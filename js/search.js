@@ -1,13 +1,1 @@
-function toggleMatches(obj) {
-  obj.next('.matches').slideToggle(300);
-  if (obj.html() == '[show matches]') {
-      obj.html('[hide matches]');
-    } else {
-      obj.html('[show matches]');
-    };
-  }
-$(function() {
-  $('a.showmatch').attr("onClick", "toggleMatches($(this));");
-  $('pre.matches').hide();
-  $('a.showmatch').show();
-  });
+function toggleMatches(a){a.next(".matches").slideToggle(300);if(a.html()=="[show matches]"){a.html("[hide matches]")}else{a.html("[show matches]")}}$(function(){$("a.showmatch").attr("onClick","toggleMatches($(this));");$("pre.matches").hide();$("a.showmatch").show()});
