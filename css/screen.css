@@ -52,7 +52,7 @@ hr { height: 1px; color: #aaa; background-color: #aaa; border: 0; margin: .2em 0
 }
 
 h1, h2, h3, h4, h5, h6 { color: black; background: none; font-weight: normal; margin: 0;
-	padding-top: .5em; padding-bottom: .17em; border-bottom: 1px solid #aaa; }
+    padding-top: .5em; padding-bottom: .17em; border-bottom: 1px solid #aaa; }
 
 h1.pageTitle { font-size: 220%; margin: 0.2em 0 .5em;  }
 h1 { font-size: 150%; margin: 1.07em 0 .535em; }
@@ -76,7 +76,6 @@ th, td { border-bottom: 1px solid #ddd; border-right: 1px solid #ccc; }
 
 /* MARGINS & PADDINGS */
 
-blockquote *:first-child { margin: .8em 0; }
 hr,  p,  ul,  ol,  dl,  blockquote,  address,  table,  pre, form { margin-bottom: 1.4em; }
 /* NOTE: Calulate header margins: TOP: 1.6em/size, BOTTOM: 1.6em/size/2 */
 th,  td { padding: .8em; }
