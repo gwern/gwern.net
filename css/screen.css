@@ -1,6 +1,6 @@
-@import url("/css/reset-fonts-grids.css");
-@import url("/css/base-min.css");
-@import url("/css/hk-pyg.css");
+@import url("reset-fonts-grids.css");
+@import url("base-min.css");
+@import url("hk-pyg.css");
 
 html { background: #f9f9f9; color: black; } 
 
@@ -23,11 +23,11 @@ h1, h2, h3, h4, h5, h6 { font-weight: normal; border-bottom: 1px solid black; }
 h1.pageTitle { font-size: 197%; margin: 0.2em 0 .5em; }
 
 h1 { font-size: 153.9%; margin: 1.07em 0 .535em; }
-h2 { font-size: 131%; margin: 1.14em 0 .57em; }
-h3 { font-size: 116%; margin: 1.23em 0 .615em; }
-h4 { font-size: 108%; margin: 1.33em 0 .67em; }
-h5 { font-size: 100%; margin: 1.6em 0 .8em; }
-h6 { font-size: 93%; margin: 1.6em 0 .8em; }
+h2 { font-size: 138.5%; margin: 1.14em 0 .57em; }
+h3 { font-size: 123.1%; margin: 1.23em 0 .615em; }
+h4 { font-size: 116%; margin: 1.33em 0 .67em; }
+h5 { font-size: 108%; margin: 1.6em 0 .8em; }
+h6 { font-size: 100%; margin: 1.6em 0 .8em; }
 
 ul { list-style-type: square; }
 dt { font-weight: bold; margin-bottom: .1em; }
@@ -90,7 +90,7 @@ h6 > a:link, h6 > a:active, h6 > a:hover, h6 > a:focus, h6 > a:visited {
         color: black;
         text-decoration: none;
 }
-#content { border: 1px solid #ccc; background-color: #fff; padding: 1em; font-size: 100%; }
+#content { border: 1px solid #ccc; background-color: #fff; padding: 1em; font-size: 108%; }
 #content p, #content pre, #content li { line-height: 140%; }
 #userbox  { text-align: right; font-weight: bold; margin: 1em; }
 #logo { min-height: 50px; }
@@ -104,30 +104,31 @@ div#toc { background-color: #f9f9f9; border: 10px solid white; margin: 0.8em; ma
 /* .req is used to hide a honeypot in a form */
 .req { display: none; }
 ul.messages > li { color: red; list-style: square; font-weight: bold; }
-ul.tabs { padding: 0; margin: 0; }
-ul.tabs li { display: inline; border: 1px solid #ccc; border-bottom: none; border-collapse: collapse; padding: 0 0.6em 0 0.6em;
-    margin: 0 0 0 1.2em; overflow: visible; background: white; }
+ul.tabs { padding: 0; margin: 0 0 1px 0; }
+ul.tabs li { display: inline; border: 1px solid #ccc; border-bottom: none; padding: 0 0.6em 0 0.6em;
+    margin: 0 0 0 1.2em; background: white; }
 ul.tabs li.selected { border-bottom: 3px solid white; }
-ul.tabs li a { text-decoration: none; font-size: 93%; font-weight: bold; margin: 0; z-index: 0; color: #36c; }
-.folding ul { list-style: none; margin: 0; padding: 0; }
-.folding li { list-style: none; background-position: 0 1px; background-repeat: no-repeat; padding-left: 20px; }
-.folding li.page { background-image: url(/img/icons/page.png); }
-.folding li.folder { background-image: url(/img/icons/folder.png); }
-.folding a { color: #000000; cursor: pointer; text-decoration: none; }
-.folding a:hover { text-decoration: underline; }
+ul.tabs li a { text-decoration: none; font-size: 93%; font-weight: bold; margin: 0; color: #36c; }
+.index ul { list-style: none; margin: 0; padding: 0; }
+.index li { list-style: none; background-position: 0 1px; background-repeat: no-repeat; padding-left: 20px; }
+.index li.page { background-image: url(../img/icons/page.png); }
+.index li.folder { background-image: url(../img/icons/folder.png); }
+.index a { color: #000000; cursor: pointer; text-decoration: none; }
+.index a:hover { text-decoration: underline; }
+a.updir { font-weight: bold; }
 #sidebar input, #sidebar select { font-size:  93%; padding: 0.1em; }
-#exportbox select { width: 9em; border: 1px solid #ccc; padding: 0; }
+#exportbox select { width: 8.5em; border: 1px solid #ccc; padding: 0; }
 #exportbox { margin: 0.3em 0 0.5em 0.4em; padding: 0; }
 #sidebar input[type='submit'] { border: none; background-color: #ccc; color: white; }
 #searchform { padding: 0; margin: 0.3em 0 0.5em 0.4em; }
-#searchform input[type='text'] { width: 9em; border: 1px solid #ccc; }
+#searchform input[type='text'] { width: 8.5em; border: 1px solid #ccc; }
 #goform { padding: 0; margin: 0.3em 0 0.5em 0.4em; }
-#goform input[type='text'] { width: 9em; border: 1px solid #ccc; }
+#goform input[type='text'] { width: 8.5em; border: 1px solid #ccc; }
 .search_result { margin-bottom: 15px; }
 .search_result .match { margin-bottom: 15px; }
 code { font-size: 93%; }
 pre.matches { margin: 0; padding: 0; }
-#editform textarea { height: 25em; width: 98%; }
+#editform textarea { height: 25em; width: 98%; font-family: monospace; font-size: 93%; }
 #editform #logMsg { width: 98%; margin-right: 1em; margin-bottom: 0.3em; }
 .added { background-color: yellow; }
 .deleted { text-decoration: line-through; color: gray; }
