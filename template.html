@@ -23,7 +23,7 @@
               <a href="/_login">Login</a> &bull; <a href="/_register">Get an account</a>
               $endif$
             </div>
-            $tabs$ 
+            $tabs$
             <div id="content">
               $if(nothead)$
               <h2 class="revision">Revision $revision$</h2>
@@ -32,7 +32,7 @@
               $messages$
               $content$
             </div>
-            <div id="footer">powered by <a href="http://github.com/jgm/gitit/tree/master/">gitit</a></div>
+            <div id="footer">Licensed: <a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/" style="text-decoration:none;"> <img src="http://i.creativecommons.org/l/zero/1.0/80x15.png" border="0" alt="CC0" /></a>; powered: <a href="http://github.com/jgm/gitit/tree/master/">darcsit</a></div>
           </div>
         </div>
         <div id="sidebar" class="yui-b first">
@@ -43,12 +43,9 @@
             <fieldset>
               <legend>Site</legend>
               <ul>
-                <li><a href="/">Front page</a></li>
                 <li><a href="/_index">All pages</a></li>
                 <li><a href="/_random">Random page</a></li>
                 <li><a href="/_activity">Recent activity</a></li>
-                <li><a href="/_upload">Upload a file</a></li>
-                <li><a href="/Help">Help</a></li>
               </ul>
               $searchbox$
             </fieldset>
@@ -60,7 +57,6 @@
               <ul>
                 <li><a href="/$pagename$?revision=$revision$&amp;showraw">Raw page source</a></li>
                 <li><a href="/$pagename$?revision=$revision$&amp;printable">Printable version</a></li>
-                <li><a href="/$pagename$?delete">Delete this page</a></li>
               </ul>
               $exportbox$
             </fieldset>
