@@ -18,16 +18,16 @@ import Text.Pandoc (defaultParserState, readMarkdown)
 import Control.Monad.Trans (MonadIO)
 
 plugin :: Plugin
-plugin = PreCommitTransform archivePage 
+plugin = PreCommitTransform archivePage
 
 -- archivePage :: (MonadIO m) => String -> ReaderT (Config, Maybe User) (StateT IO) String
 archivePage x = do mbUser <- askUser
                    let email = case mbUser of
                         Nothing -> "nobody@mailinator.com"
-                        Just u  -> uEmail u 
+                        Just u  -> uEmail u
                    let p = readMarkdown defaultParserState x
                    -- force evaluation and archiving side-effects
-                   _p' <- liftIO $ processWithM (archiveLinks email) p 
+                   _p' <- liftIO $ processWithM (archiveLinks email) p
                    return x -- note: this is read-only - don't actually change page!
 
 archiveLinks :: String -> Inline -> IO Inline
@@ -39,5 +39,5 @@ checkArchive :: (MonadIO m) => String -> String -> m ()
 checkArchive e u = when (isURI u) (liftIO $ archiveURL e u)
 
 archiveURL :: String -> String -> IO ()
-archiveURL eml url = writeFile "/home/gwern/foo" eml >> forkIO (openURL ("http://www.webcitation.org/archive?url=" ++ url ++ "&email=" ++ eml) >> return()) >> return ()
+archiveURL eml url = forkIO (openURL ("http://www.webcitation.org/archive?url=" ++ url ++ "&email=" ++ eml) >> return ()) >> return ()
    where openURL = simpleHTTP . getRequest
