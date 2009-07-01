@@ -15,9 +15,9 @@
 
   (Written by Gwern Branwen; put in public domain, 2009) -}
 
-module InterwikiPlugin (plugin) where
+module Interwiki (plugin) where
 
-import Gitit.Interface
+import Network.Gitit.Interface
 
 import qualified Data.Map as M (fromList, lookup, Map)
 import Network.URI (escapeURIString, isAllowedInURI, unEscapeString)
