@@ -9,7 +9,7 @@
 
 module WebArchiver (plugin) where
 
-import Gitit.Interface (askUser, liftIO, processWithM, uEmail, Plugin(PreCommitTransform), Inline(Link))
+import Network.Gitit.Interface (askUser, liftIO, processWithM, uEmail, Plugin(PreCommitTransform), Inline(Link))
 import Control.Monad (when)
 import Network.URI (isURI)
 import Control.Concurrent (forkIO)
