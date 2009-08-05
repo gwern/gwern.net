@@ -33,9 +33,6 @@
           $if(pagetools)$
             $pagetools()$
           $endif$
-          $if(markuphelp)$
-            $markuphelp()$
-          $endif$
         </div>
     </div>
     $javascripts$
