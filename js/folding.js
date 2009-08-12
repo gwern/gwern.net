@@ -1,1 +1,0 @@
-$(function(){$("ul.folding li > ul").each(function(){var b=$(this).parent("li");b.addClass("folder");var a=$(this).remove();b.wrapInner("<a/>").find("a").click(function(){a.toggle()});b.append(a)});$("ul ul").hide()});
