@@ -24,7 +24,7 @@
         <div id="yui-main">
           <div id="maincol" class="yui-b">
             $userbox()$
-            $tabs$ 
+            $tabs$
             $content()$
             $footer()$
           </div>
@@ -43,6 +43,7 @@
         </div>
     </div>
     $javascripts$
+    <script type="text/javascript" src="$base$/_static/js/MathMLinHTMLforFirefoxAndIE.js"></script>
     $expire()$
     $getuser()$
   </body>
