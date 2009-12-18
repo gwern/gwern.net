@@ -35,27 +35,34 @@ plugin = mkPageTransform convertInterwikiLinks
      the Link unchanged. -}
 convertInterwikiLinks :: Inline -> Inline
 convertInterwikiLinks (Link ref (interwiki, article)) =
-  if head interwiki == '!'
-     then case M.lookup interwiki' interwikiMap of
+  case interwiki of
+    ('!':interwiki') ->
+        case M.lookup interwiki' interwikiMap of
                 Just url  -> case article of
                                   "" -> Link ref (url ++ (inlinesToURL ref), (summary $ unEscapeString $ inlinesToURL ref))
-                                  _ -> Link ref (interwikiurl article url, summary article)
+                                  _  -> Link ref (interwikiurl article url, summary article)
                 Nothing -> Link ref (interwiki, article)
-     else Link ref (interwiki, article)
- where -- '!Wookieepedia' -> 'Wookieepedia'
-       interwiki' = tail interwiki
-       -- 'http://starwars.wikia.com/wiki/Emperor_Palpatine'
-       interwikiurl a u = escapeURIString isAllowedInURI $ u ++ a
-       -- 'Wookieepedia: Emperor Palpatine'
-       summary a = interwiki' ++ ": " ++ a
+            where -- 'http://starwars.wikia.com/wiki/Emperor_Palpatine'
+                  interwikiurl a u = escapeURIString isAllowedInURI $ u ++ a
+                  -- 'Wookieepedia: Emperor Palpatine'
+                  summary a = interwiki' ++ ": " ++ a
+    _ -> Link ref (interwiki, article)
 convertInterwikiLinks x = x
 
-{- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
-   appending to it the article name (suitably URL-escaped, of course).
-   The mapping is derived from <https://secure.wikimedia.org/wikipedia/meta/wiki/Interwiki_map>
-   as of 11:19 PM, 11 February 2009. -}
+-- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
+--   appending to it the article name (suitably URL-escaped, of course).
 interwikiMap :: M.Map String String
-interwikiMap = M.fromList [ ("AbbeNormal", "http://ourpla.net/cgi/pikie?"),
+interwikiMap = M.fromList $ wpInterwikiMap ++ customInterwikiMap
+
+wpInterwikiMap, customInterwikiMap :: [(String, String)]
+customInterwikiMap = [("Hackage", "http://hackage.haskell.org/package/"),
+                      ("Hawiki", "http://haskell.org/haskellwiki/"),
+                      ("Hayoo", "http://holumbus.fh-wedel.de/hayoo/hayoo.html#0:"),
+                      ("Hoogle", "http://www.haskell.org/hoogle/?hoogle=")]
+
+-- This mapping is derived from <https://secure.wikimedia.org/wikipedia/meta/wiki/Interwiki_map>
+-- as of 11:19 PM, 11 February 2009.
+wpInterwikiMap = [ ("AbbeNormal", "http://ourpla.net/cgi/pikie?"),
                  ("Acronym", "http://www.acronymfinder.com/af-query.asp?String=exact&Acronym="),
                  ("Advisory", "http://advisory.wikimedia.org/wiki/"),
                  ("Advogato", "http://www.advogato.org/"),
