@@ -1,0 +1,10 @@
+/* CSS provided by cwillu of #lesswrong. This CSS:
+1. reflows sections to use up all horizontal whitespace so every section fits on 1 screen
+2. hides the Table of Contents (not needed since all sections are visible) */
+#content div {display:inline-block;vertical-align: top;max-width:700px; }
+#content div#TOC { display: none; }
+
+/* Undo the quicksilver change in default.css; with the qs change, the index no longer
+fits on one page because there's too much whitespace in list entries! We want compact list there. */
+li { margin-top: 0em; }
+li p { margin: 0em; }

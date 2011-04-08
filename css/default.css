@@ -1,0 +1,155 @@
+div#TOC { float: right; }
+
+html {
+    padding: 0px;
+    margin: 0px;
+    background-color: white;
+    color: black;
+    font-family: sans-serif;
+    line-height: 160%;
+}
+
+body {
+    padding: 0px 0px 60px 0px;
+    margin: 0px;
+    max-width: 1300px;
+}
+
+div#header img {
+    display: inline;
+    vertical-align: middle;
+}
+
+div#header h1 {
+    padding-left: 10px;
+    display: inline;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+div#main {
+    margin-left: 1em;
+    margin-right: 1em;
+    border: none;
+
+}
+
+div#sidebar {
+    width: 80px;
+    float: left;
+}
+
+div#sidebar a {
+    display: block;
+    font-size: 110%;
+    text-decoration: none;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+div#content {
+    margin-left: 80px;
+    padding-left: 10px;
+    line-height: 1.4em;
+
+}
+
+div#footer {
+    padding-top: 30px;
+    clear: both;
+    font-size: 90%;
+    text-align: center;
+}
+
+a {
+    color: black;
+    text-decoration: underline;
+}
+
+h2 {
+    font-size: 120%;
+    text-transform: uppercase;
+}
+
+h3 {
+    font-size: 100%;
+    text-transform: uppercase;
+}
+
+div.column {
+    width: 50%;
+    float: left;
+}
+
+img {
+    display: block;
+    margin: 10px auto 10px auto;
+    border: none;
+}
+
+ul {
+    list-style-type: square;
+    padding-left: 1em;
+    margin-left: 1em;
+}
+
+code {
+    background-color: rgb(250, 250, 250);
+    border: 1px solid rgb(200, 200, 200);
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+pre code {
+    display: block;
+    padding: 8px;
+    margin-bottom: 2em;
+}
+
+p.caption {
+    display: none;
+}
+
+p { margin-top: -0.2em; }
+
+p.hang { text-indent: -0.44em }
+
+.num { font-size: 85%; }
+
+/* CSS written by cwillu of #lesswrong in order to rewrite the Modafinil page's table of prices */
+#suppliers-prices td,#suppliers-prices th { padding: 0px 15px; }
+#suppliers-prices td:nth-child(1):after { content: "mg" }
+#suppliers-prices td:nth-child(2):before { content: "x" }
+#suppliers-prices td:nth-child(3) { text-align: right; }
+#suppliers-prices td:nth-child(3):before { content: "$" }
+#suppliers-prices td:nth-child(4):before { content: "$" }
+#suppliers-prices td:nth-child(5):after { content: "mg/$" }
+
+/* rejigger whitespace inside lists per quicksilver of #haskell */
+li { margin-top: 0.5em; }
+li p { margin: 0.2em; }
+
+/* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/ */
+blockquote {
+    z-index: -2;
+    width: intrinsic;
+    -webkit-box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1);
+
+    box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1); }
+
+/* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
+sub, sup { line-height: 0.3em; }
+
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/
+If we don't have this CSS for the floating footnotes, they're too see-through and unreadable. */
+#footnotediv div {
+background-color: white;
+padding: 3px;
+padding-left: 12px;
+padding-right: 12px;
+border: 1px solid #CDBBB5;
+box-shadow: #555 0 0 10px;
+-webkit-box-shadow: #555 0 0 10px;
+-moz-box-shadow: 0 0 10px #555;
+}
