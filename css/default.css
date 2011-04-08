@@ -146,8 +146,8 @@ If we don't have this CSS for the floating footnotes, they're too see-through an
 #footnotediv div {
 background-color: white;
 padding: 3px;
-padding-left: 12px;
-padding-right: 12px;
+padding: 12px;
+max-width: 800px;
 border: 1px solid #CDBBB5;
 box-shadow: #555 0 0 10px;
 -webkit-box-shadow: #555 0 0 10px;
