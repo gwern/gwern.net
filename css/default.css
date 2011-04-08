@@ -153,3 +153,5 @@ box-shadow: #555 0 0 10px;
 -webkit-box-shadow: #555 0 0 10px;
 -moz-box-shadow: 0 0 10px #555;
 }
+/* Deal with multiple footnotes one after another; Charuru */
+sup + sup { margin-left: 2px; }
