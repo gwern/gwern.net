@@ -114,6 +114,10 @@ p { margin-top: -0.2em; }
 
 p.hang { text-indent: -0.44em }
 
+p + p {
+  text-indent: 0.5em;
+}
+
 .num { font-size: 85%; }
 
 /* CSS written by cwillu of #lesswrong in order to rewrite the Modafinil page's table of prices */
