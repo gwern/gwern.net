@@ -1,4 +1,6 @@
-div#TOC { float: right; width: 25%; }
+div#TOC { float: right;
+          width: 25%;
+          background-color: white; }
 
 html {
     padding: 0px;
