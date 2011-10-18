@@ -124,6 +124,14 @@ p + p {
 
 .num { font-size: 85%; }
 
+/* zebra-stripe tables (CSS3); from Twitter's bootstrap package */
+tbody tr:nth-child(odd) td {
+  background-color: #f9f9f9;
+}
+tbody tr:hover td {
+  background-color: #f5f5f5;
+}
+
 /* CSS written by cwillu of #lesswrong in order to rewrite the Modafinil page's table of prices */
 #suppliers-prices td,#suppliers-prices th { padding: 0px 15px; }
 #suppliers-prices td:nth-child(1):after { content: "mg" }
