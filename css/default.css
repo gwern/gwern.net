@@ -134,8 +134,8 @@ table {
   margin-bottom: 18px;
   padding: 0;
   border-collapse: separate;
-  *border-collapse: collapse;
-  /* IE7, collapse table to remove spacing */
+  /* *border-collapse: collapse;
+   IE7, collapse table to remove spacing */
 
   font-size: 13px;
   border: 1px solid #ddd;
@@ -208,10 +208,8 @@ li p { margin: 0.2em; }
 /* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/ */
 blockquote {
     z-index: -2;
-    width: intrinsic;
     -webkit-box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1);
     -moz-box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1);
-
     box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1); }
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
