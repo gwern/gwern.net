@@ -136,7 +136,6 @@ table {
   border-collapse: separate;
   /* *border-collapse: collapse;
    IE7, collapse table to remove spacing */
-
   font-size: 13px;
   border: 1px solid #ddd;
   -webkit-border-radius: 4px;
@@ -182,6 +181,28 @@ table tbody tr:last-child td:last-child {
   -webkit-border-radius: 0 0 4px 0;
   -moz-border-radius: 0 0 4px 0;
   border-radius: 0 0 4px 0;
+}
+
+/* Add little icons to tables handled by tablesorter.js
+   to advertise that they are sortable.
+   http://tablesorter.com/docs/#Configuration */
+th.header {
+    background-image: url(/static/img/bg.gif);
+    cursor: pointer;
+    font-weight: bold;
+    background-repeat: no-repeat;
+    background-position: center left;
+    padding-left: 20px;
+    border-right: 1px solid #dad9c7;
+    margin-left: -1px;
+}
+th.headerSortUp {
+    background-image: url(/static/img/small_asc.gif);
+    background-color: #79BEDB;
+}
+th.headerSortDown {
+    background-image: url(/static/img/small_desc.gif);
+    background-color: #79BEDB;
 }
 
 /* zebra-stripe tables (CSS3); from Twitter's bootstrap package */
