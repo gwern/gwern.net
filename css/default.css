@@ -54,6 +54,7 @@ div#description { font-size: 95%; }
 
 div#content {
     margin-left: 80px;
+    margin-right: 80px;
     padding-left: 10px;
     line-height: 1.4em;
 }
