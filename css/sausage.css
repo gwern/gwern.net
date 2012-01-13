@@ -2,8 +2,6 @@
     .sausage-set {
         position: fixed; right: 0; top: 0;
         width: 14px; height: 90%;
-        border-left: solid 1px #ffg;
-        border-right: solid 1px #ffg;
         background-color: #fff;
     }
 
