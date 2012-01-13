@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk" />  <!-- Google Web Master Tools -->
+    <meta name="description" content="$description$" />
+    <meta http-equiv="last-modified" content="$modified$" />
+
+    <title>$title$</title>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/sausage.css" />
+
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed" />
+
+    <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico" />
+    <!-- "The clouds above join and separate
+         The breeze in the courtyard leaves and returns.
+         Life is like that, so why not relax?
+         Who can stop us from celebrating?"
+         Lu Yu -->
+  </head>
+  <body>
+    <div id="main">
+      <div id="header">
+        <img src="/images/logo.png" width="32" height="36" alt="Logo: a Gothic blackletter capital G" />
+        <h1>$title$</h1>
+      </div>
+
+      <div id="sidebar">
+        <p><a href="/index" title="index - categorized list of articles">Home</a>
+          <a href="/About" title="Site ideals; source &amp; content; traffic; examples; license">Site</a>
+          <a href="/Links" title="Who am I online &amp; what have I done? - Contact information; sites I use; things I&#39;ve worked on">Me</a>
+        </p>
+
+        <hr/>
+        <div id="description"><h4>Abstract:</h4> <em>$description$</em></div>
+
+        <hr/>
+        <div id="last-modified">$modified$</div>
+      </div>
+
+      <div id="content">
+        $body$
+      </div>
+
+      <!-- licensing; see also /About -->
+      <div id="footer">
+        <a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/" style="text-decoration:none;"></a>
+        Send <a rel="feedback" href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">anonymous feedback</a>;
+        <a rel="donations" href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> donations welcome: <tt>1HCKsp7kndaibiZUTYBpDzaJq3JVTX9eGf</tt>
+      </div>
+    </div>
+
+    <!-- Force MathML rendering -->
+    <script type="text/javascript" src="/static/js/MathMLinHTML.js"></script>
+
+    <!-- Load infrastructure from Google's CDN: http://code.google.com/apis/libraries/devguide.html -->
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+
+    <!-- jQuery plugin which adds a sidebar visualizing the page sections; see http://christophercliff.github.com/sausage/ -->
+    <script type="text/javascript" src="/static/js/jquery.sausage.js"></script>
+    <script type="text/javascript">
+      $(function(){
+      $(window)
+      .sausage({
+      page: '.section',
+      content: function (i, $page) {
+      return '<span class="sausage-span">' + $page.find(':header').first().text() + '</span>';
+      } }) ; });
+    </script>
+
+    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
+    <script type="text/javascript" src="/static/js/footnotes.js"></script>
+
+    <!-- http://tablesorter.com/docs/ -->
+    <script type="text/javascript" src="/static/js/tablesorter.js"></script>
+    <script type="text/javascript" id="tablesorter">
+      $(document).ready(function() {
+      $("table").tablesorter();
+      }); </script>
+
+    <!-- Comments courtesy of Disqus -->
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+      if (document.title != 'index') { <!-- avoid Disqus comments on front page -->
+      (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://disqus.com/forums/gwern/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+      var disqus_shortname = 'gwern';
+      (function () {
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'http://disqus.com/forums/gwern/count.js';
+      (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+      }());
+      }
+      else <!-- suppress Table of Contents by loading an additional special-purpose CSS file -->
+      { var head  = document.getElementsByTagName('head')[0];
+      var link  = document.createElement('link');
+      link.id   = 'parallelColumns';
+      link.rel  = 'stylesheet';
+      link.type = 'text/css';
+      link.href = './static/css/index.css';
+      link.media = 'all';
+      head.appendChild(link); }</script>
+    <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
+
+    <!-- Google+ feed, for lightweight sharing -->
+    <link href="http://googleplus-activity-widget.googlecode.com/svn/v1/light.css" rel="stylesheet" type="text/css" />
+    <script src="http://googleplus-activity-widget.googlecode.com/files/jquery.googleplus-activity-1.0.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      //<![CDATA[
+       jQuery.fn.googlePlusActivity.defaults.api_key = 'AIzaSyAs2yALswc7M6GtyKS6MUvVagmOFKOFvfk';
+       //]]>
+    </script>
+    <div class="google-plus-activity" data-options="{ user: '103530621949492999968' }">
+      <a class="gpaw-info" href="http://www.moretechtips.net" target="_blank">Google+ Activity Widget</a>
+    </div>
+
+    <!-- Load Google Analytics, because the data is interesting and useful -->
+    <script id="googleAnalytics" type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-18912926-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();</script>
+  </body>
+</html>
