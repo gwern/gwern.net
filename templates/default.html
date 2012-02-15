@@ -53,7 +53,7 @@
       <div id="footer">
         <a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/" style="text-decoration:none;"></a>
         <a rel="feedback" href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Give anonymous feedback</a>
-        <br>
+        <br />
         <div id="donations">
          <a rel="btcdonations" href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> welcome: <tt>1HCKsp7kndaibiZUTYBpDzaJq3JVTX9eGf</tt> or
          <form style="display: inline" action="https://www.paypal.com/cgi-bin/webscr" method="post">
@@ -76,6 +76,7 @@
     <!-- jQuery plugin which adds a sidebar visualizing the page sections; see http://christophercliff.github.com/sausage/ -->
     <script type="text/javascript" src="/static/js/jquery.sausage.js"></script>
     <script type="text/javascript">
+      //<![CDATA[
       $(function(){
       $(window)
       .sausage({
@@ -83,6 +84,7 @@
       content: function (i, $page) {
       return '<span class="sausage-span">' + $page.find(':header').first().text() + '</span>';
       } }) ; });
+      //]]>
     </script>
 
     <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
