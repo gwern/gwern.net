@@ -224,12 +224,19 @@ tbody tr:hover td {
 li { margin-top: 0.5em; }
 li p { margin: 0.2em; }
 
-/* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/ */
-blockquote {
+/* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
+   Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes. */
+blockquote,
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
     z-index: -2;
-    -webkit-box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1);
-    -moz-box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1);
-    box-shadow:-7px 4px 0px rgba(0, 0, 0, 0.1); }
+    background-color: rgb(250, 250, 250);
+    -webkit-box-shadow:-4px 2px 0px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow:-4px 2px 0px rgba(0, 0, 0, 0.1);
+    box-shadow:-4px 2px 0px rgba(0, 0, 0, 0.1); }
+blockquote blockquote,
+blockquote blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote { background-color: rgb(240, 240, 240); }
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub, sup { line-height: 0.3em; }
