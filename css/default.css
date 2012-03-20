@@ -12,7 +12,6 @@ html {
 }
 
 body {
-    padding: 0px 0px 60px 0px;
     margin: 1px;
     max-width: 1400px;
 }
@@ -23,7 +22,7 @@ div#header img {
 }
 
 div#header h1 {
-    padding-left: 10px;
+    padding-left: 30px;
     display: inline;
     text-transform: uppercase;
     vertical-align: middle;
@@ -37,12 +36,11 @@ div#main {
 }
 
 div#sidebar {
-    width: 80px;
+    width: 90px;
     float: left;
-    margin-right: 30px;
 }
 
-div#sidebar a {
+div#sidebar-links a {
     display: block;
     font-size: 105%;
     text-decoration: none;
@@ -52,10 +50,12 @@ div#sidebar a {
 
 div#description { font-size: 95%; }
 
+div#tags { font-size: 80%; }
+
 div#content {
-    margin-left: 80px;
     margin-right: 80px;
-    padding-left: 10px;
+    margin-left: 10px;
+    padding-left: 90px;
     line-height: 1.4em;
 }
 

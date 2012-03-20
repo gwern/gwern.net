@@ -26,19 +26,25 @@
   <body>
     <div id="main">
       <div id="header">
-        <img src="/images/logo.png" width="32" height="36" alt="Logo: a Gothic blackletter capital G" />
+        <img src="/static/img/logo.png" width="32" height="36" alt="Logo: a Gothic blackletter capital G" />
         <h1>$title$</h1>
       </div>
 
       <div id="sidebar">
-        <p><a href="/index" title="index - categorized list of articles">Home</a>
-          <a href="/About" title="Site ideals; source &amp; content; traffic; examples; license">Site</a>
-          <a href="/Links" title="Who am I online &amp; what have I done? - Contact information; sites I use; things I&#39;ve worked on">Me</a>
-        </p>
+        <div id="sidebar-links">
+          <p>
+            <a href="/index" title="index - categorized list of articles">Home</a>
+            <a href="/About" title="Site ideals; source &amp; content; traffic; examples; license">Site</a>
+            <a href="/Links" title="Who am I online &amp; what have I done? - Contact information; sites I use; things I&#39;ve worked on">Me</a>
+          </p>
+        </div>
 
         <div id="last-modified">$modified$</div>
         <br />
         <div id="abstract"><em>$description$</em></div>
+        <br />
+        <div id="tags"><i>$prettytags$</i></div>
+        <br />
       </div>
 
       <div id="content">
@@ -51,13 +57,13 @@
         <a rel="feedback" href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Send anonymous feedback</a>
         <br />
         <div id="donations">
-         <a rel="btcdonations" href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> welcome: <tt>1HCKsp7kndaibiZUTYBpDzaJq3JVTX9eGf</tt> or
-         <form style="display: inline" action="https://www.paypal.com/cgi-bin/webscr" method="post">
-           <div class="form-type">
-             <input type="hidden" name="cmd" value="_s-xclick" />
-             <input type="hidden" name="hosted_button_id" value="8GSLCWGCC6AF8" />
-             <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="PayPal: the safe easy way to donate" />
-           </div>
+          <a rel="btcdonations" href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> welcome: <tt>1HCKsp7kndaibiZUTYBpDzaJq3JVTX9eGf</tt> or
+          <form style="display: inline" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+            <div class="form-type">
+              <input type="hidden" name="cmd" value="_s-xclick" />
+              <input type="hidden" name="hosted_button_id" value="8GSLCWGCC6AF8" />
+              <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="PayPal: the safe easy way to donate" />
+            </div>
           </form>
         </div>
       </div>
