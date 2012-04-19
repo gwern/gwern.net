@@ -52,8 +52,7 @@ div#description { font-size: 95%; }
 div#tags { font-size: 80%; }
 
 div#content {
-    margin-right: 80px;
-    margin-left: 10px;
+    margin-left: 15px;
     padding-left: 90px;
     line-height: 130%;
 }

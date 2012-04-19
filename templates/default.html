@@ -11,7 +11,6 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/sausage.css" />
     <link rel="stylesheet" type="text/css" href="http://googleplus-activity-widget.googlecode.com/svn/v1/light.css" />
 
     <!-- RSS -->
@@ -76,20 +75,6 @@
     <!-- Load infrastructure from Google's CDN: http://code.google.com/apis/libraries/devguide.html -->
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-
-    <!-- jQuery plugin which adds a sidebar visualizing the page sections; see http://christophercliff.github.com/sausage/ -->
-    <script type="text/javascript" src="/static/js/jquery.sausage.js"></script>
-    <script type="text/javascript">
-      //<![CDATA[
-      $(function(){
-      $(window)
-      .sausage({
-      page: '.section',
-      content: function (i, $page) {
-      return '<span class="sausage-span">' + $page.find(':header').first().text() + '</span>';
-      } }) ; });
-      //]]>
-    </script>
 
     <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
     <script type="text/javascript" src="/static/js/footnotes.js"></script>
