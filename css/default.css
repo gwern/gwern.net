@@ -202,12 +202,11 @@ tbody tr:hover td {
 
 /* CSS written by cwillu of #lesswrong in order to rewrite the Modafinil page's table of prices */
 #suppliers-prices td,#suppliers-prices th { padding: 0px 15px; }
-#suppliers-prices td:nth-child(1):after { content: "mg" }
-#suppliers-prices td:nth-child(2):before { content: "x" }
-#suppliers-prices td:nth-child(3) { text-align: right; }
-#suppliers-prices td:nth-child(3):before { content: "$" }
-#suppliers-prices td:nth-child(4):before { content: "$" }
-#suppliers-prices td:nth-child(5):after { content: "mg/$" }
+#suppliers-prices td:nth-child(1):after { content: "mg/$" }
+#suppliers-prices td:nth-child(2) { text-align: right; }
+#suppliers-prices td:nth-child(2):after { content: "mg" }
+#suppliers-prices td:nth-child(3):before { content: "x" }
+#suppliers-prices td:nth-child(5):before { content: "$" }
 
 /* rejigger whitespace inside lists per quicksilver of #haskell */
 li { margin-top: 0.5em; }
