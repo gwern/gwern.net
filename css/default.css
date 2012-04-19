@@ -8,7 +8,6 @@ html {
     background-color: white;
     color: black;
     font-family: sans-serif;
-    line-height: 110%;
 }
 
 body {
@@ -56,7 +55,7 @@ div#content {
     margin-right: 80px;
     margin-left: 10px;
     padding-left: 90px;
-    line-height: 1.4em;
+    line-height: 130%;
 }
 
 div#footer {
