@@ -37,6 +37,19 @@ div#main {
 div#sidebar {
     width: 95px;
     float: left;
+
+/* We want descriptions and tags to be hyphenated/broken
+   when they are too long, otherwise they spill onto the
+   body text, which is ugly and unreadable.
+
+   CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
+    -ms-word-break: break-all;
+    word-break: break-all;
+    // Non standard for webkit
+    word-break: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
 }
 
 div#sidebar-links a {
