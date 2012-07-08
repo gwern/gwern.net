@@ -242,6 +242,7 @@ sub, sup { line-height: 0.3em; }
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/
 If we don't have this CSS for the floating footnotes, they're too see-through and unreadable. */
 #footnotediv div {
+opacity: 1;
 background-color: white;
 padding: 3px;
 padding: 12px;
