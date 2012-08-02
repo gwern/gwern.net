@@ -12,7 +12,8 @@ html {
 
 body {
     margin: 1px;
-    max-width: 1400px;
+    /* original 1400px; see A/B tests */
+    max-width: 900px;
 }
 
 div#header img {
