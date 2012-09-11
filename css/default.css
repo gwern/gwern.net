@@ -7,7 +7,9 @@ html {
     margin: 0px;
     background-color: white;
     color: black;
-    font-family: sans-serif;
+    /* Georgia choice from http://opinionator.blogs.nytimes.com/2012/08/08/hear-all-ye-people-hearken-o-earth/ */
+    font-family: Georgia, "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica,
+                 Arial, "Lucida Grande", garamond, palatino, verdana, sans-serif;
 }
 
 body {
@@ -49,7 +51,7 @@ div#sidebar {
    CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
     -ms-word-break: break-all;
     word-break: break-all;
-    // Non standard for webkit
+    /* Non standard for webkit */
     word-break: break-word;
     -webkit-hyphens: auto;
     -moz-hyphens: auto;
