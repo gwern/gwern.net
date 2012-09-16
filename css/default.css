@@ -57,6 +57,8 @@ div#sidebar {
     -moz-hyphens: auto;
     hyphens: auto;
 }
+/* But the version and belief tags are too short and look ugly if broken with a hyphen, so reset: */
+div#version, div#epistemological-status { word-break: normal; }
 
 div#sidebar-links a {
     display: block;
@@ -65,6 +67,7 @@ div#sidebar-links a {
     margin-bottom: 5px;
     text-transform: uppercase;
 }
+
 
 div#description { font-size: 95%; }
 
