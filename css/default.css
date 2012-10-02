@@ -242,7 +242,7 @@ blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote b
     background-color: rgb(240, 240, 240); }
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan and #lesswrong for help */
-q {background-color:rgba(0,0,0,0.05);}
+q {background-color:rgba(0,0,0,0.03);}
 blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
