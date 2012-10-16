@@ -21,13 +21,7 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-div#header img {
-    display: inline;
-    vertical-align: middle;
-}
-
 div#header h1 {
-    padding-left: 30px;
     display: inline;
     text-transform: uppercase;
     vertical-align: middle;
@@ -39,7 +33,7 @@ div#main {
     border: none;
 
 }
-
+div#logo {     margin-left: -65px; }
 div#sidebar {
     width: 95px;
     float: left;
@@ -67,7 +61,6 @@ div#sidebar-links a {
     margin-bottom: 5px;
     text-transform: uppercase;
 }
-
 
 div#description { font-size: 95%; }
 
