@@ -13,7 +13,6 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
-    <link rel="stylesheet" type="text/css" href="http://googleplus-activity-widget.googlecode.com/svn/v1/light.css" />
 
     <!-- RSS -->
     <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed" />
@@ -63,7 +62,6 @@
 
     <!-- Load infrastructure from Google's CDN: http://code.google.com/apis/libraries/devguide.html -->
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 
     <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
     <script type="text/javascript" src="/static/js/footnotes.js"></script>
@@ -102,17 +100,6 @@
       head.appendChild(link); }</script>
     <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
 
-    <!-- Google+ feed, for lightweight sharing -->
-    <script src="http://googleplus-activity-widget.googlecode.com/files/jquery.googleplus-activity-1.0.min.js" type="text/javascript"></script>
-    <script type="text/javascript">
-      //<![CDATA[
-       jQuery.fn.googlePlusActivity.defaults.api_key = 'AIzaSyAs2yALswc7M6GtyKS6MUvVagmOFKOFvfk';
-       //]]>
-    </script>
-    <div class="google-plus-activity" data-options="{ user: '103530621949492999968' }">
-      <a class="gpaw-info" href="http://www.moretechtips.net">Google+ Activity Widget</a>
-    </div>
-
     <!-- Load Google Analytics, because the data is interesting and useful -->
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
@@ -126,6 +113,8 @@
 
     <!-- licensing; see also /About -->
     <div id="footer">
+      <p>Still bored? Then try my <a href="https://plus.google.com/103530621949492999968/posts" title="Google+ posts">Google+ news feed</a>.</p>
+
       <a rel="license" href="http://creativecommons.org/publicdomain/zero/1.0/" style="text-decoration:none;"></a>
       <a href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Send anonymous feedback</a>
       <br />
@@ -136,7 +125,7 @@
             <div class="form-type">
               <input type="hidden" name="cmd" value="_s-xclick" />
               <input type="hidden" name="hosted_button_id" value="8GSLCWGCC6AF8" />
-              <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="Help pay for hosting!" />
+              <input type="image" src="http://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" alt="Help pay for hosting!" />
             </div>
           </form>
         </div>
