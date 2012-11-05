@@ -33,7 +33,7 @@ div#main {
     border: none;
 
 }
-div#logo {     margin-left: -65px; }
+div#logo {     margin-left: -40px; }
 div#sidebar {
     width: 95px;
     float: left;
@@ -244,12 +244,12 @@ sub, sup { line-height: 0.3em; }
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/
 If we don't have this CSS for the floating footnotes, they're too see-through and unreadable. */
 #footnotediv div {
-opacity: 1;
-background-color: white;
-padding: 3px;
-padding: 12px;
-max-width: 800px;
-border: 1px solid #CDBBB5;
+    opacity: 1;
+    background-color: white;
+    padding: 3px;
+    padding: 12px;
+    max-width: 800px;
+    border: 1px solid #CDBBB5;
 }
 
 /* Deal with multiple footnotes one after another; Charuru */
