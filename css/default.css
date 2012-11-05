@@ -103,6 +103,14 @@ img {
     display: block;
     margin: 10px auto 10px auto;
     border: none;
+
+/* resize images based on browser width: 'fluid images'; see
+http://unstoppablerobotninja.com/entry/fluid-images/
+http://blog.kurtschindler.net/post/flexible-dynamically-resizing-images-with-css
+http://stackoverflow.com/questions/787839/resize-image-proportionally-with-css */
+    max-width: 100%;
+    height: auto;
+    width: auto\9; /* ie8 */
 }
 
 ul {
