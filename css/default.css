@@ -1,6 +1,6 @@
 div#TOC { float: right;
           width: 25%;
-          background-color: white; }
+}
 
 html {
     padding: 0px;
@@ -15,7 +15,7 @@ html {
 body {
     margin: 1px;
     /* original 1400px; see A/B tests */
-    max-width: 900px;
+    max-width: 1000px;
     /* https://developer.mozilla.org/en-US/docs/CSS/text-rendering
        Windows/Linux browsers render prettily like OS X - ligatures etc */
     text-rendering: optimizeLegibility;
