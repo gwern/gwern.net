@@ -82,6 +82,12 @@ div#footer {
 a {
     color: black;
     text-decoration: underline;
+    }
+div#content a {
+/* how we implement grey underlining:
+   http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/ */
+    text-decoration: none;
+    border-bottom: 1px Solid grey;
 }
 
 h2 {
