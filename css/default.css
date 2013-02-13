@@ -31,9 +31,10 @@ div#main {
     margin-left: 1em;
     margin-right: 1em;
     border: none;
-
 }
-div#logo {     margin-left: -40px; }
+
+div#logo { margin-left: -50px; }
+
 div#sidebar {
     width: 95px;
     float: left;
