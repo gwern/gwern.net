@@ -27,6 +27,9 @@ div#header h1 {
     vertical-align: middle;
 }
 
+/* center the ads so they don't look aligned with the content & part of the content */
+div#adsense { text-align: center; }
+
 div#main {
     margin-left: 1em;
     margin-right: 1em;
