@@ -39,7 +39,7 @@ div#main {
 div#logo { margin-left: -50px; }
 
 div#sidebar {
-    width: 95px;
+    width: 115px;
     float: left;
 
 /* We want descriptions and tags to be hyphenated/broken
