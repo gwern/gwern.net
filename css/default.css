@@ -16,9 +16,6 @@ body {
     margin: 1px;
     /* original 1400px; see A/B tests */
     max-width: 1000px;
-    /* https://developer.mozilla.org/en-US/docs/CSS/text-rendering
-       Windows/Linux browsers render prettily like OS X - ligatures etc */
-    text-rendering: optimizeLegibility;
 }
 
 div#header h1 {
@@ -47,12 +44,7 @@ div#sidebar {
    body text, which is ugly and unreadable.
 
    CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
-    -ms-word-break: break-all;
     word-break: break-all;
-    /* Non standard for webkit */
-    word-break: break-word;
-    -webkit-hyphens: auto;
-    -moz-hyphens: auto;
     hyphens: auto;
 }
 /* But the version and belief tags are too short and look ugly if broken with a hyphen, so reset: */
@@ -120,7 +112,6 @@ http://blog.kurtschindler.net/post/flexible-dynamically-resizing-images-with-css
 http://stackoverflow.com/questions/787839/resize-image-proportionally-with-css */
     max-width: 100%;
     height: auto;
-    width: auto\9; /* ie8 */
 }
 
 ul {
