@@ -25,6 +25,9 @@
          Lu Yu -->
   </head>
   <body>
+    <!-- override CSS with a/b test -->
+    <div class="maxwidth_class1"></div>
+
     <div id="main">
       <div id="sidebar">
         <div id="logo"><img alt="Logo: a Gothic blackletter capital G" height="36" src="/static/img/logo.png" width="32" /></div>
@@ -97,9 +100,64 @@
       <a href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Send anonymous feedback</a>
       <br />
       <div id="donations2">
-        <a href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> donations: <code>15mHK7ag4ZyoDaTRTc2S3nf1YVdUeSYTnU</code>
+        <a href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> donations: <code>1Ha1o1Q8M1JUxwYejfR89koZKtgcUtEKyC</code>
       </div>
     </div>
+
+    <!-- a/b testing -->
+    <script type="text/javascript" src="/static/js/abalytics.js"></script>
+    <script type="text/javascript">
+      window.onload = function() {
+      ABalytics.applyHtml();
+      };
+    </script>
+
+    <!-- Load Google Analytics, because the data is interesting and useful -->
+    <script id="googleAnalytics" type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-18912926-1']);
+
+      ABalytics.init({
+      maxwidth: [
+      {
+      name: '800',
+      "maxwidth_class1": "<style>body { max-width: 800px; }</style>",
+      "maxwidth_class2": ""
+      },
+      {
+      name: '900',
+      "maxwidth_class1": "<style>body { max-width: 900px; }</style>",
+      "maxwidth_class2": ""
+      },
+      {
+      name: '1100',
+      "maxwidth_class1": "<style>body { max-width: 1100px; }</style>",
+      "maxwidth_class2": ""
+      },
+      {
+      name: '1200',
+      "maxwidth_class1": "<style>body { max-width: 1200px; }</style>",
+      "maxwidth_class2": ""
+      },
+      {
+      name: '1300',
+      "maxwidth_class1": "<style>body { max-width: 1300px; }</style>",
+      "maxwidth_class2": ""
+      },
+      {
+      name: '1400',
+      "maxwidth_class1": "<style>body { max-width: 1400px; }</style>",
+      "maxwidth_class2": ""
+      }
+      ],
+      }, _gaq);
+
+      _gaq.push(['_trackPageview']);
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();</script>
 
     <!-- Handle cross-browser MathML rendering -->
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
@@ -143,17 +201,5 @@
       link.media = 'all';
       head.appendChild(link); }</script>
     <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
-
-    <!-- Load Google Analytics, because the data is interesting and useful -->
-    <script id="googleAnalytics" type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-18912926-1']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();</script>
-
   </body>
 </html>
