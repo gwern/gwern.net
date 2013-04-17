@@ -15,7 +15,7 @@ html {
 body {
     margin: 1px;
     /* original 1400px; see A/B tests */
-    max-width: 1000px;
+    max-width: 1100px;
 }
 
 div#header h1 {
