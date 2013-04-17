@@ -25,6 +25,8 @@
          Lu Yu -->
   </head>
   <body>
+    <!-- override CSS with a/b test -->
+    <div class="fontfamily_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -98,7 +100,7 @@
       <a href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Send anonymous feedback</a>
       <br />
       <div id="donations2">
-        <a href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> donations: <code>1Ha1o1Q8M1JUxwYejfR89koZKtgcUtEKyC</code>
+        <a href="http://en.wikipedia.org/wiki/Bitcoin">฿</a> donations: <tt>1L7LgaRtr3WSw5g1MaJQWj19T6RByssz41</tt>
       </div>
     </div>
 
@@ -116,6 +118,28 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
+      fontfamily: [
+      {
+      name: 'Baskerville',
+      "fontfamily_class1": "<style>html { font-family: Baskerville, Georgia; }</style>",
+      "fontfamily_class2": ""
+      },
+      {
+      name: 'Georgia',
+      "fontfamily_class1": "<style>html { font-family: Georgia; }</style>",
+      "fontfamily_class2": ""
+      },
+      {
+      name: 'Trebuchet',
+      "fontfamily_class1": "<style>html { font-family: 'Trebuchet MS', Georgia; }</style>",
+      "fontfamily_class2": ""
+      },
+      {
+      name: 'Helvetica',
+      "fontfamily_class1": "<style>html { font-family: Helvetica, Georgia; }</style>",
+      "fontfamily_class2": ""
+      }
+      ],
       }, _gaq);
 
       _gaq.push(['_trackPageview']);
