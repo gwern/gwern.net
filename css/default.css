@@ -36,6 +36,7 @@ div#main {
 div#logo { margin-left: -50px; }
 
 div#sidebar {
+    padding: 1em;
     width: 115px;
     float: left;
 
