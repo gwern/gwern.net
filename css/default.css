@@ -2,14 +2,15 @@ div#TOC { float: left;
           width: 25%;
           font-size: 10pt;
           background: #eee;
-          margin-right: 15px;
-          margin-bottom: 15px;
+          margin-right: 20px;
+          margin-bottom: 10px;
           line-height: 15pt;
         }
-#TOC li {
+div#TOC li {
     margin-top: 0;
     list-style-type: none;
 }
+div#TOC a { text-decoration: none; }
 
 html {
     padding: 0px;
@@ -27,10 +28,8 @@ body {
     max-width: 1100px;
 }
 
-
 #header {
-    margin-top: 50px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 div#header h1 {
     display: inline;
@@ -42,15 +41,15 @@ div#header h1 {
 div#adsense { text-align: center; }
 
 div#main {
-    margin-left: 1em;
-    margin-right: 1em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
     border: none;
 }
 
-div#logo { margin-left: -50px; }
+div#logo { margin-left: -80px; }
 
 div#sidebar {
-    padding: 1em;
+    padding: 0.5em;
     width: 150px;
     float: left;
 
@@ -152,7 +151,11 @@ p.caption {
     display: none;
 }
 
-p { margin-top: -0.2em; }
+p { margin-top: -0.2em;
+    margin-bottom: 0 }
+p + p {
+  text-indent: 1.5em;
+  margin-top: 0 }
 
 p.hang { text-indent: -0.44em }
 
@@ -259,7 +262,7 @@ blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote b
     background-color: rgb(240, 240, 240); }
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan and #lesswrong for help */
-q {background-color:rgba(0,0,0,0.03);}
+q {background-color:rgba(0,0,0,0.02);}
 blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
