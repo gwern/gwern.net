@@ -1,10 +1,14 @@
-div#TOC { float: right;
+div#TOC { float: left;
           width: 25%;
-      width: 200px;
-      margin-right: -235px;
-    }
+          font-size: 10pt;
+          background: #eee;
+          margin-right: 15px;
+          margin-bottom: 15px;
+          line-height: 15pt;
+        }
 #TOC li {
     margin-top: 0;
+    list-style-type: none;
 }
 
 html {
@@ -14,7 +18,7 @@ html {
     color: black;
     /* Georgia choice from http://opinionator.blogs.nytimes.com/2012/08/08/hear-all-ye-people-hearken-o-earth/ */
     font-family: Georgia, "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica,
-                 Arial, "Lucida Grande", garamond, palatino, verdana, sans-serif;
+    Arial, "Lucida Grande", garamond, palatino, verdana, sans-serif;
 }
 
 body {
@@ -50,11 +54,11 @@ div#sidebar {
     width: 150px;
     float: left;
 
-/* We want descriptions and tags to be hyphenated/broken
-   when they are too long, otherwise they spill onto the
-   body text, which is ugly and unreadable.
+    /* We want descriptions and tags to be hyphenated/broken
+       when they are too long, otherwise they spill onto the
+       body text, which is ugly and unreadable.
 
-   CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
+       CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
     word-break: break-all;
     hyphens: auto;
 }
@@ -89,10 +93,10 @@ div#footer {
 a {
     color: #303C3C; /* off-black */
     text-decoration: underline;
-    }
+}
 div#content a {
-/* how we implement grey underlining:
-   http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/ */
+    /* how we implement grey underlining:
+       http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/ */
     text-decoration: none;
     border-bottom: 1px Solid grey;
 }
@@ -117,10 +121,10 @@ img {
     margin: 10px auto 10px auto;
     border: none;
 
-/* resize images based on browser width: 'fluid images'; see
-http://unstoppablerobotninja.com/entry/fluid-images/
-http://blog.kurtschindler.net/post/flexible-dynamically-resizing-images-with-css
-http://stackoverflow.com/questions/787839/resize-image-proportionally-with-css */
+    /* resize images based on browser width: 'fluid images'; see
+       http://unstoppablerobotninja.com/entry/fluid-images/
+       http://blog.kurtschindler.net/post/flexible-dynamically-resizing-images-with-css
+       http://stackoverflow.com/questions/787839/resize-image-proportionally-with-css */
     max-width: 100%;
     height: auto;
 }
@@ -161,47 +165,47 @@ p.hang { text-indent: -0.44em }
  * ---------------------------------------- */
 /* from Twitter's bootstrap package; adds grid-lines to table */
 table {
-  width: 100%;
-  margin-bottom: 18px;
-  padding: 0;
-  border-collapse: separate;
-  /* *border-collapse: collapse;
-   IE7, collapse table to remove spacing */
-  font-size: 13px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+    width: 100%;
+    margin-bottom: 18px;
+    padding: 0;
+    border-collapse: separate;
+    /* *border-collapse: collapse;
+       IE7, collapse table to remove spacing */
+    font-size: 13px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 table th, table td {
-  padding: 10px 10px 9px;
-  line-height: 18px;
-  text-align: left;
+    padding: 10px 10px 9px;
+    line-height: 18px;
+    text-align: left;
 }
 table th {
-  padding-top: 9px;
-  font-weight: bold;
-  vertical-align: middle;
-  border-bottom: 1px solid #ddd;
+    padding-top: 9px;
+    font-weight: bold;
+    vertical-align: middle;
+    border-bottom: 1px solid #ddd;
 }
 table td {
-  vertical-align: top;
+    vertical-align: top;
 }
 table th + th, table td + td {
-  border-left: 1px solid #ddd;
+    border-left: 1px solid #ddd;
 }
 table tr + tr td {
-  border-top: 1px solid #ddd;
+    border-top: 1px solid #ddd;
 }
 table tbody tr:first-child td:first-child {
-  border-radius: 4px 0 0 0;
+    border-radius: 4px 0 0 0;
 }
 table tbody tr:first-child td:last-child {
-  border-radius: 0 4px 0 0;
+    border-radius: 0 4px 0 0;
 }
 table tbody tr:last-child td:first-child {
-  border-radius: 0 0 0 4px;
+    border-radius: 0 0 0 4px;
 }
 table tbody tr:last-child td:last-child {
-  border-radius: 0 0 4px 0;
+    border-radius: 0 0 4px 0;
 }
 
 /* Add little icons to tables handled by tablesorter.js
@@ -228,10 +232,10 @@ th.headerSortDown {
 
 /* zebra-stripe tables (CSS3); from Twitter's bootstrap package */
 tbody tr:nth-child(odd) td {
-  background-color: #f9f9f9;
+    background-color: #f9f9f9;
 }
 tbody tr:hover td {
-  background-color: #f5f5f5;
+    background-color: #f5f5f5;
 }
 
 /* CSS written by cwillu of #lesswrong in order to rewrite the Modafinil page's table of prices */
@@ -262,7 +266,7 @@ blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 sub, sup { line-height: 0.3em; }
 
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/
-If we don't have this CSS for the floating footnotes, they're too see-through and unreadable. */
+   If we don't have this CSS for the floating footnotes, they're too see-through and unreadable. */
 #footnotediv div {
     opacity: 1;
     background-color: white;
@@ -277,7 +281,7 @@ sup + sup { margin-left: 2px; }
 
 /* Sourcecode highlighting; generated by pandoc. */
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre
-   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+{ margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
 td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
 td.sourceCode { padding-left: 5px; }
 pre.sourceCode span.kw { color: #007020; font-weight: bold; }
