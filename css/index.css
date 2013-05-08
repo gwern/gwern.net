@@ -5,7 +5,9 @@
 #content div#TOC { display: none; }
 
 /* Hide donation requests */
-#footer { display: none; }
+#paypal, #bitcoin { display: none; }
+/* Hide metadata which is not interesting for index.page */
+#page-created, #tags, #version, #epistemological-status { display: none; }
 
 /* Get as many columns on the page as possible;
 this overrides the A/B-tested narrower 900px max-width for content pages */
