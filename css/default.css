@@ -74,7 +74,7 @@ div#sidebar-links a {
 }
 
 div#description { font-size: 95%; }
-div#tags, #page-created, #last-modified { font-size: 80%; }
+div#tags, div#page-created, div#last-modified, div#license { font-size: 80%; }
 
 div#content {
     margin-left: 200px;

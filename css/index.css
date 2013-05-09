@@ -5,12 +5,12 @@
 #content div#TOC { display: none; }
 
 /* Hide donation requests */
-#paypal, #bitcoin { display: none; }
+div#paypal, div#bitcoin { display: none; }
 /* Hide metadata which is not interesting for index.page */
-#page-created, #tags, #version, #epistemological-status { display: none; }
+div#page-created, div#tags, div#version, div#epistemological-status { display: none; }
 
 /* Get as many columns on the page as possible;
-this overrides the A/B-tested narrower 900px max-width for content pages */
+this overrides the A/B-tested narrower max-width for content pages */
 body { max-width: 1700px; }
 
 /* Undo the quicksilver change in default.css; with the qs change, the index no longer
