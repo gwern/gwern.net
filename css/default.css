@@ -17,9 +17,8 @@ html {
     margin: 0px;
     background-color: #FCFCFC; /* off-white */
     color: black;
-    /* Georgia choice from http://opinionator.blogs.nytimes.com/2012/08/08/hear-all-ye-people-hearken-o-earth/ */
-    font-family: Georgia, "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica,
-    Arial, "Lucida Grande", garamond, palatino, verdana, sans-serif;
+    /* see A/B tests */
+    font-family: Baskerville, Trebuchet, Georgia, Arial, "Lucida Grande", garamond, palatino, verdana;
 }
 
 body {
