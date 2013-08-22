@@ -3,6 +3,10 @@ div#TOC{
 	width: 25%;
 	font-size: 80%;
 	background: #eee;
+    /* Force a margin big enough that
+       bulleted items won't overlap the
+       blue-shaded area of the ToC */
+	margin-right: 20px;
 }
 div#TOC li{
 	list-style-type: none;
