@@ -27,7 +27,7 @@
   <body>
 
     <!-- override CSS with A/B test -->
-    <div class="linewidth_class1"></div>
+    <div class="null_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -142,29 +142,28 @@
       </div>
     </div>
 
+    <!-- Load infrastructure from Google's CDN: http://code.google.com/apis/libraries/devguide.html -->
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
     <!-- A/B testing -->
     <script type="text/javascript" src="/static/js/abalytics.js"></script>
-    <script type="text/javascript">
-      window.onload = function() {
-      ABalytics.applyHtml();
-      };
-    </script>
+    <script type="text/javascript">window.onload = function() { ABalytics.applyHtml(); };</script>
     <!-- Load Google Analytics & setup A/B test, because the data is interesting and useful -->
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      linewidth: [
+      null: [
       {
       name: 'null1',
-      "linewidth_class1": "",
-      "linewidth_class2": ""
+      "null_class1": "",
+      "null_class2": ""
       },
       {
       name: 'null2',
-      "linewidth_class1": "",
-      "linewidth_class2": ""
+      "null_class1": "",
+      "null_class2": ""
       }
       ],
       }, _gaq);
@@ -175,12 +174,27 @@
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();</script>
+    <!-- How do people leave the site? http://stackoverflow.com/questions/12302300/track-all-outbound-links-in-google-analytics -->
+    <script id="outboundLinkTracking" type="text/javascript">
+      $(function() {
+      $("a").on('click',function(e){
+      var url = $(this).attr("href");
+      if (e.currentTarget.host != window.location.host) {
+      _gat._getTrackerByName()._trackEvent("Outbound Links", e.currentTarget.host.replace(':80',''), url, 0);
+      if (e.metaKey || e.ctrlKey) {
+      var newtab = true;
+      }
+      if (!newtab) {
+      e.preventDefault();
+      setTimeout('document.location = "' + url + '"', 100);
+      }
+      }
+      });
+      });
+    </script>
 
     <!-- Handle cross-browser MathML rendering -->
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    <!-- Load infrastructure from Google's CDN: http://code.google.com/apis/libraries/devguide.html -->
-    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
     <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
     <script type="text/javascript" src="/static/js/footnotes.js"></script>
