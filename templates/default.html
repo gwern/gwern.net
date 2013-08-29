@@ -27,7 +27,7 @@
   <body>
 
     <!-- override CSS with A/B test -->
-    <div class="null_class1"></div>
+    <div class="underline_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -154,16 +154,16 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      null: [
+      underline: [
       {
-      name: 'null1',
-      "null_class1": "",
-      "null_class2": ""
+      name: underlined',
+      "underline_class1": "<style>a { color: #303C3C; text-decoration: underline; }</style>",
+      "underline_class2": ""
       },
       {
-      name: 'null2',
-      "null_class1": "",
-      "null_class2": ""
+      name: 'notUnderlined',
+      "underline_class1": "<style>a { color: #303C3C; text-decoration: none; }</style>",
+      "underline_class2": ""
       }
       ],
       }, _gaq);
