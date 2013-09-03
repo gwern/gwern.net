@@ -105,8 +105,6 @@
       <!-- Selling out -->
       <div id="adsense">
         <a href="http://41j.com/ads/ad.html"><img alt="Advertisement for 'HTerm, The Graphical Terminal'" src="http://41j.com/ads/ad.png"></a>
-        <hr/>
-        Minute to spare? <a href="http://tolu.na/1406553" title="3-question survey about historical cleaning practices">Please take a short survey.</a>
       </div>
 
       <div id="header">
@@ -156,7 +154,7 @@
       ABalytics.init({
       underline: [
       {
-      name: underlined',
+      name: 'underlined',
       "underline_class1": "<style>a { color: #303C3C; text-decoration: underline; }</style>",
       "underline_class2": ""
       },
@@ -181,7 +179,7 @@
       var url = $(this).attr("href");
       if (e.currentTarget.host != window.location.host) {
       _gat._getTrackerByName()._trackEvent("Outbound Links", e.currentTarget.host.replace(':80',''), url, 0);
-      if (e.metaKey || e.ctrlKey) {
+      if (e.metaKey || e.ctrlKey || (e.button == 1)) {
       var newtab = true;
       }
       if (!newtab) {
