@@ -27,7 +27,7 @@
   <body>
 
     <!-- override CSS with A/B test -->
-    <div class="underline_class1"></div>
+    <div class="ground_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -152,16 +152,26 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      underline: [
+      ground: [
       {
-      name: 'underlined',
-      "underline_class1": "<style>a { color: #303C3C; text-decoration: underline; }</style>",
-      "underline_class2": ""
+      name: 'bw,
+      "ground_class1": "<style>html { background-color: white; color: black; }</style>",
+      "ground_class2": ""
       },
       {
-      name: 'notUnderlined',
-      "underline_class1": "<style>a { color: #303C3C; text-decoration: none; }</style>",
-      "underline_class2": ""
+      name: 'obw',
+      "ground_class1": "<style>html { background-color: white; color: #303C3C; }</style>",
+      "ground_class2": ""
+      },
+      {
+      name: 'bow,
+      "ground_class1": "<style>html { background-color: #FCFCFC; color: black; }</style>",
+      "ground_class2": ""
+      },
+      {
+      name: 'obow,
+      "ground_class1": "<style>html { background-color: #FCFCFC; color: #303C3C; }</style>",
+      "ground_class2": ""
       }
       ],
       }, _gaq);
