@@ -27,7 +27,7 @@
   <body>
 
     <!-- override CSS with A/B test -->
-    <div class="ground_class1"></div>
+    <div class="ulFontSize_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -143,26 +143,81 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      ground: [
+      ulFontSize: [
       {
-      name: 'bw',
-      "ground_class1": "<style>html { background-color: white; color: black; }</style>",
-      "ground_class2": ""
+      name: 's100',
+      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 100%; }</style>",
+      "ulFontSize_class2": ""
       },
       {
-      name: 'obw',
-      "ground_class1": "<style>html { background-color: white; color: #303C3C; }</style>",
-      "ground_class2": ""
+      name: 's105',
+      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 105%; }</style>",
+      "ulFontSize_class2": ""
       },
       {
-      name: 'bow',
-      "ground_class1": "<style>html { background-color: #FCFCFC; color: black; }</style>",
-      "ground_class2": ""
+      name: 's110',
+      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 110%; }</style>",
+      "ulFontSize_class2": ""
       },
       {
-      name: 'obow',
-      "ground_class1": "<style>html { background-color: #FCFCFC; color: #303C3C; }</style>",
-      "ground_class2": ""
+      name: 's115',
+      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 115%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 's120',
+      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 120%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'c100',
+      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 100%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'c105',
+      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 105%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'c110',
+      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 110%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'c115',
+      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 115%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'c120',
+      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 120%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'd100',
+      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 100%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'd105',
+      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 105%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'd110',
+      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 110%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'd115',
+      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 115%; }</style>",
+      "ulFontSize_class2": ""
+      },
+      {
+      name: 'd120',
+      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 120%; }</style>",
+      "ulFontSize_class2": ""
       }
       ],
       }, _gaq);
