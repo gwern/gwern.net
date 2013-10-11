@@ -22,7 +22,8 @@ div#TOC ul ul { margin-left: 1em; padding-left: 1em; }
 html {
     padding: 0px;
     margin: 0px;
-    background-color: #FCFCFC; /* off-white */
+    /* for color & background, see A/B tests */
+    background-color: white;
     color: black;
     /* see A/B tests */
     font-family: Baskerville, Trebuchet, Georgia, Arial, "Lucida Grande", garamond, palatino, verdana;
