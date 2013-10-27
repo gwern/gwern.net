@@ -27,7 +27,7 @@
   <body>
 
     <!-- override CSS with A/B test -->
-    <div class="ulFontSize_class1"></div>
+    <div class="blockquoteFormatting_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -87,7 +87,7 @@
         <hr/>
 
         <div id="paypal">
-          <form style="display: inline" action="https://www.paypal.com/cgi-bin/webscr" method="post" onClick="_gaq.push(['_trackEvent', 'Click', 'PayPalClicked']);">
+          <form style="display: inline" action="https://www.paypal.com/cgi-bin/webscr" method="post" onClick="_gaq.push(['_trackEvent', 'Click', 'PayPalClicked', ""]);">
             <div class="form-type">
               <input type="hidden" name="cmd" value="_s-xclick" />
               <input type="hidden" name="hosted_button_id" value="8GSLCWGCC6AF8" />
@@ -143,81 +143,26 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      ulFontSize: [
+      blockquoteFormatting: [
       {
-      name: 's100',
-      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 100%; }</style>",
-      "ulFontSize_class2": ""
+      name: 'rz',
+      "blockquoteFormatting_class1": "<style>blockquote: : before { content: '\201C'; filter: alpha(opacity=20); font-family: 'Constantia', Georgia, 'Hoefler Text', 'Times New Roman', serif; font-size: 4em;left: -0.5em; opacity: .2; position: absolute; top: .25em }; blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote { z-index: -2; background-color: rgb(245, 245, 245); }; blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote { background-color: rgb(235, 235, 235); }</style>",
+      "blockquoteFormatting_class2": ""
       },
       {
-      name: 's105',
-      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 105%; }</style>",
-      "ulFontSize_class2": ""
+      name: 'orz',
+      "blockquoteFormatting_class1": "<style>blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote { z-index: -2; background-color: rgb(245, 245, 245); }; blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote { background-color: rgb(235, 235, 235); }</style>",
+      "blockquoteFormatting_class2": ""
       },
       {
-      name: 's110',
-      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 110%; }</style>",
-      "ulFontSize_class2": ""
+      name: 'roz',
+      "blockquoteFormatting_class1": "<style>blockquote: : before { content: '\201C'; filter: alpha(opacity=20); font-family: 'Constantia', Georgia, 'Hoefler Text', 'Times New Roman', serif; font-size: 4em;left: -0.5em; opacity: .2; position: absolute; top: .25em }</style>",
+      "blockquoteFormatting_class2": ""
       },
       {
-      name: 's115',
-      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 115%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 's120',
-      "ulFontSize_class1": "<style>ul { list-style-type: square; }; html { font-size: 120%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'c100',
-      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 100%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'c105',
-      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 105%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'c110',
-      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 110%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'c115',
-      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 115%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'c120',
-      "ulFontSize_class1": "<style>ul { list-style-type: circle; }; html { font-size: 120%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'd100',
-      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 100%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'd105',
-      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 105%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'd110',
-      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 110%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'd115',
-      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 115%; }</style>",
-      "ulFontSize_class2": ""
-      },
-      {
-      name: 'd120',
-      "ulFontSize_class1": "<style>ul { list-style-type: disc; }; html { font-size: 120%; }</style>",
-      "ulFontSize_class2": ""
+      name: 'oroz',
+      "blockquoteFormatting_class1": "<style></style>",
+      "blockquoteFormatting_class2": ""
       }
       ],
       }, _gaq);
