@@ -267,12 +267,14 @@ li { margin-top: 0.5em; }
 li p { margin: 0.2em; }
 
 /* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
-   Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes. */
-/* blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote { */
-/*     z-index: -2; */
-/*     background-color: rgb(245, 245, 245); } */
-/* blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote { */
-/*     background-color: rgb(235, 235, 235); } */
+   Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
+
+   See A/B tests: this highlighting is better than no highlighting */
+blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote {
+    z-index: -2;
+    background-color: rgb(245, 245, 245); }
+blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote {
+    background-color: rgb(235, 235, 235); }
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan and #lesswrong for help */
 q {background-color:rgba(0,0,0,0.02);}
