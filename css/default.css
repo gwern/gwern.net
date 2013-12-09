@@ -82,6 +82,13 @@ div#sidebar-links a {
     margin-bottom: 5px;
     text-transform: uppercase;
 }
+div#sidebar-news a {
+    display: block;
+    font-size: 105%;
+    text-decoration: none;
+    margin-bottom: 5px;
+}
+
 
 div#description { font-size: 95%; }
 div#tags, div#page-created, div#last-modified, div#license { font-size: 80%; }
