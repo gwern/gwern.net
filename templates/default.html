@@ -112,7 +112,7 @@
 
       <!-- Selling out -->
       <div id="adsense">
-        <a href="http://41j.com/ads/ad.html"><img alt="Advertisement for 'HTerm, The Graphical Terminal'" src="http://41j.com/ads/ad.png"></a>
+        <a href="http://41j.com/ads/ad.html"><img alt="Advertisement for 'HTerm, The Graphical Terminal'" src="http://41j.com/ads/ad.png" height="90" width="728"></a>
       </div>
 
       <div id="header">
@@ -132,7 +132,7 @@
         <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
           <a rel="license"
              href="http://creativecommons.org/publicdomain/zero/1.0/">
-            <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" />
+            <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" height="31" width="88" />
           </a>
         </p>
       </div>
@@ -295,11 +295,12 @@
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();</script>
+
     <!-- How do people leave the site? http://stackoverflow.com/questions/12302300/track-all-outbound-links-in-google-analytics -->
     <script id="outboundLinkTracking" type="text/javascript">
-      $(function() {
-      $("a").on('click',function(e){
-      var url = $(this).attr("href");
+      $$(function() {
+      $$("a").on('click',function(e){
+      var url = $$(this).attr("href");
       if (e.currentTarget.host != window.location.host) {
       _gat._getTrackerByName()._trackEvent("Outbound Links", e.currentTarget.host.replace(':80',''), url, 0);
       if (e.metaKey || e.ctrlKey || (e.button == 1)) {
@@ -323,8 +324,8 @@
     <!-- http://tablesorter.com/docs/ -->
     <script type="text/javascript" src="/static/js/tablesorter.js"></script>
     <script type="text/javascript" id="tablesorter">
-      $(document).ready(function() {
-      $("table").tablesorter();
+      $$(document).ready(function() {
+      $$("table").tablesorter();
       }); </script>
 
     <!-- Comments courtesy of Disqus -->
@@ -344,25 +345,5 @@
       }());
       }</script>
     <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
-
-    <!-- Google Code for Time on page Conversion Page -->
-    <script type="text/javascript">
-      /* <![CDATA[ */
-var google_conversion_id = 975503112;
-var google_conversion_language = "en";
-var google_conversion_format = "3";
-var google_conversion_color = "ffffff";
-var google_conversion_label = "FAKkCLDMmA0QiP6T0QM";
-var google_conversion_value = 0;
-var google_remarketing_only = false;
-/* ]]> */
-    </script>
-    <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
-    </script>
-    <noscript>
-      <div style="display:inline;">
-        <img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/975503112/?value=0&amp;label=FAKkCLDMmA0QiP6T0QM&amp;guid=ON&amp;script=0"/>
-      </div>
-    </noscript>
   </body>
 </html>
