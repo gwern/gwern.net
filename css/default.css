@@ -2,6 +2,7 @@ div#TOC{
     float: left;
     width: 25%;
     font-size: 80%;
+    /* see A/B tests */
     background: #eee;
     /* Force a margin big enough that
        bulleted items won't overlap the
