@@ -59,8 +59,6 @@ div#main {
     border: none;
 }
 
-div#logo { margin-left: -80px; }
-
 div#sidebar {
     padding: 0.5em;
     width: 150px;
@@ -135,9 +133,15 @@ div.column {
     float: left;
 }
 
-img {
+
+div#logo { margin-left: -80px; }
+div#logo img {  display:block;
+                margin:10px auto 10px auto; }
+
+/* 'figure' because we don't want to force these settings on normal inline images, like those used in _Radiance_ */
+figure img {
     display: block;
-    margin: 10px auto 10px auto;
+    margin: 5px auto 5px auto;
     border: none;
 
     /* resize images based on browser width: 'fluid images'; see
