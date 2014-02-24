@@ -27,7 +27,7 @@
   <body>
 
     <!-- override CSS with A/B test -->
-    <div class="headerCaps_class1"></div>
+    <div class="tocAlign_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -152,51 +152,56 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      headerCaps: [
+      tocAlign: [
       {
-      name: 'uu',
-      "headerCaps_class1": "<style>h1, h2, h3, h4, h5 { text-transform: uppercase; }; div#header h1 { text-transform: uppercase; }</style>",
-      "headerCaps_class2": ""
+      name: 'l15',
+      "tocAlign_class1": "<style>div#TOC { float: left; width: 15%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'un',
-      "headerCaps_class1": "<style>div#header h1 { text-transform: uppercase; }; div#header h1 { text-transform: none; }</style>",
-      "headerCaps_class2": ""
+      name: 'l20',
+      "tocAlign_class1": "<style>div#TOC { float: left; width: 20%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'uc',
-      "headerCaps_class1": "<style>div#header h1 { text-transform: uppercase; }; div#header h1 { text-transform: capitalize; }</style>",
-      "headerCaps_class2": ""
+      name: 'l25',
+      "tocAlign_class1": "<style>div#TOC { float: left; width: 25%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'nu',
-      "headerCaps_class1": "<style>h1, h2, h3, h4, h5 { text-transform: none; }; div#header h1 { text-transform: uppercase; }</style>",
-      "headerCaps_class2": ""
+      name: 'l30',
+      "tocAlign_class1": "<style>div#TOC { float: left; width: 30%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'nn',
-      "headerCaps_class1": "<style>h1, h2, h3, h4, h5 { text-transform: none; }; div#header h1 { text-transform: none; }</style>",
-      "headerCaps_class2": ""
+      name: 'l35',
+      "tocAlign_class1": "<style>div#TOC { float: left; width: 35%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'nc',
-      "headerCaps_class1": "<style>h1, h2, h3, h4, h5 { text-transform: none; }; div#header h1 { text-transform: capitalize; }</style>",
-      "headerCaps_class2": ""
+      name: 'r15',
+      "tocAlign_class1": "<style>div#TOC { float: right; width: 15%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'cu',
-      "headerCaps_class1": "<style>h1, h2, h3, h4, h5 { text-transform: capitalize; }; div#header h1 { text-transform: uppercase; }</style>",
-      "headerCaps_class2": ""
+      name: 'r20',
+      "tocAlign_class1": "<style>div#TOC { float: right; width: 20%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'cn',
-      "headerCaps_class1": "<style>h1, h2, h3, h4, h5 { text-transform: capitalize; }; div#header h1 { text-transform: none; }</style>",
-      "headerCaps_class2": ""
+      name: 'r25',
+      "tocAlign_class1": "<style>div#TOC { float: right; width: 25%; }</style>",
+      "tocAlign_class2": ""
       },
       {
-      name: 'cc',
-      "headerCaps_class1": "<style>h1, h2, h3, h4, h5 { text-transform: capitalize; }; div#header h1 { text-transform: capitalize; }</style>",
-      "headerCaps_class2": ""
+      name: 'r30',
+      "tocAlign_class1": "<style>div#TOC { float: right; width: 30%; }</style>",
+      "tocAlign_class2": ""
+      },
+      {
+      name: 'r35',
+      "tocAlign_class1": "<style>div#TOC { float: right; width: 35%; }</style>",
+      "tocAlign_class2": ""
       }
       ],
       }, _gaq);

@@ -1,7 +1,6 @@
-div#TOC{
+div#TOC {
     float: left;
     width: 25%;
-    font-size: 80%;
     /* see A/B tests */
     background: #eee;
     /* Force a margin big enough that
@@ -9,7 +8,7 @@ div#TOC{
        blue-shaded area of the ToC */
     margin-right: 20px;
 }
-div#TOC li{
+div#TOC li {
     list-style-type: none;
     margin-right: 0px; padding-right: 0px;
 }
