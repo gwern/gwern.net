@@ -1,6 +1,7 @@
 div#TOC {
+    /* see A/B tests */
     float: left;
-    width: 25%;
+    width: 20%;
     /* see A/B tests */
     background: #eee;
     /* Force a margin big enough that
