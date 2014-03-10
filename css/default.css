@@ -328,3 +328,6 @@ pre.sourceCode span.al { color: red; font-weight: bold; }
 pre.sourceCode span.fu { color: #06287e; }
 pre.sourceCode span.re { }
 pre.sourceCode span.er { color: red; font-weight: bold; }
+
+/* temporary inlining of beeline.min.css */
+.beeline-node{display:inline;font:inherit}.beeline-colored-area a,.beeline-colored-area a:hover,.beeline-colored-area a:active,.beeline-colored-area a:visited{text-decoration:underline;color:black}.beeline-colored-area.beeline-theme-inverted a,.beeline-colored-area.beeline-theme-inverted a:hover,.beeline-colored-area.beeline-theme-inverted a:active,.beeline-colored-area.beeline-theme-inverted a:visited{color:white}

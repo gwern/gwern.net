@@ -19,9 +19,6 @@
   </head>
   <body>
 
-    <!-- override CSS with A/B test -->
-    <div class="TODO_class1"></div>
-
     <div id="main">
       <div id="sidebar">
         <div id="logo"><img alt="Logo: a Gothic blackletter capital G" height="36" src="/images/logo.png" width="32" /></div>
@@ -136,6 +133,9 @@
     <!-- Load infrastructure from Google's CDN: http://code.google.com/apis/libraries/devguide.html -->
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
+    <!-- BLR highlights half-lines to help readers -->
+    <script src="/static/js/beeline.min.js" type="text/javascript"></script>
+
     <!-- A/B testing -->
     <script type="text/javascript" src="/static/js/abalytics.js"></script>
     <script type="text/javascript">window.onload = function() { ABalytics.applyHtml(); };</script>
@@ -145,7 +145,43 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      TODO: [
+      blr: [
+      {
+      name: 'default',
+      "blr_class1": ""
+      },
+      {
+      name: 'dark',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"dark\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      },
+      {
+      name: 'blues',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"blues\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      },
+      {
+      name: 'gray1',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"gray1\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      },
+      {
+      name: 'gray2',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"gray2\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      },
+      {
+      name: 'gray3',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"gray3\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      },
+      {
+      name: 'gray4',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"gray4\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      },
+      {
+      name: 'gray5',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"gray5\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      },
+      {
+      name: 'gray6',
+      "blr_class1": "\x3Cscript\x3Evar elements=document.querySelectorAll(\\\"body\\\");for(var i=0;i\x3Celements.length;i++){var beeline=new BeeLineReader(elements[i]);beeline.setOptions({theme:\\\"gray6\\\",skipBackgroundColor:true});beeline.color()}\x3C\x2Fscript\x3E"
+      }
       ],
       }, _gaq);
 
@@ -155,6 +191,8 @@
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();</script>
+    <!-- since we're testing the running of JS, not CSS, we put the substitution in the footer -->
+    <div class="blr_class1"></div>
 
     <!-- How do people leave the site? http://stackoverflow.com/questions/12302300/track-all-outbound-links-in-google-analytics -->
     <script id="outboundLinkTracking" type="text/javascript">
