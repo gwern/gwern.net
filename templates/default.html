@@ -142,7 +142,7 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
      // A/B test: heavily based on ABalytics
-     function readCookie (name) {
+      function readCookie (name) {
         var nameEQ = name + "=";
         var ca = document.cookie.split(';');
         for(var i=0;i < ca.length;i++) {
@@ -151,10 +151,10 @@
             if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
         }
         return null;
-     }
+      }
 
       if (typeof(start_slot) == 'undefined') start_slot = 1;
-      var experiment = "blr2";
+      var experiment = "blr3";
       var variant_names = ["none", "dark", "blues", "gray1", "gray2", "gray3", "gray4", "gray5", "gray6"];
 
       var variant_id = this.readCookie("ABalytics_"+experiment);
@@ -163,13 +163,13 @@
       document.cookie = "ABalytics_"+experiment+"="+variant_id+"; path=/";
                         }
       function beelinefy (COLOR) {
-      if (COLOR != "none") {
+       if (COLOR != "none") {
           var elements=document.querySelectorAll("p");
-          for(var i=0;i < elements.length;i++){var beeline=new BeeLineReader(elements[i]);
-                                             beeline.setOptions({theme:COLOR,skipBackgroundColor:true});
-                                             beeline.color()
-                                            }
-                            }
+          for(var i=0;i < elements.length;i++) {
+                          var beeline=new BeeLineReader(elements[i], { theme: COLOR, skipBackgroundColor: true, skipTags: ['math', 'svg', 'h1', 'h2', 'h3', 'h4'] });
+                          beeline.color();
+                          }
+       }
       }
       beelinefy(variant_names[variant_id]);
       _gaq.push(['_setCustomVar',
