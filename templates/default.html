@@ -148,7 +148,7 @@
       var variant_id = Math.floor(Math.random()*variant_names.length);
       function beelinefy (COLOR) {
       if (COLOR != "none") {
-          var elements=document.querySelectorAll("body");
+          var elements=document.querySelectorAll("p");
           for(var i=0;i < elements.length;i++){var beeline=new BeeLineReader(elements[i]);
                                              beeline.setOptions({theme:COLOR,skipBackgroundColor:true});
                                              beeline.color()
