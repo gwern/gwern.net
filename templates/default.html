@@ -141,11 +141,27 @@
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
-      // A/B test: heavily based on ABalytics
+     // A/B test: heavily based on ABalytics
+     function readCookie (name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+     }
+
       if (typeof(start_slot) == 'undefined') start_slot = 1;
       var experiment = "blr2";
       var variant_names = ["none", "dark", "blues", "gray1", "gray2", "gray3", "gray4", "gray5", "gray6"];
+
+      var variant_id = this.readCookie("ABalytics_"+experiment);
+      if (!variant_id || !variant_names[variant_id]) {
       var variant_id = Math.floor(Math.random()*variant_names.length);
+      document.cookie = "ABalytics_"+experiment+"="+variant_id+"; path=/";
+                        }
       function beelinefy (COLOR) {
       if (COLOR != "none") {
           var elements=document.querySelectorAll("p");
@@ -160,7 +176,7 @@
                   start_slot,
                   experiment,                 // The name of the custom variable = name of the experiment
                   variant_names[variant_id],  // The value of the custom variable = variant shown
-                  3                           // Sets the scope to page-level
+                  2                           // Sets the scope to session-level
                  ]);
 
       _gaq.push(['_trackPageview']);
