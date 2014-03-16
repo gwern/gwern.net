@@ -164,7 +164,7 @@
                         }
       function beelinefy (COLOR) {
        if (COLOR != "none") {
-          var elements=document.querySelectorAll("p");
+          var elements=document.querySelectorAll("#content");
           for(var i=0;i < elements.length;i++) {
                           var beeline=new BeeLineReader(elements[i], { theme: COLOR, skipBackgroundColor: true, skipTags: ['math', 'svg', 'h1', 'h2', 'h3', 'h4'] });
                           beeline.color();
