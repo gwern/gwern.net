@@ -83,7 +83,7 @@
 
         <div id="donations">
           <div id="bitcoin-donation-address">
-            <a href="http://en.wikipedia.org/wiki/Bitcoin">฿</a>: 1FQXqcRskzys6HK2uqMrfbdvPiRQFXTAnc
+            <a href="http://en.wikipedia.org/wiki/Bitcoin">฿</a>: 18qCaJR3DRWFgdbNcr6TXkGfa2fQ5LLsvn
           </div>
 
           <div id="paypal">
@@ -133,9 +133,6 @@
     <!-- Load infrastructure from Google's CDN: http://code.google.com/apis/libraries/devguide.html -->
     <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 
-    <!-- BLR highlights pairs half-lines to help readers -->
-    <script src="/static/js/beeline.min.js" type="text/javascript"></script>
-
     <!-- Load Google Analytics & setup A/B test -->
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
@@ -162,16 +159,6 @@
       var variant_id = Math.floor(Math.random()*variant_names.length);
       document.cookie = "ABalytics_"+experiment+"="+variant_id+"; path=/";
                         }
-      function beelinefy (COLOR) {
-       if (COLOR != "none") {
-          var elements=document.querySelectorAll("#content");
-          for(var i=0;i < elements.length;i++) {
-                          var beeline=new BeeLineReader(elements[i], { theme: COLOR, skipBackgroundColor: true, skipTags: ['math', 'svg', 'h1', 'h2', 'h3', 'h4'] });
-                          beeline.color();
-                          }
-       }
-      }
-      beelinefy(variant_names[variant_id]);
       _gaq.push(['_setCustomVar',
                   start_slot,
                   experiment,                 // The name of the custom variable = name of the experiment
