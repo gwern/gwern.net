@@ -140,44 +140,6 @@
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-18912926-1']);
-
-     // A/B test: heavily based on ABalytics
-      function readCookie (name) {
-        var nameEQ = name + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0;i < ca.length;i++) {
-            var c = ca[i];
-            while (c.charAt(0)==' ') c = c.substring(1,c.length);
-            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-        }
-        return null;
-      }
-
-      if (typeof(start_slot) == 'undefined') start_slot = 1;
-      var experiment = "floating_footnotes";
-      var variant_names = ["none", "float"];
-
-      var variant_id = this.readCookie("ABalytics_"+experiment);
-      if (!variant_id || !variant_names[variant_id]) {
-      var variant_id = Math.floor(Math.random()*variant_names.length);
-      document.cookie = "ABalytics_"+experiment+"="+variant_id+"; path=/";
-                        }
-      // enable the floating footnotes
-      function footnotefy (VARIANT) {
-       if (VARIANT != "none") {
-         $$(document).ready(function() {
-                        Footnotes.setup();
-                        });
-       }
-      }
-      footnotefy(variant_names[variant_id]);
-      _gaq.push(['_setCustomVar',
-                  start_slot,
-                  experiment,                 // The name of the custom variable = name of the experiment
-                  variant_names[variant_id],  // The value of the custom variable = variant shown
-                  2                           // Sets the scope to session-level
-                 ]);
-
       _gaq.push(['_trackPageview']);
       (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -207,6 +169,9 @@
 
     <!-- Handle cross-browser MathML rendering -->
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
+    <script type="text/javascript" src="/static/js/footnotes.js"></script>
 
     <!-- http://tablesorter.com/docs/ -->
     <script type="text/javascript" src="/static/js/tablesorter.js"></script>
