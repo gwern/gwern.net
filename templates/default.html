@@ -19,6 +19,9 @@
   </head>
   <body>
 
+   <!-- override CSS with A/B test -->
+   <div class="indent_class1"></div>
+
     <div id="main">
       <div id="sidebar">
         <div id="logo"><img alt="Logo: a Gothic/Fraktur blackletter capital G/𝕲" height="36" src="/images/logo.png" width="32" /></div>
@@ -136,10 +139,48 @@
     <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
     <script type="text/javascript" src="/static/js/footnotes.js"></script>
 
+    <!-- a/b testing -->
+    <script type="text/javascript" src="/static/js/abalytics.js"></script>
+    <script type="text/javascript">
+      window.onload = function() {
+      ABalytics.applyHtml();
+      };
+    </script>
+
     <!-- Load Google Analytics & setup A/B test -->
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-18912926-1']);
+
+      ABalytics.init({
+      indent: [
+      {
+      name: "none",
+      "indent_class1": "<style>p + p { text-indent: 0.0em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent0.1",
+      "indent_class1": "<style>p + p { text-indent: 0.1em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent0.5",
+      "indent_class1": "<style>p + p { text-indent: 0.5em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent1.0",
+      "indent_class1": "<style>p + p { text-indent: 1.0em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent1.5",
+      "indent_class1": "<style>p + p { text-indent: 1.5em; margin-top: 0 }</style>"
+      },
+      {
+      name: "indent2.0",
+      "indent_class1": "<style>p + p { text-indent: 2.0em; margin-top: 0 }</style>"
+      }
+      ],
+      }, _gaq);
+
       _gaq.push(['_trackPageview']);
       (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;

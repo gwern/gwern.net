@@ -179,9 +179,6 @@ p.caption {
 
 p { margin-top: -0.2em;
     margin-bottom: 0 }
-p + p {
-  text-indent: 1.5em;
-  margin-top: 0 }
 
 p.hang { text-indent: -0.44em }
 
