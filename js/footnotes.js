@@ -1,3 +1,7 @@
+$(document).ready(function() {
+    Footnotes.setup();
+});
+
 var Footnotes = {
     footnotetimeout: false,
     setup: function() {
