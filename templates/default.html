@@ -100,7 +100,11 @@
           </div>
 
           <div id="Gratipay">
-            <script data-gratipay-username="gwern" data-gratipay-widget="button" src="//gttp.co/v1.js"></script>
+            <!-- http://grtp.co1/v1.js -->
+            <script type="text/javascript" data-gratipay-username="gwern" data-gratipay-widget="button">
+              /*! grtp.co 2014-08-31 */
+              !function(){"use strict";function a(a){return document.querySelectorAll(a)}var b=a("[data-gratipay-username],[data-gittip-username]"),c=b.length,d=window.Gratipay||{},e=window.grtpAPI||"//grtp.co/v1/";if(window._grtp=window._grtp||[],!d.widgets&&!a('script[src="'+e+'api.js"]').length){var f=document.createElement("script");f.src=e+"api.js",a("head")[0].appendChild(f)}for(var g=0;c>g;g++){var h=b[g];h.getAttribute("data-gratipay-readystatus")||(d.widgets?d.widgets.load(h):_grtp.push(h),h.setAttribute("data-gratipay-readystatus","loading"))}}();
+            </script>
           </div>
         </div>
       </div>
