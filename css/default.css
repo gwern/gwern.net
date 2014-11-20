@@ -180,6 +180,11 @@ p.caption {
 p { margin-top: -0.2em;
     margin-bottom: 0 }
 
+/* how much to indent successive paragraphs; see A/B tests */
+p + p {
+    text-indent: 2em;
+    margin-top: 0 }
+
 p.hang { text-indent: -0.44em }
 
 
