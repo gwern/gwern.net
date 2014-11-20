@@ -20,7 +20,7 @@
   <body>
 
    <!-- override CSS with A/B test -->
-   <div class="indent_class1"></div>
+   <div class="sidebar_test_class1"></div>
 
     <div id="main">
       <div id="sidebar">
@@ -59,8 +59,8 @@
             <input id="q" style="" name="q" size="5" type="text" placeholder="search" />
           </form>
         </div>
-        </div>
         <hr/>
+        </div>
         <div id="metadata">
           <div id="abstract"><em>$description$</em></div>
           <br />
@@ -153,14 +153,30 @@
       _gaq.push(['_setAccount', 'UA-18912926-1']);
 
       ABalytics.init({
-      indent: [
+      sidebar_test: [
       {
-      name: "indent0.5",
-      "indent_class1": "<style>p + p { text-indent: 0.5em; margin-top: 0 }</style>"
+      name: "s1c1d1",
+      "sidebar_test_class1": "<style></style>"
       },
       {
-      name: "indent1.0",
-      "indent_class1": "<style>p + p { text-indent: 1.0em; margin-top: 0 }</style>"
+      name: "s1c1d0",
+      "sidebar_test_class1": "<style>div#donations {visibility:hidden; display:none;}</style>"
+      },
+      {
+      name: "s1c0d1",
+      "sidebar_test_class1": "<style>div#cse-sitesearch {visibility:hidden; display:none;}</style>"
+      },
+      {
+      name: "s0c1d1",
+      "sidebar_test_class1": "<style>div#sidebar hr {visibility:hidden; display:none;}</style>"
+      },
+      {
+      name: "s0c1d0",
+      "sidebar_test_class1": "<style>div#sidebar hr {visibility:hidden; display:none;}; div#donations {visibility:hidden; display:none;}</style>"
+      },
+      {
+      name: "s0c0d0",
+      "sidebar_test_class1": "<style>div#sidebar hr {visibility:hidden; display:none;}; div#cse-sitesearch {visibility:hidden; display:none;}; div#donations {visibility:hidden; display:none;}</style>"
       }
       ],
       }, _gaq);
