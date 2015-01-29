@@ -90,8 +90,12 @@ div#sidebar-news a {
    text-transform: uppercase;
 }
 
+/* metadata customization: */
 div#description { font-size: 95%; }
 div#tags, div#page-created, div#last-modified, div#license { font-size: 80%; }
+/* support A/B test by hiding by default all the HTML variants: */
+div#metadata1, div#metadata2, div#metadata3, div#metadata4, div#metadata5, div#metadata6 { display: none; }
+
 
 div#content {
     margin-left: 200px;
