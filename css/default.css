@@ -303,9 +303,11 @@ blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 sub, sup { line-height: 0.3em; }
 
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/
-   If we don't have this CSS for the floating footnotes, they're too see-through and unreadable. */
+   If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
+
+   Note: setting `opacity: 1;` in this CSS doesn't seem to set the footnote appearance to fully opaque,
+   so I've edited the opacity calls in `footnotes.js` to force it */
 #footnotediv div {
-    opacity: 1;
     background-color: white;
     padding: 3px;
     padding: 12px;

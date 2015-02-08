@@ -40,7 +40,7 @@ var Footnotes = {
         div.css({
             left:left,
             top:top,
-            opacity:0.95,
+            opacity:1,
             position: "absolute"
             });
     },
@@ -57,7 +57,7 @@ var Footnotes = {
         clearTimeout(Footnotes.footnotetimeout);
         $('#footnotediv').stop();
         $('#footnotediv').css({
-                opacity: 0.9
+                opacity: 1
         });
     }
 }
