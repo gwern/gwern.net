@@ -209,6 +209,9 @@ table {
     font-size: 13px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    /* align columns of numbers on their decimal points:
+    http://www.w3.org/TR/css3-text/#text-align https://developer.mozilla.org/en-US/docs/Web/CSS/text-align http://blog.adrianroselli.com/2013/05/my-kingdom-for-decimal-alignment-on.html */
+    text-align: "." right;
 }
 table th, table td {
     padding: 10px 10px 9px;
