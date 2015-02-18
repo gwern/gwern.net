@@ -299,6 +299,12 @@ blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote b
 q {background-color:rgba(0,0,0,0.02);}
 blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 
+/* left-hanging quotes:
+http://css-tricks.com/almanac/properties/h/hanging-punctuation/ http://www.w3schools.com/cssref/css3_pr_hanging-punctuation.asp http://www.w3.org/TR/css3-text/#hanging-punctuation0 */
+blockquote, p {
+  hanging-punctuation: first;
+}
+
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub, sup { line-height: 0.3em; }
 
