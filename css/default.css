@@ -1,3 +1,76 @@
+/* **************** */
+/* DESKTOP-ONLY CSS */
+/* **************** */
+@media screen and (min-width: 650px) {
+    div#content {
+        margin-left: 200px;
+        padding-left: 0;
+        line-height: 130%; /* see A/B tests */
+    }
+
+    #header {
+        margin-bottom: 15px;
+    }
+
+    div#main {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        border: none;
+    }
+
+    div#logo { margin-left: -80px; }
+
+    /* uses up too much horizontal whitespace by default: */
+    blockquote { margin-left: 10px; }
+    blockquote blockquote { margin-left: 10px; }
+
+    div#sidebar {
+    padding: 0.5em;
+    width: 150px;
+    float: left;
+
+    /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
+     which we can afford on the desktop. */
+    /* We want descriptions and tags to be hyphenated/broken
+       when they are too long, otherwise they spill onto the
+       body text, which is ugly and unreadable.
+
+       CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
+    word-break: break-all;
+    }
+    /* But the version and belief tags are too short and look ugly if broken with a hyphen, so reset: */
+    div#version, div#epistemological-status { word-break: normal; }
+
+    div#sidebar-links a {
+        display: block;
+        font-size: 105%;
+        text-decoration: none;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+    div#sidebar-news a {
+        display: inline; /* override the `display: block;` so it reads 'NEW: RSS/MAIL' */
+        font-size: 105%;
+        text-decoration: none;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+}
+
+/* **************** */
+/* MOBILE-ONLY CSS */
+/* **************** */
+@media screen and (max-width: 649px) {
+    /* remove extra lines from the sidebar: */
+    div#sidebar hr { display:none; }
+    /* even less horizontal is available on mobile! */
+    blockquote { margin-left: 3px; }
+    blockquote blockquote { margin-left: 3px; }
+}
+
+/* ********************** */
+/* DEVICE-INDEPENDENT CSS */
+/* ********************** */
 div#TOC {
     /* see A/B tests */
     float: left;
@@ -40,9 +113,6 @@ body {
     max-width: 1100px;
 }
 
-#header {
-    margin-bottom: 15px;
-}
 div#header h1 {
     display: inline;
     vertical-align: middle;
@@ -54,54 +124,9 @@ h1, h2, h3, h4, h5 { text-transform: uppercase; }
 div#adsense { text-align: center; }
 div#bitcoin-donation-address { font-family: monospace; }
 
-div#main {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-    border: none;
-}
-
-div#sidebar {
-    padding: 0.5em;
-    width: 150px;
-    float: left;
-
-    /* We want descriptions and tags to be hyphenated/broken
-       when they are too long, otherwise they spill onto the
-       body text, which is ugly and unreadable.
-
-       CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
-    word-break: break-all;
-}
-/* But the version and belief tags are too short and look ugly if broken with a hyphen, so reset: */
-div#version, div#epistemological-status { word-break: normal; }
-
-div#sidebar-links a {
-    display: block;
-    font-size: 105%;
-    text-decoration: none;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-}
-div#sidebar-news a {
-    display: block;
-    font-size: 105%;
-    text-decoration: none;
-    margin-bottom: 5px;
-   text-transform: uppercase;
-}
-
 /* metadata customization: */
 div#description { font-size: 95%; }
 div#tags, div#page-created, div#last-modified, div#license { font-size: 80%; }
-/* support A/B test by hiding by default all the HTML variants: */
-div#metadata1, div#metadata2, div#metadata3, div#metadata4, div#metadata5, div#metadata6 { display: none; }
-
-
-div#content {
-    margin-left: 200px;
-    padding-left: 0;
-    line-height: 130%; /* see A/B tests */
-}
 
 div#footer {
     padding-top: 30px;
@@ -138,8 +163,6 @@ div.column {
     float: left;
 }
 
-
-div#logo { margin-left: -80px; }
 div#logo img {  display:block;
                 margin:10px auto 10px auto; }
 
@@ -190,7 +213,6 @@ p + p {
     margin-top: 0 }
 
 p.hang { text-indent: -0.44em }
-
 
 .num { font-size: 85%; }
 
@@ -346,5 +368,5 @@ td.sourceCode { padding-left: 5px; }
 .sourceCode span.re { }
 .sourceCode span.er { color: red; font-weight: bold; }
 
-/* temporary inlining of beeline.min.css */
-.beeline-node{display:inline;font:inherit}.beeline-colored-area a,.beeline-colored-area a:hover,.beeline-colored-area a:active,.beeline-colored-area a:visited{text-decoration:underline;color:black}.beeline-colored-area.beeline-theme-inverted a,.beeline-colored-area.beeline-theme-inverted a:hover,.beeline-colored-area.beeline-theme-inverted a:active,.beeline-colored-area.beeline-theme-inverted a:visited{color:white}
+/* support A/B test by hiding by default all the HTML variants: */
+div#metadata1, div#metadata2, div#metadata3, div#metadata4, div#metadata5, div#metadata6 { display: none; }
