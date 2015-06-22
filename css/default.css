@@ -2,6 +2,10 @@
 /* DESKTOP-ONLY CSS */
 /* **************** */
 @media screen and (min-width: 650px) {
+
+    div#logo img {  display: block;
+                    margin: 10px auto 10px auto; }
+
     div#content {
         margin-left: 200px;
         padding-left: 0;
@@ -25,17 +29,17 @@
     blockquote blockquote { margin-left: 10px; }
 
     div#sidebar {
-    padding: 0.5em;
-    width: 150px;
-    float: left;
+        padding: 0.5em;
+        width: 150px;
+        float: left;
 
-    /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
-     which we can afford on the desktop. */
-    /* We want descriptions and tags to be hyphenated/broken
-       when they are too long, otherwise they spill onto the
-       body text, which is ugly and unreadable.
-
-       CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
+        /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
+         *  which we can afford on the desktop. */
+        /* We want descriptions and tags to be hyphenated/broken
+         * when they are too long, otherwise they spill onto the
+         * body text, which is ugly and unreadable.
+         *
+         * CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
     word-break: break-all;
     }
     /* But the version and belief tags are too short and look ugly if broken with a hyphen, so reset: */
@@ -61,8 +65,11 @@
 /* MOBILE-ONLY CSS */
 /* **************** */
 @media screen and (max-width: 649px) {
-    /* remove extra lines from the sidebar: */
+    /* remove extra lines and stuff from the sidebar: */
     div#sidebar hr { display:none; }
+    div#donations { display:none; }
+    div#cse-sitesearch { display:none; }
+    div#logo { display: none; }
     /* even less horizontal is available on mobile! */
     blockquote { margin-left: 3px; }
     blockquote blockquote { margin-left: 3px; }
@@ -162,9 +169,6 @@ div.column {
     width: 50%;
     float: left;
 }
-
-div#logo img {  display:block;
-                margin:10px auto 10px auto; }
 
 /* 'figure' because we don't want to force these settings on normal inline images, like those used in _Radiance_ */
 figure img {
