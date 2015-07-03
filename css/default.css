@@ -128,7 +128,9 @@ div#header h1 {
 h1, h2, h3, h4, h5 { text-transform: uppercase; }
 
 /* center the ads so they don't look aligned with the content & part of the content */
-div#adsense { text-align: center; }
+div#adsense { text-align: center;
+              max-width: 100%;
+              overflow-x: hidden; }
 div#bitcoin-donation-address { font-family: monospace; }
 
 /* metadata customization: */
@@ -149,6 +151,7 @@ a {
     text-decoration: underline;
 }
 div#content a {
+    word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
     /* how we implement grey underlining:
        http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/ */
     text-decoration: none;
