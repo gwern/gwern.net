@@ -41,14 +41,6 @@
           <hr/>
         </div>
         <div id="cse-sitesearch">
-          <script>
-            (function() {
-            var cx = '009114923999563836576:dv0a4ndtmly';
-            var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
-            gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
-            })();
-          </script>
           <div style="width:0px;overflow:hidden;height:0px;">
             <gcse:search></gcse:search>
           </div>
@@ -205,9 +197,9 @@
 
     <!-- How do people leave the site? http://stackoverflow.com/questions/12302300/track-all-outbound-links-in-google-analytics -->
     <script id="outboundLinkTracking" type="text/javascript">
-      $$(function() {
-      $$("a").on('click',function(e){
-      var url = $$(this).attr("href");
+      jQuery(function() {
+      jQuery("a").on('click',function(e){
+      var url = jQuery(this).attr("href");
       if (e.currentTarget.host != window.location.host) {
       _gat._getTrackerByName()._trackEvent("Outbound Links", e.currentTarget.host.replace(':80',''), url, 0);
       if (e.metaKey || e.ctrlKey || (e.button == 1)) {
@@ -221,7 +213,23 @@
       });
       });
     </script>
-
+    
+    <!-- Deferred search loading -->
+    <script>
+      initializeCSE = (function() {
+      var cx = '009114923999563836576:dv0a4ndtmly';
+      var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
+      gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
+      });
+      (function() {
+        function getParameterByName(name) {
+            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        }
+        if (getParameterByName("cx") != null && getParameterByName("q") != null) initializeCSE();
+      })();
+    </script>
     <!-- Handle cross-browser MathML rendering -->
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
@@ -231,8 +239,8 @@
     <!-- http://tablesorter.com/docs/ -->
     <script type="text/javascript" src="/static/js/tablesorter.js"></script>
     <script type="text/javascript" id="tablesorter">
-      $$(document).ready(function() {
-      $$("table").tablesorter();
+      jQuery(document).ready(function() {
+      jQuery("table").tablesorter();
       }); </script>
 
     <!-- Comments courtesy of Disqus -->
