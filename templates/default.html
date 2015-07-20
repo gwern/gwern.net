@@ -100,25 +100,6 @@
 
         <noscript>Please enable JavaScript for math equation rendering.</noscript>
 
-<!-- Combined created/modified -->
-<div id="metadata3">
-  <span id="abstract"><em>$description$</em></span>
-  <br>
-  <span id="tags"><i>$tags$</i></span>
-  <br>
-  <span id="page-created">created: <i>$created$</i></span>;  <span id="last-modified">modified: <i>$modified$</i></span>
-  <br>
-  <span id="version">status:
-    <br>
-    <i>$status$</i></span>
-  <br>
-  <span id="epistemological-status"><a href="/About#belief-tags" title="Explanation of 'belief' metadata">belief:</a>
-    <br>
-    <i>$belief$</i>
-  </span>
-  <hr>
-</div>
-
 <!-- Combined abstract/tags -->
 <div id="metadata5">
   <span id="abstract"><em>$description$</em></span> (<span id="tags"><i>$tags$</i></span>)
@@ -195,25 +176,6 @@
       })();
     </script>
 
-    <!-- How do people leave the site? http://stackoverflow.com/questions/12302300/track-all-outbound-links-in-google-analytics -->
-    <script id="outboundLinkTracking" type="text/javascript">
-      jQuery(function() {
-      jQuery("a").on('click',function(e){
-      var url = jQuery(this).attr("href");
-      if (e.currentTarget.host != window.location.host) {
-      _gat._getTrackerByName()._trackEvent("Outbound Links", e.currentTarget.host.replace(':80',''), url, 0);
-      if (e.metaKey || e.ctrlKey || (e.button == 1)) {
-      var newtab = true;
-      }
-      if (!newtab) {
-      e.preventDefault();
-      setTimeout('document.location = "' + url + '"', 100);
-      }
-      }
-      });
-      });
-    </script>
-    
     <!-- Deferred search loading -->
     <script>
       initializeCSE = (function() {
