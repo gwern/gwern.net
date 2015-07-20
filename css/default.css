@@ -73,6 +73,9 @@
     /* even less horizontal is available on mobile! */
     blockquote { margin-left: 3px; }
     blockquote blockquote { margin-left: 3px; }
+
+    /* force source code to fit inside the viewport: */
+    pre  { word-wrap: break-word; }
 }
 
 /* ********************** */
