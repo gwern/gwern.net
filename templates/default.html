@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
 
-    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide global ATOM/RSS Feed (all edits)" />
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Site-wide global ATOM/RSS Feed (all edits)" />
 
     <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico" />
   </head>
@@ -25,7 +25,7 @@
 
     <div id="main">
       <div id="sidebar">
-        <div id="logo"><img alt="Logo: a Gothic/Fraktur blackletter capital G/𝕲" src="/images/logo.png" height="36" width="32" /></div>
+        <div id="logo"><img alt="Logo: a Gothic/Fraktur blackletter capital G" src="/images/logo.png" height="36" width="32" /></div>
 
         <div id="sidebar-links">
           <p>
@@ -40,17 +40,6 @@
           </p>
           <hr/>
         </div>
-        <div id="cse-sitesearch">
-          <div style="width:0px;overflow:hidden;height:0px;">
-            <gcse:search></gcse:search>
-          </div>
-          <form id="searchbox_009114923999563836576:dv0a4ndtmly">
-            <input value="009114923999563836576:dv0a4ndtmly" name="cx" type="hidden"/>
-            <input value="FORID:11" name="cof" type="hidden"/>
-            <input id="q" style="" name="q" size="5" type="text" placeholder="search" />
-          </form>
-        </div>
-        <hr/>
         </div>
         <div id="donations">
           <div id="Patreon">
@@ -70,25 +59,18 @@
               </div>
             </form>
           </div>
-
-          <div id="Gratipay">
-            <!-- <script data-gratipay-username="gwern" src="//grtp.co/v1.js" async></script> -->
-          </div>
         </div>
       </div>
 
       <!-- Selling out -->
       <div id="adsense">
-        <script type="text/javascript"><!--
-                                           google_ad_client = "ca-pub-3962790353015211";
-                                           /* Big Header */
-                                           google_ad_slot = "5113940481";
-                                           google_ad_width = 728;
-                                           google_ad_height = 90;
-                                           //-->
-        </script>
-        <script type="text/javascript"
-                src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-3962790353015211"
+             data-ad-slot="5113940481"></ins> <!-- Big Header -->
+        <script>
+          (adsbygoogle = window.adsbygoogle || []).push({});
         </script>
       </div>
 
@@ -117,39 +99,33 @@
   <span id="page-created">created: <i>$created$</i></span>;  <span id="last-modified">modified: <i>$modified$</i></span>; <span id="version">status: <i>$status$</i></span>; <span id="epistemological-status"><a href="/About#belief-tags" title="Explanation of 'belief' metadata">belief:</a> <i>$belief$</i></span>
   <hr>
 </div>
-
         $body$
       </div>
     </div>
 
     <div id="footer">
       <p>Still bored? Then try my <a href="https://plus.google.com/103530621949492999968/posts" title="Google+ posts">Google+ news feed</a>.</p>
-      <a href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Send anonymous feedback</a>
-      <br />
+      <p><a href="https://docs.google.com/spreadsheet/viewform?formkey=dE5GLWpfX3RhX1c2Q1phcEo3U3VDVEE6MQ">Send anonymous feedback</a></p>
       <div id="license">
-        <p xmlns:dct="http://purl.org/dc/terms/" xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#">
           <a rel="license"
              href="http://creativecommons.org/publicdomain/zero/1.0/">
             <img src="http://i.creativecommons.org/p/zero/1.0/88x31.png" style="border-style: none;" alt="CC0" height="31" width="88" />
           </a>
-        </p>
       </div>
     </div>
 
-    <!-- dependency of other JS libs -->
-    <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
+    <!-- dependency -->
+    <script type="text/javascript" src="/static/js/jquery-1.7.1.min.js" defer></script>
+    <!-- http://tablesorter.com/docs/ ; requires JQuery -->
+    <script type="text/javascript" src="/static/js/tablesorter.js" defer></script>
+    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ ; also requires jQuery -->
+    <script type="text/javascript" src="/static/js/footnotes.js" defer></script>
 
-    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
-    <script type="text/javascript" src="/static/js/footnotes.js"></script>
+    <!-- Handle cross-browser MathML rendering -->
+    <script id="math" type="text/javascript" src="/static/js/MathJax.js" async></script>
 
-    <!-- a/b testing -->
+    <!-- A/B testing -->
     <script type="text/javascript" src="/static/js/abalytics.js"></script>
-    <script type="text/javascript">
-      window.onload = function() {
-      ABalytics.applyHtml();
-      };
-    </script>
-
     <!-- Load Google Analytics & setup A/B test -->
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
@@ -176,51 +152,17 @@
       })();
     </script>
 
-    <!-- Deferred search loading -->
-    <script>
-      initializeCSE = (function() {
-      var cx = '009114923999563836576:dv0a4ndtmly';
-      var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
-      gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//www.google.com/cse/cse.js?cx=' + cx;
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
-      });
-      (function() {
-        function getParameterByName(name) {
-            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
-            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
-        }
-        if (getParameterByName("cx") != null && getParameterByName("q") != null) initializeCSE();
-      })();
-    </script>
-    <!-- Handle cross-browser MathML rendering -->
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
-    <script type="text/javascript" src="/static/js/footnotes.js"></script>
-
-    <!-- http://tablesorter.com/docs/ -->
-    <script type="text/javascript" src="/static/js/tablesorter.js"></script>
-    <script type="text/javascript" id="tablesorter">
-      jQuery(document).ready(function() {
-      jQuery("table").tablesorter();
-      }); </script>
-
     <!-- Comments courtesy of Disqus -->
     <div id="comments">
       <div id="disqus_thread"></div>
       <script type="text/javascript">
         if (document.title != 'Essays - Gwern.net') { <!-- avoid Disqus comments on front page -->
-        (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = 'http://disqus.com/forums/gwern/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-        var disqus_shortname = 'gwern';
-        (function () {
-        var s = document.createElement('script'); s.async = true;
-        s.src = 'http://disqus.com/forums/gwern/count.js';
-        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-        }());
+         var disqus_shortname = 'gwern';
+         (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+         })();
         }</script>
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
