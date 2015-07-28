@@ -20,9 +20,6 @@
   </head>
   <body>
 
-   <!-- override CSS with A/B test -->
-   <div class="metadata_test_class1"></div>
-
     <div id="main">
       <div id="sidebar">
         <div id="logo"><img alt="Logo: a Gothic/Fraktur blackletter capital G" src="/images/logo.png" height="36" width="32" /></div>
@@ -82,24 +79,15 @@
 
         <noscript>Please enable JavaScript for math equation rendering.</noscript>
 
-<!-- Combined abstract/tags -->
-<div id="metadata5">
-  <span id="abstract"><em>$description$</em></span> (<span id="tags"><i>$tags$</i></span>)
-  <br>
-  <span id="page-created">created: <i>$created$</i></span>;  <span id="last-modified">modified: <i>$modified$</i></span>
-  <br>
-  <span id="version">status: <i>$status$</i></span>; <span id="epistemological-status"><a href="/About#belief-tags" title="Explanation of 'belief' metadata">belief:</a> <i>$belief$</i></span>
-  <hr>
-</div>
+        <div id="metadata">
+          <span id="abstract"><em>$description$</em></span> (<span id="tags"><i>$tags$</i></span>)
+          <br>
+          <span id="page-created">created: <i>$created$</i></span>;  <span id="last-modified">modified: <i>$modified$</i></span>; <span id="version">status: <i>$status$</i></span>; <span id="epistemological-status"><a href="/About#belief-tags" title="Explanation of 'belief' metadata">belief:</a> <i>$belief$</i></span>
+          <hr>
+        </div>
 
-<!-- Combined timing with status -->
-<div id="metadata6">
-  <span id="abstract"><em>$description$</em></span> (<span id="tags"><i>$tags$</i></span>)
-  <br>
-  <span id="page-created">created: <i>$created$</i></span>;  <span id="last-modified">modified: <i>$modified$</i></span>; <span id="version">status: <i>$status$</i></span>; <span id="epistemological-status"><a href="/About#belief-tags" title="Explanation of 'belief' metadata">belief:</a> <i>$belief$</i></span>
-  <hr>
-</div>
         $body$
+
       </div>
     </div>
 
@@ -124,26 +112,10 @@
     <!-- Handle cross-browser MathML rendering -->
     <script id="math" type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
 
-    <!-- A/B testing -->
-    <script type="text/javascript" src="/static/js/abalytics.js"></script>
-    <!-- Load Google Analytics & setup A/B test -->
+    <!-- Async load Google Analytics  -->
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-18912926-1']);
-
-      ABalytics.init({
-      metadata_test: [
-      {
-      name: "meta5",
-      "metadata_test_class1": "<style>div#metadata5 { display: block; }</style>"
-      },
-      {
-      name: "meta6",
-      "metadata_test_class1": "<style>div#metadata6 { display: block; }</style>"
-      }
-      ],
-      }, _gaq);
-
       _gaq.push(['_trackPageview']);
       (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
