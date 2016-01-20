@@ -128,7 +128,9 @@ div#header h1 {
     vertical-align: middle;
 }
 /* uppercase page title, all section headers; see A/B tests */
-h1, h2, h3, h4, h5 { text-transform: uppercase; }
+h1, h2, h3, h4, h5 { text-transform: uppercase;
+                     /* prevent overlapping, per Wei: */
+                     line-height: 130%; }
 
 /* center the ads so they don't look aligned with the content & part of the content */
 div#adsense { text-align: center;
