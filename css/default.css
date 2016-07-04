@@ -81,6 +81,7 @@
 /* ********************** */
 /* DEVICE-INDEPENDENT CSS */
 /* ********************** */
+/* Table of Contents */
 div#TOC {
     /* see A/B tests */
     float: left;
@@ -102,6 +103,21 @@ div#TOC ul li ul li {
 }
 div#TOC ul { margin-left: 0px; padding-left: 0px; }
 div#TOC ul ul { margin-left: 1em; padding-left: 1em; }
+
+/* CSS by Brendan Long: make lists look better when next to the ToC (eg in 'Links' or 'Bitcoin is Worse is Better'): */
+/* "The problem is that if you have a list next to a floated element (the table of contents), the padding gets removed. This looks weird normally, but it’s especially strange with a multi-level list  since everything shows up on the same level. This problem also effects your block quotes (the grey background extends behind the TOC). */
+/* Apparently, setting “overflow” on an element creates a new formatting context which fixes this. “overflow: hidden” will do this without actually changing how overflow is handled. Unfortunately, if we do that, the bullet points and numbering inexplicably disappear and we have to move them “inside”. Once we fix that, <li><p>…</p></li> creates two new block contexts, causing blank lines on some bullet points on pages like this. */
+/* Note that I’m only messing with non-section children of sections and list elements (not the lists themselves). This is because I’m assuming you want paragraphs and lists to wrap around the TOC" */
+/* result: http://imgur.com/lhvneyP */
+section > :not(section), li {
+    overflow: auto;
+}
+li {
+    list-style-position: inside;
+}
+li p {
+    display: inline;
+}
 
 html {
     padding: 0px;
