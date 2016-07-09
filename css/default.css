@@ -203,7 +203,9 @@ figure img {
     /* resize images based on browser width: 'fluid images'; see
        http://unstoppablerobotninja.com/entry/fluid-images/
        http://blog.kurtschindler.net/post/flexible-dynamically-resizing-images-with-css
-       http://stackoverflow.com/questions/787839/resize-image-proportionally-with-css */
+       http://stackoverflow.com/questions/787839/resize-image-proportionally-with-css
+       Unfortunately, this will cause reflowing as images load and turn out to be too big & have to be rescaled...
+       No apparent way to avoid this without a lot of CSS/JS hacks */
     max-width: 100%;
     height: auto;
 }
