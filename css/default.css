@@ -109,14 +109,8 @@ div#TOC ul ul { margin-left: 1em; padding-left: 1em; }
 /* Apparently, setting “overflow” on an element creates a new formatting context which fixes this. “overflow: hidden” will do this without actually changing how overflow is handled. Unfortunately, if we do that, the bullet points and numbering inexplicably disappear and we have to move them “inside”. Once we fix that, <li><p>…</p></li> creates two new block contexts, causing blank lines on some bullet points on pages like this. */
 /* Note that I’m only messing with non-section children of sections and list elements (not the lists themselves). This is because I’m assuming you want paragraphs and lists to wrap around the TOC" */
 /* result: http://imgur.com/lhvneyP */
-section > :not(section), li {
+div#content>:not(section), div#content section>:not(section) {
     overflow: auto;
-}
-li {
-    list-style-position: inside;
-}
-li p {
-    display: inline;
 }
 
 html {
