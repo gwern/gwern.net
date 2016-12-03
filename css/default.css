@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700&subset=latin-ext');
+
 /* **************** */
 /* DESKTOP-ONLY CSS */
 /* **************** */
@@ -9,7 +11,7 @@
     div#content {
         margin-left: 200px;
         padding-left: 0;
-        line-height: 130%; /* see A/B tests */
+        line-height: 150%; /* see A/B tests */
     }
 
     #header {
@@ -81,29 +83,6 @@
 /* ********************** */
 /* DEVICE-INDEPENDENT CSS */
 /* ********************** */
-/* Table of Contents */
-div#TOC {
-    /* see A/B tests */
-    float: left;
-    width: 20%;
-    /* see A/B tests */
-    background: #eee;
-    /* Force a margin big enough that
-       bulleted items won't overlap the
-       blue-shaded area of the ToC */
-    margin-right: 20px;
-}
-div#TOC li {
-    list-style-type: none;
-    margin-right: 0px; padding-right: 0px;
-}
-div#TOC ul li ul li {
-    position: relative;
-    left: -15px
-}
-div#TOC ul { margin-left: 0px; padding-left: 0px; }
-div#TOC ul ul { margin-left: 1em; padding-left: 1em; }
-
 /* CSS by Brendan Long: make lists look better when next to the ToC (eg in 'Links' or 'Bitcoin is Worse is Better'): */
 /* "The problem is that if you have a list next to a floated element (the table of contents), the padding gets removed. This looks weird normally, but it’s especially strange with a multi-level list  since everything shows up on the same level. This problem also effects your block quotes (the grey background extends behind the TOC). */
 /* Apparently, setting “overflow” on an element creates a new formatting context which fixes this. “overflow: hidden” will do this without actually changing how overflow is handled. Unfortunately, if we do that, the bullet points and numbering inexplicably disappear and we have to move them “inside”. Once we fix that, <li><p>…</p></li> creates two new block contexts, causing blank lines on some bullet points on pages like this. */
@@ -124,18 +103,23 @@ html {
     /* no size set for the font; see A/B tests */
 
     /* see A/B tests */
-    font-family: Baskerville, Trebuchet, Georgia, Arial, "Lucida Grande", garamond, palatino, verdana;
+    font-family: Baskerville, "Libre Baskerville", "Sitka Text", "Trebuchet MS", "Georgia", serif;
 }
 
 body {
     margin: 1px;
+
     /* original 1400px; see A/B tests */
     max-width: 1100px;
+
 }
 
+
 div#header h1 {
-    display: inline;
+    text-align: center;
     vertical-align: middle;
+
+
 }
 /* uppercase page title, all section headers; see A/B tests */
 h1, h2, h3, h4, h5 { text-transform: uppercase;
@@ -239,6 +223,71 @@ p + p {
 p.hang { text-indent: -0.44em }
 
 .num { font-size: 85%; }
+
+/* Table of Contents */
+div#TOC {
+    /* see A/B tests */
+    float: left;
+    width: auto;
+    max-width: 25%;
+    /* see A/B tests */
+    border: 1px solid #cccccc;
+    background-color: #f9f9f9;
+    /* Force a margin big enough that
+       bulleted items won't overlap the
+       blue-shaded area of the ToC */
+    margin-right: 20px;
+
+
+}
+div#TOC li {
+    font-weight: bold;
+    margin-top: 0px;
+    margin-bottom: 6px;
+    margin-right: 2px;
+}
+div#TOC li li {
+    margin-bottom: 0px;
+    font-weight: normal;
+    font-size: 90%;
+}
+div#TOC p {
+    margin-top: 9px;
+    margin-bottom: 3px;
+}
+div#TOC ul {
+    list-style-type: none;
+    padding-left: 0em;
+    margin-bottom: 0px;
+    margin-top: 4px;
+    padding-left: 1em;
+    text-indent: -1em;
+}
+div#TOC ul ul {
+    list-style-type: none;
+    padding-left: 0.7em;
+    margin-top: 2px;
+}
+div#TOC a {
+    border: 0px;
+}
+div#TOC a:hover {
+    text-shadow: 1px 1px 3px #777;
+}
+
+
+/*
+div#TOC li {
+    list-style-type: none;
+    margin-right: 0px; padding-right: 0px;
+}
+div#TOC ul li ul li {
+    position: relative;
+    left: -15px
+}
+div#TOC ul { margin-left: 0px; padding-left: 0px; }
+div#TOC ul ul { margin-left: 1em; padding-left: 1em; }
+*/
 
 /*
  * Tables.less
@@ -391,6 +440,3 @@ td.sourceCode { padding-left: 5px; }
 .sourceCode span.fu { color: #06287e; }
 .sourceCode span.re { }
 .sourceCode span.er { color: red; font-weight: bold; }
-
-/* support A/B test by hiding by default all the HTML variants: */
-div#metadata1, div#metadata2, div#metadata3, div#metadata4, div#metadata5, div#metadata6 { display: none; }
