@@ -224,13 +224,13 @@ div#TOC {
     /* see A/B tests */
     border: 1px solid #cccccc;
     background-color: #f9f9f9;
+    /* Baskerville isn't quite as clear at small font sizes like in the ToC */
+    font-family: "Lucida Sans Unicode";
     padding: 0 0.5rem;
     /* Force a margin big enough that
        bulleted items won't overlap the
        blue-shaded area of the ToC */
     margin-right: 20px;
-
-
 }
 div#TOC li {
     font-weight: bold;
