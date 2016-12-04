@@ -32,7 +32,7 @@
 
     div#sidebar {
         padding: 0.5em;
-        width: 150px;
+        width: 160px;
         float: left;
 
         /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
@@ -44,8 +44,6 @@
          * CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
     word-break: break-all;
     }
-    /* But the version and belief tags are too short and look ugly if broken with a hyphen, so reset: */
-    div#version, div#epistemological-status { word-break: normal; }
 
     div#sidebar-links a {
         display: block;
@@ -103,23 +101,18 @@ html {
     /* no size set for the font; see A/B tests */
 
     /* see A/B tests */
-    font-family: Baskerville, "Libre Baskerville", "Sitka Text", "Trebuchet MS", "Georgia", serif;
+    font-family: Baskerville, "Libre Baskerville", serif;
 }
 
 body {
     margin: 1px;
-
     /* original 1400px; see A/B tests */
     max-width: 1100px;
-
 }
-
 
 div#header h1 {
     text-align: center;
     vertical-align: middle;
-
-
 }
 /* uppercase page title, all section headers; see A/B tests */
 h1, h2, h3, h4, h5 { text-transform: uppercase;
@@ -191,8 +184,6 @@ figure img {
 ul {
     /* see A/B tests */
     list-style-type: square;
-/*    padding-left: 1em; */
-    margin-left: 1em;
 }
 
 code {
@@ -233,6 +224,7 @@ div#TOC {
     /* see A/B tests */
     border: 1px solid #cccccc;
     background-color: #f9f9f9;
+    padding: 0 0.5rem;
     /* Force a margin big enough that
        bulleted items won't overlap the
        blue-shaded area of the ToC */
@@ -274,20 +266,6 @@ div#TOC a {
 div#TOC a:hover {
     text-shadow: 1px 1px 3px #777;
 }
-
-
-/*
-div#TOC li {
-    list-style-type: none;
-    margin-right: 0px; padding-right: 0px;
-}
-div#TOC ul li ul li {
-    position: relative;
-    left: -15px
-}
-div#TOC ul { margin-left: 0px; padding-left: 0px; }
-div#TOC ul ul { margin-left: 1em; padding-left: 1em; }
-*/
 
 /*
  * Tables.less
