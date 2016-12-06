@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 @import url('https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700&subset=latin-ext');
 
 /* **************** */
@@ -144,11 +146,12 @@ a {
 }
 div#content a {
     word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
-    /* how we implement grey underlining:
-       http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/ */
-    text-decoration: none;
-    border-bottom: 1px Solid grey;
-}
+    word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
+   /* how we implement grey underlining:
+      http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
+    not as nice as Tufte CSS's gray lines, but at least works with the TOC CSS... */
+   text-decoration: none;
+   border-bottom: 1px Solid grey; }
 
 h2 {
     font-size: 120%;
@@ -191,6 +194,8 @@ code {
     border: 1px solid rgb(200, 200, 200);
     padding-left: 4px;
     padding-right: 4px;
+    /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
 }
 
 pre code {
