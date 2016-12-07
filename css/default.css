@@ -101,7 +101,7 @@ html {
 body {
     margin: 1px;
     /* original 1400px; see A/B tests */
-    max-width: 1400px;
+    max-width: 830px;
 }
 
 div#header h1 {
@@ -383,9 +383,11 @@ li p { margin: 0.2em; }
 /* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
    Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
 
-   See A/B tests: this highlighting is better than no highlighting */
-blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote {
+   See A/B t ests: this highlighting is better than no highlighting */
+blockquote {
     z-index: -2;
+    background-color: rgb(245, 245, 245); }
+blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote {
     background-color: rgb(245, 245, 245); }
 blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote {
     background-color: rgb(235, 235, 235); }
@@ -433,8 +435,8 @@ body { counter-reset: sidenote-counter; }
 
 .sidenote, .marginnote { float: right;
                          clear: right;
-                         margin-right: -52%;
-                         width: 50%;
+                         margin-right: -53%;
+                         width: 45%;
                          font-size: 95%;
                          vertical-align: baseline;
                          position: relative; }
@@ -452,8 +454,7 @@ body { counter-reset: sidenote-counter; }
 .sidenote:before { content: counter(sidenote-counter) " ";
                    top: -0.5rem; }
 
-p, footer, table {
-width: 65%; }
+:not(sidenote):* { width: 65%; }
 
 input.margin-toggle { display: none; }
 
