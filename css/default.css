@@ -83,14 +83,6 @@
 /* ********************** */
 /* DEVICE-INDEPENDENT CSS */
 /* ********************** */
-/* CSS by Brendan Long: make lists look better when next to the ToC (eg in 'Links' or 'Bitcoin is Worse is Better'): */
-/* "The problem is that if you have a list next to a floated element (the table of contents), the padding gets removed. This looks weird normally, but it’s especially strange with a multi-level list  since everything shows up on the same level. This problem also effects your block quotes (the grey background extends behind the TOC). */
-/* Apparently, setting “overflow” on an element creates a new formatting context which fixes this. “overflow: hidden” will do this without actually changing how overflow is handled. Unfortunately, if we do that, the bullet points and numbering inexplicably disappear and we have to move them “inside”. Once we fix that, <li><p>…</p></li> creates two new block contexts, causing blank lines on some bullet points on pages like this. */
-/* Note that I’m only messing with non-section children of sections and list elements (not the lists themselves). This is because I’m assuming you want paragraphs and lists to wrap around the TOC" */
-/* result: http://imgur.com/lhvneyP */
-div#content>:not(section), div#content section>:not(section) {
-    overflow: auto;
-}
 
 html {
     padding: 0px;
@@ -109,7 +101,7 @@ html {
 body {
     margin: 1px;
     /* original 1400px; see A/B tests */
-    max-width: 1100px;
+    max-width: 1400px;
 }
 
 div#header h1 {
@@ -399,7 +391,7 @@ blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote b
     background-color: rgb(235, 235, 235); }
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan and #lesswrong for help */
-q {background-color:rgba(0,0,0,0.02);}
+q {background-color:rgba(0,0,0,0.015);}
 blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 
 /* left-hanging quotes:
@@ -410,19 +402,6 @@ blockquote, p {
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub, sup { line-height: 0.3em; }
-
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/
-   If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
-
-   Note: setting `opacity: 1;` in this CSS doesn't seem to set the footnote appearance to fully opaque,
-   so I've edited the opacity calls in `footnotes.js` to force it */
-#footnotediv div {
-    background-color: white;
-    padding: 3px;
-    padding: 12px;
-    max-width: 800px;
-    border: 1px solid #CDBBB5;
-}
 
 /* Deal with multiple footnotes one after another; per Charuru */
 sup + sup { margin-left: 2px; }
@@ -445,3 +424,55 @@ td.sourceCode { padding-left: 5px; }
 .sourceCode span.fu { color: #06287e; }
 .sourceCode span.re { }
 .sourceCode span.er { color: red; font-weight: bold; }
+
+/* Tufte CSS: Sidenote code enabled by feeding the Pandoc through pandoc-sidenote */
+/* sidenotes are like footnotes, but in a second column to the right of the main column of text. (There's plenty of horizontal right-whitespace for them because people complain about wide main texts, forcing them to be narrowed to ~1100px inclusive of the left-whitespace.)
+The original Tufte CSS sidenote code is undocumented and spread out across the CSS file in an opaque hardwired fashion. The following is what I was able to shrink it down to by deleting lines of code and reverting when it seemed to break the sidenotes, along with a little tweaking of size for gwern.net pages. */
+/* begin Tufte CSS */
+body { counter-reset: sidenote-counter; }
+
+.sidenote, .marginnote { float: right;
+                         clear: right;
+                         margin-right: -52%;
+                         width: 50%;
+                         font-size: 95%;
+                         vertical-align: baseline;
+                         position: relative; }
+
+.sidenote-number { counter-increment: sidenote-counter; }
+
+.sidenote-number:after, .sidenote:before { content: counter(sidenote-counter) " ";
+                                           position: relative;
+                                           vertical-align: baseline; }
+
+.sidenote-number:after { content: counter(sidenote-counter);
+                         top: -0.5rem;
+                         left: 0.1rem; }
+
+.sidenote:before { content: counter(sidenote-counter) " ";
+                   top: -0.5rem; }
+
+p, footer, table {
+width: 65%; }
+
+input.margin-toggle { display: none; }
+
+label.sidenote-number { display: inline; }
+
+label.margin-toggle:not(.sidenote-number) { display: none; }
+
+@media (max-width: 760px) {
+                            label.margin-toggle:not(.sidenote-number) { display: inline; }
+                            .sidenote, .marginnote { display: none; }
+                            .margin-toggle:checked + .sidenote,
+                            .margin-toggle:checked + .marginnote { display: block;
+                                                                   float: left;
+                                                                   left: 1rem;
+                                                                   clear: both;
+                                                                   width: 95%;
+                                                                   margin: 1rem 2.5%;
+                                                                   vertical-align: baseline;
+                                                                   position: relative; }
+                            label { cursor: pointer; }
+}
+/* End Tufte CSS */
