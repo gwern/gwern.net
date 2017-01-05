@@ -34,7 +34,7 @@
 
     div#sidebar {
         padding: 0.5em;
-        width: 160px;
+        width: 165px;
         float: left;
 
         /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
