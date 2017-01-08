@@ -50,15 +50,21 @@
       </div>
 
       <!-- Selling out -->
-      <div id="adsense" style="height:60px;">
+      <div id="adsense">
         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" async></script>
         <!-- Medium Header -->
         <ins class="adsbygoogle"
              style="display:inline-block;width:468px;height:60px"
              data-ad-client="ca-pub-3962790353015211"
              data-ad-slot="2936413286"></ins>
+        <!-- A/B test of ad effects on site traffic: randomize 2-days based on day-of-year & pre-generated randomness; offset by 8 because started on 8 January 2016 -->
         <script>
-          (adsbygoogle = window.adsbygoogle || []).push({});
+          var now = new Date(); var start = new Date(now.getFullYear(), 0, 0); var diff = now - start; var oneDay = 1000 * 60 * 60 * 24; var day = Math.floor(diff / oneDay);
+          randomness = [1,0,0,0,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,1,1,0,0,1,1,1,1,0,0,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,0,0,1,1,0,0,0,0,1,1,0,0];
+
+          if (randomness[day - 8]) {
+              (adsbygoogle = window.adsbygoogle || []).push({});
+          }
         </script>
       </div>
 
