@@ -125,7 +125,8 @@ h1, h2, h3, h4, h5 { text-transform: uppercase;
 div#adsense { text-align: center;
               max-width: 100%;
               overflow-x: hidden; }
-div#bitcoin-donation-address { font-family: monospace; }
+/* make Bitcoin address look computer-like, and shrink it since it's so long */
+div#bitcoin-donation-address { font-family: monospace; font-size: 85%; }
 
 /* metadata customization: */
 div#description { font-size: 95%; }
