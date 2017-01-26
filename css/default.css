@@ -108,8 +108,7 @@ html {
 
 body {
     margin: 1px;
-    /* original 1400px; see A/B tests */
-    max-width: 1100px;
+    max-width: 1600px;
 }
 
 div#header h1 {
@@ -253,7 +252,7 @@ div#TOC {
     border: 1px solid #cccccc;
     background-color: #f9f9f9;
     /* Baskerville isn't quite as clear at small font sizes like in the ToC */
-    font-family: "Lucida Sans Unicode";
+    font-family: "Lucida Sans Unicode", "Lucida Grande", "Trebuchet MS", Helvetica, sans-serif;
     padding: 0 0.5rem;
     /* Force a margin big enough that
        bulleted items won't overlap the
@@ -400,6 +399,7 @@ blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote b
     background-color: rgb(235, 235, 235); }
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan and #lesswrong for help */
+/* WARNING: apparently browsers will display correctly quotation marks when <q> elements are used, but will not preserve them in copy-paste‽ */
 q {background-color:rgba(0,0,0,0.02);}
 blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 
