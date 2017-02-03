@@ -248,7 +248,6 @@ div#TOC {
     float: left;
     width: auto;
     max-width: 25%;
-    /* see A/B tests */
     border: 1px solid #cccccc;
     background-color: #f9f9f9;
     /* Baskerville isn't quite as clear at small font sizes like in the ToC */
@@ -258,11 +257,12 @@ div#TOC {
        bulleted items won't overlap the
        blue-shaded area of the ToC */
     margin-right: 20px;
+    line-height: 105%;
 }
 div#TOC li {
     font-weight: bold;
-    margin-top: 0px;
-    margin-bottom: 6px;
+    margin-top: 5px;
+    margin-bottom: 10px;
     margin-right: 2px;
 }
 div#TOC li li {
@@ -279,8 +279,8 @@ div#TOC ul {
     padding-left: 0em;
     margin-bottom: 0px;
     margin-top: 4px;
-    padding-left: 1em;
-    text-indent: -1em;
+    padding-left: 1.4em;
+    text-indent: -1.4em;
 }
 div#TOC ul ul {
     list-style-type: none;
@@ -293,7 +293,6 @@ div#TOC a {
 div#TOC a:hover {
     text-shadow: 1px 1px 3px #777;
 }
-
 /*
  * Tables.less
  * Tables for, you guessed it, tabular data
