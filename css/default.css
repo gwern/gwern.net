@@ -54,6 +54,12 @@
         margin-bottom: 5px;
         text-transform: uppercase;
     }
+    /* pull the RSS/EMAIL links together
+    div#sidebar-news ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        line-height: 80%;
+    }
     div#sidebar-news a {
         display: inline; /* override the `display: block;` so it reads 'NEW: RSS/MAIL' */
         font-size: 105%;
