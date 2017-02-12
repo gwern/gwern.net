@@ -11,7 +11,7 @@
                     margin: 10px auto 10px auto; }
 
     div#content {
-        margin-left: 200px;
+        margin-left: 114px;
         padding-left: 0;
         line-height: 150%; /* see A/B tests */
     }
@@ -26,15 +26,14 @@
         border: none;
     }
 
-    div#logo { margin-left: -80px; }
+    div#logo { margin-left: -64px; }
 
     /* uses up too much horizontal whitespace by default: */
     blockquote { margin-left: 10px; }
     blockquote blockquote { margin-left: 10px; }
 
     div#sidebar {
-        padding: 0.5em;
-        width: 165px;
+        width: 103px;
         float: left;
 
         /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
@@ -54,12 +53,13 @@
         margin-bottom: 5px;
         text-transform: uppercase;
     }
-    /* pull the RSS/EMAIL links together
+    /* pull the RSS/EMAIL links together */
     div#sidebar-news ul {
         list-style-type: disc;
         padding-left: 20px;
         line-height: 80%;
     }
+
     div#sidebar-news a {
         display: inline; /* override the `display: block;` so it reads 'NEW: RSS/MAIL' */
         font-size: 105%;
@@ -67,6 +67,17 @@
         margin-bottom: 5px;
         text-transform: uppercase;
     }
+
+    /* center-align the donation text and highlight the Patreon */
+    div#donations {  text-indent:-1em; padding-left:1em; }
+    div#Patreon span { font-variant: small-caps; }
+
+    /* Table of Contents: on mobile, we want it to be inline, but for desktop, we want it side by side with the content */
+    div#TOC {
+    float: left;
+    width: auto;
+    max-width: 20% }
+
 }
 
 /* **************** */
@@ -74,6 +85,7 @@
 /* **************** */
 @media screen and (max-width: 649px) {
     /* remove extra lines and stuff from the sidebar: */
+    div#sidebar * { display: inline; }
     div#sidebar hr { display:none; }
     div#donations { display:none; }
     div#cse-sitesearch { display:none; }
@@ -81,6 +93,8 @@
     /* even less horizontal is available on mobile! */
     blockquote { margin-left: 3px; }
     blockquote blockquote { margin-left: 3px; }
+
+    div#TOC { float: inherit; margin: 5px; }
 
     /* force source code to fit inside the viewport: */
     pre  { word-wrap: break-word; }
@@ -251,9 +265,6 @@ p.hang { text-indent: -0.44em }
 /* Table of Contents */
 div#TOC {
     /* see A/B tests */
-    float: left;
-    width: auto;
-    max-width: 25%;
     border: 1px solid #cccccc;
     background-color: #f9f9f9;
     /* Baskerville isn't quite as clear at small font sizes like in the ToC */
@@ -299,6 +310,9 @@ div#TOC a {
 div#TOC a:hover {
     text-shadow: 1px 1px 3px #777;
 }
+
+div#TOC + ul { max-width: 170px; }
+
 /*
  * Tables.less
  * Tables for, you guessed it, tabular data
