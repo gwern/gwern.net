@@ -26,7 +26,7 @@
         border: none;
     }
 
-    div#logo { margin-left: -64px; }
+    div#logo { margin-left: -40px; }
 
     /* uses up too much horizontal whitespace by default: */
     blockquote { margin-left: 10px; }
@@ -44,15 +44,15 @@
          *
          * CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
     word-break: break-all;
+    font-variant: small-caps;
     }
 
     div#sidebar-links a {
         display: block;
         font-size: 105%;
         text-decoration: none;
-        margin-bottom: 5px;
-        text-transform: uppercase;
     }
+
     /* pull the RSS/EMAIL links together */
     div#sidebar-news ul {
         list-style-type: disc;
@@ -64,19 +64,14 @@
         display: inline; /* override the `display: block;` so it reads 'NEW: RSS/MAIL' */
         font-size: 105%;
         text-decoration: none;
-        margin-bottom: 5px;
-        text-transform: uppercase;
     }
 
-    /* center-align the donation text and highlight the Patreon */
-    div#donations {  text-indent:-1em; padding-left:1em; }
-    div#Patreon span { font-variant: small-caps; }
 
     /* Table of Contents: on mobile, we want it to be inline, but for desktop, we want it side by side with the content */
     div#TOC {
-    float: left;
-    width: auto;
-    max-width: 20% }
+        float: left;
+        width: auto;
+        max-width: 20% }
 
 }
 
