@@ -11,7 +11,7 @@
                     margin: 10px auto 10px auto; }
 
     div#content {
-        margin-left: 114px;
+        margin-left: 150px;
         padding-left: 0;
         line-height: 150%; /* see A/B tests */
     }
@@ -26,14 +26,14 @@
         border: none;
     }
 
-    div#logo { margin-left: -40px; }
+    div#logo { margin-left: -63px; }
 
     /* uses up too much horizontal whitespace by default: */
     blockquote { margin-left: 10px; }
     blockquote blockquote { margin-left: 10px; }
 
     div#sidebar {
-        width: 103px;
+        width: 133px;
         float: left;
 
         /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
@@ -43,8 +43,8 @@
          * body text, which is ugly and unreadable.
          *
          * CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
-    word-break: break-all;
-    font-variant: small-caps;
+        word-break: break-all;
+        font-variant: small-caps;
     }
 
     div#sidebar-links a {
@@ -139,8 +139,6 @@ h1, h2, h3, h4, h5 { text-transform: uppercase;
 div#adsense { text-align: center;
               max-width: 100%;
               overflow-x: hidden; }
-/* make Bitcoin address look computer-like, and shrink it since it's so long */
-div#bitcoin-donation-address { font-family: monospace; font-size: 85%; }
 
 /* metadata customization: */
 div#description { font-size: 95%; }
