@@ -16,7 +16,7 @@
         line-height: 150%; /* see A/B tests */
     }
 
-    #header {
+    header {
         margin-bottom: 15px;
     }
 
@@ -103,7 +103,7 @@
 /* Apparently, setting “overflow” on an element creates a new formatting context which fixes this. “overflow: hidden” will do this without actually changing how overflow is handled. Unfortunately, if we do that, the bullet points and numbering inexplicably disappear and we have to move them “inside”. Once we fix that, <li><p>…</p></li> creates two new block contexts, causing blank lines on some bullet points on pages like this. */
 /* Note that I’m only messing with non-section children of sections and list elements (not the lists themselves). This is because I’m assuming you want paragraphs and lists to wrap around the TOC" */
 /* result: http://imgur.com/lhvneyP */
-div#content>:not(section), div#content section>:not(section) {
+article>:not(section), article section>:not(section) {
     overflow: auto;
 }
 
@@ -126,7 +126,7 @@ body {
     max-width: 1600px;
 }
 
-div#header h1 {
+header h1 {
     text-align: center;
     vertical-align: middle;
 }
@@ -157,7 +157,7 @@ div#disqus_thread { padding-left: 0.5em; }
 a {
     color: #303C3C; /* off-black */
 }
-div#content a { word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
+article a { word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
                  text-decoration: none;
 }
 
