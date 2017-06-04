@@ -421,6 +421,9 @@ blockquote, p {
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub, sup { line-height: 0.3em; }
+/* TODO: experimental hack around the problems caused by superscript line-height change inside blockquotes' first line: */
+/* blockquote { overflow: visible !important; } */
+blockquote { padding-top: 6px; }
 
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/
    If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
