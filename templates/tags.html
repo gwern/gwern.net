@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <meta name="generator" content="hakyll" />
-    <meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk" />
-    <meta name="description" content="All posts for this tag" />
+    <meta charset="utf-8">
+    <meta name="generator" content="hakyll">
+    <meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk">
+    <meta name="description" content="All gwern.net pages for this tag: $title$">
+    <meta name="keywords" content="$title$">
 
     <title>$title$</title>
 
@@ -36,7 +37,8 @@
       <ul>$posts$</ul>
     </div>
 
-    <!-- Load Google Analytics, because the data is interesting and useful -->
+    <!-- Async load Google Analytics  -->
+    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" async></script>
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-18912926-1']);
@@ -45,6 +47,7 @@
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();</script>
+      })();
+    </script>
   </body>
 </html>
