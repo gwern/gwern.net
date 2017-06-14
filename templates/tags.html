@@ -1,44 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="generator" content="hakyll">
     <meta name="google-site-verification" content="BOhOQI1uMfsqu_DopVApovk1mJD5ZBLfan0s9go3phk">
     <meta name="description" content="All gwern.net pages for this tag: $title$">
     <meta name="keywords" content="$title$">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>$title$</title>
+    <title>$title$ - Gwern.net</title>
 
-    <!-- Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700&subset=latin-ext" />
     <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
+
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Site-wide global ATOM/RSS Feed (all edits)" />
 
     <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico" />
   </head>
   <body>
-    <div id="main">
+
+    <main>
       <div id="sidebar">
-        <div id="logo"><img alt="Logo: a Gothic blackletter capital G" height="36" src="/images/logo.png" width="32" /></div>
-        <br />
+        <div id="logo"><a href="/index" title="index: categorized list of articles"><img alt="Logo: a Gothic/Fraktur blackletter capital G" src="/images/logo.png" height="75" width="64" /></a></div>
+
         <div id="sidebar-links">
           <p>
             <a href="/index" title="index: categorized list of articles">Home</a>
             <a href="/About" title="Site ideals, source, content, traffic, examples, license">Site</a>
-            <a href="/Links" title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I&#39;ve worked on">Me</a>
+            <a href="/Links" title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I've worked on">Me</a>
           </p>
+          <hr/>
+        <div id="sidebar-news">
+          <p>
+            <a href="/Changelog" title="What&#39;s new or updated">New:</a>
+            <ul>
+              <li><a href="https://gwern.us3.list-manage.com/subscribe?u=ed1f6b2799208b40f5f18be8f&amp;id=91b4d51355" title="Monthly mailing list: newsletter signup form"><i>mail</i></a></li>
+              <li><a href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM/RSS feed of all changes"><i>rss</i></a></li>
+            </ul>
+          <hr/>
+        </div>
         </div>
       </div>
-    </div>
 
-    <div id="header">
-      <h1>$title$</h1>
-    </div>
+      <header>
+        <h1>$title$</h1>
+      </header>
 
-    <div id="content">
-      <ul>$posts$</ul>
-    </div>
+      <article>
+
+        <ul>$posts$</ul>
+
+      </article>
+    </main>
 
     <!-- Async load Google Analytics  -->
-    <script src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" async></script>
     <script id="googleAnalytics" type="text/javascript">
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-18912926-1']);
