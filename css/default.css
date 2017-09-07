@@ -140,7 +140,7 @@ div#adsense { text-align: center;
 
 /* metadata customization: */
 div#description { font-size: 95%; }
-div#tags, div#page-created, div#last-modified, div#license { font-size: 80%; }
+div#tags, div#page-created, div#last-modified { font-size: 80%; }
 
 div#footer {
     padding-top: 30px;
