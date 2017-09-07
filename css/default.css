@@ -107,7 +107,8 @@ article>:not(section), article section>:not(section) {
 
 html {
     padding: 0px;
-    margin: 0px;
+    margin-left: 5px;
+    margin-right: 5px;
 
     /* see A/B tests */
     background-color: white;
@@ -120,7 +121,7 @@ html {
 }
 
 body {
-    margin: 1px;
+    margin-right: 10px;
     max-width: 1600px;
 }
 
