@@ -134,11 +134,6 @@ h1, h2, h3, h4, h5 { text-transform: uppercase;
                      /* prevent overlapping, per Wei: */
                      line-height: 130%; }
 
-/* center the ads so they don't look aligned with the content & part of the content */
-div#adsense { text-align: center;
-              max-width: 100%;
-              overflow-x: hidden; }
-
 /* metadata customization: */
 div#description { font-size: 95%; }
 div#tags, div#page-created, div#last-modified { font-size: 80%; }
