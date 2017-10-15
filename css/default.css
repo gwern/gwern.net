@@ -380,7 +380,7 @@ tbody tr:hover td {
     background-color: #f5f5f5;
 }
 
-/* CSS written by cwillu of #lesswrong in order to rewrite the Modafinil page's table of prices */
+/* CSS written by cwillu in order to rewrite the Modafinil page's table of prices */
 #suppliers-prices td,#suppliers-prices th { padding: 0px 15px; }
 #suppliers-prices td:nth-child(1):after { content: "mg/$" }
 #suppliers-prices td:nth-child(2) { text-align: right; }
@@ -402,7 +402,7 @@ blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote b
 blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote {
     background-color: rgb(235, 235, 235); }
 
-/* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan and #lesswrong for help */
+/* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan & IRC for help */
 /* WARNING: apparently browsers will display correctly quotation marks when <q> elements are used, but will not preserve them in copy-paste‽ */
 q {background-color:rgba(0,0,0,0.02);}
 blockquote > p:only-of-type q:only-of-type {background-color:inherit}
