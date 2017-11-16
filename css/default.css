@@ -8,10 +8,10 @@
     div#logo img {  display: block;
                     margin: 10px auto 10px auto; }
 
-    div#content {
+    #markdownBody {
         margin-left: 150px;
         padding-left: 0;
-        line-height: 150%; /* see A/B tests */
+        line-height: 1.4; /* see A/B tests */
     }
 
     header {
