@@ -50,8 +50,38 @@
         </div>
       </div>
 
+      <!-- A/B test of ad effects on site traffic, static ad version: randomize blocks of 7-days based on day-of-year pre-generated randomness -->
+      <script id="adsABTestJS">
+      // create Date object for current location
+      var d = new Date();
+      // convert to msec
+      // add local time zone offset
+      // get UTC time in msec
+      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      // create new Date object for different timezone, EST/UTC-4
+      var now = new Date(utc + (3600000*-4));
+
+        start = new Date("2018-09-28"); var diff = now - start;
+        var oneDay = 1000 * 60 * 60 * 24; var day = Math.floor(diff / oneDay);
+        randomness = [1,0,1,1,1,0,0,1,0,1,1,0,0,1,1,0,0,0,1,1,1,0,1,1,0,0,0,0,0,
+          1,1,0,0,1,1,1,0,1,0,1,0,0,1,1,1,1,0,0,0,1,1,0,0,1,1,1,0,1,0,1,1,0,0,0,
+          0,0,1,1,0,1,0,0,1,1,0,1,1,1,1,1,0,1,0,0,1,0,1,1,1,1,0,1,1,1,1,1,1,0,1,
+          1,0,0,0,0,1,0,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,0,1,1,1,0,1,0,0,1,
+          0,1,1,0,1,1,0,0,0,0,1,0,1,0,1,0,0,1,1,0,0,0,0,0,0,1,1,1,1,1,0,1,0,0,0,
+          1,1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,1,1,1,0,0,0,1,0,0,1,0,1,1,1,1,1,1,0,0,
+          0,0,0,0,0,1,1,0,1,1,0,1,0,1,0,1,1,0,0,0,1,0,0,1,1,0,0,1,1,0,0,1,0,1,1,
+          0,1,1,0,1,0,0,1,0,0,1,1,0,1,0,1,0,0,0,0,0,1,0,1,1,1,0,0,0,1,0,0,1,1,1,
+          0,1,1,0,0,1,1,1,1,0,0,0,0,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,0,0,0,1,
+          0,0,0,1,0,1,1,1,1,0,0,1,1,0,1,1,1,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,0,0,1,
+          0,0,1,1,0,0,1,0,0,0,0,1,1];
+        if (randomness[day]) {
+          document.getElementById("ads").style.visibility = "visible";
+        }
+      </script>
+
       <!-- Selling out -->
       <div id="adsense">
+        <div id="ads"><a href="https://triplebyte.com/a/Lpa4wbK/d"><img alt="Banner ad for the tech recruiting company Triplebyte: 'Triplebyte is building a background-blind screening process for hiring software engineers'" width="500" height="256" src="/static/img/ads-triplebyte-banner.png"></a></div>
       </div>
 
       <header>
