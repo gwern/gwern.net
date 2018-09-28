@@ -452,4 +452,4 @@ td.sourceCode { padding-left: 5px; }
 .sourceCode span.er { color: red; font-weight: bold; }
 
 /* hide the ad in the ad A/B test by default */
-div#ads { display: none; }
+div#ads { display: block; text-align: center; display: none; }
