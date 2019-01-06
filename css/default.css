@@ -130,9 +130,15 @@ header h1 {
     vertical-align: middle;
 }
 /* uppercase page title, all section headers; see A/B tests */
-h1, h2, h3, h4, h5 { text-transform: uppercase;
-                     /* prevent overlapping, per Wei: */
-                     line-height: 130%; }
+/* uppercase page title, all section headers; see A/B tests */
+h1 { text-transform: uppercase;
+     /* prevent overlapping, per Wei: */
+     line-height: 130%; }
+/* make a hierarchy of emphasis for h2-5, to avoid all being the same (all-uppercased) */
+h2 { font-variant: small-caps; font-size: 120%; }
+h3 { text-transform: capitalize; }
+h4 { font-weight: 550; }
+h5 { font-size: 90%; }
 
 /* metadata customization: */
 div#description { font-size: 95%; }
@@ -180,15 +186,6 @@ div#markdownBody a:link::-moz-selection {
     background: #b4d5fe;}
 /* end Tufte CSS */
 
-h2 {
-    font-size: 120%;
-    text-transform: uppercase;
-}
-
-h3 {
-    font-size: 100%;
-    text-transform: uppercase;
-}
 
 div.column {
     width: 50%;
