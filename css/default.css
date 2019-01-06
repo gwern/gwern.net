@@ -117,7 +117,7 @@ html {
     /* no size set for the font; see A/B tests */
 
     /* see A/B tests */
-    font-family: Baskerville, "Libre Baskerville", serif;
+    font-family: Baskerville, "Libre Baskerville", serif; /* TODO: switch to a (Obormot-tool-minimized) Source Serif Pro https://wiki.obormot.net/Main/FontsDemo?font_one=Source+Serif+Pro&font_two=ITC+New+Baskerville&weight_one=400&weight_two=400&strg=29&s=35&tr_one=optimizeLegibility&tr_two=optimizeLegibility&advanced=on&salt_one=&salt_two=&OT1_one=&OT1_two=smcp&OT2_one=&OT2_two=&OT3_one=&OT3_two= https://en.wikipedia.org/wiki/Source_Serif_Pro which will have real small-caps for the sidebar & main title */
 }
 
 body {
@@ -125,19 +125,20 @@ body {
     max-width: 1600px;
 }
 
+/* uppercase top-lvel section headers; see A/B tests */
+h1 { text-transform: uppercase; line-height: 1.25; font-size: 1.375em; }
+/* put the main page title centered in the middle */
 header h1 {
     text-align: center;
     vertical-align: middle;
+    text-transform: initial;
+    font-variant: small-caps;
 }
-/* uppercase page title, all section headers; see A/B tests */
-/* uppercase page title, all section headers; see A/B tests */
-h1 { text-transform: uppercase;
-     /* prevent overlapping, per Wei: */
-     line-height: 130%; }
 /* make a hierarchy of emphasis for h2-5, to avoid all being the same (all-uppercased) */
-h2 { font-variant: small-caps; font-size: 120%; }
+h2 { text-transform: uppercase; font-size: 1.1em; }
+h3 { text-transform: capitalize; font-size: 1.1em; }
 h3 { text-transform: capitalize; }
-h4 { font-weight: 550; }
+h4 { font-weight: 550; } /* make somewhat less bold */
 h5 { font-size: 90%; }
 
 /* metadata customization: */
