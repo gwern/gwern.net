@@ -125,6 +125,7 @@ body {
     max-width: 1600px;
 }
 
+/* HEADER H1-6 HIERARCHY */
 /* uppercase top-lvel section headers; see A/B tests */
 h1 { text-transform: uppercase; line-height: 1.25; font-size: 1.375em; }
 /* put the main page title centered in the middle */
@@ -133,6 +134,7 @@ header h1 {
     vertical-align: middle;
     text-transform: initial;
     font-variant: small-caps;
+    font-size: 2.5em;
 }
 /* make a hierarchy of emphasis for h2-5, to avoid all being the same (all-uppercased) */
 h2 { text-transform: uppercase; font-size: 1.1em; }
@@ -140,6 +142,84 @@ h3 { text-transform: capitalize; font-size: 1.1em; }
 h3 { text-transform: capitalize; }
 h4 { font-weight: 550; } /* make somewhat less bold */
 h5 { font-size: 90%; }
+
+/* COLLAPSIBLE HEADER SECTIONS */
+/* Use: annotate collapsible section headers with '{.collapse}' (in the Markdown); for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page), one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'. (Pandoc Markdown does support a native div syntax, but it's long and ugly.) */
+section {
+    position: relative;
+}
+section > .collapse {
+    padding-right: 1em;
+}
+section:not(:target) .disclosure-button:not(:checked) ~ *:not(.collapseSummary) {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+.disclosure-button {
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    height: 2em;
+    width: 2em;
+    overflow: visible;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.disclosure-button:not(:checked) {
+    height: calc(100% - 1.75em);
+    width: 100%;
+}
+.disclosure-button::before {
+    content: "\25C0";
+    font-size: 1.5em;
+    line-height: 1;
+    position: absolute;
+    right: -4px;
+    top: -2px;
+    width: 1em;
+    height: 1em;
+    color: #999;
+    padding: 4px;
+    font-family: Baskerville, libre baskerville, serif;
+}
+.disclosure-button:checked::before {
+    transform: rotate(-90deg);
+}
+.disclosure-button:not(:checked)::after {
+    content: "Click to expand";
+    width: 100%;
+    position: absolute;
+    top: calc(100% + 2px);
+    text-align: center;
+    visibility: hidden;
+    color: #777;
+    text-shadow: none;
+}
+.disclosure-button:not(:checked):hover::after {
+    visibility: visible;
+}
+.disclosure-button:not(:checked):hover {
+    border: 1px dotted #777;
+}
+.disclosure-button:focus {
+    outline: none;
+    text-shadow:
+        0 0 1px #f00,
+        0 0 3px #f00,
+        0 0 5px #f00;
+}
+/* force tables to collapse too */
+thead, tbody, tfoot, caption {
+    max-height: inherit;
+    display: block;
+    overflow: auto;
+}
+/* END COLLAPSIBLE HEADER SECTIONS */
 
 /* metadata customization: */
 div#description { font-size: 95%; }
@@ -186,7 +266,6 @@ div#markdownBody a:link::-moz-selection {
     text-shadow: 0.03em 0 #b4d5fe, -0.03em 0 #b4d5fe, 0 0.03em #b4d5fe, 0 -0.03em #b4d5fe, 0.06em 0 #b4d5fe, -0.06em 0 #b4d5fe, 0.09em 0 #b4d5fe, -0.09em 0 #b4d5fe, 0.12em 0 #b4d5fe, -0.12em 0 #b4d5fe, 0.15em 0 #b4d5fe, -0.15em 0 #b4d5fe;
     background: #b4d5fe;}
 /* end Tufte CSS */
-
 
 div.column {
     width: 50%;

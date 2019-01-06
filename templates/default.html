@@ -145,5 +145,12 @@
         }</script>
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
+
+    <!-- Collapsed sections: insert a toggle to expand them -->
+    <script>
+      document.querySelectorAll("section.collapse > h1").forEach(heading => {
+	      heading.insertAdjacentHTML("afterend", "<input type='checkbox' class='disclosure-button'>");
+      });
+    </script>
   </body>
 </html>
