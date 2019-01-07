@@ -145,13 +145,10 @@ h5 { font-size: 90%; }
 
 /* COLLAPSIBLE HEADER SECTIONS */
 /* Use: annotate collapsible section headers with '{.collapse}' (in the Markdown); for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page), one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'. (Pandoc Markdown does support a native div syntax, but it's long and ugly.) */
-section {
+.collapse {
     position: relative;
 }
-section > .collapse {
-    padding-right: 1em;
-}
-section:not(:target) .disclosure-button:not(:checked) ~ *:not(.collapseSummary) {
+.collapse:not(:target) .disclosure-button:not(:checked) ~ *:not(.collapseSummary) {
     max-height: 0;
     overflow: hidden;
     padding: 0;
@@ -248,7 +245,7 @@ article a { word-wrap: break-word; /* force the occasional inline URL or other l
    by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined.
    Unfortunately, we don't want to add underlines to the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
    I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead. */
-/* egin Tufte CSS */
+/* Begin Tufte CSS */
 div#markdownBody a:link, #tags a:link {
          text-decoration: none;
          background: -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(#333, #333);

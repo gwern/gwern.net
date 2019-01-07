@@ -148,7 +148,7 @@
 
     <!-- Collapsed sections: insert a toggle to expand them -->
     <script>
-      document.querySelectorAll("section.collapse > h1").forEach(heading => {
+      document.querySelectorAll(".collapse > *:first-child").forEach(heading => {
 	      heading.insertAdjacentHTML("afterend", "<input type='checkbox' class='disclosure-button'>");
       });
     </script>
