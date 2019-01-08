@@ -148,7 +148,10 @@ h5 { font-size: 90%; }
 .collapse {
     position: relative;
 }
-.collapse:not(:target) .disclosure-button:not(:checked) ~ *:not(.collapseSummary) {
+.collapse > *:first-child {
+    padding-right: 1em;
+}
+.collapse:not(:target) .disclosure-button:not(:checked)~*:not(.collapseSummary) {
     max-height: 0;
     overflow: hidden;
     padding: 0;
@@ -168,7 +171,7 @@ h5 { font-size: 90%; }
     border: 1px solid transparent;
 }
 .disclosure-button:not(:checked) {
-    height: calc(100% - 1.75em);
+    height: 100%;
     width: 100%;
 }
 .disclosure-button::before {
@@ -177,44 +180,52 @@ h5 { font-size: 90%; }
     line-height: 1;
     position: absolute;
     right: -4px;
-    top: -2px;
+    top: 0;
     width: 1em;
     height: 1em;
     color: #999;
     padding: 4px;
-    font-family: Baskerville, libre baskerville, serif;
+    font-family: Baskerville,libre baskerville,serif;
 }
 .disclosure-button:checked::before {
     transform: rotate(-90deg);
 }
 .disclosure-button:not(:checked)::after {
-    content: "Click to expand";
     width: 100%;
     position: absolute;
-    top: calc(100% + 2px);
     text-align: center;
-    visibility: hidden;
     color: #777;
     text-shadow: none;
+    pointer-events: none;
+}
+.disclosure-button:not(:checked)::after {
+    content: "…";
+    font-size: 3em;
+    line-height: 0;
+    top: calc(100% - 16px);
 }
 .disclosure-button:not(:checked):hover::after {
-    visibility: visible;
+    content: "Click to expand";
+    font-size: 1em;
+    top: calc(100% - 8px);
 }
 .disclosure-button:not(:checked):hover {
     border: 1px dotted #777;
 }
+.disclosure-button:not(:checked) ~ .collapseSummary > *:first-child {
+    margin-top: 0;
+}
+.disclosure-button:not(:checked) ~ .collapseSummary > *:last-child {
+    margin-bottom: 20px;
+}
 .disclosure-button:focus {
     outline: none;
-    text-shadow:
-        0 0 1px #f00,
-        0 0 3px #f00,
-        0 0 5px #f00;
+    text-shadow: 0 0 1px red, 0 0 3px red, 0 0 5px red;
 }
-/* force tables to collapse too */
-thead, tbody, tfoot, caption {
+thead,tbody,tfoot,caption {
     max-height: inherit;
     display: block;
-    overflow: auto;
+    overflow: auto
 }
 /* END COLLAPSIBLE HEADER SECTIONS */
 
