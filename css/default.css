@@ -422,7 +422,8 @@ code {
     padding-left: 4px;
     padding-right: 4px;
     /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
-    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-family: "Liberation Mono", Consolas, Courier, monospace;
+    font-size:0.9375em;
 }
 
 pre code {
@@ -453,7 +454,7 @@ div#TOC {
     border: 1px solid #cccccc;
     background-color: #f9f9f9;
     /* Baskerville isn't quite as clear at small font sizes like in the ToC */
-    font-family: "Lucida Sans Unicode", "Lucida Grande", "Trebuchet MS", Helvetica, sans-serif;
+    font-family: "Lucida Sans Unicode", Helvetica, "Trebuchet MS", sans-serif;
     padding: 0 0.5rem;
     /* Force a margin big enough that
        bulleted items won't overlap the
