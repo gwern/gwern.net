@@ -1,5 +1,105 @@
 @charset "UTF-8";
 
+/********************/
+/* SOURCE SERIF PRO */
+/********************/
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 200;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 200;
+        font-style: italic;
+        src: url('/static/font/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 300;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Light.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 300;
+        font-style: italic;
+        src: url('/static/font/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 400;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 400;
+        font-style: italic;
+        src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 600;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 600;
+        font-style: italic;
+        src: url('/static/font-BASIC-SemiboldItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 700;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 700;
+        font-style: italic;
+        src: url('/static/font/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 900;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Black.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
+@font-face {
+        font-family: "Source Serif Pro";
+        font-weight: 900;
+        font-style: italic;
+        src: url('/static/font/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+
 /* **************** */
 /* DESKTOP-ONLY CSS */
 /* **************** */
@@ -24,7 +124,10 @@
         border: none;
     }
 
-    div#logo { margin-left: -63px; }
+    div#logo { margin-left: -63px;
+               position: relative;
+               top: -0.75em;
+    }
 
     /* uses up too much horizontal whitespace by default: */
     blockquote { margin-left: 10px; }
@@ -50,6 +153,15 @@
         font-size: 105%;
         text-decoration: none;
     }
+    div#sidebar-links p {
+        letter-spacing: -0.5px;
+    }
+    div#sidebar-links ul {
+        padding-left: 20px;
+        text-transform: uppercase;
+        font-size: 0.75em;
+        line-height: 1.3;
+    }
 
     /* pull the RSS/EMAIL links together */
     div#sidebar-news ul {
@@ -64,14 +176,15 @@
         text-decoration: none;
     }
 
-
+    div#Patreon a {
+        text-decoration: none;
+    }
     /* Table of Contents: on mobile, we want it to be inline, but for desktop, we want it side by side with the content */
     div#TOC {
         float: left;
         width: auto;
         max-width: 20% }
-
-}
+} /* end desktop css */
 
 /* **************** */
 /* MOBILE-ONLY CSS */
@@ -117,7 +230,8 @@ html {
     /* no size set for the font; see A/B tests */
 
     /* see A/B tests */
-    font-family: Baskerville, "Libre Baskerville", serif; /* TODO: switch to a (Obormot-tool-minimized) Source Serif Pro https://wiki.obormot.net/Main/FontsDemo?font_one=Source+Serif+Pro&font_two=ITC+New+Baskerville&weight_one=400&weight_two=400&strg=29&s=35&tr_one=optimizeLegibility&tr_two=optimizeLegibility&advanced=on&salt_one=&salt_two=&OT1_one=&OT1_two=smcp&OT2_one=&OT2_two=&OT3_one=&OT3_two= https://en.wikipedia.org/wiki/Source_Serif_Pro which will have real small-caps for the sidebar & main title */
+    font-weight: 400;
+    font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
 }
 
 body {
@@ -135,12 +249,14 @@ header h1 {
     text-transform: initial;
     font-variant: small-caps;
     font-size: 2.5em;
+    font-weight: 600;
+    letter-spacing: -1px;
 }
+article section > h1 { overflow: visible; }
 /* make a hierarchy of emphasis for h2-5, to avoid all being the same (all-uppercased) */
 h2 { text-transform: uppercase; font-size: 1.1em; }
 h3 { text-transform: capitalize; font-size: 1.1em; }
 h3 { text-transform: capitalize; }
-h4 { font-weight: 550; } /* make somewhat less bold */
 h5 { font-size: 90%; }
 
 /* COLLAPSIBLE HEADER SECTIONS */
@@ -185,7 +301,6 @@ h5 { font-size: 90%; }
     height: 1em;
     color: #999;
     padding: 4px;
-    font-family: Baskerville,libre baskerville,serif;
 }
 .disclosure-button:checked::before {
     transform: rotate(-90deg);
