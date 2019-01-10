@@ -337,11 +337,6 @@ h5 { font-size: 90%; }
     outline: none;
     text-shadow: 0 0 1px red, 0 0 3px red, 0 0 5px red;
 }
-thead,tbody,tfoot,caption {
-    max-height: inherit;
-    display: block;
-    overflow: auto
-}
 /* END COLLAPSIBLE HEADER SECTIONS */
 
 /* metadata customization: */

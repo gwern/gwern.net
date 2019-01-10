@@ -151,6 +151,9 @@
       document.querySelectorAll(".collapse > *:first-child").forEach(heading => {
           heading.insertAdjacentHTML("afterend", "<input type='checkbox' class='disclosure-button'>");
       });
+      document.querySelectorAll("table").forEach(table => {
+          table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
+      });
     </script>
   </body>
 </html>
