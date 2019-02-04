@@ -594,10 +594,17 @@ blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote b
     background-color: rgb(245, 245, 245); }
 blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote {
     background-color: rgb(235, 235, 235); }
+/* add a gray border and a margin */
+blockquote {
+    border: 0.5px solid #ccc;
+    font-size: 0.9375em;
+    padding: 14px 1em 12px 1em;
+    margin: 1em;
+}
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan & IRC for help */
 /* WARNING: apparently browsers will display correctly quotation marks when <q> elements are used, but will not preserve them in copy-paste‽ */
-q {background-color:rgba(0,0,0,0.02);}
+q {background-color:rgba(0,0,0,0.015);}
 blockquote > p:only-of-type q:only-of-type {background-color:inherit}
 
 /* left-hanging quotes:
