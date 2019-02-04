@@ -356,6 +356,8 @@ div#disqus_thread { padding-left: 0.5em; }
 a {
     color: #303C3C; /* off-black */
 }
+/* make body links react when moused-over so users get feedback on a link being clickable */
+article>:not(#TOC) a:hover { color: #999; }
 article a { word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
             text-decoration: none;
 }
