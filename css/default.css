@@ -406,9 +406,22 @@ figure img {
     height: auto;
 }
 
-ul {
-    /* see A/B tests */
-    list-style-type: square;
+/* switch unordered lists to an elegant little star as the bulletpoint marker (replacing square): U+27E3 / ⟣ / e2 9f a3 / "WHITE CONCAVE-SIDED DIAMOND WITH RIGHT­WARDS TICK"
+   I also experimented with ⤙/⤚/𒀸; the cuneiform wasn't too bad. TODO: Fraktur periods might work: https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Dearest+Friend or https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Albrecht+Durer+Gothic perhaps alternate? */
+#markdownBody ul {
+    list-style-type: none;
+    margin-left: 0.9em;
+    padding-left: 0;
+    position: relative;
+}
+#markdownBody ul li {
+    margin-left: 1.3em;
+}
+#markdownBody ul li::before {
+    content: "\27E3";
+    position: absolute;
+    left: 0;
+    color: #888;
 }
 
 code {
@@ -615,9 +628,6 @@ blockquote, p {
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub, sup { line-height: 0.3em; }
-/* TODO: experimental hack around the problems caused by superscript line-height change inside blockquotes' first line: */
-/* blockquote { overflow: visible !important; } */
-blockquote { padding-top: 6px; }
 
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/
    If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
