@@ -176,6 +176,7 @@
         text-decoration: none;
     }
 
+    #sidebar #Patreon { font-size: 0.875em; }
     div#Patreon a {
         text-decoration: none;
     }
@@ -320,7 +321,7 @@ div#markdownBody section > *:first-child a:hover {
     color: #485555;
 }
 div#markdownBody section > *:first-child a::after {
-    content: "\\00B6";
+    content: "\00B6";
     font-size: 0.75em;
     position: relative;
     top: -3px;
@@ -431,9 +432,12 @@ div#footer {
 div#disqus_thread { padding-left: 0.5em; }
 
 /* link colors and underlining */
-a {
-    color: #303C3C; /* off-black */
+a { color: #303C3C; /* off-black */ }
+div#markdownBody a {
+    word-break: break-word;
+    hyphens: auto;
 }
+
 /* make body links react when moused-over so users get feedback on a link being clickable */
 article>:not(#TOC) a:hover { color: #999; }
 article a { word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
@@ -505,13 +509,13 @@ figure img {
     font-size: 0.875em;
     top: 0.125em;
 }
-#markdownBody ul li::before,
-#markdownBody ul ul ul li::before {
-    content: "\2727";
+#markdownBody ul > li::before,
+#markdownBody ul ul ul > li::before {
+    content: "\2727"
 }
-#markdownBody ul ul li::before,
-#markdownBody ul ul ul ul li::before {
-    content: "\2726";
+#markdownBody ul ul > li::before,
+#markdownBody ul ul ul ul > li::before {
+    content: "\2726"
 }
 
 code {
@@ -723,6 +727,51 @@ blockquote, p {
   hanging-punctuation: first;
 }
 
+/* Special CSS for for epigraph blockquotes (denoted by an 'epigraph' div class); loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
+.epigraph {
+    margin: 1.5em 2em;
+    overflow: visible;
+}
+.epigraph blockquote {
+    padding: 0;
+    border: none;
+    background-color: inherit;
+    margin: 0;
+    font-size: inherit;
+    position: relative;
+    z-index: 1;
+}
+.epigraph q {
+    font-style: italic;
+    background-color: inherit;
+}
+.epigraph q em { font-style: normal; } /* reverse back to normal when italics are used inside an epigraph */
+.epigraph p:last-child {
+    margin: 0.5em 0 0 0;
+    text-align: right;
+    font-size: 0.875em; }
+.epigraph p:nth-last-of-type(n+2) > q::before,
+.epigraph p:nth-last-of-type(n+2) > q::after {
+    display: none;
+}
+.epigraph blockquote::before, .epigraph blockquote::after {
+    display: block;
+    position: absolute;
+    font-size: 2.5em;
+    opacity: 0.5;
+}
+.epigraph blockquote::before {
+    content: "\201C";
+    left: -34px;
+    top: -0.5em;
+}
+.epigraph blockquote::after {
+    content: "\201D";
+    right: -35px;
+    bottom: -0.75em;
+}
+
+
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub, sup { line-height: 0.3em; }
 
@@ -763,3 +812,4 @@ td.sourceCode { padding-left: 5px; }
 
 /* hide the ad in the ad A/B test by default */
 div#ads { display: block; text-align: center; display: none; }
+div#ads a img {  max-width: 100%; }
