@@ -1,7 +1,7 @@
 var Footnotes = {
     footnotetimeout: false,
     setup: function() {
-        var footnotelinks = jQuery('.footnoteRef')
+        var footnotelinks = jQuery('.footnote-ref')
 
         footnotelinks.unbind('mouseover',Footnotes.footnoteover);
         footnotelinks.unbind('mouseout',Footnotes.footnoteoout);
