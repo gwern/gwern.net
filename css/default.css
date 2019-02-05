@@ -272,6 +272,31 @@ h2 { text-transform: uppercase; font-size: 1.1em; }
 h3 { text-transform: capitalize; font-size: 1.1em; }
 h3 { text-transform: capitalize; }
 h5 { font-size: 90%; }
+/* support self-links in headers by disabling the link coloring and adding a pilcrow on hover */
+div#markdownBody section > *:first-child a {
+    display: block;
+    background: none;
+}
+div#markdownBody section > *:first-child a:hover {
+    color: #485555;
+}
+div#markdownBody section > *:first-child a::after {
+    content: "\\00B6";
+    font-size: 0.75em;
+    position: relative;
+    top: -3px;
+    left: 5px;
+    visibility: hidden;
+}
+div#markdownBody section > *:first-child a:hover::after,
+div#markdownBody section > *:first-child a:active::after,
+div#markdownBody section > *:first-child a:focus::after,
+div#markdownBody section:target > *:first-child a::after {
+    visibility: visible;
+}
+div#markdownBody section:target > *:first-child a::after {
+    opacity: 0.5;
+}
 
 /* COLLAPSIBLE HEADER SECTIONS */
 /* Use: annotate collapsible section headers with '{.collapse}' (in the Markdown); for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page), one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'. (Pandoc Markdown does support a native div syntax, but it's long and ugly.) */
