@@ -564,12 +564,12 @@ div#TOC {
     background-color: #f9f9f9;
     /* Baskerville isn't quite as clear at small font sizes like in the ToC */
     font-family: "Lucida Sans Unicode", Helvetica, "Trebuchet MS", sans-serif;
-    padding: 0 0.5rem;
     /* Force a margin big enough that
        bulleted items won't overlap the
        blue-shaded area of the ToC */
     margin-right: 20px;
-    line-height: 105%;
+    line-height: 1.25;
+    padding: 10px 10px 2px 14px;
 }
 div#TOC li {
     font-weight: bold;
@@ -592,7 +592,8 @@ div#TOC ul {
     margin-bottom: 0px;
     margin-top: 4px;
     padding-left: 1.4em;
-    text-indent: -1.4em;
+    text-indent: 0;
+    padding: 0;
 }
 div#TOC ul ul {
     list-style-type: none;
