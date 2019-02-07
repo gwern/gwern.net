@@ -2,8 +2,8 @@
 
 /********************/
 /* SOURCE SERIF PRO */
+/* workhorse font for the body; Baskerville-like */
 /********************/
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 200;
@@ -11,7 +11,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 200;
@@ -19,7 +18,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 300;
@@ -27,7 +25,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-Light.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 300;
@@ -35,7 +32,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 400;
@@ -43,7 +39,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 400;
@@ -51,7 +46,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 600;
@@ -59,7 +53,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 600;
@@ -67,7 +60,6 @@
         src: url('/static/font-BASIC-SemiboldItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 700;
@@ -75,7 +67,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 700;
@@ -83,7 +74,6 @@
         src: url('/static/font/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 900;
@@ -91,13 +81,101 @@
         src: url('/static/font/SourceSerifPro-BASIC-Black.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
-
 @font-face {
         font-family: "Source Serif Pro";
         font-weight: 900;
         font-style: italic;
         src: url('/static/font/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+/*******************/
+/* SOURCE SANS PRO */
+/* used in Table of Contents as a better sans font; primarily intended for Mac/iOS users */
+/*******************/
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 200;
+    font-style: normal;
+    src: url('/static/font/SourceSansPro-BASIC-ExtraLight.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 200;
+    font-style: italic;
+    src: url('/static/font/SourceSansPro-BASIC-ExtraLightItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 300;
+    font-style: normal;
+    src: url('/static/font/SourceSansPro-BASIC-Light.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 300;
+    font-style: italic;
+    src: url('/static/font/SourceSansPro-BASIC-LightItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 400;
+    font-style: normal;
+    src: url('/static/font/SourceSansPro-BASIC-Regular.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 400;
+    font-style: italic;
+    src: url('/static/font/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 600;
+    font-style: normal;
+    src: url('/static/font/SourceSansPro-BASIC-Semibold.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 600;
+    font-style: italic;
+    src: url('/static/font/SourceSansPro-BASIC-SemiboldItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 700;
+    font-style: normal;
+    src: url('/static/font/SourceSansPro-BASIC-Bold.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 700;
+    font-style: italic;
+    src: url('/static/font/SourceSansPro-BASIC-BoldItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 900;
+    font-style: normal;
+    src: url('/static/font/SourceSansPro-BASIC-Black.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+}
+@font-face {
+    font-family: 'Source Sans Pro';
+    font-weight: 900;
+    font-style: italic;
+    src: url('/static/font/SourceSansPro-BASIC-BlackItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
 }
 
 /* **************** */
@@ -848,7 +926,6 @@ blockquote, p {
     right: -35px;
     bottom: -0.75em;
 }
-
 
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub, sup { line-height: 0.3em; }
