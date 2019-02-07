@@ -474,7 +474,7 @@ div.column {
     float: left;
 }
 
-/* 'figure' because we don't want to force these settings on normal inline images, like those used in _Radiance_ */
+/* 'figure' instead of 'img' because we don't want to force these settings on all normal inline images, like those used in _Radiance_ */
 figure img {
     display: block;
     margin: 5px auto 5px auto;
@@ -488,6 +488,19 @@ figure img {
        No apparent way to avoid this without a lot of CSS/JS hacks */
     max-width: 100%;
     height: auto;
+}
+#markdownBody figure {
+    margin: 1.5em 2em;
+}
+/* add a border around images; important for photographs or screenshots, not so important for statistics diagrams/graphs */
+#markdownBody figure img {
+    border: 1px solid #888;
+    box-sizing: border-box;
+}
+#markdownBody figcaption {
+    text-align: center;
+    font-size: 0.9375em;
+    font-weight: bold;
 }
 
 /* switch unordered lists to elegant little full/empty stars as the bulletpoint marker (replacing square)  */
@@ -665,6 +678,14 @@ div#TOC::before {
     opacity: 0.4;
 }
 
+/* Tables */
+/* double line around tables */
+#markdownBody .tableWrapper {
+    margin: 1.5em auto;
+}
+#markdownBody table {
+    margin: 0;
+}
 /*
  * Tables.less
  * Tables for, you guessed it, tabular data
