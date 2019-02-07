@@ -654,7 +654,7 @@ div#TOC {
     border: 1px solid #cccccc;
     background-color: #f9f9f9;
     /* Baskerville isn't quite as clear at small font sizes like in the ToC */
-    font-family: "Lucida Sans Unicode", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     /* Force a margin big enough that
        bulleted items won't overlap the
        blue-shaded area of the ToC */
@@ -697,8 +697,38 @@ div#TOC a {
 div#TOC a:hover {
     text-shadow: 1px 1px 3px #777;
 }
-
 div#TOC + ul { max-width: 170px; }
+@media only screen and (max-width: 1280px) {
+    div#TOC {
+        font-size: 0.95rem;
+    }
+}
+@media only screen and (max-width: 1200px) {
+    div#TOC {
+        font-size: 0.90rem;
+    }
+}
+@media only screen and (max-width: 1120px) {
+    div#TOC {
+        font-size: 0.85rem;
+    }
+}
+@media only screen and (max-width: 1040px) {
+    div#TOC {
+        font-size: 0.80rem;
+    }
+}
+#TOC ul li {
+    padding-left: 1.125em;
+    position: relative;
+}
+#TOC ul li::before {
+    opacity: .4;
+    position: absolute;
+    left: -3em;
+    width: 4em;
+    text-align: right
+}
 
 /*********************************/
 /* WIKIPEDIA-STYLE TOC NUMBERING */
