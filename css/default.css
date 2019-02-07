@@ -609,6 +609,62 @@ div#TOC a:hover {
 
 div#TOC + ul { max-width: 170px; }
 
+/*********************************/
+/* WIKIPEDIA-STYLE TOC NUMBERING */
+/*********************************/
+#TOC > ul {
+    counter-reset: htoc_1;
+}
+#TOC > ul > li::before {
+    counter-increment: htoc_1;
+    content: counter(htoc_1) "\2006  ";
+}
+#TOC > ul ul {
+    counter-reset: htoc_2;
+}
+#TOC > ul ul li::before {
+    counter-increment: htoc_2;
+    content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
+}
+#TOC > ul ul ul {
+    counter-reset: htoc_3;
+}
+#TOC > ul ul ul li::before {
+    counter-increment: htoc_3;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
+}
+#TOC > ul ul ul ul {
+    counter-reset: htoc_4;
+}
+#TOC > ul ul ul ul li::before {
+    counter-increment: htoc_4;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
+}
+#TOC > ul ul ul ul ul {
+    counter-reset: htoc_5;
+}
+#TOC > ul ul ul ul ul li::before {
+    counter-increment: htoc_5;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
+}
+#TOC > ul ul ul ul ul ul {
+    counter-reset: htoc_6;
+}
+#TOC > ul ul ul ul ul ul li::before {
+    counter-increment: htoc_6;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
+}
+#TOC ul li::before {
+    font-weight: normal;
+    opacity: 0.4;
+}
+div#TOC::before {
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    display: block;
+    opacity: 0.4;
+}
+
 /*
  * Tables.less
  * Tables for, you guessed it, tabular data
