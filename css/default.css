@@ -189,8 +189,12 @@
     #markdownBody {
         margin-left: 150px;
         padding-left: 0;
-        line-height: 1.4; /* see A/B tests */
     }
+
+    /* replaces A/B-test-set average value; the wider the screen, the more line-height is necessary, and no one size suits all, so set 3 brackets of increasing height. */
+    @media screen and                         (max-width: 1000px) { #markdownBody { line-height: 1.4; }; #markdownBody blockquote { line-height: 1.35; } }
+    @media screen and (min-width: 1001px) and (max-width: 1200px) { #markdownBody { line-height: 1.5; }; #markdownBody blockquote { line-height: 1.45; } }
+    @media screen and (min-width: 1201px)                         { #markdownBody { line-height: 1.55; }; #markdownBody blockquote { line-height: 1.50; } }
 
     header {
         margin-bottom: 15px;
@@ -368,10 +372,11 @@ html {
 
 body {
     margin: 0 10px 0 0;
-    max-width: 1600px;
+    max-width: 1400px;
 }
 
 /* HEADER H1-6 HIERARCHY */
+h1, h2, h3, h4, h5, h6 { margin: 1.5em 0 0.75em 0; }
 /* uppercase top-lvel section headers; see A/B tests */
 h1 { text-transform: uppercase; line-height: 1.25; font-size: 1.375em; }
 /* put the main page title centered in the middle */
@@ -388,7 +393,7 @@ article section > h1 { overflow: visible; }
 /* make a hierarchy of emphasis for h2-5, to avoid all being the same (all-uppercased) */
 h2 { text-transform: uppercase; font-size: 1.1em; }
 h3 { text-transform: capitalize; font-size: 1.1em; }
-h3 { text-transform: capitalize; }
+h4 { text-transform: capitalize; }
 h5 { font-size: 90%; }
 /* support self-links in headers by disabling the link coloring and adding a pilcrow on hover */
 div#markdownBody section > *:first-child a {
