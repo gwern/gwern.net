@@ -678,7 +678,12 @@ p + p {
 
 p.hang { text-indent: -0.44em }
 
+/* number formatting */
 .num { font-size: 85%; }
+/* cute 'old-style' numerals, look a little nicer inline in text: https://practicaltypography.com/alternate-figures.html#oldstyle-figures */
+#markdownBody p { font-variant-numeric: oldstyle-nums; }
+/* 'tabular figures' to make numbers line up in tables: https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum */
+#markdownBody .table { font-variant-numeric: tabular-nums; }
 
 /* More elegant-looking rules */
 hr {
