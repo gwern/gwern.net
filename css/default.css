@@ -641,7 +641,7 @@ video {
     border: 1px solid #888;
 }
 
-/* switch unordered lists to elegant little full/empty stars as the bulletpoint marker (replacing square)  */
+/* switch unordered lists to elegant little full/empty star-diamonds as the bulletpoint marker/list-item (replacing square)  */
 #markdownBody ul {
     list-style-type: none;
     margin-left: .9em;
@@ -652,7 +652,6 @@ video {
     position: relative;
     margin-left: 1.3em;
 }
-
 #markdownBody ul li::before {
     position: absolute;
     left: -1.375em;

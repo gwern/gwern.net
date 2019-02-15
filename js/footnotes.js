@@ -1,3 +1,4 @@
+/* popup/floating footnotes to avoid readers needing to scroll to the end of the page to see any footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ for details; also requires jQuery */
 var Footnotes = {
     footnotetimeout: false,
     setup: function() {
@@ -25,7 +26,11 @@ var Footnotes = {
         var el = document.getElementById(id);
         div.html('<div>'+jQuery(el).html()+'</div>');
 
-        jQuery(document.body).append(div);
+        // WARNING: Original generic code for any HTML page
+        // // jQuery(document.body).append(div);
+        // This however means that any CSS for sub-body elements, like #markdownBody, does *not* get applied to the floating footnotes when they float, even though they *do* get applied to the footnotes in their original static form as endnotes at the end of the page! This is because they get inserted at the end of 'body', and 'body' is above #markdownBody. This leads to visual inconsistencies. To avoid this, we change the footnotes to get inserted at the end of #markdownBody instead, thereby inheriting all the CSS we've written to customize #markdownBody's appearance. This assumes we have a #markdownBody, of course, which we probably don't on non-Hakyll/Pandoc-generated websites.
+        // Specialized to Hakyll-generated websites:
+        $("#markdownBody").append(div)
 
         var left = position.left;
         if(left + 420  > jQuery(window).width() + jQuery(window).scrollLeft())
