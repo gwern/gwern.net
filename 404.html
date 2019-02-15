@@ -13,8 +13,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico" />
   </head>
   <body>
-    <blockquote><p>Every shrub, every tree &mdash; <br />if one has not forgotten <br />where they were planted &mdash; <br />has beneath the fallen snow <br />some vestige of its form.</p></blockquote>
-    <script type="text/javascript"> var GOOG_FIXURL_LANG = 'en'; var GOOG_FIXURL_SITE = 'https://www.gwern.net';</script> <script type="text/javascript" src="http://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
+    <blockquote><p>Every shrub, every tree&mdash;<br />if one has not forgotten<br />where they were planted&mdash;<br />has beneath the fallen snow<br />some vestige of its form.</p></blockquote>
+    <script type="text/javascript"> var GOOG_FIXURL_LANG = 'en'; var GOOG_FIXURL_SITE = 'https://www.gwern.net';</script> <script type="text/javascript" src="https://linkhelp.clients.google.com/tbproxy/lh/wm/fixurl.js"></script>
     <p>Popular pages:</p>
     <ul>
       <li><a href="https://www.gwern.net/Modafinil">https://www.gwern.net/Modafinil</a></li>
@@ -33,7 +33,7 @@
       <li><a href="https://www.gwern.net/Prediction-markets">https://www.gwern.net/Prediction-markets</a></li>
       <li><a href="https://www.gwern.net/Nicotine">https://www.gwern.net/Nicotine</a></li>
       <li><a href="https://www.gwern.net/Tanks" title="AI folklore tells a story about a neural network trained to detect tanks which instead learned to detect time of day; investigating, this probably never happened.">The Neural Net Tank Urban Legend</a></li>
-      <li><a href="https://www.gwern.net/Danbooru2017" title="Danbooru2017: A Large-Scale Crowdsourced and Tagged Anime Illustration Dataset; 2.9m+ images annotated with 77.5m+ tags; it can be useful for machine learning purposes such as image recognition and generation">Danbooru2017 Large-Scale Anime Image Dataset</a></li>
+      <li><a href="https://www.gwern.net/Danbooru2018" title="Danbooru2018: A Large-Scale Crowdsourced and Tagged Anime Illustration Dataset; 3.3m+ images annotated with 90m+ tags; it can be useful for machine learning purposes such as image recognition and generation">Danbooru2018 Large-Scale Anime Image Dataset</a></li>
       <li><a href="https://www.gwern.net/Tool-AI" title="AIs limited to purely computational inferential tasks (Tool AIs) supporting humans will be less intelligent, efficient, and economically valuable than more autonomous reinforcement-learning AIs (Agent AIs) who learn to take actions over computation/data/training/architecture/hyperparameters/external-resource use.">Why Tool AIs Want to Be Agent AIs</a></li>
       <li><a href="https://www.gwern.net/About">https://www.gwern.net/About</a></li>
       <li><a href="https://www.gwern.net/Melatonin">https://www.gwern.net/Melatonin</a></li>
@@ -122,16 +122,12 @@
       <li><a href="https://www.gwern.net/Arias-past-present-and-future">https://www.gwern.net/Aria's-past,-present,-and-future</a></li>
     </ul>
     <!-- Async load Google Analytics  -->
-    <script id="googleAnalytics" type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-18912926-1']);
-      _gaq.push(['_trackPageview']);
-      _gaq.push(['_trackEvent', 'Error', '404', 'page: ' + document.location.pathname + document.location.search + ' ref: ' + document.referrer ]);
-      (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
+    <script id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" async></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-18912926-1');
     </script>
   </body>
 </html>
