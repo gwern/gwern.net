@@ -1198,3 +1198,244 @@ code span.wa { color: #bf0303; } /* Warning */
 /* hide the ad in the ad A/B test by default */
 div#ads { display: block; text-align: center; display: none; }
 div#ads a img {  max-width: 100%; }
+
+/****************************************************************TEMPORARY*************************************************************************/
+/* http://share.obormot.net/misc/gwern/image-focus.css http://share.obormot.net/misc/gwern/image-focus.js */
+/* Clickable/zoomable images */
+/***************/
+/* IMAGE FOCUS */
+/***************/
+
+/*=-------------------=*/
+/*= Scroll prevention =*/
+/*=-------------------=*/
+
+html.no-scroll {
+    overflow-y: scroll;
+    position: fixed;
+    max-width: calc(100% - 10px);
+}
+
+/*=--------------=*/
+/*= Hover styles =*/
+/*=--------------=*/
+
+#markdownBody img:hover {
+    filter: drop-shadow(0 0 3px #777);
+    cursor: zoom-in;
+}
+#markdownBody img:active {
+    transform: scale(0.975);
+}
+
+/*=---------=*/
+/*= Overlay =*/
+/*=---------=*/
+
+#image-focus-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: none;
+    cursor: zoom-out;
+}
+#image-focus-overlay::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    opacity: 0.5;
+    z-index: -1;
+}
+#image-focus-overlay.engaged {
+    display: initial;
+}
+
+#image-focus-overlay img {
+    margin: auto;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
+/*=---------=*/
+/*= Caption =*/
+/*=---------=*/
+
+#image-focus-overlay .caption {
+    --GW-image-focus-caption-side-spacing: 4.5em;
+
+    position: absolute;
+    bottom: 0.75em;
+    background-color: rgba(0,0,0,0.7);
+    left: var(--GW-image-focus-caption-side-spacing);
+    right: var(--GW-image-focus-caption-side-spacing);
+    margin: auto;
+    max-width: calc(100% - 2 * var(--GW-image-focus-caption-side-spacing));
+    text-align: center;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    border-radius: 8px;
+    z-index: 1;
+    transition:
+        bottom 0.15s ease;
+}
+@supports (width: -moz-fit-content) {
+    #image-focus-overlay .caption {
+        width: -moz-fit-content;
+    }
+}
+@supports (width: fit-content) {
+    #image-focus-overlay .caption {
+        width: fit-content;
+    }
+}
+#image-focus-overlay .caption.hidden {
+    bottom: -50%;
+    transition:
+        bottom 0.5s ease-in;
+}
+
+#image-focus-overlay .caption p {
+    margin: 1em 1.25em;
+    color: #fff;
+}
+
+#image-focus-overlay .caption:not(:empty)::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100vw;
+    height: calc(100% + 1.5em);
+    z-index: -1;
+    top: -0.75em;
+    left: calc(-50vw + 50%);
+
+}
+
+/*=--------------=*/
+/*= Help overlay =*/
+/*=--------------=*/
+
+#image-focus-overlay .help-overlay {
+    position: absolute;
+    display: flex;
+    flex-flow: column;
+    z-index: 2;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-size: 1.25rem;
+    padding: 1em;
+    border-radius: 10px;
+    bottom: 1em;
+    right: 1em;
+    overflow: hidden;
+    white-space: nowrap;
+    color: transparent;
+    visibility: hidden;
+    transition:
+        visibility 1s ease,
+        color 1s ease,
+        background-color 1s ease,
+        bottom 0.3s ease;
+}
+#image-focus-overlay .help-overlay:hover {
+    max-width: 24em;
+    max-height: 14em;
+    background-color: rgba(0,0,0,0.85);
+    color: #fff;
+    visibility: visible;
+    transition:
+        visibility 0.2s ease 0.3s,
+        color 0.2s ease 0.3s,
+        background-color 0.2s ease 0.3s;
+}
+
+#image-focus-overlay .help-overlay::after {
+    content: "?";
+    font-weight: bold;
+    font-size: 2rem;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    color: #000;
+    filter: drop-shadow(0 0 6px #fff);
+    visibility: visible;
+    opacity: 0.85;
+    transition:
+        visibility 1s ease;
+}
+#image-focus-overlay .help-overlay:hover::after {
+    visibility: hidden;
+    transition:
+        visibility 0.2s ease 0.3s;
+}
+
+#image-focus-overlay .help-overlay p {
+    margin: 0;
+    text-indent: -2em;
+    padding-left: 2em;
+    max-width: 100%;
+    overflow: hidden;
+}
+#image-focus-overlay .help-overlay p + p {
+    margin: 0.75em 0 0 0;
+}
+#image-focus-overlay .help-overlay.hidden {
+    bottom: -2em;
+}
+
+/*=-----------------=*/
+/*= Background blur =*/
+/*=-----------------=*/
+
+.blurred {
+    filter: blur(3px);
+}
+
+/*=---------=*/
+/*= Tooltip =*/
+/*=---------=*/
+
+.image-wrapper {
+    position: relative;
+    display: block;
+}
+.image-wrapper::after {
+    content: "Click to enlarge";
+    display: block;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    bottom: 10px;
+    padding: 6px 15px 7px 15px;
+    font-size: 1rem;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    background-color: rgba(0,0,0,0.75);
+    color: #fff;
+    border-radius: 5px;
+    opacity: 0.0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+@supports (width: -moz-fit-content) {
+    .image-wrapper::after {
+        width: -moz-fit-content;
+    }
+}
+@supports (width: fit-content) {
+    .image-wrapper::after {
+        width: fit-content;
+    }
+}
+.image-wrapper:hover::after {
+    opacity: 1.0;
+}
