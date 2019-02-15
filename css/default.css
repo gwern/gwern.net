@@ -409,7 +409,7 @@ body {
     max-width: 1400px;
 }
 
-/* try to avoid scrollbars on paragraphs */
+/* try to avoid scrollbars on paragraphs: prevents long unbroken un-hyphenatable lines from causing H-scrolling */
 #markdownBody { overflow-wrap: break-word; }
 /* use justified text (words get broken/hyphenated as necessary to avoid a 'ragged margin'), undoing the default of 'flush left, ragged' right (see https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left ) */
 @supports (-webkit-hyphens: auto) or (-ms-hyphens: auto) or (hyphens: auto) {
@@ -644,6 +644,7 @@ video {
 /* switch unordered lists to elegant little full/empty star-diamonds as the bulletpoint marker/list-item (replacing square)  */
 #markdownBody ul {
     list-style-type: none;
+    margin: 1.25em 0 1.5em 1em;
     margin-left: .9em;
     padding-left: 0;
 }
@@ -667,6 +668,25 @@ video {
 #markdownBody ul ul ul ul > li::before {
     content: "\2726"
 }
+/********************************************************/
+/* Fixes many spacing abnormalities in and around lists */
+/********************************************************/
+#markdownBody ul > li {
+    margin: 0.5em 0 0 1.5em;
+}
+#markdownBody ul > li:first-of-type {
+    margin: 0 0 0 1.5em;
+}
+#markdownBody ol {
+    padding: 0 0 0 2.5em;
+    margin: 1.25em 0 1.5em 0;
+}
+#markdownBody ol > li {
+    margin: 0.5em 0 0 0;
+}
+#markdownBody ol > li:first-of-type {
+    margin: 0;
+}
 
 p.caption {
     display: none;
@@ -687,7 +707,7 @@ p.hang { text-indent: -0.44em }
 /* cute 'old-style' numerals, look a little nicer inline in text: https://practicaltypography.com/alternate-figures.html#oldstyle-figures */
 #markdownBody p { font-variant-numeric: oldstyle-nums; }
 /* 'tabular figures' to make numbers line up in tables: https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum */
-#markdownBody .table { font-variant-numeric: tabular-nums; }
+#markdownBody table { font-variant-numeric: tabular-nums; }
 
 /* More elegant-looking rules */
 hr {
@@ -837,10 +857,16 @@ div#TOC::before {
 /* Tables */
 /* double line around tables */
 #markdownBody .tableWrapper {
-    margin: 1.5em auto;
+    margin: 2em 0 2.125em 0;
 }
 #markdownBody table {
     margin: 0;
+    border-collapse: collapse;
+    border-radius: 0;
+    border: 1px solid #bbb;
+}
+#markdownBody th.header {
+    border-right: none;
 }
 /*
  * Tables.less
@@ -933,6 +959,16 @@ tbody tr:hover td {
 li { margin-top: 0.5em; }
 li p { margin: 0.2em; }
 
+
+/******************************************************************/
+/* More consistent and pleasing spacing in and around blockquotes */
+/******************************************************************/
+blockquote {
+    margin: 1.5em 1em;
+}
+blockquote > *:last-child {
+    margin-bottom: 0;
+}
 /* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
    Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
 
@@ -963,7 +999,7 @@ blockquote, p {
 
 /* Special CSS for for epigraph blockquotes (denoted by an 'epigraph' div class); loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 .epigraph {
-    margin: 1.5em 2em;
+    margin: 2.125em 2em 2em 2em;
     overflow: visible;
 }
 .epigraph blockquote {
@@ -980,7 +1016,7 @@ blockquote, p {
     background-color: inherit;
 }
 .epigraph q em { font-style: normal; } /* reverse back to normal when italics are used inside an epigraph */
-.epigraph p:last-child {
+#markdownBody .epigraph p:last-child {
     margin: 0.5em 0 0 0;
     text-align: right;
     font-size: 0.875em; }
@@ -1021,8 +1057,55 @@ sub, sup { line-height: 0.3em; }
     border: 1px solid #CDBBB5;
 }
 
-/* Deal with multiple footnotes one after another; per Charuru */
+/* Deal with multiple footnote superscripts one after another; per Charuru */
 sup + sup { margin-left: 2px; }
+
+/**********************************************************/
+/* More stylish footnotes + layout bug fixes in footnotes */
+/**********************************************************/
+
+div#markdownBody a.footnote-back {
+    background: none;
+    margin: 0 0 0 10px;
+    position: relative;
+    top: 3px;
+    font-weight: bold;
+    line-height: 1;
+    border: 1px dotted #000;
+    display: inline-block;
+    padding: 5px 5px 0 6px;
+}
+div#markdownBody a.footnote-back:hover {
+    border-color: #999;
+}
+
+div#markdownBody .footnotes li {
+    position: relative;
+}
+div#markdownBody .footnotes > ol > li + li {
+    margin: 1em 0 0 0;
+}
+div#markdownBody blockquote + a.footnote-back,
+div#markdownBody pre + a.footnote-back,
+div#markdownBody .sourceCode + a.footnote-back {
+    position: absolute;
+    right: 0.5em;
+    top: unset;
+    bottom: -0.5em;
+    background-color: #fff;
+}
+
+#footnotediv {
+    z-index: 1;
+    font-size: 0.9em;
+    box-shadow: 0 0 0 2px #fff;
+}
+#footnotediv div {
+    border: 3px double #aaa;
+}
+ #markdownBody #footnotediv a.footnote-back {
+    display: none;
+}
 
 /***************/
 /* CODE BLOCKS */
