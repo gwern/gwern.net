@@ -409,7 +409,17 @@ body {
     max-width: 1400px;
 }
 
+/* try to avoid scrollbars on paragraphs */
 #markdownBody { overflow-wrap: break-word; }
+/* use justified text (words get broken/hyphenated as necessary to avoid a 'ragged margin'), undoing the default of 'flush left, ragged' right (see https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left ) */
+@supports (-webkit-hyphens: auto) or (-ms-hyphens: auto) or (hyphens: auto) {
+    #markdownBody p {
+        text-align: justify;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto;
+    }
+}
 
 /* HEADER H1-6 HIERARCHY */
 h1, h2, h3, h4, h5, h6 { margin: 1.5em 0 0.75em 0; }
