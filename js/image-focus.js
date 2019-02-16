@@ -1,3 +1,7 @@
+/* Image-focus.js http://share.obormot.net/misc/gwern/image-focus.js */
+/* Written by Obormot, 15 February 2019 */
+/* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
+
 window.GW = { };
 GW.temp = { };
 
@@ -28,8 +32,8 @@ GW.disableLogging = (permanently = false) => {
 /* MISC HELPERS */
 /****************/
 
-/*	Given an HTML string, creates an element from that HTML, adds it to 
-	#ui-elements-container (creating the latter if it does not exist), and 
+/*	Given an HTML string, creates an element from that HTML, adds it to
+	#ui-elements-container (creating the latter if it does not exist), and
 	returns the created element.
 	*/
 function addUIElement(element_html) {
@@ -118,14 +122,14 @@ function imageFocusSetup() {
 	});
 
 	// Create the image focus overlay.
-	let imageFocusOverlay = addUIElement("<div id='image-focus-overlay'>" + 
+	let imageFocusOverlay = addUIElement("<div id='image-focus-overlay'>" +
 	`<div class='help-overlay'>
 		 <p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
 		 <p><strong>Space bar:</strong> Reset image size & position</p>
 		 <p><strong>Scroll</strong> to zoom in/out</p>
 		 <p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
 	</div>
-	<div class='caption'></div>` + 
+	<div class='caption'></div>` +
 	"</div>");
 	imageFocusOverlay.dropShadowFilterForImages = " drop-shadow(10px 10px 10px #000) drop-shadow(0 0 10px #444)";
 
@@ -195,20 +199,20 @@ function focusImage(imageToFocus) {
 		let imageSizeExceedsWindowBounds = (image.getBoundingClientRect().width > window.innerWidth || image.getBoundingClientRect().height > window.innerHeight);
 		let zoomingFromCursor = imageSizeExceedsWindowBounds &&
 								(imageBoundingBox.left <= event.clientX &&
-								 event.clientX <= imageBoundingBox.right && 
+								 event.clientX <= imageBoundingBox.right &&
 								 imageBoundingBox.top <= event.clientY &&
 								 event.clientY <= imageBoundingBox.bottom);
-		// Otherwise, if we're zooming OUT, zoom from window center; if we're 
+		// Otherwise, if we're zooming OUT, zoom from window center; if we're
 		// zooming IN, zoom from image center.
 		let zoomingFromWindowCenter = event.deltaY > 0;
 		if (zoomingFromCursor)
-			zoomOrigin = { x: event.clientX, 
+			zoomOrigin = { x: event.clientX,
 						   y: event.clientY };
 		else if (zoomingFromWindowCenter)
-			zoomOrigin = { x: window.innerWidth / 2, 
+			zoomOrigin = { x: window.innerWidth / 2,
 						   y: window.innerHeight / 2 };
 		else
-			zoomOrigin = { x: imageBoundingBox.x + imageBoundingBox.width / 2, 
+			zoomOrigin = { x: imageBoundingBox.x + imageBoundingBox.width / 2,
 						   y: imageBoundingBox.y + imageBoundingBox.height / 2 };
 
 		// Calculate offset from zoom origin.
@@ -226,7 +230,7 @@ function focusImage(imageToFocus) {
 		image.style.top = parseInt(getComputedStyle(image).top) - deltaFromCenteredZoom.y + "px";
 		// Gradually re-center image, if it's smaller than the window.
 		if (!imageSizeExceedsWindowBounds) {
-			let imageCenter = { x: image.getBoundingClientRect().x + image.getBoundingClientRect().width / 2, 
+			let imageCenter = { x: image.getBoundingClientRect().x + image.getBoundingClientRect().width / 2,
 								y: image.getBoundingClientRect().y + image.getBoundingClientRect().height / 2 }
 			let windowCenter = { x: window.innerWidth / 2,
 								 y: window.innerHeight / 2 }
@@ -263,7 +267,7 @@ function focusImage(imageToFocus) {
 			return;
 
 		let focusedImage = document.querySelector("#image-focus-overlay img");
-		if (event.target == focusedImage && 
+		if (event.target == focusedImage &&
 			(focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth)) {
 			// If the mouseup event was the end of a pan of an overside image,
 			// put the filter back; do not unfocus.
@@ -308,13 +312,13 @@ function focusImage(imageToFocus) {
 	document.addEventListener("keyup", GW.imageFocus.keyUp = (event) => {
 		GWLog("GW.imageFocus.keyUp");
 		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc" ];
-		if (!allowedKeys.contains(event.key) || 
+		if (!allowedKeys.contains(event.key) ||
 			getComputedStyle(document.querySelector("#image-focus-overlay")).display == "none") return;
 
 		event.preventDefault();
 
 		switch (event.key) {
-		case "Escape": 
+		case "Escape":
 		case "Esc":
 			unfocusImageOverlay();
 			break;
@@ -351,7 +355,7 @@ function resetFocusedImagePosition() {
 	GWLog("resetFocusedImagePosition");
 	let focusedImage = document.querySelector("#image-focus-overlay img");
 	if (!focusedImage) return;
-	
+
 	let sourceImage = document.querySelector(GW.imageFocus.focusedImageSelector);
 
 	// Make sure that initially, the image fits into the viewport.
@@ -374,7 +378,7 @@ function resetFocusedImagePosition() {
 function setFocusedImageCursor() {
 	let focusedImage = document.querySelector("#image-focus-overlay img");
 	if (!focusedImage) return;
-	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) ? 
+	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) ?
 						 		'move' : '';
 }
 
@@ -420,11 +424,11 @@ function setImageFocusCaption() {
 	// Determine caption.
 	let currentlyFocusedImage = document.querySelector(GW.imageFocus.focusedImageSelector);
 	var captionHTML;
-	if ((T.enclosingFigure = currentlyFocusedImage.closest("figure")) && 
+	if ((T.enclosingFigure = currentlyFocusedImage.closest("figure")) &&
 		(T.figcaption = T.enclosingFigure.querySelector("figcaption"))) {
-		captionHTML = (T.figcaption.querySelector("p")) ? 
-					  T.figcaption.innerHTML : 
-					  "<p>" + T.figcaption.innerHTML + "</p>"; 
+		captionHTML = (T.figcaption.querySelector("p")) ?
+					  T.figcaption.innerHTML :
+					  "<p>" + T.figcaption.innerHTML + "</p>";
 	} else if (currentlyFocusedImage.title != "") {
 		captionHTML = `<p>${currentlyFocusedImage.title}</p>`;
 	}

@@ -1195,17 +1195,14 @@ code span.wa { color: #bf0303; } /* Warning */
 div#ads { display: block; text-align: center; display: none; }
 div#ads a img {  max-width: 100%; }
 
-/****************************************************************TEMPORARY*************************************************************************/
-/* http://share.obormot.net/misc/gwern/image-focus.css http://share.obormot.net/misc/gwern/image-focus.js */
-/* Clickable/zoomable images */
 /***************/
 /* IMAGE FOCUS */
 /***************/
+/* 'click to zoom' images. Source: http://share.obormot.net/misc/gwern/image-focus.css ; supporting CSS for the JS: http://share.obormot.net/misc/gwern/image-focus.js */
 
 /*=-------------------=*/
 /*= Scroll prevention =*/
 /*=-------------------=*/
-
 html.no-scroll {
     overflow-y: scroll;
     position: fixed;
@@ -1215,7 +1212,6 @@ html.no-scroll {
 /*=--------------=*/
 /*= Hover styles =*/
 /*=--------------=*/
-
 #markdownBody img:hover {
     filter: drop-shadow(0 0 3px #777);
     cursor: zoom-in;
@@ -1227,7 +1223,6 @@ html.no-scroll {
 /*=---------=*/
 /*= Overlay =*/
 /*=---------=*/
-
 #image-focus-overlay {
     position: fixed;
     top: 0;
@@ -1265,7 +1260,6 @@ html.no-scroll {
 /*=---------=*/
 /*= Caption =*/
 /*=---------=*/
-
 #image-focus-overlay .caption {
     position: absolute;
     bottom: 0.75em;
@@ -1317,7 +1311,6 @@ html.no-scroll {
 /*=--------------=*/
 /*= Help overlay =*/
 /*=--------------=*/
-
 #image-focus-overlay .help-overlay {
     position: absolute;
     display: flex;
@@ -1389,7 +1382,6 @@ html.no-scroll {
 /*=-----------------=*/
 /*= Background blur =*/
 /*=-----------------=*/
-
 .blurred {
     filter: blur(3px);
 }
@@ -1397,7 +1389,6 @@ html.no-scroll {
 /*=---------=*/
 /*= Tooltip =*/
 /*=---------=*/
-
 .image-wrapper {
     position: relative;
     display: block;
