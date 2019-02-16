@@ -335,9 +335,9 @@ body.siteIndex { max-width: 1500px; }
 body.siteIndex article section { display: inline-block; vertical-align: top; }
 /* align the section headers nicely with the lists of pages for desktop; otherwise keep default mobile spacing of lists */
 @media screen and (min-width: 650px) {
-    body.siteIndex li { margin-top: 0em; }
-    body.siteIndex li p { margin: 0em; }
-    body.siteIndex h1 { padding-left: 0.6em; }
+    body.siteIndex #markdownBody li { margin-top: 0em; }
+    body.siteIndex #markdownBody li p { margin: 0em; }
+    body.siteIndex #markdownBody h1 { padding-left: 0.6em; }
 }
 
 /* General sidebar tweaks */
@@ -562,10 +562,6 @@ div#disqus_thread { padding-left: 0.5em; }
 
 /* link colors and underlining */
 a { color: #303C3C; /* off-black */ }
-div#markdownBody a {
-    word-break: break-word;
-    hyphens: auto;
-}
 
 /* make body links react when moused-over so users get feedback on a link being clickable */
 article>:not(#TOC) a:hover { color: #999; }
@@ -1271,15 +1267,13 @@ html.no-scroll {
 /*=---------=*/
 
 #image-focus-overlay .caption {
-    --GW-image-focus-caption-side-spacing: 4.5em;
-
     position: absolute;
     bottom: 0.75em;
     background-color: rgba(0,0,0,0.7);
-    left: var(--GW-image-focus-caption-side-spacing);
-    right: var(--GW-image-focus-caption-side-spacing);
+    left: 4.5em;
+    right: 4.5em;
     margin: auto;
-    max-width: calc(100% - 2 * var(--GW-image-focus-caption-side-spacing));
+    max-width: calc(100% - 9em);
     text-align: center;
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     border-radius: 8px;

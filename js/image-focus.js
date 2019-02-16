@@ -24,44 +24,6 @@ GW.disableLogging = (permanently = false) => {
 		GW.loggingEnabled = false;
 };
 
-/********************/
-/* QUERYING THE DOM */
-/********************/
-
-function queryAll(selector, context) {
-    context = context || document;
-    // Redirect simple selectors to the more performant function
-    if (/^(#?[\w-]+|\.[\w-.]+)$/.test(selector)) {
-        switch (selector.charAt(0)) {
-            case '#':
-                // Handle ID-based selectors
-                let element = document.getElementById(selector.substr(1));
-                return element ? [ element ] : [ ];
-            case '.':
-                // Handle class-based selectors
-                // Query by multiple classes by converting the selector 
-                // string into single spaced class names
-                var classes = selector.substr(1).replace(/\./g, ' ');
-                return [].slice.call(context.getElementsByClassName(classes));
-            default:
-                // Handle tag-based selectors
-                return [].slice.call(context.getElementsByTagName(selector));
-        }
-    }
-    // Default to `querySelectorAll`
-    return [].slice.call(context.querySelectorAll(selector));
-}
-function query(selector, context) {
-	let all = queryAll(selector, context);
-	return (all.length > 0) ? all[0] : null;
-}
-Object.prototype.queryAll = function (selector) {
-	return queryAll(selector, this);
-}
-Object.prototype.query = function (selector) {
-	return query(selector, this);
-}
-
 /****************/
 /* MISC HELPERS */
 /****************/
@@ -71,11 +33,11 @@ Object.prototype.query = function (selector) {
 	returns the created element.
 	*/
 function addUIElement(element_html) {
-	var ui_elements_container = query("#ui-elements-container");
+	var ui_elements_container = document.querySelector("#ui-elements-container");
 	if (!ui_elements_container) {
 		ui_elements_container = document.createElement("div");
 		ui_elements_container.id = "ui-elements-container";
-		query("body").appendChild(ui_elements_container);
+		document.querySelector("body").appendChild(ui_elements_container);
 	}
 
 	ui_elements_container.insertAdjacentHTML("beforeend", element_html);
@@ -85,7 +47,7 @@ function addUIElement(element_html) {
 /*	Toggles whether the page is scrollable.
 	*/
 function togglePageScrolling(enable) {
-	let html = query("html");
+	let html = document.querySelector("html");
 	if (!enable) {
 		GW.scrollPositionBeforeScrollingDisabled = window.scrollY;
 		html.classList.toggle("no-scroll", true);
@@ -141,13 +103,13 @@ function imageFocusSetup() {
 		}
 	};
 	// Add the listener to all content images.
-	queryAll(GW.imageFocus.contentImagesSelector).forEach(image => {
+	document.querySelectorAll(GW.imageFocus.contentImagesSelector).forEach(image => {
 		image.addEventListener("click", GW.imageClickedToFocus);
 	});
 
 	// Wrap all images in figures in a span.
-	queryAll("figure").forEach(figure => {
-		let image = figure.query("img");
+	document.querySelectorAll("figure").forEach(figure => {
+		let image = figure.querySelector("img");
 		if (!image) return;
 		let wrapper = document.createElement("span");
 		wrapper.classList.add("image-wrapper");
@@ -181,7 +143,7 @@ function focusImage(imageToFocus) {
 
 	// Create the focused version of the image.
 	imageToFocus.classList.toggle("focused", true);
-	let imageFocusOverlay = query("#image-focus-overlay");
+	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
 	let clonedImage = imageToFocus.cloneNode(true);
 	clonedImage.style = "";
 	clonedImage.removeAttribute("width");
@@ -196,7 +158,7 @@ function focusImage(imageToFocus) {
 	resetFocusedImagePosition();
 
 	// Blur everything else.
-	queryAll(GW.imageFocus.pageContentSelector).forEach(element => {
+	document.querySelectorAll(GW.imageFocus.pageContentSelector).forEach(element => {
 		element.classList.toggle("blurred", true);
 	});
 
@@ -205,7 +167,7 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.scrollEvent");
 		event.preventDefault();
 
-		let image = query("#image-focus-overlay img");
+		let image = document.querySelector("#image-focus-overlay img");
 
 		// Remove the filter.
 		image.savedFilter = image.style.filter;
@@ -300,7 +262,7 @@ function focusImage(imageToFocus) {
 			event.target.closest(".help-overlay"))
 			return;
 
-		let focusedImage = query("#image-focus-overlay img");
+		let focusedImage = document.querySelector("#image-focus-overlay img");
 		if (event.target == focusedImage && 
 			(focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth)) {
 			// If the mouseup event was the end of a pan of an overside image,
@@ -315,7 +277,7 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.mouseDown");
 		event.preventDefault();
 
-		let focusedImage = query("#image-focus-overlay img");
+		let focusedImage = document.querySelector("#image-focus-overlay img");
 		if (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) {
 			let mouseCoordX = event.clientX;
 			let mouseCoordY = event.clientY;
@@ -347,7 +309,7 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.keyUp");
 		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc" ];
 		if (!allowedKeys.contains(event.key) || 
-			getComputedStyle(query("#image-focus-overlay")).display == "none") return;
+			getComputedStyle(document.querySelector("#image-focus-overlay")).display == "none") return;
 
 		event.preventDefault();
 
@@ -387,10 +349,10 @@ function focusImage(imageToFocus) {
 
 function resetFocusedImagePosition() {
 	GWLog("resetFocusedImagePosition");
-	let focusedImage = query("#image-focus-overlay img");
+	let focusedImage = document.querySelector("#image-focus-overlay img");
 	if (!focusedImage) return;
 	
-	let sourceImage = query(GW.imageFocus.focusedImageSelector);
+	let sourceImage = document.querySelector(GW.imageFocus.focusedImageSelector);
 
 	// Make sure that initially, the image fits into the viewport.
 	let constrainedWidth = Math.min(sourceImage.naturalWidth, window.innerWidth * GW.imageFocus.shrinkRatio);
@@ -410,7 +372,7 @@ function resetFocusedImagePosition() {
 	setFocusedImageCursor();
 }
 function setFocusedImageCursor() {
-	let focusedImage = query("#image-focus-overlay img");
+	let focusedImage = document.querySelector("#image-focus-overlay img");
 	if (!focusedImage) return;
 	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) ? 
 						 		'move' : '';
@@ -431,17 +393,17 @@ function unfocusImageOverlay() {
 	window.removeEventListener("mouseup", GW.imageFocus.mouseUp);
 
 	// Remove focused image and hide overlay.
-	let imageFocusOverlay = query("#image-focus-overlay");
+	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
 	imageFocusOverlay.classList.toggle("engaged", false);
-	imageFocusOverlay.query("img").remove();
+	imageFocusOverlay.querySelector("img").remove();
 
 	// Un-blur content/etc.
-	queryAll(GW.imageFocus.pageContentSelector).forEach(element => {
+	document.querySelectorAll(GW.imageFocus.pageContentSelector).forEach(element => {
 		element.classList.toggle("blurred", false);
 	});
 
 	// Unset "focused" class of focused image.
-	query(GW.imageFocus.focusedImageSelector).classList.toggle("focused", false);
+	document.querySelector(GW.imageFocus.focusedImageSelector).classList.toggle("focused", false);
 
 	// Re-enable page scrolling.
 	togglePageScrolling(true);
@@ -452,15 +414,15 @@ function setImageFocusCaption() {
 	var T = { }; // Temporary storage.
 
 	// Clear existing caption, if any.
-	let captionContainer = query("#image-focus-overlay .caption");
+	let captionContainer = document.querySelector("#image-focus-overlay .caption");
 	Array.from(captionContainer.children).forEach(child => { child.remove(); });
 
 	// Determine caption.
-	let currentlyFocusedImage = query(GW.imageFocus.focusedImageSelector);
+	let currentlyFocusedImage = document.querySelector(GW.imageFocus.focusedImageSelector);
 	var captionHTML;
 	if ((T.enclosingFigure = currentlyFocusedImage.closest("figure")) && 
-		(T.figcaption = T.enclosingFigure.query("figcaption"))) {
-		captionHTML = (T.figcaption.query("p")) ? 
+		(T.figcaption = T.enclosingFigure.querySelector("figcaption"))) {
+		captionHTML = (T.figcaption.querySelector("p")) ? 
 					  T.figcaption.innerHTML : 
 					  "<p>" + T.figcaption.innerHTML + "</p>"; 
 	} else if (currentlyFocusedImage.title != "") {
@@ -472,16 +434,16 @@ function setImageFocusCaption() {
 
 function hideImageFocusUI() {
 	GWLog("hideImageFocusUI");
-	let imageFocusOverlay = query("#image-focus-overlay");
-	imageFocusOverlay.queryAll(".help-overlay, .caption").forEach(element => {
+	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
+	imageFocusOverlay.querySelectorAll(".help-overlay, .caption").forEach(element => {
 		element.classList.toggle("hidden", true);
 	});
 }
 
 function unhideImageFocusUI() {
 	GWLog("unhideImageFocusUI");
-	let imageFocusOverlay = query("#image-focus-overlay");
-	imageFocusOverlay.queryAll(".help-overlay, .caption").forEach(element => {
+	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
+	imageFocusOverlay.querySelectorAll(".help-overlay, .caption").forEach(element => {
 		element.classList.toggle("hidden", false);
 	});
 }
