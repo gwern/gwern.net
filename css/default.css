@@ -241,6 +241,9 @@ body {
     display: block;
     margin: -0.75em 0 calc(20px + 0.75em) 0;
 }
+#sidebar #logo a:hover {
+    background-color: transparent;
+}
 
 /*=---------------------=*/
 /*= Other sidebar stuff =*/
@@ -290,6 +293,9 @@ body {
         text-transform: uppercase;
         font-size: 0.75em;
         line-height: 0.8;
+    }
+    #sidebar-links li a {
+        padding: 0.25em 0;
     }
 
     #sidebar #Patreon {
@@ -514,26 +520,17 @@ header h1 {
     /* replaces A/B-test-set average value; the wider the screen, the more line-height is necessary, and no one size suits all, so set 3 brackets of increasing height. */
     @media only screen and (max-width: 1000px) {
         #markdownBody {
-            line-height: 1.4;
-        }
-        #markdownBody blockquote {
-            line-height: 1.35;
+            line-height: 1.45;
         }
     }
     @media only screen and (min-width: 1001px) and (max-width: 1200px) {
         #markdownBody {
             line-height: 1.5;
         }
-        #markdownBody blockquote {
-            line-height: 1.45;
-        }
     }
     @media only screen and (min-width: 1201px) {
         #markdownBody {
             line-height: 1.55;
-        }
-        #markdownBody blockquote {
-            line-height: 1.50;
         }
     }
 }
@@ -916,6 +913,15 @@ article > :not(#TOC) a:link *::-moz-selection {
     list-style-type: lower-alpha;
 }
 
+/*=------------------=*/
+/*= Weird edge cases =*/
+/*=------------------=*/
+
+li > ul + p,
+li > ol + p {
+    margin-top: 1em;
+}
+
 /**********/
 /* IMAGES */
 /**********/
@@ -944,6 +950,199 @@ video {
     margin: 0 auto 0.5em auto;
     display: block;
     border: 1px solid #888;
+}
+
+/***************/
+/* BLOCKQUOTES */
+/***************/
+
+blockquote {
+    margin: 1.5em 1.5em 1.75em 1.5em;
+    border: 0.5px solid #ccc;
+    font-size: 0.95em;
+    padding: 0.8rem 1rem;
+}
+blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+/*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
+
+    See A/B tests: this highlighting is better than no highlighting.
+    */
+blockquote,
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
+    z-index: -2;
+    background-color: rgb(245, 245, 245);
+}
+blockquote blockquote,
+blockquote blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+    background-color: rgb(230, 230, 230);
+}
+
+/*  Inline quotes within blockquotes.
+    */
+blockquote > p:only-of-type q:only-of-type {
+    background-color: inherit;
+}
+
+/*****************/
+/* INLINE QUOTES */
+/*****************/
+
+q {
+    background-color: rgba(0, 0, 0, 0.015);
+}
+q::before,
+q::after {
+    content: none;
+}
+
+/*************/
+/* EPIGRAPHS */
+/*************/
+/* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
+
+.epigraph {
+    margin: 2.125em 2em 2em 2em;
+    overflow: visible;
+}
+.epigraph blockquote {
+    padding: 0;
+    border: none;
+    background-color: inherit;
+    margin: 0;
+    font-size: inherit;
+    position: relative;
+    z-index: 1;
+}
+.epigraph q {
+    font-style: italic;
+    background-color: inherit;
+}
+.epigraph q em {
+    font-style: normal;
+} /* reverse back to normal when italics are used inside an epigraph */
+#markdownBody .epigraph p:last-child {
+    margin: 0.5em 0 0 0;
+    text-align: right;
+    font-size: 0.875em;
+}
+.epigraph p:nth-last-of-type(n+2) > q::before,
+.epigraph p:nth-last-of-type(n+2) > q::after {
+    display: none;
+}
+.epigraph blockquote::before,
+.epigraph blockquote::after {
+    display: block;
+    position: absolute;
+    font-size: 2.5em;
+    opacity: 0.5;
+}
+.epigraph blockquote::before {
+    content: "\201C";
+    left: -34px;
+    top: -0.5em;
+}
+.epigraph blockquote::after {
+    content: "\201D";
+    right: -35px;
+    bottom: -0.75em;
+}
+
+/*************/
+/* FOOTNOTES */
+/*************/
+
+/* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
+sub,
+sup {
+    line-height: 0.3em;
+}
+sup {
+    vertical-align: baseline;
+}
+a.footnote-ref {
+    vertical-align: super;
+    line-height: 0.3em;
+    position: relative;
+    padding: 0 1px;
+}
+
+sup + sup,
+a.footnote-ref + a.footnote-ref {
+    margin-left: 1px;
+}
+
+/*=----------=*/
+/*= Endnotes =*/
+/*=----------=*/
+
+#markdownBody .footnotes > ol > li + li {
+    margin: 1em 0 0 0;
+}
+
+/*=------------------------=*/
+/*= Back-to-citation links =*/
+/*=------------------------=*/
+
+#markdownBody .footnotes a.footnote-back {
+    background: none;
+    margin: 0 0 0 10px;
+    position: relative;
+    top: 3px;
+    font-weight: bold;
+    line-height: 1;
+    border: 1px dotted #000;
+    display: inline-block;
+    padding: 5px 5px 0 6px;
+}
+#markdownBody .footnotes a.footnote-back:hover {
+    border-color: #999;
+}
+
+#markdownBody .footnotes li {
+    position: relative;
+}
+#markdownBody .footnotes blockquote + a.footnote-back,
+#markdownBody .footnotes pre + a.footnote-back,
+#markdownBody .footnotes .sourceCode + a.footnote-back {
+    position: absolute;
+    right: 0.5em;
+    top: unset;
+    bottom: -0.5em;
+    background-color: #fff;
+}
+
+/*=--------------------------=*/
+/*= Floating footnote popups =*/
+/*=--------------------------=*/
+
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/
+   If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
+
+   Note: setting `opacity: 1;` in this CSS doesn't seem to set the footnote appearance to fully opaque,
+   so I've edited the opacity calls in `footnotes.js` to force it */
+#footnotediv {
+    z-index: 1;
+    font-size: 0.9em;
+    box-shadow: 0 0 0 2px #fff;
+}
+#footnotediv div {
+    background-color: #fff;
+    padding: 12px;
+    max-width: 800px;
+    border: 3px double #aaa;
+    line-height: 1.45;
+}
+#footnotediv a.footnote-back {
+    display: none;
+}
+
+#footnotediv blockquote {
+    margin: 1.5em 0.5em;
 }
 
 /**********/
@@ -1099,182 +1298,6 @@ hr {
     border-bottom: 1px solid #aaa;
 }
 
-/* rejigger whitespace inside lists per quicksilver of #haskell */
-li {
-    margin-top: 0.5em;
-}
-li p {
-    margin: 0.2em;
-}
-
-/***************/
-/* BLOCKQUOTES */
-/***************/
-
-blockquote {
-    margin: 1.5em 1em;
-}
-blockquote > :last-child {
-    margin-bottom: 0;
-}
-/* 'alternating'/zebra-stripe coloring of quotes.
-
-   See A/B tests: this highlighting is better than no highlighting */
-blockquote,
-blockquote blockquote blockquote,
-blockquote blockquote blockquote blockquote blockquote {
-    z-index: -2;
-    background-color: rgb(245, 245, 245);
-}
-blockquote blockquote,
-blockquote blockquote blockquote blockquote,
-blockquote blockquote blockquote blockquote blockquote blockquote {
-    background-color: rgb(235, 235, 235);
-}
-/* add a gray border and a margin */
-blockquote {
-    border: 0.5px solid #ccc;
-    font-size: 0.9375em;
-    padding: 14px 1em 12px 1em;
-    margin: 1em;
-}
-
-/* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan & IRC for help */
-q {
-    background-color: rgba(0, 0, 0, 0.015);
-}
-/* WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting, quote marks are not by default included in browser copy-paste, possibly annoying users. You need the following CSS & a line of JS to insert real quotes. */
-q::before,
-q::after {
-    content: none;
-}
-blockquote > p:only-of-type q:only-of-type {
-    background-color: inherit;
-}
-
-/*************/
-/* EPIGRAPHS */
-/*************/
-/* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
-
-.epigraph {
-    margin: 2.125em 2em 2em 2em;
-    overflow: visible;
-}
-.epigraph blockquote {
-    padding: 0;
-    border: none;
-    background-color: inherit;
-    margin: 0;
-    font-size: inherit;
-    position: relative;
-    z-index: 1;
-}
-.epigraph q {
-    font-style: italic;
-    background-color: inherit;
-}
-.epigraph q em {
-    font-style: normal;
-} /* reverse back to normal when italics are used inside an epigraph */
-#markdownBody .epigraph p:last-child {
-    margin: 0.5em 0 0 0;
-    text-align: right;
-    font-size: 0.875em;
-}
-.epigraph p:nth-last-of-type(n+2) > q::before,
-.epigraph p:nth-last-of-type(n+2) > q::after {
-    display: none;
-}
-.epigraph blockquote::before,
-.epigraph blockquote::after {
-    display: block;
-    position: absolute;
-    font-size: 2.5em;
-    opacity: 0.5;
-}
-.epigraph blockquote::before {
-    content: "\201C";
-    left: -34px;
-    top: -0.5em;
-}
-.epigraph blockquote::after {
-    content: "\201D";
-    right: -35px;
-    bottom: -0.75em;
-}
-
-/*************/
-/* FOOTNOTES */
-/*************/
-
-/* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
-sub,
-sup {
-    line-height: 0.3em;
-}
-
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/
-   If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
-
-   Note: setting `opacity: 1;` in this CSS doesn't seem to set the footnote appearance to fully opaque,
-   so I've edited the opacity calls in `footnotes.js` to force it */
-#footnotediv div {
-    background-color: #fff;
-    padding: 3px;
-    padding: 12px;
-    max-width: 800px;
-    border: 1px solid #CDBBB5;
-}
-
-/* Deal with multiple footnote superscripts one after another; per Charuru */
-sup + sup {
-    margin-left: 2px;
-}
-
-div#markdownBody a.footnote-back {
-    background: none;
-    margin: 0 0 0 10px;
-    position: relative;
-    top: 3px;
-    font-weight: bold;
-    line-height: 1;
-    border: 1px dotted #000;
-    display: inline-block;
-    padding: 5px 5px 0 6px;
-}
-div#markdownBody a.footnote-back:hover {
-    border-color: #999;
-}
-
-div#markdownBody .footnotes li {
-    position: relative;
-}
-div#markdownBody .footnotes > ol > li + li {
-    margin: 1em 0 0 0;
-}
-div#markdownBody blockquote + a.footnote-back,
-div#markdownBody pre + a.footnote-back,
-div#markdownBody .sourceCode + a.footnote-back {
-    position: absolute;
-    right: 0.5em;
-    top: unset;
-    bottom: -0.5em;
-    background-color: #fff;
-}
-
-#footnotediv {
-    z-index: 1;
-    font-size: 0.9em;
-    box-shadow: 0 0 0 2px #fff;
-}
-#footnotediv div {
-    border: 3px double #aaa;
-}
- #markdownBody #footnotediv a.footnote-back {
-    display: none;
-}
-
 /***************/
 /* CODE BLOCKS */
 /***************/
@@ -1418,10 +1441,13 @@ div#ads a img {
     max-width: 100%;
 }
 
+/****************************************************************TEMPORARY*************************************************************************/
+/* http://share.obormot.net/misc/gwern/image-focus.css http://share.obormot.net/misc/gwern/image-focus.js */
+/* Clickable/zoomable images */
 /***************/
 /* IMAGE FOCUS */
 /***************/
-/* 'click to zoom' images. Source: http://share.obormot.net/misc/gwern/image-focus.css ; supporting CSS for the JS: http://share.obormot.net/misc/gwern/image-focus.js */
+
 /*=-------------------=*/
 /*= Scroll prevention =*/
 /*=-------------------=*/
@@ -1652,17 +1678,6 @@ html.no-scroll {
 .image-wrapper:hover::after {
     opacity: 1.0;
 }
-
-/********************/
-/* DESKTOP-ONLY CSS */
-/********************/
-
-@media only screen and (min-width: 650px) {
-    div#Patreon a {
-        text-decoration: none;
-    }
-}
-/* end desktop css */
 
 /*******************/
 /* MOBILE-ONLY CSS */
