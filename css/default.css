@@ -1117,8 +1117,7 @@ blockquote {
 blockquote > :last-child {
     margin-bottom: 0;
 }
-/* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
-   Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
+/* 'alternating'/zebra-stripe coloring of quotes.
 
    See A/B tests: this highlighting is better than no highlighting */
 blockquote,
