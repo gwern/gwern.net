@@ -991,13 +991,16 @@ blockquote > p:only-of-type q:only-of-type {
 /*****************/
 /* INLINE QUOTES */
 /*****************/
-
 q {
     background-color: rgba(0, 0, 0, 0.015);
 }
+/* WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting, quote marks are not by default included in browser copy-paste, possibly annoying users. You need the following CSS & a line of JS to insert real quotes. */
 q::before,
 q::after {
     content: none;
+}
+blockquote > p:only-of-type q:only-of-type {
+    background-color: inherit;
 }
 
 /*************/

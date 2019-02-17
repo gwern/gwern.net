@@ -157,7 +157,7 @@
           table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
       });
 
-      document.querySelectorAll("q").forEach(q => { q.innerHTML = `“${q.innerHTML}”`; });
+      document.querySelectorAll("q").forEach(q => { q.innerHTML = `“$${q.innerHTML}”`; });
     </script>
   </body>
 </html>
