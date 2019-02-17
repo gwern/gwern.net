@@ -229,7 +229,7 @@ body {
 /***********/
 
 #sidebar {
-    padding: 0 30px 0 3px;
+    padding: 0 40px 0 10px;
     width: 100px;
 }
 
@@ -237,9 +237,8 @@ body {
 /*= Logo =*/
 /*=------=*/
 
-#sidebar #logo img {
-    display: block;
-    margin: -0.75em 0 calc(20px + 0.75em) 0;
+#sidebar #logo {
+    margin: 1em 0 2em 0;
 }
 #sidebar #logo a:hover {
     background-color: transparent;
@@ -326,11 +325,16 @@ body {
 /* PAGE HEADER */
 /***************/
 
+header {
+    overflow: auto;
+}
 header h1 {
+    margin: 0.75em 0;
     text-align: center;
     text-transform: none;
     font-variant: small-caps;
     font-size: 2.5em;
+    line-height: 1.15;
     font-weight: 600;
     letter-spacing: -1px;
 }
@@ -347,9 +351,15 @@ header h1 {
 /* PAGE METADATA BLOCK */
 /***********************/
 
-/*  (i.e., #page-metadata) */
-/*  Nothing!
-    */
+#page-metadata hr {
+    display: none;
+}
+#page-metadata {
+    margin: 0 0 40px 0;
+    overflow: auto;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
 
 /*********************/
 /* TABLE OF CONTENTS */
@@ -359,7 +369,7 @@ header h1 {
     border: 1px solid #ccc;
     background-color: #f9f9f9;
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    margin: 0 20px 0 0;
+    margin: 0 40px 0 0;
     line-height: 1.25;
     padding: 10px 10px 2px 14px;
 }
@@ -552,6 +562,16 @@ header h1 {
     font-variant-numeric: oldstyle-nums;
 }
 
+#markdownBody > blockquote:first-child,
+.collapseSummary blockquote {
+    margin: 0 0 1.5em 0;
+    box-shadow:
+        0 0 0 5px #fff inset,
+        0 0 0 6px #ccc inset;
+    border-color: #bbb;
+    padding: 0.9rem 1.25rem 0.95rem 1.25rem;
+}
+
 /************/
 /* SECTIONS */
 /************/
@@ -577,11 +597,12 @@ header h1 {
 .disclosure-button {
     position: absolute;
     top: -2px;
-    right: -3px;
+    right: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
     height: 2em;
     width: 2em;
+    margin: 0;
     overflow: visible;
     cursor: pointer;
     border: 1px solid transparent;
@@ -595,12 +616,12 @@ header h1 {
     font-size: 1.5em;
     line-height: 1;
     position: absolute;
-    right: -4px;
+    right: 0;
     top: 0;
     width: 1em;
     height: 1em;
     color: #999;
-    padding: 4px;
+    padding: 4px 0 4px 8px;
 }
 .disclosure-button:checked::before {
     transform: rotate(-90deg);
@@ -753,21 +774,9 @@ article > :not(#TOC) a:hover {
 article > :not(#TOC) a:link {
     text-decoration: none;
     background:
-        -webkit-linear-gradient(#fffff8, #fffff8),
-        -webkit-linear-gradient(#fffff8, #fffff8),
-        -webkit-linear-gradient(#333,    #333);
-    background:
         linear-gradient(#fffff8, #fffff8),
         linear-gradient(#fffff8, #fffff8),
         linear-gradient(#333,    #333);
-    -webkit-background-size:
-        0.05em 1px,
-        0.05em 1px,
-           1px 1px;
-    -moz-background-size:
-        0.05em 1px,
-        0.05em 1px,
-           1px 1px;
     background-size:
         0.05em 1px,
         0.05em 1px,
@@ -841,7 +850,7 @@ article > :not(#TOC) a:link *::-moz-selection {
 }
 #markdownBody li > ul,
 #markdownBody li > ol {
-    margin: 0.5em 0 0 2.5em;
+    margin: 0.5em 0 0.5em 2.5em;
 }
 
 #markdownBody ul > li,
@@ -927,7 +936,7 @@ li > ol + p {
 /**********/
 
 figure {
-    margin: 1.5em 2em;
+    margin: 1.75em 2em 1.5em 2em;
 }
 figure img {
     display: block;
@@ -962,8 +971,12 @@ blockquote {
     font-size: 0.95em;
     padding: 0.8rem 1rem;
 }
-blockquote > :last-child {
-    margin-bottom: 0;
+
+@media only screen and (max-width: 649px) {
+    /* even less horizontal is available on mobile! */
+    blockquote {
+        margin: 1.25em 0 1.5em 0;
+    }
 }
 
 /*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
@@ -974,33 +987,112 @@ blockquote,
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
     z-index: -2;
-    background-color: rgb(245, 245, 245);
+    background-color: #f5f5f5;
 }
 blockquote blockquote,
 blockquote blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
-    background-color: rgb(230, 230, 230);
+    background-color: #e6e6e6;
 }
 
-/*  Inline quotes within blockquotes.
+article > :not(#TOC) a:link q,
+article > :not(#TOC) q a:link,
+article > :not(#TOC) blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
+    text-shadow:
+         0.03em 0       #f5f5f5,
+        -0.03em 0       #f5f5f5,
+         0      0.03em  #f5f5f5,
+         0     -0.03em  #f5f5f5,
+         0.06em 0       #f5f5f5,
+        -0.06em 0       #f5f5f5,
+         0.09em 0       #f5f5f5,
+        -0.09em 0       #f5f5f5,
+         0.12em 0       #f5f5f5,
+        -0.12em 0       #f5f5f5,
+         0.15em 0       #f5f5f5,
+        -0.15em 0       #f5f5f5;
+}
+article > :not(#TOC) blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
+    text-shadow:
+         0.03em 0       #e6e6e6,
+        -0.03em 0       #e6e6e6,
+         0      0.03em  #e6e6e6,
+         0     -0.03em  #e6e6e6,
+         0.06em 0       #e6e6e6,
+        -0.06em 0       #e6e6e6,
+         0.09em 0       #e6e6e6,
+        -0.09em 0       #e6e6e6,
+         0.12em 0       #e6e6e6,
+        -0.12em 0       #e6e6e6,
+         0.15em 0       #e6e6e6,
+        -0.15em 0       #e6e6e6;
+}
+
+blockquote blockquote {
+    margin: 1em 1px;
+}
+
+/*=--------------------=*/
+/*= Various edge cases =*/
+/*=--------------------=*/
+
+#markdownBody blockquote blockquote:first-child {
+    margin: 0.25em 1px 1em 1px;
+}
+
+#markdownBody blockquote > :last-child,
+#markdownBody blockquote > :last-child > :last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child > :last-child {
+    margin-bottom: 0;
+}
+#markdownBody blockquote > :first-child,
+#markdownBody blockquote > :first-child > :first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child > :first-child {
+    margin-top: 0;
+}
+
+#markdownBody blockquote > ul:only-child,
+#markdownBody blockquote > ol:only-child {
+    margin-left: 1.5em;
+}
+
+/*  Interviews (e.g. https://www.gwern.net/Morning-writing#examples).
     */
-blockquote > p:only-of-type q:only-of-type {
-    background-color: inherit;
+blockquote p > code:first-child,
+blockquote p > a:first-child code:first-child {
+    border: none;
+    background-color: transparent;
+    font-weight: bold;
+    font-family: inherit;
+    padding: 0;
+    font-size: inherit;
 }
 
 /*****************/
 /* INLINE QUOTES */
 /*****************/
+
 q {
-    background-color: rgba(0, 0, 0, 0.015);
+    background-color: rgba(0,0,0,0.04);
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.04);
 }
-/* WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting, quote marks are not by default included in browser copy-paste, possibly annoying users. You need the following CSS & a line of JS to insert real quotes. */
+blockquote q {
+    border-color: transparent;
+    background-color: transparent;
+    box-shadow: none;
+}
+/*  WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting,
+    quote marks are not by default included in browser copy-paste, possibly annoying users.
+    You need the following CSS & a line of JS in default.html to insert real quotes. */
 q::before,
 q::after {
     content: none;
-}
-blockquote > p:only-of-type q:only-of-type {
-    background-color: inherit;
 }
 
 /*************/
@@ -1046,13 +1138,31 @@ blockquote > p:only-of-type q:only-of-type {
 }
 .epigraph blockquote::before {
     content: "\201C";
-    left: -34px;
-    top: -0.5em;
+    left: -33px;
+    top: -0.375em;
 }
 .epigraph blockquote::after {
     content: "\201D";
-    right: -35px;
-    bottom: -0.75em;
+    right: -33px;
+    bottom: -0.875em;
+}
+
+article > :not(#TOC) .epigraph blockquote a:link,
+article > :not(#TOC) .epigraph blockquote a:link q,
+article > :not(#TOC) .epigraph blockquote q a:link {
+    text-shadow:
+         0.03em 0       #fff,
+        -0.03em 0       #fff,
+         0      0.03em  #fff,
+         0     -0.03em  #fff,
+         0.06em 0       #fff,
+        -0.06em 0       #fff,
+         0.09em 0       #fff,
+        -0.09em 0       #fff,
+         0.12em 0       #fff,
+        -0.12em 0       #fff,
+         0.15em 0       #fff,
+        -0.15em 0       #fff;
 }
 
 /*************/
@@ -1064,7 +1174,7 @@ sub,
 sup {
     line-height: 0.3em;
 }
-sup {
+a.footnote-ref sup {
     vertical-align: baseline;
 }
 a.footnote-ref {
@@ -1074,14 +1184,13 @@ a.footnote-ref {
     padding: 0 1px;
 }
 
+/* Deal with multiple footnote superscripts one after another; per Charuru */
 sup + sup,
 a.footnote-ref + a.footnote-ref {
     margin-left: 1px;
 }
 
-/*=----------=*/
-/*= Endnotes =*/
-/*=----------=*/
+
 
 #markdownBody .footnotes > ol > li + li {
     margin: 1em 0 0 0;
@@ -1101,6 +1210,7 @@ a.footnote-ref + a.footnote-ref {
     border: 1px dotted #000;
     display: inline-block;
     padding: 5px 5px 0 6px;
+    text-indent: 0;
 }
 #markdownBody .footnotes a.footnote-back:hover {
     border-color: #999;
@@ -1135,7 +1245,7 @@ a.footnote-ref + a.footnote-ref {
 }
 #footnotediv div {
     background-color: #fff;
-    padding: 12px;
+    padding: 12px 16px 14px 16px;
     max-width: 800px;
     border: 3px double #aaa;
     line-height: 1.45;
@@ -1145,7 +1255,21 @@ a.footnote-ref + a.footnote-ref {
 }
 
 #footnotediv blockquote {
-    margin: 1.5em 0.5em;
+    margin: 1em 0;
+}
+
+/*  The following compensates for the variable edge case where the last
+    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
+    back-to-citation link after it (which is not shown, if present, but makes it
+    uncertain whether the blockquote is the last child of the popup or not. This
+    code makes everything consistent regardless of which case applies.
+    —Obormot (2019-02-17)
+    */
+#footnotediv > div > blockquote:nth-last-child(2) {
+    margin-bottom: 2px;
+}
+#footnotediv > div > blockquote:nth-last-child(2) + p {
+    margin-top: 1em;
 }
 
 /**********/
@@ -1154,6 +1278,30 @@ a.footnote-ref + a.footnote-ref {
 
 .tableWrapper {
     margin: 2em 0 2.125em 0;
+    overflow: auto;
+}
+h1 + .tableWrapper,
+h2 + .tableWrapper,
+h3 + .tableWrapper,
+h4 + .tableWrapper,
+h5 + .tableWrapper,
+h6 + .tableWrapper {
+    margin: 0 0 2.125em 0;
+}
+/*=--------------------------------------------------=*/
+/*= Horizontal scrollbar styling (Webkit/Blink only) =*/
+/*=--------------------------------------------------=*/
+
+.tableWrapper::-webkit-scrollbar {
+    height: 16px;
+}
+.tableWrapper::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    box-shadow:
+        0 0 0 3px #fafafa inset;
+}
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
 }
 
 table {
@@ -1178,15 +1326,13 @@ table {
 /* from Twitter's bootstrap package; adds grid-lines to table */
 table th,
 table td {
-    padding: 10px 10px 9px;
-    line-height: 18px;
-    text-align: left;
+    padding: 7px 10px;
+    line-height: 1.35;
 }
 table th {
-    padding-top: 9px;
     font-weight: bold;
-    vertical-align: middle;
     border-bottom: 1px solid #ddd;
+    text-align: left;
 }
 table td {
     vertical-align: top;
@@ -1197,18 +1343,6 @@ table td + td {
 }
 table tr + tr td {
     border-top: 1px solid #ddd;
-}
-table tbody tr:first-child td:first-child {
-    border-radius: 4px 0 0 0;
-}
-table tbody tr:first-child td:last-child {
-    border-radius: 0 4px 0 0;
-}
-table tbody tr:last-child td:first-child {
-    border-radius: 0 0 0 4px;
-}
-table tbody tr:last-child td:last-child {
-    border-radius: 0 0 4px 0;
 }
 
 /* Add little icons to tables handled by tablesorter.js
@@ -1221,15 +1355,26 @@ th.header {
     background-repeat: no-repeat;
     background-position: center left;
     padding-left: 20px;
-    margin-left: -1px;
+}
+th.header:hover {
+    background-color: #e2f0f2;
 }
 th.headerSortUp {
     background-image: url(/static/img/small_asc.gif);
-    background-color: #79BEDB;
 }
 th.headerSortDown {
     background-image: url(/static/img/small_desc.gif);
-    background-color: #79BEDB;
+}
+th.headerSortUp,
+th.headerSortDown,
+th.headerSortUp:hover,
+th.headerSortDown:hover {
+    background-color: #8bd0ed;
+    border: 1px solid #8bd0ed;
+    color: #fff;
+    text-shadow:
+       0.5px 0.5px 0 #000,
+       0 0 1px #000;
 }
 
 /* zebra-stripe tables (CSS3); from Twitter's bootstrap package */
@@ -1237,13 +1382,19 @@ tbody tr:nth-child(odd) td {
     background-color: #f9f9f9;
 }
 tbody tr:hover td {
-    background-color: #f5f5f5;
+    background-color: #eee;
+    cursor: text;
 }
 
 /* CSS written by cwillu in order to rewrite the Modafinil page's table of prices */
-#suppliers-prices td,
 #suppliers-prices th {
+    padding: 3px 15px 2px 15px;
+}
+#suppliers-prices td {
     padding: 0 15px;
+}
+#suppliers-prices td:nth-child(1) {
+    text-align: right;
 }
 #suppliers-prices td:nth-child(1):after {
     content: "mg/$";
@@ -1261,44 +1412,15 @@ tbody tr:hover td {
     content: "$";
 }
 
-/*****************/
-/* UNCATEGORIZED */
-/*****************/
-/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-
-div.column {
-    width: 50%;
-    float: left;
-}
-
-p.caption {
-    display: none;
-}
+/**************/
+/* PARAGRAPHS */
+/**************/
 
 p {
-    margin-top: -0.2em;
-    margin-bottom: 0;
+    margin: 0;
 }
-
-/* how much to indent successive paragraphs; see A/B tests */
 p + p {
     text-indent: 2.5em;
-    margin-top: 0;
-}
-
-p.hang {
-    text-indent: -0.44em;
-}
-
-/* number formatting */
-.num {
-    font-size: 0.85em
-}
-/* More elegant-looking rules */
-hr {
-    border: none;
-    height: 0;
-    border-bottom: 1px solid #aaa;
 }
 
 /***************/
@@ -1306,26 +1428,57 @@ hr {
 /***************/
 
 code {
-    background-color: rgb(250, 250, 250);
-    border: 1px solid rgb(200, 200, 200);
-    padding-left: 4px;
-    padding-right: 4px;
+    background-color: #fafafa;
+    border: 1px solid #c8c8c8;
+    padding: 0 4px;
     /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
     font-family: "Liberation Mono", Consolas, Courier, monospace;
-    font-size: 0.9375em;
-}
-pre code {
-    display: block;
-    padding: 8px;
-    margin-bottom: 2em;
-    margin: 0;
+    font-size: 0.9em;
 }
 pre code.sourceCode {
+    display: block;
+    padding: 8px 14px;
+    margin: 0;
     overflow: auto;
 }
-/* Source code highlighting; generated by pandoc/skylighting: 'kate' theme */
+
+@media only screen and (max-width: 649px) {
+    /* force source code to fit inside the viewport: */
+    pre {
+        word-wrap: break-word;
+        overflow-wrap: break-all;
+    }
+}
+
+/*=--------------------------------------------------=*/
+/*= Horizontal scrollbar styling (Webkit/Blink only) =*/
+/*=--------------------------------------------------=*/
+
+pre.sourceCode {
+    border-bottom: 1px solid #c8c8c8;
+}
+pre code.sourceCode {
+    border-bottom: 1px solid transparent;
+}
+pre code.sourceCode::-webkit-scrollbar {
+    height: 16px;
+}
+pre code.sourceCode::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    box-shadow:
+        0 1px 0 3px #fafafa inset;
+}
+pre code.sourceCode::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+}
+
+/*=-------------------------------------------------------------------------=*/
+/*= Source code highlighting; generated by pandoc/skylighting: 'kate' theme =*/
+/*=-------------------------------------------------------------------------=*/
+
 a.sourceLine {
-    display: inline-block; line-height: 1.25;
+    display: inline-block;
+    line-height: 1.25;
 }
 a.sourceLine {
     pointer-events: none;
@@ -1343,7 +1496,7 @@ code.sourceCode {
     position: relative;
 }
 div.sourceCode {
-    margin: 1.5em auto;
+    margin: 1.75em auto;
 }
 pre.sourceCode {
     margin: 0;
@@ -1366,7 +1519,8 @@ pre.numberSource a.sourceLine {
     position: relative;
     left: -4em;
 }
-pre.numberSource a.sourceLine::before { content: attr(title);
+pre.numberSource a.sourceLine::before {
+    content: attr(title);
     position: relative;
     left: -1em;
     text-align: right;
@@ -1402,6 +1556,7 @@ div.sourceCode {
         text-decoration: underline;
     }
 }
+
 code span    { color: #1f1c1b; } /* Normal */
 code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
 code span.an { color: #ca60ca; } /* Annotation */
@@ -1434,14 +1589,119 @@ code span.va { color: #0057ae; } /* Variable */
 code span.vs { color: #bf0303; } /* VerbatimString */
 code span.wa { color: #bf0303; } /* Warning */
 
+/********/
+/* MISC */
+/********/
+
+/*  WHAT IS THIS???
+    */
+p.hang {
+    text-indent: -0.44em;
+}
+
+/*  WHAT IS THIS???
+    */
+/* number formatting */
+.num {
+    font-size: 0.85em
+}
+
+hr {
+    border: none;
+    height: 0;
+    border-bottom: 1px solid #aaa;
+    margin: 1em 0;
+}
+
 /* hide the ad in the ad A/B test by default */
-div#ads {
+#ads {
     display: block;
     text-align: center;
     display: none;
 }
-div#ads a img {
+#ads a img {
     max-width: 100%;
+}
+
+/*******************/
+/* INDEX PAGE ONLY */
+/*******************/
+/*  add tweaks for just the landing page https://www.gwern.net/index, which is a static HTML;
+    it's hardwired so it can be edited to remove various things and have a reflowable site-wide Table of Contents
+    */
+
+body.siteIndex {
+    /*  leave enough horizontal room to show multiple sections simultaneously, table-like
+        */
+    max-width: 1500px;
+}
+
+body.siteIndex #markdownBody {
+    /*  add some vertical padding for the introduction
+        */
+    padding-top: 15px;
+}
+
+/*  make the sections reflow; better than fixed-width tables
+    */
+body.siteIndex article section {
+    display: inline-block;
+    vertical-align: top;
+}
+
+/*  align the section headers nicely with the lists of pages for desktop; otherwise keep default mobile spacing of lists
+    */
+@media only screen and (min-width: 650px) {
+    body.siteIndex #markdownBody {
+        padding-bottom: 4em;
+        position: relative;
+    }
+    body.siteIndex #markdownBody ul {
+        margin: 1.25em 3em 0 1.375em;
+    }
+    body.siteIndex #markdownBody li > ul {
+        margin: 0.25em 0 0.25em 2.5em;
+    }
+    body.siteIndex #markdownBody li {
+        margin-top: 0;
+    }
+    body.siteIndex #markdownBody > section ~ p {
+        border-top: 1px dotted #777;
+        margin: 2em 0 0 0;
+        padding: 1em 0 0 0;
+        font-weight: bold;
+    }
+
+    /*  Nice-looking bottom decoration.
+        */
+    body.siteIndex #markdownBody::after {
+        content: "";
+        background-color: #fff;
+        background-image: url('/images/logo.png');
+        display: block;
+        position: absolute;
+        bottom: 1em;
+        width: 20px;
+        height: 24px;
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        left: 0;
+        right: 0;
+        margin: auto;
+        padding: 0 10px 0 11px;
+        z-index: 1;
+    }
+    body.siteIndex #markdownBody::before {
+        content: "";
+        display: block;
+        position: absolute;
+        bottom: calc(1em + 12px);
+        height: 1px;
+        border-bottom: 1px dotted #000;
+        width: 100%;
+        opacity: 0.5;
+    }
 }
 
 /****************************************************************TEMPORARY*************************************************************************/
@@ -1680,62 +1940,4 @@ html.no-scroll {
 }
 .image-wrapper:hover::after {
     opacity: 1.0;
-}
-
-/*******************/
-/* MOBILE-ONLY CSS */
-/*******************/
-
-@media only screen and (max-width: 649px) {
-    /* even less horizontal is available on mobile! */
-    blockquote {
-        margin-left: 3px;
-    }
-    blockquote blockquote {
-        margin-left: 3px;
-    }
-
-
-    /* force source code to fit inside the viewport: */
-    pre {
-        word-wrap: break-word;
-    }
-}
-
-/*******************/
-/* INDEX PAGE ONLY */
-/*******************/
-/*  add tweaks for just the landing page https://www.gwern.net/index, which is a static HTML;
-    it's hardwired so it can be edited to remove various things and have a reflowable site-wide Table of Contents
-    */
-
-body.siteIndex {
-    /*  leave enough horizontal room to show multiple sections simultaneously, table-like
-        */
-    max-width: 1500px;
-
-    /*  add some vertical padding for the introduction
-        */
-    margin-top: 15px;
-}
-
-/*  make the sections reflow; better than fixed-width tables
-    */
-body.siteIndex article section {
-    display: inline-block;
-    vertical-align: top;
-}
-
-/*  align the section headers nicely with the lists of pages for desktop; otherwise keep default mobile spacing of lists
-    */
-@media only screen and (min-width: 650px) {
-    body.siteIndex #markdownBody li {
-        margin-top: 0;
-    }
-    body.siteIndex #markdownBody li p {
-        margin: 0;
-    }
-    body.siteIndex #markdownBody h1 {
-        padding-left: 0.6em;
-    }
 }
