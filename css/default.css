@@ -2,108 +2,110 @@
 
 /********************/
 /* SOURCE SERIF PRO */
-/* workhorse font for the body; Baskerville-like */
 /********************/
+/* workhorse font for the body; Baskerville-like */
+
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 200;
-        font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap; /* for body text, display as soon as possible (presumably as system font Baskerville) and re-render with Source Serif Pro whenever it downloads: https://developers.google.com/web/updates/2016/02/font-display https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display https://caniuse.com/#search=font-display */
+    font-family: "Source Serif Pro";
+    font-weight: 200;
+    font-style: normal;
+    src: url('/static/font/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap; /* for body text, display as soon as possible (presumably as system font Baskerville) and re-render with Source Serif Pro whenever it downloads: https://developers.google.com/web/updates/2016/02/font-display https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display https://caniuse.com/#search=font-display */
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 200;
-        font-style: italic;
-        src: url('/static/font/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 200;
+    font-style: italic;
+    src: url('/static/font/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 300;
-        font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Light.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 300;
+    font-style: normal;
+    src: url('/static/font/SourceSerifPro-BASIC-Light.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 300;
-        font-style: italic;
-        src: url('/static/font/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 300;
+    font-style: italic;
+    src: url('/static/font/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 400;
-        font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 400;
+    font-style: normal;
+    src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 400;
-        font-style: italic;
-        src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 400;
+    font-style: italic;
+    src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 600;
-        font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 600;
+    font-style: normal;
+    src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 600;
-        font-style: italic;
-        src: url('/static/font-BASIC-SemiboldItalic.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 600;
+    font-style: italic;
+    src: url('/static/font-BASIC-SemiboldItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 700;
-        font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 700;
+    font-style: normal;
+    src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 700;
-        font-style: italic;
-        src: url('/static/font/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 700;
+    font-style: italic;
+    src: url('/static/font/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 900;
-        font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Black.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 900;
+    font-style: normal;
+    src: url('/static/font/SourceSerifPro-BASIC-Black.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
 @font-face {
-        font-family: "Source Serif Pro";
-        font-weight: 900;
-        font-style: italic;
-        src: url('/static/font/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
-        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-        font-display: swap;
+    font-family: "Source Serif Pro";
+    font-weight: 900;
+    font-style: italic;
+    src: url('/static/font/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
+    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    font-display: swap;
 }
+
 /*******************/
 /* SOURCE SANS PRO */
-/* used in Table of Contents as a better sans font; primarily intended for Mac/iOS users */
 /*******************/
+/* used in Table of Contents as a better sans font; primarily intended for Mac/iOS users */
 
 @font-face {
     font-family: 'Source Sans Pro';
@@ -202,149 +204,54 @@
     font-display: swap;
 }
 
-/* **************** */
-/* DESKTOP-ONLY CSS */
-/* **************** */
-@media screen and (min-width: 650px) {
+/***********/
+/* GENERAL */
+/***********/
 
-    div#logo img {  display: block;
-                    margin: 10px auto 10px auto; }
+html {
+    padding: 0;
+    margin: 0;
 
-    #markdownBody {
-        margin-left: 150px;
-        padding-left: 0;
-    }
+    background-color: #fff;
+    color: #000;
 
-    /* replaces A/B-test-set average value; the wider the screen, the more line-height is necessary, and no one size suits all, so set 3 brackets of increasing height. */
-    @media screen and (max-width: 1000px) {
-        #markdownBody { line-height: 1.4; }
-        #markdownBody blockquote { line-height: 1.35; }
-    }
-    @media screen and (min-width: 1001px) and (max-width: 1200px) {
-        #markdownBody { line-height: 1.5; }
-        #markdownBody blockquote { line-height: 1.45; }
-    }
-    @media screen and (min-width: 1201px) {
-        #markdownBody { line-height: 1.55; }
-        #markdownBody blockquote { line-height: 1.50; }
-    }
-
-    header {
-        margin-bottom: 15px;
-    }
-
-    div#logo { margin-left: -63px;
-               position: relative;
-               top: -0.75em;
-    }
-
-    /* uses up too much horizontal whitespace by default: */
-    blockquote { margin-left: 10px; }
-    blockquote blockquote { margin-left: 10px; }
-
-    div#sidebar {
-        width: 133px;
-        float: left;
-
-        font-variant: small-caps;
-    }
-
-    div#sidebar-links a {
-        display: block;
-        font-size: 105%;
-        text-decoration: none;
-    }
-    div#sidebar-links p {
-        letter-spacing: -0.5px;
-    }
-    div#sidebar-links ul {
-        padding-left: 20px;
-        text-transform: uppercase;
-        font-size: 0.75em;
-        line-height: 1.5;
-    }
-
-    /* pull the RSS/EMAIL links together */
-    div#sidebar-news ul {
-        list-style-type: disc;
-        padding-left: 20px;
-        line-height: 80%;
-    }
-
-    div#sidebar-news a {
-        display: inline; /* override the `display: block;` so it reads 'NEW: RSS/MAIL' */
-        font-size: 105%;
-        text-decoration: none;
-    }
-
-    #sidebar #Patreon { font-size: 0.875em; }
-    div#Patreon a {
-        text-decoration: none;
-    }
-    /* Table of Contents: on mobile, we want it to be inline, but for desktop, we want it side by side with the content */
-    div#TOC {
-        float: left;
-        width: auto;
-        max-width: 20% }
-} /* end desktop css */
-
-/* **************** */
-/* MOBILE-ONLY CSS */
-/* **************** */
-@media screen and (max-width: 649px) {
-    /* remove extra lines and stuff from the sidebar: */
-    div#sidebar * { display: inline; }
-    div#sidebar hr { display:none; }
-    div#donations { display:none; }
-    div#cse-sitesearch { display:none; }
-    div#logo { display: none; }
-    /* even less horizontal is available on mobile! */
-    blockquote { margin-left: 3px; }
-    blockquote blockquote { margin-left: 3px; }
-
-    div#TOC { float: inherit; margin: 5px; }
-
-    /* force source code to fit inside the viewport: */
-    pre  { word-wrap: break-word; }
+    font-weight: 400;
+    font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
 }
 
-/* ********************** */
-/* DEVICE-INDEPENDENT CSS */
-/* ********************** */
-
-/* add tweaks for just the landing page https://www.gwern.net/index, which is a static HTML; it's hardwired so it can be edited to remove various things and have a reflowable site-wide Table of Contents */
-/* add some vertical padding for the introduction */
-body.siteIndex { padding-top: 15px; }
-/* leave enough horizontal room to show multiple sections simultaneously, table-like */
-body.siteIndex { max-width: 1500px; }
-/* make the sections reflow; better than fixed-width tables */
-body.siteIndex article section { display: inline-block; vertical-align: top; }
-/* align the section headers nicely with the lists of pages for desktop; otherwise keep default mobile spacing of lists */
-@media screen and (min-width: 650px) {
-    body.siteIndex #markdownBody li { margin-top: 0em; }
-    body.siteIndex #markdownBody li p { margin: 0em; }
-    body.siteIndex #markdownBody h1 { padding-left: 0.6em; }
+body {
+    max-width: 1400px;
+    margin: 0 15px 0 5px;
 }
 
-/* General sidebar tweaks */
-/* Rectifying layout weirdness: */
-div#sidebar {
+/***********/
+/* SIDEBAR */
+/***********/
+
+#sidebar {
     padding: 0 30px 0 3px;
     width: 100px;
 }
-#sidebar #logo {
-    margin: 0;
-}
+
+/*=------=*/
+/*= Logo =*/
+/*=------=*/
+
 #sidebar #logo img {
-    margin: 0 0 20px 0;
+    display: block;
+    margin: -0.75em 0 calc(20px + 0.75em) 0;
 }
-/* Code block in sidebar less clunky-looking, by deleting grayscale background: */
+
+/*=---------------------=*/
+/*= Other sidebar stuff =*/
+/*=---------------------=*/
+
 #sidebar code {
     border: none;
     background-color: transparent;
     padding: 0;
 }
-/* Rules in sidebar more subdued, and better spaced */
+
 #sidebar hr {
     border-bottom-style: dotted;
     margin: 1em 0 1.125em 0;
@@ -352,51 +259,285 @@ div#sidebar {
 #sidebar #sidebar-news hr {
     margin: 1.25em 0 1em 0;
 }
-/* Bullets in sidebar less heavy by switching to open circle: */
+
 #sidebar #sidebar-news ul {
     list-style-type: circle;
     padding: 0 0 0 20px;
 }
-/* Hover styling for sidebar links: grayscales entire line when mouse-overed: */
-#sidebar div:not(#logo) a {
+
+#sidebar a {
     display: block;
 }
 #sidebar a:hover {
     background-color: #eee;
 }
 
-/* CSS by Brendan Long: make lists look better when next to the ToC (eg in 'Links' or 'Bitcoin is Worse is Better'): */
-/* "The problem is that if you have a list next to a floated element (the table of contents), the padding gets removed. This looks weird normally, but it’s especially strange with a multi-level list  since everything shows up on the same level. This problem also effects your block quotes (the grey background extends behind the TOC). */
-/* Apparently, setting “overflow” on an element creates a new formatting context which fixes this. “overflow: hidden” will do this without actually changing how overflow is handled. Unfortunately, if we do that, the bullet points and numbering inexplicably disappear and we have to move them “inside”. Once we fix that, <li><p>…</p></li> creates two new block contexts, causing blank lines on some bullet points on pages like this. */
-/* Note that I’m only messing with non-section children of sections and list elements (not the lists themselves). This is because I’m assuming you want paragraphs and lists to wrap around the TOC" */
-/* result: http://imgur.com/lhvneyP */
-article>:not(section), article section>:not(section) {
+@media only screen and (min-width: 650px) {
+    #sidebar {
+        float: left;
+        font-variant: small-caps;
+    }
+
+    #sidebar-links a {
+        display: block;
+        font-size: 1.05em;
+        text-decoration: none;
+    }
+    #sidebar-links p a {
+        letter-spacing: -0.5px;
+    }
+    #sidebar-links ul {
+        text-transform: uppercase;
+        font-size: 0.75em;
+        line-height: 0.8;
+    }
+
+    #sidebar #Patreon {
+        font-size: 0.875em;
+    }
+}
+
+@media only screen and (max-width: 649px) {
+    /* remove extra lines and stuff from the sidebar: */
+    #sidebar * {
+        display: inline;
+    }
+    #sidebar #logo {
+        display: none;
+    }
+    #sidebar hr {
+        display: none;
+    }
+    #donations {
+        display: none;
+    }
+    #cse-sitesearch {
+        display: none;
+    }
+}
+
+/***************/
+/* PAGE HEADER */
+/***************/
+
+header h1 {
+    text-align: center;
+    text-transform: none;
+    font-variant: small-caps;
+    font-size: 2.5em;
+    font-weight: 600;
+    letter-spacing: -1px;
+}
+
+/*********************/
+/* ARTICLE CONTAINER */
+/*********************/
+
+/*  (i.e., article) */
+/*  Nothing!
+    */
+
+/***********************/
+/* PAGE METADATA BLOCK */
+/***********************/
+
+/*  (i.e., #page-metadata) */
+/*  Nothing!
+    */
+
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+#TOC {
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    margin: 0 20px 0 0;
+    line-height: 1.25;
+    padding: 10px 10px 2px 14px;
+}
+
+/*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
+    */
+@media only screen and (min-width: 650px) {
+    #TOC {
+        float: left;
+        max-width: 20%;
+    }
+}
+@media only screen and (max-width: 649px) {
+    #TOC {
+        float: none;
+        margin: 5px;
+    }
+}
+
+/*=-------------------------------------------------------=*/
+/*= Adjusting TOC font size for different viewport widths =*/
+/*=-------------------------------------------------------=*/
+
+@media only screen and (max-width: 1280px) {
+    #TOC {
+        font-size: 0.95rem;
+    }
+}
+@media only screen and (max-width: 1200px) {
+    #TOC {
+        font-size: 0.90rem;
+    }
+}
+@media only screen and (max-width: 1120px) {
+    #TOC {
+        font-size: 0.85rem;
+    }
+}
+@media only screen and (max-width: 1040px) {
+    #TOC {
+        font-size: 0.80rem;
+    }
+}
+
+/*=-----------------=*/
+/*= TOC list layout =*/
+/*=-----------------=*/
+
+#TOC ul {
+    list-style-type: none;
+    padding-left: 0em;
+    margin-bottom: 0;
+    margin-top: 4px;
+    padding-left: 1.4em;
+    text-indent: 0;
+    padding: 0;
+}
+#TOC ul ul {
+    list-style-type: none;
+    padding-left: 0.7em;
+    margin-top: 2px;
+}
+
+#TOC li {
+    font-weight: bold;
+    margin: 5px 2px 10px 0;
+    padding-left: 1.125em;
+    position: relative;
+}
+#TOC li li {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+#TOC p {
+    margin-top: 9px;
+    margin-bottom: 3px;
+}
+
+/*=------------------=*/
+/*= TOC link styling =*/
+/*=------------------=*/
+
+#TOC a {
+    border: 0;
+}
+#TOC a:hover {
+    text-shadow: 1px 1px 3px #777;
+}
+
+/*=-------------------------------=*/
+/*= Wikipedia-style TOC numbering =*/
+/*=-------------------------------=*/
+
+#TOC > ul {
+    counter-reset: htoc_1;
+}
+#TOC > ul > li::before {
+    counter-increment: htoc_1;
+    content: counter(htoc_1) "\2006  ";
+}
+#TOC > ul ul {
+    counter-reset: htoc_2;
+}
+#TOC > ul ul li::before {
+    counter-increment: htoc_2;
+    content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
+}
+#TOC > ul ul ul {
+    counter-reset: htoc_3;
+}
+#TOC > ul ul ul li::before {
+    counter-increment: htoc_3;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
+}
+#TOC > ul ul ul ul {
+    counter-reset: htoc_4;
+}
+#TOC > ul ul ul ul li::before {
+    counter-increment: htoc_4;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
+}
+#TOC > ul ul ul ul ul {
+    counter-reset: htoc_5;
+}
+#TOC > ul ul ul ul ul li::before {
+    counter-increment: htoc_5;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
+}
+#TOC > ul ul ul ul ul ul {
+    counter-reset: htoc_6;
+}
+#TOC > ul ul ul ul ul ul li::before {
+    counter-increment: htoc_6;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
+}
+#TOC ul li::before {
+    position: absolute;
+    left: -3em;
+    width: 4em;
+    text-align: right;
+    font-weight: normal;
+    opacity: 0.4;
+}
+
+/****************/
+/* MAIN CONTENT */
+/****************/
+
+/* try to avoid scrollbars on paragraphs: prevents long unbroken un-hyphenatable lines from causing H-scrolling */
+#markdownBody {
+    overflow-wrap: break-word;
     overflow: auto;
 }
 
-html {
-    padding: 0px;
-    margin-left: 5px;
-    margin-right: 5px;
-
-    /* see A/B tests */
-    background-color: white;
-    color: black;
-
-    /* no size set for the font; see A/B tests */
-
-    /* see A/B tests */
-    font-weight: 400;
-    font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
+@media only screen and (min-width: 650px) {
+    /* replaces A/B-test-set average value; the wider the screen, the more line-height is necessary, and no one size suits all, so set 3 brackets of increasing height. */
+    @media only screen and (max-width: 1000px) {
+        #markdownBody {
+            line-height: 1.4;
+        }
+        #markdownBody blockquote {
+            line-height: 1.35;
+        }
+    }
+    @media only screen and (min-width: 1001px) and (max-width: 1200px) {
+        #markdownBody {
+            line-height: 1.5;
+        }
+        #markdownBody blockquote {
+            line-height: 1.45;
+        }
+    }
+    @media only screen and (min-width: 1201px) {
+        #markdownBody {
+            line-height: 1.55;
+        }
+        #markdownBody blockquote {
+            line-height: 1.50;
+        }
+    }
 }
 
-body {
-    margin: 0 10px 0 0;
-    max-width: 1400px;
-}
-
-/* try to avoid scrollbars on paragraphs: prevents long unbroken un-hyphenatable lines from causing H-scrolling */
-#markdownBody { overflow-wrap: break-word; }
 /* use justified text (words get broken/hyphenated as necessary to avoid a 'ragged margin'), undoing the default of 'flush left, ragged' right (see https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left ) */
 @supports (-webkit-hyphens: auto) or (-ms-hyphens: auto) or (hyphens: auto) {
     #markdownBody p {
@@ -407,61 +548,29 @@ body {
     }
 }
 
-/* HEADER H1-6 HIERARCHY */
-h1, h2, h3, h4, h5, h6 { margin: 1.5em 0 0.75em 0; }
-/* uppercase top-lvel section headers; see A/B tests */
-h1 { text-transform: uppercase; line-height: 1.25; font-size: 1.375em; }
-/* put the main page title centered in the middle */
-header h1 {
-    text-align: center;
-    vertical-align: middle;
-    text-transform: initial;
-    font-variant: small-caps;
-    font-size: 2.5em;
-    font-weight: 600;
-    letter-spacing: -1px;
-}
-article section > h1 { overflow: visible; }
-/* make a hierarchy of emphasis for h2-5, to avoid all being the same (all-uppercased) */
-h2 { text-transform: uppercase; font-size: 1.1em; }
-h3 { text-transform: capitalize; font-size: 1.1em; }
-h4 { text-transform: capitalize; }
-h5 { font-size: 90%; }
-/* support self-links in headers by disabling the link coloring and adding a pilcrow on hover */
-div#markdownBody section > *:first-child a {
-    display: block;
-    background: none;
-}
-div#markdownBody section > *:first-child a:hover {
-    color: #485555;
-}
-div#markdownBody section > *:first-child a::after {
-    content: "\00B6";
-    font-size: 0.75em;
-    position: relative;
-    top: -3px;
-    left: 5px;
-    visibility: hidden;
-}
-div#markdownBody section > *:first-child a:hover::after,
-div#markdownBody section > *:first-child a:active::after,
-div#markdownBody section > *:first-child a:focus::after,
-div#markdownBody section:target > *:first-child a::after {
-    visibility: visible;
-}
-div#markdownBody section:target > *:first-child a::after {
-    opacity: 0.5;
+/*  cute 'old-style' numerals, look a little nicer inline in text:
+    https://practicaltypography.com/alternate-figures.html#oldstyle-figures
+    */
+#markdownBody p {
+    font-variant-numeric: oldstyle-nums;
 }
 
-/* COLLAPSIBLE HEADER SECTIONS */
-/* Use: annotate collapsible section headers with '{.collapse}' (in the Markdown); for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page), one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'. (Pandoc Markdown does support a native div syntax, but it's long and ugly.) */
+/************/
+/* SECTIONS */
+/************/
+/*  Use: annotate collapsible section headers with '{.collapse}' (in the Markdown);
+    for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page),
+    one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'.
+    (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
+    */
+
 .collapse {
     position: relative;
 }
-.collapse > *:first-child {
+.collapse > :first-child {
     padding-right: 1em;
 }
-.collapse:not(:target) .disclosure-button:not(:checked)~*:not(.collapseSummary) {
+.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseSummary) {
     max-height: 0;
     overflow: hidden;
     padding: 0;
@@ -521,39 +630,122 @@ div#markdownBody section:target > *:first-child a::after {
 .disclosure-button:not(:checked):hover {
     border: 1px dotted #777;
 }
-.disclosure-button:not(:checked) ~ .collapseSummary > *:first-child {
+.disclosure-button:not(:checked) ~ .collapseSummary > :first-child {
     margin-top: 0;
 }
-.disclosure-button:not(:checked) ~ .collapseSummary > *:last-child {
+.disclosure-button:not(:checked) ~ .collapseSummary > :last-child {
     margin-bottom: 20px;
 }
 .disclosure-button:focus {
     outline: none;
-    text-shadow: 0 0 1px red, 0 0 3px red, 0 0 5px red;
+    text-shadow:
+        0 0 1px red,
+        0 0 3px red,
+        0 0 5px red;
 }
-/* END COLLAPSIBLE HEADER SECTIONS */
 
-/* metadata customization: */
-div#description { font-size: 95%; }
-div#tags, div#page-created, div#last-modified { font-size: 80%; }
+/************/
+/* HEADINGS */
+/************/
 
-div#footer {
+/* HEADER H1-6 HIERARCHY */
+h1, h2, h3, h4, h5, h6 {
+    margin: 1.5em 0 0.75em 0;
+}
+
+/* uppercase top-lvel section headers; see A/B tests */
+h1 {
+    text-transform: uppercase;
+    line-height: 1.25;
+    font-size: 1.375em;
+}
+
+article section > h1 {
+    overflow: visible;
+}
+
+/* make a hierarchy of emphasis for h2-5, to avoid all being the same (all-uppercased) */
+h2 {
+    text-transform: uppercase;
+    font-size: 1.1em;
+}
+h3 {
+    text-transform: capitalize;
+    font-size: 1.1em;
+}
+h4 {
+    text-transform: capitalize;
+}
+h5 {
+    font-size: 0.9em;
+}
+
+/*=----------------------------=*/
+/*= Section heading self-links =*/
+/*=----------------------------=*/
+
+article #markdownBody section > :first-child a {
+    display: block;
+    background: none;
+}
+#markdownBody section > :first-child a:hover {
+    color: #485555;
+}
+#markdownBody section > :first-child a::after {
+    content: "\00B6";
+    font-size: 0.75em;
+    position: relative;
+    top: -3px;
+    left: 5px;
+    visibility: hidden;
+}
+#markdownBody section > :first-child a:hover::after,
+#markdownBody section > :first-child a:active::after,
+#markdownBody section > :first-child a:focus::after,
+#markdownBody section:target > :first-child a::after {
+    visibility: visible;
+}
+#markdownBody section:target > :first-child a::after {
+    opacity: 0.5;
+}
+
+/**********/
+/* FOOTER */
+/**********/
+
+#footer {
     padding-top: 30px;
-    clear: both;
-    font-size: 90%;
+    font-size: 0.9em;
     text-align: center;
 }
 
-div#disqus_thread { padding-left: 0.5em; }
+/**********/
+/* DISQUS */
+/**********/
 
-/* link colors and underlining */
-a { color: #303C3C; /* off-black */ }
-
-/* make body links react when moused-over so users get feedback on a link being clickable */
-article>:not(#TOC) a:hover { color: #999; }
-article a { word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
-            text-decoration: none;
+#disqus_thread {
+    padding-left: 0.5em;
 }
+
+/*********/
+/* LINKS */
+/*********/
+
+a {
+    color: #303C3C; /* off-black */
+    text-decoration: none;
+}
+article > :not(#TOC) a:hover {
+    color: #999;
+}
+
+#markdownBody a {
+    word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
+}
+
+/*=------------------------=*/
+/*= Fancy link underlining =*/
+/*=------------------------=*/
 
 /* Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
    The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
@@ -561,312 +753,229 @@ article a { word-wrap: break-word; /* force the occasional inline URL or other l
    by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined.
    Unfortunately, we don't want to add underlines to the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
    I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead. */
-/* Begin Tufte CSS */
-div#markdownBody a:link, #tags a:link {
-         text-decoration: none;
-         background: -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(#fffff8, #fffff8), -webkit-linear-gradient(#333, #333);
-         background: linear-gradient(#fffff8, #fffff8), linear-gradient(#fffff8, #fffff8), linear-gradient(#333, #333);
-         -webkit-background-size: 0.05em 1px, 0.05em 1px, 1px 1px;
-         -moz-background-size: 0.05em 1px, 0.05em 1px, 1px 1px;
-         background-size: 0.05em 1px, 0.05em 1px, 1px 1px;
-         background-repeat: no-repeat, no-repeat, repeat-x;
-         text-shadow: 0.03em 0 #fffff8, -0.03em 0 #fffff8, 0 0.03em #fffff8, 0 -0.03em #fffff8, 0.06em 0 #fffff8, -0.06em 0 #fffff8, 0.09em 0 #fffff8, -0.09em 0 #fffff8, 0.12em 0 #fffff8, -0.12em 0 #fffff8, 0.15em 0 #fffff8, -0.15em 0 #fffff8;
-         background-position: 0% 93%, 100% 93%, 0% 93%; }
-div#markdownBody a:link::selection {
-    text-shadow: 0.03em 0 #b4d5fe, -0.03em 0 #b4d5fe, 0 0.03em #b4d5fe, 0 -0.03em #b4d5fe, 0.06em 0 #b4d5fe, -0.06em 0 #b4d5fe, 0.09em 0 #b4d5fe, -0.09em 0 #b4d5fe, 0.12em 0 #b4d5fe, -0.12em 0 #b4d5fe, 0.15em 0 #b4d5fe, -0.15em 0 #b4d5fe;
-                    background: #b4d5fe; }
-div#markdownBody a:link::-moz-selection {
-    text-shadow: 0.03em 0 #b4d5fe, -0.03em 0 #b4d5fe, 0 0.03em #b4d5fe, 0 -0.03em #b4d5fe, 0.06em 0 #b4d5fe, -0.06em 0 #b4d5fe, 0.09em 0 #b4d5fe, -0.09em 0 #b4d5fe, 0.12em 0 #b4d5fe, -0.12em 0 #b4d5fe, 0.15em 0 #b4d5fe, -0.15em 0 #b4d5fe;
-    background: #b4d5fe;}
-/* end Tufte CSS */
-
-div.column {
-    width: 50%;
-    float: left;
+article > :not(#TOC) a:link {
+    text-decoration: none;
+    background:
+        -webkit-linear-gradient(#fffff8, #fffff8),
+        -webkit-linear-gradient(#fffff8, #fffff8),
+        -webkit-linear-gradient(#333,    #333);
+    background:
+        linear-gradient(#fffff8, #fffff8),
+        linear-gradient(#fffff8, #fffff8),
+        linear-gradient(#333,    #333);
+    -webkit-background-size:
+        0.05em 1px,
+        0.05em 1px,
+           1px 1px;
+    -moz-background-size:
+        0.05em 1px,
+        0.05em 1px,
+           1px 1px;
+    background-size:
+        0.05em 1px,
+        0.05em 1px,
+           1px 1px;
+    background-repeat:
+        no-repeat,
+        no-repeat,
+        repeat-x;
+    text-shadow:
+         0.03em 0       #fffff8,
+        -0.03em 0       #fffff8,
+         0      0.03em  #fffff8,
+         0     -0.03em  #fffff8,
+         0.06em 0       #fffff8,
+        -0.06em 0       #fffff8,
+         0.09em 0       #fffff8,
+        -0.09em 0       #fffff8,
+         0.12em 0       #fffff8,
+        -0.12em 0       #fffff8,
+         0.15em 0       #fffff8,
+        -0.15em 0       #fffff8;
+    background-position:
+          0% 93%,
+        100% 93%,
+          0% 93%;
+}
+article > :not(#TOC) a:link::selection,
+article > :not(#TOC) a:link *::selection {
+    text-shadow:
+         0.03em  0      #b4d5fe,
+        -0.03em  0      #b4d5fe,
+         0       0.03em #b4d5fe,
+         0      -0.03em #b4d5fe,
+         0.06em  0      #b4d5fe,
+        -0.06em  0      #b4d5fe,
+         0.09em  0      #b4d5fe,
+        -0.09em  0      #b4d5fe,
+         0.12em  0      #b4d5fe,
+        -0.12em  0      #b4d5fe,
+         0.15em  0      #b4d5fe,
+        -0.15em  0      #b4d5fe;
+    background: #b4d5fe;
+}
+article > :not(#TOC) a:link::-moz-selection,
+article > :not(#TOC) a:link *::-moz-selection {
+    text-shadow:
+         0.03em  0      #b4d5fe,
+        -0.03em  0      #b4d5fe,
+         0       0.03em #b4d5fe,
+         0      -0.03em #b4d5fe,
+         0.06em  0      #b4d5fe,
+        -0.06em  0      #b4d5fe,
+         0.09em  0      #b4d5fe,
+        -0.09em  0      #b4d5fe,
+         0.12em  0      #b4d5fe,
+        -0.12em  0      #b4d5fe,
+         0.15em  0      #b4d5fe,
+        -0.15em  0      #b4d5fe;
+    background: #b4d5fe;
 }
 
-/* 'figure' instead of 'img' because we don't want to force these settings on all normal inline images, like those used in _Radiance_ */
-figure img {
-    display: block;
-    margin: 5px auto 5px auto;
-    border: none;
+/*********/
+/* LISTS */
+/*********/
 
-    /* resize images based on browser width: 'fluid images'; see
-       http://unstoppablerobotninja.com/entry/fluid-images/
-       http://blog.kurtschindler.net/post/flexible-dynamically-resizing-images-with-css
-       http://stackoverflow.com/questions/787839/resize-image-proportionally-with-css
-       Unfortunately, this will cause reflowing as images load and turn out to be too big & have to be rescaled...
-       No apparent way to avoid this without a lot of CSS/JS hacks */
-    max-width: 100%;
-    height: auto;
+#markdownBody ul,
+#markdownBody ol {
+    list-style-type: none;
+    margin: 1.25em 0 1.5em 2.5em;
+    padding: 0;
 }
-#markdownBody figure {
+#markdownBody li > ul,
+#markdownBody li > ol {
+    margin: 0.5em 0 0 2.5em;
+}
+
+#markdownBody ul > li,
+#markdownBody ol > li {
+    position: relative;
+    margin: 0;
+}
+#markdownBody ul > li:nth-of-type(n+2),
+#markdownBody ol > li:nth-of-type(n+2) {
+    margin: 0.5em 0 0 0;
+}
+
+#markdownBody ul > li::before,
+#markdownBody ol > li::before {
+    position: absolute;
+}
+
+/*=-----------------------=*/
+/*= Bulleted list markers =*/
+/*=-----------------------=*/
+
+#markdownBody ul > li::before {
+    color: #888;
+    font-size: 0.875em;
+    top: 0.125em;
+    left: -1.375em;
+}
+
+#markdownBody ul > li::before,
+#markdownBody ul ul ul > li::before {
+    content: "\2727";
+}
+#markdownBody ul ul > li::before,
+#markdownBody ul ul ul ul > li::before {
+    content: "\2726";
+}
+
+/*=-----------------------=*/
+/*= Numbered list markers =*/
+/*=-----------------------=*/
+
+#markdownBody ol {
+    counter-reset: ol;
+}
+#markdownBody ol > li {
+    counter-increment: ol;
+}
+#markdownBody ol > li::before {
+    content: counter(ol) ".";
+    width: 2em;
+    right: calc(100% + 0.5em);
+    text-align: right;
+    font-feature-settings: 'onum';
+    color: #444;
+}
+
+#markdownBody ol ol {
+    list-style-type: lower-roman;
+    margin-left: 2em;
+}
+#markdownBody ol ol > li {
+    padding: 0 0 0 0.25em;
+}
+#markdownBody ol ol > li::before {
+    content: none;
+}
+
+#markdownBody ol ol ol {
+    list-style-type: lower-alpha;
+}
+
+/**********/
+/* IMAGES */
+/**********/
+
+figure {
     margin: 1.5em 2em;
 }
-/* add a border around images; important for photographs or screenshots, not so important for statistics diagrams/graphs */
-#markdownBody figure img {
+figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 5px auto;
     border: 1px solid #888;
-    box-sizing: border-box;
 }
-#markdownBody figcaption {
+figcaption {
     text-align: center;
     font-size: 0.9375em;
     font-weight: bold;
 }
 
-/***************/
-/* VIDEOS: CSS */
-/***************/
+/**********/
+/* VIDEOS */
+/**********/
+
 video {
     margin: 0 auto 0.5em auto;
     display: block;
     border: 1px solid #888;
 }
 
-/* switch unordered lists to elegant little full/empty star-diamonds as the bulletpoint marker/list-item (replacing square)  */
-#markdownBody ul {
-    list-style-type: none;
-    margin: 1.25em 0 1.5em 1em;
-    margin-left: .9em;
-    padding-left: 0;
-}
+/**********/
+/* TABLES */
+/**********/
 
-#markdownBody ul li {
-    position: relative;
-    margin-left: 1.3em;
-}
-#markdownBody ul li::before {
-    position: absolute;
-    left: -1.375em;
-    color: #888;
-    font-size: 0.875em;
-    top: 0.125em;
-}
-#markdownBody ul > li::before,
-#markdownBody ul ul ul > li::before {
-    content: "\2727"
-}
-#markdownBody ul ul > li::before,
-#markdownBody ul ul ul ul > li::before {
-    content: "\2726"
-}
-/********************************************************/
-/* Fixes many spacing abnormalities in and around lists */
-/********************************************************/
-#markdownBody ul > li {
-    margin: 0.5em 0 0 1.5em;
-}
-#markdownBody ul > li:first-of-type {
-    margin: 0 0 0 1.5em;
-}
-#markdownBody ol {
-    padding: 0 0 0 2.5em;
-    margin: 1.25em 0 1.5em 0;
-}
-#markdownBody ol > li {
-    margin: 0.5em 0 0 0;
-}
-#markdownBody ol > li:first-of-type {
-    margin: 0;
-}
-
-p.caption {
-    display: none;
-}
-
-p { margin-top: -0.2em;
-    margin-bottom: 0 }
-
-/* how much to indent successive paragraphs; see A/B tests */
-p + p {
-    text-indent: 2em;
-    margin-top: 0 }
-
-p.hang { text-indent: -0.44em }
-
-/* number formatting */
-.num { font-size: 85%; }
-/* cute 'old-style' numerals, look a little nicer inline in text: https://practicaltypography.com/alternate-figures.html#oldstyle-figures */
-#markdownBody p { font-variant-numeric: oldstyle-nums; }
-/* 'tabular figures' to make numbers line up in tables: https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum */
-#markdownBody table { font-variant-numeric: tabular-nums; }
-
-/* More elegant-looking rules */
-hr {
-    border: none;
-    height: 0;
-    border-bottom: 1px solid #aaa;
-}
-
-/* Table of Contents */
-div#TOC {
-    /* see A/B tests */
-    border: 1px solid #cccccc;
-    background-color: #f9f9f9;
-    /* Baskerville isn't quite as clear at small font sizes like in the ToC */
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    /* Force a margin big enough that
-       bulleted items won't overlap the
-       blue-shaded area of the ToC */
-    margin-right: 20px;
-    line-height: 1.25;
-    padding: 10px 10px 2px 14px;
-}
-div#TOC li {
-    font-weight: bold;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    margin-right: 2px;
-}
-div#TOC li li {
-    margin-bottom: 0px;
-    font-weight: normal;
-    font-size: 90%;
-}
-div#TOC p {
-    margin-top: 9px;
-    margin-bottom: 3px;
-}
-div#TOC ul {
-    list-style-type: none;
-    padding-left: 0em;
-    margin-bottom: 0px;
-    margin-top: 4px;
-    padding-left: 1.4em;
-    text-indent: 0;
-    padding: 0;
-}
-div#TOC ul ul {
-    list-style-type: none;
-    padding-left: 0.7em;
-    margin-top: 2px;
-}
-div#TOC a {
-    border: 0px;
-}
-div#TOC a:hover {
-    text-shadow: 1px 1px 3px #777;
-}
-div#TOC + ul { max-width: 170px; }
-@media only screen and (max-width: 1280px) {
-    div#TOC {
-        font-size: 0.95rem;
-    }
-}
-@media only screen and (max-width: 1200px) {
-    div#TOC {
-        font-size: 0.90rem;
-    }
-}
-@media only screen and (max-width: 1120px) {
-    div#TOC {
-        font-size: 0.85rem;
-    }
-}
-@media only screen and (max-width: 1040px) {
-    div#TOC {
-        font-size: 0.80rem;
-    }
-}
-#TOC ul li {
-    padding-left: 1.125em;
-    position: relative;
-}
-#TOC ul li::before {
-    opacity: .4;
-    position: absolute;
-    left: -3em;
-    width: 4em;
-    text-align: right
-}
-
-/*********************************/
-/* WIKIPEDIA-STYLE TOC NUMBERING */
-/*********************************/
-#TOC > ul {
-    counter-reset: htoc_1;
-}
-#TOC > ul > li::before {
-    counter-increment: htoc_1;
-    content: counter(htoc_1) "\2006  ";
-}
-#TOC > ul ul {
-    counter-reset: htoc_2;
-}
-#TOC > ul ul li::before {
-    counter-increment: htoc_2;
-    content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
-}
-#TOC > ul ul ul {
-    counter-reset: htoc_3;
-}
-#TOC > ul ul ul li::before {
-    counter-increment: htoc_3;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
-}
-#TOC > ul ul ul ul {
-    counter-reset: htoc_4;
-}
-#TOC > ul ul ul ul li::before {
-    counter-increment: htoc_4;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
-}
-#TOC > ul ul ul ul ul {
-    counter-reset: htoc_5;
-}
-#TOC > ul ul ul ul ul li::before {
-    counter-increment: htoc_5;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
-}
-#TOC > ul ul ul ul ul ul {
-    counter-reset: htoc_6;
-}
-#TOC > ul ul ul ul ul ul li::before {
-    counter-increment: htoc_6;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
-}
-#TOC ul li::before {
-    font-weight: normal;
-    opacity: 0.4;
-}
-div#TOC::before {
-    font-weight: bold;
-    margin: 0 0 10px 0;
-    display: block;
-    opacity: 0.4;
-}
-
-/* Tables */
-/* double line around tables */
-#markdownBody .tableWrapper {
+.tableWrapper {
     margin: 2em 0 2.125em 0;
 }
-#markdownBody table {
+
+table {
     margin: 0;
+    padding: 0;
     border-collapse: collapse;
-    border-radius: 0;
-    border: 1px solid #bbb;
+    width: 100%;
+    font-size: 0.65em;
+    border: 1px solid #ddd;
+
+    /*  'tabular figures' to make numbers line up in tables:
+        https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
+        https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
+        */
+    font-variant-numeric: tabular-nums;
 }
-#markdownBody th.header {
-    border-right: none;
-}
+
 /*
  * Tables.less
  * Tables for, you guessed it, tabular data
  * ---------------------------------------- */
 /* from Twitter's bootstrap package; adds grid-lines to table */
-table {
-    width: 100%;
-    margin-bottom: 18px;
-    padding: 0;
-    border-collapse: separate;
-    /* *border-collapse: collapse;
-       IE7, collapse table to remove spacing */
-    font-size: 13px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-}
-table th, table td {
+table th,
+table td {
     padding: 10px 10px 9px;
     line-height: 18px;
     text-align: left;
@@ -880,7 +989,8 @@ table th {
 table td {
     vertical-align: top;
 }
-table th + th, table td + td {
+table th + th,
+table td + td {
     border-left: 1px solid #ddd;
 }
 table tr + tr td {
@@ -909,7 +1019,6 @@ th.header {
     background-repeat: no-repeat;
     background-position: center left;
     padding-left: 20px;
-    border-right: 1px solid #dad9c7;
     margin-left: -1px;
 }
 th.headerSortUp {
@@ -930,36 +1039,99 @@ tbody tr:hover td {
 }
 
 /* CSS written by cwillu in order to rewrite the Modafinil page's table of prices */
-#suppliers-prices td,#suppliers-prices th { padding: 0px 15px; }
-#suppliers-prices td:nth-child(1):after { content: "mg/$" }
-#suppliers-prices td:nth-child(2) { text-align: right; }
-#suppliers-prices td:nth-child(2):after { content: "mg" }
-#suppliers-prices td:nth-child(3):before { content: "x" }
-#suppliers-prices td:nth-child(5):before { content: "$" }
+#suppliers-prices td,
+#suppliers-prices th {
+    padding: 0 15px;
+}
+#suppliers-prices td:nth-child(1):after {
+    content: "mg/$";
+}
+#suppliers-prices td:nth-child(2) {
+    text-align: right;
+}
+#suppliers-prices td:nth-child(2):after {
+    content: "mg";
+}
+#suppliers-prices td:nth-child(3):before {
+    content: "x";
+}
+#suppliers-prices td:nth-child(5):before {
+    content: "$";
+}
+
+/*****************/
+/* UNCATEGORIZED */
+/*****************/
+/*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+
+div.column {
+    width: 50%;
+    float: left;
+}
+
+p.caption {
+    display: none;
+}
+
+p {
+    margin-top: -0.2em;
+    margin-bottom: 0;
+}
+
+/* how much to indent successive paragraphs; see A/B tests */
+p + p {
+    text-indent: 2.5em;
+    margin-top: 0;
+}
+
+p.hang {
+    text-indent: -0.44em;
+}
+
+/* number formatting */
+.num {
+    font-size: 0.85em
+}
+/* More elegant-looking rules */
+hr {
+    border: none;
+    height: 0;
+    border-bottom: 1px solid #aaa;
+}
 
 /* rejigger whitespace inside lists per quicksilver of #haskell */
-li { margin-top: 0.5em; }
-li p { margin: 0.2em; }
+li {
+    margin-top: 0.5em;
+}
+li p {
+    margin: 0.2em;
+}
 
+/***************/
+/* BLOCKQUOTES */
+/***************/
 
-/******************************************************************/
-/* More consistent and pleasing spacing in and around blockquotes */
-/******************************************************************/
 blockquote {
     margin: 1.5em 1em;
 }
-blockquote > *:last-child {
+blockquote > :last-child {
     margin-bottom: 0;
 }
 /* Add very modest drop shadows, partially inspired by http://nicolasgallagher.com/css-drop-shadows-without-images/demo/
    Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
 
    See A/B tests: this highlighting is better than no highlighting */
-blockquote, blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote {
+blockquote,
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
     z-index: -2;
-    background-color: rgb(245, 245, 245); }
-blockquote blockquote, blockquote blockquote blockquote blockquote, blockquote blockquote blockquote blockquote blockquote blockquote {
-    background-color: rgb(235, 235, 235); }
+    background-color: rgb(245, 245, 245);
+}
+blockquote blockquote,
+blockquote blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+    background-color: rgb(235, 235, 235);
+}
 /* add a gray border and a margin */
 blockquote {
     border: 0.5px solid #ccc;
@@ -970,24 +1142,22 @@ blockquote {
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan & IRC for help */
 q {
-	background-color: rgba(0, 0, 0, 0.015);
+    background-color: rgba(0, 0, 0, 0.015);
 }
 /* WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting, quote marks are not by default included in browser copy-paste, possibly annoying users. You need the following CSS & a line of JS to insert real quotes. */
 q::before,
 q::after {
-	content: none;
+    content: none;
 }
 blockquote > p:only-of-type q:only-of-type {
-	background-color: inherit;
+    background-color: inherit;
 }
 
-/* left-hanging quotes:
-http://css-tricks.com/almanac/properties/h/hanging-punctuation/ http://www.w3schools.com/cssref/css3_pr_hanging-punctuation.asp http://www.w3.org/TR/css3-text/#hanging-punctuation0 */
-blockquote, p {
-  hanging-punctuation: first;
-}
+/*************/
+/* EPIGRAPHS */
+/*************/
+/* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 
-/* Special CSS for for epigraph blockquotes (denoted by an 'epigraph' div class); loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 .epigraph {
     margin: 2.125em 2em 2em 2em;
     overflow: visible;
@@ -1005,16 +1175,20 @@ blockquote, p {
     font-style: italic;
     background-color: inherit;
 }
-.epigraph q em { font-style: normal; } /* reverse back to normal when italics are used inside an epigraph */
+.epigraph q em {
+    font-style: normal;
+} /* reverse back to normal when italics are used inside an epigraph */
 #markdownBody .epigraph p:last-child {
     margin: 0.5em 0 0 0;
     text-align: right;
-    font-size: 0.875em; }
+    font-size: 0.875em;
+}
 .epigraph p:nth-last-of-type(n+2) > q::before,
 .epigraph p:nth-last-of-type(n+2) > q::after {
     display: none;
 }
-.epigraph blockquote::before, .epigraph blockquote::after {
+.epigraph blockquote::before,
+.epigraph blockquote::after {
     display: block;
     position: absolute;
     font-size: 2.5em;
@@ -1031,8 +1205,15 @@ blockquote, p {
     bottom: -0.75em;
 }
 
+/*************/
+/* FOOTNOTES */
+/*************/
+
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
-sub, sup { line-height: 0.3em; }
+sub,
+sup {
+    line-height: 0.3em;
+}
 
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/
    If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
@@ -1040,7 +1221,7 @@ sub, sup { line-height: 0.3em; }
    Note: setting `opacity: 1;` in this CSS doesn't seem to set the footnote appearance to fully opaque,
    so I've edited the opacity calls in `footnotes.js` to force it */
 #footnotediv div {
-    background-color: white;
+    background-color: #fff;
     padding: 3px;
     padding: 12px;
     max-width: 800px;
@@ -1048,11 +1229,9 @@ sub, sup { line-height: 0.3em; }
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
-sup + sup { margin-left: 2px; }
-
-/**********************************************************/
-/* More stylish footnotes + layout bug fixes in footnotes */
-/**********************************************************/
+sup + sup {
+    margin-left: 2px;
+}
 
 div#markdownBody a.footnote-back {
     background: none;
@@ -1100,7 +1279,7 @@ div#markdownBody .sourceCode + a.footnote-back {
 /***************/
 /* CODE BLOCKS */
 /***************/
-/* source code formatting */
+
 code {
     background-color: rgb(250, 250, 250);
     border: 1px solid rgb(200, 200, 200);
@@ -1108,7 +1287,7 @@ code {
     padding-right: 4px;
     /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
     font-family: "Liberation Mono", Consolas, Courier, monospace;
-    font-size:0.9375em;
+    font-size: 0.9375em;
 }
 pre code {
     display: block;
@@ -1120,38 +1299,83 @@ pre code.sourceCode {
     overflow: auto;
 }
 /* Source code highlighting; generated by pandoc/skylighting: 'kate' theme */
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1.5em auto; }
-pre.sourceCode { margin: 0; }
-@media screen {
-    div.sourceCode { overflow: auto; }
+a.sourceLine {
+    display: inline-block; line-height: 1.25;
+}
+a.sourceLine {
+    pointer-events: none;
+    color: inherit;
+    text-decoration: inherit;
+}
+a.sourceLine:empty {
+    height: 1.2em;
+}
+.sourceCode {
+    overflow: visible;
+}
+code.sourceCode {
+    white-space: pre;
+    position: relative;
+}
+div.sourceCode {
+    margin: 1.5em auto;
+}
+pre.sourceCode {
+    margin: 0;
+}
+@media only screen {
+    div.sourceCode {
+        overflow: auto;
+    }
 }
 @media print {
-    code.sourceCode { white-space: pre-wrap; }
-    a.sourceLine { text-indent: -1em; padding-left: 1em; }
+    code.sourceCode {
+        white-space: pre-wrap;
+    }
+    a.sourceLine {
+        text-indent: -1em;
+        padding-left: 1em;
+    }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    background-color: #ffffff;
+pre.numberSource a.sourceLine {
+    position: relative;
+    left: -4em;
+}
+pre.numberSource a.sourceLine::before { content: attr(title);
+    position: relative;
+    left: -1em;
+    text-align: right;
+    vertical-align: baseline;
+    border: none;
+    pointer-events: all;
+    display: inline-block;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    padding: 0 4px;
+    width: 4em;
+    background-color: #fff;
     color: #a0a0a0;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
-div.sourceCode
-  { color: #1f1c1b; background-color: #ffffff; }
-@media screen {
-    a.sourceLine::before { text-decoration: underline; }
+}
+pre.numberSource {
+    margin-left: 3em;
+    border-left: 1px solid #a0a0a0;
+    padding-left: 4px;
+}
+div.sourceCode {
+    color: #1f1c1b;
+    background-color: #fff;
+}
+@media only screen {
+    a.sourceLine::before {
+        text-decoration: underline;
+    }
 }
 code span    { color: #1f1c1b; } /* Normal */
 code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
@@ -1186,26 +1410,32 @@ code span.vs { color: #bf0303; } /* VerbatimString */
 code span.wa { color: #bf0303; } /* Warning */
 
 /* hide the ad in the ad A/B test by default */
-div#ads { display: block; text-align: center; display: none; }
-div#ads a img {  max-width: 100%; }
+div#ads {
+    display: block;
+    text-align: center;
+    display: none;
+}
+div#ads a img {
+    max-width: 100%;
+}
 
 /***************/
 /* IMAGE FOCUS */
 /***************/
 /* 'click to zoom' images. Source: http://share.obormot.net/misc/gwern/image-focus.css ; supporting CSS for the JS: http://share.obormot.net/misc/gwern/image-focus.js */
-
 /*=-------------------=*/
 /*= Scroll prevention =*/
 /*=-------------------=*/
+
 html.no-scroll {
     overflow-y: scroll;
     position: fixed;
-    max-width: calc(100% - 10px);
 }
 
 /*=--------------=*/
 /*= Hover styles =*/
 /*=--------------=*/
+
 #markdownBody img:hover {
     filter: drop-shadow(0 0 3px #777);
     cursor: zoom-in;
@@ -1217,6 +1447,7 @@ html.no-scroll {
 /*=---------=*/
 /*= Overlay =*/
 /*=---------=*/
+
 #image-focus-overlay {
     position: fixed;
     top: 0;
@@ -1254,10 +1485,11 @@ html.no-scroll {
 /*=---------=*/
 /*= Caption =*/
 /*=---------=*/
+
 #image-focus-overlay .caption {
     position: absolute;
     bottom: 0.75em;
-    background-color: rgba(0,0,0,0.7);
+    background-color: rgba(0, 0, 0, 0.7);
     left: 4.5em;
     right: 4.5em;
     margin: auto;
@@ -1305,6 +1537,7 @@ html.no-scroll {
 /*=--------------=*/
 /*= Help overlay =*/
 /*=--------------=*/
+
 #image-focus-overlay .help-overlay {
     position: absolute;
     display: flex;
@@ -1329,7 +1562,7 @@ html.no-scroll {
 #image-focus-overlay .help-overlay:hover {
     max-width: 24em;
     max-height: 14em;
-    background-color: rgba(0,0,0,0.85);
+    background-color: rgba(0, 0, 0, 0.85);
     color: #fff;
     visibility: visible;
     transition:
@@ -1376,6 +1609,7 @@ html.no-scroll {
 /*=-----------------=*/
 /*= Background blur =*/
 /*=-----------------=*/
+
 .blurred {
     filter: blur(3px);
 }
@@ -1383,6 +1617,7 @@ html.no-scroll {
 /*=---------=*/
 /*= Tooltip =*/
 /*=---------=*/
+
 .image-wrapper {
     position: relative;
     display: block;
@@ -1398,7 +1633,7 @@ html.no-scroll {
     padding: 6px 15px 7px 15px;
     font-size: 1rem;
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    background-color: rgba(0,0,0,0.75);
+    background-color: rgba(0, 0, 0, 0.75);
     color: #fff;
     border-radius: 5px;
     opacity: 0.0;
@@ -1417,4 +1652,73 @@ html.no-scroll {
 }
 .image-wrapper:hover::after {
     opacity: 1.0;
+}
+
+/********************/
+/* DESKTOP-ONLY CSS */
+/********************/
+
+@media only screen and (min-width: 650px) {
+    div#Patreon a {
+        text-decoration: none;
+    }
+}
+/* end desktop css */
+
+/*******************/
+/* MOBILE-ONLY CSS */
+/*******************/
+
+@media only screen and (max-width: 649px) {
+    /* even less horizontal is available on mobile! */
+    blockquote {
+        margin-left: 3px;
+    }
+    blockquote blockquote {
+        margin-left: 3px;
+    }
+
+
+    /* force source code to fit inside the viewport: */
+    pre {
+        word-wrap: break-word;
+    }
+}
+
+/*******************/
+/* INDEX PAGE ONLY */
+/*******************/
+/*  add tweaks for just the landing page https://www.gwern.net/index, which is a static HTML;
+    it's hardwired so it can be edited to remove various things and have a reflowable site-wide Table of Contents
+    */
+
+body.siteIndex {
+    /*  leave enough horizontal room to show multiple sections simultaneously, table-like
+        */
+    max-width: 1500px;
+
+    /*  add some vertical padding for the introduction
+        */
+    margin-top: 15px;
+}
+
+/*  make the sections reflow; better than fixed-width tables
+    */
+body.siteIndex article section {
+    display: inline-block;
+    vertical-align: top;
+}
+
+/*  align the section headers nicely with the lists of pages for desktop; otherwise keep default mobile spacing of lists
+    */
+@media only screen and (min-width: 650px) {
+    body.siteIndex #markdownBody li {
+        margin-top: 0;
+    }
+    body.siteIndex #markdownBody li p {
+        margin: 0;
+    }
+    body.siteIndex #markdownBody h1 {
+        padding-left: 0.6em;
+    }
 }
