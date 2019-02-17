@@ -233,12 +233,6 @@
         margin-bottom: 15px;
     }
 
-    div#main {
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-        border: none;
-    }
-
     div#logo { margin-left: -63px;
                position: relative;
                top: -0.75em;
@@ -252,14 +246,6 @@
         width: 133px;
         float: left;
 
-        /* SIDEBAR: add most of the fanciness, particularly the 'block' display which uses up vertical whitespace,
-         *  which we can afford on the desktop. */
-        /* We want descriptions and tags to be hyphenated/broken
-         * when they are too long, otherwise they spill onto the
-         * body text, which is ugly and unreadable.
-         *
-         * CSS courtesy of http://blog.kenneth.io/blog/2012/03/04/word-wrapping-hypernation-using-css/ */
-        word-break: break-all;
         font-variant: small-caps;
     }
 
@@ -983,9 +969,17 @@ blockquote {
 }
 
 /* very lightly highlight non-block quotations somewhat similar to above; thanks to puritan & IRC for help */
-/* WARNING: apparently browsers will display correctly quotation marks when <q> elements are used, but will not preserve them in copy-paste‽ */
-q {background-color:rgba(0,0,0,0.015);}
-blockquote > p:only-of-type q:only-of-type {background-color:inherit}
+q {
+	background-color: rgba(0, 0, 0, 0.015);
+}
+/* WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting, quote marks are not by default included in browser copy-paste, possibly annoying users. You need the following CSS & a line of JS to insert real quotes. */
+q::before,
+q::after {
+	content: none;
+}
+blockquote > p:only-of-type q:only-of-type {
+	background-color: inherit;
+}
 
 /* left-hanging quotes:
 http://css-tricks.com/almanac/properties/h/hanging-punctuation/ http://www.w3schools.com/cssref/css3_pr_hanging-punctuation.asp http://www.w3.org/TR/css3-text/#hanging-punctuation0 */
