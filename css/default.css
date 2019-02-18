@@ -223,6 +223,11 @@ body {
     max-width: 1400px;
     margin: 0 15px 0 5px;
 }
+@media only screen and (max-width: 649px) {
+    body {
+        margin: 0 10px;
+    }
+}
 
 /***********/
 /* SIDEBAR */
@@ -303,20 +308,55 @@ body {
 }
 
 @media only screen and (max-width: 649px) {
-    /* remove extra lines and stuff from the sidebar: */
-    #sidebar * {
-        display: inline;
+    #sidebar {
+        width: unset;
+        padding: 2px 0 0 0;
+        justify-content: center;
+    }
+    #sidebar a {
+        border: 1px dotted #000;
+        padding: 3px 10px;
+    }
+    #sidebar,
+    #sidebar-links,
+    #sidebar-news,
+    #sidebar-links p,
+    #sidebar-links ul {
+        display: flex;
+        margin: 0;
+    }
+    #sidebar-links {
+        flex-flow: column;
+        margin: 0.5em 0;
+    }
+    #sidebar-links > p {
+        justify-content: stretch;
+    }
+    #sidebar-links a {
+        flex: 1 1 auto;
+        text-align: center;
+        margin: 1px;
+    }
+    #sidebar #sidebar-links ul {
+        list-style-type: none;
+        padding: 0;
     }
     #sidebar #logo {
-        display: none;
+        display: inline-block;
+        margin: calc(0.5em + 1px) 1px 0 0;
+    }
+    #sidebar #logo a {
+        padding: 7px 5px 6px 5px;
+    }
+    #sidebar #logo img {
+        width: 2.5rem;
+        height: auto;
+        display: block;
     }
     #sidebar hr {
         display: none;
     }
     #donations {
-        display: none;
-    }
-    #cse-sitesearch {
         display: none;
     }
 }
@@ -339,6 +379,12 @@ header h1 {
     letter-spacing: -1px;
 }
 
+@media only screen and (max-width: 649px) {
+    header h1 {
+        font-size: 2em;
+    }
+}
+
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -359,6 +405,18 @@ header h1 {
     overflow: auto;
     font-size: 0.95em;
     line-height: 1.5;
+}
+
+#page-metadata #abstract {
+    display: block;
+    margin: 0 auto 0.5em auto;
+}
+#page-metadata #abstract + br {
+    display: none;
+}
+
+#page-metadata span:nth-of-type(n+3) {
+    white-space: nowrap;
 }
 
 /*********************/
@@ -385,7 +443,7 @@ header h1 {
 @media only screen and (max-width: 649px) {
     #TOC {
         float: none;
-        margin: 5px;
+        margin: 2em auto;
     }
 }
 
@@ -411,6 +469,26 @@ header h1 {
 @media only screen and (max-width: 1040px) {
     #TOC {
         font-size: 0.80rem;
+    }
+}
+@media only screen and (max-width: 649px) {
+    #TOC {
+        font-size: 1rem;
+    }
+    #TOC a {
+        display: inline-block;
+    }
+    #TOC li li a {
+        padding: 0 0 1px 0;
+    }
+    #TOC li li li a {
+        padding: 0 0 2px 0;
+    }
+    #TOC li li li li a {
+        padding: 0 0 3px 0;
+    }
+    #TOC li li li li a {
+        padding: 0 0 4px 0;
     }
 }
 
@@ -866,6 +944,19 @@ article > :not(#TOC) a:link *::-moz-selection {
 #markdownBody ul > li::before,
 #markdownBody ol > li::before {
     position: absolute;
+}
+
+@media only screen and (max-width: 649px) {
+    #markdownBody ul,
+    #markdownBody ol {
+        list-style-type: none;
+        margin: 1.25em 0 1.5em 1.75em;
+        padding: 0;
+    }
+    #markdownBody li > ul,
+    #markdownBody li > ol {
+        margin: 0.5em 0 0.5em 1.75em;
+    }
 }
 
 /*=-----------------------=*/
@@ -1435,7 +1526,7 @@ code {
     font-family: "Liberation Mono", Consolas, Courier, monospace;
     font-size: 0.9em;
 }
-pre code.sourceCode {
+pre code {
     display: block;
     padding: 8px 14px;
     margin: 0;
@@ -1639,7 +1730,8 @@ body.siteIndex {
 body.siteIndex #markdownBody {
     /*  add some vertical padding for the introduction
         */
-    padding-top: 15px;
+    padding: 15px 0 4em 0;
+    position: relative;
 }
 
 /*  make the sections reflow; better than fixed-width tables
@@ -1649,58 +1741,72 @@ body.siteIndex article section {
     vertical-align: top;
 }
 
-/*  align the section headers nicely with the lists of pages for desktop; otherwise keep default mobile spacing of lists
+/*  Nice-looking bottom decoration.
     */
-@media only screen and (min-width: 650px) {
-    body.siteIndex #markdownBody {
-        padding-bottom: 4em;
-        position: relative;
+body.siteIndex #markdownBody::after {
+    content: "";
+    background-color: #fff;
+    background-image: url('/images/logo.png');
+    display: block;
+    position: absolute;
+    bottom: 1em;
+    width: 20px;
+    height: 24px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    left: 0;
+    right: 0;
+    margin: auto;
+    padding: 0 10px 0 11px;
+    z-index: 1;
+}
+body.siteIndex #markdownBody::before {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: calc(1em + 12px);
+    height: 1px;
+    border-bottom: 1px dotted #000;
+    width: 100%;
+    opacity: 0.5;
+}
+
+body.siteIndex #markdownBody ul {
+    margin: 1.25em 3em 0 1.375em;
+}
+body.siteIndex #markdownBody li > ul {
+    margin: 0.25em 0 0.25em 2.5em;
+}
+body.siteIndex #markdownBody li {
+    margin-top: 0;
+}
+body.siteIndex #markdownBody > section ~ p {
+    border-top: 1px dotted #777;
+    margin: 2em 0 0 0;
+    padding: 1em 0 0 0;
+    font-weight: bold;
+}
+
+@media only screen and (max-width: 649px) {
+    body.siteIndex #sidebar #logo {
+        border: 1px dotted transparent;
+        align-self: flex-start;
+        padding: 7px 5px 6px 5px;
+    }
+    body.siteIndex #markdownBody section {
+        max-width: 100%;
     }
     body.siteIndex #markdownBody ul {
-        margin: 1.25em 3em 0 1.375em;
-    }
-    body.siteIndex #markdownBody li > ul {
-        margin: 0.25em 0 0.25em 2.5em;
+        overflow-wrap: break-word;
+        margin-right: 0;
     }
     body.siteIndex #markdownBody li {
-        margin-top: 0;
+        padding: 1px 0;
+        margin: 2px 0 0 0;
     }
-    body.siteIndex #markdownBody > section ~ p {
-        border-top: 1px dotted #777;
-        margin: 2em 0 0 0;
-        padding: 1em 0 0 0;
-        font-weight: bold;
-    }
-
-    /*  Nice-looking bottom decoration.
-        */
-    body.siteIndex #markdownBody::after {
-        content: "";
-        background-color: #fff;
-        background-image: url('/images/logo.png');
-        display: block;
-        position: absolute;
-        bottom: 1em;
-        width: 20px;
-        height: 24px;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        left: 0;
-        right: 0;
-        margin: auto;
-        padding: 0 10px 0 11px;
-        z-index: 1;
-    }
-    body.siteIndex #markdownBody::before {
-        content: "";
-        display: block;
-        position: absolute;
-        bottom: calc(1em + 12px);
-        height: 1px;
-        border-bottom: 1px dotted #000;
-        width: 100%;
-        opacity: 0.5;
+    body.siteIndex #markdownBody ul > li::before {
+        top: 0.25em;
     }
 }
 
