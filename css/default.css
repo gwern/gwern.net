@@ -256,130 +256,110 @@ html {
 /* SIDEBAR */
 /***********/
 
-#sidebar {
-    padding: 0 40px 0 10px;
-    width: 100px;
-}
-
-/*=------=*/
-/*= Logo =*/
-/*=------=*/
-
-#sidebar #logo {
-    margin: 1em 0 2em 0;
-}
-#sidebar #logo a:hover {
-    background-color: transparent;
-}
-
-/*=---------------------=*/
-/*= Other sidebar stuff =*/
-/*=---------------------=*/
-
 #sidebar code {
     border: none;
     background-color: transparent;
     padding: 0;
 }
 
-#sidebar hr {
-    border-bottom-style: dotted;
-    margin: 1em 0 1.125em 0;
-}
-#sidebar #sidebar-news hr {
-    margin: 1.25em 0 1em 0;
-}
-
-#sidebar #sidebar-news ul {
-    list-style-type: circle;
-    padding: 0 0 0 20px;
-}
-
 #sidebar a {
     display: block;
-}
-#sidebar a:hover {
-    background-color: #eee;
 }
 
 @media only screen and (min-width: 650px) {
     #sidebar {
         font-variant: small-caps;
+        padding: 0 40px 0 10px;
+        width: 100px;
+    }
+    #sidebar a:hover {
+        background-color: #eee;
     }
 
-    #sidebar-links a {
-        display: block;
+    #sidebar a#logo {
+        margin: 1em 0 2em 0;
+    }
+    #sidebar a#logo:hover {
+        background-color: transparent;
+    }
+
+    #sidebar a.new,
+    #sidebar a.patreon {
+        border-top: 1px dotted #aaa;
+    }
+    #sidebar a.new {
+        margin: 1.25em 0 0.5em 0;
+        padding-top: 1.125em;
+        box-shadow: 0 1.125em 0 0 #fff inset;
+    }
+    #sidebar a.patreon {
+        font-size: 0.9em;
+        margin-top: 1.375em;
+        padding-top: 1.25em;
+        box-shadow: 0 1.25em 0 0 #fff inset;
+    }
+
+    #sidebar a.mail,
+    #sidebar a.rss,
+    #sidebar a.r_gwern {
+        line-height: 1;
+        padding-left: 0.25em;
         font-size: 1.05em;
-        text-decoration: none;
     }
-    #sidebar-links p a {
-        letter-spacing: -0.5px;
-    }
-    #sidebar-links ul {
-        text-transform: uppercase;
-        font-size: 0.75em;
-        line-height: 0.8;
-    }
-    #sidebar-links li a {
-        padding: 0.25em 0;
-    }
-
-    #sidebar #Patreon {
-        font-size: 0.875em;
+    #sidebar a.mail::before,
+    #sidebar a.rss::before,
+    #sidebar a.r_gwern::before {
+        content: "\25CB\2007";
+        font-size: 0.65em;
+        text-shadow: 0 0 0 #000;
     }
 }
-
 @media only screen and (max-width: 649px) {
     #sidebar {
-        width: unset;
-        padding: 2px 0 0 0;
         justify-content: center;
     }
     #sidebar a {
         border: 1px dotted #000;
         padding: 3px 10px;
-    }
-    #sidebar,
-    #sidebar-links,
-    #sidebar-news,
-    #sidebar-links p,
-    #sidebar-links ul {
-        display: flex;
-        margin: 0;
-    }
-    #sidebar-links {
-        flex-flow: column;
-        margin: 0.5em 0;
-    }
-    #sidebar-links > p {
-        justify-content: stretch;
-    }
-    #sidebar-links a {
-        flex: 1 1 auto;
         text-align: center;
         margin: 1px;
     }
-    #sidebar #sidebar-links ul {
-        list-style-type: none;
-        padding: 0;
-    }
-    #sidebar #logo {
-        display: inline-block;
-        margin: calc(0.5em + 1px) 1px 0 0;
-    }
-    #sidebar #logo a {
+    #sidebar a#logo {
         padding: 7px 5px 6px 5px;
+    }
+
+    #sidebar,
+    #sidebar-links {
+        display: flex;
+    }
+    #sidebar-links {
+        flex-flow: row wrap;
+        margin: 0.5em 0 0 0;
+    }
+
+    #sidebar a.home,
+    #sidebar a.site,
+    #sidebar a.links {
+        flex: 1 1 20%;
+    }
+    #sidebar a.new,
+    #sidebar a.mail,
+    #sidebar a.rss,
+    #sidebar a.r_gwern {
+        padding: 3px 10px;
+        flex: 1 1 auto;
+    }
+    #sidebar a.patreon {
+        display: none;
+    }
+
+    #sidebar #logo {
+        margin: calc(0.5em + 1px) 1px 1px 0;
     }
     #sidebar #logo img {
         width: 2.5rem;
         height: auto;
         display: block;
-    }
-    #sidebar hr {
-        display: none;
-    }
-    #donations {
-        display: none;
     }
 }
 
