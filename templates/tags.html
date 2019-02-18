@@ -2,26 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="author" content="gwern">
     <meta name="generator" content="hakyll">
-    <meta name="description" content="All gwern.net pages for this tag: $title$">
+    <meta name="description" content="All gwern.net pages for this $title$">
     <meta name="keywords" content="$title$">
     <link rel="canonical" href="https://www.gwern.net$url$">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>$title$ - Gwern.net</title>
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700&subset=latin-ext" />
     <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
 
     <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Site-wide global ATOM/RSS Feed (all edits)" />
 
     <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.ico" />
   </head>
-  <body>
+  <body class="tags">
 
     <main>
       <div id="sidebar">
-        <div id="logo"><a href="/index" title="index: categorized list of articles"><img alt="Logo: a Gothic/Fraktur blackletter capital G" src="/images/logo.png" height="75" width="64" /></a></div>
+        <div id="logo"><a href="/index" title="index: categorized list of articles"><img alt="Logo: a Gothic/Fraktur blackletter capital G" src="/images/logo.png" width="64" height="75" /></a></div>
 
         <div id="sidebar-links">
           <p>
@@ -47,22 +47,21 @@
       </header>
 
       <article>
-
-        <ul>$posts$</ul>
-
+        <div id="markdownBody">
+          <ul>
+            $posts$
+          </ul>
+        </div>
       </article>
     </main>
 
     <!-- Async load Google Analytics  -->
-    <script id="googleAnalytics" type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-18912926-1']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
+    <script id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" async></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-18912926-1');
     </script>
   </body>
 </html>
