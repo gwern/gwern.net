@@ -11,7 +11,13 @@
     font-style: normal;
     src: url('/static/font/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
     unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap; /* for body text, display as soon as possible (presumably as system font Baskerville) and re-render with Source Serif Pro whenever it downloads: https://developers.google.com/web/updates/2016/02/font-display https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display https://caniuse.com/#search=font-display */
+    /*  for body text, display as soon as possible (presumably as system font Baskerville)
+        and re-render with Source Serif Pro whenever it downloads:
+        https://developers.google.com/web/updates/2016/02/font-display
+        https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display
+        https://caniuse.com/#search=font-display
+        */
+    font-display: swap;
 }
 @font-face {
     font-family: "Source Serif Pro";
@@ -219,9 +225,26 @@ html {
     font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
 }
 
-body {
-    max-width: 1400px;
-    margin: 0 15px 0 5px;
+@media only screen and (min-width: 650px) {
+    body {
+        max-width: 1400px;
+        margin: 0 15px 0 5px;
+    }
+    main {
+        min-height: 100vh;
+        display: flex;
+        flex-flow: column;
+    }
+    article {
+        flex: 1 1 auto;
+    }
+    #sidebar {
+        position: absolute;
+    }
+    header,
+    article {
+        margin-left: 150px;
+    }
 }
 @media only screen and (max-width: 649px) {
     body {
@@ -281,7 +304,6 @@ body {
 
 @media only screen and (min-width: 650px) {
     #sidebar {
-        float: left;
         font-variant: small-caps;
     }
 
@@ -623,7 +645,10 @@ header h1 {
     }
 }
 
-/* use justified text (words get broken/hyphenated as necessary to avoid a 'ragged margin'), undoing the default of 'flush left, ragged' right (see https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left ) */
+/*  Use justified text (words get broken/hyphenated as necessary to avoid a 'ragged margin'),
+    undoing the default of 'flush left, ragged' right (see
+    https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
+    */
 @supports (-webkit-hyphens: auto) or (-ms-hyphens: auto) or (hyphens: auto) {
     #markdownBody p {
         text-align: justify;
@@ -1738,22 +1763,23 @@ hr {
     max-width: 100%;
 }
 
-/*******************/
-/* INDEX PAGE ONLY */
-/*******************/
-/*  add tweaks for just the landing page https://www.gwern.net/index, which is a static HTML;
-    it's hardwired so it can be edited to remove various things and have a reflowable site-wide Table of Contents
-    */
+/*******************************/
+/* PAGE-SPECIFIC MODIFICATIONS */
+/*******************************/
 
+/*=-------------------------=*/
+/*= Index page & Tags pages =*/
+/*=-------------------------=*/
+
+/*  leave enough horizontal room to show multiple sections simultaneously, table-like
+    */
 body.siteIndex {
-    /*  leave enough horizontal room to show multiple sections simultaneously, table-like
-        */
     max-width: 1500px;
 }
 
+/*  add some vertical padding for the introduction
+    */
 body.siteIndex #markdownBody {
-    /*  add some vertical padding for the introduction
-        */
     padding-top: 15px;
 }
 
@@ -1766,14 +1792,13 @@ body.siteIndex article section {
 
 /*  Nice-looking bottom decoration.
     */
-body.siteIndex #markdownBody,
-body.tags #markdownBody {
+body.siteIndex article,
+body.tags article {
     position: relative;
     padding-bottom: 4em;
 }
-
-body.siteIndex #markdownBody::after,
-body.tags #markdownBody::after{
+body.siteIndex article::after,
+body.tags article::after{
     content: "";
     background-color: #fff;
     background-image: url('/images/logo.png');
@@ -1791,8 +1816,8 @@ body.tags #markdownBody::after{
     padding: 0 10px 0 11px;
     z-index: 1;
 }
-body.siteIndex #markdownBody::before,
-body.tags #markdownBody::before{
+body.siteIndex article::before,
+body.tags article::before{
     content: "";
     display: block;
     position: absolute;
@@ -1849,7 +1874,26 @@ body.siteIndex #markdownBody > section ~ p {
     }
 }
 
-/****************************************************************TEMPORARY*************************************************************************/
+/*=-------=*/
+/*= /Mead =*/
+/*=-------=*/
+
+/*  This is for the pictures of mead bottles next to the reviews.
+    */
+body.mead p > img {
+    float: right;
+    max-height: 8em;
+    width: auto;
+    position: relative;
+    z-index: 1;
+    margin: 1em 1em 1em 2em;
+    box-shadow:
+        0 0 0 15px #fff,
+        0 0 0 16px #ccc,
+        0 0 0 17px transparent;
+}
+
+/********************************************TEMPORARY*****************************************************/
 /* http://share.obormot.net/misc/gwern/image-focus.css http://share.obormot.net/misc/gwern/image-focus.js */
 /* Clickable/zoomable images */
 /***************/
