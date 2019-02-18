@@ -157,7 +157,18 @@
           table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
       });
 
-      document.querySelectorAll("q").forEach(q => { q.innerHTML = `“$${q.innerHTML}”`; });
+      document.querySelectorAll("q").forEach(q => {
+          var Q = { };
+          QQ = qq => {
+          let Qq = ((Q.Q_q = qq.parentElement) &&
+                      (Q.q_Q_q = Q.Q_q.closest("q")) &&
+                       Q.q_Q_q.classList.contains("qq"));
+            qq.classList.add(Qq ? "q" : "qq");
+            qq.innerHTML = (Qq ? `‘$${qq.innerHTML}’` : `“$${qq.innerHTML}”`);
+            qq.querySelectorAll("q").forEach(qqq => { QQ(qqq); });
+          };
+          QQ(q);
+      });
     </script>
   </body>
 </html>
