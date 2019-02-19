@@ -224,6 +224,11 @@ html {
     font-weight: 400;
     font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
 }
+@media only screen and (max-width: 649px) {
+    html {
+        font-size: 18px;
+    }
+}
 
 @media only screen and (min-width: 650px) {
     body {
@@ -1363,23 +1368,35 @@ a.footnote-ref + a.footnote-ref {
 /*= Floating footnote popups =*/
 /*=--------------------------=*/
 
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/
-   If we don't have this CSS for the popup/floating footnotes, they're too see-through and unreadable.
-
-   Note: setting `opacity: 1;` in this CSS doesn't seem to set the footnote appearance to fully opaque,
-   so I've edited the opacity calls in `footnotes.js` to force it */
+/*  http://ignorethecode.net/blog/2010/04/20/footnotes/
+    */
 #footnotediv {
     z-index: 1;
     font-size: 0.9em;
     box-shadow: 0 0 0 2px #fff;
+    position: absolute;
 }
 #footnotediv > div {
     background-color: #fff;
     padding: 12px 16px 14px 16px;
     max-width: 800px;
+    max-height: calc(100vh - 32px);
     border: 3px double #aaa;
     line-height: 1.45;
+    overflow: auto;
 }
+#footnotediv > div::-webkit-scrollbar {
+    width: 14px;
+}
+#footnotediv > div::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    box-shadow:
+        0 0 0 3px #fff inset;
+}
+#footnotediv > div::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
+}
+
 #footnotediv a.footnote-back {
     display: none;
 }
@@ -1725,9 +1742,11 @@ code span.wa { color: #bf0303; } /* Warning */
     overflow: auto;
     vertical-align: bottom;
 }
+/*
 #markdownBody #footnotediv .MathJax_SVG {
     vertical-align: unset;
 }
+ */
 
 /********/
 /* MISC */
