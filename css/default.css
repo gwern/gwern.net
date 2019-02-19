@@ -282,6 +282,9 @@ html {
     #sidebar a#logo:hover {
         background-color: transparent;
     }
+    #sidebar a#logo img {
+        width: 64px;
+    }
 
     #sidebar a.new,
     #sidebar a.patreon {
@@ -309,14 +312,22 @@ html {
     #sidebar a.mail::before,
     #sidebar a.rss::before,
     #sidebar a.r_gwern::before {
-        content: "\25CB\2007";
-        font-size: 0.65em;
+        content: "°\2007";
         text-shadow: 0 0 0 #000;
+        position: relative;
+        top: 0.25em;
+    }
+
+    #sidebar code {
+        font-variant: none;
+        text-transform: uppercase;
+        font-size: 0.7em;
     }
 }
 @media only screen and (max-width: 649px) {
     #sidebar {
         justify-content: center;
+        margin: 0 0 0.5em 0;
     }
     #sidebar a {
         border: 1px dotted #000;
@@ -325,7 +336,7 @@ html {
         margin: 1px;
     }
     #sidebar a#logo {
-        padding: 7px 5px 6px 5px;
+        padding: 8px 5px 3px 5px;
     }
 
     #sidebar,
@@ -358,8 +369,6 @@ html {
     }
     #sidebar #logo img {
         width: 2.5rem;
-        height: auto;
-        display: block;
     }
 }
 
@@ -518,6 +527,8 @@ header h1 {
     margin: 5px 2px 10px 0;
     padding-left: 1.125em;
     position: relative;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 #TOC li li {
     margin-bottom: 0;
@@ -1708,6 +1719,9 @@ code span.wa { color: #bf0303; } /* Warning */
     overflow: auto;
     vertical-align: bottom;
 }
+#markdownBody #footnotediv .MathJax_SVG {
+    vertical-align: unset;
+}
 
 /********/
 /* MISC */
@@ -1781,12 +1795,12 @@ body.siteIndex article::after,
 body.tags article::after{
     content: "";
     background-color: #fff;
-    background-image: url('/images/logo.png');
+    background-image: url('/images/logo-smooth.svg');
     display: block;
     position: absolute;
-    bottom: 1em;
-    width: 20px;
-    height: 24px;
+    bottom: 0.75em;
+    width: 22px;
+    height: 30px;
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -1801,7 +1815,7 @@ body.tags article::before{
     content: "";
     display: block;
     position: absolute;
-    bottom: calc(1em + 12px);
+    bottom: calc(0.75em + 15px);
     height: 1px;
     border-bottom: 1px dotted #000;
     width: 100%;
