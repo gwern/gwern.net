@@ -232,8 +232,9 @@ html {
 
 @media only screen and (min-width: 650px) {
     body {
-        max-width: 1400px;
-        margin: 0 15px 0 5px;
+        max-width: 1120px;
+        padding: 0 15px 0 5px;
+        margin: 0 auto;
     }
     main {
         min-height: 100vh;
@@ -443,7 +444,7 @@ header h1 {
     border: 1px solid #ccc;
     background-color: #f9f9f9;
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    margin: 0 40px 0 0;
+    margin: 0 40px 40px 0;
     line-height: 1.25;
     padding: 10px 10px 2px 14px;
 }
@@ -453,7 +454,7 @@ header h1 {
 @media only screen and (min-width: 650px) {
     #TOC {
         float: left;
-        max-width: 20%;
+        max-width: 25%;
     }
 }
 @media only screen and (max-width: 649px) {
@@ -616,14 +617,20 @@ header h1 {
 /* MAIN CONTENT */
 /****************/
 
-/* try to avoid scrollbars on paragraphs: prevents long unbroken un-hyphenatable lines from causing H-scrolling */
 #markdownBody {
+/*  overflow: auto; */
+
+    /*  Try to avoid scrollbars on paragraphs: prevents long unbroken
+        un-hyphenatable lines from causing H-scrolling
+        */
     overflow-wrap: break-word;
-    overflow: auto;
 }
 
 @media only screen and (min-width: 650px) {
-    /* replaces A/B-test-set average value; the wider the screen, the more line-height is necessary, and no one size suits all, so set 3 brackets of increasing height. */
+    /*  Replaces A/B-test-set average value; the wider the screen, the more
+        line-height is necessary, and no one size suits all, so set 3 brackets
+        of increasing height.
+        */
     @media only screen and (max-width: 1000px) {
         #markdownBody {
             line-height: 1.45;
@@ -641,8 +648,8 @@ header h1 {
     }
 }
 
-/*  Use justified text (words get broken/hyphenated as necessary to avoid a 'ragged margin'),
-    undoing the default of 'flush left, ragged' right (see
+/*  Use justified text (words get broken/hyphenated as necessary to avoid a
+    'ragged margin'), undoing the default of 'flush left, ragged' right (see
     https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
     */
 @supports (-webkit-hyphens: auto) or (-ms-hyphens: auto) or (hyphens: auto) {
@@ -654,7 +661,7 @@ header h1 {
     }
 }
 
-/*  cute 'old-style' numerals, look a little nicer inline in text:
+/*  Cute 'old-style' numerals, look a little nicer inline in text:
     https://practicaltypography.com/alternate-figures.html#oldstyle-figures
     */
 #markdownBody p {
@@ -821,12 +828,15 @@ article #markdownBody section > :first-child a {
     top: -3px;
     left: 5px;
     visibility: hidden;
+    opacity: 0;
+    transition: opacity 0s ease 0.1s;
 }
 #markdownBody section > :first-child a:hover::after,
 #markdownBody section > :first-child a:active::after,
 #markdownBody section > :first-child a:focus::after,
 #markdownBody section:target > :first-child a::after {
     visibility: visible;
+    opacity: 1;
 }
 #markdownBody section:target > :first-child a::after {
     opacity: 0.5;
@@ -950,12 +960,13 @@ article > :not(#TOC) a:link *::-moz-selection {
 #markdownBody ul,
 #markdownBody ol {
     list-style-type: none;
-    margin: 1.25em 0 1.5em 2.5em;
-    padding: 0;
+    margin: 1.25em 0 1.5em 0;
+    padding: 0 0 0 2.5em;
+    overflow: hidden;
 }
 #markdownBody li > ul,
 #markdownBody li > ol {
-    margin: 0.5em 0 0.5em 2.5em;
+    margin: 0.5em 0 0.5em 0;
 }
 
 #markdownBody ul > li,
@@ -1092,6 +1103,11 @@ blockquote {
     padding: 0.8rem 1rem;
 }
 
+@media only screen and (min-width: 650px) {
+    blockquote {
+        overflow: hidden;
+    }
+}
 @media only screen and (max-width: 649px) {
     /* even less horizontal is available on mobile! */
     blockquote {
@@ -1221,8 +1237,9 @@ q::after {
 /* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 
 .epigraph {
-    margin: 2.125em 2em 2em 2em;
-    overflow: visible;
+    margin: 2em 0 2em 0;
+    padding: 0.125em 2em 0 2em;
+    overflow: hidden;
 }
 .epigraph blockquote {
     padding: 0;
@@ -1232,6 +1249,7 @@ q::after {
     font-size: inherit;
     position: relative;
     z-index: 1;
+    overflow: visible;
 }
 .epigraph q {
     font-style: italic;
@@ -1288,7 +1306,9 @@ article > :not(#TOC) .epigraph blockquote q a:link {
 @media only screen and (max-width: 649px) {
     .epigraph {
         margin: 2.125em 1em 2em 1em;
+        padding: 0;
         font-size: 0.95em;
+        overflow: visible;
     }
     .epigraph blockquote::before {
         left: -0.375em;
@@ -1317,6 +1337,7 @@ a.footnote-ref {
     line-height: 0.3em;
     position: relative;
     padding: 0 1px;
+    font-feature-settings: 'lnum';
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
@@ -1790,12 +1811,6 @@ hr {
 /*= Index page & Tags pages =*/
 /*=-------------------------=*/
 
-/*  leave enough horizontal room to show multiple sections simultaneously, table-like
-    */
-body.siteIndex {
-    max-width: 1500px;
-}
-
 /*  add some vertical padding for the introduction
     */
 body.siteIndex #markdownBody {
@@ -1851,11 +1866,12 @@ body.tags article::before{
     */
 body.siteIndex #markdownBody ul,
 body.tags #markdownBody ul {
-    margin: 1.25em 3em 0 1.375em;
+    margin: 1.25em 3em 0 0;
+    padding: 0 0 0 1.375em;
 }
 body.siteIndex #markdownBody li > ul,
 body.tags #markdownBody li > ul {
-    margin: 0.25em 0 0.25em 2.5em;
+    margin: 0.25em 0 0.25em 0;
 }
 body.siteIndex #markdownBody li,
 body.tags #markdownBody li {
@@ -1868,6 +1884,19 @@ body.siteIndex #markdownBody > section ~ p {
     font-weight: bold;
 }
 
+@media only screen and (min-width: 650px) {
+    /*  Leave enough horizontal room to show multiple sections simultaneously,
+        table-like
+        */
+    body.siteIndex #markdownBody {
+        width: 1350px;
+        max-width: calc(50vw + 380px);
+    }
+    body.siteIndex p,
+    body.siteIndex hr {
+        max-width: 970px;
+    }
+}
 @media only screen and (max-width: 649px) {
     body.siteIndex #sidebar #logo {
         border: 1px dotted transparent;
@@ -1926,6 +1955,7 @@ body.mead p > img {
 html.no-scroll {
     overflow-y: scroll;
     position: fixed;
+    width: 100%;
 }
 
 /*=--------------=*/

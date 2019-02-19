@@ -47,7 +47,6 @@ var Footnotes = {
 		if (top + div.height() > jQuery(window).height() + jQuery(window).scrollTop())
 			top = position.top - div.height() - 15;
 		if (top < 0) top = 0;
-		console.log(top);
 		div.css({
 			left:left,
 			top:top
