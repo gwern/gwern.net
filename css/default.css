@@ -236,6 +236,11 @@ html {
         padding: 0 15px 0 5px;
         margin: 0 auto;
     }
+    @media only screen and (min-width: 1185px) {
+        body {
+            padding: 0 60px 0 5px;
+        }
+    }
     main {
         min-height: 100vh;
         display: flex;
@@ -287,6 +292,7 @@ html {
     }
     #sidebar a#logo:hover {
         background-color: transparent;
+        opacity: 0.6;
     }
     #sidebar a#logo img {
         width: 64px;
@@ -447,6 +453,10 @@ header h1 {
     margin: 0 40px 40px 0;
     line-height: 1.25;
     padding: 10px 10px 2px 14px;
+}
+
+#TOC:empty {
+    display: none;
 }
 
 /*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
@@ -1605,6 +1615,7 @@ code {
 }
 pre:not(.sourceCode) {
     overflow: auto;
+    margin: 1.75em auto;
 }
 pre.sourceCode code {
     overflow: auto;
@@ -1822,6 +1833,12 @@ body.siteIndex #markdownBody {
 body.siteIndex article section {
     display: inline-block;
     vertical-align: top;
+}
+
+/*  No index self-link.
+    */
+body.siteIndex #sidebar a#logo {
+    pointer-events: none;
 }
 
 /*  Nice-looking bottom decoration.
@@ -2046,6 +2063,11 @@ html.no-scroll {
 #image-focus-overlay .caption p {
     margin: 1em 1.25em;
     color: #fff;
+}
+#image-focus-overlay .caption code {
+    background-color: inherit;
+    border: none;
+    font-size: 1em;
 }
 
 #image-focus-overlay .caption:not(:empty)::before {
