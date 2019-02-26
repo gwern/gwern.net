@@ -136,26 +136,13 @@
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
 
-    <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. Force quotes into HTML -->
+    <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them -->
     <script>
       document.querySelectorAll(".collapse > *:first-child").forEach(heading => {
           heading.insertAdjacentHTML("afterend", "<input type='checkbox' class='disclosure-button'>");
       });
       document.querySelectorAll("table").forEach(table => {
           table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
-      });
-
-      document.querySelectorAll("q").forEach(q => {
-          var Q = { };
-          QQ = qq => {
-          let Qq = ((Q.Q_q = qq.parentElement) &&
-                      (Q.q_Q_q = Q.Q_q.closest("q")) &&
-                       Q.q_Q_q.classList.contains("qq"));
-            qq.classList.add(Qq ? "q" : "qq");
-            qq.innerHTML = (Qq ? `‘$${qq.innerHTML}’` : `“$${qq.innerHTML}”`);
-            qq.querySelectorAll("q").forEach(qqq => { QQ(qqq); });
-          };
-          QQ(q);
       });
     </script>
   </body>
