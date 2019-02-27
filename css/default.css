@@ -734,15 +734,23 @@ header h1 {
 .collapse {
     position: relative;
 }
-.collapse > :first-child {
+section.collapse > :first-child {
     padding-right: 1em;
 }
-.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseSummary) {
+section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseSummary) {
     max-height: 0;
     overflow: hidden;
     padding: 0;
     margin: 0;
     border: none;
+}
+:not(section).collapse .disclosure-button:not(:checked) + * > :nth-child(n+2) {
+    max-height: 0;
+    overflow: hidden;
+}
+:not(section).collapse .disclosure-button:not(:checked) + * > :first-child:not(.collapseSummary) {
+    max-height: 6ex;
+    overflow: hidden;
 }
 .disclosure-button {
     position: absolute;
@@ -757,9 +765,22 @@ header h1 {
     cursor: pointer;
     border: 1px solid transparent;
 }
+:not(section).collapse .disclosure-button {
+    width: 100%;
+}
 .disclosure-button:not(:checked) {
     height: 100%;
-    width: 100%;
+}
+:not(section).collapse .disclosure-button:not(:checked) {
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    right: -2px;
+}
+:not(section).collapse .disclosure-button:checked {
+    top: 0;
+}
+:not(section).collapse .disclosure-button:checked:hover {
+    background-color: rgba(0,0,0,0.1);
 }
 .disclosure-button::before {
     content: "\25C0";
@@ -773,8 +794,15 @@ header h1 {
     color: #999;
     padding: 4px 0 4px 8px;
 }
+:not(section).collapse .disclosure-button::before {
+    right: 1px;
+}
 .disclosure-button:checked::before {
     transform: rotate(-90deg);
+}
+:not(section).collapse .disclosure-button:checked::before {
+    top: 0;
+    right: -2px;
 }
 .disclosure-button:not(:checked)::after {
     width: 100%;
@@ -794,6 +822,12 @@ header h1 {
     content: "Click to expand";
     font-size: 1em;
     top: calc(100% - 8px);
+}
+:not(section).collapse .disclosure-button:not(:checked)::after {
+    top: calc(100% - 20px);
+}
+:not(section).collapse .disclosure-button:not(:checked):hover::after {
+    top: calc(100% - 12px);
 }
 .disclosure-button:not(:checked):hover {
     border: 1px dotted #777;
@@ -1111,7 +1145,12 @@ li > ol + p {
 /**********/
 
 figure {
-    margin: 1.75em 2em 1.5em 2em;
+    margin: 2em 2em 1.75em 2em;
+}
+@media only screen and (max-width: 649px) {
+    figure {
+        margin: 2em 1em 1.75em 1em;
+    }
 }
 figure img {
     display: block;
@@ -1121,9 +1160,26 @@ figure img {
     border: 1px solid #888;
 }
 figcaption {
-    text-align: center;
     font-size: 0.9375em;
     font-weight: bold;
+    padding: 0 0.25em;
+    margin: auto;
+    line-height: 1.45;
+}
+@supports (width: -moz-fit-content) {
+    figcaption {
+        width: -moz-fit-content;
+    }
+}
+@supports (width: fit-content) {
+    figcaption {
+        width: fit-content;
+    }
+}
+@media only screen and (max-width: 649px) {
+    figcaption {
+        font-size: 0.875em;
+    }
 }
 
 /*  Layout fix for images outside of <figure>.
@@ -1283,6 +1339,15 @@ blockquote q {
 q::before,
 q::after {
     content: none;
+}
+
+/* JS in default.html will insert the quote-mark spans around <q>s; this CSS then pushes them 'out' of the gray-highlighted area & de-emphasizes the double quotes, which looks somewhat nicer. And if the reader isn't using JS, then it's safe, because nothing happens since these spans won't exist. */
+span.quote-mark { opacity: 0.6; }
+span.quote-mark.open {
+    margin: 0 3px 0 2px;
+}
+span.quote-mark.close {
+    margin: 0 2px 0 3px;
 }
 
 /*************/
@@ -1651,45 +1716,41 @@ p + p {
 /***************/
 
 code {
-    background-color: #fafafa;
-    border: 1px solid #c8c8c8;
     padding: 0 4px;
     /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
     font-family: "Liberation Mono", Consolas, Courier, monospace;
     font-size: 0.9em;
+    border: 1px solid #c8c8c8;
+    background-color: #fafafa;
 }
-pre:not(.sourceCode) {
+pre {
     overflow: auto;
     margin: 1.75em auto;
-}
-pre.sourceCode code {
-    overflow: auto;
+    border: 1px solid #c8c8c8;
+    background-color: #fafafa;
 }
 pre code {
     display: block;
     padding: 8px 14px;
     margin: 0;
+    border: none;
+    background-color: transparent;
 }
 
 /*=--------------------------------------------------=*/
 /*= Horizontal scrollbar styling (Webkit/Blink only) =*/
 /*=--------------------------------------------------=*/
 
-pre.sourceCode {
-    border-bottom: 1px solid #c8c8c8;
-}
-pre code.sourceCode {
-    border-bottom: 1px solid transparent;
-}
-pre code.sourceCode::-webkit-scrollbar {
+pre::-webkit-scrollbar {
     height: 16px;
+    background-color: #fafafa;
 }
-pre code.sourceCode::-webkit-scrollbar-thumb {
+pre::-webkit-scrollbar-thumb {
     background-color: #ccc;
     box-shadow:
-        0 1px 0 3px #fafafa inset;
+        0 0 0 3px #fafafa inset;
 }
-pre code.sourceCode::-webkit-scrollbar-thumb:hover {
+pre::-webkit-scrollbar-thumb:hover {
     background-color: #999;
 }
 
@@ -1708,24 +1769,6 @@ a.sourceLine {
 }
 a.sourceLine:empty {
     height: 1.2em;
-}
-.sourceCode {
-    overflow: visible;
-}
-code.sourceCode {
-    white-space: pre;
-    position: relative;
-}
-div.sourceCode {
-    margin: 1.75em auto;
-}
-pre.sourceCode {
-    margin: 0;
-}
-@media only screen {
-    div.sourceCode {
-        overflow: auto;
-    }
 }
 @media print {
     code.sourceCode {
