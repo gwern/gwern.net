@@ -6,106 +6,106 @@
 /* workhorse font for the body; Baskerville-like */
 
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 200;
-    font-style: normal;
-    src: url('/static/font/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    /*  for body text, display as soon as possible (presumably as system font Baskerville)
-        and re-render with Source Serif Pro whenever it downloads:
-        https://developers.google.com/web/updates/2016/02/font-display
-        https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display
-        https://caniuse.com/#search=font-display
-        */
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 200;
+	font-style: normal;
+	src: url('/static/font/SourceSerifPro-BASIC-ExtraLight.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	/*  for body text, display as soon as possible (presumably as system font Baskerville)
+		and re-render with Source Serif Pro whenever it downloads:
+		https://developers.google.com/web/updates/2016/02/font-display
+		https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display
+		https://caniuse.com/#search=font-display
+		*/
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 200;
-    font-style: italic;
-    src: url('/static/font/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 200;
+	font-style: italic;
+	src: url('/static/font/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 300;
-    font-style: normal;
-    src: url('/static/font/SourceSerifPro-BASIC-Light.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 300;
+	font-style: normal;
+	src: url('/static/font/SourceSerifPro-BASIC-Light.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 300;
-    font-style: italic;
-    src: url('/static/font/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 300;
+	font-style: italic;
+	src: url('/static/font/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 400;
-    font-style: normal;
-    src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 400;
-    font-style: italic;
-    src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 600;
-    font-style: normal;
-    src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 600;
+	font-style: normal;
+	src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 600;
-    font-style: italic;
-    src: url('/static/font/SourceSerifPro-BASIC-SemiboldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 600;
+	font-style: italic;
+	src: url('/static/font/SourceSerifPro-BASIC-SemiboldItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 700;
-    font-style: normal;
-    src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 700;
-    font-style: italic;
-    src: url('/static/font/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 700;
+	font-style: italic;
+	src: url('/static/font/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 900;
-    font-style: normal;
-    src: url('/static/font/SourceSerifPro-BASIC-Black.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 900;
+	font-style: normal;
+	src: url('/static/font/SourceSerifPro-BASIC-Black.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: "Source Serif Pro";
-    font-weight: 900;
-    font-style: italic;
-    src: url('/static/font/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: "Source Serif Pro";
+	font-weight: 900;
+	font-style: italic;
+	src: url('/static/font/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 
 /*******************/
@@ -114,100 +114,100 @@
 /* used in Table of Contents as a better sans font; primarily intended for Mac/iOS users */
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 200;
-    font-style: normal;
-    src: url('/static/font/SourceSansPro-BASIC-ExtraLight.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 200;
+	font-style: normal;
+	src: url('/static/font/SourceSansPro-BASIC-ExtraLight.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 200;
-    font-style: italic;
-    src: url('/static/font/SourceSansPro-BASIC-ExtraLightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 200;
+	font-style: italic;
+	src: url('/static/font/SourceSansPro-BASIC-ExtraLightItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 300;
-    font-style: normal;
-    src: url('/static/font/SourceSansPro-BASIC-Light.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 300;
+	font-style: normal;
+	src: url('/static/font/SourceSansPro-BASIC-Light.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 300;
-    font-style: italic;
-    src: url('/static/font/SourceSansPro-BASIC-LightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 300;
+	font-style: italic;
+	src: url('/static/font/SourceSansPro-BASIC-LightItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 400;
-    font-style: normal;
-    src: url('/static/font/SourceSansPro-BASIC-Regular.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: normal;
+	src: url('/static/font/SourceSansPro-BASIC-Regular.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 400;
-    font-style: italic;
-    src: url('/static/font/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 400;
+	font-style: italic;
+	src: url('/static/font/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 600;
-    font-style: normal;
-    src: url('/static/font/SourceSansPro-BASIC-Semibold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 600;
+	font-style: normal;
+	src: url('/static/font/SourceSansPro-BASIC-Semibold.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 600;
-    font-style: italic;
-    src: url('/static/font/SourceSansPro-BASIC-SemiboldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 600;
+	font-style: italic;
+	src: url('/static/font/SourceSansPro-BASIC-SemiboldItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 700;
-    font-style: normal;
-    src: url('/static/font/SourceSansPro-BASIC-Bold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	font-style: normal;
+	src: url('/static/font/SourceSansPro-BASIC-Bold.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 700;
-    font-style: italic;
-    src: url('/static/font/SourceSansPro-BASIC-BoldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	font-style: italic;
+	src: url('/static/font/SourceSansPro-BASIC-BoldItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 900;
-    font-style: normal;
-    src: url('/static/font/SourceSansPro-BASIC-Black.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 900;
+	font-style: normal;
+	src: url('/static/font/SourceSansPro-BASIC-Black.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-weight: 900;
-    font-style: italic;
-    src: url('/static/font/SourceSansPro-BASIC-BlackItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
-    font-display: swap;
+	font-family: 'Source Sans Pro';
+	font-weight: 900;
+	font-style: italic;
+	src: url('/static/font/SourceSansPro-BASIC-BlackItalic.ttf') format('truetype');
+	unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+	font-display: swap;
 }
 
 /***********/
@@ -215,76 +215,76 @@
 /***********/
 
 html {
-    padding: 0;
-    margin: 0;
+	padding: 0;
+	margin: 0;
 
-    background-color: #fff;
-    color: #000;
+	background-color: #fff;
+	color: #000;
 
-    font-weight: 400;
-    font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
+	font-weight: 400;
+	font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
 }
 @media only screen and (max-width: 64.9ch) {
-    html {
-        font-size: 18px;
-    }
+	html {
+		font-size: 18px;
+	}
 }
 
 @media only screen and (min-width: 65ch) {
-    body {
-        max-width: 112ch;
-        padding: 0 1.5ch 0 0.5ch;
-        margin: 0 auto;
-    }
-    @media only screen and (min-width: 118.5ch) {
-        body {
-            padding: 0 6ch 0 0.5ch;
-        }
-    }
-    main {
-        min-height: 100vh;
-        display: flex;
-        flex-flow: column;
-    }
-    article {
-        flex: 1 1 auto;
-    }
-    #sidebar {
-        position: absolute;
-    }
-    header,
-    article {
-        margin-left: 15ch;
-    }
-    @media only screen and (max-width: 120ch) {
-        header,
-        article {
-            margin-left: 14.5ch;
-        }
-    }
-    @media only screen and (max-width: 112ch) {
-        header,
-        article {
-            margin-left: 14ch;
-        }
-    }
-    @media only screen and (max-width: 104ch) {
-        header,
-        article {
-            margin-left: 13.5ch;
-        }
-    }
-    @media only screen and (max-width: 96ch) {
-        header,
-        article {
-            margin-left: 13ch;
-        }
-    }
+	body {
+		max-width: 112ch;
+		padding: 0 1.5ch 0 0.5ch;
+		margin: 0 auto;
+	}
+	@media only screen and (min-width: 118.5ch) {
+		body {
+			padding: 0 6ch 0 0.5ch;
+		}
+	}
+	main {
+		min-height: 100vh;
+		display: flex;
+		flex-flow: column;
+	}
+	article {
+		flex: 1 1 auto;
+	}
+	#sidebar {
+		position: absolute;
+	}
+	header,
+	article {
+		margin-left: 15ch;
+	}
+	@media only screen and (max-width: 120ch) {
+		header,
+		article {
+			margin-left: 14.5ch;
+		}
+	}
+	@media only screen and (max-width: 112ch) {
+		header,
+		article {
+			margin-left: 14ch;
+		}
+	}
+	@media only screen and (max-width: 104ch) {
+		header,
+		article {
+			margin-left: 13.5ch;
+		}
+	}
+	@media only screen and (max-width: 96ch) {
+		header,
+		article {
+			margin-left: 13ch;
+		}
+	}
 }
 @media only screen and (max-width: 64.9ch) {
-    body {
-        margin: 0 1ch;
-    }
+	body {
+		margin: 0 1ch;
+	}
 }
 
 /***********/
@@ -292,121 +292,121 @@ html {
 /***********/
 
 #sidebar code {
-    border: none;
-    background-color: transparent;
-    padding: 0;
+	border: none;
+	background-color: transparent;
+	padding: 0;
 }
 
 #sidebar a {
-    display: block;
+	display: block;
 }
 
 @media only screen and (min-width: 65ch) {
-    #sidebar {
-        font-variant: small-caps;
-        padding: 0 4ch 0 1ch;
-        width: 10ch;
-    }
+	#sidebar {
+		font-variant: small-caps;
+		padding: 0 4ch 0 1ch;
+		width: 10ch;
+	}
 
-    #sidebar a:hover {
-        background-color: #eee;
-    }
+	#sidebar a:hover {
+		background-color: #eee;
+	}
 
-    #sidebar a#logo {
-        margin: 1em 0 2em 0;
-    }
-    #sidebar a#logo:hover {
-        background-color: transparent;
-        opacity: 0.6;
-    }
-    #sidebar a#logo img {
-        width: 64px;
-    }
+	#sidebar a#logo {
+		margin: 1em 0 2em 0;
+	}
+	#sidebar a#logo:hover {
+		background-color: transparent;
+		opacity: 0.6;
+	}
+	#sidebar a#logo img {
+		width: 64px;
+	}
 
-    #sidebar a.new,
-    #sidebar a.patreon {
-        border-top: 1px dotted #aaa;
-    }
-    #sidebar a.new {
-        margin: 1.25em 0 0.5em 0;
-        padding-top: 1.125em;
-        box-shadow: 0 1.125em 0 0 #fff inset;
-    }
-    #sidebar a.patreon {
-        font-size: 0.9em;
-        margin-top: 1.375em;
-        padding-top: 1.25em;
-        box-shadow: 0 1.25em 0 0 #fff inset;
-    }
+	#sidebar a.new,
+	#sidebar a.patreon {
+		border-top: 1px dotted #aaa;
+	}
+	#sidebar a.new {
+		margin: 1.25em 0 0.5em 0;
+		padding-top: 1.125em;
+		box-shadow: 0 1.125em 0 0 #fff inset;
+	}
+	#sidebar a.patreon {
+		font-size: 0.9em;
+		margin-top: 1.375em;
+		padding-top: 1.25em;
+		box-shadow: 0 1.25em 0 0 #fff inset;
+	}
 
-    #sidebar a.mail,
-    #sidebar a.rss,
-    #sidebar a.r_gwern {
-        line-height: 1;
-        padding-left: 0.25em;
-        font-size: 1.05em;
-    }
-    #sidebar a.mail::before,
-    #sidebar a.rss::before,
-    #sidebar a.r_gwern::before {
-        content: "°\2007";
-        text-shadow: 0 0 0 #000;
-        position: relative;
-        top: 0.25em;
-    }
+	#sidebar a.mail,
+	#sidebar a.rss,
+	#sidebar a.r_gwern {
+		line-height: 1;
+		padding-left: 0.25em;
+		font-size: 1.05em;
+	}
+	#sidebar a.mail::before,
+	#sidebar a.rss::before,
+	#sidebar a.r_gwern::before {
+		content: "°\2007";
+		text-shadow: 0 0 0 #000;
+		position: relative;
+		top: 0.25em;
+	}
 
-    #sidebar code {
-        font-variant: none;
-        text-transform: uppercase;
-        font-size: 0.7em;
-    }
+	#sidebar code {
+		font-variant: none;
+		text-transform: uppercase;
+		font-size: 0.7em;
+	}
 }
 @media only screen and (max-width: 64.9ch) {
-    #sidebar {
-        justify-content: center;
-        margin: 0 0 0.5em 0;
-    }
-    #sidebar a {
-        border: 1px dotted #000;
-        padding: 3px 10px;
-        text-align: center;
-        margin: 1px;
-    }
-    #sidebar a#logo {
-        padding: 8px 5px 3px 5px;
-    }
+	#sidebar {
+		justify-content: center;
+		margin: 0 0 0.5em 0;
+	}
+	#sidebar a {
+		border: 1px dotted #000;
+		padding: 3px 10px;
+		text-align: center;
+		margin: 1px;
+	}
+	#sidebar a#logo {
+		padding: 8px 5px 3px 5px;
+	}
 
-    #sidebar,
-    #sidebar-links {
-        display: flex;
-    }
-    #sidebar-links {
-        flex-flow: row wrap;
-        margin: 0.5em 0 0 0;
-    }
+	#sidebar,
+	#sidebar-links {
+		display: flex;
+	}
+	#sidebar-links {
+		flex-flow: row wrap;
+		margin: 0.5em 0 0 0;
+	}
 
-    #sidebar a.home,
-    #sidebar a.site,
-    #sidebar a.links {
-        flex: 1 1 20%;
-    }
-    #sidebar a.new,
-    #sidebar a.mail,
-    #sidebar a.rss,
-    #sidebar a.r_gwern {
-        padding: 3px 10px;
-        flex: 1 1 auto;
-    }
-    #sidebar a.patreon {
-        display: none;
-    }
+	#sidebar a.home,
+	#sidebar a.site,
+	#sidebar a.links {
+		flex: 1 1 20%;
+	}
+	#sidebar a.new,
+	#sidebar a.mail,
+	#sidebar a.rss,
+	#sidebar a.r_gwern {
+		padding: 3px 10px;
+		flex: 1 1 auto;
+	}
+	#sidebar a.patreon {
+		display: none;
+	}
 
-    #sidebar #logo {
-        margin: calc(0.5em + 1px) 1px 1px 0;
-    }
-    #sidebar #logo img {
-        width: 2.5rem;
-    }
+	#sidebar #logo {
+		margin: calc(0.5em + 1px) 1px 1px 0;
+	}
+	#sidebar #logo img {
+		width: 2.5rem;
+	}
 }
 
 /***************/
@@ -414,23 +414,23 @@ html {
 /***************/
 
 header {
-    overflow: auto;
+	overflow: auto;
 }
 header h1 {
-    margin: 0.75em 0;
-    text-align: center;
-    text-transform: none;
-    font-variant: small-caps;
-    font-size: 2.5em;
-    line-height: 1.15;
-    font-weight: 600;
-    letter-spacing: -1px;
+	margin: 0.75em 0;
+	text-align: center;
+	text-transform: none;
+	font-variant: small-caps;
+	font-size: 2.5em;
+	line-height: 1.15;
+	font-weight: 600;
+	letter-spacing: -1px;
 }
 
 @media only screen and (max-width: 64.9ch) {
-    header h1 {
-        font-size: 2em;
-    }
+	header h1 {
+		font-size: 2em;
+	}
 }
 
 /*********************/
@@ -439,32 +439,32 @@ header h1 {
 
 /*  (i.e., article) */
 /*  Nothing!
-    */
+	*/
 
 /***********************/
 /* PAGE METADATA BLOCK */
 /***********************/
 
 #page-metadata hr {
-    display: none;
+	display: none;
 }
 #page-metadata {
-    margin: 0 0 2rem 0;
-    overflow: auto;
-    font-size: 0.95em;
-    line-height: 1.5;
+	margin: 0 0 2rem 0;
+	overflow: auto;
+	font-size: 0.95em;
+	line-height: 1.5;
 }
 
 #page-metadata #abstract {
-    display: block;
-    margin: 0 auto 0.5em auto;
+	display: block;
+	margin: 0 auto 0.5em auto;
 }
 #page-metadata #abstract + br {
-    display: none;
+	display: none;
 }
 
 #page-metadata span:nth-of-type(n+3) {
-    white-space: nowrap;
+	white-space: nowrap;
 }
 
 /*********************/
@@ -472,85 +472,85 @@ header h1 {
 /*********************/
 
 #TOC {
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    margin: 0 2rem 2rem 0;
-    line-height: 1.25;
-    padding: 10px 10px 2px 14px;
+	border: 1px solid #ccc;
+	background-color: #f9f9f9;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	margin: 0 2rem 2rem 0;
+	line-height: 1.25;
+	padding: 10px 10px 2px 14px;
 }
 
 #TOC:empty {
-    display: none;
+	display: none;
 }
 
 /*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
-    */
+	*/
 @media only screen and (max-width: 128ch) {
-    #TOC {
-        font-size: 0.95rem;
-    }
+	#TOC {
+		font-size: 0.95rem;
+	}
 }
 @media only screen and (max-width: 120ch) {
-    #TOC {
-        font-size: 0.90rem;
-    }
+	#TOC {
+		font-size: 0.90rem;
+	}
 }
 @media only screen and (max-width: 112ch) {
-    #TOC {
-        font-size: 0.85rem;
-        margin: 0 1.5rem 1.5rem 0;
-    }
+	#TOC {
+		font-size: 0.85rem;
+		margin: 0 1.5rem 1.5rem 0;
+	}
 }
 @media only screen and (max-width: 104ch) {
-    #TOC {
-        font-size: 0.80rem;
-        margin: 0 1.25rem 1.25rem 0;
-    }
+	#TOC {
+		font-size: 0.80rem;
+		margin: 0 1.25rem 1.25rem 0;
+	}
 }
 @media only screen and (max-width: 96ch) {
-    #TOC {
-        margin: 0 1rem 1rem 0;
-    }
+	#TOC {
+		margin: 0 1rem 1rem 0;
+	}
 }
 @media only screen and (min-width: 90ch) {
-    #TOC {
-        float: left;
-        max-width: 30ch;
-    }
+	#TOC {
+		float: left;
+		max-width: 30ch;
+	}
 }
 @media only screen and (max-width: 90ch) {
-    #TOC {
-        float: none;
-        margin: 2em auto;
-        font-size: 1rem;
-    }
-    #TOC > ul > li > ul {
-        column-count: 2;
-    }
-    #TOC > ul > li > ul > li > ul {
-        break-inside: avoid;
-    }
+	#TOC {
+		float: none;
+		margin: 2em auto;
+		font-size: 1rem;
+	}
+	#TOC > ul > li > ul {
+		column-count: 2;
+	}
+	#TOC > ul > li > ul > li > ul {
+		break-inside: avoid;
+	}
 }
 @media only screen and (max-width: 64.9ch) {
-    #TOC a {
-        display: inline-block;
-    }
-    #TOC > ul > li > ul {
-        column-count: 1;
-    }
-    #TOC li li a {
-        padding: 0 0 1px 0;
-    }
-    #TOC li li li a {
-        padding: 0 0 2px 0;
-    }
-    #TOC li li li li a {
-        padding: 0 0 3px 0;
-    }
-    #TOC li li li li a {
-        padding: 0 0 4px 0;
-    }
+	#TOC a {
+		display: inline-block;
+	}
+	#TOC > ul > li > ul {
+		column-count: 1;
+	}
+	#TOC li li a {
+		padding: 0 0 1px 0;
+	}
+	#TOC li li li a {
+		padding: 0 0 2px 0;
+	}
+	#TOC li li li li a {
+		padding: 0 0 3px 0;
+	}
+	#TOC li li li li a {
+		padding: 0 0 4px 0;
+	}
 }
 
 /*=-----------------=*/
@@ -558,37 +558,37 @@ header h1 {
 /*=-----------------=*/
 
 #TOC ul {
-    list-style-type: none;
-    padding-left: 0em;
-    margin-bottom: 0;
-    margin-top: 4px;
-    padding-left: 1.4em;
-    text-indent: 0;
-    padding: 0;
+	list-style-type: none;
+	padding-left: 0em;
+	margin-bottom: 0;
+	margin-top: 4px;
+	padding-left: 1.4em;
+	text-indent: 0;
+	padding: 0;
 }
 #TOC ul ul {
-    list-style-type: none;
-    padding-left: 0.7em;
-    margin-top: 2px;
+	list-style-type: none;
+	padding-left: 0.7em;
+	margin-top: 2px;
 }
 
 #TOC li {
-    font-weight: bold;
-    margin: 5px 2px 10px 0;
-    padding-left: 1.125em;
-    position: relative;
-    overflow-wrap: break-word;
-    hyphens: auto;
+	font-weight: bold;
+	margin: 5px 2px 10px 0;
+	padding-left: 1.125em;
+	position: relative;
+	overflow-wrap: break-word;
+	hyphens: auto;
 }
 #TOC li li {
-    margin-bottom: 0;
-    font-weight: normal;
-    font-size: 0.9em;
+	margin-bottom: 0;
+	font-weight: normal;
+	font-size: 0.9em;
 }
 
 #TOC p {
-    margin-top: 9px;
-    margin-bottom: 3px;
+	margin-top: 9px;
+	margin-bottom: 3px;
 }
 
 /*=------------------=*/
@@ -596,10 +596,10 @@ header h1 {
 /*=------------------=*/
 
 #TOC a {
-    border: 0;
+	border: 0;
 }
 #TOC a:hover {
-    text-shadow: 1px 1px 3px #777;
+	text-shadow: 1px 1px 3px #777;
 }
 
 /*=-------------------------------=*/
@@ -607,54 +607,54 @@ header h1 {
 /*=-------------------------------=*/
 
 #TOC > ul {
-    counter-reset: htoc_1;
+	counter-reset: htoc_1;
 }
 #TOC > ul > li::before {
-    counter-increment: htoc_1;
-    content: counter(htoc_1) "\2006  ";
+	counter-increment: htoc_1;
+	content: counter(htoc_1) "\2006  ";
 }
 #TOC > ul ul {
-    counter-reset: htoc_2;
+	counter-reset: htoc_2;
 }
 #TOC > ul ul li::before {
-    counter-increment: htoc_2;
-    content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
+	counter-increment: htoc_2;
+	content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
 }
 #TOC > ul ul ul {
-    counter-reset: htoc_3;
+	counter-reset: htoc_3;
 }
 #TOC > ul ul ul li::before {
-    counter-increment: htoc_3;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
+	counter-increment: htoc_3;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
 }
 #TOC > ul ul ul ul {
-    counter-reset: htoc_4;
+	counter-reset: htoc_4;
 }
 #TOC > ul ul ul ul li::before {
-    counter-increment: htoc_4;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
+	counter-increment: htoc_4;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
 }
 #TOC > ul ul ul ul ul {
-    counter-reset: htoc_5;
+	counter-reset: htoc_5;
 }
 #TOC > ul ul ul ul ul li::before {
-    counter-increment: htoc_5;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
+	counter-increment: htoc_5;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
 }
 #TOC > ul ul ul ul ul ul {
-    counter-reset: htoc_6;
+	counter-reset: htoc_6;
 }
 #TOC > ul ul ul ul ul ul li::before {
-    counter-increment: htoc_6;
-    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
+	counter-increment: htoc_6;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
 }
 #TOC ul li::before {
-    position: absolute;
-    right: calc(100% - 1em);
-    width: 12ch;
-    text-align: right;
-    font-weight: normal;
-    opacity: 0.4;
+	position: absolute;
+	right: calc(100% - 1em);
+	width: 12ch;
+	text-align: right;
+	font-weight: normal;
+	opacity: 0.4;
 }
 
 /****************/
@@ -664,186 +664,186 @@ header h1 {
 #markdownBody {
 /*  overflow: auto; */
 
-    /*  Try to avoid scrollbars on paragraphs: prevents long unbroken
-        un-hyphenatable lines from causing H-scrolling
-        */
-    overflow-wrap: break-word;
+	/*  Try to avoid scrollbars on paragraphs: prevents long unbroken
+		un-hyphenatable lines from causing H-scrolling
+		*/
+	overflow-wrap: break-word;
 }
 
 @media only screen and (min-width: 65ch) {
-    /*  Replaces A/B-test-set average value; the wider the screen, the more
-        line-height is necessary, and no one size suits all, so set 3 brackets
-        of increasing height.
-        */
-    @media only screen and (max-width: 100ch) {
-        #markdownBody {
-            line-height: 1.45;
-        }
-    }
-    @media only screen and (min-width: 100.1ch) and (max-width: 120ch) {
-        #markdownBody {
-            line-height: 1.5;
-        }
-    }
-    @media only screen and (min-width: 120.1ch) {
-        #markdownBody {
-            line-height: 1.55;
-        }
-    }
+	/*  Replaces A/B-test-set average value; the wider the screen, the more
+		line-height is necessary, and no one size suits all, so set 3 brackets
+		of increasing height.
+		*/
+	@media only screen and (max-width: 100ch) {
+		#markdownBody {
+			line-height: 1.45;
+		}
+	}
+	@media only screen and (min-width: 100.1ch) and (max-width: 120ch) {
+		#markdownBody {
+			line-height: 1.5;
+		}
+	}
+	@media only screen and (min-width: 120.1ch) {
+		#markdownBody {
+			line-height: 1.55;
+		}
+	}
 }
 
 /*  Use justified text (words get broken/hyphenated as necessary to avoid a
-    'ragged margin'), undoing the default of 'flush left, ragged' right (see
-    https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
-    */
+	'ragged margin'), undoing the default of 'flush left, ragged' right (see
+	https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
+	*/
 @supports (-webkit-hyphens: auto) or (-ms-hyphens: auto) or (hyphens: auto) {
-    #markdownBody p {
-        text-align: justify;
-        -webkit-hyphens: auto;
-        -ms-hyphens: auto;
-        hyphens: auto;
-    }
+	#markdownBody p {
+		text-align: justify;
+		-webkit-hyphens: auto;
+		-ms-hyphens: auto;
+		hyphens: auto;
+	}
 }
 
 /*  Cute 'old-style' numerals, look a little nicer inline in text:
-    https://practicaltypography.com/alternate-figures.html#oldstyle-figures
-    */
+	https://practicaltypography.com/alternate-figures.html#oldstyle-figures
+	*/
 #markdownBody p {
-    font-variant-numeric: oldstyle-nums;
+	font-variant-numeric: oldstyle-nums;
 }
 
 #markdownBody > blockquote:first-child,
 .collapseSummary blockquote {
-    margin: 0 0 1.5em 0;
-    box-shadow:
-        0 0 0 5px #fff inset,
-        0 0 0 6px #ccc inset;
-    border-color: #bbb;
-    padding: 0.9rem 1.25rem 0.95rem 1.25rem;
+	margin: 0 0 1.5em 0;
+	box-shadow:
+		0 0 0 5px #fff inset,
+		0 0 0 6px #ccc inset;
+	border-color: #bbb;
+	padding: 0.9rem 1.25rem 0.95rem 1.25rem;
 }
 
 /************/
 /* SECTIONS */
 /************/
 /*  Use: annotate collapsible section headers with '{.collapse}' (in the Markdown);
-    for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page),
-    one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'.
-    (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
-    */
+	for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page),
+	one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'.
+	(Pandoc Markdown does support a native div syntax, but it's long and ugly.)
+	*/
 
 .collapse {
-    position: relative;
+	position: relative;
 }
 section.collapse > :first-child {
-    padding-right: 1em;
+	padding-right: 1em;
 }
 section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseSummary) {
-    max-height: 0;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-    border: none;
+	max-height: 0;
+	overflow: hidden;
+	padding: 0;
+	margin: 0;
+	border: none;
 }
 :not(section).collapse .disclosure-button:not(:checked) + * > :nth-child(n+2) {
-    max-height: 0;
-    overflow: hidden;
+	max-height: 0;
+	overflow: hidden;
 }
 :not(section).collapse .disclosure-button:not(:checked) + * > :first-child:not(.collapseSummary) {
-    max-height: 6ex;
-    overflow: hidden;
+	max-height: 6ex;
+	overflow: hidden;
 }
 .disclosure-button {
-    position: absolute;
-    top: -2px;
-    right: 0;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    height: 2em;
-    width: 2em;
-    margin: 0;
-    overflow: visible;
-    cursor: pointer;
-    border: 1px solid transparent;
+	position: absolute;
+	top: -2px;
+	right: 0;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	height: 2em;
+	width: 2em;
+	margin: 0;
+	overflow: visible;
+	cursor: pointer;
+	border: 1px solid transparent;
 }
 :not(section).collapse .disclosure-button {
-    width: 100%;
+	width: 100%;
 }
 .disclosure-button:not(:checked) {
-    height: 100%;
+	height: 100%;
 }
 :not(section).collapse .disclosure-button:not(:checked) {
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
-    right: -2px;
+	width: calc(100% + 4px);
+	height: calc(100% + 4px);
+	right: -2px;
 }
 :not(section).collapse .disclosure-button:checked {
-    top: 0;
+	top: 0;
 }
 :not(section).collapse .disclosure-button:checked:hover {
-    background-color: rgba(0,0,0,0.1);
+	background-color: rgba(0,0,0,0.1);
 }
 .disclosure-button::before {
-    content: "\25C0";
-    font-size: 1.5em;
-    line-height: 1;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 1em;
-    height: 1em;
-    color: #999;
-    padding: 4px 0 4px 8px;
+	content: "\25C0";
+	font-size: 1.5em;
+	line-height: 1;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 1em;
+	height: 1em;
+	color: #999;
+	padding: 4px 0 4px 8px;
 }
 :not(section).collapse .disclosure-button::before {
-    right: 1px;
+	right: 1px;
 }
 .disclosure-button:checked::before {
-    transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
 :not(section).collapse .disclosure-button:checked::before {
-    top: 0;
-    right: -2px;
+	top: 0;
+	right: -2px;
 }
 .disclosure-button:not(:checked)::after {
-    width: 100%;
-    position: absolute;
-    text-align: center;
-    color: #777;
-    text-shadow: none;
-    pointer-events: none;
+	width: 100%;
+	position: absolute;
+	text-align: center;
+	color: #777;
+	text-shadow: none;
+	pointer-events: none;
 }
 .disclosure-button:not(:checked)::after {
-    content: "…";
-    font-size: 3em;
-    line-height: 0;
-    top: calc(100% - 16px);
+	content: "…";
+	font-size: 3em;
+	line-height: 0;
+	top: calc(100% - 16px);
 }
 .disclosure-button:not(:checked):hover::after {
-    content: "Click to expand";
-    font-size: 1em;
-    top: calc(100% - 8px);
+	content: "Click to expand";
+	font-size: 1em;
+	top: calc(100% - 8px);
 }
 :not(section).collapse .disclosure-button:not(:checked)::after {
-    top: calc(100% - 20px);
+	top: calc(100% - 20px);
 }
 :not(section).collapse .disclosure-button:not(:checked):hover::after {
-    top: calc(100% - 12px);
+	top: calc(100% - 12px);
 }
 .disclosure-button:not(:checked):hover {
-    border: 1px dotted #777;
+	border: 1px dotted #777;
 }
 .disclosure-button:not(:checked) ~ .collapseSummary > :first-child {
-    margin-top: 0;
+	margin-top: 0;
 }
 .disclosure-button:not(:checked) ~ .collapseSummary > :last-child {
-    margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 .disclosure-button:focus {
-    outline: none;
-    text-shadow:
-        0 0 1px red,
-        0 0 3px red,
-        0 0 5px red;
+	outline: none;
+	text-shadow:
+		0 0 1px red,
+		0 0 3px red,
+		0 0 5px red;
 }
 
 /************/
@@ -852,40 +852,40 @@ section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseS
 
 /* HEADER H1-6 HIERARCHY */
 h1, h2, h3, h4, h5, h6 {
-    margin: 1.5em 0 0.75em 0;
-    font-weight: bold;
+	margin: 1.5em 0 0.75em 0;
+	font-weight: bold;
 }
 
 /* uppercase top-lvel section headers; see A/B tests */
 h1 {
-    text-transform: uppercase;
-    line-height: 1.25;
-    font-size: 1.375em;
+	text-transform: uppercase;
+	line-height: 1.25;
+	font-size: 1.375em;
 }
 
 article section > h1 {
-    overflow: visible;
+	overflow: visible;
 }
 
 /* make a hierarchy of emphasis for h2-6, to avoid all being the same (all-uppercased) */
 h2 {
-    text-transform: uppercase;
-    font-size: 1.1em;
+	text-transform: uppercase;
+	font-size: 1.1em;
 }
 h3 {
-    text-transform: capitalize;
-    font-size: 1.1em;
+	text-transform: capitalize;
+	font-size: 1.1em;
 }
 h4 {
-    text-transform: capitalize;
+	text-transform: capitalize;
 }
 h5 {
-    font-size: 1em;
+	font-size: 1em;
 }
 h6 {
-    font-size: 1em;
-    font-weight: normal;
-    font-style: italic;
+	font-size: 1em;
+	font-weight: normal;
+	font-style: italic;
 }
 
 /*=----------------------------=*/
@@ -893,31 +893,31 @@ h6 {
 /*=----------------------------=*/
 
 article #markdownBody section > :first-child a {
-    display: block;
-    background: none;
+	display: block;
+	background: none;
 }
 #markdownBody section > :first-child a:hover {
-    color: #485555;
+	color: #485555;
 }
 #markdownBody section > :first-child a::after {
-    content: "\00B6";
-    font-size: 0.75em;
-    position: relative;
-    top: -3px;
-    left: 5px;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0s ease 0.1s;
+	content: "\00B6";
+	font-size: 0.75em;
+	position: relative;
+	top: -3px;
+	left: 5px;
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 0s ease 0.1s;
 }
 #markdownBody section > :first-child a:hover::after,
 #markdownBody section > :first-child a:active::after,
 #markdownBody section > :first-child a:focus::after,
 #markdownBody section:target > :first-child a::after {
-    visibility: visible;
-    opacity: 1;
+	visibility: visible;
+	opacity: 1;
 }
 #markdownBody section:target > :first-child a::after {
-    opacity: 0.5;
+	opacity: 0.5;
 }
 
 /**********/
@@ -925,9 +925,9 @@ article #markdownBody section > :first-child a {
 /**********/
 
 #footer {
-    padding-top: 3ch;
-    font-size: 0.9em;
-    text-align: center;
+	padding-top: 3ch;
+	font-size: 0.9em;
+	text-align: center;
 }
 
 /**********/
@@ -935,7 +935,7 @@ article #markdownBody section > :first-child a {
 /**********/
 
 #disqus_thread {
-    padding-left: 0.5em;
+	padding-left: 0.5em;
 }
 
 /*********/
@@ -943,15 +943,15 @@ article #markdownBody section > :first-child a {
 /*********/
 
 a {
-    color: #303C3C; /* off-black */
-    text-decoration: none;
+	color: #303C3C; /* off-black */
+	text-decoration: none;
 }
 article > :not(#TOC) a:hover {
-    color: #999;
+	color: #999;
 }
 
 #markdownBody a {
-    word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
+	word-wrap: break-word; /* force the occasional inline URL or other long word to break at max-width */
 }
 
 /*=------------------------=*/
@@ -965,70 +965,70 @@ article > :not(#TOC) a:hover {
    Unfortunately, we don't want to add underlines to the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
    I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead. */
 article > :not(#TOC) a:link {
-    text-decoration: none;
-    background:
-        linear-gradient(#fffff8, #fffff8),
-        linear-gradient(#fffff8, #fffff8),
-        linear-gradient(#333,    #333);
-    background-size:
-        0.05em 1px,
-        0.05em 1px,
-           1px 1px;
-    background-repeat:
-        no-repeat,
-        no-repeat,
-        repeat-x;
-    text-shadow:
-         0.03em 0       #fffff8,
-        -0.03em 0       #fffff8,
-         0      0.03em  #fffff8,
-         0     -0.03em  #fffff8,
-         0.06em 0       #fffff8,
-        -0.06em 0       #fffff8,
-         0.09em 0       #fffff8,
-        -0.09em 0       #fffff8,
-         0.12em 0       #fffff8,
-        -0.12em 0       #fffff8,
-         0.15em 0       #fffff8,
-        -0.15em 0       #fffff8;
-    background-position:
-          0% 93%,
-        100% 93%,
-          0% 93%;
+	text-decoration: none;
+	background:
+		linear-gradient(#fffff8, #fffff8),
+		linear-gradient(#fffff8, #fffff8),
+		linear-gradient(#333,    #333);
+	background-size:
+		0.05em 1px,
+		0.05em 1px,
+		   1px 1px;
+	background-repeat:
+		no-repeat,
+		no-repeat,
+		repeat-x;
+	text-shadow:
+		 0.03em 0       #fffff8,
+		-0.03em 0       #fffff8,
+		 0      0.03em  #fffff8,
+		 0     -0.03em  #fffff8,
+		 0.06em 0       #fffff8,
+		-0.06em 0       #fffff8,
+		 0.09em 0       #fffff8,
+		-0.09em 0       #fffff8,
+		 0.12em 0       #fffff8,
+		-0.12em 0       #fffff8,
+		 0.15em 0       #fffff8,
+		-0.15em 0       #fffff8;
+	background-position:
+		  0% 93%,
+		100% 93%,
+		  0% 93%;
 }
 article > :not(#TOC) a:link::selection,
 article > :not(#TOC) a:link *::selection {
-    text-shadow:
-         0.03em  0      #b4d5fe,
-        -0.03em  0      #b4d5fe,
-         0       0.03em #b4d5fe,
-         0      -0.03em #b4d5fe,
-         0.06em  0      #b4d5fe,
-        -0.06em  0      #b4d5fe,
-         0.09em  0      #b4d5fe,
-        -0.09em  0      #b4d5fe,
-         0.12em  0      #b4d5fe,
-        -0.12em  0      #b4d5fe,
-         0.15em  0      #b4d5fe,
-        -0.15em  0      #b4d5fe;
-    background: #b4d5fe;
+	text-shadow:
+		 0.03em  0      #b4d5fe,
+		-0.03em  0      #b4d5fe,
+		 0       0.03em #b4d5fe,
+		 0      -0.03em #b4d5fe,
+		 0.06em  0      #b4d5fe,
+		-0.06em  0      #b4d5fe,
+		 0.09em  0      #b4d5fe,
+		-0.09em  0      #b4d5fe,
+		 0.12em  0      #b4d5fe,
+		-0.12em  0      #b4d5fe,
+		 0.15em  0      #b4d5fe,
+		-0.15em  0      #b4d5fe;
+	background: #b4d5fe;
 }
 article > :not(#TOC) a:link::-moz-selection,
 article > :not(#TOC) a:link *::-moz-selection {
-    text-shadow:
-         0.03em  0      #b4d5fe,
-        -0.03em  0      #b4d5fe,
-         0       0.03em #b4d5fe,
-         0      -0.03em #b4d5fe,
-         0.06em  0      #b4d5fe,
-        -0.06em  0      #b4d5fe,
-         0.09em  0      #b4d5fe,
-        -0.09em  0      #b4d5fe,
-         0.12em  0      #b4d5fe,
-        -0.12em  0      #b4d5fe,
-         0.15em  0      #b4d5fe,
-        -0.15em  0      #b4d5fe;
-    background: #b4d5fe;
+	text-shadow:
+		 0.03em  0      #b4d5fe,
+		-0.03em  0      #b4d5fe,
+		 0       0.03em #b4d5fe,
+		 0      -0.03em #b4d5fe,
+		 0.06em  0      #b4d5fe,
+		-0.06em  0      #b4d5fe,
+		 0.09em  0      #b4d5fe,
+		-0.09em  0      #b4d5fe,
+		 0.12em  0      #b4d5fe,
+		-0.12em  0      #b4d5fe,
+		 0.15em  0      #b4d5fe,
+		-0.15em  0      #b4d5fe;
+	background: #b4d5fe;
 }
 
 /*********/
@@ -1037,44 +1037,44 @@ article > :not(#TOC) a:link *::-moz-selection {
 
 #markdownBody ul,
 #markdownBody ol {
-    list-style-type: none;
-    margin: 1.25em 0 1.5em 0;
-    padding: 0 0 0 2.5em;
-    overflow: hidden;
+	list-style-type: none;
+	margin: 1.25em 0 1.5em 0;
+	padding: 0 0 0 2.5em;
+	overflow: hidden;
 }
 #markdownBody li > ul,
 #markdownBody li > ol {
-    margin: 0.5em 0 0.5em 0;
+	margin: 0.5em 0 0.5em 0;
 }
 
 #markdownBody ul > li,
 #markdownBody ol > li {
-    position: relative;
-    margin: 0;
+	position: relative;
+	margin: 0;
 }
 #markdownBody ul > li:nth-of-type(n+2),
 #markdownBody ol > li:nth-of-type(n+2) {
-    margin: 0.5em 0 0 0;
+	margin: 0.5em 0 0 0;
 }
 
 #markdownBody ul > li::before,
 #markdownBody ol > li::before {
-    position: absolute;
-    z-index: 1;
+	position: absolute;
+	z-index: 1;
 }
 
 @media only screen and (max-width: 64.9ch) {
-    #markdownBody ul,
-    #markdownBody ol {
-        list-style-type: none;
-        margin: 1.25em 0 1.5em 0;
-        padding: 0 0 0 1.75em;
-    }
-    #markdownBody li > ul,
-    #markdownBody li > ol {
-        margin: 0.5em 0 0.5em 0;
-        padding: 0 0 0 1.75em;
-    }
+	#markdownBody ul,
+	#markdownBody ol {
+		list-style-type: none;
+		margin: 1.25em 0 1.5em 0;
+		padding: 0 0 0 1.75em;
+	}
+	#markdownBody li > ul,
+	#markdownBody li > ol {
+		margin: 0.5em 0 0.5em 0;
+		padding: 0 0 0 1.75em;
+	}
 }
 
 /*=-----------------------=*/
@@ -1082,19 +1082,19 @@ article > :not(#TOC) a:link *::-moz-selection {
 /*=-----------------------=*/
 
 #markdownBody ul > li::before {
-    color: #888;
-    font-size: 0.875em;
-    top: 0.125em;
-    left: -1.375em;
+	color: #888;
+	font-size: 0.875em;
+	top: 0.125em;
+	left: -1.375em;
 }
 
 #markdownBody ul > li::before,
 #markdownBody ul ul ul > li::before {
-    content: "\2727";
+	content: "\2727";
 }
 #markdownBody ul ul > li::before,
 #markdownBody ul ul ul ul > li::before {
-    content: "\2726";
+	content: "\2726";
 }
 
 /*=-----------------------=*/
@@ -1102,33 +1102,33 @@ article > :not(#TOC) a:link *::-moz-selection {
 /*=-----------------------=*/
 
 #markdownBody ol {
-    counter-reset: ol;
+	counter-reset: ol;
 }
 #markdownBody ol > li {
-    counter-increment: ol;
+	counter-increment: ol;
 }
 #markdownBody ol > li::before {
-    content: counter(ol) ".";
-    width: 2em;
-    right: calc(100% + 0.5em);
-    text-align: right;
-    font-feature-settings: 'onum';
-    color: #444;
+	content: counter(ol) ".";
+	width: 2em;
+	right: calc(100% + 0.5em);
+	text-align: right;
+	font-feature-settings: 'onum';
+	color: #444;
 }
 
 #markdownBody ol ol {
-    list-style-type: lower-roman;
-    margin-left: 2em;
+	list-style-type: lower-roman;
+	margin-left: 2em;
 }
 #markdownBody ol ol > li {
-    padding: 0 0 0 0.25em;
+	padding: 0 0 0 0.25em;
 }
 #markdownBody ol ol > li::before {
-    content: none;
+	content: none;
 }
 
 #markdownBody ol ol ol {
-    list-style-type: lower-alpha;
+	list-style-type: lower-alpha;
 }
 
 /*=------------------=*/
@@ -1137,69 +1137,78 @@ article > :not(#TOC) a:link *::-moz-selection {
 
 li > ul + p,
 li > ol + p {
-    margin-top: 1em;
+	margin-top: 1em;
 }
 
-/**********/
-/* IMAGES */
-/**********/
+/***********/
+/* FIGURES */
+/***********/
 
 figure {
-    margin: 2em 2em 1.75em 2em;
-}
-@media only screen and (max-width: 649px) {
-    figure {
-        margin: 2em 1em 1.75em 1em;
-    }
-}
-figure img {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin: 5px auto;
-    border: 1px solid #888;
-}
-figcaption {
-    font-size: 0.9375em;
-    font-weight: bold;
-    padding: 0 0.25em;
-    margin: auto;
-    line-height: 1.45;
+	margin: 2em auto 1.75em auto;
+	border: 1px solid #888;
+	max-width: calc(100% - 5em);
 }
 @supports (width: -moz-fit-content) {
-    figcaption {
-        width: -moz-fit-content;
-    }
+	figure {
+		width: -moz-fit-content;
+	}
 }
 @supports (width: fit-content) {
-    figcaption {
-        width: fit-content;
-    }
+	figure {
+		width: fit-content;
+	}
 }
-@media only screen and (max-width: 649px) {
-    figcaption {
-        font-size: 0.875em;
-    }
+@media only screen and (max-width: 64.9ch) {
+	figure {
+		max-width: calc(100% - 2em);
+	}
+}
+figure + figure {
+	margin-top: 2.75em;
+}
+@media only screen and (max-width: 64.9ch) {
+	figure + figure {
+		margin-top: 2em;
+	}
+}
+figure img,
+figure video {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	margin: 0 auto;
+	outline: 1px solid #888;
+}
+figcaption {
+	font-size: 0.9375em;
+	font-weight: bold;
+	padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
+	margin: auto;
+	line-height: 1.45;
+}
+@supports (width: -moz-fit-content) {
+	figcaption {
+		width: -moz-fit-content;
+	}
+}
+@supports (width: fit-content) {
+	figcaption {
+		width: fit-content;
+	}
+}
+@media only screen and (max-width: 64.9ch) {
+	figcaption {
+		font-size: 0.875em;
+	}
 }
 
 /*  Layout fix for images outside of <figure>.
-    REMOVE once all images are properly within <figure>!
-    */
+	REMOVE once all images are properly within <figure>!
+	*/
 #markdownBody :not(figure) img {
-    max-width: 100%;
-    height: auto;
-}
-
-/**********/
-/* VIDEOS */
-/**********/
-
-video {
-    margin: 0 auto 0.5em auto;
-    display: block;
-    border: 1px solid #888;
-    max-width: 100%;
-    height: auto;
+	max-width: 100%;
+	height: auto;
 }
 
 /***************/
@@ -1207,38 +1216,38 @@ video {
 /***************/
 
 blockquote {
-    margin: 1.5em 1.5em 1.75em 1.5em;
-    border: 0.5px solid #ccc;
-    font-size: 0.95em;
-    padding: 0.8rem 1rem;
+	margin: 1.5em 1.5em 1.75em 1.5em;
+	border: 1px solid #ccc;
+	font-size: 0.95em;
+	padding: 0.8rem 1rem;
 }
 
 @media only screen and (min-width: 65ch) {
-    blockquote {
-        overflow: hidden;
-    }
+	blockquote {
+		overflow: hidden;
+	}
 }
 @media only screen and (max-width: 64.9ch) {
-    /* even less horizontal is available on mobile! */
-    blockquote {
-        margin: 1.25em 0 1.5em 0;
-    }
+	/* even less horizontal is available on mobile! */
+	blockquote {
+		margin: 1.25em 0 1.5em 0;
+	}
 }
 
 /*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
 
-    See A/B tests: this highlighting is better than no highlighting.
-    */
+	See A/B tests: this highlighting is better than no highlighting.
+	*/
 blockquote,
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
-    z-index: -2;
-    background-color: #f5f5f5;
+	z-index: -2;
+	background-color: #f5f5f5;
 }
 blockquote blockquote,
 blockquote blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
-    background-color: #e6e6e6;
+	background-color: #e6e6e6;
 }
 
 article > :not(#TOC) a:link q,
@@ -1246,40 +1255,40 @@ article > :not(#TOC) q a:link,
 article > :not(#TOC) blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
-    text-shadow:
-         0.03em 0       #f5f5f5,
-        -0.03em 0       #f5f5f5,
-         0      0.03em  #f5f5f5,
-         0     -0.03em  #f5f5f5,
-         0.06em 0       #f5f5f5,
-        -0.06em 0       #f5f5f5,
-         0.09em 0       #f5f5f5,
-        -0.09em 0       #f5f5f5,
-         0.12em 0       #f5f5f5,
-        -0.12em 0       #f5f5f5,
-         0.15em 0       #f5f5f5,
-        -0.15em 0       #f5f5f5;
+	text-shadow:
+		 0.03em 0       #f5f5f5,
+		-0.03em 0       #f5f5f5,
+		 0      0.03em  #f5f5f5,
+		 0     -0.03em  #f5f5f5,
+		 0.06em 0       #f5f5f5,
+		-0.06em 0       #f5f5f5,
+		 0.09em 0       #f5f5f5,
+		-0.09em 0       #f5f5f5,
+		 0.12em 0       #f5f5f5,
+		-0.12em 0       #f5f5f5,
+		 0.15em 0       #f5f5f5,
+		-0.15em 0       #f5f5f5;
 }
 article > :not(#TOC) blockquote blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
-    text-shadow:
-         0.03em 0       #e6e6e6,
-        -0.03em 0       #e6e6e6,
-         0      0.03em  #e6e6e6,
-         0     -0.03em  #e6e6e6,
-         0.06em 0       #e6e6e6,
-        -0.06em 0       #e6e6e6,
-         0.09em 0       #e6e6e6,
-        -0.09em 0       #e6e6e6,
-         0.12em 0       #e6e6e6,
-        -0.12em 0       #e6e6e6,
-         0.15em 0       #e6e6e6,
-        -0.15em 0       #e6e6e6;
+	text-shadow:
+		 0.03em 0       #e6e6e6,
+		-0.03em 0       #e6e6e6,
+		 0      0.03em  #e6e6e6,
+		 0     -0.03em  #e6e6e6,
+		 0.06em 0       #e6e6e6,
+		-0.06em 0       #e6e6e6,
+		 0.09em 0       #e6e6e6,
+		-0.09em 0       #e6e6e6,
+		 0.12em 0       #e6e6e6,
+		-0.12em 0       #e6e6e6,
+		 0.15em 0       #e6e6e6,
+		-0.15em 0       #e6e6e6;
 }
 
 blockquote blockquote {
-    margin: 1em 1px;
+	margin: 1em 1px;
 }
 
 /*=--------------------=*/
@@ -1287,37 +1296,37 @@ blockquote blockquote {
 /*=--------------------=*/
 
 #markdownBody blockquote blockquote:first-child {
-    margin: 0.25em 1px 1em 1px;
+	margin: 0.25em 1px 1em 1px;
 }
 
 #markdownBody blockquote > :last-child,
 #markdownBody blockquote > :last-child > :last-child,
 #markdownBody blockquote > :last-child > :last-child > :last-child,
 #markdownBody blockquote > :last-child > :last-child > :last-child > :last-child {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 #markdownBody blockquote > :first-child,
 #markdownBody blockquote > :first-child > :first-child,
 #markdownBody blockquote > :first-child > :first-child > :first-child,
 #markdownBody blockquote > :first-child > :first-child > :first-child > :first-child {
-    margin-top: 0;
+	margin-top: 0;
 }
 
 #markdownBody blockquote > ul:only-child,
 #markdownBody blockquote > ol:only-child {
-    margin-left: 1.5em;
+	margin-left: 1.5em;
 }
 
 /*  Interviews (e.g. https://www.gwern.net/Morning-writing#examples).
-    */
+	*/
 blockquote p > code:first-child,
 blockquote p > a:first-child code:first-child {
-    border: none;
-    background-color: transparent;
-    font-weight: bold;
-    font-family: inherit;
-    padding: 0;
-    font-size: inherit;
+	border: none;
+	background-color: transparent;
+	font-weight: bold;
+	font-family: inherit;
+	padding: 0;
+	font-size: inherit;
 }
 
 /*****************/
@@ -1325,29 +1334,30 @@ blockquote p > a:first-child code:first-child {
 /*****************/
 
 q {
-    background-color: rgba(0,0,0,0.04);
-    box-shadow: 0 0 0 2px rgba(0,0,0,0.04);
+	background-color: rgba(0,0,0,0.04);
+	box-shadow: 0 0 0 2px rgba(0,0,0,0.04);
 }
 blockquote q {
-    border-color: transparent;
-    background-color: transparent;
-    box-shadow: none;
+	border-color: transparent;
+	background-color: transparent;
+	box-shadow: none;
 }
 /*  WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting,
-    quote marks are not by default included in browser copy-paste, possibly annoying users.
-    You need the following CSS & a line of JS in default.html to insert real quotes. */
+	quote marks are not by default included in browser copy-paste, possibly annoying users.
+	You need the following CSS & a line of JS in default.html to insert real quotes. */
 q::before,
 q::after {
-    content: none;
+	content: none;
 }
 
-/* JS in default.html will insert the quote-mark spans around <q>s; this CSS then pushes them 'out' of the gray-highlighted area & de-emphasizes the double quotes, which looks somewhat nicer. And if the reader isn't using JS, then it's safe, because nothing happens since these spans won't exist. */
-span.quote-mark { opacity: 0.6; }
+span.quote-mark {
+	opacity: 0.6;
+}
 span.quote-mark.open {
-    margin: 0 3px 0 2px;
+	margin: 0 3px 0 2px;
 }
 span.quote-mark.close {
-    margin: 0 2px 0 3px;
+	margin: 0 2px 0 3px;
 }
 
 /*************/
@@ -1356,88 +1366,98 @@ span.quote-mark.close {
 /* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 
 .epigraph {
-    margin: 2em 0 2em 0;
-    padding: 0.125em 2em 0 2em;
-    overflow: hidden;
+	margin: 2em 0 2em 0;
+	padding: 0.5em 2.5em 0.375em 2.5em;
+	overflow: hidden;
 }
 .epigraph blockquote {
-    padding: 0;
-    border: none;
-    background-color: inherit;
-    margin: 0;
-    font-size: inherit;
-    position: relative;
-    z-index: 1;
-    overflow: visible;
+	padding: 0;
+	border: none;
+	background-color: inherit;
+	margin: 0;
+	font-size: inherit;
+	position: relative;
+	z-index: 1;
+	overflow: visible;
 }
 .epigraph q {
-    font-style: italic;
-    background-color: inherit;
+	font-style: italic;
+	background-color: inherit;
 }
+/*	Reverse back to normal when italics are used inside an epigraph.
+	*/
 .epigraph q em {
-    font-style: normal;
-} /* reverse back to normal when italics are used inside an epigraph */
+	font-style: normal;
+}
+.epigraph blockquote > p:nth-last-child(2) > span.quote-mark:first-child,
+.epigraph blockquote > p:nth-last-child(2) > span.quote-mark:last-child {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin: 0;
+	opacity: 0;
+}
 #markdownBody .epigraph p:last-child {
-    margin: 0.5em 0 0 0;
-    text-align: right;
-    font-size: 0.875em;
-    text-indent: 0;
+	margin: 0.5em 0 0 0;
+	text-align: right;
+	font-size: 0.875em;
+	text-indent: 0;
 }
 .epigraph p:nth-last-of-type(n+2) > q::before,
 .epigraph p:nth-last-of-type(n+2) > q::after {
-    display: none;
+	display: none;
 }
 .epigraph blockquote::before,
 .epigraph blockquote::after {
-    display: block;
-    position: absolute;
-    font-size: 2.5em;
-    opacity: 0.5;
+	display: block;
+	position: absolute;
+	font-size: 2.5em;
+	opacity: 0.5;
 }
 .epigraph blockquote::before {
-    content: "\201C";
-    left: -0.65em;
-    top: -0.375em;
+	content: "\201C";
+	left: -0.975em;
+	top: -0.5em;
 }
 .epigraph blockquote::after {
-    content: "\201D";
-    right: -0.65em;
-    bottom: -0.875em;
+	content: "\201D";
+	right: -0.975em;
+	bottom: -1em;
 }
 
 article > :not(#TOC) .epigraph blockquote a:link,
 article > :not(#TOC) .epigraph blockquote a:link q,
 article > :not(#TOC) .epigraph blockquote q a:link {
-    text-shadow:
-         0.03em 0       #fff,
-        -0.03em 0       #fff,
-         0      0.03em  #fff,
-         0     -0.03em  #fff,
-         0.06em 0       #fff,
-        -0.06em 0       #fff,
-         0.09em 0       #fff,
-        -0.09em 0       #fff,
-         0.12em 0       #fff,
-        -0.12em 0       #fff,
-         0.15em 0       #fff,
-        -0.15em 0       #fff;
+	text-shadow:
+		 0.03em 0       #fff,
+		-0.03em 0       #fff,
+		 0      0.03em  #fff,
+		 0     -0.03em  #fff,
+		 0.06em 0       #fff,
+		-0.06em 0       #fff,
+		 0.09em 0       #fff,
+		-0.09em 0       #fff,
+		 0.12em 0       #fff,
+		-0.12em 0       #fff,
+		 0.15em 0       #fff,
+		-0.15em 0       #fff;
 }
 
 @media only screen and (max-width: 64.9ch) {
-    .epigraph {
-        margin: 2.125em 1em 2em 1em;
-        padding: 0;
-        font-size: 0.95em;
-        overflow: visible;
-    }
-    .epigraph blockquote::before {
-        left: -0.375em;
-        top: -0.75em;
-    }
-    .epigraph blockquote::after {
-        right: -0.375em;
-        bottom: -1.25em;
-    }
+	.epigraph {
+		margin: 2.125em 1em 2em 1em;
+		padding: 0;
+		font-size: 0.95em;
+		overflow: visible;
+	}
+	.epigraph blockquote::before {
+		left: -0.375em;
+		top: -0.75em;
+	}
+	.epigraph blockquote::after {
+		right: -0.375em;
+		bottom: -1.25em;
+	}
 }
 
 /*************/
@@ -1447,29 +1467,29 @@ article > :not(#TOC) .epigraph blockquote q a:link {
 /* make footnotes better: http://bytes.com/topic/html-css/answers/97932-superscript-doesnt-distort-line-spacing#post340658 */
 sub,
 sup {
-    line-height: 0.3em;
+	line-height: 0.3em;
 }
 a.footnote-ref sup {
-    vertical-align: baseline;
+	vertical-align: baseline;
 }
 a.footnote-ref {
-    vertical-align: super;
-    line-height: 0.3em;
-    position: relative;
-    padding: 0 1px;
-    font-feature-settings: 'lnum';
+	vertical-align: super;
+	line-height: 0.3em;
+	position: relative;
+	padding: 0 1px;
+	font-feature-settings: 'lnum';
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
 sup + sup,
 a.footnote-ref + a.footnote-ref {
-    margin-left: 1px;
+	margin-left: 1px;
 }
 
 
 
 #markdownBody .footnotes > ol > li + li {
-    margin: 1em 0 0 0;
+	margin: 1em 0 0 0;
 }
 
 /*=------------------------=*/
@@ -1477,32 +1497,32 @@ a.footnote-ref + a.footnote-ref {
 /*=------------------------=*/
 
 #markdownBody .footnotes a.footnote-back {
-    background: none;
-    margin: 0 0 0 10px;
-    position: relative;
-    top: 3px;
-    font-weight: bold;
-    line-height: 1;
-    border: 1px dotted #000;
-    display: inline-block;
-    padding: 5px 5px 0 6px;
-    text-indent: 0;
+	background: none;
+	margin: 0 0 0 10px;
+	position: relative;
+	top: 3px;
+	font-weight: bold;
+	line-height: 1;
+	border: 1px dotted #000;
+	display: inline-block;
+	padding: 5px 5px 0 6px;
+	text-indent: 0;
 }
 #markdownBody .footnotes a.footnote-back:hover {
-    border-color: #999;
+	border-color: #999;
 }
 
 #markdownBody .footnotes li {
-    position: relative;
+	position: relative;
 }
 #markdownBody .footnotes blockquote + a.footnote-back,
 #markdownBody .footnotes pre + a.footnote-back,
 #markdownBody .footnotes .sourceCode + a.footnote-back {
-    position: absolute;
-    right: 0.5em;
-    top: unset;
-    bottom: -0.5em;
-    background-color: #fff;
+	position: absolute;
+	right: 0.5em;
+	top: unset;
+	bottom: -0.5em;
+	background-color: #fff;
 }
 
 /*=--------------------------=*/
@@ -1510,54 +1530,54 @@ a.footnote-ref + a.footnote-ref {
 /*=--------------------------=*/
 
 /*  http://ignorethecode.net/blog/2010/04/20/footnotes/
-    */
+	*/
 #footnotediv {
-    z-index: 1;
-    font-size: 0.9em;
-    box-shadow: 0 0 0 2px #fff;
-    position: absolute;
+	z-index: 1;
+	font-size: 0.9em;
+	box-shadow: 0 0 0 2px #fff;
+	position: absolute;
 }
 #footnotediv > div {
-    background-color: #fff;
-    padding: 12px 16px 14px 16px;
-    max-width: 800px;
-    max-height: calc(100vh - 32px);
-    border: 3px double #aaa;
-    line-height: 1.45;
-    overflow: auto;
+	background-color: #fff;
+	padding: 12px 16px 14px 16px;
+	max-width: 800px;
+	max-height: calc(100vh - 32px);
+	border: 3px double #aaa;
+	line-height: 1.45;
+	overflow: auto;
 }
 #footnotediv > div::-webkit-scrollbar {
-    width: 14px;
+	width: 14px;
 }
 #footnotediv > div::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    box-shadow:
-        0 0 0 3px #fff inset;
+	background-color: #ccc;
+	box-shadow:
+		0 0 0 3px #fff inset;
 }
 #footnotediv > div::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
+	background-color: #999;
 }
 
 #footnotediv a.footnote-back {
-    display: none;
+	display: none;
 }
 
 #footnotediv blockquote {
-    margin: 1em 0;
+	margin: 1em 0;
 }
 
 /*  The following compensates for the variable edge case where the last
-    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
-    back-to-citation link after it (which is not shown, if present, but makes it
-    uncertain whether the blockquote is the last child of the popup or not. This
-    code makes everything consistent regardless of which case applies.
-    —Obormot (2019-02-17)
-    */
+	blockquote within a floating footnote popup either DOES, or DOES NOT, have a
+	back-to-citation link after it (which is not shown, if present, but makes it
+	uncertain whether the blockquote is the last child of the popup or not. This
+	code makes everything consistent regardless of which case applies.
+	—Obormot (2019-02-17)
+	*/
 #footnotediv > div > blockquote:nth-last-child(2) {
-    margin-bottom: 2px;
+	margin-bottom: 2px;
 }
 #footnotediv > div > blockquote:nth-last-child(2) + p {
-    margin-top: 1em;
+	margin-top: 1em;
 }
 
 /**********/
@@ -1565,8 +1585,8 @@ a.footnote-ref + a.footnote-ref {
 /**********/
 
 .tableWrapper {
-    margin: 2em 0 2.125em 0;
-    overflow: auto;
+	margin: 2em 0 2.125em 0;
+	overflow: auto;
 }
 h1 + .tableWrapper,
 h2 + .tableWrapper,
@@ -1574,37 +1594,37 @@ h3 + .tableWrapper,
 h4 + .tableWrapper,
 h5 + .tableWrapper,
 h6 + .tableWrapper {
-    margin: 0 0 2.125em 0;
+	margin: 0 0 2.125em 0;
 }
 /*=--------------------------------------------------=*/
 /*= Horizontal scrollbar styling (Webkit/Blink only) =*/
 /*=--------------------------------------------------=*/
 
 .tableWrapper::-webkit-scrollbar {
-    height: 16px;
+	height: 16px;
 }
 .tableWrapper::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    box-shadow:
-        0 0 0 3px #fafafa inset;
+	background-color: #ccc;
+	box-shadow:
+		0 0 0 3px #fafafa inset;
 }
 .tableWrapper::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
+	background-color: #999;
 }
 
 table {
-    margin: 0;
-    padding: 0;
-    border-collapse: collapse;
-    width: 100%;
-    font-size: 0.65em;
-    border: 1px solid #ddd;
+	margin: 0;
+	padding: 0;
+	border-collapse: collapse;
+	width: 100%;
+	font-size: 0.65em;
+	border: 1px solid #ddd;
 
-    /*  'tabular figures' to make numbers line up in tables:
-        https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
-        https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
-        */
-    font-variant-numeric: tabular-nums;
+	/*  'tabular figures' to make numbers line up in tables:
+		https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
+		https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
+		*/
+	font-variant-numeric: tabular-nums;
 }
 
 /*
@@ -1614,90 +1634,90 @@ table {
 /* from Twitter's bootstrap package; adds grid-lines to table */
 table th,
 table td {
-    padding: 7px 10px;
-    line-height: 1.35;
+	padding: 7px 10px;
+	line-height: 1.35;
 }
 table th {
-    font-weight: bold;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
+	font-weight: bold;
+	border-bottom: 1px solid #ddd;
+	text-align: left;
 }
 table td {
-    vertical-align: top;
+	vertical-align: top;
 }
 table th + th,
 table td + td {
-    border-left: 1px solid #ddd;
+	border-left: 1px solid #ddd;
 }
 table tr + tr td {
-    border-top: 1px solid #ddd;
+	border-top: 1px solid #ddd;
 }
 
 /* Add little icons to tables handled by tablesorter.js
    to advertise that they are sortable.
    http://tablesorter.com/docs/#Configuration */
 th.header {
-    background-image: url(/static/img/bg.gif);
-    cursor: pointer;
-    font-weight: bold;
-    background-repeat: no-repeat;
-    background-position: center left;
-    padding-left: 20px;
+	background-image: url(/static/img/bg.gif);
+	cursor: pointer;
+	font-weight: bold;
+	background-repeat: no-repeat;
+	background-position: center left;
+	padding-left: 20px;
 }
 th.header:hover {
-    background-color: #e2f0f2;
+	background-color: #e2f0f2;
 }
 th.headerSortUp {
-    background-image: url(/static/img/small_asc.gif);
+	background-image: url(/static/img/small_asc.gif);
 }
 th.headerSortDown {
-    background-image: url(/static/img/small_desc.gif);
+	background-image: url(/static/img/small_desc.gif);
 }
 th.headerSortUp,
 th.headerSortDown,
 th.headerSortUp:hover,
 th.headerSortDown:hover {
-    background-color: #8bd0ed;
-    border: 1px solid #8bd0ed;
-    color: #fff;
-    text-shadow:
-       0.5px 0.5px 0 #000,
-       0 0 1px #000;
+	background-color: #8bd0ed;
+	border: 1px solid #8bd0ed;
+	color: #fff;
+	text-shadow:
+	   0.5px 0.5px 0 #000,
+	   0 0 1px #000;
 }
 
 /* zebra-stripe tables (CSS3); from Twitter's bootstrap package */
 tbody tr:nth-child(odd) td {
-    background-color: #f9f9f9;
+	background-color: #f9f9f9;
 }
 tbody tr:hover td {
-    background-color: #eee;
-    cursor: text;
+	background-color: #eee;
+	cursor: text;
 }
 
 /* CSS written by cwillu in order to rewrite the Modafinil page's table of prices */
 #suppliers-prices th {
-    padding: 3px 15px 2px 15px;
+	padding: 3px 15px 2px 15px;
 }
 #suppliers-prices td {
-    padding: 0 15px;
+	padding: 0 15px;
 }
 #suppliers-prices td:nth-child(1) {
-    text-align: right;
+	text-align: right;
 }
 #suppliers-prices td:nth-child(1):after {
-    content: "mg/$";
+	content: "mg/$";
 }
 #suppliers-prices td:nth-child(2) {
-    text-align: right;
+	text-align: right;
 }
 #suppliers-prices td:nth-child(2):after {
-    content: "mg";
+	content: "mg";
 }
 #suppliers-prices td:nth-child(3):before {
-    content: "x";
+	content: "x";
 }
 #suppliers-prices td:nth-child(5):before {
-    content: "$";
+	content: "$";
 }
 
 /**************/
@@ -1705,10 +1725,15 @@ tbody tr:hover td {
 /**************/
 
 p {
-    margin: 0;
+	margin: 0;
 }
 p + p {
-    text-indent: 2.5em;
+	text-indent: 2.5em;
+}
+@media only screen and (max-width: 64.9ch) {
+	p + p {
+		text-indent: 1em;
+	}
 }
 
 /***************/
@@ -1716,25 +1741,25 @@ p + p {
 /***************/
 
 code {
-    padding: 0 4px;
-    /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
-    font-family: "Liberation Mono", Consolas, Courier, monospace;
-    font-size: 0.9em;
-    border: 1px solid #c8c8c8;
-    background-color: #fafafa;
+	padding: 0 4px;
+	/* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+	font-family: "Liberation Mono", Consolas, Courier, monospace;
+	font-size: 0.9em;
+	border: 1px solid #c8c8c8;
+	background-color: #fafafa;
 }
 pre {
-    overflow: auto;
-    margin: 1.75em auto;
-    border: 1px solid #c8c8c8;
-    background-color: #fafafa;
+	overflow: auto;
+	margin: 1.75em auto;
+	border: 1px solid #c8c8c8;
+	background-color: #fafafa;
 }
 pre code {
-    display: block;
-    padding: 8px 14px;
-    margin: 0;
-    border: none;
-    background-color: transparent;
+	display: block;
+	padding: 8px 14px;
+	margin: 0;
+	border: none;
+	background-color: transparent;
 }
 
 /*=--------------------------------------------------=*/
@@ -1742,16 +1767,16 @@ pre code {
 /*=--------------------------------------------------=*/
 
 pre::-webkit-scrollbar {
-    height: 16px;
-    background-color: #fafafa;
+	height: 16px;
+	background-color: #fafafa;
 }
 pre::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    box-shadow:
-        0 0 0 3px #fafafa inset;
+	background-color: #ccc;
+	box-shadow:
+		0 0 0 3px #fafafa inset;
 }
 pre::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
+	background-color: #999;
 }
 
 /*=-------------------------------------------------------------------------=*/
@@ -1759,66 +1784,66 @@ pre::-webkit-scrollbar-thumb:hover {
 /*=-------------------------------------------------------------------------=*/
 
 a.sourceLine {
-    display: inline-block;
-    line-height: 1.25;
+	display: inline-block;
+	line-height: 1.25;
 }
 a.sourceLine {
-    pointer-events: none;
-    color: inherit;
-    text-decoration: inherit;
+	pointer-events: none;
+	color: inherit;
+	text-decoration: inherit;
 }
 a.sourceLine:empty {
-    height: 1.2em;
+	height: 1.2em;
 }
 @media print {
-    code.sourceCode {
-        white-space: pre-wrap;
-    }
-    a.sourceLine {
-        text-indent: -1em;
-        padding-left: 1em;
-    }
+	code.sourceCode {
+		white-space: pre-wrap;
+	}
+	a.sourceLine {
+		text-indent: -1em;
+		padding-left: 1em;
+	}
 }
 pre.numberSource a.sourceLine {
-    position: relative;
-    left: -4em;
+	position: relative;
+	left: -4em;
 }
 pre.numberSource a.sourceLine::before {
-    content: attr(title);
-    position: relative;
-    left: -1em;
-    text-align: right;
-    vertical-align: baseline;
-    border: none;
-    pointer-events: all;
-    display: inline-block;
+	content: attr(title);
+	position: relative;
+	left: -1em;
+	text-align: right;
+	vertical-align: baseline;
+	border: none;
+	pointer-events: all;
+	display: inline-block;
 
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
 
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 
-    padding: 0 4px;
-    width: 4em;
-    background-color: #fff;
-    color: #a0a0a0;
+	padding: 0 4px;
+	width: 4em;
+	background-color: #fff;
+	color: #a0a0a0;
 }
 pre.numberSource {
-    margin-left: 3em;
-    border-left: 1px solid #a0a0a0;
-    padding-left: 4px;
+	margin-left: 3em;
+	border-left: 1px solid #a0a0a0;
+	padding-left: 4px;
 }
 div.sourceCode {
-    color: #1f1c1b;
-    background-color: #fff;
+	color: #1f1c1b;
+	background-color: #fff;
 }
 @media only screen {
-    a.sourceLine::before {
-        text-decoration: underline;
-    }
+	a.sourceLine::before {
+		text-decoration: underline;
+	}
 }
 
 code span    { color: #1f1c1b; } /* Normal */
@@ -1858,13 +1883,13 @@ code span.wa { color: #bf0303; } /* Warning */
 /********/
 
 #markdownBody .MathJax_SVG {
-    max-width: 100%;
-    overflow: auto;
-    vertical-align: bottom;
+	max-width: 100%;
+	overflow: auto;
+	vertical-align: bottom;
 }
 /*
 #markdownBody #footnotediv .MathJax_SVG {
-    vertical-align: unset;
+	vertical-align: unset;
 }
  */
 
@@ -1876,33 +1901,33 @@ code span.wa { color: #bf0303; } /* Warning */
 span.smallcaps { font-variant: small-caps; }
 
 /*  WHAT IS THIS???
-    */
+	*/
 p.hang {
-    text-indent: -0.44em;
+	text-indent: -0.44em;
 }
 
 /*  WHAT IS THIS???
-    */
+	*/
 /* number formatting */
 .num {
-    font-size: 0.85em
+	font-size: 0.85em
 }
 
 hr {
-    border: none;
-    height: 0;
-    border-bottom: 1px solid #aaa;
-    margin: 1em 0;
+	border: none;
+	height: 0;
+	border-bottom: 1px solid #aaa;
+	margin: 1em 0;
 }
 
 /* hide the ad in the ad A/B test by default */
 #ads {
-    display: block;
-    text-align: center;
-    display: none;
+	display: block;
+	text-align: center;
+	display: none;
 }
 #ads a img {
-    max-width: 100%;
+	max-width: 100%;
 }
 
 /*******************************/
@@ -1914,120 +1939,120 @@ hr {
 /*=-------------------------=*/
 
 /*  add some vertical padding for the introduction
-    */
+	*/
 body.siteIndex #markdownBody {
-    padding-top: 1.5ch;
+	padding-top: 1.5ch;
 }
 
 /*  make the sections reflow; better than fixed-width tables
-    */
+	*/
 body.siteIndex article section {
-    display: inline-block;
-    vertical-align: top;
+	display: inline-block;
+	vertical-align: top;
 }
 
 /*  No index self-link.
-    */
+	*/
 body.siteIndex #sidebar a#logo {
-    pointer-events: none;
+	pointer-events: none;
 }
 
 /*  Nice-looking bottom decoration.
-    */
+	*/
 body.siteIndex article,
 body.tags article {
-    position: relative;
-    padding-bottom: 4em;
+	position: relative;
+	padding-bottom: 4em;
 }
 body.siteIndex article::after,
 body.tags article::after{
-    content: "";
-    background-color: #fff;
-    background-image: url('/images/logo-smooth.svg');
-    display: block;
-    position: absolute;
-    bottom: 0.75em;
-    width: 22px;
-    height: 30px;
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    left: 0;
-    right: 0;
-    margin: auto;
-    padding: 0 10px 0 11px;
-    z-index: 1;
+	content: "";
+	background-color: #fff;
+	background-image: url('/images/logo-smooth.svg');
+	display: block;
+	position: absolute;
+	bottom: 0.75em;
+	width: 22px;
+	height: 30px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	left: 0;
+	right: 0;
+	margin: auto;
+	padding: 0 10px 0 11px;
+	z-index: 1;
 }
 body.siteIndex article::before,
 body.tags article::before{
-    content: "";
-    display: block;
-    position: absolute;
-    bottom: calc(0.75em + 15px);
-    height: 1px;
-    border-bottom: 1px dotted #000;
-    width: 100%;
-    opacity: 0.5;
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: calc(0.75em + 15px);
+	height: 1px;
+	border-bottom: 1px dotted #000;
+	width: 100%;
+	opacity: 0.5;
 }
 
 /*  Lists on the home page.
-    */
+	*/
 body.siteIndex #markdownBody ul,
 body.tags #markdownBody ul {
-    margin: 1.25em 3em 0 0;
-    padding: 0 0 0 1.375em;
+	margin: 1.25em 3em 0 0;
+	padding: 0 0 0 1.375em;
 }
 body.siteIndex #markdownBody li > ul,
 body.tags #markdownBody li > ul {
-    margin: 0.25em 0 0.25em 0;
+	margin: 0.25em 0 0.25em 0;
 }
 body.siteIndex #markdownBody li,
 body.tags #markdownBody li {
-    margin-top: 0;
+	margin-top: 0;
 }
 body.siteIndex #markdownBody > section ~ p {
-    border-top: 1px dotted #777;
-    margin: 2em 0 0 0;
-    padding: 1em 0 0 0;
-    font-weight: bold;
+	border-top: 1px dotted #777;
+	margin: 2em 0 0 0;
+	padding: 1em 0 0 0;
+	font-weight: bold;
 }
 
 @media only screen and (min-width: 120ch) {
-    /*  Leave enough horizontal room to show multiple sections simultaneously,
-        table-like
-        */
-    body.siteIndex #markdownBody {
-        width: 135ch;
-        max-width: calc(50vw + 42ch);
-    }
-    body.siteIndex p,
-    body.siteIndex hr {
-        max-width: 97ch;
-    }
+	/*  Leave enough horizontal room to show multiple sections simultaneously,
+		table-like
+		*/
+	body.siteIndex #markdownBody {
+		width: 135ch;
+		max-width: calc(50vw + 42ch);
+	}
+	body.siteIndex p,
+	body.siteIndex hr {
+		max-width: 97ch;
+	}
 }
 @media only screen and (max-width: 64.9ch) {
-    body.siteIndex #sidebar #logo {
-        border: 1px dotted transparent;
-        align-self: flex-start;
-        padding: 7px 5px 6px 5px;
-    }
-    body.siteIndex #markdownBody section {
-        max-width: 100%;
-    }
-    body.siteIndex #markdownBody ul,
-    body.tags #markdownBody ul {
-        overflow-wrap: break-word;
-        margin-right: 0;
-    }
-    body.siteIndex #markdownBody li,
-    body.tags #markdownBody li {
-        padding: 1px 0;
-        margin: 2px 0 0 0;
-    }
-    body.siteIndex #markdownBody ul > li::before,
-    body.tags #markdownBody ul > li::before {
-        top: 0.25em;
-    }
+	body.siteIndex #sidebar #logo {
+		border: 1px dotted transparent;
+		align-self: flex-start;
+		padding: 7px 5px 6px 5px;
+	}
+	body.siteIndex #markdownBody section {
+		max-width: 100%;
+	}
+	body.siteIndex #markdownBody ul,
+	body.tags #markdownBody ul {
+		overflow-wrap: break-word;
+		margin-right: 0;
+	}
+	body.siteIndex #markdownBody li,
+	body.tags #markdownBody li {
+		padding: 1px 0;
+		margin: 2px 0 0 0;
+	}
+	body.siteIndex #markdownBody ul > li::before,
+	body.tags #markdownBody ul > li::before {
+		top: 0.25em;
+	}
 }
 
 /*=-------=*/
@@ -2035,18 +2060,18 @@ body.siteIndex #markdownBody > section ~ p {
 /*=-------=*/
 
 /*  This is for the pictures of mead bottles next to the reviews.
-    */
+	*/
 body.mead p > img {
-    float: right;
-    max-height: 8em;
-    width: auto;
-    position: relative;
-    z-index: 1;
-    margin: 1em 1em 1em 2em;
-    box-shadow:
-        0 0 0 15px #fff,
-        0 0 0 16px #ccc,
-        0 0 0 17px transparent;
+	float: right;
+	max-height: 8em;
+	width: auto;
+	position: relative;
+	z-index: 1;
+	margin: 1em 1em 1em 2em;
+	box-shadow:
+		0 0 0 15px #fff,
+		0 0 0 16px #ccc,
+		0 0 0 17px transparent;
 }
 
 /********************************************TEMPORARY*****************************************************/
@@ -2061,9 +2086,9 @@ body.mead p > img {
 /*=-------------------=*/
 
 html.no-scroll {
-    overflow-y: scroll;
-    position: fixed;
-    width: 100%;
+	overflow-y: scroll;
+	position: fixed;
+	width: 100%;
 }
 
 /*=--------------=*/
@@ -2071,11 +2096,11 @@ html.no-scroll {
 /*=--------------=*/
 
 #markdownBody img:hover {
-    filter: drop-shadow(0 0 3px #777);
-    cursor: zoom-in;
+	filter: drop-shadow(0 0 3px #777);
+	cursor: zoom-in;
 }
 #markdownBody img:active {
-    transform: scale(0.975);
+	transform: scale(0.975);
 }
 
 /*=---------=*/
@@ -2083,37 +2108,37 @@ html.no-scroll {
 /*=---------=*/
 
 #image-focus-overlay {
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 2;
-    display: none;
-    cursor: zoom-out;
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	display: none;
+	cursor: zoom-out;
 }
 #image-focus-overlay::before {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: #000;
-    opacity: 0.5;
-    z-index: -1;
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: #000;
+	opacity: 0.5;
+	z-index: -1;
 }
 #image-focus-overlay.engaged {
-    display: initial;
+	display: initial;
 }
 
 #image-focus-overlay img {
-    margin: auto;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%) translateY(-50%);
+	margin: auto;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
 }
 
 /*=---------=*/
@@ -2121,55 +2146,55 @@ html.no-scroll {
 /*=---------=*/
 
 #image-focus-overlay .caption {
-    position: absolute;
-    bottom: 0.75em;
-    background-color: rgba(0, 0, 0, 0.7);
-    left: 4.5em;
-    right: 4.5em;
-    margin: auto;
-    max-width: calc(100% - 9em);
-    text-align: center;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    border-radius: 8px;
-    z-index: 1;
-    transition:
-        bottom 0.15s ease;
+	position: absolute;
+	bottom: 0.75em;
+	background-color: rgba(0, 0, 0, 0.7);
+	left: 4.5em;
+	right: 4.5em;
+	margin: auto;
+	max-width: calc(100% - 9em);
+	text-align: center;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	border-radius: 8px;
+	z-index: 1;
+	transition:
+		bottom 0.15s ease;
 }
 @supports (width: -moz-fit-content) {
-    #image-focus-overlay .caption {
-        width: -moz-fit-content;
-    }
+	#image-focus-overlay .caption {
+		width: -moz-fit-content;
+	}
 }
 @supports (width: fit-content) {
-    #image-focus-overlay .caption {
-        width: fit-content;
-    }
+	#image-focus-overlay .caption {
+		width: fit-content;
+	}
 }
 #image-focus-overlay .caption.hidden {
-    bottom: -50%;
-    transition:
-        bottom 0.5s ease-in;
+	bottom: -50%;
+	transition:
+		bottom 0.5s ease-in;
 }
 
 #image-focus-overlay .caption p {
-    margin: 1em 1.25em;
-    color: #fff;
+	margin: 1em 1.25em;
+	color: #fff;
 }
 #image-focus-overlay .caption code {
-    background-color: inherit;
-    border: none;
-    font-size: 1em;
+	background-color: inherit;
+	border: none;
+	font-size: 1em;
 }
 
 #image-focus-overlay .caption:not(:empty)::before {
-    content: "";
-    display: block;
-    position: absolute;
-    width: 100vw;
-    height: calc(100% + 1.5em);
-    z-index: -1;
-    top: -0.75em;
-    left: calc(-50vw + 50%);
+	content: "";
+	display: block;
+	position: absolute;
+	width: 100vw;
+	height: calc(100% + 1.5em);
+	z-index: -1;
+	top: -0.75em;
+	left: calc(-50vw + 50%);
 
 }
 
@@ -2178,71 +2203,71 @@ html.no-scroll {
 /*=--------------=*/
 
 #image-focus-overlay .help-overlay {
-    position: absolute;
-    display: flex;
-    flex-flow: column;
-    z-index: 2;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    font-size: 1.25rem;
-    padding: 1em;
-    border-radius: 10px;
-    bottom: 1em;
-    right: 1em;
-    overflow: hidden;
-    white-space: nowrap;
-    color: transparent;
-    visibility: hidden;
-    transition:
-        visibility 1s ease,
-        color 1s ease,
-        background-color 1s ease,
-        bottom 0.3s ease;
+	position: absolute;
+	display: flex;
+	flex-flow: column;
+	z-index: 2;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	font-size: 1.25rem;
+	padding: 1em;
+	border-radius: 10px;
+	bottom: 1em;
+	right: 1em;
+	overflow: hidden;
+	white-space: nowrap;
+	color: transparent;
+	visibility: hidden;
+	transition:
+		visibility 1s ease,
+		color 1s ease,
+		background-color 1s ease,
+		bottom 0.3s ease;
 }
 #image-focus-overlay .help-overlay:hover {
-    max-width: 24em;
-    max-height: 14em;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    visibility: visible;
-    transition:
-        visibility 0.2s ease 0.3s,
-        color 0.2s ease 0.3s,
-        background-color 0.2s ease 0.3s;
+	max-width: 24em;
+	max-height: 14em;
+	background-color: rgba(0, 0, 0, 0.85);
+	color: #fff;
+	visibility: visible;
+	transition:
+		visibility 0.2s ease 0.3s,
+		color 0.2s ease 0.3s,
+		background-color 0.2s ease 0.3s;
 }
 
 #image-focus-overlay .help-overlay::after {
-    content: "?";
-    font-weight: bold;
-    font-size: 2rem;
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    padding: 10px;
-    color: #000;
-    filter: drop-shadow(0 0 6px #fff);
-    visibility: visible;
-    opacity: 0.85;
-    transition:
-        visibility 1s ease;
+	content: "?";
+	font-weight: bold;
+	font-size: 2rem;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	padding: 10px;
+	color: #000;
+	filter: drop-shadow(0 0 6px #fff);
+	visibility: visible;
+	opacity: 0.85;
+	transition:
+		visibility 1s ease;
 }
 #image-focus-overlay .help-overlay:hover::after {
-    visibility: hidden;
-    transition:
-        visibility 0.2s ease 0.3s;
+	visibility: hidden;
+	transition:
+		visibility 0.2s ease 0.3s;
 }
 
 #image-focus-overlay .help-overlay p {
-    margin: 0;
-    text-indent: -2em;
-    padding-left: 2em;
-    max-width: 100%;
-    overflow: hidden;
+	margin: 0;
+	text-indent: -2em;
+	padding-left: 2em;
+	max-width: 100%;
+	overflow: hidden;
 }
 #image-focus-overlay .help-overlay p + p {
-    margin: 0.75em 0 0 0;
+	margin: 0.75em 0 0 0;
 }
 #image-focus-overlay .help-overlay.hidden {
-    bottom: -2em;
+	bottom: -2em;
 }
 
 /*=-----------------=*/
@@ -2250,7 +2275,7 @@ html.no-scroll {
 /*=-----------------=*/
 
 .blurred {
-    filter: blur(3px);
+	filter: blur(3px);
 }
 
 /*=---------=*/
@@ -2258,37 +2283,37 @@ html.no-scroll {
 /*=---------=*/
 
 .image-wrapper {
-    position: relative;
-    display: block;
+	position: relative;
+	display: block;
 }
 .image-wrapper::after {
-    content: "Click to enlarge";
-    display: block;
-    position: absolute;
-    margin: auto;
-    left: 0;
-    right: 0;
-    bottom: 10px;
-    padding: 6px 15px 7px 15px;
-    font-size: 1rem;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    background-color: rgba(0, 0, 0, 0.75);
-    color: #fff;
-    border-radius: 5px;
-    opacity: 0.0;
-    transition: opacity 0.15s ease;
-    pointer-events: none;
+	content: "Click to enlarge";
+	display: block;
+	position: absolute;
+	margin: auto;
+	left: 0;
+	right: 0;
+	bottom: 10px;
+	padding: 6px 15px 7px 15px;
+	font-size: 1rem;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	background-color: rgba(0, 0, 0, 0.75);
+	color: #fff;
+	border-radius: 5px;
+	opacity: 0.0;
+	transition: opacity 0.15s ease;
+	pointer-events: none;
 }
 @supports (width: -moz-fit-content) {
-    .image-wrapper::after {
-        width: -moz-fit-content;
-    }
+	.image-wrapper::after {
+		width: -moz-fit-content;
+	}
 }
 @supports (width: fit-content) {
-    .image-wrapper::after {
-        width: fit-content;
-    }
+	.image-wrapper::after {
+		width: fit-content;
+	}
 }
 .image-wrapper:hover::after {
-    opacity: 1.0;
+	opacity: 1.0;
 }
