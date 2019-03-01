@@ -1036,6 +1036,8 @@ article > :not(#TOC) a:link *::-moz-selection {
 /*= Icons for certain link types =*/
 /*=------------------------------=*/
 
+/*  PDFs.
+    */
 a[href$='.pdf']::after {
     content: "";
     display: inline-block;
@@ -1049,6 +1051,18 @@ a[href$='.pdf']::after {
 }
 a[href$='.pdf']:hover::after {
     opacity: 0.3;
+}
+
+/*  Internal (within-site) links.
+    */
+#markdownBody a[href^="./"]:not([href$=".pdf"])::after,
+#markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
+    content: "\1D50A";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
 }
 
 /*********/
@@ -2042,6 +2056,13 @@ body.siteIndex #markdownBody > section ~ p {
     margin: 2em 0 0 0;
     padding: 1em 0 0 0;
     font-weight: bold;
+}
+
+/*  Internal links on the home page need no decoration.
+    */
+body.siteIndex #markdownBody a[href^="./"]:not([href$=".pdf"])::after,
+body.siteIndex #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
+    content: none;
 }
 
 @media only screen and (min-width: 120ch) {
