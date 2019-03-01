@@ -148,7 +148,7 @@
       document.querySelectorAll(".collapse").forEach(collapseBlock => {
         let disclosureButtonHTML = "<input type='checkbox' class='disclosure-button'>";
         if (collapseBlock.tagName == "SECTION") {
-            collapseBlock.firstChild.insertAdjacentHTML("afterend", disclosureButtonHTML);
+            collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
         } else {
             // Construct collapse block wrapper.
             let realCollapseBlock = document.createElement("div");

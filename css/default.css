@@ -1065,6 +1065,22 @@ a[href$='.pdf']:hover::after {
     opacity: 0.55;
 }
 
+/*  Within-page (anchor) links.
+    */
+#markdownBody section > :not(:first-child) a[href^='#']::after {
+    content: "\00B6";
+    margin: 0 1px 0 3px;
+    font-size: 0.75em;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.5em;
+    opacity: 0.6;
+}
+#markdownBody section > :not(:first-child) a[href^='#'].footnote-ref::after,
+#markdownBody section > :not(:first-child) a[href^='#'].footnote-back::after {
+    content: none;
+}
+
 /*********/
 /* LISTS */
 /*********/
