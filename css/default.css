@@ -662,8 +662,6 @@ header h1 {
 /****************/
 
 #markdownBody {
-/*  overflow: auto; */
-
     /*  Try to avoid scrollbars on paragraphs: prevents long unbroken
         un-hyphenatable lines from causing H-scrolling
         */
@@ -735,16 +733,27 @@ header h1 {
 .collapse {
     position: relative;
 }
+
+/*  Collapsible section elements
+    */
+section.collapse {
+    overflow: hidden;
+    margin: 1.5em 0 0 0;
+}
 section.collapse > :first-child {
     padding-right: 1em;
+    margin-top: 0;
 }
-section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseSummary) {
+#markdownBody section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseSummary) {
     max-height: 0;
     overflow: hidden;
     padding: 0;
     margin: 0;
     border: none;
 }
+
+/*  Collapsible non-section blocks
+    */
 :not(section).collapse .disclosure-button:not(:checked) + * > :nth-child(n+2) {
     max-height: 0;
     overflow: hidden;
@@ -753,36 +762,77 @@ section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseS
     max-height: 6ex;
     overflow: hidden;
 }
+
+/*  Making sure collapse summaries do not cause misalignment
+    */
+.collapse:not(:target) .disclosure-button:not(:checked) ~ .collapseSummary > :first-child {
+    margin-top: 0;
+}
+.collapse:not(:target) .disclosure-button:not(:checked) ~ .collapseSummary > :last-child {
+    margin-bottom: 20px;
+}
+.collapseSummary {
+    position: relative;
+    z-index: 1;
+}
+.collapse:not(:target) .disclosure-button:not(:checked) ~ .collapseSummary {
+    opacity: 0.75;
+}
+
+/*  The interactable region to expand/collapse
+    */
 .disclosure-button {
     position: absolute;
-    top: -2px;
-    right: 0;
     -webkit-appearance: none;
     -moz-appearance: none;
-    height: 2em;
-    width: 2em;
     margin: 0;
-    overflow: visible;
     cursor: pointer;
     border: 1px solid transparent;
 }
-:not(section).collapse .disclosure-button {
-    width: 100%;
+section.collapse .disclosure-button {
+    top: 0;
+    right: 0;
 }
-.disclosure-button:not(:checked) {
+section.collapse .disclosure-button:not(:checked) {
+    width: 100%;
     height: 100%;
+}
+:not(section).collapse .disclosure-button {
+    top: -2px;
+    right: -2px;
 }
 :not(section).collapse .disclosure-button:not(:checked) {
     width: calc(100% + 4px);
     height: calc(100% + 4px);
-    right: -2px;
 }
-:not(section).collapse .disclosure-button:checked {
-    top: 0;
+.disclosure-button:checked {
+    height: 2em;
+}
+section.collapse .disclosure-button:checked {
+    width: 2em;
 }
 :not(section).collapse .disclosure-button:checked:hover {
     background-color: rgba(0,0,0,0.1);
 }
+section.collapse:target .disclosure-button {
+    pointer-events: none;
+}
+.disclosure-button:focus {
+    outline: none;
+    text-shadow:
+        0 0 1px red,
+        0 0 3px red,
+        0 0 5px red;
+}
+.collapse:not(:target) .disclosure-button:not(:checked) {
+    background-color: rgba(255,255,255,0.5);
+}
+.collapse:not(:target) .disclosure-button:not(:checked):hover {
+    background-color: rgba(255,255,255,0.3);
+}
+
+/*  Triangle symbol
+    */
 .disclosure-button::before {
     content: "\25C0";
     font-size: 1.5em;
@@ -798,14 +848,25 @@ section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseS
 :not(section).collapse .disclosure-button::before {
     right: 1px;
 }
-.disclosure-button:checked::before {
+.disclosure-button:checked::before,
+.collapse:target .disclosure-button::before {
     transform: rotate(-90deg);
+    top: 3px;
 }
 :not(section).collapse .disclosure-button:checked::before {
     top: 0;
     right: -2px;
 }
-.disclosure-button:not(:checked)::after {
+.collapse:not(:target) .disclosure-button:hover::before {
+    color: #666;
+}
+.collapse:target .disclosure-button::before {
+    opacity: 0.4;
+}
+
+/*  Ellipsis or "Click to expand"
+    */
+.collapse:not(:target) .disclosure-button:not(:checked)::after {
     width: 100%;
     position: absolute;
     text-align: center;
@@ -813,38 +874,32 @@ section.collapse:not(:target) .disclosure-button:not(:checked) ~ :not(.collapseS
     text-shadow: none;
     pointer-events: none;
 }
-.disclosure-button:not(:checked)::after {
+.collapse:not(:target) .disclosure-button:not(:checked)::after {
     content: "…";
     font-size: 3em;
     line-height: 0;
-    top: calc(100% - 16px);
+    top: calc(100% - 18px);
 }
-.disclosure-button:not(:checked):hover::after {
+.collapse:not(:target) .disclosure-button:not(:checked):hover::after {
     content: "Click to expand";
+    text-shadow:
+         1px -1px 0 #fff,
+        -1px  1px 0 #fff,
+        -1px -1px 0 #fff,
+         1px  1px 0 #fff;
     font-size: 1em;
-    top: calc(100% - 8px);
+    font-weight: bold;
+    color: #444;
+    top: calc(100% - 10px);
 }
-:not(section).collapse .disclosure-button:not(:checked)::after {
+:not(section).collapse:not(:target) .disclosure-button:not(:checked)::after {
     top: calc(100% - 20px);
 }
-:not(section).collapse .disclosure-button:not(:checked):hover::after {
+:not(section).collapse:not(:target) .disclosure-button:not(:checked):hover::after {
     top: calc(100% - 12px);
 }
 .disclosure-button:not(:checked):hover {
     border: 1px dotted #777;
-}
-.disclosure-button:not(:checked) ~ .collapseSummary > :first-child {
-    margin-top: 0;
-}
-.disclosure-button:not(:checked) ~ .collapseSummary > :last-child {
-    margin-bottom: 20px;
-}
-.disclosure-button:focus {
-    outline: none;
-    text-shadow:
-        0 0 1px red,
-        0 0 3px red,
-        0 0 5px red;
 }
 
 /************/
@@ -959,12 +1014,13 @@ article > :not(#TOC) a:hover {
 /*= Fancy link underlining =*/
 /*=------------------------=*/
 
-/* Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
-   The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
-   is that when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
-   by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined.
-   Unfortunately, we don't want to add underlines to the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
-   I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead. */
+/*  Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
+    The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
+    is that when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
+    by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined.
+    Unfortunately, we don't want to add underlines to the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
+    I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead.
+    */
 article > :not(#TOC) a:link {
     text-decoration: none;
     background:
@@ -1401,7 +1457,8 @@ blockquote q {
 }
 /*  WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting,
     quote marks are not by default included in browser copy-paste, possibly annoying users.
-    You need the following CSS & a line of JS in default.html to insert real quotes. */
+    You need the following CSS & a line of JS in default.html to insert real quotes.
+    */
 q::before,
 q::after {
     content: none;
@@ -1684,6 +1741,17 @@ table {
     font-variant-numeric: tabular-nums;
 }
 
+table caption {
+    padding: 0.5em 0.75em;
+    font-weight: bold;
+    font-size: 1.25em;
+    border-color: #444;
+    border-style: solid;
+    border-width: 1px 1px 0 1px;
+    background-color: #444;
+    color: #fff;
+}
+
 /*
  * Tables.less
  * Tables for, you guessed it, tabular data
@@ -1710,9 +1778,10 @@ table tr + tr td {
     border-top: 1px solid #ddd;
 }
 
-/* Add little icons to tables handled by tablesorter.js
-   to advertise that they are sortable.
-   http://tablesorter.com/docs/#Configuration */
+/*  Add little icons to tables handled by tablesorter.js
+    to advertise that they are sortable.
+    http://tablesorter.com/docs/#Configuration
+    */
 th.header {
     background-image: url(/static/img/bg.gif);
     cursor: pointer;
@@ -1742,7 +1811,8 @@ th.headerSortDown:hover {
        0 0 1px #000;
 }
 
-/* zebra-stripe tables (CSS3); from Twitter's bootstrap package */
+/*  zebra-stripe tables (CSS3); from Twitter's bootstrap package
+    */
 tbody tr:nth-child(odd) td {
     background-color: #f9f9f9;
 }
@@ -1751,7 +1821,8 @@ tbody tr:hover td {
     cursor: text;
 }
 
-/* CSS written by cwillu in order to rewrite the Modafinil page's table of prices */
+/*  CSS written by cwillu in order to rewrite the Modafinil page's table of prices
+    */
 #suppliers-prices th {
     padding: 3px 15px 2px 15px;
 }
@@ -1944,18 +2015,16 @@ code span.wa { color: #bf0303; } /* Warning */
     overflow: auto;
     vertical-align: bottom;
 }
-/*
-#markdownBody #footnotediv .MathJax_SVG {
-    vertical-align: unset;
-}
- */
 
 /********/
 /* MISC */
 /********/
 
-/* enable standard Pandoc attribute-based syntax for small-caps like '[foo]{.smallcaps}'; see https://pandoc.org/MANUAL.html#small-caps */
-span.smallcaps { font-variant: small-caps; }
+/*  enable standard Pandoc attribute-based syntax for small-caps like '[foo]{.smallcaps}'; see https://pandoc.org/MANUAL.html#small-caps
+    */
+span.smallcaps {
+    font-variant: small-caps;
+}
 
 /*  WHAT IS THIS???
     */
