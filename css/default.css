@@ -3,8 +3,7 @@
 /********************/
 /* SOURCE SERIF PRO */
 /********************/
-/* workhorse font for the body; Baskerville-like */
-
+/* workhorse font for the body */
 @font-face {
     font-family: "Source Serif Pro";
     font-weight: 200;
@@ -574,11 +573,10 @@ header h1 {
 
 #TOC li {
     font-weight: bold;
-    margin: 5px 2px 10px 0;
+    margin: 5px 0 10px 0;
     padding-left: 1.125em;
     position: relative;
     overflow-wrap: break-word;
-    hyphens: auto;
 }
 #TOC li li {
     margin-bottom: 0;
@@ -597,9 +595,22 @@ header h1 {
 
 #TOC a {
     border: 0;
+    display: block;
+    position: relative;
 }
 #TOC a:hover {
-    text-shadow: 1px 1px 3px #777;
+    background-color: rgba(0,0,0,0.05);
+    color: #000;
+}
+#TOC a:hover::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background-color: #ccc;
+    width: 0.25em;
+    height: 100%;
 }
 
 /*=-------------------------------=*/
@@ -655,6 +666,10 @@ header h1 {
     text-align: right;
     font-weight: normal;
     opacity: 0.4;
+    pointer-events: none;
+}
+#TOC ul li:hover::before {
+    opacity: 0.7;
 }
 
 /****************/
@@ -811,18 +826,16 @@ section.collapse .disclosure-button:not(:checked) {
 section.collapse .disclosure-button:checked {
     width: 2em;
 }
+:not(section).collapse .disclosure-button:checked {
+    width: 100%;
+    top: 0;
+    right: 0;
+}
 :not(section).collapse .disclosure-button:checked:hover {
     background-color: rgba(0,0,0,0.1);
 }
 section.collapse:target .disclosure-button {
     pointer-events: none;
-}
-.disclosure-button:focus {
-    outline: none;
-    text-shadow:
-        0 0 1px red,
-        0 0 3px red,
-        0 0 5px red;
 }
 .collapse:not(:target) .disclosure-button:not(:checked) {
     background-color: rgba(255,255,255,0.5);
@@ -863,6 +876,15 @@ section.collapse:target .disclosure-button {
 .collapse:target .disclosure-button::before {
     opacity: 0.4;
 }
+.disclosure-button:focus {
+    outline: none;
+}
+.disclosure-button:focus::before {
+    text-shadow:
+        0 0 1px #e00,
+        0 0 3px #e00,
+        0 0 5px #e00;
+}
 
 /*  Ellipsis or "Click to expand"
     */
@@ -871,22 +893,19 @@ section.collapse:target .disclosure-button {
     position: absolute;
     text-align: center;
     color: #777;
-    text-shadow: none;
     pointer-events: none;
-}
-.collapse:not(:target) .disclosure-button:not(:checked)::after {
     content: "…";
     font-size: 3em;
     line-height: 0;
     top: calc(100% - 18px);
-}
-.collapse:not(:target) .disclosure-button:not(:checked):hover::after {
-    content: "Click to expand";
     text-shadow:
          1px -1px 0 #fff,
         -1px  1px 0 #fff,
         -1px -1px 0 #fff,
          1px  1px 0 #fff;
+}
+.collapse:not(:target) .disclosure-button:not(:checked):hover::after {
+    content: "Click to expand";
     font-size: 1em;
     font-weight: bold;
     color: #444;
