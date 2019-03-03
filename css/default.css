@@ -1,6 +1,9 @@
 @charset "UTF-8";
 
-/* fonts are loaded from /static/css/fonts.css */
+/*********/
+/* FONTS */
+/*********/
+/* fonts are now loaded from /static/css/fonts.css */
 
 /***********/
 /* GENERAL */
@@ -900,38 +903,9 @@ article > :not(#TOC) a:link *::-moz-selection {
     background: #b4d5fe;
 }
 
-/*=------------------------------=*/
-/*= Icons for certain link types =*/
-/*=------------------------------=*/
-
-/*  PDFs.
-    */
-a[href$='.pdf']::after {
-    content: "";
-    display: inline-block;
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
-    background-repeat: no-repeat;
-    background-position: bottom center;
-    height: 0.75em;
-    width: 0.75em;
-    margin: 0 0 0 2px;
-    opacity: 0.55;
-}
-a[href$='.pdf']:hover::after {
-    opacity: 0.3;
-}
-
-/*  Internal (within-site) links.
-    */
-#markdownBody a[href^="./"]:not([href$=".pdf"])::after,
-#markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
-    content: "\1D50A";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
-}
+/*=-----------------------------------------=*/
+/*= Icons for certain link types: by target =*/
+/*=-----------------------------------------=*/
 
 /*  Within-page (anchor) links.
     */
@@ -946,8 +920,223 @@ a[href$='.pdf']:hover::after {
     opacity: 0.6;
 }
 #markdownBody section > :not(:first-child) a[href^='#'].footnote-ref::after,
+#markdownBody > p a[href^='#'].footnote-ref::after,
 #markdownBody section > :not(:first-child) a[href^='#'].footnote-back::after {
     content: none;
+}
+
+/*  Internal (within-site) links.
+    */
+#markdownBody a[href^="./"]::after {
+    content: "\1D50A";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/*=--------------------------------------------=*/
+/*= Icons for certain link types: by file type =*/
+/*=--------------------------------------------=*/
+/*  Note: some file extension link types have are selected additionally by
+    origin on gwern.net, because they frequently appear at the ends of ordinary
+    web page URLs.
+    */
+
+/*  PDFs */
+#markdownBody a[href$='.pdf']::after,
+/*  Textfiles */
+#markdownBody a[href^="./"][href$='.htm']::after,
+#markdownBody a[href^="./"][href$='.html']::after,
+#markdownBody a[href$='.opml']::after,
+#markdownBody a[href$='.page']::after,
+#markdownBody a[href$='.txt']::after,
+#markdownBody a[href$='.xml']::after,
+/*  Code */
+#markdownBody a[href$='.css']::after,
+#markdownBody a[href$='.hs']::after,
+#markdownBody a[href$='.js']::after,
+#markdownBody a[href$='.json']::after,
+#markdownBody a[href^="./"][href$='.php']::after,
+#markdownBody a[href$='.sh']::after,
+/*  Word */
+#markdownBody a[href$='.doc']::after,
+#markdownBody a[href$='.docx']::after,
+/*  Excel */
+#markdownBody a[href$='.xls']::after,
+#markdownBody a[href$='.xlsx']::after,
+/*  CSV */
+#markdownBody a[href$='.csv']::after,
+/*  Images */
+#markdownBody a[href$='.gif']::after,
+#markdownBody a[href$='.ico']::after,
+#markdownBody a[href$='.jpg']::after,
+#markdownBody a[href$='.png']::after,
+#markdownBody a[href$='.svg']::after,
+#markdownBody a[href$='.xcf']::after,
+/*  Audio */
+#markdownBody a[href$='.maff']::after,
+#markdownBody a[href$='.ogg']::after,
+/*  Video */
+#markdownBody a[href$='.avi']::after,
+#markdownBody a[href$='.mp4']::after,
+#markdownBody a[href$='.webm']::after,
+/*  Archives */
+#markdownBody a[href$='.tar']::after,
+/*  Misc */
+#markdownBody a[href$='.ebt']::after,
+#markdownBody a[href$='.epub']::after,
+#markdownBody a[href$='.mdb']::after,
+#markdownBody a[href$='.mht']::after,
+#markdownBody a[href$='.ttf']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 0 2px;
+    opacity: 0.55;
+}
+/*  PDFs */
+#markdownBody a[href$='.pdf']:hover::after,
+/*  Textfiles */
+#markdownBody a[href^="./"][href$='.htm']:hover::after,
+#markdownBody a[href^="./"][href$='.html']:hover::after,
+#markdownBody a[href$='.opml']:hover::after,
+#markdownBody a[href$='.page']:hover::after,
+#markdownBody a[href$='.txt']:hover::after,
+#markdownBody a[href$='.xml']:hover::after,
+/*  Code */
+#markdownBody a[href$='.css']:hover::after,
+#markdownBody a[href$='.hs']:hover::after,
+#markdownBody a[href$='.js']:hover::after,
+#markdownBody a[href$='.json']:hover::after,
+#markdownBody a[href^="./"][href$='.php']:hover::after,
+#markdownBody a[href$='.sh']:hover::after,
+/*  Word */
+#markdownBody a[href$='.doc']:hover::after,
+#markdownBody a[href$='.docx']:hover::after,
+/*  Excel */
+#markdownBody a[href$='.xls']:hover::after,
+#markdownBody a[href$='.xlsx']:hover::after,
+/*  CSV */
+#markdownBody a[href$='.csv']:hover::after,
+/*  Images */
+#markdownBody a[href$='.gif']:hover::after,
+#markdownBody a[href$='.ico']:hover::after,
+#markdownBody a[href$='.jpg']:hover::after,
+#markdownBody a[href$='.png']:hover::after,
+#markdownBody a[href$='.svg']:hover::after,
+#markdownBody a[href$='.xcf']:hover::after,
+/*  Audio */
+#markdownBody a[href$='.maff']:hover::after,
+#markdownBody a[href$='.ogg']:hover::after,
+/*  Video */
+#markdownBody a[href$='.avi']:hover::after,
+#markdownBody a[href$='.mp4']:hover::after,
+#markdownBody a[href$='.webm']:hover::after,
+/*  Archives */
+#markdownBody a[href$='.tar']:hover::after,
+/*  Misc */
+#markdownBody a[href$='.ebt']:hover::after,
+#markdownBody a[href$='.epub']:hover::after,
+#markdownBody a[href$='.mdb']:hover::after,
+#markdownBody a[href$='.mht']:hover::after,
+#markdownBody a[href$='.ttf']:hover::after {
+    opacity: 0.3;
+}
+
+/*  PDFs.
+    */
+#markdownBody a[href$='.pdf']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
+}
+
+/*  Textfiles.
+    */
+#markdownBody a[href^="./"][href$='.htm']::after,
+#markdownBody a[href^="./"][href$='.html']::after,
+#markdownBody a[href$='.opml']::after,
+#markdownBody a[href$='.page']::after,
+#markdownBody a[href$='.txt']::after,
+#markdownBody a[href$='.xml']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02NCAyMzZjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEydjh6bTAtNjRjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEydjh6bTAtNzJ2OGMwIDYuNi01LjQgMTItMTIgMTJIMTA4Yy02LjYgMC0xMi01LjQtMTItMTJ2LThjMC02LjYgNS40LTEyIDEyLTEyaDE2OGM2LjYgMCAxMiA1LjQgMTIgMTJ6bTk2LTExNC4xdjYuMUgyNTZWMGg2LjFjNi40IDAgMTIuNSAyLjUgMTcgN2w5Ny45IDk4YzQuNSA0LjUgNyAxMC42IDcgMTYuOXoiLz48L3N2Zz4=');
+}
+
+/*  Code, scripts, etc.
+    */
+#markdownBody a[href$='.css']::after,
+#markdownBody a[href$='.hs']::after,
+#markdownBody a[href$='.js']::after,
+#markdownBody a[href$='.json']::after,
+#markdownBody a[href^="./"][href$='.php']::after,
+#markdownBody a[href$='.sh']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YzYuMzY1IDAgMTIuNDcgMi41MjkgMTYuOTcxIDcuMDI5bDk3Ljk0MSA5Ny45NDFBMjQuMDA1IDI0LjAwNSAwIDAgMSAzODQgMTIxLjk0MXpNMjQ4IDE2MGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRWMEgyNEMxMC43NDUgMCAwIDEwLjc0NSAwIDI0djQ2NGMwIDEzLjI1NSAxMC43NDUgMjQgMjQgMjRoMzM2YzEzLjI1NSAwIDI0LTEwLjc0NSAyNC0yNFYxNjBIMjQ4ek0xMjMuMjA2IDQwMC41MDVhNS40IDUuNCAwIDAgMS03LjYzMy4yNDZsLTY0Ljg2Ni02MC44MTJhNS40IDUuNCAwIDAgMSAwLTcuODc5bDY0Ljg2Ni02MC44MTJhNS40IDUuNCAwIDAgMSA3LjYzMy4yNDZsMTkuNTc5IDIwLjg4NWE1LjQgNS40IDAgMCAxLS4zNzIgNy43NDdMMTAxLjY1IDMzNmw0MC43NjMgMzUuODc0YTUuNCA1LjQgMCAwIDEgLjM3MiA3Ljc0N2wtMTkuNTc5IDIwLjg4NHptNTEuMjk1IDUwLjQ3OWwtMjcuNDUzLTcuOTdhNS40MDIgNS40MDIgMCAwIDEtMy42ODEtNi42OTJsNjEuNDQtMjExLjYyNmE1LjQwMiA1LjQwMiAwIDAgMSA2LjY5Mi0zLjY4MWwyNy40NTIgNy45N2E1LjQgNS40IDAgMCAxIDMuNjggNi42OTJsLTYxLjQ0IDIxMS42MjZhNS4zOTcgNS4zOTcgMCAwIDEtNi42OSAzLjY4MXptMTYwLjc5Mi0xMTEuMDQ1bC02NC44NjYgNjAuODEyYTUuNCA1LjQgMCAwIDEtNy42MzMtLjI0NmwtMTkuNTgtMjAuODg1YTUuNCA1LjQgMCAwIDEgLjM3Mi03Ljc0N0wyODQuMzUgMzM2bC00MC43NjMtMzUuODc0YTUuNCA1LjQgMCAwIDEtLjM3Mi03Ljc0N2wxOS41OC0yMC44ODVhNS40IDUuNCAwIDAgMSA3LjYzMy0uMjQ2bDY0Ljg2NiA2MC44MTJhNS40IDUuNCAwIDAgMS0uMDAxIDcuODc5eiIvPjwvc3ZnPg==');
+}
+
+/*  Word (& compatible) documents.
+    */
+#markdownBody a[href$='.doc']::after,
+#markdownBody a[href$='.docx']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em01Ny4xIDEyMEgzMDVjNy43IDAgMTMuNCA3LjEgMTEuNyAxNC43bC0zOCAxNjhjLTEuMiA1LjUtNi4xIDkuMy0xMS43IDkuM2gtMzhjLTUuNSAwLTEwLjMtMy44LTExLjYtOS4xLTI1LjgtMTAzLjUtMjAuOC04MS4yLTI1LjYtMTEwLjVoLS41Yy0xLjEgMTQuMy0yLjQgMTcuNC0yNS42IDExMC41LTEuMyA1LjMtNi4xIDkuMS0xMS42IDkuMUgxMTdjLTUuNiAwLTEwLjUtMy45LTExLjctOS40bC0zNy44LTE2OGMtMS43LTcuNSA0LTE0LjYgMTEuNy0xNC42aDI0LjVjNS43IDAgMTAuNyA0IDExLjggOS43IDE1LjYgNzggMjAuMSAxMDkuNSAyMSAxMjIuMiAxLjYtMTAuMiA3LjMtMzIuNyAyOS40LTEyMi43IDEuMy01LjQgNi4xLTkuMSAxMS43LTkuMWgyOS4xYzUuNiAwIDEwLjQgMy44IDExLjcgOS4yIDI0IDEwMC40IDI4LjggMTI0IDI5LjYgMTI5LjQtLjItMTEuMi0yLjYtMTcuOCAyMS42LTEyOS4yIDEtNS42IDUuOS05LjUgMTEuNS05LjV6TTM4NCAxMjEuOXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+}
+
+/*  Excel (& compatible) documents.
+    */
+#markdownBody a[href$='.xls']::after,
+#markdownBody a[href$='.xlsx']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02MC4xIDEwNi41TDIyNCAzMzZsNjAuMSA5My41YzUuMSA4LS42IDE4LjUtMTAuMSAxOC41aC0zNC45Yy00LjQgMC04LjUtMi40LTEwLjYtNi4zQzIwOC45IDQwNS41IDE5MiAzNzMgMTkyIDM3M2MtNi40IDE0LjgtMTAgMjAtMzYuNiA2OC44LTIuMSAzLjktNi4xIDYuMy0xMC41IDYuM0gxMTBjLTkuNSAwLTE1LjItMTAuNS0xMC4xLTE4LjVsNjAuMy05My41LTYwLjMtOTMuNWMtNS4yLTggLjYtMTguNSAxMC4xLTE4LjVoMzQuOGM0LjQgMCA4LjUgMi40IDEwLjYgNi4zIDI2LjEgNDguOCAyMCAzMy42IDM2LjYgNjguNSAwIDAgNi4xLTExLjcgMzYuNi02OC41IDIuMS0zLjkgNi4yLTYuMyAxMC42LTYuM0gyNzRjOS41LS4xIDE1LjIgMTAuNCAxMC4xIDE4LjR6TTM4NCAxMjEuOXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+}
+
+/*  CSV files.
+    */
+#markdownBody a[href$='.csv']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0tOTYgMTQ0YzAgNC40Mi0zLjU4IDgtOCA4aC04Yy04Ljg0IDAtMTYgNy4xNi0xNiAxNnYzMmMwIDguODQgNy4xNiAxNiAxNiAxNmg4YzQuNDIgMCA4IDMuNTggOCA4djE2YzAgNC40Mi0zLjU4IDgtOCA4aC04Yy0yNi41MSAwLTQ4LTIxLjQ5LTQ4LTQ4di0zMmMwLTI2LjUxIDIxLjQ5LTQ4IDQ4LTQ4aDhjNC40MiAwIDggMy41OCA4IDh2MTZ6bTQ0LjI3IDEwNEgxNjBjLTQuNDIgMC04LTMuNTgtOC04di0xNmMwLTQuNDIgMy41OC04IDgtOGgxMi4yN2M1Ljk1IDAgMTAuNDEtMy41IDEwLjQxLTYuNjIgMC0xLjMtLjc1LTIuNjYtMi4xMi0zLjg0bC0yMS44OS0xOC43N2MtOC40Ny03LjIyLTEzLjMzLTE3LjQ4LTEzLjMzLTI4LjE0IDAtMjEuMyAxOS4wMi0zOC42MiA0Mi40MS0zOC42MkgyMDBjNC40MiAwIDggMy41OCA4IDh2MTZjMCA0LjQyLTMuNTggOC04IDhoLTEyLjI3Yy01Ljk1IDAtMTAuNDEgMy41LTEwLjQxIDYuNjIgMCAxLjMuNzUgMi42NiAyLjEyIDMuODRsMjEuODkgMTguNzdjOC40NyA3LjIyIDEzLjMzIDE3LjQ4IDEzLjMzIDI4LjE0LjAxIDIxLjI5LTE5IDM4LjYyLTQyLjM5IDM4LjYyek0yNTYgMjY0djIwLjhjMCAyMC4yNyA1LjcgNDAuMTcgMTYgNTYuODggMTAuMy0xNi43IDE2LTM2LjYxIDE2LTU2Ljg4VjI2NGMwLTQuNDIgMy41OC04IDgtOGgxNmM0LjQyIDAgOCAzLjU4IDggOHYyMC44YzAgMzUuNDgtMTIuODggNjguODktMzYuMjggOTQuMDktMy4wMiAzLjI1LTcuMjcgNS4xMS0xMS43MiA1LjExcy04LjctMS44Ni0xMS43Mi01LjExYy0yMy40LTI1LjItMzYuMjgtNTguNjEtMzYuMjgtOTQuMDlWMjY0YzAtNC40MiAzLjU4LTggOC04aDE2YzQuNDIgMCA4IDMuNTggOCA4em0xMjEtMTU5TDI3OS4xIDdjLTQuNS00LjUtMTAuNi03LTE3LTdIMjU2djEyOGgxMjh2LTYuMWMwLTYuMy0yLjUtMTIuNC03LTE2Ljl6Ii8+PC9zdmc+');
+}
+
+/*  Images.
+    */
+#markdownBody a[href$='.gif']::after,
+#markdownBody a[href$='.ico']::after,
+#markdownBody a[href$='.jpg']::after,
+#markdownBody a[href$='.png']::after,
+#markdownBody a[href$='.svg']::after,
+#markdownBody a[href$='.xcf']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YTI0IDI0IDAgMCAxIDE2Ljk3IDcuMDI5bDk3Ljk0MSA5Ny45NDFhMjQuMDAyIDI0LjAwMiAwIDAgMSA3LjAzIDE2Ljk3MXpNMjQ4IDE2MGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRWMEgyNEMxMC43NDUgMCAwIDEwLjc0NSAwIDI0djQ2NGMwIDEzLjI1NSAxMC43NDUgMjQgMjQgMjRoMzM2YzEzLjI1NSAwIDI0LTEwLjc0NSAyNC0yNFYxNjBIMjQ4em0tMTM1LjQ1NSAxNmMyNi41MSAwIDQ4IDIxLjQ5IDQ4IDQ4cy0yMS40OSA0OC00OCA0OC00OC0yMS40OS00OC00OCAyMS40OTEtNDggNDgtNDh6bTIwOCAyNDBoLTI1NmwuNDg1LTQ4LjQ4NUwxMDQuNTQ1IDMyOGM0LjY4Ni00LjY4NiAxMS43OTktNC4yMDEgMTYuNDg1LjQ4NUwxNjAuNTQ1IDM2OCAyNjQuMDYgMjY0LjQ4NWM0LjY4Ni00LjY4NiAxMi4yODQtNC42ODYgMTYuOTcxIDBMMzIwLjU0NSAzMDR2MTEyeiIvPjwvc3ZnPg==');
+}
+
+/*  Audio files.
+    */
+#markdownBody a[href$='.maff']::after,
+#markdownBody a[href$='.ogg']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0tNjQgMjY4YzAgMTAuNy0xMi45IDE2LTIwLjUgOC41TDEwNCAzNzZINzZjLTYuNiAwLTEyLTUuNC0xMi0xMnYtNTZjMC02LjYgNS40LTEyIDEyLTEyaDI4bDM1LjUtMzYuNWM3LjYtNy42IDIwLjUtMi4yIDIwLjUgOC41djEzNnptMzMuMi00Ny42YzkuMS05LjMgOS4xLTI0LjEgMC0zMy40LTIyLjEtMjIuOCAxMi4yLTU2LjIgMzQuNC0zMy41IDI3LjIgMjcuOSAyNy4yIDcyLjQgMCAxMDAuNC0yMS44IDIyLjMtNTYuOS0xMC40LTM0LjQtMzMuNXptODYtMTE3LjFjNTQuNCA1NS45IDU0LjQgMTQ0LjggMCAyMDAuOC0yMS44IDIyLjQtNTctMTAuMy0zNC40LTMzLjUgMzYuMi0zNy4yIDM2LjMtOTYuNSAwLTEzMy44LTIyLjEtMjIuOCAxMi4zLTU2LjMgMzQuNC0zMy41ek0zODQgMTIxLjl2Ni4xSDI1NlYwaDYuMWM2LjQgMCAxMi41IDIuNSAxNyA3bDk3LjkgOThjNC41IDQuNSA3IDEwLjYgNyAxNi45eiIvPjwvc3ZnPg==');
+}
+
+/*  Video files.
+    */
+#markdownBody a[href$='.avi']::after,
+#markdownBody a[href$='.mp4']::after,
+#markdownBody a[href$='.webm']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YzYuMzY1IDAgMTIuNDcgMi41MjkgMTYuOTcxIDcuMDI5bDk3Ljk0MSA5Ny45NDFBMjQuMDA1IDI0LjAwNSAwIDAgMSAzODQgMTIxLjk0MXpNMjI0IDEzNlYwSDI0QzEwLjc0NSAwIDAgMTAuNzQ1IDAgMjR2NDY0YzAgMTMuMjU1IDEwLjc0NSAyNCAyNCAyNGgzMzZjMTMuMjU1IDAgMjQtMTAuNzQ1IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em05NiAxNDQuMDE2djExMS45NjNjMCAyMS40NDUtMjUuOTQzIDMxLjk5OC00MC45NzEgMTYuOTcxTDIyNCAzNTMuOTQxVjM5MmMwIDEzLjI1NS0xMC43NDUgMjQtMjQgMjRIODhjLTEzLjI1NSAwLTI0LTEwLjc0NS0yNC0yNFYyODBjMC0xMy4yNTUgMTAuNzQ1LTI0IDI0LTI0aDExMmMxMy4yNTUgMCAyNCAxMC43NDUgMjQgMjR2MzguMDU5bDU1LjAyOS01NS4wMTNjMTUuMDExLTE1LjAxIDQwLjk3MS00LjQ5MSA0MC45NzEgMTYuOTd6Ii8+PC9zdmc+');
+}
+
+/*  Archive files.
+    */
+#markdownBody a[href$='.tar']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzc3IDEwNUwyNzkuMSA3Yy00LjUtNC41LTEwLjYtNy0xNy03SDI1NnYxMjhoMTI4di02LjFjMC02LjMtMi41LTEyLjQtNy0xNi45ek0xMjguNCAzMzZjLTE3LjkgMC0zMi40IDEyLjEtMzIuNCAyNyAwIDE1IDE0LjYgMjcgMzIuNSAyN3MzMi40LTEyLjEgMzIuNC0yNy0xNC42LTI3LTMyLjUtMjd6TTIyNCAxMzZWMGgtNjMuNnYzMmgtMzJWMEgyNEMxMC43IDAgMCAxMC43IDAgMjR2NDY0YzAgMTMuMyAxMC43IDI0IDI0IDI0aDMzNmMxMy4zIDAgMjQtMTAuNyAyNC0yNFYxNjBIMjQ4Yy0xMy4yIDAtMjQtMTAuOC0yNC0yNHpNOTUuOSAzMmgzMnYzMmgtMzJ6bTMyLjMgMzg0Yy0zMy4yIDAtNTgtMzAuNC01MS40LTYyLjlMOTYuNCAyNTZ2LTMyaDMydi0zMmgtMzJ2LTMyaDMydi0zMmgtMzJWOTZoMzJWNjRoMzJ2MzJoLTMydjMyaDMydjMyaC0zMnYzMmgzMnYzMmgtMzJ2MzJoMjIuMWM1LjcgMCAxMC43IDQuMSAxMS44IDkuN2wxNy4zIDg3LjdjNi40IDMyLjQtMTguNCA2Mi42LTUxLjQgNjIuNnoiLz48L3N2Zz4=');
+}
+
+/*  Miscellaneous files (for which there is no specific icon).
+    */
+#markdownBody a[href$='.ebt']::after,
+#markdownBody a[href$='.epub']::after,
+#markdownBody a[href$='.mdb']::after,
+#markdownBody a[href$='.mht']::after,
+#markdownBody a[href$='.ttf']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0xNjAtMTQuMXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
 }
 
 /*********/
@@ -1872,7 +2061,21 @@ hr {
 /*************/
 /* DROP CAPS */
 /*************/
-/* "drop caps"/"initials" (https://en.wikipedia.org/wiki/Initial https://wiki.obormot.net/Reference/DropCapsDemo) are large fancy block letters used to start a page/section. We skip them on mobile because they use up 8-12KB each (even after @font-face subset optimization to load only 1 letter at a time), and take up a lot of screen space. (Mobile users can't have nice things.) To implement them, each Markdown page has a custom metadata field like "css: drop-caps-goudy" which is substituted into the compiled HTML like '<body class="pagename drop-caps-goudy">', allowing defining of multiple drop-caps and customized per page. The 3 drop-caps right now are Goudy ('drop-caps-goudy'), yinit ('drop-caps-yinit'), and De-Ze/Deutsche Zierschrift ('drop-caps-de-zs'). Goudy is for literary/historical/humanities pages, yinit is for technical/scientific pages, and De-Ze is for everything else.  */
+/*  "drop caps"/"initials" (https://en.wikipedia.org/wiki/Initial
+    https://wiki.obormot.net/Reference/DropCapsDemo) are large fancy
+    block letters used to start a page/section. We skip them on mobile because
+    they use up 8-12KB each (even after @font-face subset optimization to load
+    only 1 letter at a time), and take up a lot of screen space.
+    (Mobile users can't have nice things.) To implement them, each Markdown
+    page has a custom metadata field like "css: drop-caps-goudy" which is
+    substituted into the compiled HTML like
+    '<body class="pagename drop-caps-goudy">', allowing defining of multiple
+    drop-caps and customized per page. The 3 drop-caps right now are Goudy
+    ('drop-caps-goudy'), yinit ('drop-caps-yinit'), and
+    De-Zs/Deutsche Zierschrift ('drop-caps-de-zs'). Goudy is for
+    literary/historical/humanities pages, yinit is for technical/scientific
+    pages, and De-Zs is for everything else.
+    */
 
 @media only screen and (min-width: 65ch) {
     body[class*='drop-caps-'] #markdownBody > p:first-child::first-letter,
@@ -1887,14 +2090,14 @@ hr {
     body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
     body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
         font-family: Goudy Initialen;
-        font-size: 6.875em;
+        font-size: 7em;
         line-height: 1;
-        margin: 0.022em 0.022em -0.125em 0;
+        margin: 0.022em 0.022em -0.25em 0;
     }
     body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
     body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
         font-family: Yinit;
-        font-size: 5.75em;
+        font-size: 5.625em;
         line-height: 1.35;
         margin: 0.043em 0.061em -0.5em 0.0087em;
         text-shadow: 0 0 0 #777;
@@ -1906,7 +2109,12 @@ hr {
         font-size: 6.5em;
         line-height: 1.1;
         margin: 0.015em 0.038em -0.25em 0;
-        opacity: 0.9;
+        text-shadow:
+             0px 2.5px 0 #fff,
+            -4px   4px 0 #fff,
+             4px   4px 0 #fff;
+        color: #191919;
+        opacity: 0.99;
     }
 
     /*  Compensating for responsive line-height reduction.
@@ -1914,11 +2122,11 @@ hr {
     @media only screen and (max-width: 120ch) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
-            font-size: 6.625em;
+            font-size: 6.875em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
         body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
-            font-size: 5.5em;
+            font-size: 5.375em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
         body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
@@ -1928,7 +2136,7 @@ hr {
     @media only screen and (max-width: 100ch) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
-            font-size: 6.375em;
+            font-size: 6.625em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
         body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
@@ -1936,7 +2144,7 @@ hr {
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
         body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
-            font-size: 6.25em;
+            font-size: 6.125em;
         }
     }
 
@@ -1945,15 +2153,15 @@ hr {
     @-moz-document url-prefix() {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
-            margin: 0.044em 0.022em 0 0;
+            margin: 0.045em 0.02em 0 0;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
         body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
-            margin: 0.052em 0.061em 0 0.0087em;
+            margin: 0.065em 0.04em 0 0.01em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
         body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
-            margin: 0.054em 0.038em 0 0;
+            margin: 0.06em 0.04em 0 0;
         }
     }
 }
