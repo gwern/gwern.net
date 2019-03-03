@@ -4,6 +4,7 @@
 /* SOURCE SERIF PRO */
 /********************/
 /* workhorse font for the body */
+
 @font-face {
     font-family: "Source Serif Pro";
     font-weight: 200;
@@ -207,6 +208,418 @@
     src: url('/static/font/SourceSansPro-BASIC-BlackItalic.ttf') format('truetype');
     unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
     font-display: swap;
+}
+
+/*************************/
+/* Drop Caps Support     */
+/* each font is subsetted into A-Z, so only *one* letter needs to be loaded (at a cost of 8-16KB), rather than 200-700KB or worse */
+/*************************/
+
+/************************/
+/* DEUTSCHE ZIERSCHRIFT */
+/* used for general pages */
+/************************/
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-A.ttf') format('truetype');
+    unicode-range: U+0041;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-B.ttf') format('truetype');
+    unicode-range: U+0042;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-C.ttf') format('truetype');
+    unicode-range: U+0043;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-D.ttf') format('truetype');
+    unicode-range: U+0044;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-E.ttf') format('truetype');
+    unicode-range: U+0045;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-F.ttf') format('truetype');
+    unicode-range: U+0046;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-G.ttf') format('truetype');
+    unicode-range: U+0047;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-H.ttf') format('truetype');
+    unicode-range: U+0048;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-I.ttf') format('truetype');
+    unicode-range: U+0049;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-J.ttf') format('truetype');
+    unicode-range: U+004A;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-K.ttf') format('truetype');
+    unicode-range: U+004B;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-L.ttf') format('truetype');
+    unicode-range: U+004C;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-M.ttf') format('truetype');
+    unicode-range: U+004D;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-N.ttf') format('truetype');
+    unicode-range: U+004E;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-O.ttf') format('truetype');
+    unicode-range: U+004F;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-P.ttf') format('truetype');
+    unicode-range: U+0050;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-Q.ttf') format('truetype');
+    unicode-range: U+0051;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-R.ttf') format('truetype');
+    unicode-range: U+0052;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-S.ttf') format('truetype');
+    unicode-range: U+0053;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-T.ttf') format('truetype');
+    unicode-range: U+0054;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-U.ttf') format('truetype');
+    unicode-range: U+0055;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-V.ttf') format('truetype');
+    unicode-range: U+0056;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-W.ttf') format('truetype');
+    unicode-range: U+0057;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-X.ttf') format('truetype');
+    unicode-range: U+0058;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-Y.ttf') format('truetype');
+    unicode-range: U+0059;
+}
+@font-face {
+    font-family: 'Deutsche Zierschrift';
+    src: url('/static/font/DeutscheZierschrift-Z.ttf') format('truetype');
+    unicode-range: U+005A;
+}
+
+/*********/
+/* YINIT */
+/* for technical/scientific pages */
+/* https://www.tug.org/TUGboat/tb12-1/tb31hara.pdf#page=8 */
+/*********/
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-A.ttf') format('truetype');
+    unicode-range: U+0041;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-B.ttf') format('truetype');
+    unicode-range: U+0042;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-C.ttf') format('truetype');
+    unicode-range: U+0043;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-D.ttf') format('truetype');
+    unicode-range: U+0044;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-E.ttf') format('truetype');
+    unicode-range: U+0045;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-F.ttf') format('truetype');
+    unicode-range: U+0046;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-G.ttf') format('truetype');
+    unicode-range: U+0047;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-H.ttf') format('truetype');
+    unicode-range: U+0048;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-I.ttf') format('truetype');
+    unicode-range: U+0049;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-J.ttf') format('truetype');
+    unicode-range: U+004A;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-K.ttf') format('truetype');
+    unicode-range: U+004B;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-L.ttf') format('truetype');
+    unicode-range: U+004C;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-M.ttf') format('truetype');
+    unicode-range: U+004D;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-N.ttf') format('truetype');
+    unicode-range: U+004E;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-O.ttf') format('truetype');
+    unicode-range: U+004F;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-P.ttf') format('truetype');
+    unicode-range: U+0050;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-Q.ttf') format('truetype');
+    unicode-range: U+0051;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-R.ttf') format('truetype');
+    unicode-range: U+0052;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-S.ttf') format('truetype');
+    unicode-range: U+0053;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-T.ttf') format('truetype');
+    unicode-range: U+0054;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-U.ttf') format('truetype');
+    unicode-range: U+0055;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-V.ttf') format('truetype');
+    unicode-range: U+0056;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-W.ttf') format('truetype');
+    unicode-range: U+0057;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-X.ttf') format('truetype');
+    unicode-range: U+0058;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-Y.ttf') format('truetype');
+    unicode-range: U+0059;
+}
+@font-face {
+    font-family: 'Yinit';
+    src: url('/static/font/Yinit-Z.ttf') format('truetype');
+    unicode-range: U+005A;
+}
+
+/*******************/
+/* GOUDY INITIALEN */
+/* for humanities/literature/history */
+/* https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Goudy+Initialen */
+/*******************/
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-A.ttf') format('truetype');
+    unicode-range: U+0041;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-B.ttf') format('truetype');
+    unicode-range: U+0042;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-C.ttf') format('truetype');
+    unicode-range: U+0043;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-D.ttf') format('truetype');
+    unicode-range: U+0044;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-E.ttf') format('truetype');
+    unicode-range: U+0045;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-F.ttf') format('truetype');
+    unicode-range: U+0046;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-G.ttf') format('truetype');
+    unicode-range: U+0047;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-H.ttf') format('truetype');
+    unicode-range: U+0048;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-I.ttf') format('truetype');
+    unicode-range: U+0049;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-J.ttf') format('truetype');
+    unicode-range: U+004A;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-K.ttf') format('truetype');
+    unicode-range: U+004B;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-L.ttf') format('truetype');
+    unicode-range: U+004C;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-M.ttf') format('truetype');
+    unicode-range: U+004D;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-N.ttf') format('truetype');
+    unicode-range: U+004E;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-O.ttf') format('truetype');
+    unicode-range: U+004F;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-P.ttf') format('truetype');
+    unicode-range: U+0050;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-Q.ttf') format('truetype');
+    unicode-range: U+0051;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-R.ttf') format('truetype');
+    unicode-range: U+0052;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-S.ttf') format('truetype');
+    unicode-range: U+0053;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-T.ttf') format('truetype');
+    unicode-range: U+0054;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-U.ttf') format('truetype');
+    unicode-range: U+0055;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-V.ttf') format('truetype');
+    unicode-range: U+0056;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-W.ttf') format('truetype');
+    unicode-range: U+0057;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-X.ttf') format('truetype');
+    unicode-range: U+0058;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-Y.ttf') format('truetype');
+    unicode-range: U+0059;
+}
+@font-face {
+    font-family: 'Goudy Initialen';
+    src: url('/static/font/GoudyInitialen-Z.ttf') format('truetype');
+    unicode-range: U+005A;
 }
 
 /***********/
@@ -474,7 +887,7 @@ header h1 {
     border: 1px solid #ccc;
     background-color: #f9f9f9;
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    margin: 0 2rem 2rem 0;
+    margin: 0 2rem 1.5rem 0;
     line-height: 1.25;
     padding: 10px 10px 2px 14px;
 }
@@ -498,13 +911,13 @@ header h1 {
 @media only screen and (max-width: 112ch) {
     #TOC {
         font-size: 0.85rem;
-        margin: 0 1.5rem 1.5rem 0;
+        margin: 0 1.5rem 1.25rem 0;
     }
 }
 @media only screen and (max-width: 104ch) {
     #TOC {
         font-size: 0.80rem;
-        margin: 0 1.25rem 1.25rem 0;
+        margin: 0 1.25rem 1rem 0;
     }
 }
 @media only screen and (max-width: 96ch) {
@@ -1142,7 +1555,8 @@ a[href$='.pdf']:hover::after {
 
 /*  Within-page (anchor) links.
     */
-#markdownBody section > :not(:first-child) a[href^='#']::after {
+#markdownBody section > :not(:first-child) a[href^='#']::after,
+#markdownBody > p a[href^='#']::after {
     content: "\00B6";
     margin: 0 1px 0 3px;
     font-size: 0.75em;
@@ -2073,6 +2487,95 @@ hr {
 }
 #ads a img {
     max-width: 100%;
+}
+
+/*************/
+/* DROP CAPS */
+/*************/
+/* "drop caps"/"initials" (https://en.wikipedia.org/wiki/Initial https://wiki.obormot.net/Reference/DropCapsDemo) are large fancy block letters used to start a page/section. We skip them on mobile because they use up 8-12KB each (even after @font-face subset optimization to load only 1 letter at a time), and take up a lot of screen space. (Mobile users can't have nice things.) To implement them, each Markdown page has a custom metadata field like "css: drop-caps-goudy" which is substituted into the compiled HTML like '<body class="pagename drop-caps-goudy">', allowing defining of multiple drop-caps and customized per page. The 3 drop-caps right now are Goudy ('drop-caps-goudy'), yinit ('drop-caps-yinit'), and De-Ze/Deutsche Zierschrift ('drop-caps-de-zs'). Goudy is for literary/historical/humanities pages, yinit is for technical/scientific pages, and De-Ze is for everything else.  */
+
+@media only screen and (min-width: 65ch) {
+    body[class*='drop-caps-'] #markdownBody > p:first-child::first-letter,
+    body[class*='drop-caps-'] #markdownBody > blockquote:first-child + p::first-letter {
+        font-style: normal;
+        font-weight: normal;
+        float: left;
+    }
+
+    /*  All of these numbers are magic.
+        */
+    body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+    body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+        font-family: Goudy Initialen;
+        font-size: 6.875em;
+        line-height: 1;
+        margin: 0.022em 0.022em -0.125em 0;
+    }
+    body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
+    body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+        font-family: Yinit;
+        font-size: 5.75em;
+        line-height: 1.35;
+        margin: 0.043em 0.061em -0.5em 0.0087em;
+        text-shadow: 0 0 0 #777;
+        opacity: 0.95;
+    }
+    body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
+    body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+        font-family: Deutsche Zierschrift;
+        font-size: 6.5em;
+        line-height: 1.1;
+        margin: 0.015em 0.038em -0.25em 0;
+        opacity: 0.9;
+    }
+
+    /*  Compensating for responsive line-height reduction.
+        */
+    @media only screen and (max-width: 120ch) {
+        body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+            font-size: 6.625em;
+        }
+        body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
+        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+            font-size: 5.5em;
+        }
+        body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
+        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+            font-size: 6.375em;
+        }
+    }
+    @media only screen and (max-width: 100ch) {
+        body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+            font-size: 6.375em;
+        }
+        body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
+        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+            font-size: 5.25em;
+        }
+        body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
+        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+            font-size: 6.25em;
+        }
+    }
+
+    /*  Special styles for special browsers.
+        */
+    @-moz-document url-prefix() {
+        body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+            margin: 0.044em 0.022em 0 0;
+        }
+        body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
+        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+            margin: 0.052em 0.061em 0 0.0087em;
+        }
+        body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
+        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+            margin: 0.054em 0.038em 0 0;
+        }
+    }
 }
 
 /*******************************/
