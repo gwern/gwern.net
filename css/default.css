@@ -723,29 +723,62 @@ section.collapse:target .disclosure-button {
 
 /* HEADER H1-6 HIERARCHY */
 h1, h2, h3, h4, h5, h6 {
-    margin: 1.5em 0 0.75em 0;
+    margin: 1.25em 0 0.5em -0.75rem;
     font-weight: bold;
 }
+section.collapse > :first-child {
+    margin-left: 0;
+}
+@media only screen and (max-width: 65ch) {
+    h1, h2, h3, h4, h5, h6 {
+        margin: 1.25em 0 0.5em 0;
+    }
+}
 
-/* uppercase top-lvel section headers; see A/B tests */
 h1 {
-    text-transform: uppercase;
+    font-feature-settings: 'smcp';
+    font-size: 1.75em;
     line-height: 1.25;
-    font-size: 1.375em;
+    letter-spacing: -0.75px;
+}
+section:not(.collapse) > h1:first-child {
+    line-height: 0.875;
+    margin: 1.75em 0 0.5em 0;
+    border-bottom: 1px solid #888;
+    text-align: right;
+    font-weight: 600;
+}
+#markdownBody section:not(.collapse) > h1:first-child a {
+    position: relative;
+}
+#markdownBody section:not(.collapse) > h1:first-child a::after {
+    position: absolute;
+    top: 0.15em;
+}
+@media only screen and (min-width: 65.1ch) {
+    section:not(.collapse) > h1:first-child {
+        margin: 1.75em 0 0.5em -0.75rem;
+        padding: 0 0 0 0.75rem;
+        font-size: 2em;
+    }
+    #markdownBody section:not(.collapse) > h1:first-child a::after {
+        left: calc(100% + 0.75ch);
+    }
 }
 
 article section > h1 {
     overflow: visible;
 }
 
-/* make a hierarchy of emphasis for h2-6, to avoid all being the same (all-uppercased) */
+/*  Make a hierarchy of emphasis for h2-6, to avoid all being the same (all-uppercased)
+    */
 h2 {
     text-transform: uppercase;
-    font-size: 1.1em;
+    font-size: 1.25em;
 }
 h3 {
     text-transform: capitalize;
-    font-size: 1.1em;
+    font-size: 1.125em;
 }
 h4 {
     text-transform: capitalize;
@@ -757,6 +790,13 @@ h6 {
     font-size: 1em;
     font-weight: normal;
     font-style: italic;
+}
+
+/*  Margins between adjacent headings should collapse.
+    */
+h1 + section > h2:first-child,
+h2 + section > h3:first-child {
+    margin-top: 0;
 }
 
 /*=----------------------------=*/
@@ -807,6 +847,23 @@ article #markdownBody section > :first-child a {
 
 #disqus_thread {
     padding-left: 0.5em;
+}
+body {
+    overflow-x: hidden;
+}
+#comments {
+    position: relative;
+    margin: 0.5em 0 0 0;
+    padding: 0.25em 0 0 0;
+}
+#comments::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 300%;
+    border-top: 1px solid #999;
+    top: 0;
+    left: -100%;
 }
 
 /*********/
@@ -2106,7 +2163,7 @@ hr {
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
-        margin: 0.043em 0.061em -0.5em 0.0087em;
+        margin: 0.04em 0.03em -0.5em 0.01em;
         text-shadow: 0 0 0 #777;
         opacity: 0.95;
     }
