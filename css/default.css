@@ -2258,13 +2258,13 @@ hr {
 /*= Index page & Tags pages =*/
 /*=-------------------------=*/
 
-/*  add some vertical padding for the introduction
+/*  Add some vertical padding for the introduction.
     */
 body.siteIndex #markdownBody {
     padding-top: 1.5ch;
 }
 
-/*  make the sections reflow; better than fixed-width tables
+/*  Make the sections reflow; better than fixed-width tables.
     */
 body.siteIndex article section {
     display: inline-block;
@@ -2275,6 +2275,16 @@ body.siteIndex article section {
     */
 body.siteIndex #sidebar a#logo {
     pointer-events: none;
+}
+
+/*  Less fancy headings.
+    */
+body.siteIndex section:not(.collapse) > h1:first-child {
+    font-size: 1.5em;
+    line-height: 0.875;
+    border: none;
+    text-align: left;
+    font-weight: bold;
 }
 
 /*  Nice-looking bottom decoration.
