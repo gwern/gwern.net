@@ -2015,9 +2015,10 @@ code span.wa { color: #bf0303; } /* Warning */
 #markdownBody .MathJax_SVG {
     max-width: 100%;
     overflow: auto;
-    vertical-align: bottom;
 }
-
+#markdownBody :not(.MathJax_SVG_Display) > .MathJax_SVG {
+    display: inline !important;
+}
 /********/
 /* MISC */
 /********/
@@ -2079,7 +2080,9 @@ hr {
 
 @media only screen and (min-width: 65ch) {
     body[class*='drop-caps-'] #markdownBody > p:first-child::first-letter,
-    body[class*='drop-caps-'] #markdownBody > blockquote:first-child + p::first-letter {
+    body[class*='drop-caps-'] #markdownBody > blockquote:first-child + p::first-letter,
+    body[class*='drop-caps-'] #markdownBody > .epigraph:first-child + p::first-letter,
+    #markdownBody *[class*='drop-cap-']::first-letter {
         font-style: normal;
         font-weight: normal;
         float: left;
@@ -2088,14 +2091,18 @@ hr {
     /*  All of these numbers are magic.
         */
     body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-    body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+    body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+    #markdownBody .drop-caps-goudy::first-letter {
         font-family: Goudy Initialen;
         font-size: 7em;
         line-height: 1;
         margin: 0.022em 0.022em -0.25em 0;
     }
     body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-    body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+    body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
+    #markdownBody .drop-caps-yinit::first-letter {
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
@@ -2104,7 +2111,9 @@ hr {
         opacity: 0.95;
     }
     body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-    body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+    body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
+    #markdownBody .drop-caps-de-zs::first-letter {
         font-family: Deutsche Zierschrift;
         font-size: 6.5em;
         line-height: 1.1;
@@ -2121,29 +2130,41 @@ hr {
         */
     @media only screen and (max-width: 120ch) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-goudy::first-letter {
             font-size: 6.875em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-yinit::first-letter {
             font-size: 5.375em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-de-zs::first-letter {
             font-size: 6.375em;
         }
     }
     @media only screen and (max-width: 100ch) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-goudy::first-letter {
             font-size: 6.625em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-yinit::first-letter {
             font-size: 5.25em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-de-zs::first-letter {
             font-size: 6.125em;
         }
     }
@@ -2152,15 +2173,21 @@ hr {
         */
     @-moz-document url-prefix() {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-goudy::first-letter {
             margin: 0.045em 0.02em 0 0;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-yinit::first-letter {
             margin: 0.065em 0.04em 0 0.01em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter {
+        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
+        #markdownBody .drop-caps-de-zs::first-letter {
             margin: 0.06em 0.04em 0 0;
         }
     }
