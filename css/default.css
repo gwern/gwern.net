@@ -1000,7 +1000,8 @@ article > :not(#TOC) a:link *::-moz-selection {
 
 /*  Internal (within-site) links.
     */
-#markdownBody a[href^="./"]::after, a[href^="https://www.gwern.net/"]::after {
+#markdownBody a[href^="./"]::after,
+#markdownBody a[href^="https://www.gwern.net/"]::after {
     content: "\1D50A";
     margin: 0 0 0 2px;
     vertical-align: baseline;
@@ -1020,8 +1021,6 @@ article > :not(#TOC) a:link *::-moz-selection {
 /*  PDFs */
 #markdownBody a[href$='.pdf']::after,
 /*  Textfiles */
-#markdownBody a[href^="./"][href$='.htm']::after,
-#markdownBody a[href^="./"][href$='.html']::after,
 #markdownBody a[href$='.opml']::after,
 #markdownBody a[href$='.page']::after,
 #markdownBody a[href$='.txt']::after,
@@ -1076,8 +1075,6 @@ article > :not(#TOC) a:link *::-moz-selection {
 /*  PDFs */
 #markdownBody a[href$='.pdf']:hover::after,
 /*  Textfiles */
-#markdownBody a[href^="./"][href$='.htm']:hover::after,
-#markdownBody a[href^="./"][href$='.html']:hover::after,
 #markdownBody a[href$='.opml']:hover::after,
 #markdownBody a[href$='.page']:hover::after,
 #markdownBody a[href$='.txt']:hover::after,
@@ -1130,8 +1127,6 @@ article > :not(#TOC) a:link *::-moz-selection {
 
 /*  Textfiles.
     */
-#markdownBody a[href^="./"][href$='.htm']::after,
-#markdownBody a[href^="./"][href$='.html']::after,
 #markdownBody a[href$='.opml']::after,
 #markdownBody a[href$='.page']::after,
 #markdownBody a[href$='.txt']::after,
