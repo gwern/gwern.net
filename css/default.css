@@ -273,6 +273,26 @@ header h1 {
     margin: 0 2rem 1.5rem 0;
     line-height: 1.25;
     padding: 10px 10px 2px 14px;
+    position: relative;
+}
+
+/*  This covers up the line of any H1 that overlaps the TOC.
+    */
+#TOC::before,
+#TOC::after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 1em;
+    height: 100%;
+    top: 0;
+    background-color: #fff;
+}
+#TOC::before {
+    left: calc(-1em - 1px);
+}
+#TOC::after {
+    right: calc(-1em - 1px);
 }
 
 #TOC:empty {
@@ -758,11 +778,10 @@ section:not(.collapse) > h1:first-child {
 @media only screen and (min-width: 65.1ch) {
     section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.5em -0.75rem;
-        padding: 0 0 0 0.75rem;
         font-size: 2em;
     }
     #markdownBody section:not(.collapse) > h1:first-child a::after {
-        left: calc(100% + 0.75ch);
+        opacity: 0.4;
     }
 }
 
@@ -848,9 +867,6 @@ article #markdownBody section > :first-child a {
 #disqus_thread {
     padding-left: 0.5em;
 }
-body {
-    overflow-x: hidden;
-}
 #comments {
     position: relative;
     margin: 0.5em 0 0 0;
@@ -860,10 +876,10 @@ body {
     content: "";
     display: block;
     position: absolute;
-    width: 300%;
+    width: calc(100% + 1ch);
     border-top: 1px solid #999;
     top: 0;
-    left: -100%;
+    left: 0;
 }
 
 /*********/
@@ -984,7 +1000,7 @@ article > :not(#TOC) a:link *::-moz-selection {
 
 /*  Internal (within-site) links.
     */
-#markdownBody a[href^="./"]::after {
+#markdownBody a[href^="./"]::after, a[href^="https://www.gwern.net/"]::after {
     content: "\1D50A";
     margin: 0 0 0 2px;
     vertical-align: baseline;
@@ -2154,7 +2170,7 @@ hr {
         font-family: Goudy Initialen;
         font-size: 7em;
         line-height: 1;
-        margin: 0.022em 0.022em -0.25em 0;
+        margin: 0.025em 0.02em -0.25em 0;
     }
     body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
     body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
@@ -2163,7 +2179,7 @@ hr {
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
-        margin: 0.04em 0.03em -0.5em 0.01em;
+        margin: 0.05em 0.04em -0.5em 0.01em;
         text-shadow: 0 0 0 #777;
         opacity: 0.95;
     }
@@ -2174,7 +2190,7 @@ hr {
         font-family: Deutsche Zierschrift;
         font-size: 6.5em;
         line-height: 1.1;
-        margin: 0.015em 0.038em -0.25em 0;
+        margin: 0.015em 0.03em -0.25em 0;
         text-shadow:
              0px 2.5px 0 #fff,
             -4px   4px 0 #fff,
