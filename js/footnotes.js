@@ -40,15 +40,26 @@ var Footnotes = {
 
 		$(Footnotes.contentContainerSelector).append(div)
 
-		var left = position.left;
+		var left = position.left + 20;
 		if (left + Footnotes.minFootnoteWidth > jQuery(window).width() + jQuery(window).scrollLeft())
 			left = jQuery(window).width() - Footnotes.minFootnoteWidth + jQuery(window).scrollLeft();
-		var top = position.top + 20;
+		div.css({
+			left:left
+		});
+
+		var top = position.top + 120;
 		if (top + div.height() > jQuery(window).height() + jQuery(window).scrollTop())
-			top = position.top - div.height() - 15;
+			top -= (div.height() + 120);
+		if (top + div.height() > jQuery(window).height() + jQuery(window).scrollTop() ||
+			div.height() == jQuery(window).height() ||
+			top < jQuery(window).scrollTop())
+			top = jQuery(window).scrollTop();
+		if (top + div.height() + 120 < position.top)
+			top = position.top - div.height();
+		else if (top > position.top)
+			top -= 90;
 		if (top < 0) top = 0;
 		div.css({
-			left:left,
 			top:top
 		});
 	},
