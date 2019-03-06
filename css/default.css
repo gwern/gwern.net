@@ -273,7 +273,6 @@ header h1 {
     margin: 0 2rem 1.5rem 0;
     line-height: 1.25;
     padding: 10px 10px 2px 14px;
-    box-shadow: 0 0 0 1em #fff;
 }
 
 #TOC:empty {
@@ -550,7 +549,8 @@ header h1 {
     */
 section.collapse {
     overflow: hidden;
-    margin: 1.5em 0 0 0;
+    margin: 1.5em 0 0 -1em;
+    padding: 0 1em;
 }
 section.collapse > :first-child {
     padding-right: 1em;
@@ -727,9 +727,6 @@ h1, h2, h3, h4, h5, h6 {
     margin: 1.25em 0 0.5em -0.75rem;
     font-weight: bold;
 }
-section.collapse > :first-child {
-    margin-left: 0;
-}
 @media only screen and (max-width: 65ch) {
     h1, h2, h3, h4, h5, h6 {
         margin: 1.25em 0 0.5em 0;
@@ -758,13 +755,19 @@ section:not(.collapse) > h1:first-child {
     position: absolute;
     top: 0.15em;
 }
-@media only screen and (min-width: 65.1ch) {
+@media only screen and (min-width: 65ch) {
     section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
+        overflow: hidden;
+        padding: 0 0 3px 0.75rem;
+        box-shadow:
+            0 -5px 0 0 #fff inset,
+            0 -6px 0 0 #888 inset;
     }
     #markdownBody section:not(.collapse) > h1:first-child a::after {
         opacity: 0.4;
+        text-indent: -0.75rem;
     }
 }
 
@@ -806,8 +809,10 @@ h2 + section > h3:first-child {
 /*=----------------------------=*/
 
 article #markdownBody section > :first-child a {
-    display: block;
     background: none;
+}
+article #markdownBody section > h1:first-child a {
+    display: block;
 }
 #markdownBody section > :first-child a:hover {
     color: #485555;
@@ -870,12 +875,12 @@ article #markdownBody section > :first-child a {
 /*********/
 
 a {
-    color: #303C3C; /* off-black */
+    color: #3c3c3c; /* off-black */
     text-decoration: none;
 }
 article > :not(#TOC) a:hover,
 #footer a:hover {
-    color: #999;
+    color: #888;
 }
 
 #markdownBody a {
@@ -895,10 +900,10 @@ article > :not(#TOC) a:hover,
     */
 article > :not(#TOC) a:link {
     text-decoration: none;
-    background:
-        linear-gradient(#fffff8, #fffff8),
-        linear-gradient(#fffff8, #fffff8),
-        linear-gradient(#333,    #333);
+    background-image:
+        linear-gradient(#fff, #fff),
+        linear-gradient(#fff, #fff),
+        linear-gradient(#333, #333);
     background-size:
         0.05em 1px,
         0.05em 1px,
@@ -907,57 +912,29 @@ article > :not(#TOC) a:link {
         no-repeat,
         no-repeat,
         repeat-x;
-    text-shadow:
-         0.03em 0       #fffff8,
-        -0.03em 0       #fffff8,
-         0      0.03em  #fffff8,
-         0     -0.03em  #fffff8,
-         0.06em 0       #fffff8,
-        -0.06em 0       #fffff8,
-         0.09em 0       #fffff8,
-        -0.09em 0       #fffff8,
-         0.12em 0       #fffff8,
-        -0.12em 0       #fffff8,
-         0.15em 0       #fffff8,
-        -0.15em 0       #fffff8;
     background-position:
-          0% 93%,
-        100% 93%,
-          0% 93%;
-}
-article > :not(#TOC) a:link::selection,
-article > :not(#TOC) a:link *::selection {
+          0% 90%,
+        100% 90%,
+          0% 90%;
     text-shadow:
-         0.03em  0      #b4d5fe,
-        -0.03em  0      #b4d5fe,
-         0       0.03em #b4d5fe,
-         0      -0.03em #b4d5fe,
-         0.06em  0      #b4d5fe,
-        -0.06em  0      #b4d5fe,
-         0.09em  0      #b4d5fe,
-        -0.09em  0      #b4d5fe,
-         0.12em  0      #b4d5fe,
-        -0.12em  0      #b4d5fe,
-         0.15em  0      #b4d5fe,
-        -0.15em  0      #b4d5fe;
-    background: #b4d5fe;
+         0.03em 0       #fff,
+        -0.03em 0       #fff,
+         0      0.03em  #fff,
+         0     -0.03em  #fff,
+         0.06em 0       #fff,
+        -0.06em 0       #fff,
+         0.09em 0       #fff,
+        -0.09em 0       #fff,
+         0.12em 0       #fff,
+        -0.12em 0       #fff,
+         0.15em 0       #fff,
+        -0.15em 0       #fff;
 }
-article > :not(#TOC) a:link::-moz-selection,
-article > :not(#TOC) a:link *::-moz-selection {
-    text-shadow:
-         0.03em  0      #b4d5fe,
-        -0.03em  0      #b4d5fe,
-         0       0.03em #b4d5fe,
-         0      -0.03em #b4d5fe,
-         0.06em  0      #b4d5fe,
-        -0.06em  0      #b4d5fe,
-         0.09em  0      #b4d5fe,
-        -0.09em  0      #b4d5fe,
-         0.12em  0      #b4d5fe,
-        -0.12em  0      #b4d5fe,
-         0.15em  0      #b4d5fe,
-        -0.15em  0      #b4d5fe;
-    background: #b4d5fe;
+article > :not(#TOC) a:hover {
+    background-image:
+        linear-gradient(#fff, #fff),
+        linear-gradient(#fff, #fff),
+        linear-gradient(#999, #999);
 }
 
 /*=-----------------------------------------=*/
@@ -1638,19 +1615,32 @@ sup {
 }
 a.footnote-ref sup {
     vertical-align: baseline;
+    font-size: 0.75em;
 }
 a.footnote-ref {
     vertical-align: super;
-    line-height: 0.3em;
+    line-height: 0.3;
     position: relative;
-    padding: 0 1px;
+    top: 0.05em;
+    padding: 0 0.05em;
     font-feature-settings: 'lnum';
+    font-weight: 600;
+}
+a.footnote-ref::before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 150%;
+    height: 100%;
+    left: -25%;
+    top: 15%;
+    opacity: 0.5;
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
 sup + sup,
-a.footnote-ref + a.footnote-ref {
-    margin-left: 1px;
+a.footnote-ref {
+    margin-left: 0.05em;
 }
 
 #markdownBody .footnotes > ol > li + li {
@@ -1933,6 +1923,7 @@ pre {
     margin: 1.75em auto;
     border: 1px solid #c8c8c8;
     background-color: #fafafa;
+    cursor: text;
 }
 pre code {
     display: block;
@@ -2164,7 +2155,7 @@ hr {
     body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
     body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
     body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
-    #markdownBody .drop-caps-goudy::first-letter {
+    #markdownBody .drop-cap-goudy::first-letter {
         font-family: Goudy Initialen;
         font-size: 7em;
         line-height: 1;
@@ -2173,7 +2164,7 @@ hr {
     body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
     body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
     body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
-    #markdownBody .drop-caps-yinit::first-letter {
+    #markdownBody .drop-cap-yinit::first-letter {
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
@@ -2184,7 +2175,7 @@ hr {
     body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
     body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
     body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
-    #markdownBody .drop-caps-de-zs::first-letter {
+    #markdownBody .drop-cap-de-zs::first-letter {
         font-family: Deutsche Zierschrift;
         font-size: 6.5em;
         line-height: 1.1;
@@ -2203,19 +2194,19 @@ hr {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-goudy::first-letter {
+        #markdownBody .drop-cap-goudy::first-letter {
             font-size: 6.875em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
         body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-yinit::first-letter {
+        #markdownBody .drop-cap-yinit::first-letter {
             font-size: 5.375em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
         body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-de-zs::first-letter {
+        #markdownBody .drop-cap-de-zs::first-letter {
             font-size: 6.375em;
         }
     }
@@ -2223,19 +2214,19 @@ hr {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-goudy::first-letter {
+        #markdownBody .drop-cap-goudy::first-letter {
             font-size: 6.625em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
         body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-yinit::first-letter {
+        #markdownBody .drop-cap-yinit::first-letter {
             font-size: 5.25em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
         body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-de-zs::first-letter {
+        #markdownBody .drop-cap-de-zs::first-letter {
             font-size: 6.125em;
         }
     }
@@ -2246,19 +2237,19 @@ hr {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-goudy::first-letter {
+        #markdownBody .drop-cap-goudy::first-letter {
             margin: 0.045em 0.02em 0 0;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
         body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-yinit::first-letter {
+        #markdownBody .drop-cap-yinit::first-letter {
             margin: 0.065em 0.04em 0 0.01em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
         body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
-        #markdownBody .drop-caps-de-zs::first-letter {
+        #markdownBody .drop-cap-de-zs::first-letter {
             margin: 0.06em 0.04em 0 0;
         }
     }
@@ -2300,6 +2291,7 @@ body.siteIndex section:not(.collapse) > h1:first-child {
     text-align: left;
     font-weight: bold;
     margin-left: 0;
+    padding: 0;
 }
 
 /*  Nice-looking bottom decoration.
