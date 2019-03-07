@@ -575,6 +575,13 @@ section.collapse > :first-child {
 	overflow: hidden;
 }
 
+/*	Collapsible tables (special case).
+	*/
+.tableCollapse > .disclosure-button:not(:checked) + .tableWrapper {
+	max-height: 2.125em;
+	overflow: hidden;
+}
+
 /*  Making sure collapse summaries do not cause misalignment.
 	*/
 .collapse:not(:target) > .disclosure-button:not(:checked) ~ .collapseSummary > :first-child {
@@ -658,6 +665,9 @@ section.collapse:target > .disclosure-button {
 :not(section).collapse > .disclosure-button::before {
 	right: 1px;
 }
+.tableCollapse > .disclosure-button::before {
+	color: #ccc;
+}
 .disclosure-button:checked::before,
 .collapse:target > .disclosure-button::before {
 	transform: rotate(-90deg);
@@ -667,11 +677,14 @@ section.collapse:target > .disclosure-button {
 	top: 0;
 	right: -2px;
 }
-.collapse:not(:target) > .disclosure-button:hover::before {
+.collapse > .disclosure-button:hover::before {
 	color: #666;
 }
-.collapse:target > .disclosure-button::before {
+section.collapse:target > .disclosure-button::before {
 	opacity: 0.4;
+}
+.tableCollapse > .disclosure-button:hover::before {
+	color: #eee;
 }
 .disclosure-button:focus {
 	outline: none;
@@ -771,16 +784,41 @@ section:not(.collapse) > h1:first-child {
 	}
 }
 
-article section > h1 {
-	overflow: visible;
-}
-
-/*	Make a hierarchy of emphasis for h2-6, to avoid all being the same (all-uppercased)
-	*/
 h2 {
 	text-transform: uppercase;
 	font-size: 1.25em;
+	position: relative;
+	padding: 0 0.5em 0 0;
 }
+h2::after {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 100%;
+	border-bottom: 1px dotted #888;
+	left: 0;
+	bottom: 0.25em;
+	pointer-events: none;
+	z-index: -1;
+}
+#markdownBody section:not(.collapse) > h2:first-child a {
+	position: relative;
+}
+#markdownBody section:not(.collapse) > h2:first-child a::after {
+	position: absolute;
+	top: 0.1em;
+	left: unset;
+	right: -0.75em;
+}
+#markdownBody section.collapse > h2:first-child a::after {
+	top: -0.2em;
+}
+@media only screen and (min-width: 65ch) {
+	section:not(.collapse) > h2:first-child {
+		overflow: hidden;
+	}
+}
+
 h3 {
 	text-transform: capitalize;
 	font-size: 1.125em;
@@ -811,7 +849,8 @@ h2 + section > h3:first-child {
 article #markdownBody section > :first-child a {
 	background: none;
 }
-article #markdownBody section > h1:first-child a {
+article #markdownBody section > h1:first-child a,
+article #markdownBody section:not(.collapse) > h2:first-child a {
 	display: block;
 }
 #markdownBody section > :first-child a:hover {
@@ -1321,22 +1360,11 @@ figcaption {
 	line-height: 1.45;
 	margin: auto;
 	padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
-
-	/*	REMOVE once image-focus.js is updated:
-		*/
-	outline: 1px solid #888;
-	margin: 1px auto 0 auto;
 }
 .caption-wrapper {
 	display: block;
 	outline: 1px solid #888;
 	margin: 1px 0 0 0;
-}
-/*	REMOVE once image-focus.js is updated:
-	*/
-.caption-wrapper figcaption {
-	outline: none;
-	margin: 0;
 }
 @supports (width: -moz-fit-content) {
 	figcaption {
@@ -1623,6 +1651,15 @@ article > :not(#TOC) .epigraph blockquote q a:link {
 		right: -0.375em;
 		bottom: -1.25em;
 	}
+}
+
+/*	Edge cases.
+	*/
+h1 + .epigraph {
+	margin-top: 1.25em;
+}
+h2 + .epigraph {
+	margin-top: 1em;
 }
 
 /*************/
@@ -2208,14 +2245,25 @@ hr {
 		color: #191919;
 		opacity: 0.99;
 	}
-	body.drop-caps-rbg-d #markdownBody > p:first-child::first-letter,
-	body.drop-caps-rbg-d #markdownBody > blockquote:first-child + p::first-letter,
-	body.drop-caps-rbg-d #markdownBody > .epigraph:first-child + p::first-letter,
-	#markdownBody .drop-cap-rbg-d::first-letter {
-		font-family: Rothenburg Decorative;
-		font-size: 5em;
+	body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
+	body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+	body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
+	#markdownBody .drop-cap-cheshire::first-letter {
+		font-family: Cheshire Initials;
+		font-size: 6.75em;
 		line-height: 1;
-		margin: 0.27em -0.07em -0.125em -0.2em;
+		margin: 0.05em 0.015em -0.25em 0;
+		opacity: 0.9;
+	}
+	body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
+	body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+	body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
+	#markdownBody .drop-cap-kanzlei::first-letter {
+		font-family: Kanzlei Initialen;
+		font-size: 7em;
+		line-height: 1;
+		margin: 0.03em 0.01em -0.25em -0.03em;
+		opacity: 0.9;
 	}
 
 	/*	Compensating for responsive line-height reduction.
@@ -2239,6 +2287,18 @@ hr {
 		#markdownBody .drop-cap-de-zs::first-letter {
 			font-size: 6.375em;
 		}
+		body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
+		body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+		body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
+		#markdownBody .drop-cap-kanzlcheshireei::first-letter {
+			font-size: 6.625em;
+		}
+		body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
+		body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+		body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
+		#markdownBody .drop-cap-kanzlei::first-letter {
+			font-size: 6.875em;
+		}
 	}
 	@media only screen and (max-width: 100ch) {
 		body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
@@ -2258,6 +2318,18 @@ hr {
 		body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
 		#markdownBody .drop-cap-de-zs::first-letter {
 			font-size: 6.125em;
+		}
+		body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
+		body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+		body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
+		#markdownBody .drop-cap-cheshire::first-letter {
+			font-size: 6.3125em;
+		}
+		body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
+		body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+		body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
+		#markdownBody .drop-cap-kanzlei::first-letter {
+			font-size: 6.6875em;
 		}
 	}
 
@@ -2281,6 +2353,18 @@ hr {
 		body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
 		#markdownBody .drop-cap-de-zs::first-letter {
 			margin: 0.06em 0.04em 0 0;
+		}
+		body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
+		body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+		body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
+		#markdownBody .drop-cap-cheshire::first-letter {
+			margin: 0.08em 0.02em 0 0.01em;
+		}
+		body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
+		body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+		body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
+		#markdownBody .drop-cap-kanzlei::first-letter {
+			margin: 0.05em 0.02em 0 -0.04em;
 		}
 	}
 }
