@@ -221,6 +221,7 @@
 /* DEUTSCHE ZIERSCHRIFT */
 /* used for general pages */
 /************************/
+
 @font-face {
     font-family: 'Deutsche Zierschrift';
     src: url('/static/font/DeutscheZierschrift-A.ttf') format('truetype');
@@ -383,6 +384,7 @@
 /* for technical/scientific pages */
 /* https://www.tug.org/TUGboat/tb12-1/tb31hara.pdf#page=8 */
 /*********/
+
 @font-face {
     font-family: 'Yinit';
     src: url('/static/font/Yinit-A.ttf') format('truetype');
@@ -545,6 +547,7 @@
 /* for humanities/literature/history */
 /* https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Goudy+Initialen */
 /*******************/
+
 @font-face {
     font-family: 'Goudy Initialen';
     src: url('/static/font/GoudyInitialen-A.ttf') format('truetype');
@@ -698,6 +701,328 @@
 @font-face {
     font-family: 'Goudy Initialen';
     src: url('/static/font/GoudyInitialen-Z.ttf') format('truetype');
+    unicode-range: U+005A;
+    font-display: swap;
+}
+
+/*********************/
+/* CHESHIRE INITIALS */
+/*********************/
+
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-A.ttf') format('truetype');
+    unicode-range: U+0041;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-B.ttf') format('truetype');
+    unicode-range: U+0042;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-C.ttf') format('truetype');
+    unicode-range: U+0043;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-D.ttf') format('truetype');
+    unicode-range: U+0044;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-E.ttf') format('truetype');
+    unicode-range: U+0045;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-F.ttf') format('truetype');
+    unicode-range: U+0046;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-G.ttf') format('truetype');
+    unicode-range: U+0047;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-H.ttf') format('truetype');
+    unicode-range: U+0048;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-I.ttf') format('truetype');
+    unicode-range: U+0049;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-J.ttf') format('truetype');
+    unicode-range: U+004A;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-K.ttf') format('truetype');
+    unicode-range: U+004B;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-L.ttf') format('truetype');
+    unicode-range: U+004C;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-M.ttf') format('truetype');
+    unicode-range: U+004D;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-N.ttf') format('truetype');
+    unicode-range: U+004E;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-O.ttf') format('truetype');
+    unicode-range: U+004F;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-P.ttf') format('truetype');
+    unicode-range: U+0050;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-Q.ttf') format('truetype');
+    unicode-range: U+0051;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-R.ttf') format('truetype');
+    unicode-range: U+0052;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-S.ttf') format('truetype');
+    unicode-range: U+0053;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-T.ttf') format('truetype');
+    unicode-range: U+0054;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-U.ttf') format('truetype');
+    unicode-range: U+0055;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-V.ttf') format('truetype');
+    unicode-range: U+0056;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-W.ttf') format('truetype');
+    unicode-range: U+0057;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-X.ttf') format('truetype');
+    unicode-range: U+0058;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-Y.ttf') format('truetype');
+    unicode-range: U+0059;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Cheshire Initials';
+    src: url('/static/font/Cheshire-Initials-Z.ttf') format('truetype');
+    unicode-range: U+005A;
+    font-display: swap;
+}
+
+/*********************/
+/* KANZLEI INITIALEN */
+/*********************/
+
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-A.ttf') format('truetype');
+    unicode-range: U+0041;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-B.ttf') format('truetype');
+    unicode-range: U+0042;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-C.ttf') format('truetype');
+    unicode-range: U+0043;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-D.ttf') format('truetype');
+    unicode-range: U+0044;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-E.ttf') format('truetype');
+    unicode-range: U+0045;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-F.ttf') format('truetype');
+    unicode-range: U+0046;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-G.ttf') format('truetype');
+    unicode-range: U+0047;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-H.ttf') format('truetype');
+    unicode-range: U+0048;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-I.ttf') format('truetype');
+    unicode-range: U+0049;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-J.ttf') format('truetype');
+    unicode-range: U+004A;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-K.ttf') format('truetype');
+    unicode-range: U+004B;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-L.ttf') format('truetype');
+    unicode-range: U+004C;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-M.ttf') format('truetype');
+    unicode-range: U+004D;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-N.ttf') format('truetype');
+    unicode-range: U+004E;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-O.ttf') format('truetype');
+    unicode-range: U+004F;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-P.ttf') format('truetype');
+    unicode-range: U+0050;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-Q.ttf') format('truetype');
+    unicode-range: U+0051;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-R.ttf') format('truetype');
+    unicode-range: U+0052;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-S.ttf') format('truetype');
+    unicode-range: U+0053;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-T.ttf') format('truetype');
+    unicode-range: U+0054;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-U.ttf') format('truetype');
+    unicode-range: U+0055;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-V.ttf') format('truetype');
+    unicode-range: U+0056;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-W.ttf') format('truetype');
+    unicode-range: U+0057;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-X.ttf') format('truetype');
+    unicode-range: U+0058;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-Y.ttf') format('truetype');
+    unicode-range: U+0059;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Kanzlei Initialen';
+    src: url('/static/font/Kanzlei-Initialen-Z.ttf') format('truetype');
     unicode-range: U+005A;
     font-display: swap;
 }
