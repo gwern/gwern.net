@@ -2,6 +2,8 @@
 /* Written by Obormot, 15 February 2019 */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
+document.querySelector("body").classList.toggle("if-slideshow", true);
+
 window.GW = { };
 GW.temp = { };
 
@@ -57,7 +59,7 @@ function togglePageScrolling(enable) {
 		html.classList.toggle("no-scroll", true);
 		html.style.top = `-${GW.scrollPositionBeforeScrollingDisabled}px`;
 	} else {
-		html.classList.toggle("no-scroll", false);
+		html.classList.remove("no-scroll");
 		html.removeAttribute("style");
 		window.scrollTo(0, GW.scrollPositionBeforeScrollingDisabled);
 	}
@@ -67,6 +69,12 @@ function togglePageScrolling(enable) {
 	*/
 Array.prototype.contains = function (element) {
 	return (this.indexOf(element) !== -1);
+}
+
+/*	Returns true if the string begins with the given prefix.
+	*/
+String.prototype.hasPrefix = function (prefix) {
+	return (this.lastIndexOf(prefix, 0) === 0);
 }
 
 /***************/
@@ -115,6 +123,7 @@ function imageFocusSetup() {
 	document.querySelectorAll("figure").forEach(figure => {
 		let image = figure.querySelector("img");
 		if (!image) return;
+
 		let wrapper = document.createElement("span");
 		wrapper.classList.add("image-wrapper");
 		wrapper.appendChild(image);
@@ -124,10 +133,24 @@ function imageFocusSetup() {
 	// Create the image focus overlay.
 	let imageFocusOverlay = addUIElement("<div id='image-focus-overlay'>" +
 	`<div class='help-overlay'>
-		 <p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
-		 <p><strong>Space bar:</strong> Reset image size & position</p>
-		 <p><strong>Scroll</strong> to zoom in/out</p>
-		 <p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
+		<p class='slideshow-help-text'><strong>Arrow keys:</strong> Next/previous image</p>
+		<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
+		<p><strong>Space bar:</strong> Reset image size & position</p>
+		<p><strong>Scroll</strong> to zoom in/out</p>
+		<p>(When zoomed in, <strong>drag</strong> to pan; <br/><strong>double-click</strong> to close)</p>
+	</div>
+	<div class='image-number'></div>
+	<div class='slideshow-buttons'>
+		<button type='button' class='slideshow-button previous' tabindex='-1' title='Previous image'>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+				<path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z"/>
+			</svg>
+		</button>
+		<button type='button' class='slideshow-button next' tabindex='-1' title='Next image'>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+				<path d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z"/>
+			</svg>
+		</button>
 	</div>
 	<div class='caption'></div>` +
 	"</div>");
@@ -138,12 +161,32 @@ function imageFocusSetup() {
 		window.matchMedia('(orientation: portrait)').addListener(() => { setTimeout(resetFocusedImagePosition, 0); });
 	}
 
+	// Accesskey-L starts the slideshow.
+	(document.querySelector(GW.imageFocus.contentImagesSelector)||{}).accessKey = 'l';
+	// Count how many images there are in the post, and set the "… of X" label to that.
+	((document.querySelector("#image-focus-overlay .image-number")||{}).dataset||{}).numberOfImages = document.querySelectorAll(GW.imageFocus.contentImagesSelector).length;
+
+	imageFocusOverlay.querySelectorAll(".slideshow-button").forEach(button => {
+		button.addEventListener("click", GW.imageFocus.slideshowButtonClicked = (event) => {
+			GWLog("GW.imageFocus.slideshowButtonClicked");
+			focusNextImage(event.target.classList.contains("next"));
+			event.target.blur();
+		});
+	});
+
 	// UI starts out hidden.
 	hideImageFocusUI();
 }
 
 function focusImage(imageToFocus) {
 	GWLog("focusImage");
+
+	// Clear 'last-focused' class of last focused image.
+	let lastFocusedImage = document.querySelector(GW.imageFocus.focusedImageSelector);
+	if (lastFocusedImage) {
+		lastFocusedImage.classList.remove("last-focused");
+		lastFocusedImage.removeAttribute("accesskey");
+	}
 
 	// Create the focused version of the image.
 	imageToFocus.classList.toggle("focused", true);
@@ -161,17 +204,12 @@ function focusImage(imageToFocus) {
 	// Set image to default size and position.
 	resetFocusedImagePosition();
 
-	// Blur everything else.
-	document.querySelectorAll(GW.imageFocus.pageContentSelector).forEach(element => {
-		element.classList.toggle("blurred", true);
-	});
-
 	// Add listener to zoom image with scroll wheel.
 	window.addEventListener("wheel", GW.imageFocus.scrollEvent = (event) => {
 		GWLog("GW.imageFocus.scrollEvent");
 		event.preventDefault();
 
-		let image = document.querySelector("#image-focus-overlay img");
+		let image = document.querySelector("#image-focus-overlay img.focused");
 
 		// Remove the filter.
 		image.savedFilter = image.style.filter;
@@ -261,27 +299,34 @@ function focusImage(imageToFocus) {
 		// We only want to do anything on left-clicks.
 		if (event.button != 0) return;
 
+		// Don't unfocus if click was on a slideshow next/prev button!
+		if (event.target.classList.contains("slideshow-button")) return;
+
 		// We also don't want to do anything if clicked on the help overlay.
 		if (event.target.classList.contains("help-overlay") ||
 			event.target.closest(".help-overlay"))
 			return;
 
-		let focusedImage = document.querySelector("#image-focus-overlay img");
-		if (event.target == focusedImage &&
+		let focusedImage = document.querySelector("#image-focus-overlay img.focused");
+		if ((event.target == focusedImage || event.target.tagName == "HTML") &&
 			(focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth)) {
 			// If the mouseup event was the end of a pan of an overside image,
 			// put the filter back; do not unfocus.
 			focusedImage.style.filter = focusedImage.savedFilter;
-		} else {
+		} else if (event.target.tagName != "HTML") {
 			unfocusImageOverlay();
 			return;
 		}
 	});
 	window.addEventListener("mousedown", GW.imageFocus.mouseDown = (event) => {
 		GWLog("GW.imageFocus.mouseDown");
+
+		// We only want to do anything on left-clicks.
+		if (event.button != 0) return;
+
 		event.preventDefault();
 
-		let focusedImage = document.querySelector("#image-focus-overlay img");
+		let focusedImage = document.querySelector("#image-focus-overlay img.focused");
 		if (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) {
 			let mouseCoordX = event.clientX;
 			let mouseCoordY = event.clientY;
@@ -305,13 +350,15 @@ function focusImage(imageToFocus) {
 	// Double-click on the image unfocuses.
 	clonedImage.addEventListener('dblclick', GW.imageFocus.doubleClick = (event) => {
 		GWLog("GW.imageFocus.doubleClick");
+		if (event.target.classList.contains("slideshow-button")) return;
+
 		unfocusImageOverlay();
 	});
 
 	// Escape key unfocuses, spacebar resets.
 	document.addEventListener("keyup", GW.imageFocus.keyUp = (event) => {
 		GWLog("GW.imageFocus.keyUp");
-		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc" ];
+		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Up", "Down", "Left", "Right" ];
 		if (!allowedKeys.contains(event.key) ||
 			getComputedStyle(document.querySelector("#image-focus-overlay")).display == "none") return;
 
@@ -326,11 +373,44 @@ function focusImage(imageToFocus) {
 		case "Spacebar":
 			resetFocusedImagePosition();
 			break;
+		case "ArrowDown":
+		case "Down":
+		case "ArrowRight":
+		case "Right":
+			if (document.querySelector(GW.imageFocus.focusedImageSelector)) focusNextImage(true);
+			break;
+		case "ArrowUp":
+		case "Up":
+		case "ArrowLeft":
+		case "Left":
+			if (document.querySelector(GW.imageFocus.focusedImageSelector)) focusNextImage(false);
+			break;
 		}
 	});
 
-	// Prevent spacebar or arrow keys from scrolling page when image focused.
-	togglePageScrolling(false);
+	setTimeout(() => {
+		// Blur everything else.
+		document.querySelectorAll(GW.imageFocus.pageContentSelector).forEach(element => {
+			element.classList.toggle("blurred", true);
+		});
+		// Prevent spacebar or arrow keys from scrolling page when image focused.
+		togglePageScrolling(false);
+	});
+
+	// Mark the overlay as being in slide show mode (to show buttons/count).
+	imageFocusOverlay.classList.add("slideshow");
+
+	// Set state of next/previous buttons.
+	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
+	var indexOfFocusedImage = getIndexOfFocusedImage();
+	imageFocusOverlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
+	imageFocusOverlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
+
+	// Set the image number.
+	document.querySelector("#image-focus-overlay .image-number").textContent = (indexOfFocusedImage + 1);
+
+	// Replace the hash.
+	history.replaceState(null, null, "#if_slide_" + (indexOfFocusedImage + 1));
 
 	// Set the caption.
 	setImageFocusCaption();
@@ -353,7 +433,7 @@ function focusImage(imageToFocus) {
 
 function resetFocusedImagePosition() {
 	GWLog("resetFocusedImagePosition");
-	let focusedImage = document.querySelector("#image-focus-overlay img");
+	let focusedImage = document.querySelector("#image-focus-overlay img.focused");
 	if (!focusedImage) return;
 
 	let sourceImage = document.querySelector(GW.imageFocus.focusedImageSelector);
@@ -364,7 +444,6 @@ function resetFocusedImagePosition() {
 	var constrainedHeight = Math.min(sourceImage.naturalHeight, window.innerHeight * GW.imageFocus.shrinkRatio);
 	let heightShrinkRatio = constrainedHeight / sourceImage.naturalHeight;
 	let shrinkRatio = Math.min(widthShrinkRatio, heightShrinkRatio);
-	GWLog("Setting focused image dimensions...");
 	focusedImage.style.width = (sourceImage.naturalWidth * shrinkRatio) + "px";
 	focusedImage.style.height = (sourceImage.naturalHeight * shrinkRatio) + "px";
 
@@ -376,7 +455,7 @@ function resetFocusedImagePosition() {
 	setFocusedImageCursor();
 }
 function setFocusedImageCursor() {
-	let focusedImage = document.querySelector("#image-focus-overlay img");
+	let focusedImage = document.querySelector("#image-focus-overlay img.focused");
 	if (!focusedImage) return;
 	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) ?
 						 		'move' : '';
@@ -396,21 +475,81 @@ function unfocusImageOverlay() {
 	window.removeEventListener("mousedown", GW.imageFocus.mouseDown);
 	window.removeEventListener("mouseup", GW.imageFocus.mouseUp);
 
+	// Set accesskey of currently focused image.
+	let currentlyFocusedImage = document.querySelector(GW.imageFocus.focusedImageSelector)
+	if (currentlyFocusedImage) {
+		currentlyFocusedImage.classList.toggle("last-focused", true);
+		currentlyFocusedImage.accessKey = 'l';
+	}
+
 	// Remove focused image and hide overlay.
 	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
-	imageFocusOverlay.classList.toggle("engaged", false);
-	imageFocusOverlay.querySelector("img").remove();
-
-	// Un-blur content/etc.
-	document.querySelectorAll(GW.imageFocus.pageContentSelector).forEach(element => {
-		element.classList.toggle("blurred", false);
-	});
+	imageFocusOverlay.classList.remove("engaged");
+	imageFocusOverlay.querySelector("img.focused").remove();
 
 	// Unset "focused" class of focused image.
-	document.querySelector(GW.imageFocus.focusedImageSelector).classList.toggle("focused", false);
+	document.querySelector(GW.imageFocus.focusedImageSelector).classList.remove("focused");
 
-	// Re-enable page scrolling.
-	togglePageScrolling(true);
+	setTimeout(() => {
+		// Un-blur content/etc.
+		document.querySelectorAll(GW.imageFocus.pageContentSelector).forEach(element => {
+			element.classList.remove("blurred");
+		});
+		// Re-enable page scrolling.
+		togglePageScrolling(true);
+	});
+
+	// Reset the hash, if needed.
+	if (location.hash.hasPrefix("#if_slide_"))
+		history.replaceState(null, null, "#");
+}
+
+function getIndexOfFocusedImage() {
+	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
+	var indexOfFocusedImage = -1;
+	for (i = 0; i < images.length; i++) {
+		if (images[i].classList.contains("focused")) {
+			indexOfFocusedImage = i;
+			break;
+		}
+	}
+	return indexOfFocusedImage;
+}
+
+function focusNextImage(next = true) {
+	GWLog("focusNextImage");
+
+	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
+	var indexOfFocusedImage = getIndexOfFocusedImage();
+
+	if (next ? (++indexOfFocusedImage == images.length) : (--indexOfFocusedImage == -1)) return;
+
+	// Remove existing image.
+	document.querySelector("#image-focus-overlay img.focused").remove();
+	// Unset "focused" class of just-removed image.
+	document.querySelector(GW.imageFocus.focusedImageSelector).classList.remove("focused");
+
+	// Create the focused version of the image.
+	images[indexOfFocusedImage].classList.toggle("focused", true);
+	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
+	let clonedImage = images[indexOfFocusedImage].cloneNode(true);
+	clonedImage.style = "";
+	clonedImage.removeAttribute("width");
+	clonedImage.removeAttribute("height");
+	clonedImage.style.filter = images[indexOfFocusedImage].style.filter + imageFocusOverlay.dropShadowFilterForImages;
+	imageFocusOverlay.appendChild(clonedImage);
+	imageFocusOverlay.classList.toggle("engaged", true);
+	// Set image to default size and position.
+	resetFocusedImagePosition();
+	// Set state of next/previous buttons.
+	imageFocusOverlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
+	imageFocusOverlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
+	// Set the image number display.
+	document.querySelector("#image-focus-overlay .image-number").textContent = (indexOfFocusedImage + 1);
+	// Set the caption.
+	setImageFocusCaption();
+	// Replace the hash.
+	history.replaceState(null, null, "#if_slide_" + (indexOfFocusedImage + 1));
 }
 
 function setImageFocusCaption() {
@@ -439,7 +578,7 @@ function setImageFocusCaption() {
 function hideImageFocusUI() {
 	GWLog("hideImageFocusUI");
 	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
-	imageFocusOverlay.querySelectorAll(".help-overlay, .caption").forEach(element => {
+	imageFocusOverlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
 		element.classList.toggle("hidden", true);
 	});
 }
@@ -447,8 +586,8 @@ function hideImageFocusUI() {
 function unhideImageFocusUI() {
 	GWLog("unhideImageFocusUI");
 	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
-	imageFocusOverlay.querySelectorAll(".help-overlay, .caption").forEach(element => {
-		element.classList.toggle("hidden", false);
+	imageFocusOverlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
+		element.classList.remove("hidden");
 	});
 }
 

@@ -2594,9 +2594,20 @@ html.no-scroll {
 #image-focus-overlay img {
 	margin: auto;
 	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translateX(-50%) translateY(-50%);
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+/*=-------------------=*/
+/*= Single-image mode =*/
+/*=-------------------=*/
+
+#image-focus-overlay:not(.slideshow) .image-number,
+#image-focus-overlay:not(.slideshow) .slideshow-buttons,
+#image-focus-overlay:not(.slideshow) .slideshow-help-text {
+	display: none;
 }
 
 /*=---------=*/
@@ -2732,6 +2743,117 @@ html.no-scroll {
 }
 #image-focus-overlay .help-overlay.hidden {
 	bottom: -2em;
+}
+
+/*=--------------=*/
+/*= Slide number =*/
+/*=--------------=*/
+
+#image-focus-overlay .image-number {
+	position: absolute;
+	z-index: 2;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	font-size: 1.5rem;
+	left: 1em;
+	top: 1em;
+	font-weight: 600;
+	text-shadow:
+		0 0 3px #fff,
+		0 0 5px #fff,
+		0 0 8px #fff,
+		0 0 13px #fff;
+	width: 1.5em;
+	text-align: right;
+	white-space: nowrap;
+	transition: top 0.3s ease;
+}
+#image-focus-overlay .image-number::before {
+	content: "#";
+	opacity: 0.3;
+}
+#image-focus-overlay .image-number::after {
+	content: " of " attr(data-number-of-images);
+	opacity: 0.3;
+}
+#image-focus-overlay .image-number:hover::before,
+#image-focus-overlay .image-number:hover::after {
+	opacity: 1.0;
+}
+#image-focus-overlay .image-number.hidden {
+	top: -1.25em;
+}
+
+/*=-------------------=*/
+/*= Slideshow buttons =*/
+/*=-------------------=*/
+
+#image-focus-overlay .slideshow-buttons {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	display: flex;
+	justify-content: space-between;
+	pointer-events: none;
+}
+#image-focus-overlay .slideshow-buttons button {
+	font-size: 3rem;
+	color: #ddd;
+	border: none;
+	background-color: transparent;
+	position: relative;
+	left: 0;
+	transition:
+		left 0.3s ease;
+	pointer-events: auto;
+	cursor: pointer;
+	width: 4rem;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-origin: content-box;
+}
+#image-focus-overlay .slideshow-buttons button.next {
+	padding: 0.25em 0.25em 0.25em 0.375em;
+}
+#image-focus-overlay .slideshow-buttons button.previous {
+	padding: 0.25em 0.375em 0.25em 0.25em;
+}
+#image-focus-overlay .slideshow-buttons button svg {
+	pointer-events: none;
+	fill: currentColor;
+}
+#image-focus-overlay .slideshow-buttons button::selection {
+	background-color: transparent;
+}
+@media only screen and (hover: hover) {
+	#image-focus-overlay .slideshow-buttons button:hover {
+		background-color: rgba(0,0,0,0.1);
+		color: #777;
+	}
+	#image-focus-overlay .slideshow-buttons button:not(:disabled):hover svg {
+		filter:
+			drop-shadow(0 0 1px #fff)
+			drop-shadow(0 0 3px #fff);
+	}
+}
+#image-focus-overlay .slideshow-buttons button:active {
+	transform: none;
+	color: #888;
+}
+#image-focus-overlay .slideshow-buttons button:disabled {
+	text-shadow: none;
+	background-color: transparent;
+	color: #ddd;
+	cursor: default;
+	opacity: 0.4;
+}
+#image-focus-overlay .slideshow-button.previous.hidden {
+	left: -1.75em;
+}
+#image-focus-overlay .slideshow-button.next.hidden {
+	left: 1.75em;
 }
 
 /*=-----------------=*/
