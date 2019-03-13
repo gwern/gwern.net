@@ -15,6 +15,9 @@
 
     <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/fonts.css" />
+    <!-- fetch the title & body fonts immediately to avoid re-rendering -->
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Regular.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Semibold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
 
     <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Site-wide global ATOM/RSS Feed (all edits)" />
 
