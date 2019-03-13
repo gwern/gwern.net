@@ -1,3 +1,5 @@
+
+
 if (typeof window.GW == "undefined")
 	window.GW = { };
 
@@ -109,6 +111,9 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 					main {
 						position: relative;
 						right: 4ch;
+					}
+					#markdownBody {
+						position: relative;
 					}
 				}
 				@media only screen and (max-width: ${viewportWidthBreakpointInPixels}px) {
