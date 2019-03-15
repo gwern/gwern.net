@@ -32,21 +32,27 @@ Footnotes = {
 
 		//	Get, or create, the footnote popup.
 		Footnotes.footnotePopup = document.querySelector("#footnotediv");
-		if (!Footnotes.footnotePopup || Footnotes.footnotePopup.dataset.footnoteReference != targetFootnoteId) {
+		if (Footnotes.footnotePopup) {
+			Footnotes.footnotePopup.classList.remove("fading");
+			Footnotes.footnotePopup.remove();
+		} else {
 			Footnotes.footnotePopup = document.createElement('div');
 			Footnotes.footnotePopup.id = "footnotediv";
-			Footnotes.footnotePopup.dataset.footnoteReference = targetFootnoteId;
-			Footnotes.footnotePopup.addEventListener("mouseover", Footnotes.divover);
-			Footnotes.footnotePopup.addEventListener("mouseout", Footnotes.footnoteoout);
 		}
-		Footnotes.footnotePopup.classList.remove("fading");
 
-		//	Inject the contents of the footnote into the popup.
-		var targetFootnote = document.querySelector("#" + targetFootnoteId);
-		Footnotes.footnotePopup.innerHTML = '<div>' + targetFootnote.innerHTML + '</div>';
+		//	Inject the contents of the footnote into the popup, if needed.
+		if (Footnotes.footnotePopup.dataset.footnoteReference != targetFootnoteId) {
+			var targetFootnote = document.querySelector("#" + targetFootnoteId);
+			Footnotes.footnotePopup.innerHTML = '<div>' + targetFootnote.innerHTML + '</div>';
+			Footnotes.footnotePopup.dataset.footnoteReference = targetFootnoteId;
+		}
 
 		//	Inject the popup into the page.
 		document.querySelector(Footnotes.contentContainerSelector).appendChild(Footnotes.footnotePopup);
+
+		//	Add event listeners.
+		Footnotes.footnotePopup.addEventListener("mouseover", Footnotes.divover);
+		Footnotes.footnotePopup.addEventListener("mouseout", Footnotes.footnoteoout);
 
 		/*	How much "breathing room" to give the footnote reference (i.e.,
 			offset of the footnote popup).
@@ -89,6 +95,9 @@ Footnotes = {
 	},
 	//	The mouseout event.
 	footnoteoout: (event) => {
+		clearTimeout(Footnotes.footnotefadetimeout);
+		clearTimeout(Footnotes.footnotekilltimeout);
+
 		Footnotes.footnotefadetimeout = setTimeout(() => {
 			Footnotes.footnotePopup.classList.add("fading");
 			Footnotes.footnotekilltimeout = setTimeout(() => {
