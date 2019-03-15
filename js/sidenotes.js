@@ -1,5 +1,3 @@
-
-
 if (typeof window.GW == "undefined")
 	window.GW = { };
 
@@ -84,6 +82,16 @@ function realignHash() {
 	var hash = location.hash;
 	history.replaceState(null, null, "#");
 	location.hash = hash;
+}
+
+/*	Make sure clicking a sidenote does not cause scrolling.
+	*/
+function setHashWithoutScrolling(newHash) {
+	let scrollPositionBeforeNavigate = window.scrollY;
+	location.hash = newHash;
+	requestAnimationFrame(() => {
+		window.scrollTo(0, scrollPositionBeforeNavigate);
+	});
 }
 
 /*	Firefox.
@@ -281,18 +289,16 @@ function updateFootnoteEventListeners() {
 
 	/*	Determine whether we are in sidenote mode or footnote mode.
 		*/
-	var sidenotes = (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == false);
+	var sidenotesMode = (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == false);
 
-	/*	Get all footnote links.
-		(We use jQuery for this because footnotes.js is written with jQuery and
-		otherwise bind()/unbind() don't work.)
-		*/
-	var footnotelinks = jQuery('.footnote-ref')
-
-	if (sidenotes) {
+	//	Get all footnote links.
+	document.querySelectorAll(".footnote-ref").forEach(fnref => {
 		//	Unbind footnote mouse events.
-		footnotelinks.unbind('mouseover', Footnotes.footnoteover);
-		footnotelinks.unbind('mouseout', Footnotes.footnoteoout);
+		fnref.removeEventListener("mouseover", Footnotes.footnoteover);
+		fnref.removeEventListener("mouseout", Footnotes.footnoteoout);
+	});
+
+	if (sidenotesMode) {
 		//	Bind sidenote mouse events.
 		for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 			let fnref = GW.sidenotes.footnoteRefs[i];
@@ -321,10 +327,11 @@ function updateFootnoteEventListeners() {
 			fnref.removeEventListener("mouseout", GW.sidenotes.footnoteout);
 			sidenote.removeEventListener("mouseover", GW.sidenotes.sidenoteover);
 			sidenote.removeEventListener("mouseout", GW.sidenotes.sidenoteout);
+
+			//	Bind footnote events.
+			fnref.addEventListener("mouseover", Footnotes.footnoteover);
+			fnref.addEventListener("mouseout", Footnotes.footnoteoout);
 		}
-		//	Bind footnote mouse events.
-		footnotelinks.bind('mouseover', Footnotes.footnoteover);
-		footnotelinks.bind('mouseout', Footnotes.footnoteoout);
 	}
 }
 
@@ -352,6 +359,10 @@ function updateSidenotePositions() {
 		*/
 	if (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == true)
 		return;
+
+	//	Show the sidenote columns.
+	GW.sidenoteColumnLeft.style.visibility = "";
+	GW.sidenoteColumnRight.style.visibility = "";
 
 	//	Update the disposition of sidenotes within collapse blocks.
 	updateSidenotesInCollapseBlocks();
@@ -472,8 +483,8 @@ function sidenotesSetup() {
 	/*	Add the sidenote columns.
 		*/
 	document.querySelector("#markdownBody").insertAdjacentHTML("beforeend",
-		"<div id='sidenote-column-left' class='footnotes'></div>" +
-		"<div id='sidenote-column-right' class='footnotes'></div>");
+		"<div id='sidenote-column-left' class='footnotes' style='visibility:hidden'></div>" +
+		"<div id='sidenote-column-right' class='footnotes' style='visibility:hidden'></div>");
 	GW.sidenoteColumnLeft = document.querySelector("#sidenote-column-left");
 	GW.sidenoteColumnRight = document.querySelector("#sidenote-column-right");
 
@@ -542,12 +553,12 @@ function sidenotesSetup() {
 		sidenote.addEventListener("click", GW.sidenotes.sidenoteClicked = (event) => {
 			GWLog("GW.sidenotes.sidenoteClicked");
 
-			if (decodeURIComponent(location.hash) == sidenote.id) return;
+			if (decodeURIComponent(location.hash) == sidenote.id || event.target.tagName == "A") return;
 
-			// Make sure clicking a sidenote does not cause scrolling.
-			let scrollPositionBeforeNavigate = window.scrollY;
-			location.hash = encodeURIComponent(sidenote.id);
-			window.scrollTo(0, scrollPositionBeforeNavigate);
+			//	Preserve hash before changing it.
+			if (!(location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref")))
+				GW.sidenotes.hashBeforeSidenoteWasFocused = location.hash;
+			setHashWithoutScrolling(encodeURIComponent(sidenote.id));
 		});
 	}
 
@@ -648,6 +659,18 @@ function sidenotesSetup() {
 
 			setTimeout(updateSidenotePositions);
 		});
+	});
+
+	//	Prepare for hash reversion.
+	GW.sidenotes.hashBeforeSidenoteWasFocused = (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref")) ?
+												"" : location.hash;
+	document.body.addEventListener("click", GW.sidenotes.bodyClicked = (event) => {
+		GWLog("GW.sidenotes.bodyClicked");
+
+		if (!(event.target.tagName == "A" || event.target.closest(".sidenote")) &&
+			(location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref"))) {
+			setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
+		}
 	});
 }
 
