@@ -105,9 +105,15 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 	} else {
 		let widthOfCharacterUnit = parseInt(getComputedStyle(document.body).maxWidth) / GW.maxBodyWidthInCharacterUnits;
 		let viewportWidthBreakpointInPixels = 176 * widthOfCharacterUnit;
-
 		GW.sidenotes.viewportWidthBreakpointMediaQuery = `(max-width: ${viewportWidthBreakpointInPixels}px)`
-		document.querySelector("head").insertAdjacentHTML("beforeend", "<style>" + `
+
+		var sidenotesBrowserWorkaroundStyleBlock = document.querySelector("style#sidenotes-browser-workaround");
+		if (!sidenotesBrowserWorkaroundStyleBlock) {
+			sidenotesBrowserWorkaroundStyleBlock = document.createElement("style");
+			sidenotesBrowserWorkaroundStyleBlock.id = "sidenotes-browser-workaround";
+			document.querySelector("head").appendChild(sidenotesBrowserWorkaroundStyleBlock);
+		}
+		sidenotesBrowserWorkaroundStyleBlock.innerHTML = `
 			@-moz-document url-prefix() {
 				@media only screen and (max-width: ${viewportWidthBreakpointInPixels}px) {
 					#sidenote-column-left,
@@ -131,8 +137,14 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 					}
 				}
 			}
-		` + "</style>");
+		`;
 	}
+}
+
+/*	Returns true if the string begins with the given prefix.
+	*/
+String.prototype.hasPrefix = function (prefix) {
+	return (this.lastIndexOf(prefix, 0) === 0);
 }
 
 /*******************/
@@ -239,7 +251,7 @@ function updateSidenotesInCollapseBlocks() {
 		}
 
 		//	Otherwise, move the sidenote back into the correct sidenote column.
-		let side = (i % 2) ? GW.sidenoteColumnLeft : GW.sidenoteColumnRight;
+		let side = (i % 2) ? GW.sidenotes.sidenoteColumnLeft : GW.sidenotes.sidenoteColumnRight;
 		//	What's the next sidenote?
 		var nextSidenoteIndex = i + 2;
 		while (nextSidenoteIndex < GW.sidenotes.footnoteRefs.length &&
@@ -291,12 +303,14 @@ function updateFootnoteEventListeners() {
 		*/
 	var sidenotesMode = (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == false);
 
-	//	Get all footnote links.
-	document.querySelectorAll(".footnote-ref").forEach(fnref => {
-		//	Unbind footnote mouse events.
-		fnref.removeEventListener("mouseover", Footnotes.footnoteover);
-		fnref.removeEventListener("mouseout", Footnotes.footnoteoout);
-	});
+	if (window.Footnotes) {
+		//	Get all footnote links.
+		document.querySelectorAll(".footnote-ref").forEach(fnref => {
+			//	Unbind footnote mouse events.
+			fnref.removeEventListener("mouseover", Footnotes.footnoteover);
+			fnref.removeEventListener("mouseout", Footnotes.footnoteoout);
+		});
+	}
 
 	if (sidenotesMode) {
 		//	Bind sidenote mouse events.
@@ -328,9 +342,11 @@ function updateFootnoteEventListeners() {
 			sidenote.removeEventListener("mouseover", GW.sidenotes.sidenoteover);
 			sidenote.removeEventListener("mouseout", GW.sidenotes.sidenoteout);
 
-			//	Bind footnote events.
-			fnref.addEventListener("mouseover", Footnotes.footnoteover);
-			fnref.addEventListener("mouseout", Footnotes.footnoteoout);
+			if (window.Footnotes) {
+				//	Bind footnote events.
+				fnref.addEventListener("mouseover", Footnotes.footnoteover);
+				fnref.addEventListener("mouseout", Footnotes.footnoteoout);
+			}
 		}
 	}
 }
@@ -360,9 +376,25 @@ function updateSidenotePositions() {
 	if (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == true)
 		return;
 
-	//	Show the sidenote columns.
-	GW.sidenoteColumnLeft.style.visibility = "";
-	GW.sidenoteColumnRight.style.visibility = "";
+	/*	Position left sidenote column so top is flush with top of first
+		full-width block (i.e., one that is not pushed right by the TOC).
+
+		NOTE: This doesn't quite do what it says (due to overflow), but that's
+		fine; nothing really breaks as a result...
+		*/
+	let markdownBody = document.querySelector("#markdownBody");
+	var firstFullWidthBlock;
+	for (var block of markdownBody.children) {
+		if (block.clientWidth == markdownBody.clientWidth) {
+			firstFullWidthBlock = block;
+			break;
+		}
+	}
+	let offset = firstFullWidthBlock.offsetTop;
+	if (GW.sidenotes.sidenoteColumnLeft.offsetTop < firstFullWidthBlock.offsetTop) {
+		GW.sidenotes.sidenoteColumnLeft.style.top = offset + "px";
+		GW.sidenotes.sidenoteColumnLeft.style.height = `calc(100% - ${offset}px)`;
+	}
 
 	//	Update the disposition of sidenotes within collapse blocks.
 	updateSidenotesInCollapseBlocks();
@@ -377,7 +409,7 @@ function updateSidenotePositions() {
 			continue;
 
 		//	What side is this sidenote on?
-		let side = (i % 2) ? GW.sidenoteColumnLeft : GW.sidenoteColumnRight;
+		let side = (i % 2) ? GW.sidenotes.sidenoteColumnLeft : GW.sidenotes.sidenoteColumnRight;
 
 		//	Default position (vertically aligned with the footnote reference).
 		sidenote.style.top = Math.round(((GW.sidenotes.footnoteRefs[i].getBoundingClientRect().top) - side.getBoundingClientRect().top) + 4) + "px";
@@ -444,69 +476,36 @@ function updateSidenotePositions() {
 			nextSidenote.style.top = (parseInt(nextSidenote.style.top) + overlap) + "px";
 		}
 	}
+
+	//	Show the sidenote columns.
+	GW.sidenotes.sidenoteColumnLeft.style.visibility = "";
+	GW.sidenotes.sidenoteColumnRight.style.visibility = "";
 }
 
-/******************/
-/* INITIALIZATION */
-/******************/
-
-/*	Q:	Why is this setup function so long and complex?
-	A:	In order to properly handle all of the following:
-
-	1.	The two different modes (footnote popups vs. sidenotes)
-	2.	The interactions between sidenotes and collapse blocks
-	3.	Linking to footnotes/sidenotes
-	4.	Loading a URL that links to a footnote/sidenote
-	5.	Disclosing too-long sidenotes (and otherwise interacting with sidenotes)
-	6.	Changes in the viewport width dynamically altering all of the above
-
-	… and, of course, correct layout of the sidenotes, even in tricky cases
-	where the citations are densely packed and the sidenotes are long.
+/*	Constructs the HTML structure, and associated listeners and auxiliaries,
+	of the sidenotes.
 	*/
-function sidenotesSetup() {
-	GWLog("sidenotesSetup");
+function constructSidenotes() {
+	GWLog("constructSidenotes");
 
-	/*	The `sidenoteSpacing` constant defines the minimum vertical space that
-		is permitted between adjacent sidenotes; any less, and they are
-		considered to be overlapping.
+	/*	Do nothing if sidenotes.js somehow gets run extremely early in the page
+		load process.
 		*/
-	GW.sidenotes = {
-		sidenoteSpacing:	60
-	};
-	/*	This should match the "max-width" property of the "body" element.
-		*/
-	GW.maxBodyWidthInCharacterUnits = 112;
+	let markdownBody = document.querySelector("#markdownBody");
+	if (!markdownBody) return;
 
 	//	Compensate for Firefox nonsense.
 	ridiculousWorkaroundsForBrowsersFromBizarroWorld();
 
-	/*	Add the sidenote columns.
+	/*	Add the sidenote columns (removing them first if they already exist).
 		*/
-	document.querySelector("#markdownBody").insertAdjacentHTML("beforeend",
+	if (GW.sidenotes.sidenoteColumnLeft) GW.sidenotes.sidenoteColumnLeft.remove();
+	if (GW.sidenotes.sidenoteColumnRight) GW.sidenotes.sidenoteColumnRight.remove();
+	markdownBody.insertAdjacentHTML("beforeend",
 		"<div id='sidenote-column-left' class='footnotes' style='visibility:hidden'></div>" +
 		"<div id='sidenote-column-right' class='footnotes' style='visibility:hidden'></div>");
-	GW.sidenoteColumnLeft = document.querySelector("#sidenote-column-left");
-	GW.sidenoteColumnRight = document.querySelector("#sidenote-column-right");
-
-	/*	Position left sidenote column so top is flush with top of first
-		full-width block (i.e., one that is not pushed right by the TOC).
-
-		NOTE: This doesn't quite do what it says (due to overflow), but that's
-		fine; nothing really breaks as a result...
-		*/
-	let markdownBody = document.querySelector("#markdownBody");
-	var firstFullWidthBlock;
-	for (var block of markdownBody.children) {
-		if (block.clientWidth == markdownBody.clientWidth) {
-			firstFullWidthBlock = block;
-			break;
-		}
-	}
-	let offset = firstFullWidthBlock.offsetTop;
-	if (GW.sidenoteColumnLeft.offsetTop < firstFullWidthBlock.offsetTop) {
-		GW.sidenoteColumnLeft.style.top = offset + "px";
-		GW.sidenoteColumnLeft.style.height = `calc(100% - ${offset}px)`;
-	}
+	GW.sidenotes.sidenoteColumnLeft = document.querySelector("#sidenote-column-left");
+	GW.sidenotes.sidenoteColumnRight = document.querySelector("#sidenote-column-right");
 
 	/*	Create and inject the sidenotes.
 		*/
@@ -523,7 +522,7 @@ function sidenotesSetup() {
 		//	Add the sidenote to the sidenotes array...
 		GW.sidenotes.sidenoteDivs.push(sidenote);
 		//	On which side should the sidenote go? Odd - right; even - left.
-		let side = (i % 2) ? GW.sidenoteColumnLeft : GW.sidenoteColumnRight;
+		let side = (i % 2) ? GW.sidenotes.sidenoteColumnLeft : GW.sidenotes.sidenoteColumnRight;
 		//	Inject the sidenote into the page.
 		side.appendChild(sidenote);
 	}
@@ -541,6 +540,7 @@ function sidenotesSetup() {
 	/*	Create & inject the hidden sidenote storage (for sidenotes within
 		currently-collapsed collapse blocks).
 		*/
+	if (GW.sidenotes.hiddenSidenoteStorage) GW.sidenotes.hiddenSidenoteStorage.remove();
 	GW.sidenotes.hiddenSidenoteStorage = document.createElement("div");
 	GW.sidenotes.hiddenSidenoteStorage.id = "hidden-sidenote-storage";
 	GW.sidenotes.hiddenSidenoteStorage.style.display = "none";
@@ -575,6 +575,45 @@ function sidenotesSetup() {
 			});
 		});
 	});
+}
+
+/******************/
+/* INITIALIZATION */
+/******************/
+
+/*	Q:	Why is this setup function so long and complex?
+	A:	In order to properly handle all of the following:
+
+	1.	The two different modes (footnote popups vs. sidenotes)
+	2.	The interactions between sidenotes and collapse blocks
+	3.	Linking to footnotes/sidenotes
+	4.	Loading a URL that links to a footnote/sidenote
+	5.	Disclosing too-long sidenotes (and otherwise interacting with sidenotes)
+	6.	Changes in the viewport width dynamically altering all of the above
+
+	… and, of course, correct layout of the sidenotes, even in tricky cases
+	where the citations are densely packed and the sidenotes are long.
+	*/
+function sidenotesSetup() {
+	GWLog("sidenotesSetup");
+
+	/*	The `sidenoteSpacing` constant defines the minimum vertical space that
+		is permitted between adjacent sidenotes; any less, and they are
+		considered to be overlapping.
+		*/
+	GW.sidenotes = {
+		sidenoteSpacing:	60
+	};
+	/*	This should match the "max-width" property of the "body" element.
+		*/
+	GW.maxBodyWidthInCharacterUnits = 112;
+
+	/*	Construct the sidenotes immediately, and also re-construct them as soon
+		as the HTML content is fully loaded (if it isn't already).
+		*/
+	constructSidenotes();
+	if (document.readyState == "loading")
+		window.addEventListener("DOMContentLoaded", constructSidenotes);
 
 	/*	Add a resize listener so that sidenote positions are recalculated when
 		the window is resized.
@@ -589,6 +628,11 @@ function sidenotesSetup() {
 	if (document.readyState == "complete") {
 		updateSidenotePositions();
 	} else {
+		if (document.readyState == "loading") {
+			window.addEventListener("DOMContentLoaded", updateSidenotePositions);
+		} else {
+			updateSidenotePositions();
+		}
 		window.addEventListener("load", updateSidenotePositions);
 	}
 
@@ -605,14 +649,28 @@ function sidenotesSetup() {
 		updateFootnoteReferenceLinks();
 		clearFootnotePopups();
 	});
-	/*	Immediately set the correct mode (footnote popups or sidenotes), and
+	/*	On page load, set the correct mode (footnote popups or sidenotes), and
 		rewrite the citation (footnote reference) links to point to footnotes
 		or to sidenotes, as appropriate.
 		*/
-	window.addEventListener("load", () => {
+	if (document.readyState == "complete") {
 		updateFootnoteEventListeners();
 		updateFootnoteReferenceLinks();
-	});
+	} else {
+		window.addEventListener("load", () => {
+			updateFootnoteEventListeners();
+			updateFootnoteReferenceLinks();
+		});
+	}
+	/*	In case footnotes.js loads later, make sure event listeners are set in
+		order afterwards.
+		*/
+	let footnotesScriptTag = document.querySelector("script[src*='footnotes.js']");
+	if (footnotesScriptTag && !Footnotes) {
+		footnotesScriptTag.addEventListener("load", (event) => {
+			setTimeout(updateFootnoteEventListeners);
+		});
+	}
 
 	/*	If the page was loaded with a hash that points to a footnote, but
 		sidenotes are enabled (or vice-versa), rewrite the hash in accordance
@@ -629,7 +687,7 @@ function sidenotesSetup() {
 		/*	Otherwise, make sure that if a sidenote is targeted by the hash, it
 			indeed ends up looking highlighted (this defeats a weird bug).
 			*/
-		requestIdleCallback(realignHashIfNeeded);
+		requestAnimationFrame(realignHashIfNeeded);
 	}
 
 	/*	Having updated the hash, now properly highlight everything, if needed,
@@ -662,8 +720,14 @@ function sidenotesSetup() {
 	});
 
 	//	Prepare for hash reversion.
+	/*	Save the hash, if need be (if it does NOT point to a sidenote or a
+		footnote reference).
+		*/
 	GW.sidenotes.hashBeforeSidenoteWasFocused = (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref")) ?
 												"" : location.hash;
+	/*	Add event listener to un-focus a sidenote (by resetting the hash) when
+		then document is clicked anywhere but a sidenote or a link.
+		*/
 	document.body.addEventListener("click", GW.sidenotes.bodyClicked = (event) => {
 		GWLog("GW.sidenotes.bodyClicked");
 
