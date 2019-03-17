@@ -21,6 +21,8 @@
 
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
     <script src="/static/js/sidenotes.js" async></script> <!-- since sidenotes visibly render, unlike the other JS libs, we prioritize its loading in the head -->
+    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
+    <script src="/static/js/footnotes.js" defer></script>
 
     <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Site-wide global ATOM/RSS Feed (all edits)" />
 
@@ -31,7 +33,7 @@
     <main>
       <div id="sidebar">
         <a id="logo" href="/index" title="index: categorized list of articles">
-          <img alt="Logo [the logo is a Gothic/Fraktur blackletter capital G]" src="/images/logo-smooth.svg">
+          <img alt="Gwern.net Site Logo [a Gothic/Fraktur blackletter capital G]" src="/images/logo-smooth.svg">
         </a>
         <div id="sidebar-links">
         <a class="home" href="/index" title="index: categorized list of articles">Home</a>
@@ -107,13 +109,10 @@
       <p><a href="https://docs.google.com/forms/d/17cNf0ohMHKeTwmUM_V_hDVkirjsf8HLMWsJco8gt2Eg/viewform">Send anonymous feedback</a></p>
     </div>
 
-    <!-- dependency for tablesorter/footnotes.js -->
+    <!-- dependency for tablesorter -->
     <script src="/static/js/jquery-1.7.1.min.js" defer></script>
     <!-- http://tablesorter.com/docs/ ; requires JQuery -->
     <script src="/static/js/tablesorter.js" defer></script>
-
-    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
-    <script src="/static/js/footnotes.js" defer></script>
 
     <!-- JS library for clickable/zoomable images, for images larger than can be displayed in the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css -->
     <script src="/static/js/image-focus.js" defer></script>

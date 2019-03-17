@@ -331,6 +331,7 @@ function updateFootnoteEventListeners() {
 				fnref.classList.remove("highlighted");
 			});
 		}
+		clearFootnotePopups();
 	} else {
 		//	Unbind sidenote mouse events.
 		for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
@@ -518,7 +519,10 @@ function constructSidenotes() {
 		sidenote.classList.add("sidenote");
 		sidenote.id = "sn" + (i + 1);
 		//	Wrap the contents of the footnote in two wrapper divs...
-		sidenote.innerHTML = "<div class='sidenote-outer-wrapper'><div class='sidenote-inner-wrapper'>" + document.querySelector(GW.sidenotes.footnoteRefs[i].hash).innerHTML + "</div></div>";
+		let referencedFootnote = document.querySelector(GW.sidenotes.footnoteRefs[i].hash);
+		sidenote.innerHTML = "<div class='sidenote-outer-wrapper'><div class='sidenote-inner-wrapper'>" +
+							 (referencedFootnote ? referencedFootnote.innerHTML : "Loading sidenote contents, please wait…")
+							 + "</div></div>";
 		//	Add the sidenote to the sidenotes array...
 		GW.sidenotes.sidenoteDivs.push(sidenote);
 		//	On which side should the sidenote go? Odd - right; even - left.
@@ -647,7 +651,6 @@ function sidenotesSetup() {
 
 		updateFootnoteEventListeners();
 		updateFootnoteReferenceLinks();
-		clearFootnotePopups();
 	});
 	/*	On page load, set the correct mode (footnote popups or sidenotes), and
 		rewrite the citation (footnote reference) links to point to footnotes
@@ -665,12 +668,13 @@ function sidenotesSetup() {
 	/*	In case footnotes.js loads later, make sure event listeners are set in
 		order afterwards.
 		*/
-	let footnotesScriptTag = document.querySelector("script[src*='footnotes.js']");
-	if (footnotesScriptTag && !Footnotes) {
-		footnotesScriptTag.addEventListener("load", (event) => {
-			setTimeout(updateFootnoteEventListeners);
-		});
-	}
+	var footnotesObserver = new MutationObserver((mutationsList, observer) => {
+		if (document.querySelector("#footnotediv")) {
+			updateFootnoteEventListeners();
+			footnotesObserver.disconnect();
+		}
+	});
+	footnotesObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
 
 	/*	If the page was loaded with a hash that points to a footnote, but
 		sidenotes are enabled (or vice-versa), rewrite the hash in accordance
