@@ -201,6 +201,17 @@
         //  Ensure minimum caption box width.
         wrapper.style.minWidth = media.clientWidth + "px";
     });
+
+     /*	Insert zero-width spaces after problematic characters in links.
+	    (This is to mitigate justification/wrapping problems.)
+	*/
+    let problematicCharacters = '/';
+    document.querySelectorAll("p a, p a *").forEach(element => {
+	    element.childNodes.forEach(node => {
+		   if (node.childNodes.length > 0) return;
+		   node.textContent = node.textContent.replace(new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g'), "$$1\u{200B}$$2");
+	    });
+    });
     </script>
   </body>
 </html>
