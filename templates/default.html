@@ -202,15 +202,45 @@
         wrapper.style.minWidth = media.clientWidth + "px";
     });
 
-     /*	Insert zero-width spaces after problematic characters in links.
-	    (This is to mitigate justification/wrapping problems.)
-	*/
+     /* Insert zero-width spaces after problematic characters in links.
+        (This is to mitigate justification/wrapping problems.)
+    */
     let problematicCharacters = '/';
     document.querySelectorAll("p a, p a *").forEach(element => {
-	    element.childNodes.forEach(node => {
-		   if (node.childNodes.length > 0) return;
-		   node.textContent = node.textContent.replace(new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g'), "$$1\u{200B}$$2");
-	    });
+        element.childNodes.forEach(node => {
+           if (node.childNodes.length > 0) return;
+           node.textContent = node.textContent.replace(new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g'), "$$1\u{200B}$$2");
+        });
+    });
+
+    /* rectify straight quotes / apostrophes / etc. in the header and the page metadata. TODO: this should be doable in Hakyll at compile-time */
+    let textCleanRegexps = [
+      // beginning "
+      [/([^A-Za-z0-9_\)]|^)"(\S)/, '$$1\u201c$$2'],
+      // ending "
+      [/(\u201c[^"]*)"([^"]*$$|[^\u201c"]*\u201c)/, '$$1\u201d$$2'],
+      // remaining " at end of word
+      [/([^0-9])"/, '$$1\u201d'],
+      // double quotes
+      [/"(.+?)"/, '\u201c$$1\u201d'],
+      // beginning '
+      [/(\W|^)'(\S)/, '$$1\u2018$$2'],
+      // conjunction's possession
+      [/([a-z])'([a-z])/, '$$1\u2019$$2'],
+      // abbrev. years like '93
+      [/(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$$)|$$|\u2019[a-z])/, '\u2019$$2$$3'],
+      // ending '
+      [/((\u2018[^']*)|[a-z])'([^0-9]|$$)/, '$$1\u2019$$3'],
+      // backwards apostrophe
+      [/(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$$))/, '$$1\u2019'],
+    ];
+    document.querySelectorAll("header *, #page-metadata *").forEach(element => {
+        element.childNodes.forEach(node => {
+            if (node.childNodes.length > 0) return;
+            textCleanRegexps.forEach(tcr => {
+                node.textContent = node.textContent.replace(new RegExp(tcr[0], 'ig'), tcr[1]);
+            });
+        });
     });
     </script>
   </body>
