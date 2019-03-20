@@ -52,7 +52,7 @@ html {
 	}
 	/*	Special styles for special browsers.
 		*/
-	@-moz-document url-prefix() {
+	@supports (-moz-user-focus: normal) {
 		@media only screen and (min-width: 176.1ch) {
 			main {
 				right: 0;
@@ -1895,7 +1895,7 @@ a.footnote-ref {
 }
 /*	Special styles for special browsers.
 	*/
-@-moz-document url-prefix() {
+@supports (-moz-user-focus: normal) {
 	@media only screen and (max-width: 176ch) {
 		#sidenote-column-left,
 		#sidenote-column-right {
@@ -2022,6 +2022,11 @@ a.footnote-ref {
 	padding: 0 0 0 1.75em;
 }
 
+.sidenote code {
+	word-break: break-all;
+	hyphens: none;
+}
+
 /*=-----------=*/
 /*= Citations =*/
 /*=-----------=*/
@@ -2046,7 +2051,7 @@ a.footnote-ref {
 
 /*	Special styles for special browsers.
 	*/
-@-moz-document url-prefix() {
+@supports (-moz-user-focus: normal) {
 	@media only screen and (max-width: 176ch) {
 		.footnote-ref:target {
 			background-color: #fff;
@@ -2551,7 +2556,7 @@ hr {
 		font-family: Cheshire Initials;
 		font-size: 6.75em;
 		line-height: 1;
-		margin: 0.01em 0.04em -0.25em 0;
+		margin: 0.02em 0.04em -0.25em 0;
 		opacity: 0.9;
 	}
 	body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
@@ -2634,7 +2639,7 @@ hr {
 
 	/*	Special styles for special browsers.
 		*/
-	@-moz-document url-prefix() {
+	@supports (-moz-user-focus: normal) {
 		body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
 		body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
 		body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
