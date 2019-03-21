@@ -36,7 +36,6 @@ Footnotes = {
 				left: (citationAbsoluteRect.left - bodyAbsoluteRect.left),
 				top: (citationAbsoluteRect.top - bodyAbsoluteRect.top)
 			};
-			console.log(citationPosition);
 			var targetFootnoteId = event.target.hash.substr(1);
 
 			//	Get, or create, the footnote popup.
@@ -115,6 +114,8 @@ Footnotes = {
 		clearTimeout(Footnotes.footnotefadetimeout);
 		clearTimeout(Footnotes.footnotekilltimeout);
 		clearTimeout(Footnotes.footnotepopuptimeout);
+
+		if (!Footnotes.footnotePopup) return;
 
 		Footnotes.footnotefadetimeout = setTimeout(() => {
 			Footnotes.footnotePopup.classList.add("fading");
