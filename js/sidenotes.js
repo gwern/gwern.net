@@ -166,6 +166,24 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 			}
 		`;
 	}
+
+	/*	Create a media query object (for checking and attaching listeners).
+		*/
+	GW.sidenotes.viewportWidthBreakpointMediaQuery = window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQueryString);
+
+	/*	Listen for changes to whether the viewport width media query is matched;
+		if such a change occurs (i.e., if the viewport becomes, or stops being,
+		wide enough to support sidenotes), switch modes from footnote popups to
+		sidenotes or vice/versa, as appropriate.
+		(This listener may also be fired if the dev tools pane is opened, etc.)
+		*/
+	GW.sidenotes.viewportWidthBreakpointMediaQuery.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
+		GWLog("GW.sidenotes.viewportWidthBreakpointChanged");
+
+		updateFootnoteEventListeners();
+		footnotesObserver.disconnect();
+		updateFootnoteReferenceLinks();
+	});
 }
 
 /*	Returns true if the string begins with the given prefix.
@@ -418,7 +436,7 @@ function updateSidenotePositions() {
 			break;
 		}
 	}
-	let offset = firstFullWidthBlock.offsetTop;
+	let offset = firstFullWidthBlock.offsetTop || 0;
 	if (GW.sidenotes.sidenoteColumnLeft.offsetTop < firstFullWidthBlock.offsetTop) {
 		GW.sidenotes.sidenoteColumnLeft.style.top = offset + "px";
 		GW.sidenotes.sidenoteColumnLeft.style.height = `calc(100% - ${offset}px)`;
@@ -635,9 +653,8 @@ function sidenotesSetup() {
 
 	//	Compensate for Firefox nonsense.
 	ridiculousWorkaroundsForBrowsersFromBizarroWorld();
-
-	//	Create a media query object (for checking and attaching listeners).
-	GW.sidenotes.viewportWidthBreakpointMediaQuery = window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQueryString);
+	if (GW.isFirefox && document.readyState != "complete")
+		window.addEventListener("load", ridiculousWorkaroundsForBrowsersFromBizarroWorld);
 
 	/*	Construct the sidenotes immediately, and also re-construct them as soon
 		as the HTML content is fully loaded (if it isn't already).
@@ -667,19 +684,6 @@ function sidenotesSetup() {
 		window.addEventListener("load", updateSidenotePositions);
 	}
 
-	/*	Listen for changes to whether the viewport width media query is matched;
-		if such a change occurs (i.e., if the viewport becomes, or stops being,
-		wide enough to support sidenotes), switch modes from footnote popups to
-		sidenotes or vice/versa, as appropriate.
-		(This listener may also be fired if the dev tools pane is opened, etc.)
-		*/
-	GW.sidenotes.viewportWidthBreakpointMediaQuery.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
-		GWLog("GW.sidenotes.viewportWidthBreakpointChanged");
-
-		updateFootnoteEventListeners();
-		footnotesObserver.disconnect();
-		updateFootnoteReferenceLinks();
-	});
 	/*	On page load, set the correct mode (footnote popups or sidenotes), and
 		rewrite the citation (footnote reference) links to point to footnotes
 		or to sidenotes, as appropriate.
