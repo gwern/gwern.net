@@ -47,7 +47,7 @@ function updateTargetCounterpart() {
 	var counterpart;
 	if (location.hash.match(/#sn[0-9]/)) {
 		counterpart = document.querySelector("#fnref" + location.hash.substr(3));
-	} else if (location.hash.match(/#fnref[0-9]/) && window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == false) {
+	} else if (location.hash.match(/#fnref[0-9]/) && GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false) {
 		counterpart = document.querySelector("#sn" + location.hash.substr(6));
 	}
 	/*	If a target counterpart exists, mark it as such.
@@ -95,17 +95,44 @@ function setHashWithoutScrolling(newHash) {
 }
 
 /*	Firefox.
+
+	This workaround is necessary because Firefox takes the 'ch' unit, *as used
+	in media queries* (e.g. "@media only screen and (max-width: 120ch)") from,
+	not the font-family set on the 'body' element or the 'html' element or even
+	the ':root' element (as Chrome does, and as is proper), but from the font
+	*set by the user to be the browser default*. That means that media queries
+	specified in 'ch' units change their meaning based on the browser default
+	font, even if that font is used absolutely nowhere on the page.
+
+	This makes 'ch' based media queries utterly useless in Firefox.
+
+	Thus, this workaround, which is a sort of "polyfill" for correct 'ch' unit
+	based media query behavior. It checks the computed value of the 'body'
+	element (which, while *specified* in 'ch' units, is returned in pixels),
+	divides it by the *specified* value, thus deriving the width of a 'ch' unit
+	for the font specified for the body. It then constructs media queries
+	specified in pixels (which are equivalent to those specified in default.css
+	in 'ch' units), and injects a <style> block into the <head> with those
+	media queries, wrapped in a Firefox-specific CSS block.
 	*/
 function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 	GWLog("ridiculousWorkaroundsForBrowsersFromBizarroWorld");
 
 	GW.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 	if (!GW.isFirefox) {
-		GW.sidenotes.viewportWidthBreakpointMediaQuery = `(max-width: 176ch)`;
+		GW.sidenotes.viewportWidthBreakpointMediaQueryString = `(max-width: 176ch)`;
 	} else {
+		/*	This should match the "max-width" property of the "body" element.
+			*/
+		GW.maxBodyWidthInCharacterUnits = 112;
+
+		/*	This should be some property/value pair that only Firefox supports.
+			*/
+		GW.firefoxTargetingSelector = "@supports (-moz-user-focus: normal)";
+
 		let widthOfCharacterUnit = parseInt(getComputedStyle(document.body).maxWidth) / GW.maxBodyWidthInCharacterUnits;
 		let viewportWidthBreakpointInPixels = 176 * widthOfCharacterUnit;
-		GW.sidenotes.viewportWidthBreakpointMediaQuery = `(max-width: ${viewportWidthBreakpointInPixels}px)`
+		GW.sidenotes.viewportWidthBreakpointMediaQueryString = `(max-width: ${viewportWidthBreakpointInPixels}px)`
 
 		var sidenotesBrowserWorkaroundStyleBlock = document.querySelector("style#sidenotes-browser-workaround");
 		if (!sidenotesBrowserWorkaroundStyleBlock) {
@@ -114,7 +141,7 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 			document.querySelector("head").appendChild(sidenotesBrowserWorkaroundStyleBlock);
 		}
 		sidenotesBrowserWorkaroundStyleBlock.innerHTML = `
-			@-moz-document url-prefix() {
+			${GW.firefoxTargetingSelector} {
 				@media only screen and (max-width: ${viewportWidthBreakpointInPixels}px) {
 					#sidenote-column-left,
 					#sidenote-column-right {
@@ -285,7 +312,7 @@ function updateFootnoteReferenceLinks() {
 
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let fnref = GW.sidenotes.footnoteRefs[i];
-		if (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == false) {
+		if (GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false) {
 			fnref.href = "#sn" + (i + 1);
 		} else {
 			fnref.href = "#fn" + (i + 1);
@@ -301,7 +328,7 @@ function updateFootnoteEventListeners() {
 
 	/*	Determine whether we are in sidenote mode or footnote mode.
 		*/
-	var sidenotesMode = (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == false);
+	var sidenotesMode = (GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false);
 
 	if (window.Footnotes) {
 		//	Get all footnote links.
@@ -374,7 +401,7 @@ function updateSidenotePositions() {
 	/*	If we're in footnotes mode (i.e., the viewport is too narrow), then
 		don't do anything.
 		*/
-	if (window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == true)
+	if (GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == true)
 		return;
 
 	/*	Position left sidenote column so top is flush with top of first
@@ -495,9 +522,6 @@ function constructSidenotes() {
 	let markdownBody = document.querySelector("#markdownBody");
 	if (!markdownBody) return;
 
-	//	Compensate for Firefox nonsense.
-	ridiculousWorkaroundsForBrowsersFromBizarroWorld();
-
 	/*	Add the sidenote columns (removing them first if they already exist).
 		*/
 	if (GW.sidenotes.sidenoteColumnLeft) GW.sidenotes.sidenoteColumnLeft.remove();
@@ -608,9 +632,12 @@ function sidenotesSetup() {
 	GW.sidenotes = {
 		sidenoteSpacing:	60
 	};
-	/*	This should match the "max-width" property of the "body" element.
-		*/
-	GW.maxBodyWidthInCharacterUnits = 112;
+
+	//	Compensate for Firefox nonsense.
+	ridiculousWorkaroundsForBrowsersFromBizarroWorld();
+
+	//	Create a media query object (for checking and attaching listeners).
+	GW.sidenotes.viewportWidthBreakpointMediaQuery = window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQueryString);
 
 	/*	Construct the sidenotes immediately, and also re-construct them as soon
 		as the HTML content is fully loaded (if it isn't already).
@@ -646,10 +673,11 @@ function sidenotesSetup() {
 		sidenotes or vice/versa, as appropriate.
 		(This listener may also be fired if the dev tools pane is opened, etc.)
 		*/
-	window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
+	GW.sidenotes.viewportWidthBreakpointMediaQuery.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
 		GWLog("GW.sidenotes.viewportWidthBreakpointChanged");
 
 		updateFootnoteEventListeners();
+		footnotesObserver.disconnect();
 		updateFootnoteReferenceLinks();
 	});
 	/*	On page load, set the correct mode (footnote popups or sidenotes), and
@@ -682,10 +710,10 @@ function sidenotesSetup() {
 		to the appropriate element - footnote or sidenote).
 		*/
 	if (location.hash.match(/#sn[0-9]/) &&
-		window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == true) {
+		GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == true) {
 		location.hash = "#fn" + location.hash.substr(3);
 	} else if (location.hash.match(/#fn[0-9]/) &&
-		window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQuery).matches == false) {
+		GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false) {
 		location.hash = "#sn" + location.hash.substr(3);
 	} else {
 		/*	Otherwise, make sure that if a sidenote is targeted by the hash, it
