@@ -2450,7 +2450,7 @@ code span.wa { color: #bf0303; } /* Warning */
 /*	enable standard Pandoc attribute-based syntax for small-caps like '[foo]{.smallcaps}'; see https://pandoc.org/MANUAL.html#small-caps
 	*/
 span.smallcaps {
-	font-variant: small-caps;
+    font-feature-settings: 'smcp';
 }
 
 /*  WHAT IS THIS???
