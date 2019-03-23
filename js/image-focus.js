@@ -2,8 +2,6 @@
 /* Written by Obormot, 15 February 2019 */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
-document.querySelector("body").classList.toggle("if-slideshow", true);
-
 if (typeof window.GW == "undefined")
 	window.GW = { };
 GW.temp = { };

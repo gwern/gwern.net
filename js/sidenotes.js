@@ -181,7 +181,7 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 		GWLog("GW.sidenotes.viewportWidthBreakpointChanged");
 
 		updateFootnoteEventListeners();
-		footnotesObserver.disconnect();
+		GW.sidenotes.footnotesObserver.disconnect();
 		updateFootnoteReferenceLinks();
 	});
 }
@@ -700,13 +700,13 @@ function sidenotesSetup() {
 	/*	In case footnotes.js loads later, make sure event listeners are set in
 		order afterwards.
 		*/
-	var footnotesObserver = new MutationObserver((mutationsList, observer) => {
+	GW.sidenotes.footnotesObserver = new MutationObserver((mutationsList, observer) => {
 		if (document.querySelector("#footnotediv")) {
 			updateFootnoteEventListeners();
-			footnotesObserver.disconnect();
+			GW.sidenotes.footnotesObserver.disconnect();
 		}
 	});
-	footnotesObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
+	GW.sidenotes.footnotesObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
 
 	/*	If the page was loaded with a hash that points to a footnote, but
 		sidenotes are enabled (or vice-versa), rewrite the hash in accordance
