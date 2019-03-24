@@ -13,11 +13,13 @@
 
     <title>$title$ - Gwern.net</title>
 
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css" />
-    <!-- fetch the title & body fonts immediately to avoid re-rendering -->
+    <!-- fetch the title & body fonts & logo immediately to avoid re-rendering -->
     <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Regular.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Semibold.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/images/logo-smooth.svg" as="image" type="image/svg+xml">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css" />
 
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
     <script src="/static/js/sidenotes.js" async></script> <!-- since sidenotes visibly render, unlike the other JS libs, we prioritize its loading in the head -->
@@ -144,101 +146,101 @@
     <script>
     //  Unwrap pre.sourceCode blocks from their extraneous containing divs.
     document.querySelectorAll("div.sourceCode").forEach(scd => {
-    	scd.outerHTML = scd.innerHTML;
+        scd.outerHTML = scd.innerHTML;
     });
 
     //  Inject disclosure buttons and otherwise prepare the collapse blocks.
     document.querySelectorAll(".collapse").forEach(collapseBlock => {
-    	let disclosureButtonHTML = "<input type='checkbox' class='disclosure-button'>";
-    	if (collapseBlock.tagName == "SECTION") {
-    		//  Inject the disclosure button.
-    		collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
-    	} else {
-    		//  Construct collapse block wrapper and inject the disclosure button.
-    		let realCollapseBlock = document.createElement("div");
-    		realCollapseBlock.classList.add("collapse");
-    		realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
-    		//  Move block-to-be-collapsed into wrapper.
-    		collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
-    		collapseBlock.classList.remove("collapse");
-    		realCollapseBlock.appendChild(collapseBlock);
-    	}
+        let disclosureButtonHTML = "<input type='checkbox' class='disclosure-button'>";
+        if (collapseBlock.tagName == "SECTION") {
+            //  Inject the disclosure button.
+            collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
+        } else {
+            //  Construct collapse block wrapper and inject the disclosure button.
+            let realCollapseBlock = document.createElement("div");
+            realCollapseBlock.classList.add("collapse");
+            realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+            //  Move block-to-be-collapsed into wrapper.
+            collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
+            collapseBlock.classList.remove("collapse");
+            realCollapseBlock.appendChild(collapseBlock);
+        }
 
-    	//  Special case for tables.
-    	if (collapseBlock.tagName == "TABLE") {
-    		collapseBlock.parentElement.classList.add("tableCollapse");
-    	}
+        //  Special case for tables.
+        if (collapseBlock.tagName == "TABLE") {
+            collapseBlock.parentElement.classList.add("tableCollapse");
+        }
     });
 
     //  Wrap each table in a div.tableWrapper (for layout purposes).
     document.querySelectorAll("table").forEach(table => {
-    	table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
+        table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
     });
 
     //  Inject spans to contain curly quotes within <q> elements.
     document.querySelectorAll("q").forEach(q => {
-    	let openQuote = `<span class='quote-mark open'>$${q.innerHTML.substring(0, 1)}</span>`;
-    	let closeQuote = `<span class='quote-mark close'>$${q.innerHTML.substring(q.innerHTML.length - 1)}</span>`;
-    	q.innerHTML = q.innerHTML.substring(1, q.innerHTML.length - 1);
-    	if (q.parentElement.tagName == "A" && q.parentElement.childNodes.length == 1) {
-    		q.parentElement.outerHTML = `$${openQuote}$${q.parentElement.outerHTML}$${closeQuote}`;
-    	} else {
-    		q.outerHTML = `$${openQuote}$${q.outerHTML}$${closeQuote}`;
-    	}
+        let openQuote = `<span class='quote-mark open'>$${q.innerHTML.substring(0, 1)}</span>`;
+        let closeQuote = `<span class='quote-mark close'>$${q.innerHTML.substring(q.innerHTML.length - 1)}</span>`;
+        q.innerHTML = q.innerHTML.substring(1, q.innerHTML.length - 1);
+        if (q.parentElement.tagName == "A" && q.parentElement.childNodes.length == 1) {
+            q.parentElement.outerHTML = `$${openQuote}$${q.parentElement.outerHTML}$${closeQuote}`;
+        } else {
+            q.outerHTML = `$${openQuote}$${q.outerHTML}$${closeQuote}`;
+        }
     });
 
-    /*	Returns an array of objects each with two properties: 'media' (which
-    	is the image or video element) and 'caption' (which is the figcaption
-    	element). These are all the captioned media elements on the page.
-    	*/
+    /*  Returns an array of objects each with two properties: 'media' (which
+        is the image or video element) and 'caption' (which is the figcaption
+        element). These are all the captioned media elements on the page.
+        */
     function getAllCaptionedMedia() {
-    	return Array.prototype.map.call(document.querySelectorAll("figure"), figure => {
-    		let media = figure.querySelector("img") || figure.querySelector("video");
-    		let caption = figure.querySelector("figcaption");
-    		return { media: media, caption: caption };
-    	}).filter(captionedMedia => captionedMedia.media && captionedMedia.caption);
+        return Array.prototype.map.call(document.querySelectorAll("figure"), figure => {
+            let media = figure.querySelector("img") || figure.querySelector("video");
+            let caption = figure.querySelector("figcaption");
+            return { media: media, caption: caption };
+        }).filter(captionedMedia => captionedMedia.media && captionedMedia.caption);
     }
 
-    //	Wrap all captions in figures in a span.
+    //  Wrap all captions in figures in a span.
     getAllCaptionedMedia().forEach(captionedMedia => {
-    	//	Wrap the caption in the wrapper span.
-    	let wrapper = document.createElement("span");
-    	wrapper.classList.add("caption-wrapper");
-    	wrapper.appendChild(captionedMedia.caption);
+        //  Wrap the caption in the wrapper span.
+        let wrapper = document.createElement("span");
+        wrapper.classList.add("caption-wrapper");
+        wrapper.appendChild(captionedMedia.caption);
 
-    	//	Re-insert the wrapped caption into the figure.
-    	let figure = captionedMedia.media.closest("figure");
-    	figure.appendChild(wrapper);
+        //  Re-insert the wrapped caption into the figure.
+        let figure = captionedMedia.media.closest("figure");
+        figure.appendChild(wrapper);
     });
 
-    /*	Sets minimum width of all captions to the width of their associated
-    	media (image or video) element.
-    	*/
+    /*  Sets minimum width of all captions to the width of their associated
+        media (image or video) element.
+        */
     function setCaptionsMinimumWidth() {
-    	getAllCaptionedMedia().forEach(captionedMedia => {
-    		//	Get the caption wrapper span.
-    		let wrapper = captionedMedia.caption.closest(".caption-wrapper");
-    		//	Set wrapper minimum width to width of media element.
-    		wrapper.style.minWidth = captionedMedia.media.clientWidth + "px";
-    	});
+        getAllCaptionedMedia().forEach(captionedMedia => {
+            //  Get the caption wrapper span.
+            let wrapper = captionedMedia.caption.closest(".caption-wrapper");
+            //  Set wrapper minimum width to width of media element.
+            wrapper.style.minWidth = captionedMedia.media.clientWidth + "px";
+        });
     }
     /*  Set minimum caption box width, and add listener to recalculate on
-    	window resize.
-    	*/
+        window resize.
+        */
     setCaptionsMinimumWidth();
     window.addEventListener('resize', (event) => {
-    	setCaptionsMinimumWidth();
+        setCaptionsMinimumWidth();
     });
 
      /* Insert zero-width spaces after problematic characters in links.
-    	(This is to mitigate justification/wrapping problems.)
+        (This is to mitigate justification/wrapping problems.)
     */
     let problematicCharacters = '/';
     document.querySelectorAll("p a, p a *").forEach(element => {
-    	element.childNodes.forEach(node => {
-    	   if (node.childNodes.length > 0) return;
-    	   node.textContent = node.textContent.replace(new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g'), "$$1\u{200B}$$2");
-    	});
+        element.childNodes.forEach(node => {
+           if (node.childNodes.length > 0) return;
+           node.textContent = node.textContent.replace(new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g'), "$$1\u{200B}$$2");
+        });
     });
 
     /* rectify straight quotes / apostrophes / etc. in the header and the page metadata. TODO: this should be doable in Hakyll at compile-time */
@@ -263,12 +265,12 @@
       [/(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$$))/, '$$1\u2019'],
     ];
     document.querySelectorAll("header *, #page-metadata *").forEach(element => {
-    	element.childNodes.forEach(node => {
-    		if (node.childNodes.length > 0) return;
-    		textCleanRegexps.forEach(tcr => {
-    			node.textContent = node.textContent.replace(new RegExp(tcr[0], 'ig'), tcr[1]);
-    		});
-    	});
+        element.childNodes.forEach(node => {
+            if (node.childNodes.length > 0) return;
+            textCleanRegexps.forEach(tcr => {
+                node.textContent = node.textContent.replace(new RegExp(tcr[0], 'ig'), tcr[1]);
+            });
+        });
     });
     </script>
   </body>
