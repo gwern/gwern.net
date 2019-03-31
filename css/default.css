@@ -1065,10 +1065,10 @@ article > :not(#TOC) a:hover {
     content: "";
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj48cGF0aCBkPSJNNjQwIDUxLjJsLS4zIDEyLjJjLTI4LjEuOC00NSAxNS44LTU1LjggNDAuMy0yNSA1Ny44LTEwMy4zIDI0MC0xNTUuMyAzNTguNkg0MTVsLTgxLjktMTkzLjFjLTMyLjUgNjMuNi02OC4zIDEzMC05OS4yIDE5My4xLS4zLjMtMTUgMC0xNS0uM0MxNzIgMzUyLjMgMTIyLjggMjQzLjQgNzUuOCAxMzMuNCA2NC40IDEwNi43IDI2LjQgNjMuNC4yIDYzLjdjMC0zLjEtLjMtMTAtLjMtMTQuMmgxNjEuOXYxMy45Yy0xOS4yIDEuMS01Mi44IDEzLjMtNDMuMyAzNC4yIDIxLjkgNDkuNyAxMDMuNiAyNDAuMyAxMjUuNiAyODguNiAxNS0yOS43IDU3LjgtMTA5LjIgNzUuMy0xNDIuOC0xMy45LTI4LjMtNTguNi0xMzMuOS03Mi44LTE2MC05LjctMTcuOC0zNi4xLTE5LjQtNTUuOC0xOS43VjQ5LjhsMTQyLjUuM3YxMy4xYy0xOS40LjYtMzguMSA3LjgtMjkuNCAyNi4xIDE4LjkgNDAgMzAuNiA2OC4xIDQ4LjEgMTA0LjcgNS42LTEwLjggMzQuNy02OS40IDQ4LjEtMTAwLjggOC45LTIwLjYtMy45LTI4LjYtMzguNi0yOS40LjMtMy42IDAtMTAuMy4zLTEzLjYgNDQuNC0uMyAxMTEuMS0uMyAxMjMuMS0uNnYxMy42Yy0yMi41LjgtNDUuOCAxMi44LTU4LjEgMzEuN2wtNTkuMiAxMjIuOGM2LjQgMTYuMSA2My4zIDE0Mi44IDY5LjIgMTU2LjdMNTU5LjIgOTEuOGMtOC42LTIzLjEtMzYuNC0yOC4xLTQ3LjItMjguM1Y0OS42bDEyNy44IDEuMS4yLjV6Ii8+PC9zdmc+');
     background-repeat: no-repeat;
-    background-size: 0.8em;
+    background-size: 0.75em;
     background-position: right 1px top;
-    width: 0.95em;
-    height: 0.8em;
+    width: 0.85em;
+    height: 0.85em;
     display: inline-block;
     vertical-align: baseline;
     opacity: 0.85;
@@ -1196,8 +1196,8 @@ article > :not(#TOC) a:hover {
     */
 #markdownBody a[href$='.pdf']::after,
 #markdownBody a[href$='/pdf']::after,
-#markdownBody a[href*='.pdf#']::after,
-#markdownBody a[href$='type=pdf']::after {
+#markdownBody a[href$='type=pdf']::after,
+#markdownBody a[href*='.pdf#']::after {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
 
@@ -1559,6 +1559,21 @@ blockquote blockquote {
 #markdownBody blockquote > :first-child > :first-child > :first-child,
 #markdownBody blockquote > :first-child > :first-child > :first-child > :first-child {
     margin-top: 0;
+}
+
+/*  Special case for tables in blockquotes.
+    */
+#markdownBody blockquote > table:last-child,
+#markdownBody blockquote > :last-child > table:last-child,
+#markdownBody blockquote > :last-child > :last-child > table:last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child > table:last-child {
+    margin-bottom: 0.5em;
+}
+#markdownBody blockquote > table:first-child,
+#markdownBody blockquote > :first-child > table:first-child,
+#markdownBody blockquote > :first-child > :first-child > table:first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child > table:first-child {
+    margin-top: 0.5em;
 }
 
 #markdownBody blockquote > ul:only-child,
@@ -2126,7 +2141,8 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 
 .tableWrapper {
     margin: 2em 0 2.125em 0;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 h1 + .tableWrapper,
 h2 + .tableWrapper,
@@ -2153,6 +2169,20 @@ table {
         */
     font-variant-numeric: tabular-nums;
 }
+
+/*=-------------------=*/
+/*= Full-width tables =*/
+/*=-------------------=*/
+
+.tableWrapper.full-width {
+    background-color: #fff;
+    z-index: 1;
+    position: relative;
+}
+
+/*=-------------=*/
+/*= Table parts =*/
+/*=-------------=*/
 
 table caption {
     padding: 0.25em 0.75em;
@@ -2203,7 +2233,7 @@ table td + td {
     http://tablesorter.com/docs/#Configuration
     */
 th.header {
-    background-image: url(/static/img/bg.gif);
+    background-image: url('/static/img/bg.gif');
     cursor: pointer;
     font-weight: bold;
     background-repeat: no-repeat;
@@ -2214,17 +2244,16 @@ th.header:hover {
     background-color: #e2f0f2;
 }
 th.headerSortUp {
-    background-image: url(/static/img/small_asc.gif);
+    background-image: url('/static/img/small_asc.gif');
 }
 th.headerSortDown {
-    background-image: url(/static/img/small_desc.gif);
+    background-image: url('/static/img/small_desc.gif');
 }
 th.headerSortUp,
 th.headerSortDown,
 th.headerSortUp:hover,
 th.headerSortDown:hover {
     background-color: #8bd0ed;
-    border: 1px solid #8bd0ed;
     color: #fff;
     text-shadow:
        0.5px 0.5px 0 #000,
@@ -2250,29 +2279,29 @@ blockquote table td + td {
     border-left: 1px solid #f5f5f5;
 }
 
-/*  CSS written by cwillu in order to rewrite the Modafinil page's table of prices
+/*  Corrected version of suppliers tables CSS on /Modafinil; original by cwillu
     */
 #suppliers-prices th {
-    padding: 3px 15px 2px 15px;
+    padding: 3px 15px;
 }
 #suppliers-prices td {
     padding: 0 15px;
 }
-#suppliers-prices td:nth-child(1) {
-    text-align: right;
+#suppliers-prices th:nth-last-child(n+3),
+#suppliers-prices td:nth-last-child(n+3) {
+    text-align: right !important;
 }
 #suppliers-prices td:nth-child(1):after {
-    content: "mg/$";
-}
-#suppliers-prices td:nth-child(2) {
-    text-align: right;
+    content: " mg/$";
 }
 #suppliers-prices td:nth-child(2):after {
-    content: "mg";
+    content: " mg";
 }
 #suppliers-prices td:nth-child(3):before {
     content: "x";
+    opacity: 0.4;
 }
+#suppliers-prices td:nth-child(4):before,
 #suppliers-prices td:nth-child(5):before {
     content: "$";
 }
@@ -2864,6 +2893,17 @@ body.mead p > img {
         0 0 0 15px #fff,
         0 0 0 16px #ccc,
         0 0 0 17px transparent;
+}
+
+/*  THE FOLLOWING IS AN EXAMPLE ONLY. IT IS NON-FUNCTIONAL FOR NOW.
+    */
+
+/*=-------=*/
+/*= /Hafu =*/
+/*=-------=*/
+
+body.hafu .tableWrapper#hafu-list td:last-of-type {
+    width: 50%;
 }
 
 /*************************/
