@@ -245,6 +245,7 @@ function expandCollapseBlocksToReveal(element) {
 	let disclosureButton = collapseParent.querySelector(".disclosure-button");
 	let expansionOccurred = (disclosureButton.checked == false);
 	disclosureButton.checked = true;
+	collapseParent.classList.toggle("expanded", disclosureButton.checked);
 
 	//	Expand any higher-level collapse blocks!
 	/*	Update sidenote positions only if we do NOT have to do any further
@@ -425,7 +426,7 @@ function updateSidenotePositions() {
 	/*	Position left sidenote column so top is flush with top of first
 		full-width block (i.e., one that is not pushed right by the TOC).
 
-		NOTE: This doesn't quite do what it says (due to overflow), but that's
+		NOTE: This doesn’t quite do what it says (due to overflow), but that’s
 		fine; nothing really breaks as a result...
 		*/
 	let markdownBody = document.querySelector("#markdownBody");
@@ -445,6 +446,9 @@ function updateSidenotePositions() {
 	//	Update the disposition of sidenotes within collapse blocks.
 	updateSidenotesInCollapseBlocks();
 
+	/*	Initial layout (to force browser layout engine to compute sidenotes’
+		height for us).
+		*/
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
 
@@ -466,7 +470,24 @@ function updateSidenotePositions() {
 		sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.clientHeight + 2));
 	}
 
-	/*	Correct for overlap.
+	/*	Determine proscribed vertical ranges (i.e., bands of the page from which
+		sidenotes are excluded, by the presence of a full-width table).
+		*/
+	var proscribedVerticalRanges = [ ];
+	let rightColumnBoundingRect = GW.sidenotes.sidenoteColumnRight.getBoundingClientRect();
+	document.querySelectorAll(".tableWrapper.full-width").forEach(fullWidthTable => {
+		let tableBoundingRect = fullWidthTable.getBoundingClientRect();
+		proscribedVerticalRanges.push({ top: tableBoundingRect.top - rightColumnBoundingRect.top,
+										bottom: tableBoundingRect.bottom  - rightColumnBoundingRect.top });
+	});
+	proscribedVerticalRanges.push({
+		top:	GW.sidenotes.sidenoteColumnRight.clientHeight,
+		bottom:	GW.sidenotes.sidenoteColumnRight.clientHeight
+	});
+
+	/*	Correct for overlap (both between sidenotes, and of sidenotes with
+		proscribed vertical ranges, such as those associated with full-width
+		tables).
 		*/
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
@@ -477,49 +498,160 @@ function updateSidenotePositions() {
 			*/
 		if (sidenote.parentElement == GW.sidenotes.hiddenSidenoteStorage) continue;
 
-		//	Is there a sidenote below this one?
-		if (!nextSidenote) continue;
+		//	What side is this sidenote on?
+		let side = (i % 2) ? GW.sidenotes.sidenoteColumnLeft : GW.sidenotes.sidenoteColumnRight;
 
-		//	Is there any overlap between them?
-		var overlap = (sidenote.getBoundingClientRect().top + sidenote.clientHeight + GW.sidenotes.sidenoteSpacing) - nextSidenote.getBoundingClientRect().top;
-		/*	If the sidenote is cut off (due to being too tall), compensate
-			(to maintain visual consistency).
+		/*	What points bound the vertical region within which this sidenote may
+			be placed?
 			*/
-		/*	If there's no overlap, then this sidenote's position needs no
-			adjustment.
+		let room = {
+			ceiling:	0,
+			floor:		side.clientHeight
+		};
+		let sidenoteFootprint = {
+			top:	sidenote.offsetTop - GW.sidenotes.sidenoteSpacing,
+			bottom:	sidenote.offsetTop + sidenote.clientHeight + GW.sidenotes.sidenoteSpacing
+		};
+		/*	Simultaneously traverse the array of proscribed ranges up and down,
+			narrowing down the room we have to work with (in which to place this
+			sidenote) from both sides.
 			*/
-		if (overlap <= 0) continue;
+		var nextProscribedRangeAfterSidenote = -1;
+		for (var j = 0; j < proscribedVerticalRanges.length; j++) {
+			let rangeCountingUp = {
+				top:			proscribedVerticalRanges[j].top - side.offsetTop,
+				bottom:			proscribedVerticalRanges[j].bottom - side.offsetTop,
+			};
+			rangeCountingUp.halfwayPoint = (rangeCountingUp.top + rangeCountingUp.bottom) / 2;
+			if (rangeCountingUp.halfwayPoint < sidenoteFootprint.top)
+				room.ceiling = rangeCountingUp.bottom;
 
-		//	At this point, we know there is overlap.
-		GWLog(`Sidenote ${sidenote.id.substr(3)} overlaps sidenote ${nextSidenote.id.substr(3)}!`);
+			let indexCountingDown = proscribedVerticalRanges.length - j - 1;
+			let rangeCountingDown = {
+				top:	proscribedVerticalRanges[indexCountingDown].top - side.offsetTop,
+				bottom:	proscribedVerticalRanges[indexCountingDown].bottom - side.offsetTop
+			};
+			rangeCountingDown.halfwayPoint = (rangeCountingDown.top + rangeCountingDown.bottom) / 2;
+			if (rangeCountingDown.halfwayPoint > sidenoteFootprint.bottom) {
+				room.floor = rangeCountingDown.top;
+				nextProscribedRangeAfterSidenote = indexCountingDown;
+			}
+		}
 
-		/*	Figure out how much vertical space above we have; if there's enough
-			"headroom", we can simply move the current sidenote up.
+		//	Is this sidenote capable of fitting within the room it now occupies?
+		if (sidenoteFootprint.bottom - sidenoteFootprint.top > room.floor - room.ceiling) {
+			/*	If this is not caused by bumping into the top of a proscribed
+				range, then it could only be because the sidenote is either too
+				long for the entire page itself, or it’s longer than the entire
+				footnotes section (and comes very late in the document).
+				In that case, just give up.
+				*/
+			if (nextProscribedRangeAfterSidenote == -1) {
+				GWLog("TOO MUCH SIDENOTES. GIVING UP. :(");
+				return;
+			}
+
+			/*	Otherwise, move the sidenote down to the next free space, and
+				try laying it out again.
+				*/
+			sidenote.style.top = (proscribedVerticalRanges[nextProscribedRangeAfterSidenote].bottom + GW.sidenotes.sidenoteSpacing) + "px";
+			i--;
+			continue;
+		}
+		/*	At this point, we are guaranteed that the sidenote can fit within
+			its room. We do not have to worry that it will overlap its floor if
+			we move it right up against its ceiling (or vice versa).
+			*/
+
+		/*	Does this sidenote overlap its room’s ceiling? In such a case, we
+			will have to move it down, regardless of whether there’s a next
+			sidenote that would be overlapped.
+			*/
+		var overlapWithCeiling = room.ceiling - sidenoteFootprint.top;
+		if (overlapWithCeiling > 0) {
+			GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its ceiling!`);
+
+			sidenote.style.top = (parseInt(sidenote.style.top) + overlapWithCeiling) + "px";
+			sidenoteFootprint.top += overlapWithCeiling;
+			sidenoteFootprint.bottom += overlapWithCeiling;
+		}
+
+		//	Does this sidenote overlap its room’s floor?
+		var overlapWithFloor = sidenoteFootprint.bottom - room.floor;
+		if (overlapWithFloor > 0)
+			GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its floor!`);
+
+		/*	Is there a next sidenote, and if so, is there any overlap between
+			it and this one?
+			*/
+		var overlapWithNextSidenote = nextSidenote ?
+									  (sidenoteFootprint.bottom - nextSidenote.offsetTop) :
+									  -1;
+		if (overlapWithNextSidenote > 0)
+			GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps sidenote ${nextSidenote.id.substr(2)}!`);
+
+		/*	If the sidenote overlaps the next sidenote AND its room’s floor,
+			we want to know what it overlaps more.
+			*/
+		var overlapBelow = Math.max(overlapWithNextSidenote, overlapWithFloor);
+
+		/*	If there’s no overlap with the room’s floor, and there’s no overlap
+			with the next sidenote (or there is no next sidenote), then the
+			current sidenote’s position needs no further adjustment.
+			*/
+		if (overlapBelow <= 0) continue;
+
+		/*	Figure out how much vertical space above we have; if there’s enough
+			“headroom”, we can simply move the current sidenote up.
 			*/
 		let previousSidenote = sidenote.previousElementSibling;
 		let headroom = previousSidenote ?
-					   sidenote.getBoundingClientRect().top - (previousSidenote.getBoundingClientRect().top + previousSidenote.clientHeight + GW.sidenotes.sidenoteSpacing) :
-					   sidenote.getBoundingClientRect().top - sidenote.parentElement.getBoundingClientRect().top;
+					   sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.clientHeight) :
+					   sidenoteFootprint.top - room.ceiling;
 		GWLog(`We have ${headroom}px of headroom.`);
 
 		//	If we have enough headroom, simply move the sidenote up.
-		if (headroom > overlap) {
-			GWLog(`There is enough headroom. Moving sidenote ${sidenote.id.substr(3)} up.`);
-			sidenote.style.top = (parseInt(sidenote.style.top) - overlap) + "px";
+		if (headroom >= overlapBelow) {
+			GWLog(`There is enough headroom. Moving sidenote ${sidenote.id.substr(2)} up.`);
+			sidenote.style.top = (parseInt(sidenote.style.top) - overlapBelow) + "px";
 			continue;
 		} else {
-			//	We don't have enough headroom!
-			GWLog(`There is not enough headroom to move sidenote ${sidenote.id.substr(3)} all the way up!`);
+			//	We don’t have enough headroom!
+			GWLog(`There is not enough headroom to move sidenote ${sidenote.id.substr(2)} all the way up!`);
+
+			/*	If there’s overlap with the room’s floor, and the headroom is
+				insufficient to clear that overlap, then we will have to move
+				the current sidenote to the next open space, and try laying it
+				out again.
+				*/
+			if (headroom < overlapWithFloor) {
+				sidenote.style.top = (proscribedVerticalRanges[nextProscribedRangeAfterSidenote].bottom + GW.sidenotes.sidenoteSpacing) + "px";
+				i--;
+				continue;
+			}
+
+			/*	If the headroom is enough to clear the sidenote’s overlap with
+				the room’s floor (if any), then it must be insufficient to clear
+				the overlap with the next sidenote. Before we try moving the
+				current sidenote up, we check to see whether the *next* sidenote
+				will fit in the remaining space of the current room. If not,
+				then that next sidenote will need to be moved to the next open
+				space, and the current sidenote need not be disturbed...
+				*/
+			if ((sidenoteFootprint.bottom + nextSidenote.clientHeight + GW.sidenotes.sidenoteSpacing - headroom) >
+				proscribedVerticalRanges[nextProscribedRangeAfterSidenote].top)
+				continue;
+
 			//	Move the sidenote up as much as we can...
-			GWLog(`Moving sidenote ${sidenote.id.substr(3)} up by ${headroom} pixels...`);
+			GWLog(`Moving sidenote ${sidenote.id.substr(2)} up by ${headroom} pixels...`);
 			sidenote.style.top = (parseInt(sidenote.style.top) - headroom) + "px";
 			//	Recompute overlap...
-			overlap -= headroom;
+			overlapWithNextSidenote -= headroom;
 			/*	And move the next sidenote down - possibly causing overlap.
 				(But this will be handled when we process the next sidenote.)
 				*/
-			GWLog(`... and moving sidenote ${nextSidenote.id.substr(3)} down by ${overlap} pixels.`);
-			nextSidenote.style.top = (parseInt(nextSidenote.style.top) + overlap) + "px";
+			GWLog(`... and moving sidenote ${nextSidenote.id.substr(2)} down by ${overlapWithNextSidenote} pixels.`);
+			nextSidenote.style.top = (parseInt(nextSidenote.style.top) + overlapWithNextSidenote) + "px";
 		}
 	}
 
