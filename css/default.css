@@ -1019,7 +1019,9 @@ article > :not(#TOC) a:link {
 		 0.12em 0       #fff,
 		-0.12em 0       #fff,
 		 0.15em 0       #fff,
-		-0.15em 0       #fff;
+		 -0.15em 0       #fff;
+    /* disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
+    font-variant-numeric: lining-nums;
 }
 article > :not(#TOC) a:hover {
 	background-image:
