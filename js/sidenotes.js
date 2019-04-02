@@ -512,6 +512,7 @@ function updateSidenotePositions() {
 			top:	sidenote.offsetTop - GW.sidenotes.sidenoteSpacing,
 			bottom:	sidenote.offsetTop + sidenote.clientHeight + GW.sidenotes.sidenoteSpacing
 		};
+		let sidenoteFootprintHalfwayPoint = (sidenoteFootprint.top + sidenoteFootprint.bottom) / 2;
 		/*	Simultaneously traverse the array of proscribed ranges up and down,
 			narrowing down the room we have to work with (in which to place this
 			sidenote) from both sides.
@@ -523,7 +524,7 @@ function updateSidenotePositions() {
 				bottom:			proscribedVerticalRanges[j].bottom - side.offsetTop,
 			};
 			rangeCountingUp.halfwayPoint = (rangeCountingUp.top + rangeCountingUp.bottom) / 2;
-			if (rangeCountingUp.halfwayPoint < sidenoteFootprint.top)
+			if (rangeCountingUp.halfwayPoint < sidenoteFootprintHalfwayPoint)
 				room.ceiling = rangeCountingUp.bottom;
 
 			let indexCountingDown = proscribedVerticalRanges.length - j - 1;
@@ -532,11 +533,12 @@ function updateSidenotePositions() {
 				bottom:	proscribedVerticalRanges[indexCountingDown].bottom - side.offsetTop
 			};
 			rangeCountingDown.halfwayPoint = (rangeCountingDown.top + rangeCountingDown.bottom) / 2;
-			if (rangeCountingDown.halfwayPoint > sidenoteFootprint.bottom) {
+			if (rangeCountingDown.halfwayPoint > sidenoteFootprintHalfwayPoint) {
 				room.floor = rangeCountingDown.top;
 				nextProscribedRangeAfterSidenote = indexCountingDown;
 			}
 		}
+		GWLog(`Sidenote {i + 1}’s room is: (${room.ceiling}, ${room.floor}).`);
 
 		//	Is this sidenote capable of fitting within the room it now occupies?
 		if (sidenoteFootprint.bottom - sidenoteFootprint.top > room.floor - room.ceiling) {
@@ -605,9 +607,10 @@ function updateSidenotePositions() {
 			“headroom”, we can simply move the current sidenote up.
 			*/
 		let previousSidenote = sidenote.previousElementSibling;
+		let maxHeadroom = sidenoteFootprint.top - room.ceiling;
 		let headroom = previousSidenote ?
-					   sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.clientHeight) :
-					   sidenoteFootprint.top - room.ceiling;
+					   Math.min(maxHeadroom, (sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.clientHeight))) :
+					   maxHeadroom;
 		GWLog(`We have ${headroom}px of headroom.`);
 
 		//	If we have enough headroom, simply move the sidenote up.
