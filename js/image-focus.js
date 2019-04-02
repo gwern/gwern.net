@@ -53,14 +53,15 @@ function addUIElement(element_html) {
 	*/
 function togglePageScrolling(enable) {
 	if (!enable) {
-		window.addEventListener('keydown', GW.imageFocus.spacebarKeyDown = (event) => {
-			if ((event.key == "Spacebar" || event.key == " ") &&
+		window.addEventListener('keydown', GW.imageFocus.keyDown = (event) => {
+			let forbiddenKeys = [ " ", "Spacebar", "ArrowUp", "ArrowDown", "Up", "Down" ];
+			if (forbiddenKeys.contains(event.key) &&
 				event.target == document.body) {
 				event.preventDefault();
 			}
 		});
 	} else {
-		window.removeEventListener('keydown', GW.imageFocus.spacebarKeyDown);
+		window.removeEventListener('keydown', GW.imageFocus.keyDown);
 	}
 }
 
@@ -284,7 +285,7 @@ function focusImage(imageToFocus) {
 
 		// Set the cursor appropriately.
 		setFocusedImageCursor();
-	});
+	}, { passive: false });
 	window.addEventListener("MozMousePixelScroll", GW.imageFocus.oldFirefoxCompatibilityScrollEvent = (event) => {
 		GWLog("GW.imageFocus.oldFirefoxCompatibilityScrollEvent");
 		event.preventDefault();
@@ -465,7 +466,6 @@ function unfocusImageOverlay() {
 	// NOTE: The double-click listener does not need to be removed manually,
 	// because the focused (cloned) image will be removed anyway.
 	document.removeEventListener("keyup", GW.imageFocus.keyUp);
-	document.removeEventListener("keydown", GW.imageFocus.keyDown);
 	window.removeEventListener("mousemove", GW.imageFocus.mouseMoved);
 	window.removeEventListener("mousedown", GW.imageFocus.mouseDown);
 	window.removeEventListener("mouseup", GW.imageFocus.mouseUp);
