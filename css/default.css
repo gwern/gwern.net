@@ -431,6 +431,18 @@ header h1 {
 	height: 100%;
 }
 
+/*=--------------------------=*/
+/*= Inline code in TOC links =*/
+/*=--------------------------=*/
+
+#TOC code {
+	font-family: inherit;
+	font-size: inherit;
+	border: none;
+	padding: 0;
+	background-color: inherit;
+}
+
 /*=-------------------------------=*/
 /*= Wikipedia-style TOC numbering =*/
 /*=-------------------------------=*/
@@ -536,7 +548,8 @@ header h1 {
 	*/
 @supports (-webkit-hyphens: auto) or (-ms-hyphens: auto) or (hyphens: auto) {
 	#markdownBody p,
-	#markdownBody figcaption {
+	#markdownBody figcaption,
+	#markdownBody li {
 		text-align: justify;
 		-webkit-hyphens: auto;
 		-ms-hyphens: auto;
@@ -784,12 +797,34 @@ section.collapse:target > .disclosure-button::before {
 h1, h2, h3, h4, h5, h6 {
 	margin: 1.25em 0 0.5em -0.75rem;
 	font-weight: bold;
+	position: relative;
 }
 @media only screen and (max-width: 65ch) {
 	h1, h2, h3, h4, h5, h6 {
 		margin: 1.25em 0 0.5em 0;
 	}
 }
+
+/*=-------------------------=*/
+/*= Inline code in headings =*/
+/*=-------------------------=*/
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+	border: none;
+	padding: 0;
+	background-color: inherit;
+	font-size: inherit;
+	font-weight: normal;
+}
+
+/*=----------------=*/
+/*= Heading levels =*/
+/*=----------------=*/
 
 h1 {
 	font-feature-settings: 'smcp';
@@ -838,8 +873,8 @@ h1 em:last-child {
 h2 {
 	text-transform: uppercase;
 	font-size: 1.25em;
-	position: relative;
 	padding: 0 0.5em 0 0;
+	line-height: 1.25;
 }
 h2::after {
 	content: "";
@@ -848,7 +883,7 @@ h2::after {
 	width: 100%;
 	border-bottom: 1px dotted #888;
 	left: 0;
-	bottom: 0.225em;
+	bottom: 0.1em;
 	pointer-events: none;
 	z-index: -1;
 }
@@ -1019,8 +1054,9 @@ article > :not(#TOC) a:link {
 		 0.12em 0       #fff,
 		-0.12em 0       #fff,
 		 0.15em 0       #fff,
-		 -0.15em 0       #fff;
-    /* disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
+		-0.15em 0       #fff;
+
+    /*	Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
     font-variant-numeric: lining-nums;
 }
 article > :not(#TOC) a:hover {
@@ -1426,8 +1462,12 @@ figure video {
 	display: block;
 	max-width: 100%;
 	height: auto;
+	width: auto;
 	margin: 0 auto;
 	outline: 1px solid #888;
+}
+figure img {
+	max-height: calc(100vh - 8em);
 }
 figcaption {
 	font-size: 0.9375em;
@@ -1470,10 +1510,10 @@ figcaption {
 /***************/
 
 blockquote {
-	margin: 1.625em 1.5em 1.75em 1.5em;
+	margin: 1.625em 0 1.75em 0;
 	border: 1px solid #ccc;
 	font-size: 0.95em;
-	padding: 0.8rem 1rem;
+	padding: 1em 1.25em;
 }
 
 @media only screen and (min-width: 65ch) {
@@ -1779,16 +1819,17 @@ a.footnote-ref {
 	padding: 0 0.05em;
 	font-feature-settings: 'lnum';
 	font-weight: 600;
+	z-index: 1;
 }
 a.footnote-ref::before {
 	content: "";
 	display: block;
 	position: absolute;
-	width: 150%;
-	height: 100%;
-	left: -25%;
-	top: 15%;
-	opacity: 0.5;
+	width: 250%;
+	height: 125%;
+	left: -75%;
+	top: 0;
+	z-index: -1;
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
@@ -1902,6 +1943,12 @@ a.footnote-ref {
 }
 #footnotediv > div > blockquote:nth-last-child(2) + p {
 	margin-top: 1em;
+}
+
+@media only screen and (max-width: 64.9ch), not screen and (hover:hover) and (pointer:fine) {
+	#footnotediv {
+		display: none;
+	}
 }
 
 /*************/
@@ -2074,19 +2121,17 @@ a.footnote-ref {
 /*= Citations =*/
 /*=-----------=*/
 
-.footnote-ref.highlighted,
-.footnote-ref:target,
-.footnote-ref.targeted {
-	background-color: #fff;
+.footnote-ref.highlighted::before,
+.footnote-ref:target::before,
+.footnote-ref.targeted::before {
+	background-color: rgba(255,255,255,0.75);
 	box-shadow:
-		0 0.2em 0 6px #fff,
-		0 0.2em 0 7px #aaa,
-		0 0.2em 0 8px #fff,
-		0 0.2em 0 9px #aaa;
-	z-index: 1;
+		0 0 0 1px #aaa,
+		0 0 0 2px #fff,
+		0 0 0 3px #aaa;
 }
 @media only screen and (max-width: 176ch) {
-	.footnote-ref:target {
+	.footnote-ref:target::before {
 		background-color: inherit;
 		box-shadow: none;
 	}
@@ -2347,6 +2392,8 @@ pre {
 	border: 1px solid #c8c8c8;
 	background-color: #fafafa;
 	cursor: text;
+	max-height: calc(100vh - 8em);
+	overscroll-behavior: none;
 }
 pre code {
 	display: block;
