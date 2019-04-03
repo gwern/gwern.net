@@ -155,14 +155,12 @@ html {
 	}
 
 	#sidebar a.mail,
-	#sidebar a.rss,
 	#sidebar a.r_gwern {
 		line-height: 1;
 		padding-left: 0.25em;
 		font-size: 1.05em;
 	}
 	#sidebar a.mail::before,
-	#sidebar a.rss::before,
 	#sidebar a.r_gwern::before {
 		content: "°\2007";
 		text-shadow: 0 0 0 #000;
@@ -207,7 +205,6 @@ html {
 	}
 	#sidebar a.new,
 	#sidebar a.mail,
-	#sidebar a.rss,
 	#sidebar a.r_gwern {
 		padding: 3px 10px;
 		flex: 1 1 auto;
