@@ -87,11 +87,18 @@ function realignHash() {
 /*	Make sure clicking a sidenote does not cause scrolling.
 	*/
 function setHashWithoutScrolling(newHash) {
+	var selectedRange;
+	if (GW.isFirefox)
+		selectedRange = window.getSelection().getRangeAt(0);
+
 	let scrollPositionBeforeNavigate = window.scrollY;
 	location.hash = newHash;
 	requestAnimationFrame(() => {
 		window.scrollTo(0, scrollPositionBeforeNavigate);
 	});
+
+	if (GW.isFirefox)
+		window.getSelection().addRange(selectedRange);
 }
 
 /*	Firefox.
@@ -260,21 +267,28 @@ function expandCollapseBlocksToReveal(element) {
 
 /*	This function expands all necessary collapse blocks to reveal the element
 	targeted by the URL hash. (This includes expanding collapse blocks to
-	reveal a footnote reference associated with a targeted sidenote).
+	reveal a footnote reference associated with a targeted sidenote). It also
+	scrolls the targeted element into view.
 	*/
-function expandCollapseBlocksToRevealTarget() {
-	GWLog("expandCollapseBlocksToRevealTarget");
+function revealTarget() {
+	GWLog("revealTarget");
 
 	if (!location.hash) return;
 
-	let target = location.hash.match(/#sn[0-9]/) ?
-				 document.querySelector("#fnref" + location.hash.substr(3)) :
-				 document.querySelector(decodeURIComponent(location.hash));
+	let target = document.querySelector(decodeURIComponent(location.hash));
 	if (!target) return;
 
-	expandCollapseBlocksToReveal(target);
-	if (!isOnScreen(target))
-		target.scrollIntoView();
+	/*	What needs to be revealed is not necessarily the targeted element
+		itself; if the target is a sidenote, expand collapsed blocks to reveal
+		the citation reference.
+		*/
+	let targetInText = location.hash.match(/#sn[0-9]/) ?
+				 	   document.querySelector("#fnref" + location.hash.substr(3)) :
+				 	   target;
+	expandCollapseBlocksToReveal(targetInText);
+
+	//	Scroll the target into view.
+	target.scrollIntoView();
 }
 
 /*	Move sidenotes within currently-collapsed collapse blocks to the hidden
@@ -538,7 +552,7 @@ function updateSidenotePositions() {
 				nextProscribedRangeAfterSidenote = indexCountingDown;
 			}
 		}
-		GWLog(`Sidenote {i + 1}’s room is: (${room.ceiling}, ${room.floor}).`);
+		GWLog(`Sidenote ${i + 1}’s room is: (${room.ceiling}, ${room.floor}).`);
 
 		//	Is this sidenote capable of fitting within the room it now occupies?
 		if (sidenoteFootprint.bottom - sidenoteFootprint.top > room.floor - room.ceiling) {
@@ -871,11 +885,11 @@ function sidenotesSetup() {
 	window.addEventListener("hashchange", GW.sidenotes.hashChanged = () => {
 		GWLog("GW.sidenotes.hashChanged");
 
-		expandCollapseBlocksToRevealTarget();
+		revealTarget();
 		updateTargetCounterpart();
 	});
 	window.addEventListener("load", () => {
-		expandCollapseBlocksToRevealTarget();
+		revealTarget();
 		updateTargetCounterpart();
 	});
 
