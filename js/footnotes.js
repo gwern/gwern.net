@@ -9,13 +9,17 @@ Footnotes = {
 	footnotekilltimeout: false,
 	footnotepopuptimeout: false,
 	footnotePopup: null,
-	setup: function() {
-		//	Get all footnote links.
+	unbind: function() {
 		document.querySelectorAll(".footnote-ref").forEach(fnref => {
 			//	Unbind existing mouseover/mouseout events, if any.
 			fnref.removeEventListener("mouseover", Footnotes.footnoteover);
 			fnref.removeEventListener("mouseout", Footnotes.footnoteoout);
-
+		});
+	},
+	setup: function() {
+		Footnotes.unbind();
+		//	Get all footnote links.
+		document.querySelectorAll(".footnote-ref").forEach(fnref => {
 			//	Bind mousemover/mouseout events.
 			fnref.addEventListener("mouseover", Footnotes.footnoteover);
 			fnref.addEventListener("mouseout", Footnotes.footnoteoout);
@@ -36,6 +40,8 @@ Footnotes = {
 				left: (citationAbsoluteRect.left - bodyAbsoluteRect.left),
 				top: (citationAbsoluteRect.top - bodyAbsoluteRect.top)
 			};
+
+			if (!event.target.hash) return;
 			var targetFootnoteId = event.target.hash.substr(1);
 
 			//	Get, or create, the footnote popup.

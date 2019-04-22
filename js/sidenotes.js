@@ -47,7 +47,7 @@ function updateTargetCounterpart() {
 	var counterpart;
 	if (location.hash.match(/#sn[0-9]/)) {
 		counterpart = document.querySelector("#fnref" + location.hash.substr(3));
-	} else if (location.hash.match(/#fnref[0-9]/) && GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false) {
+	} else if (location.hash.match(/#fnref[0-9]/) && GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
 		counterpart = document.querySelector("#sn" + location.hash.substr(6));
 	}
 	/*	If a target counterpart exists, mark it as such.
@@ -128,6 +128,7 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 	GW.isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 	if (!GW.isFirefox) {
 		GW.sidenotes.viewportWidthBreakpointMediaQueryString = `(max-width: 176ch)`;
+		GW.sidenotes.mobileViewportWidthBreakpointMediaQueryString = `(max-width: 65ch)`;
 	} else {
 		/*	This should match the "max-width" property of the "body" element.
 			*/
@@ -139,7 +140,9 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 
 		let widthOfCharacterUnit = parseInt(getComputedStyle(document.body).maxWidth) / GW.maxBodyWidthInCharacterUnits;
 		let viewportWidthBreakpointInPixels = 176 * widthOfCharacterUnit;
-		GW.sidenotes.viewportWidthBreakpointMediaQueryString = `(max-width: ${viewportWidthBreakpointInPixels}px)`
+		GW.sidenotes.viewportWidthBreakpointMediaQueryString = `(max-width: ${viewportWidthBreakpointInPixels}px)`;
+		let mobileViewportWidthBreakpointInPixels = 65 * widthOfCharacterUnit;
+		GW.sidenotes.mobileViewportWidthBreakpointMediaQueryString = `(max-width: ${mobileViewportWidthBreakpointInPixels}px)`;
 
 		var sidenotesBrowserWorkaroundStyleBlock = document.querySelector("style#sidenotes-browser-workaround");
 		if (!sidenotesBrowserWorkaroundStyleBlock) {
@@ -174,9 +177,13 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 		`;
 	}
 
-	/*	Create a media query object (for checking and attaching listeners).
+	/*	Create media query objects (for checking and attaching listeners).
 		*/
-	GW.sidenotes.viewportWidthBreakpointMediaQuery = window.matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQueryString);
+	GW.sidenotes.mediaQueries = {
+		viewportWidthBreakpoint: matchMedia(GW.sidenotes.viewportWidthBreakpointMediaQueryString),
+		mobileViewportWidthBreakpoint: matchMedia(GW.sidenotes.mobileViewportWidthBreakpointMediaQueryString),
+		hover: matchMedia("only screen and (hover: hover) and (pointer: fine)")
+	};
 
 	/*	Listen for changes to whether the viewport width media query is matched;
 		if such a change occurs (i.e., if the viewport becomes, or stops being,
@@ -184,7 +191,7 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 		sidenotes or vice/versa, as appropriate.
 		(This listener may also be fired if the dev tools pane is opened, etc.)
 		*/
-	GW.sidenotes.viewportWidthBreakpointMediaQuery.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
+	GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
 		GWLog("GW.sidenotes.viewportWidthBreakpointChanged");
 
 		updateFootnoteEventListeners();
@@ -345,7 +352,7 @@ function updateFootnoteReferenceLinks() {
 
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let fnref = GW.sidenotes.footnoteRefs[i];
-		if (GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false) {
+		if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
 			fnref.href = "#sn" + (i + 1);
 		} else {
 			fnref.href = "#fn" + (i + 1);
@@ -361,18 +368,14 @@ function updateFootnoteEventListeners() {
 
 	/*	Determine whether we are in sidenote mode or footnote mode.
 		*/
-	var sidenotesMode = (GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false);
-
-	if (window.Footnotes) {
-		//	Get all footnote links.
-		document.querySelectorAll(".footnote-ref").forEach(fnref => {
-			//	Unbind footnote mouse events.
-			fnref.removeEventListener("mouseover", Footnotes.footnoteover);
-			fnref.removeEventListener("mouseout", Footnotes.footnoteoout);
-		});
-	}
+	var sidenotesMode = (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false);
 
 	if (sidenotesMode) {
+		if (window.Footnotes) {
+			//	Unbind footnote events.
+			Footnotes.unbind();
+		}
+
 		//	Bind sidenote mouse events.
 		for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 			let fnref = GW.sidenotes.footnoteRefs[i];
@@ -402,12 +405,13 @@ function updateFootnoteEventListeners() {
 			fnref.removeEventListener("mouseout", GW.sidenotes.footnoteout);
 			sidenote.removeEventListener("mouseover", GW.sidenotes.sidenoteover);
 			sidenote.removeEventListener("mouseout", GW.sidenotes.sidenoteout);
+		}
 
-			if (window.Footnotes) {
-				//	Bind footnote events.
-				fnref.addEventListener("mouseover", Footnotes.footnoteover);
-				fnref.addEventListener("mouseout", Footnotes.footnoteoout);
-			}
+		if (window.Footnotes &&
+			GW.sidenotes.mediaQueries.mobileViewportWidthBreakpoint.matches == false &&
+			GW.sidenotes.mediaQueries.hover == true) {
+			//	Bind footnote events.
+			Footnotes.setup();
 		}
 	}
 }
@@ -434,7 +438,7 @@ function updateSidenotePositions() {
 	/*	If we're in footnotes mode (i.e., the viewport is too narrow), then
 		don't do anything.
 		*/
-	if (GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == true)
+	if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true)
 		return;
 
 	/*	Position left sidenote column so top is flush with top of first
@@ -863,10 +867,10 @@ function sidenotesSetup() {
 		to the appropriate element - footnote or sidenote).
 		*/
 	if (location.hash.match(/#sn[0-9]/) &&
-		GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == true) {
+		GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true) {
 		location.hash = "#fn" + location.hash.substr(3);
 	} else if (location.hash.match(/#fn[0-9]/) &&
-		GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == false) {
+		GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
 		location.hash = "#sn" + location.hash.substr(3);
 	} else {
 		/*	Otherwise, make sure that if a sidenote is targeted by the hash, it

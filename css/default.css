@@ -5,6 +5,14 @@
 /*********/
 /* fonts are now loaded from /static/css/fonts.css */
 
+/*************/
+/* VARIABLES */
+/*************/
+
+:root {
+    --GW-blockquote-background-color: #f5f5f5;
+}
+
 /***********/
 /* GENERAL */
 /***********/
@@ -19,6 +27,9 @@ html {
     font-weight: 400;
     font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif;
 }
+body {
+    max-width: 112ch;
+}
 @media only screen and (max-width: 64.9ch) {
     html {
         font-size: 18px;
@@ -27,7 +38,6 @@ html {
 
 @media only screen and (min-width: 65ch) {
     body {
-        max-width: 112ch;
         padding: 0 1.5ch 0 0.5ch;
         margin: 0 auto;
     }
@@ -857,7 +867,7 @@ section:not(.collapse) > h1:first-child {
     }
     #markdownBody section:not(.collapse) > h1:first-child a::after {
         opacity: 0.4;
-        text-indent: -0.75rem;
+        left: -0.375em;
     }
 }
 
@@ -1533,7 +1543,7 @@ blockquote,
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
     z-index: -2;
-    background-color: #f5f5f5;
+    background-color: var(--GW-blockquote-background-color);
 }
 blockquote blockquote,
 blockquote blockquote blockquote blockquote,
@@ -1548,18 +1558,18 @@ article > :not(#TOC) blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
     text-shadow:
-         0.03em 0       #f5f5f5,
-        -0.03em 0       #f5f5f5,
-         0      0.03em  #f5f5f5,
-         0     -0.03em  #f5f5f5,
-         0.06em 0       #f5f5f5,
-        -0.06em 0       #f5f5f5,
-         0.09em 0       #f5f5f5,
-        -0.09em 0       #f5f5f5,
-         0.12em 0       #f5f5f5,
-        -0.12em 0       #f5f5f5,
-         0.15em 0       #f5f5f5,
-        -0.15em 0       #f5f5f5;
+         0.03em 0       var(--GW-blockquote-background-color),
+        -0.03em 0       var(--GW-blockquote-background-color),
+         0      0.03em  var(--GW-blockquote-background-color),
+         0     -0.03em  var(--GW-blockquote-background-color),
+         0.06em 0       var(--GW-blockquote-background-color),
+        -0.06em 0       var(--GW-blockquote-background-color),
+         0.09em 0       var(--GW-blockquote-background-color),
+        -0.09em 0       var(--GW-blockquote-background-color),
+         0.12em 0       var(--GW-blockquote-background-color),
+        -0.12em 0       var(--GW-blockquote-background-color),
+         0.15em 0       var(--GW-blockquote-background-color),
+        -0.15em 0       var(--GW-blockquote-background-color);
 }
 article > :not(#TOC) blockquote blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
@@ -1765,7 +1775,7 @@ article > :not(#TOC) .epigraph blockquote q a:link {
 
 @media only screen and (max-width: 64.9ch) {
     .epigraph {
-        margin: 2.125em 1em 2em 1em;
+        margin: 2.125em 1em;
         padding: 0;
         font-size: 0.95em;
         overflow: visible;
@@ -1778,21 +1788,26 @@ article > :not(#TOC) .epigraph blockquote q a:link {
         right: -0.375em;
         bottom: -1.25em;
     }
+    .epigraph + .epigraph {
+        margin-top: 2.75em;
+    }
 }
 
 /*=------------=*/
 /*= Edge cases =*/
 /*=------------=*/
 
-h1 + .epigraph,
-h3 + .epigraph,
-h5 + .epigraph {
-    margin-top: 1.25em;
-}
-h2 + .epigraph,
-h4 + .epigraph,
-h6 + .epigraph {
-    margin-top: 1em;
+@media only screen and (min-width: 65ch) {
+    h1 + .epigraph,
+    h3 + .epigraph,
+    h5 + .epigraph {
+        margin-top: 1.25em;
+    }
+    h2 + .epigraph,
+    h4 + .epigraph,
+    h6 + .epigraph {
+        margin-top: 1em;
+    }
 }
 
 /*************/
@@ -1822,9 +1837,9 @@ a.footnote-ref::before {
     content: "";
     display: block;
     position: absolute;
-    width: 250%;
+    width: calc(100% + 0.5em);
     height: 125%;
-    left: -75%;
+    left: -0.25em;
     top: 0;
     z-index: -1;
 }
@@ -2109,6 +2124,10 @@ a.footnote-ref {
     padding: 0 0 0 1.75em;
 }
 
+#markdownBody .sidenote li {
+    text-align: left;
+}
+
 .sidenote code {
     word-break: break-all;
     hyphens: none;
@@ -2325,7 +2344,7 @@ blockquote :not(.small-table) > table tr:nth-child(odd) td {
 }
 blockquote table th + th,
 blockquote table td + td {
-    border-left: 1px solid #f5f5f5;
+    border-left: 1px solid var(--GW-blockquote-background-color);
 }
 
 /*  Corrected version of suppliers tables CSS on /Modafinil; original by cwillu
@@ -3012,16 +3031,6 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 /* IMAGE FOCUS */
 /***************/
 
-/*=-------------------=*/
-/*= Scroll prevention =*/
-/*=-------------------=*/
-
-html.no-scroll {
-    overflow-y: scroll;
-    position: fixed;
-    width: 100%;
-}
-
 /*=--------------=*/
 /*= Hover styles =*/
 /*=--------------=*/
@@ -3143,7 +3152,6 @@ html.no-scroll {
     z-index: -1;
     top: -0.75em;
     left: calc(-50vw + 50%);
-
 }
 
 /*=--------------=*/
@@ -3302,7 +3310,7 @@ html.no-scroll {
 }
 @media only screen and (hover: hover) {
     #image-focus-overlay .slideshow-buttons button:hover {
-        background-color: rgba(0,0,0,0.1);
+        background-color: rgba(0, 0, 0, 0.1);
         color: #777;
     }
     #image-focus-overlay .slideshow-buttons button:not(:disabled):hover svg {
@@ -3329,14 +3337,6 @@ html.no-scroll {
     left: 1.75em;
 }
 
-/*=-----------------=*/
-/*= Background blur =*/
-/*=-----------------=*/
-
-.blurred {
-    filter: blur(3px);
-}
-
 /*=---------=*/
 /*= Tooltip =*/
 /*=---------=*/
@@ -3344,6 +3344,7 @@ html.no-scroll {
 .image-wrapper {
     position: relative;
     display: block;
+    margin: auto;
 }
 .image-wrapper::after {
     content: "Click to enlarge";
@@ -3364,11 +3365,13 @@ html.no-scroll {
     pointer-events: none;
 }
 @supports (width: -moz-fit-content) {
+    .image-wrapper,
     .image-wrapper::after {
         width: -moz-fit-content;
     }
 }
 @supports (width: fit-content) {
+    .image-wrapper,
     .image-wrapper::after {
         width: fit-content;
     }
@@ -3788,7 +3791,6 @@ html.no-scroll {
     z-index: -1;
 }
 
-
 /*************/
 /* DARK MODE */
 /*************/
@@ -3801,94 +3803,93 @@ html.no-scroll {
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme For gwern.net, the default white-black */
 /* scheme is 'light', and it can be flipped to a 'dark' scheme fairly easily by inverting it; the main visual problem is */
 /* that blockquotes appear to become much harder to see & image-focus.js doesn't work well without additional tweaks. */
-
 @media (prefers-color-scheme: dark) {
-	:root {
-		--GW-blockquote-background-color: #ddd;
-	}
+    :root {
+        --GW-blockquote-background-color: #ddd;
+    }
 
-	body > *,
-	body::before {
-		filter: invert(100%);
-	}
-	body::before {
-		content: "";
-		width: 100vw;
-		height: 100%;
-		position: fixed;
-		left: 0;
-		top: 0;
-		background-color: #fff;
-		z-index: -1;
-		pointer-events: none;
-	}
+    body > *,
+    body::before {
+        filter: invert(100%);
+    }
+    body::before {
+        content: "";
+        width: 100vw;
+        height: 100%;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background-color: #fff;
+        z-index: -1;
+        pointer-events: none;
+    }
 
-	#markdownBody {
-		text-shadow: 0 0 0 #000;
-	}
-	article > :not(#TOC) a:link {
-		text-shadow:
-			 0      0       #777,
-			 0.03em 0       #fff,
-			-0.03em 0       #fff,
-			 0      0.03em  #fff,
-			 0     -0.03em  #fff,
-			 0.06em 0       #fff,
-			-0.06em 0       #fff,
-			 0.09em 0       #fff,
-			-0.09em 0       #fff,
-			 0.12em 0       #fff,
-			-0.12em 0       #fff,
-			 0.15em 0       #fff,
-			-0.15em 0       #fff;
-	}
-	article > :not(#TOC) a:link q,
-	article > :not(#TOC) q a:link,
-	article > :not(#TOC) span.quote-mark.open + a:link,
-	article > :not(#TOC) blockquote a:link,
-	article > :not(#TOC) blockquote blockquote blockquote a:link,
-	article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
-		text-shadow:
-			 0      0       #777,
-			 0.03em 0       var(--GW-blockquote-background-color),
-			-0.03em 0       var(--GW-blockquote-background-color),
-			 0      0.03em  var(--GW-blockquote-background-color),
-			 0     -0.03em  var(--GW-blockquote-background-color),
-			 0.06em 0       var(--GW-blockquote-background-color),
-			-0.06em 0       var(--GW-blockquote-background-color),
-			 0.09em 0       var(--GW-blockquote-background-color),
-			-0.09em 0       var(--GW-blockquote-background-color),
-			 0.12em 0       var(--GW-blockquote-background-color),
-			-0.12em 0       var(--GW-blockquote-background-color),
-			 0.15em 0       var(--GW-blockquote-background-color),
-			-0.15em 0       var(--GW-blockquote-background-color);
-	}
-	article > :not(#TOC) blockquote blockquote a:link,
-	article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
-	article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
-		text-shadow:
-			 0      0       #777,
-			 0.03em 0       #e6e6e6,
-			-0.03em 0       #e6e6e6,
-			 0      0.03em  #e6e6e6,
-			 0     -0.03em  #e6e6e6,
-			 0.06em 0       #e6e6e6,
-			-0.06em 0       #e6e6e6,
-			 0.09em 0       #e6e6e6,
-			-0.09em 0       #e6e6e6,
-			 0.12em 0       #e6e6e6,
-			-0.12em 0       #e6e6e6,
-			 0.15em 0       #e6e6e6,
-			-0.15em 0       #e6e6e6;
-	}
+    #markdownBody {
+        text-shadow: 0 0 0 #000;
+    }
+    article > :not(#TOC) a:link {
+        text-shadow:
+             0      0       #777,
+             0.03em 0       #fff,
+            -0.03em 0       #fff,
+             0      0.03em  #fff,
+             0     -0.03em  #fff,
+             0.06em 0       #fff,
+            -0.06em 0       #fff,
+             0.09em 0       #fff,
+            -0.09em 0       #fff,
+             0.12em 0       #fff,
+            -0.12em 0       #fff,
+             0.15em 0       #fff,
+            -0.15em 0       #fff;
+    }
+    article > :not(#TOC) a:link q,
+    article > :not(#TOC) q a:link,
+    article > :not(#TOC) span.quote-mark.open + a:link,
+    article > :not(#TOC) blockquote a:link,
+    article > :not(#TOC) blockquote blockquote blockquote a:link,
+    article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
+        text-shadow:
+             0      0       #777,
+             0.03em 0       var(--GW-blockquote-background-color),
+            -0.03em 0       var(--GW-blockquote-background-color),
+             0      0.03em  var(--GW-blockquote-background-color),
+             0     -0.03em  var(--GW-blockquote-background-color),
+             0.06em 0       var(--GW-blockquote-background-color),
+            -0.06em 0       var(--GW-blockquote-background-color),
+             0.09em 0       var(--GW-blockquote-background-color),
+            -0.09em 0       var(--GW-blockquote-background-color),
+             0.12em 0       var(--GW-blockquote-background-color),
+            -0.12em 0       var(--GW-blockquote-background-color),
+             0.15em 0       var(--GW-blockquote-background-color),
+            -0.15em 0       var(--GW-blockquote-background-color);
+    }
+    article > :not(#TOC) blockquote blockquote a:link,
+    article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
+    article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
+        text-shadow:
+             0      0       #777,
+             0.03em 0       #e6e6e6,
+            -0.03em 0       #e6e6e6,
+             0      0.03em  #e6e6e6,
+             0     -0.03em  #e6e6e6,
+             0.06em 0       #e6e6e6,
+            -0.06em 0       #e6e6e6,
+             0.09em 0       #e6e6e6,
+            -0.09em 0       #e6e6e6,
+             0.12em 0       #e6e6e6,
+            -0.12em 0       #e6e6e6,
+             0.15em 0       #e6e6e6,
+            -0.15em 0       #e6e6e6;
+    }
 
-	figure img,
-	figure video {
-		filter: invert(100%);
-	}
-	#markdownBody img:hover {
-		filter: invert(100%) drop-shadow(0 0 3px #000);
-	}
+    figure img,
+    figure video {
+        filter: invert(100%);
+    }
+    #markdownBody img:hover {
+        filter: invert(100%) drop-shadow(0 0 3px #000);
+    }
 
     #image-focus-overlay,
     .image-wrapper::after {
