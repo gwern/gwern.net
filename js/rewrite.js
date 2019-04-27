@@ -1,4 +1,4 @@
-/* Miscellaneous JS functions which run after the page loads to rewrite or adjust parts of the page */
+/* Miscellaneous JS functions which run after the page loads to rewrite or adjust parts of the page. */
 
 /***********/
 /* HELPERS */
@@ -38,7 +38,7 @@ function expandFullWidthTables() {
 	requestAnimationFrame(() => {
 		if (typeof window.GW == "undefined" ||
 			typeof GW.sidenotes == "undefined" ||
-			GW.sidenotes.viewportWidthBreakpointMediaQuery.matches == true ||
+			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
 			GW.sidenotes.sidenoteDivs.length == 0)
 			return;
 
