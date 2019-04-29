@@ -716,7 +716,7 @@ section.collapse:target > .disclosure-button {
 /*  Triangle symbol.
     */
 .disclosure-button::before {
-    content: "\25C0";
+    content: "\25C0\FE0E";
     font-size: 1.5em;
     line-height: 1;
     position: absolute;
