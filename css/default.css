@@ -3810,7 +3810,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 
     body > *,
     body::before {
-        filter: invert(100%);
+        filter: invert(90%);
     }
     body::before {
         content: "";
@@ -3885,14 +3885,14 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 
     figure img,
     figure video {
-        filter: invert(100%);
+        filter: invert(90%);
     }
     #markdownBody img:hover {
-        filter: invert(100%) drop-shadow(0 0 3px #000);
+        filter: invert(90%) drop-shadow(0 0 3px #000);
     }
 
     #image-focus-overlay,
     .image-wrapper::after {
-        filter: invert(100%);
+        filter: invert(90%);
     }
 }
