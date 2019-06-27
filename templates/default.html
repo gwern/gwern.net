@@ -126,15 +126,31 @@
     </script>
 
     <!-- Comments courtesy of Disqus -->
+    <!-- Lazy load Disqus: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages -->
     <div id="comments">
       <div id="disqus_thread"></div>
       <script>
-         var disqus_shortname = 'gwern';
-         (function() {
-          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-         })();
+       var insertDisqus = function() {
+           var disqus_shortname = 'gwern';
+           (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+           })();
+       }
+
+       if (('IntersectionObserver' in window) &&
+           ('IntersectionObserverEntry' in window) &&
+           ('intersectionRatio' in window.IntersectionObserverEntry.prototype)) {
+            var intersectionObserver = new IntersectionObserver(function(entries) {
+                 if (entries[0].intersectionRatio <= 0) return;
+
+                 insertDisqus();
+           } );
+
+           intersectionObserver.observe(document.querySelector('#see-also, #external-links, #footer, #comments'));
+       }
+       else { insertDisqus(); }
       </script>
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
