@@ -63,7 +63,7 @@ Extracts = {
 	setup: function() {
 		//	Get or generate contents of the popups.
 		document.querySelectorAll("#markdownBody a[href*='wikipedia.org/wiki/']").forEach(wikilink => {
-			let wikipage = /https:\/\/en\.wikipedia\.org\/wiki\/(.+)/.exec(wikilink.href)[1];
+			let wikipage = /https?:\/\/en\.wikipedia\.org\/wiki\/(.+)/.exec(wikilink.href)[1];
 
 			let req = new XMLHttpRequest();
 			req.addEventListener("load", (event) => {

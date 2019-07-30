@@ -23,8 +23,6 @@
 
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
     <script src="/static/js/sidenotes.js" async></script> <!-- since sidenotes visibly render, unlike the other JS libs, we prioritize its loading in the head -->
-    <!-- floating footnotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
-    <script src="/static/js/footnotes.js" defer></script>
 
     <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.png" />
   </head>
@@ -108,13 +106,8 @@
       </article>
     </main>
 
-    <!-- dependency for tablesorter -->
-    <script src="/static/js/jquery-1.7.1.min.js" defer></script>
-    <!-- http://tablesorter.com/docs/ ; requires JQuery -->
-    <script src="/static/js/tablesorter.js" defer></script>
-
-    <!-- JS library for clickable/zoomable images, for images larger than can be displayed in the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css -->
-    <script src="/static/js/image-focus.js" defer></script>
+    <!-- floating footnotes fallback from sidenotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
+    <script src="/static/js/footnotes.js" defer></script>
 
     <!-- JS library for annotating WP links with introduction/summary from preview API (https://www.mediawiki.org/wiki/Page_Previews) -->
     <script src="/static/js/wikipedia-popups.js" defer></script>
@@ -128,11 +121,29 @@
       gtag('config', 'UA-18912926-1');
     </script>
 
-    <!-- Comments courtesy of Disqus -->
-    <!-- Lazy load Disqus: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages -->
+    <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages -->
     <div id="comments">
       <div id="disqus_thread"></div>
+      <!-- dependency for tablesorter -->
+      <script src="/static/js/jquery-1.7.1.min.js"></script>
+
       <script>
+       var lazyLoadObserver = function(f, selectors) {
+           if (('IntersectionObserver' in window) &&
+               ('IntersectionObserverEntry' in window) &&
+               ('intersectionRatio' in window.IntersectionObserverEntry.prototype)) {
+                var intersectionObserver = new IntersectionObserver(function(entries) {
+                     if (entries[0].intersectionRatio <= 0) return;
+
+                     f();
+               } );
+
+               var target = document.querySelector(selectors);
+               if (!(target === null)) { intersectionObserver.observe(target); }
+           }
+           else { f(); }
+      }
+
        var insertDisqus = function() {
            var disqus_shortname = 'gwern';
            (function() {
@@ -141,19 +152,14 @@
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
            })();
        }
+      lazyLoadObserver(insertDisqus, '#see-also, #external-links, #footer, #comments');
 
-       if (('IntersectionObserver' in window) &&
-           ('IntersectionObserverEntry' in window) &&
-           ('intersectionRatio' in window.IntersectionObserverEntry.prototype)) {
-            var intersectionObserver = new IntersectionObserver(function(entries) {
-                 if (entries[0].intersectionRatio <= 0) return;
+      // http://tablesorter.com/docs/ ; requires JQuery
+      lazyLoadObserver(function(){$$.getScript('/static/js/tablesorter.js')}, 'table');
 
-                 insertDisqus();
-           } );
-
-           intersectionObserver.observe(document.querySelector('#see-also, #external-links, #footer, #comments'));
-       }
-       else { insertDisqus(); }
+      // JS library for clickable/zoomable images, for images larger than can be displayed in
+      // the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css
+      lazyLoadObserver(function(){$$.getScript('/static/js/image-focus.js')}, 'figure');
       </script>
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
