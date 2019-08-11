@@ -106,10 +106,10 @@
       </article>
     </main>
 
-    <!-- floating footnotes fallback from sidenotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ -->
+    <!-- floating footnotes fallback from sidenotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ ; not lazy-loaded as (almost) all pages have footnotes -->
     <script src="/static/js/footnotes.js" defer></script>
 
-    <!-- JS library for annotating WP links with introduction/summary from preview API (https://www.mediawiki.org/wiki/Page_Previews) -->
+    <!-- JS library for annotating WP links with introduction/summary from preview API (https://www.mediawiki.org/wiki/Page_Previews); not lazy loaded as ~all pages link WP -->
     <script src="/static/js/wikipedia-popups.js" defer></script>
 
     <!-- Async load Google Analytics  -->
@@ -121,13 +121,16 @@
       gtag('config', 'UA-18912926-1');
     </script>
 
-    <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages -->
+    <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter & image-zooming as well, as those are on only a subset of pages -->
     <div id="comments">
       <div id="disqus_thread"></div>
-      <!-- dependency for tablesorter -->
-      <script src="/static/js/jquery-3.4.1.min.js"></script>
-
       <script>
+        function dynamicallyLoadScript(url) {
+            var script = document.createElement("script");
+            script.src = url;
+            document.head.appendChild(script);
+        }
+
        var lazyLoadObserver = function(f, selectors) {
            if (('IntersectionObserver' in window) &&
                ('IntersectionObserverEntry' in window) &&
@@ -152,14 +155,15 @@
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
            })();
        }
+      // 1. Load Disqus comments
       lazyLoadObserver(insertDisqus, '#see-also, #external-links, #footer, #comments, #disqus_thread, div[id^="comment-"]');
 
-      // http://tablesorter.com/docs/ ; requires JQuery
-      lazyLoadObserver(function(){$$.getScript('/static/js/tablesorter.js')}, 'table');
+      // 2. sort tables: http://tablesorter.com/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions
+      lazyLoadObserver(function(){dynamicallyLoadScript('/static/js/tablesorter.js')}, 'table');
 
-      // JS library for clickable/zoomable images, for images larger than can be displayed in
+      // 3. JS library for clickable/zoomable images, for images larger than can be displayed in
       // the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css
-      lazyLoadObserver(function(){$$.getScript('/static/js/image-focus.js')}, 'figure');
+      lazyLoadObserver(function(){dynamicallyLoadScript('/static/js/image-focus.js')}, 'figure');
       </script>
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
