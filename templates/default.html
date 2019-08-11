@@ -125,7 +125,7 @@
     <div id="comments">
       <div id="disqus_thread"></div>
       <!-- dependency for tablesorter -->
-      <script src="/static/js/jquery-1.7.1.min.js"></script>
+      <script src="/static/js/jquery-3.4.1.min.js"></script>
 
       <script>
        var lazyLoadObserver = function(f, selectors) {
@@ -152,7 +152,7 @@
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
            })();
        }
-      lazyLoadObserver(insertDisqus, '#see-also, #external-links, #footer, #comments');
+      lazyLoadObserver(insertDisqus, '#see-also, #external-links, #footer, #comments, #disqus_thread, div[id^="comment-"]');
 
       // http://tablesorter.com/docs/ ; requires JQuery
       lazyLoadObserver(function(){$$.getScript('/static/js/tablesorter.js')}, 'table');

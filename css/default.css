@@ -2306,7 +2306,7 @@ table td + td {
     to advertise that they are sortable.
     http://tablesorter.com/docs/#Configuration
     */
-th.header {
+th.tablesorter-header {
     background-image: url('/static/img/bg.gif');
     cursor: pointer;
     font-weight: bold;
@@ -2317,16 +2317,16 @@ th.header {
 th.header:hover {
     background-color: #e2f0f2;
 }
-th.headerSortUp {
+th.tablesorter-headerAsc {
     background-image: url('/static/img/small_asc.gif');
 }
-th.headerSortDown {
+th.tablesorter-headerDesc {
     background-image: url('/static/img/small_desc.gif');
 }
-th.headerSortUp,
-th.headerSortDown,
-th.headerSortUp:hover,
-th.headerSortDown:hover {
+th.tablesorter-headerAsc,
+th.tablesorter-headerDesc,
+th.tablesorter-headerAsc:hover,
+th.tablesorter-headerDesc:hover {
     background-color: #8bd0ed;
     color: #fff;
     text-shadow:
