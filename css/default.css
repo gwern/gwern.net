@@ -1121,6 +1121,7 @@ article > :not(#TOC) a:hover {
 }
 
 /* SSC logo too bad to use */
+#markdownBody a[href*="yvain"]::after,
 #markdownBody a[href*="slatestarcodex"]::after {
     content: "SSC";
     font-size: 80%;
@@ -1189,7 +1190,36 @@ article > :not(#TOC) a:hover {
     opacity: 0.55;
 }
 
+/* ArXiv: Chi (their logo is too bad to use) */
+#markdownBody a[href*="arxiv.org"]::after {
+    content: "\1D6D8";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
 /* IMAGE-BASED PER-DOMAIN LINK ICONS: */
+/* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
+#markdownBody a[href*='biorxiv.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14.903' height='13.896'%3E%3Cpath d='M2.26.002C2.2-.001 2.14 0 2.082.002 1.3.03.54.424 0 .867.784.93 1.886.897 2.752 2.15L6.07 6.587.43 13.896l2.525-.004c1.38-1.85 1.63-5.913 4.3-5.807 2.993.12 2.51 3.435 3.926 5.087.605.965 3.52.96 3.72-.07-1.714-.16-1.593.19-3.1-1.562-1.23-1.43-2.647-3.428-3.526-4.62l4.956-6.9-2.48.036c-1.22 1.697-1.3 5.3-3.74 5.283S5 2.244 3.475.412c-.4-.274-.804-.396-1.217-.4z'/%3E%3Chead/%3E%3Cpath d='M2.725 1.083l7.953-.008zm1.872 1.98l5.006-.002zm5.52 7.224l-6-.02zM3.208 12.1l7.37.02z' opacity='.7' fill='none' stroke='%23000' stroke-width='.358'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='biorxiv.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='biorxiv.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
 /* Wired */
 #markdownBody a[href*='wired.com']::after {
               background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='f' d='M.2 0h199.6v39.9H.2z'/%3E%3C/defs%3E%3CclipPath id='e'%3E%3Cuse overflow='visible' xlink:href='%23f'/%3E%3C/clipPath%3E%3Cpath d='M37.4 6.2h-5.2L28.4 28 24 7.8c-.2-1.4-.8-1.6-2-1.6h-2.8c-1.2 0-1.8.4-2 1.6L12.8 28 9 6.2H3.4l5.4 26.2c.2 1.2.6 1.4 2 1.4h3.8c1.2 0 1.6-.2 2-1.4l4.2-19 4.2 19c.2 1.2.6 1.4 2 1.4h3.6c1.2 0 1.8-.2 2-1.4l4.8-26.2zm2.8 33.7H.2V0h39.9v39.9z' clip-path='url(%23e)'/%3E%3C/svg%3E%0A");
@@ -1203,9 +1233,9 @@ article > :not(#TOC) a:hover {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 1em;
-    width: 1em;
-    margin: 0 0 0 2px;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2 3px;
     opacity: 0.60;
 }
 
@@ -1222,9 +1252,9 @@ article > :not(#TOC) a:hover {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 1em;
-    width: 1em;
-    margin: 0 0 0 2px;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
     opacity: 0.60;
 }
 
@@ -1298,9 +1328,9 @@ article > :not(#TOC) a:hover {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 1em;
-    width: 1em;
-    margin: 0 0 0 2px;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 4px;
     opacity: 0.60;
 }
 
@@ -1323,8 +1353,7 @@ article > :not(#TOC) a:hover {
     opacity: 0.60;
 }
 
-/*  Wikipedia links.
-    */
+/* Wikipedia */
 #markdownBody a[href*="wikipedia.org/wiki/"]::after {
     content: "";
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj48cGF0aCBkPSJNNjQwIDUxLjJsLS4zIDEyLjJjLTI4LjEuOC00NSAxNS44LTU1LjggNDAuMy0yNSA1Ny44LTEwMy4zIDI0MC0xNTUuMyAzNTguNkg0MTVsLTgxLjktMTkzLjFjLTMyLjUgNjMuNi02OC4zIDEzMC05OS4yIDE5My4xLS4zLjMtMTUgMC0xNS0uM0MxNzIgMzUyLjMgMTIyLjggMjQzLjQgNzUuOCAxMzMuNCA2NC40IDEwNi43IDI2LjQgNjMuNC4yIDYzLjdjMC0zLjEtLjMtMTAtLjMtMTQuMmgxNjEuOXYxMy45Yy0xOS4yIDEuMS01Mi44IDEzLjMtNDMuMyAzNC4yIDIxLjkgNDkuNyAxMDMuNiAyNDAuMyAxMjUuNiAyODguNiAxNS0yOS43IDU3LjgtMTA5LjIgNzUuMy0xNDIuOC0xMy45LTI4LjMtNTguNi0xMzMuOS03Mi44LTE2MC05LjctMTcuOC0zNi4xLTE5LjQtNTUuOC0xOS43VjQ5LjhsMTQyLjUuM3YxMy4xYy0xOS40LjYtMzguMSA3LjgtMjkuNCAyNi4xIDE4LjkgNDAgMzAuNiA2OC4xIDQ4LjEgMTA0LjcgNS42LTEwLjggMzQuNy02OS40IDQ4LjEtMTAwLjggOC45LTIwLjYtMy45LTI4LjYtMzguNi0yOS40LjMtMy42IDAtMTAuMy4zLTEzLjYgNDQuNC0uMyAxMTEuMS0uMyAxMjMuMS0uNnYxMy42Yy0yMi41LjgtNDUuOCAxMi44LTU4LjEgMzEuN2wtNTkuMiAxMjIuOGM2LjQgMTYuMSA2My4zIDE0Mi44IDY5LjIgMTU2LjdMNTU5LjIgOTEuOGMtOC42LTIzLjEtMzYuNC0yOC4xLTQ3LjItMjguM1Y0OS42bDEyNy44IDEuMS4yLjV6Ii8+PC9zdmc+');
@@ -1359,7 +1388,7 @@ article > :not(#TOC) a:hover {
     background-position: bottom center;
     height: 1em;
     width: 1em;
-    margin: 0 0 0 2px;
+    margin: 0 0 0 3px;
     opacity: 0.60;
 }
 
