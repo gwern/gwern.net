@@ -1108,6 +1108,221 @@ article > :not(#TOC) a:hover {
     opacity: 0.55;
 }
 
+/* TEXTUAL PER-DOMAIN LINK ICONS: */
+/* MR: cheaper to abuse Unicode */
+#markdownBody a[href*="marginalrevolution.com"]::after {
+    content: "M𝐑";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* SSC logo too bad to use */
+#markdownBody a[href*="slatestarcodex"]::after {
+    content: "SSC";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* OB logo too bad to use */
+#markdownBody a[href*="overcomingbias.com"]::after {
+    content: "OB";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* LW logo is just a colored 'LW', so no point in converting */
+#markdownBody a[href*="lesswrong.com"]::after {
+    content: "LW";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* PB logo is confusing. A purple question mark...? */
+#markdownBody a[href*="predictionbook.com"]::after {
+    content: "\FE56";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* GoodReads: logo doesn't make sense as a grayscale */
+#markdownBody a[href*="goodreads.com"]::after {
+    content: "GR";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* Long Now Foundation projects: */
+#markdownBody a[href*="longbets.org"]::after,
+#markdownBody a[href*="longnow.org"]::after,
+#markdownBody a[href*="rosettaproject.org"]::after,
+#markdownBody a[href*="theinterval.org"]::after {
+    content: "X";
+    text-decoration: overline;
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* IMAGE-BASED PER-DOMAIN LINK ICONS: */
+/* Wired */
+#markdownBody a[href*='wired.com']::after {
+              background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='f' d='M.2 0h199.6v39.9H.2z'/%3E%3C/defs%3E%3CclipPath id='e'%3E%3Cuse overflow='visible' xlink:href='%23f'/%3E%3C/clipPath%3E%3Cpath d='M37.4 6.2h-5.2L28.4 28 24 7.8c-.2-1.4-.8-1.6-2-1.6h-2.8c-1.2 0-1.8.4-2 1.6L12.8 28 9 6.2H3.4l5.4 26.2c.2 1.2.6 1.4 2 1.4h3.8c1.2 0 1.6-.2 2-1.4l4.2-19 4.2 19c.2 1.2.6 1.4 2 1.4h3.6c1.2 0 1.8-.2 2-1.4l4.8-26.2zm2.8 33.7H.2V0h39.9v39.9z' clip-path='url(%23e)'/%3E%3C/svg%3E%0A");
+}
+#markdownBody a[href*='wired.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='wired.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* Reddit */
+#markdownBody a[href*='reddit.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 341.8 341.8'%3E%3Cellipse cx='170.9' cy='170.035' rx='170.301' ry='170.95'/%3E%3Cpath d='M284.434 170.035c0-13.796-11.154-24.993-24.898-24.993-6.772 0-12.748 2.6-17.13 6.998-16.93-12.196-40.434-20.194-66.328-21.194l11.353-53.384 36.85 7.798c.398 9.397 8.166 16.995 17.727 16.995 9.76 0 17.727-7.998 17.727-17.795s-7.967-17.795-17.727-17.795c-6.97 0-12.947 4-15.735 9.997l-41.23-8.797c-1.195-.2-2.4 0-3.386.6s-1.593 1.6-1.992 2.8l-12.548 59.583c-26.49.8-50.194 8.597-67.324 21.194-4.382-4.2-10.557-6.998-17.13-6.998-13.744 0-24.898 11.197-24.898 24.993 0 10.197 5.975 18.795 14.74 22.793-.398 2.4-.598 5-.598 7.598 0 38.39 44.418 69.38 99.392 69.38s99.392-30.99 99.392-69.38c0-2.6-.2-5-.598-7.398 8.166-4 14.34-12.796 14.34-22.993zm-170.3 17.795c0-9.797 7.967-17.795 17.727-17.795s17.727 7.998 17.727 17.795-7.967 17.795-17.727 17.795-17.727-7.998-17.727-17.795zm98.994 46.986c-12.15 12.196-35.255 12.996-42.027 12.996s-30.077-1-42.027-12.996c-1.793-1.8-1.793-4.8 0-6.598a4.68 4.68 0 0 1 6.573 0c7.57 7.598 23.902 10.397 35.654 10.397s27.886-2.8 35.654-10.397a4.68 4.68 0 0 1 6.573 0c1.394 2 1.394 4.8-.398 6.598zm-3.187-29.19c-9.76 0-17.727-7.998-17.727-17.795s7.967-17.795 17.727-17.795 17.727 7.998 17.727 17.795-7.967 17.795-17.727 17.795z' fill='%23fff'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='reddit.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='reddit.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/ * HN/Y Combinator (shared logo): */
+#markdownBody a[href*='ycombinator.com']::after {
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 20010904//EN' 'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'%3E%3Csvg version='1.0' viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(0 256) scale(.1 -.1)'%3E%3Cpath d='m6 2537c-8-29-8-2485 0-2514l6-23h1268 1268l6 23c8 29 8 2485 0 2514l-6 23h-1268-1268l-6-23zm1080-854c69-142 142-292 162-333l35-75 166 333 166 332h97c54 0 98-3 98-6 0-4-99-192-220-419l-220-414v-265-266h-90-90v267 267l-220 411c-121 227-220 415-220 419 0 3 47 6 105 6h104l127-257z'/%3E%3C/g%3E%3C/svg%3E%0A");
+}
+#markdownBody a[href*='ycombinator.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='ycombinator.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* MIRI/intelligence.org */
+#markdownBody a[href*='intelligence.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21.581' height='19.341'%3E%3Cpath d='M20.23.795c-2.333 1.507-3.84 2.88-5.43 4.904-1.05 1.353-1.455 1.996-2.056 3.3-.36.777-.45.854-1.133.95-.248.03-.495.106-.563.173-.15.134-.233.672-.308 2.015l-.06 1.056-.038-1.516c-.03-1.132-.06-1.536-.143-1.593-.053-.048-.33-.115-.615-.144-.833-.106-.968-.22-1.373-1.132-.555-1.22-1.118-2.13-2.026-3.292C5.6 4.385 4.302 3.09 3.14 2.158 2.412 1.573.19.095.048.095c-.098 0-.038 1.45.1 2.17l.083.48.803.317c1.7.662 3.293 1.584 4.516 2.63.63.537 1.575 1.516 1.913 1.996.128.163-.03.038-.338-.288-1.088-1.16-2.663-2.198-4.29-2.83C1.91 4.212.686 3.876.62 3.962c-.068.077.18.74.578 1.555l.383.768.72.03c1.388.048 2.918.49 4.02 1.17.743.45 1.08.768.458.422-.63-.355-1.403-.585-2.34-.72-.818-.106-2.198-.038-2.198.115 0 .077 1.185 1.44 1.47 1.68.128.115.248.096.885-.106.93-.307 2.108-.326 2.746-.048L7.753 9h-.638c-.353.01-.848.077-1.088.154-.465.154-1.238.576-1.238.662 0 .077 1.253.864 1.703 1.065l.383.173.368-.403c.383-.432.983-.873 1.193-.873.068 0 .173.077.225.163.083.144.045.23-.233.614-.353.49-.518.816-.428.893.03.02.27.086.54.144.975.22.87.115 1.118 1.094.45 1.804.833 4.597.833 6.046 0 .413.03.633.075.595.045-.03.075-.25.075-.48 0-1.276.398-3.887.878-5.74l.338-1.315h.248c.24 0 1.448-.25 1.7-.345.068-.03.128-.086.128-.125 0-.154-.54-.864-.848-1.132-.18-.154-.315-.326-.293-.393.083-.317 1 .058 1.7.69.27.24.548.44.615.44.143 0 1.966-1.113 1.966-1.2 0-.106-.72-.45-1.35-.643a3.46 3.46 0 0 0-1.343-.154l-.698.038.398-.192c.593-.278 2.49-.27 3.293.01l.563.202.375-.365c.525-.518 1.2-1.42 1.133-1.507-.03-.048-.443-.096-.908-.106-1.373-.058-3.06.345-4.05.96-.225.134-.263.144-.15.03.248-.26 1.313-.883 1.936-1.142.848-.355 2.063-.633 3.038-.7l.848-.058.285-.633c.338-.74.645-1.622.593-1.7-.06-.077-1.133.23-2.093.585-1.68.633-3.376 1.7-4.494 2.83l-.488.49.54-.672c1.298-1.584 3.84-3.31 6.174-4.165.345-.125.645-.288.675-.365.158-.355.293-2.486.158-2.486-.038 0-.623.355-1.298.797z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='intelligence.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='intelligence.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* DeepMind; match articles or anchors about DM too */
+#markdownBody a[href*='deepmind']::after {
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' viewBox='0 0 640 640' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='a' d='m317.79 6.58c-108.65 2.51-195.49 95.25-195.58 208.85 0.09 109.07 80.38 199.75 184.39 208.26-50.55-5.95-88.78-50.64-88.81-103.82 0-57.74 44.77-104.54 100-104.54 110.46 0 200 93.61 200 209.08-0.06 108.51-79.53 198.94-182.96 208.19 158.67-9.44 282.77-146.59 282.97-312.73-0.15-163.73-120.74-299.79-276.89-312.4-6.21-0.68-12.45-1.05-18.7-1.11-0.39 0.02-0.79 0.04-1.18 0.06-1.08-0.06-2.16-0.12-3.24-0.17v0.33z'/%3E%3ClinearGradient id='d' x1='116.94' x2='623.06' y1='319.42' y2='319.42' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23a3a3a3' offset='0'/%3E%3Cstop stop-color='%23fff' offset='1'/%3E%3C/linearGradient%3E%3Cpath id='b' d='m322.21 633.42c108.65-2.51 195.49-95.25 195.58-208.85-0.09-109.07-80.38-199.75-184.39-208.26 50.55 5.95 88.78 50.64 88.81 103.82 0 57.74-44.77 104.54-100 104.54-110.46 0-200-93.61-200-209.08 0.06-108.51 79.53-198.94 182.96-208.19-158.67 9.44-282.77 146.59-282.97 312.73 0.15 163.73 120.74 299.79 276.89 312.4 6.21 0.68 12.45 1.05 18.7 1.11 0.39-0.02 0.79-0.04 1.18-0.06 1.08 0.06 2.16 0.12 3.24 0.17v-0.33z'/%3E%3ClinearGradient id='c' x1='16.94' x2='523.06' y1='320.41' y2='320.41' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0'/%3E%3Cstop stop-color='%23969696' offset='1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cuse fill='url(%23d)' xlink:href='%23a'/%3E%3Cuse fill-opacity='0' stroke='%23ffffff' stroke-width='2' xlink:href='%23a'/%3E%3Cuse fill='url(%23c)' xlink:href='%23b'/%3E%3Cuse fill-opacity='0' stroke='%23ffffff' stroke-width='2' xlink:href='%23b'/%3E%3C/svg%3E%0A");
+}
+#markdownBody a[href*='deepmind']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='deepmind']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* Twitter */
+#markdownBody a[href*='twitter.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 612 612'%3E%3Cpath d='M612 116.26c-22.525 9.98-46.694 16.75-72.088 19.772 25.93-15.527 45.777-40.155 55.184-69.41C570.774 81 543.927 91.44 515.32 97.1c-22.907-24.437-55.5-39.658-91.63-39.658-69.334 0-125.55 56.217-125.55 125.5 0 9.828 1.11 19.427 3.25 28.606-104.33-5.24-196.84-55.223-258.75-131.17-10.823 18.5-16.98 40.078-16.98 63.1 0 43.56 22.18 81.993 55.835 104.48-20.575-.688-39.926-6.348-56.867-15.756v1.568c0 60.806 43.29 111.55 100.7 123.1-10.517 2.83-21.607 4.398-33.08 4.398a120.5 120.5 0 0 1-23.634-2.333c15.985 49.907 62.336 86.2 117.25 87.194-42.947 33.654-97.1 53.655-155.92 53.655-10.134 0-20.116-.612-29.944-1.72 55.567 35.68 121.54 56.485 192.44 56.485 230.95 0 357.2-191.3 357.2-357.2l-.42-16.253c24.666-17.593 46.005-39.697 62.794-64.86z' fill='%23010002'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='twitter.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='twitter.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* Erowid */
+#markdownBody a[href*='erowid.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 2.646 2.646' height='10' width='10'%3E%3Cg transform='translate(0 -124.49)'%3E%3Cpath d='M2.364 126.372l-1.07.54-1.065-.545.003-1.086 1.07-.54 1.065.545z' fill='none' stroke='%23a7a7a7' stroke-width='.097'/%3E%3Cg transform='matrix(.013486 .020614 -.023358 .011902 1.863146 123.54988)' id='A'%3E%3Ccircle cx='71.626' cy='30.716' r='15.025' fill='%23fff' stroke='%23000' stroke-width='3.175'/%3E%3Cpath d='M73.025 9.913l-3.176 1.54.38 40.064 3.174-.03z' dominant-baseline='auto' fill-rule='evenodd'/%3E%3Ccircle cx='71.72' cy='30.905' r='9.26' fill='%23fff' stroke='%23a7a7a7' stroke-width='4.233'/%3E%3C/g%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.13866 61.893758)' id='B' xlink:href='%23A'/%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.11676 61.891213)' id='C' xlink:href='%23B'/%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.12689 61.898075)' id='D' xlink:href='%23C'/%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.09497 61.898045)' id='E' xlink:href='%23D'/%3E%3Cuse transform='scale(0)' xlink:href='%23E'/%3E%3Cuse transform='matrix(.5 -.764295 .981296 .5 -122.80377 63.920586)' xlink:href='%23A'/%3E%3C/g%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='erowid.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='erowid.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
 /*  Wikipedia links.
     */
 #markdownBody a[href*="wikipedia.org/wiki/"]::after {
