@@ -156,7 +156,7 @@
            })();
        }
       // 1. Load Disqus comments
-      lazyLoadObserver(insertDisqus, '#see-also, #external-links, #footer, #comments, #disqus_thread, div[id^="comment-"]');
+      lazyLoadObserver(insertDisqus, '#see-also, #external-links, #footer, #comments, #disqus_thread, #fn1, div[id^="comment-"]');
 
       // 2. sort tables: http://tablesorter.com/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions
       lazyLoadObserver(function(){dynamicallyLoadScript('/static/js/tablesorter.js')}, 'table');
