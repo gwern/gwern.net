@@ -1235,7 +1235,7 @@ article > :not(#TOC) a:hover {
     background-position: bottom center;
     height: 0.75em;
     width: 0.75em;
-    margin: 0 0 2 3px;
+    margin: 0 0 2px 3px;
     opacity: 0.60;
 }
 
@@ -2724,15 +2724,6 @@ a.sourceLine {
 a.sourceLine:empty {
     height: 1.2em;
 }
-@media print {
-    code.sourceCode {
-        white-space: pre-wrap;
-    }
-    a.sourceLine {
-        text-indent: -1em;
-        padding-left: 1em;
-    }
-}
 pre.numberSource a.sourceLine {
     position: relative;
     left: -4em;
@@ -2875,12 +2866,12 @@ hr {
 }
 
 /* hide the ad in the ad A/B test by default */
-#ads {
+ads {
     display: block;
     text-align: center;
     display: none;
 }
-#ads a img {
+ads a img {
     max-width: 100%;
 }
 
