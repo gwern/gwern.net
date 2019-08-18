@@ -1200,6 +1200,214 @@ article > :not(#TOC) a:hover {
     opacity: 0.55;
 }
 
+/* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */
+#markdownBody a[href*="technologyreview.com"]::after {
+    content: "T";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Economist: logo is just 'Economist'... */
+#markdownBody a[href*="economist.com"]::after {
+    content: "E";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Gelman has no logo, and doesn't even keep his own domain! */
+#markdownBody a[href*="andrewgelman.com"]::after,
+#markdownBody a[href*="statmodeling.stat.columbia.edu"]::after {
+    content: "AG";
+    font-size: 90%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* BBC: no usable logo */
+#markdownBody a[href*="bbc.com"]::after {
+    content: "BBC";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* R: at this point R Studio has taken over a lot of control, so might as well treat them as official too... */
+#markdownBody a[href*="r-project.org"]::after,
+#markdownBody a[href*="rstudio.com"]::after {
+    content: "R";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
+#markdownBody a[href*="haskell.org"]::after {
+    content: "𝛌";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* MAL: the blue of their logo doesn't work, so just text */
+#markdownBody a[href*="myanimelist.net"]::after {
+    content: "MAL";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Gene Wolfe mailing list; no logo */
+#markdownBody a[href*="urth.net"]::after {
+    content: "U";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
+#markdownBody a[href*="tumblr.com"]::after,
+#markdownBody a[href*="t.umblr.com"]::after {
+    content: "ʈ";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* The Atlantic: replicate sloping by italics */
+#markdownBody a[href*="theatlantic.com"]::after {
+    content: "A";
+    font-style: italic;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Filfre.net/The Digital Antiquarian has no logo or usable substitue... */
+#markdownBody a[href*="filfre.net"]::after {
+    content: "F";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* ANN */
+#markdownBody a[href*="animenewsnetwork.com"]::after {
+    content: "ANN";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* TV Tropes: their lampshade icon is unrecognizable & hard to see small */
+#markdownBody a[href*="tvtropes.org"]::after {
+    content: "TV";
+    font-size: 90%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* US federal Department of Justice */
+#markdownBody a[href*="justice.gov"]::after {
+    content: "DoJ";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* The Paris Review: not even going to try to make their weird bird logo work */
+#markdownBody a[href*="theparisreview.org"]::after {
+    content: "PR";
+    font-size: 90%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* The Wall Street Journal */
+#markdownBody a[href*="www.wsj.com"]::after {
+    content: "WSJ";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Slate */
+#markdownBody a[href*="slate.com"]::after {
+    content: "S";
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
+/* Evangelion: we'll split this into EGF-related and other NGE sites */
+#markdownBody a[href*="evageeks.org"]::after,
+#markdownBody a[href*="evamonkey.com"]::after {
+    content: "EG";
+    font-size: 90%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+#markdownBody a[href*="onegeek.org"]::after,
+#markdownBody a[href*="evaotaku.com"]::after,
+#markdownBody a[href*="khara.co.jp"]::after,
+#markdownBody a[href*="gainax.co.jp"]::after,
+#markdownBody a[href*="17th-angel.tumblr.com"]::after,
+#markdownBody a[href*="neweva.blog103.fc2.com"]::after, {
+    content: "NGE";
+    font-size: 80%;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.4em;
+    opacity: 0.55;
+}
+
 /* IMAGE-BASED PER-DOMAIN LINK ICONS: */
 /* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
 #markdownBody a[href*='biorxiv.org']::after {
