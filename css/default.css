@@ -1109,72 +1109,79 @@ article > :not(#TOC) a:hover {
 }
 
 /* TEXTUAL PER-DOMAIN LINK ICONS: */
-/* MR: cheaper to abuse Unicode */
-#markdownBody a[href*="marginalrevolution.com"]::after {
-    content: "M𝐑";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
-}
-
-/* SSC logo too bad to use */
+/* Common style */
+#markdownBody a[href*="marginalrevolution.com"]::after,
 #markdownBody a[href*="yvain"]::after,
-#markdownBody a[href*="slatestarcodex"]::after {
-    content: "SSC";
-    font-size: 80%;
+#markdownBody a[href*="slatestarcodex"]::after,
+#markdownBody a[href*="overcomingbias.com"]::after,
+#markdownBody a[href*="lesswrong.com"]::after,
+#markdownBody a[href*="predictionbook.com"]::after,
+#markdownBody a[href*="goodreads.com"]::after,
+#markdownBody a[href*="longbets.org"]::after,
+#markdownBody a[href*="longnow.org"]::after,
+#markdownBody a[href*="rosettaproject.org"]::after,
+#markdownBody a[href*="theinterval.org"]::after,
+#markdownBody a[href*="arxiv.org"]::after,
+#markdownBody a[href*="technologyreview.com"]::after,
+#markdownBody a[href*="economist.com"]::after,
+#markdownBody a[href*="andrewgelman.com"]::after,
+#markdownBody a[href*="statmodeling.stat.columbia.edu"]::after,
+#markdownBody a[href*="bbc.com"]::after,
+#markdownBody a[href*="r-project.org"]::after,
+#markdownBody a[href*="rstudio.com"]::after,
+#markdownBody a[href*="haskell.org"]::after,
+#markdownBody a[href*="myanimelist.net"]::after,
+#markdownBody a[href*="urth.net"]::after,
+#markdownBody a[href*="tumblr.com"]::after,
+#markdownBody a[href*="t.umblr.com"]::after,
+#markdownBody a[href*="theatlantic.com"]::after,
+#markdownBody a[href*="filfre.net"]::after,
+#markdownBody a[href*="animenewsnetwork.com"]::after,
+#markdownBody a[href*="tvtropes.org"]::after,
+#markdownBody a[href*="justice.gov"]::after,
+#markdownBody a[href*="theparisreview.org"]::after,
+#markdownBody a[href*="www.wsj.com"]::after,
+#markdownBody a[href*="slate.com"]::after,
+#markdownBody a[href*="evageeks.org"]::after,
+#markdownBody a[href*="evamonkey.com"]::after,
+#markdownBody a[href*="onegeek.org"]::after,
+#markdownBody a[href*="evaotaku.com"]::after,
+#markdownBody a[href*="khara.co.jp"]::after,
+#markdownBody a[href*="gainax.co.jp"]::after,
+#markdownBody a[href*="17th-angel.tumblr.com"]::after,
+#markdownBody a[href*="neweva.blog103.fc2.com"]::after {
+    font-size: 0.8em;
     font-weight: 600;
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
-    bottom: 0.25em;
-    opacity: 0.75;
+    bottom: 0.2em;
+    opacity: 0.6;
 }
+/* MR: cheaper to abuse Unicode */
+#markdownBody a[href*="marginalrevolution.com"]::after {
+    content: "M𝐑"; }
+
+/* SSC logo too bad to use */
+#markdownBody a[href*="yvain"]::after,
+#markdownBody a[href*="slatestarcodex"]::after {
+    content: "SSC"; }
 
 /* OB logo too bad to use */
 #markdownBody a[href*="overcomingbias.com"]::after {
-    content: "OB";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
-}
+    content: "OB"; }
 
 /* LW logo is just a colored 'LW', so no point in converting */
 #markdownBody a[href*="lesswrong.com"]::after {
-    content: "LW";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
-}
+    content: "LW"; }
 
 /* PB logo is confusing. A purple question mark...? */
 #markdownBody a[href*="predictionbook.com"]::after {
-    content: "\FE56";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
-}
+    content: "\FE56"; }
 
 /* GoodReads: logo doesn't make sense as a grayscale */
 #markdownBody a[href*="goodreads.com"]::after {
-    content: "GR";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
-}
+    content: "GR"; }
 
 /* Long Now Foundation projects: */
 #markdownBody a[href*="longbets.org"]::after,
@@ -1182,233 +1189,96 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="rosettaproject.org"]::after,
 #markdownBody a[href*="theinterval.org"]::after {
     content: "X";
-    text-decoration: overline;
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
-}
+    text-decoration: overline; }
 
 /* ArXiv: Chi (their logo is too bad to use) */
 #markdownBody a[href*="arxiv.org"]::after {
-    content: "\1D6D8";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "\1D6D8"; }
 
 /* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */
 #markdownBody a[href*="technologyreview.com"]::after {
-    content: "T";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "T"; }
 
 /* Economist: logo is just 'Economist'... */
 #markdownBody a[href*="economist.com"]::after {
-    content: "E";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.2em;
-    opacity: 0.55;
-}
+    content: "E"; }
 
 /* Favicon is a little normal distribution/histogram */
 #markdownBody a[href*="andrewgelman.com"]::after,
 #markdownBody a[href*="statmodeling.stat.columbia.edu"]::after {
     content: "▅▇▃";
-    font-size: 60%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    font-size: 0.6em; }
 
 /* BBC: no usable logo */
 #markdownBody a[href*="bbc.com"]::after {
-    content: "BBC";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "BBC"; }
 
 /* R: at this point R Studio has taken over a lot of control, so might as well treat them as official too... */
 #markdownBody a[href*="r-project.org"]::after,
 #markdownBody a[href*="rstudio.com"]::after {
     content: "R";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
 }
 
 /* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
 #markdownBody a[href*="haskell.org"]::after {
-    content: "𝛌";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "𝛌"; }
 
 /* MAL: the blue of their logo doesn't work, so just text */
 #markdownBody a[href*="myanimelist.net"]::after {
-    content: "MAL";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "MAL"; }
 
 /* Gene Wolfe mailing list; no logo */
 #markdownBody a[href*="urth.net"]::after {
-    content: "U";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "U"; }
 
 /* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
 #markdownBody a[href*="tumblr.com"]::after,
 #markdownBody a[href*="t.umblr.com"]::after {
-    content: "ʈ";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "ʈ"; }
 
 /* The Atlantic: replicate sloping by italics */
 #markdownBody a[href*="theatlantic.com"]::after {
-    content: "A";
-    font-style: italic;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "A"; }
 
 /* Filfre.net/The Digital Antiquarian has no logo or usable substitue... */
 #markdownBody a[href*="filfre.net"]::after {
-    content: "F";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "F"; }
 
 /* ANN */
 #markdownBody a[href*="animenewsnetwork.com"]::after {
-    content: "ANN";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "ANN"; }
 
 /* TV Tropes: their lampshade icon is unrecognizable & hard to see small */
 #markdownBody a[href*="tvtropes.org"]::after {
-    content: "TV";
-    font-size: 90%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "TV"; }
 
 /* US federal Department of Justice */
 #markdownBody a[href*="justice.gov"]::after {
-    content: "DoJ";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "DoJ"; }
 
 /* The Paris Review: not even going to try to make their weird bird logo work */
 #markdownBody a[href*="theparisreview.org"]::after {
-    content: "PR";
-    font-size: 90%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "PR"; }
 
 /* The Wall Street Journal */
 #markdownBody a[href*="www.wsj.com"]::after {
-    content: "WSJ";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "WSJ"; }
 
 /* Slate */
 #markdownBody a[href*="slate.com"]::after {
-    content: "S";
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    font-weight:600;
-    bottom:0.2em;
-    opacity: 0.55;
-}
+    content: "S"; }
 
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
 #markdownBody a[href*="evageeks.org"]::after,
 #markdownBody a[href*="evamonkey.com"]::after {
-    content: "EG";
-    font-size: 90%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "EG"; }
 #markdownBody a[href*="onegeek.org"]::after,
 #markdownBody a[href*="evaotaku.com"]::after,
 #markdownBody a[href*="khara.co.jp"]::after,
 #markdownBody a[href*="gainax.co.jp"]::after,
 #markdownBody a[href*="17th-angel.tumblr.com"]::after,
 #markdownBody a[href*="neweva.blog103.fc2.com"]::after {
-    content: "NGE";
-    font-size: 80%;
-    margin: 0 0 0 2px;
-    vertical-align: baseline;
-    position: relative;
-    bottom: 0.4em;
-    opacity: 0.55;
-}
+    content: "NGE"; }
 
 /* IMAGE-BASED PER-DOMAIN LINK ICONS: */
 /* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
