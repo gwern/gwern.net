@@ -1125,11 +1125,12 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="slatestarcodex"]::after {
     content: "SSC";
     font-size: 80%;
+    font-weight: 600;
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
-    bottom: 0.15em;
-    opacity: 0.55;
+    bottom: 0.25em;
+    opacity: 0.75;
 }
 
 /* OB logo too bad to use */
@@ -1216,7 +1217,7 @@ article > :not(#TOC) a:hover {
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
-    bottom: 0.4em;
+    bottom: 0.2em;
     opacity: 0.55;
 }
 
@@ -1378,7 +1379,8 @@ article > :not(#TOC) a:hover {
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
-    bottom: 0.4em;
+    font-weight:600;
+    bottom:0.2em;
     opacity: 0.55;
 }
 
@@ -1398,7 +1400,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="khara.co.jp"]::after,
 #markdownBody a[href*="gainax.co.jp"]::after,
 #markdownBody a[href*="17th-angel.tumblr.com"]::after,
-#markdownBody a[href*="neweva.blog103.fc2.com"]::after, {
+#markdownBody a[href*="neweva.blog103.fc2.com"]::after {
     content: "NGE";
     font-size: 80%;
     margin: 0 0 0 2px;
@@ -1430,7 +1432,7 @@ article > :not(#TOC) a:hover {
 
 /* Wired */
 #markdownBody a[href*='wired.com']::after {
-              background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='f' d='M.2 0h199.6v39.9H.2z'/%3E%3C/defs%3E%3CclipPath id='e'%3E%3Cuse overflow='visible' xlink:href='%23f'/%3E%3C/clipPath%3E%3Cpath d='M37.4 6.2h-5.2L28.4 28 24 7.8c-.2-1.4-.8-1.6-2-1.6h-2.8c-1.2 0-1.8.4-2 1.6L12.8 28 9 6.2H3.4l5.4 26.2c.2 1.2.6 1.4 2 1.4h3.8c1.2 0 1.6-.2 2-1.4l4.2-19 4.2 19c.2 1.2.6 1.4 2 1.4h3.6c1.2 0 1.8-.2 2-1.4l4.8-26.2zm2.8 33.7H.2V0h39.9v39.9z' clip-path='url(%23e)'/%3E%3C/svg%3E%0A");
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='f' d='M.2 0h199.6v39.9H.2z'/%3E%3C/defs%3E%3CclipPath id='e'%3E%3Cuse overflow='visible' xlink:href='%23f'/%3E%3C/clipPath%3E%3Cpath d='M37.4 6.2h-5.2L28.4 28 24 7.8c-.2-1.4-.8-1.6-2-1.6h-2.8c-1.2 0-1.8.4-2 1.6L12.8 28 9 6.2H3.4l5.4 26.2c.2 1.2.6 1.4 2 1.4h3.8c1.2 0 1.6-.2 2-1.4l4.2-19 4.2 19c.2 1.2.6 1.4 2 1.4h3.6c1.2 0 1.8-.2 2-1.4l4.8-26.2zm2.8 33.7H.2V0h39.9v39.9z' clip-path='url(%23e)'/%3E%3C/svg%3E%0A");
 }
 #markdownBody a[href*='wired.com']:hover::after {
     opacity: 0.3;
@@ -1444,6 +1446,42 @@ article > :not(#TOC) a:hover {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
+    opacity: 0.50;
+}
+
+/* The Washington Post: truncated their blackletter to 'WP' */
+#markdownBody a[href*='washingtonpost.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Chead/%3E%3Cpath d='M9.21 11.347l-.104-.1c.028-.042.138.072.104.1zm-1.655-6.15l-.952-.973-.196.22.874.877v5.726l.274-.274zm-.417.192l-.82-.822-.47.507V9.95l1.278 1.178.013-.014zm-2.53 5.07V5.374L3.5 4.223l-.21.22 1.043 1.055v5.1l1.76 1.603.21-.206zm-.417-4.89L3.2 4.552l-.522.562v4.85l1.187 1.055.326-.384zm-2.75-1.37c0-.562-.47-.753-.47-1.1 0-.493.182-.904.47-1.288l-.026-.014C1.024 2.1.66 2.607.66 3.1s.508.726.508 1.165V6.69h.274zm0 6.288v-2.9H.71a.54.54 0 0 0-.574.493L.15 8.1c.13-.15.26-.233.56-.233h.456v2.767l1.72 1.562.196-.247zm4.655 1.918l-1.813-1.644L2.9 12.402l-1.878-1.7V8.018H.66c-.326 0-.495.22-.574.48h-.04a2.28 2.28 0 0 1-.065-.52c0-.356.09-1.288 1.043-1.288V4.333c0-.452-.508-.63-.508-1.233 0-.78.704-1.548 1.995-2.028l.052.04c-.47.288-.717.562-.717 1.15 0 .904.834.67.834 2.096v.548l1.526-1.685L5.81 4.88l1.513-1.658 1.46 1.507V9.8z'/%3E%3Cpath d='M16.11 11.064c-50.462 2.712-25.23 1.356 0 0zm-1.684-6.202L13.557 4l-.204.23.804.784v6.284l.268-.216zm-1.94 6.067v.35c.434.108.612.243.92.62l.294-.243a1.63 1.63 0 0 0-1.212-.73zm1.53-5.85l-.753-.73-.778.892v4.756c.664.068 1.123.27 1.52.73l.013-.013zm-1.672.31l-.28.31v7.824l.28.27zm-1.493-.77l-.638-.62-.204.23.574.54v1.527h.268zm0 2.433h-.702c-.485 0-.676.324-.69.703l.013.013a.7.7 0 0 1 .612-.405h.498v7.365l.268-.27zm-.408 3.878c-.523.108-.893.446-1.136.892l.013.027c.358-.324.69-.473 1.123-.58zm2.948 1.19c-.357-.405-.485-.54-.906-.662v2.65l-.026.013-.5-.487-1.48 1.446-.026-.013V11.43c-.447.108-.92.35-1.378.838l-.025-.013c.09-1.04.574-1.81 1.404-2.108V7.5h-.268c-.37 0-.574.203-.753.567h-.038c-.038-.12-.064-.31-.064-.62 0-.568.396-1.162 1.047-1.162h.076v-1.46l-.523-.5-.255.27-.09-.095 1.29-1.446 1.2 1.162v1.23l.28-.324V3.578h.14l.038.582 1.203-1.19 1.898 1.487v5.878z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='washingtonpost.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='washingtonpost.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0px 3px;
+    opacity: 0.60;
+}
+
+#markdownBody a[href*='nytimes.com']::after {
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M13.994 2.824c0-1.565-1.7-1.956-3.025-1.956v.235c.8 0 1.423.235 1.423.783 0 .313-.267.783-1.067.783-.623 0-1.957-.313-2.936-.626-1.156-.39-2.224-.704-3.113-.704-1.78 0-3.025 1.174-3.025 2.504 0 1.174.98 1.565 1.334 1.722l.09-.157c-.178-.157-.445-.313-.445-.783 0-.313.356-.86 1.245-.86.8 0 1.868.313 3.29.704 1.245.313 2.58.548 3.29.626V7.52L9.724 8.537v.078l1.334 1.017v3.365c-.712.39-1.512.47-2.224.47-1.334 0-2.49-.313-3.47-1.252l3.647-1.565v-5.4L4.565 6.972C4.92 5.955 5.9 5.25 6.878 4.78l-.09-.235c-2.67.626-5.07 2.817-5.07 5.478 0 3.13 2.936 5.478 6.227 5.478 3.558 0 5.87-2.504 5.87-5.087h-.178c-.534 1.017-1.334 1.956-2.313 2.426v-3.21l1.423-1.017v-.078L11.325 7.52V5.094c1.334 0 2.67-.783 2.67-2.27zm-7.74 8.608l-1.067.47c-.623-.704-.98-1.643-.98-2.974 0-.548 0-1.174.178-1.643l1.868-.704zm8.273 2.582c-8.54 4.07-4.27 2.035 0 0z'/%3E%3Chead/%3E%3C/svg%3E");}
+#markdownBody a[href*='nytimes.com']:hover::after {
+    opacity: 0.45;
+}
+#markdownBody a[href*='nytimes.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 0.8em;
+    margin:0 0 2px 3px;
     opacity: 0.60;
 }
 
@@ -1463,15 +1501,15 @@ article > :not(#TOC) a:hover {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.60;
+    opacity: 0.50;
 }
 
-/ * HN/Y Combinator (shared logo): */
+/* HN+Y Combinator (shared logo): */
 #markdownBody a[href*='ycombinator.com']::after {
     background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 20010904//EN' 'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'%3E%3Csvg version='1.0' viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(0 256) scale(.1 -.1)'%3E%3Cpath d='m6 2537c-8-29-8-2485 0-2514l6-23h1268 1268l6 23c8 29 8 2485 0 2514l-6 23h-1268-1268l-6-23zm1080-854c69-142 142-292 162-333l35-75 166 333 166 332h97c54 0 98-3 98-6 0-4-99-192-220-419l-220-414v-265-266h-90-90v267 267l-220 411c-121 227-220 415-220 419 0 3 47 6 105 6h104l127-257z'/%3E%3C/g%3E%3C/svg%3E%0A");
 }
 #markdownBody a[href*='ycombinator.com']:hover::after {
-    opacity: 0.3;
+    opacity: 0.4;
 }
 #markdownBody a[href*='ycombinator.com']::after {
     content: "";
@@ -1479,9 +1517,9 @@ article > :not(#TOC) a:hover {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 1em;
-    width: 1em;
-    margin: 0 0 0 2px;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 0 4px;
     opacity: 0.60;
 }
 
@@ -1509,7 +1547,7 @@ article > :not(#TOC) a:hover {
     background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' viewBox='0 0 640 640' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='a' d='m317.79 6.58c-108.65 2.51-195.49 95.25-195.58 208.85 0.09 109.07 80.38 199.75 184.39 208.26-50.55-5.95-88.78-50.64-88.81-103.82 0-57.74 44.77-104.54 100-104.54 110.46 0 200 93.61 200 209.08-0.06 108.51-79.53 198.94-182.96 208.19 158.67-9.44 282.77-146.59 282.97-312.73-0.15-163.73-120.74-299.79-276.89-312.4-6.21-0.68-12.45-1.05-18.7-1.11-0.39 0.02-0.79 0.04-1.18 0.06-1.08-0.06-2.16-0.12-3.24-0.17v0.33z'/%3E%3ClinearGradient id='d' x1='116.94' x2='623.06' y1='319.42' y2='319.42' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23a3a3a3' offset='0'/%3E%3Cstop stop-color='%23fff' offset='1'/%3E%3C/linearGradient%3E%3Cpath id='b' d='m322.21 633.42c108.65-2.51 195.49-95.25 195.58-208.85-0.09-109.07-80.38-199.75-184.39-208.26 50.55 5.95 88.78 50.64 88.81 103.82 0 57.74-44.77 104.54-100 104.54-110.46 0-200-93.61-200-209.08 0.06-108.51 79.53-198.94 182.96-208.19-158.67 9.44-282.77 146.59-282.97 312.73 0.15 163.73 120.74 299.79 276.89 312.4 6.21 0.68 12.45 1.05 18.7 1.11 0.39-0.02 0.79-0.04 1.18-0.06 1.08 0.06 2.16 0.12 3.24 0.17v-0.33z'/%3E%3ClinearGradient id='c' x1='16.94' x2='523.06' y1='320.41' y2='320.41' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0'/%3E%3Cstop stop-color='%23969696' offset='1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cuse fill='url(%23d)' xlink:href='%23a'/%3E%3Cuse fill-opacity='0' stroke='%23ffffff' stroke-width='2' xlink:href='%23a'/%3E%3Cuse fill='url(%23c)' xlink:href='%23b'/%3E%3Cuse fill-opacity='0' stroke='%23ffffff' stroke-width='2' xlink:href='%23b'/%3E%3C/svg%3E%0A");
 }
 #markdownBody a[href*='deepmind']:hover::after {
-    opacity: 0.3;
+    opacity: 0.5;
 }
 #markdownBody a[href*='deepmind']::after {
     content: "";
@@ -1517,9 +1555,27 @@ article > :not(#TOC) a:hover {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 1em;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 1px 4px;
+    opacity: 0.60;
+}
+
+#markdownBody a[href*='openai']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M6.3 7L8 6l1.7 1v2L8 10 6.3 9V7zm-.7 1.6l-1.4-.8v-4c.1-1.7 2-3 3.7-2.5.3.1 1.5.5.9.7L5.7 3.7c-.3.4-.1.9-.2 1.4v3.4zM14 5.8l-3.4-2c-.5 0-.8.4-1.3.5l-3 1.7c0-.5 0-1.1 0-1.6l3.5-2c1.6-.8 3.7.3 4.1 1.9.1.4.1.9.1 1.3zm-1.3 2L8.8 5.6c.5-.2.9-.6 1.4-.8l3.6 2.1a3 3 0 0 1 .4 4.3c-.2.2-1.1 1.1-1.2.6V8.1c0-.1-.1-.2-.3-.3zM1.6 5.3c.3-.5 1.2-1.4 1.6-1.2v3.8c.2.4.7.5 1.1.8l3 1.7c-.5.3-.9.6-1.4.8l-3.5-2C1.2 8.3.8 6.5 1.6 5.3zm.8 6.9c-.3-.5-.6-1.6-.3-1.9l3.3 1.9c.5 0 .8-.4 1.3-.5l3-1.7c0 .5 0 1.1 0 1.6l-3.6 2c-1.3.5-3 0-3.7-1.3zm6.5 2.7c-.6 0-1.7-.3-1.8-.7l3.3-1.9c.3-.4.1-.9.2-1.4V7.4l1.4.8v4c-.1 1.5-1.5 2.7-3 2.7zm6-8.4c.7-2-.5-4.4-2.5-5-.9-.5-2.1.2-2.7-.6C8-.5 5.3-.2 4 1.6c-.5.6-.6 1.4-1.5 1.5C.6 3.9-.4 6.3.4 8.2c.3.7 1 1.2.6 2-.3 2.1 1.4 4.1 3.4 4.4.8.1 1.6-.2 2.1.5 1.7 1.3 4.3.9 5.6-.8.5-.6.6-1.5 1.5-1.5 1.9-.8 2.9-3.2 2.1-5.1a4 4 0 0 0-.8-1.2z'/%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='openai']:hover::after {
+    opacity: 0.5;
+}
+#markdownBody a[href*='openai']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
     width: 1em;
-    margin: 0 0 0 2px;
+    margin: 0 0 0px 3px;
     opacity: 0.60;
 }
 
@@ -1588,7 +1644,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*='youtube.com']:hover::after,
 #markdownBody a[href*='youtu.be']:hover::after,
 #markdownBody a[href*='soundcloud.com']:hover::after,
-#markdownBody a[href*='bandcamp.com']:hover::after, {
+#markdownBody a[href*='bandcamp.com']:hover::after {
     opacity: 0.3;
 }
 #markdownBody a[href*='youtube.com']::after,
@@ -1603,6 +1659,104 @@ article > :not(#TOC) a:hover {
     height: 1em;
     width: 1em;
     margin: 0 0 0 3px;
+    opacity: 0.60;
+}
+
+/* The *Exchange/*Overflow family of websites: */
+#markdownBody a[href*="overflow.net"]::after,
+#markdownBody a[href*="overflow.com"]::after,
+#markdownBody a[href*="stackexchange.com"]::after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 50 50' version='1.1'%3E%3Cpath d='M13 2C9.687 2 7 4.688 7 8v2h36V8c0-3.313-2.688-6-6-6zM7 12v8h36v-8zm0 10v8h36v-8zm0 10v2c0 3.313 2.688 6 6 6h15v8l8-8h1c3.313 0 6-2.688 6-6v-2z' id='surface1'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 0.75em;
+    background-position: right 1px top;
+    width: 0.85em;
+    height: 0.85em;
+    display: inline-block;
+    vertical-align: baseline;
+    opacity: 0.85;
+}
+#markdownBody a[href*="overflow.net"]:hover::after,
+#markdownBody a[href*="overflow.com"]::after,
+#markdownBody a[href*="stackexchange.com"]:hover::after {
+    opacity: 0.6;
+}
+
+/* Amazon */
+#markdownBody a[href*="amazon.com"]::after,
+#markdownBody a[href*="amazon.co."]::after,
+#markdownBody a[href*="amzn.com"]::after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M257.2 162.7c-48.7 1.8-169.5 15.5-169.5 117.5 0 109.5 138.3 114 183.5 43.2 6.5 10.2 35.4 37.5 45.3 46.8l56.8-56S341 288.9 341 261.4V114.3C341 89 316.5 32 228.7 32 140.7 32 94 87 94 136.3l73.5 6.8c16.3-49.5 54.2-49.5 54.2-49.5 40.7-.1 35.5 29.8 35.5 69.1zm0 86.8c0 80-84.2 68-84.2 17.2 0-47.2 50.5-56.7 84.2-57.8v40.6zm136 163.5c-7.7 10-70 67-174.5 67S34.2 408.5 9.7 379c-6.8-7.7 1-11.3 5.5-8.3C88.5 415.2 203 488.5 387.7 401c7.5-3.7 13.3 2 5.5 12zm39.8 2.2c-6.5 15.8-16 26.8-21.2 31-5.5 4.5-9.5 2.7-6.5-3.8s19.3-46.5 12.7-55c-6.5-8.3-37-4.3-48-3.2-10.8 1-13 2-14-.3-2.3-5.7 21.7-15.5 37.5-17.5 15.7-1.8 41-.8 46 5.7 3.7 5.1 0 27.1-6.5 43.1z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 0.75em;
+    background-position: right 1px top;
+    width: 1.1em;
+    height: 0.9em;
+    display: inline-block;
+    vertical-align: baseline;
+    opacity: 0.85;
+}
+#markdownBody a[href*="amazon.com"]:hover::after,
+#markdownBody a[href*="amazon.co."]:hover::after,
+#markdownBody a[href*="amzn.com"]:hover::after {
+    opacity: 0.6;
+}
+
+/* Github; I exclude github.io because that's blogs */
+#markdownBody a[href*='github.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 .297a12 12 0 0 0-12 12c0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577L9 21.065c-3.338.724-4.042-1.6-4.042-1.6C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.73.084-.73 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.81 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.3.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.9 1.23 3.22 0 4.6-2.805 5.625-5.475 5.92.42.36.8 1.096.8 2.22l-.015 3.286c0 .315.2.7.825.57 4.8-1.574 8.236-6.074 8.236-11.37 0-6.627-5.373-12-12-12'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='github.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='github.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.60;
+}
+
+/* Megaupload/Mega: filesharing (used for big files) */
+#markdownBody a[href*='mega.nz']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0a12 12 0 1 0 0 24 12 12 0 1 0 0-24zm6.23 16.244a.371.371 0 0 1-.373.372H16.3a.371.371 0 0 1-.372-.372v-4.828c0-.04-.046-.06-.08-.033l-3.32 3.32a.742.742 0 0 1-1.043 0l-3.32-3.32c-.027-.027-.08-.007-.08.033v4.828a.371.371 0 0 1-.372.372H6.136a.371.371 0 0 1-.372-.372V7.757a.37.37 0 0 1 .372-.372h1.076a.75.75 0 0 1 .525.22l4.13 4.13a.18.18 0 0 0 .26 0l4.13-4.13c.14-.14.325-.22.525-.22h1.075a.37.37 0 0 1 .372.372z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='mega.nz']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='mega.nz']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.60;
+}
+
+#markdownBody a[href*='archive.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 13.1 15'%3E%3Cpath d='M.1 1.5c.08.12.12.3.23.4H12.6l.3-.4L6.5 0 .1 1.5zm.3 1h12.2v1.1H.4zM1 4.2h1l.2.1.2 3.7-.1 4.5H1l-.3-.1L.5 8c0-1.5.2-3.7.2-3.7l.3-.1zm10 0h1.1l.2.1.2 3.7-.1 4.5-.3.1h-1l-.3-.1-.2-4.4c0-1.5.2-3.7.2-3.7l.2-.2zm-6.7 0h1l.2.1.2 3.7-.1 4.5-.3.1h-.9l-.3-.1-.2-4.4c0-1.5.2-3.7.2-3.7l.2-.2zm3.4 0H9l.2 3.7-.1 4.5-.3.1h-1l-.3-.1L7.3 8c0-1.5.2-3.7.2-3.7l.2-.1zM.4 13.1h12.3v.6H.4zM0 14.3h13.1v.7H0z'/%3E%3Chead/%3E%3Cg stroke='%231a1a1a' stroke-width='.32'%3E%3Cuse xlink:href='%23B' opacity='0' fill='%231a1a1a' fill-opacity='.42'/%3E%3Cpath d='M6.5.01L.1 1.5l.2.4h12.3l.14-.2.14-.2c0 0-1.44-.34-3.2-.75L6.5.01z' opacity='0' fill-opacity='.42'/%3E%3Cpath d='M6.5.01L.1 1.5l.2.4h12.3l.14-.2.14-.2c0 0-1.44-.34-3.2-.75L6.5.01z' opacity='0'/%3E%3Cuse xlink:href='%23B' opacity='0'/%3E%3C/g%3E%3Cg stroke='%23000'%3E%3Cpath d='M.4 3.05V2.5h12.2v1.1H.4z' opacity='0' stroke-width='.32'/%3E%3Cuse xlink:href='%23B' opacity='0' stroke-width='.32'/%3E%3C/g%3E%3Cdefs %3E%3Cpath id='B' d='M.2 1.7l-.1-.2H.2L6.5.01l6.38 1.5c0 0-.06.1-.14.2l-.15.2H.3z'/%3E%3C/defs%3E%3C/svg%3E");
+}
+#markdownBody a[href*='archive.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='archive.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
     opacity: 0.60;
 }
 
@@ -1733,6 +1887,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href$='/pdf' i]::after,
 #markdownBody a[href$='type=pdf' i]::after,
 #markdownBody a[href*='.pdf#' i]::after {
+    opacity: 0.5;
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
 
@@ -2383,8 +2538,7 @@ a.footnote-ref {
 /*= Floating footnote popups =*/
 /*=--------------------------=*/
 
-/*  http://ignorethecode.net/blog/2010/04/20/footnotes/
-    */
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 #footnotediv {
     z-index: 10001;
     font-size: 0.9em;
