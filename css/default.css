@@ -277,11 +277,11 @@ header h1 {
     line-height: 1.5;
 }
 
-#page-metadata #abstract {
+#page-metadata #description {
     display: block;
     margin: 0 auto 0.5em auto;
 }
-#page-metadata #abstract + br {
+#page-metadata #description + br {
     display: none;
 }
 
@@ -585,7 +585,7 @@ header h1 {
 /* SECTIONS */
 /************/
 /*  Use: annotate collapsible section headers with '{.collapse}' (in the Markdown);
-    for sections where I want a summary/abstract (eg in Notes.page/Statistical-notes.page),
+    for sections where I want a summary/abstract of that (eg in Notes.page/Statistical-notes.page),
     one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'.
     (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
     */
