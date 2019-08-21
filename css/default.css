@@ -571,7 +571,7 @@ header h1 {
     font-variant-numeric: oldstyle-nums;
 }
 
-#markdownBody > blockquote:first-child,
+#abstract,
 .collapseSummary blockquote {
     margin: 0 0 1.5em 0;
     box-shadow:
