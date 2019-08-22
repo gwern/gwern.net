@@ -1,3 +1,11 @@
+// wikipedia-popups.js
+// author: Said Achmiz
+// 2019-07-29
+
+// wikipedia-popups.js is a standalone Javascript library for creating 'popups' for links to English Wikipedia articles when the user mouse-overs the link.
+
+// The tooltip-style popup displays the summaries/introductions/ledes to Wikipedia articles as returned by the Wikipedia API (see <code>https://www.mediawiki.org/wiki/Page_Previews/API_Specification</code> and <code>https://en.wikipedia.org/api/rest_v1/</code>). All summaries are loaded on page load so as to have minimal latency (on-mouseover summary loading is noticeably slow). If a page has many Wikipedia links on it, this can result in quite a few requests; the summaries can instead be provided statically, encoded into data attributes. (This also allows encoding summaries/previews of arbitrary websites by whatever is compiling the HTML.) See /static/js/popups.js for a JS library which takes that approach instead.
+
 document.querySelector("head").insertAdjacentHTML("beforeend", "<style>" + `
 #popupdiv {
     z-index: 10001;
