@@ -3352,6 +3352,14 @@ body.siteIndex article section {
 body.siteIndex #sidebar a#logo {
     pointer-events: none;
 }
+/*  Abstract is not a real abstract.
+    */
+body.siteIndex #abstract {
+    padding: 0;
+    border: none;
+    margin: 0;
+    box-shadow: none;
+}
 
 /*  Less fancy headings.
     */

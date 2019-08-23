@@ -1,3 +1,5 @@
+
+
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz
 // 2019
@@ -61,12 +63,11 @@ document.querySelector("head").insertAdjacentHTML("beforeend", "<style>" + `
 #popupdiv > div .icon {
     background-image: none !important;
     position: relative;
-    margin: 0 0.175em 0 0;
     top: 0.15em;
     font-size: 1.125em;
 }
 #popupdiv > div .icon::after {
-    margin: 0;
+    margin: 0 0.175em 0 0;
     width: 1em;
     height: 1em;
     font-size: 1em;
@@ -74,6 +75,9 @@ document.querySelector("head").insertAdjacentHTML("beforeend", "<style>" + `
 #popupdiv > div .icon:not([href*='.pdf'])::after {
     background-position: center center;
     background-size: 100%;
+}
+#popupdiv > div .title-link::after {
+    content: none;
 }
 
 /*  Scroll bar styles (Webkit/Blink only).
@@ -101,6 +105,9 @@ Extracts = {
     contentContainerSelector: "#markdownBody",
     targetElementsSelector: "#markdownBody a.docMetadata",
     minPopupWidth: 480,
+    popuptriggerdelay: 50,
+    popupfadeoutdelay: 50,
+    popupfadeoutduration: 400,
     popupfadetimeout: false,
     popupkilltimeout: false,
     popuptimeout: false,
@@ -159,7 +166,7 @@ Extracts = {
             //  Inject the contents of the popup into the popup div.
             Extracts.popup.innerHTML =
                 `<div>
-                    <p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a> ${target.dataset.popupTitle || ""}</p>
+                    <p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a><a class='title-link' href='${target.href}' title='${target.href}'>${target.dataset.popupTitle || ""}</a></p>
                     <p class='data-field author-plus-date'>${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}</p>
                     <div class='data-field abstract'>${target.dataset.popupAbstract || ""}</div>
                 </div>`;
@@ -205,7 +212,6 @@ Extracts = {
             if (top + provisionalExtractPopupHeight > window.innerHeight + window.scrollY ||
                 provisionalExtractPopupHeight == window.innerHeight ||
                 popupTop < window.scrollY - layoutParent.offsetTop) {
-                console.log(layoutParentAbsoluteRect);
                 popupTop = window.scrollY - layoutParent.offsetTop;
             }
             if (popupTop + provisionalExtractPopupHeight + 120 < targetPosition.top) {
@@ -217,7 +223,7 @@ Extracts = {
                 popupTop = 0;
             }
             Extracts.popup.style.top = popupTop + "px";
-        }, 50);
+        }, Extracts.popuptriggerdelay);
     },
     //  The mouseout event.
     targetout: (event) => {
@@ -232,8 +238,8 @@ Extracts = {
          Extracts.popupkilltimeout = setTimeout(() => {
              Extracts.popup.classList.remove("fading");
              Extracts.popup.remove();
-         }, 750);
-     }, 100);
+         }, Extracts.popupfadeoutduration);
+     }, Extracts.popupfadeoutdelay);
     },
     //  The “user moved mouse back into popup” mouseover event.
     divover: (event) => {
