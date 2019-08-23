@@ -221,26 +221,26 @@ Extracts = {
     },
     //  The mouseout event.
     targetout: (event) => {
-//      clearTimeout(Extracts.popupfadetimeout);
-//      clearTimeout(Extracts.popupkilltimeout);
-//      clearTimeout(Extracts.popuptimeout);
-//
-//      if (!Extracts.popup) return;
-//
-//      Extracts.popupfadetimeout = setTimeout(() => {
-//          Extracts.popup.classList.add("fading");
-//          Extracts.popupkilltimeout = setTimeout(() => {
-//              Extracts.popup.classList.remove("fading");
-//              Extracts.popup.remove();
-//          }, 750);
-//      }, 100);
+     clearTimeout(Extracts.popupfadetimeout);
+     clearTimeout(Extracts.popupkilltimeout);
+     clearTimeout(Extracts.popuptimeout);
+
+     if (!Extracts.popup) return;
+
+     Extracts.popupfadetimeout = setTimeout(() => {
+         Extracts.popup.classList.add("fading");
+         Extracts.popupkilltimeout = setTimeout(() => {
+             Extracts.popup.classList.remove("fading");
+             Extracts.popup.remove();
+         }, 750);
+     }, 100);
     },
     //  The “user moved mouse back into popup” mouseover event.
     divover: (event) => {
-//      clearTimeout(Extracts.popupfadetimeout);
-//      clearTimeout(Extracts.popupkilltimeout);
-//      clearTimeout(Extracts.popuptimeout);
-//      Extracts.popup.classList.remove("fading");
+     clearTimeout(Extracts.popupfadetimeout);
+     clearTimeout(Extracts.popupkilltimeout);
+     clearTimeout(Extracts.popuptimeout);
+     Extracts.popup.classList.remove("fading");
     }
 }
 
