@@ -3157,7 +3157,7 @@ ads a img {
 
 @media only screen and (min-width: 65ch) {
     body[class*='drop-caps-'] #markdownBody > p:first-child::first-letter,
-    body[class*='drop-caps-'] #markdownBody > blockquote:first-child + p::first-letter,
+    body[class*='drop-caps-'] #abstract + p::first-letter,
     body[class*='drop-caps-'] #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody *[class*='drop-cap-']::first-letter {
         font-style: normal;
@@ -3168,7 +3168,7 @@ ads a img {
     /*  All of these numbers are magic.
         */
     body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-    body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-goudy #abstract + p::first-letter,
     body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-goudy::first-letter {
         font-family: Goudy Initialen;
@@ -3177,7 +3177,7 @@ ads a img {
         margin: 0 0.02em -0.25em 0;
     }
     body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-    body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-yinit #abstract + p::first-letter,
     body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-yinit::first-letter {
         font-family: Yinit;
@@ -3188,7 +3188,7 @@ ads a img {
         opacity: 0.95;
     }
     body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-    body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-de-zs #abstract + p::first-letter,
     body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-de-zs::first-letter {
         font-family: Deutsche Zierschrift;
@@ -3203,7 +3203,7 @@ ads a img {
         opacity: 0.99;
     }
     body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
-    body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-cheshire #abstract + p::first-letter,
     body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-cheshire::first-letter {
         font-family: Cheshire Initials;
@@ -3213,7 +3213,7 @@ ads a img {
         opacity: 0.9;
     }
     body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
-    body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+    body.drop-caps-kanzlei #abstract + p::first-letter,
     body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-kanzlei::first-letter {
         font-family: Kanzlei Initialen;
@@ -3227,31 +3227,31 @@ ads a img {
         */
     @media only screen and (max-width: 120ch) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-goudy #abstract + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-goudy::first-letter {
             font-size: 6.875em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-yinit #abstract + p::first-letter,
         body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-yinit::first-letter {
             font-size: 5.375em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-de-zs #abstract + p::first-letter,
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-de-zs::first-letter {
             font-size: 6.375em;
         }
         body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
-        body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-cheshire #abstract + p::first-letter,
         body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-kanzlcheshireei::first-letter {
             font-size: 6.625em;
         }
         body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
-        body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-kanzlei #abstract + p::first-letter,
         body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-kanzlei::first-letter {
             font-size: 6.875em;
@@ -3259,31 +3259,31 @@ ads a img {
     }
     @media only screen and (max-width: 100ch) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-goudy #abstract + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-goudy::first-letter {
             font-size: 6.625em;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-yinit #abstract + p::first-letter,
         body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-yinit::first-letter {
             font-size: 5.25em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-de-zs #abstract + p::first-letter,
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-de-zs::first-letter {
             font-size: 6.125em;
         }
         body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
-        body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-cheshire #abstract + p::first-letter,
         body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-cheshire::first-letter {
             font-size: 6.3125em;
         }
         body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
-        body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-kanzlei #abstract + p::first-letter,
         body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-kanzlei::first-letter {
             font-size: 6.6875em;
@@ -3294,31 +3294,31 @@ ads a img {
         */
     @supports (-moz-user-focus: normal) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
-        body.drop-caps-goudy #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-goudy #abstract + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-goudy::first-letter {
             margin: 0.045em 0.02em 0 0;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
-        body.drop-caps-yinit #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-yinit #abstract + p::first-letter,
         body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-yinit::first-letter {
             margin: 0.065em 0.04em 0 0.01em;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
-        body.drop-caps-de-zs #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-de-zs #abstract + p::first-letter,
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-de-zs::first-letter {
             margin: 0.06em 0.04em 0 0;
         }
         body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
-        body.drop-caps-cheshire #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-cheshire #abstract + p::first-letter,
         body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-cheshire::first-letter {
             margin: 0.06em 0.04em 0 0.01em;
         }
         body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
-        body.drop-caps-kanzlei #markdownBody > blockquote:first-child + p::first-letter,
+        body.drop-caps-kanzlei #abstract + p::first-letter,
         body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-kanzlei::first-letter {
             margin: 0.05em 0.02em 0 -0.04em;
