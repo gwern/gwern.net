@@ -386,7 +386,7 @@
    , ("docs/ai/2019-winkler.pdf.", "/docs/ai/2019-winkler.pdf")
    , ("docs/iq/2007-strenze.pdfa", "/docs/iq/2007-strenze.pdf")
    , ("docs/catnip/1962-todd.pdf [Accessed 21 Aug. 2019].", "/docs/catnip/1962-todd.pdf")
-   , ("/docs/sr/2013-van-hout-pdf", "//docs/sr/2013-van-hout.pdf")
+   , ("docs/sr/2013-van-hout-pdf", "/docs/sr/2013-van-hout.pdf")
    , ("docs/sunkcosts/1972-trivers.[df", "/docs/sunkcosts/1972-trivers.pdf")
    , ("Greenlannews channels ratings", "/Greenland")
    , ("modifinil", "/Modafinil")
