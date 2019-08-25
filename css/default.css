@@ -277,11 +277,11 @@ header h1 {
     line-height: 1.5;
 }
 
-#page-metadata #description {
+#page-metadata #page-description {
     display: block;
     margin: 0 auto 0.5em auto;
 }
-#page-metadata #description + br {
+#page-metadata #page-description + br {
     display: none;
 }
 
