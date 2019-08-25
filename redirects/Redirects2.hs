@@ -93,6 +93,8 @@
 
    , ("docs/algernon/2006-harris.pdf)", "/docs/algernon/2006-harris.pdf")
    , ("docs/spaced repetition/1987-bahrick.pdf", "/docs/spacedrepetition/1987-bahrick.pdf")
+   , ("docs/spacedrepetition/1987- bahrick.pdf", "/docs/spacedrepetition/1987-bahrick.pdf")
+   , ("docs/spacedrepetition/1987-%20bahrick.pdf", "/docs/spacedrepetition/1987-bahrick.pdf")
    , ("Tasks", "/Tanks")
    , ("Danbooru2018 原文網址：https://mttmp.com/cijjxnk.html", "/Danbooru2018")
    , ("dnm-archive", "/DNM-archives")
@@ -395,4 +397,4 @@
    , ("Spaced repetition Vermeer, Alex. Anki Essentials v1.1: The complete guide to remembering anything with Anki . Foggy Mountain Pass. Kindle-Version.", "/Spaced-repetition")
    , ("static/plugins/interwiki.hs", "/static/plugins/Interwiki.hs")
    , ("TANKS", "/Tanks")
-                 ]
+   ]

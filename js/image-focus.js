@@ -1,5 +1,6 @@
 /* Image-focus.js http://share.obormot.net/misc/gwern/image-focus.js */
 /* Written by Obormot, 15 February 2019 */
+/* License: GPL (derivative work of https://www.pmwiki.org/wiki/Cookbook/ImgFocus ) */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
 if (typeof window.GW == "undefined")

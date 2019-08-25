@@ -1,6 +1,7 @@
 // wikipedia-popups.js
 // author: Said Achmiz
 // 2019-07-29
+// license: MIT (derivative of footnotes.js, which is PD)
 
 // wikipedia-popups.js is a standalone Javascript library for creating 'popups' for links to English Wikipedia articles when the user mouse-overs the link.
 
