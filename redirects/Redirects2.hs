@@ -397,4 +397,5 @@
    , ("Spaced repetition Vermeer, Alex. Anki Essentials v1.1: The complete guide to remembering anything with Anki . Foggy Mountain Pass. Kindle-Version.", "/Spaced-repetition")
    , ("static/plugins/interwiki.hs", "/static/plugins/Interwiki.hs")
    , ("TANKS", "/Tanks")
+   , ("docs/transhumanism/1990-regis-greatmambochicken.pdf", "/docs/transhumanism/1990-regis-greatmambochickenandthetranshumancondition.pdf")
    ]
