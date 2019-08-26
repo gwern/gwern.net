@@ -159,7 +159,7 @@
     , "Gwern Branwen"
     , "2019-08-14"
     , ""
-    , "Efficient random sampling of extreme order statistics (such as 1-in-10-billion) in R code using the beta transform trick, with a case study applying to the Jeanne Calment lifespan anomaly.<br>I implement random sampling from the extremes/order statistics of the Gompertz survival distribution, used to model human life expectancies, with the beta transformation trick and <code>flexsurv</code>/root-finding inversion. I then discuss the unusually robust lifespan record of Jeanne Calment, and show that records like hers (which surpass the runner-up's lifespan by such a degree) are not usually produced by a Gompertz distribution, supporting the claim that her lifespan was indeed unusual even for the record holder.")
+    , "Efficient random sampling of extreme order statistics (such as 1-in-10-billion) in R code using the beta transform trick, with a case study applying to the <a href=\"/Questions#jeanne-calment\">Jeanne Calment lifespan anomaly</a>.<br>I implement random sampling from the extremes/order statistics of the Gompertz survival distribution, used to model human life expectancies, with the beta transformation trick and <code>flexsurv</code>/root-finding inversion. I then discuss the unusually robust lifespan record of Jeanne Calment, and show that records like hers (which surpass the runner-up's lifespan by such a degree) are not usually produced by a Gompertz distribution, supporting the claim that her lifespan was indeed unusual even for the record holder.")
   ),
   ("https://www.nature.com/articles/d41586-019-01770-x",
    ("Russian biologist plans more CRISPR-edited babies: The proposal follows a Chinese scientist who claimed to have created twins from edited embryos last year"
@@ -918,5 +918,19 @@
       , "June 11, 2018"
       , ""
       , "We’ve obtained state-of-the-art results on a suite of diverse language tasks with a scalable, task-agnostic system, which we’re also releasing. Our approach is a combination of two existing ideas: <a href=\"https://arxiv.org/abs/1706.03762\">transformers</a> and <a href=\"https://arxiv.org/abs/1511.01432\">unsupervised pre-training</a>. These results provide a convincing example that pairing supervised learning methods with unsupervised pre-training works very well; this is an idea that many have explored in the past, and we hope our result motivates further research into applying this idea on larger and more diverse&nbsp;datasets.")
-  )
+  ),
+    ("/docs/modafinil/2000-jasinski.pdf",
+     ("An evaluation of the abuse potential of modafinil using methylphenidate as a reference"
+     , "Donald R. Jasinski"
+     , "2000-01-01"
+     , "10.1177/026988110001400107"
+     , "Modafinil is a unique wake-promoting agent. Preclinical studies indicate a mechanism of action which is distinct from that of amphetamine or methylphenidate. To compare the pharmacodynamic profiles of modafinil, methylphenidate, and placebo in humans, a double-blind Latin square crossover study was conducted in 24 male volunteers with a history of polysubstance abuse that included the stimulant cocaine. Each subject was given single oral doses of methylphenidate (45 mg or 90 mg), modafinil (200 mg, 400 mg or 800 mg) and placebo. Measures of subjective, behavioural, and physiological responses were evaluated at fixed intervals during 72 h after each dosing occasion. Subjects discriminated both modafinil and methylphenidate from placebo. Subjects liked the effects of both drugs. However, modafinil differed from methylphenidate in its lack of a significant response on the Amphetamine Scale of the Addiction Research Center Inventory. The profile of physiological effects for modafinil differed from methylphenidate in that it showed greater inhibition of observed and reported sleep, less facilitation of orthostatic tachycardia and less reduction of caloric intake. These findings are consistent with preclinical pharmacological data suggesting that modafinil is not an amphetamine-like agent.")
+    ),
+    ("/Questions#jeanne-calment",
+      ("On the Jeanne Calment longevity anomaly"
+      , "Gwern Branwen"
+      , "2018-10-17"
+      , ""
+      , "Jeanne Calment holds the record for human longevity at ~122.5 years, and will have held it for a minimum of 3 decades, despite countless countervailing factors. No challenging centenarian has come close to her record, and arithmetically, they will not for years to come. Some <a href=\"Order-statistics#sampling-gompertz-distribution-extremes\" title=\"Order Statistics: efficiently sampling Gompertz distribution extremes\">statistical simulations</a> suggest that Calment-like records are not expected from the distribution of human life expectancies, and as time passes, her record becomes increasingly anomalous.<br />This truly remarkable longevity raises the question of whether Calment's longevity is due to the same factors as all other centenarians: did she benefit from some unique factor like genetic mutations, or, as accused in late 2018 of being, is she, in fact, merely a fraud which has escaped previous verification?")
+    )
 ]
