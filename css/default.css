@@ -1110,45 +1110,54 @@ article > :not(#TOC) a:hover {
 
 /* TEXTUAL PER-DOMAIN LINK ICONS: */
 /* Common style */
-#markdownBody a[href*="marginalrevolution.com"]::after,
-#markdownBody a[href*="yvain"]::after,
-#markdownBody a[href*="slatestarcodex"]::after,
-#markdownBody a[href*="overcomingbias.com"]::after,
-#markdownBody a[href*="lesswrong.com"]::after,
-#markdownBody a[href*="predictionbook.com"]::after,
-#markdownBody a[href*="goodreads.com"]::after,
-#markdownBody a[href*="longbets.org"]::after,
-#markdownBody a[href*="longnow.org"]::after,
-#markdownBody a[href*="rosettaproject.org"]::after,
-#markdownBody a[href*="theinterval.org"]::after,
-#markdownBody a[href*="arxiv.org"]::after,
-#markdownBody a[href*="technologyreview.com"]::after,
-#markdownBody a[href*="economist.com"]::after,
+#markdownBody a[href*="17th-angel.tumblr.com"]::after,
 #markdownBody a[href*="andrewgelman.com"]::after,
-#markdownBody a[href*="statmodeling.stat.columbia.edu"]::after,
-#markdownBody a[href*="bbc.com"]::after,
-#markdownBody a[href*="r-project.org"]::after,
-#markdownBody a[href*="rstudio.com"]::after,
-#markdownBody a[href*="haskell.org"]::after,
-#markdownBody a[href*="myanimelist.net"]::after,
-#markdownBody a[href*="urth.net"]::after,
-#markdownBody a[href*="tumblr.com"]::after,
-#markdownBody a[href*="t.umblr.com"]::after,
-#markdownBody a[href*="theatlantic.com"]::after,
-#markdownBody a[href*="filfre.net"]::after,
 #markdownBody a[href*="animenewsnetwork.com"]::after,
-#markdownBody a[href*="tvtropes.org"]::after,
-#markdownBody a[href*="justice.gov"]::after,
-#markdownBody a[href*="theparisreview.org"]::after,
-#markdownBody a[href*="www.wsj.com"]::after,
-#markdownBody a[href*="slate.com"]::after,
+#markdownBody a[href*="arstechnica.com"]::after,
+#markdownBody a[href*="arxiv.org"]::after,
+#markdownBody a[href*="bbc.com"]::after,
+#markdownBody a[href*="bbc.co.uk"]::after,
+#markdownBody a[href*="bloomberg.com"]::after,
+#markdownBody a[href*="economist.com"]::after,
 #markdownBody a[href*="evageeks.org"]::after,
 #markdownBody a[href*="evamonkey.com"]::after,
-#markdownBody a[href*="onegeek.org"]::after,
 #markdownBody a[href*="evaotaku.com"]::after,
-#markdownBody a[href*="khara.co.jp"]::after,
+#markdownBody a[href*="filfre.net"]::after,
 #markdownBody a[href*="gainax.co.jp"]::after,
-#markdownBody a[href*="17th-angel.tumblr.com"]::after,
+#markdownBody a[href*="goodreads.com"]::after,
+#markdownBody a[href*="haskell.org"]::after,
+#markdownBody a[href*="justice.gov"]::after,
+#markdownBody a[href*="khara.co.jp"]::after,
+#markdownBody a[href*="lesswrong.com"]::after,
+#markdownBody a[href*="longbets.org"]::after,
+#markdownBody a[href*="longnow.org"]::after,
+#markdownBody a[href*="marginalrevolution.com"]::after,
+#markdownBody a[href*="medium.com"]::after,
+#markdownBody a[href*="myanimelist.net"]::after,
+#markdownBody a[href*="nature.com"]::after,
+#markdownBody a[href*="onegeek.org"]::after,
+#markdownBody a[href*="overcomingbias.com"]::after,
+#markdownBody a[href*="poniesatdawn.bandcamp.com"]::after,
+#markdownBody a[href*="predictionbook.com"]::after,
+#markdownBody a[href*="r-project.org"]::after,
+#markdownBody a[href*="rosettaproject.org"]::after,
+#markdownBody a[href*="rstudio.com"]::after,
+#markdownBody a[href*="sciencemag.com"]::after,
+#markdownBody a[href*="scholars-stage.blogspot.com"]::after,
+#markdownBody a[href*="slate.com"]::after,
+#markdownBody a[href*="slatestarcodex"]::after,
+#markdownBody a[href*="statmodeling.stat.columbia.edu"]::after,
+#markdownBody a[href*="t.umblr.com"]::after,
+#markdownBody a[href*="technologyreview.com"]::after,
+#markdownBody a[href*="theatlantic.com"]::after,
+#markdownBody a[href*="theinterval.org"]::after,
+#markdownBody a[href*="theparisreview.org"]::after,
+#markdownBody a[href*="tinyletter.com"]::after,
+#markdownBody a[href*="tumblr.com"]::after,
+#markdownBody a[href*="tvtropes.org"]::after,
+#markdownBody a[href*="urth.net"]::after,
+#markdownBody a[href*="www.wsj.com"]::after,
+#markdownBody a[href*="yvain"]::after,
 #markdownBody a[href*="neweva.blog103.fc2.com"]::after {
     font-size: 0.8em;
     font-weight: 600;
@@ -1161,6 +1170,25 @@ article > :not(#TOC) a:hover {
 /* MR: cheaper to abuse Unicode */
 #markdownBody a[href*="marginalrevolution.com"]::after {
     content: "M𝐑"; }
+
+/* likewise */
+#markdownBody a[href*="medium.com"]::after {
+    content: "𝐌"; }
+
+#markdownBody a[href*="poniesatdawn.bandcamp.com"]::after {
+    content: "P@D"; }
+
+/* Avoid the unfortunate connotations of 'SS' */
+#markdownBody a[href*="scholars-stage.blogspot.com"]::after {
+    content: "Ss"; }
+
+/* Ars is an orange box, not usable */
+#markdownBody a[href*="arstechnica.com"]::after {
+    content: "ars"; }
+
+/* Science is just typeset in red */
+#markdownBody a[href*="sciencemag.com"]::after {
+    content: "S"; }
 
 /* SSC logo too bad to use */
 #markdownBody a[href*="yvain"]::after,
@@ -1209,8 +1237,13 @@ article > :not(#TOC) a:hover {
     content: "▅▇▃";
     font-size: 0.6em; }
 
+/* Bloomberg: no usable logo, just an inset-B */
+#markdownBody a[href*="bloomberg.com"]::after {
+    content: "𝐁"; }
+
 /* BBC: no usable logo */
-#markdownBody a[href*="bbc.com"]::after {
+#markdownBody a[href*="bbc.com"]::after,
+#markdownBody a[href*="bbc.co.uk"]::after {
     content: "BBC"; }
 
 /* R: at this point R Studio has taken over a lot of control, so might as well treat them as official too... */
@@ -1230,6 +1263,10 @@ article > :not(#TOC) a:hover {
 /* Gene Wolfe mailing list; no logo */
 #markdownBody a[href*="urth.net"]::after {
     content: "U"; }
+
+/* TinyLetter's icon, without color, isn't memorable enough */
+#markdownBody a[href*="tinyletter.com"]::after {
+    content: "✉"; }
 
 /* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
 #markdownBody a[href*="tumblr.com"]::after,
@@ -1268,6 +1305,10 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="slate.com"]::after {
     content: "S"; }
 
+/* Nature */
+#markdownBody a[href*="nature.com"]::after {
+    content: "N"; }
+
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
 #markdownBody a[href*="evageeks.org"]::after,
 #markdownBody a[href*="evamonkey.com"]::after {
@@ -1299,6 +1340,49 @@ article > :not(#TOC) a:hover {
     margin: 0 0 0 2px;
     opacity: 0.60;
 }
+
+/* PLOS ONE in all their domain permutations... */
+#markdownBody a[href*='plosone.org']::after,
+#markdownBody a[href*='plos.org']::after,
+#markdownBody a[href*='www.plos']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='14.9'%3E%3Cpath d='M12.4 3.2c.6.2 1.1-.2 1.3-.7s-.2-1.1-.7-1.3-1.1.1-1.3.7c-.2.6.2 1.1.7 1.3zm2.5 5.3c.1-.3-.1-.6-.3-.7-.3-.1-.6.1-.6.3-.1.3.1.6.3.6.3.1.6-.1.7-.3zM9.2 1c.3.1.6-.1.7-.3S9.8 0 9.5 0s-.6.1-.7.3.1.6.3.7zm-7.4 9.3c-.3-.1-.6.1-.7.3-.1.3.1.6.3.6.3.1.6-.1.6-.3.1-.3-.1-.6-.3-.7zm9.3 2.5c-.4-.1-.7.1-.9.5s.1.7.5.9.7-.1.9-.5-.1-.7-.5-.9zm-7-10.5c.1-.5-.1-.9-.6-1.1s-.9.1-1.1.6.1.9.6 1.1c.5.2.9-.1 1.1-.6zm1.8 10.9c-.5-.2-.9.1-1.1.6s.1.9.6 1.1.9-.1 1.1-.6c.2-.5-.1-.9-.6-1.1zM.8 5c-.3-.1-.7.1-.8.4-.1.3.1.7.4.8s.7-.1.8-.4c.1-.3-.1-.7-.4-.8z'/%3E%3Cpath d='M11.8 4.7c-.7-1.1-1.8-1.9-3.1-2.2-.4-.1-.8-.2-1.2-.2-.9 0-1.9.3-2.7.8-2.4 1.5-3.1 4.6-1.6 7.1.9 1.5 2.6 2.4 4.3 2.4.9 0 1.9-.3 2.7-.8 2.4-1.5 3.1-4.6 1.6-7.1zm-2 6.5c-.6.4-1.3.6-2 .6.6-.5 1.1-1.2 1.5-2.2l.4-.2 1.1-.7.1.9c0 .1 0 .2 0 .2 0 .1 0 .2-.1.2-.1.3-.6.8-1.1 1.1zM3.7 9.8l.2.1.3.1.6.2c.1.4.2.7.3 1-.6-.3-1.1-.8-1.5-1.4zm1.7-5.9h.3c.1 0 .2 0 .3.1l.3.1c-.3.4-.5.8-.8 1.3-.4.9-.7 1.9-.8 2.9-.1.5 0 .9 0 1.4h-.1l-.3-.1-.3-.1-.2-.1c-.1 0-.2-.1-.2-.2s-.1-.1-.2-.2c-.2-.2-.3-.5-.3-.5-.4-1.6 0-3.2 1.2-4.3.2-.2.6-.4 1.1-.4zm5.7 1.1c.1.2.2.4.3.7l.1.4.1.4c0 .2 0 .3 0 .5l-.1.2c0 .1-.1.2-.1.2-.1.1-.1.2-.2.2-.1.1-.1.2-.2.2L11 8l-.5-.9c-.1-.1-.2-.3-.2-.4l-.2-.3c.1-1.1 0-2-.3-2.7.5.3 1 .8 1.4 1.4zm-3.9 6.3c-.3.2-.6.4-.9.3s-.6-.3-.7-.6c-.1-.3-.2-.5-.3-.8h.9c.2 0 .3 0 .4 0h.5L8 10c.1 0 .3-.1.4-.1-.3.6-.7 1.1-1.2 1.5zm-2-3c.1-1 .3-1.9.7-2.8.2-.5.5-1 .8-1.4l.7.4c.1.1.2.2.4.2l1.6 1.5c-.1 1-.3 1.9-.6 2.8l-.1.2-.7.2-1.3.2c-.1 0-.3 0-.4 0h-.8c-.1 0-.1 0-.2 0-.1-.5-.1-1 0-1.4zm4.8-1.3l.5.9c0 .1.1.2.1.3 0 0-.1 0-.1.1l-.3.2-.7.4c.2-.6.4-1.3.5-1.9zM8.5 3.2c.2.1.4.3.6.6.2.5.3 1.1.3 1.9l-.7-.6c-.1-.1-.2-.2-.4-.3L8 4.5c-.1-.1-.2-.2-.4-.2L7 3.9c.2-.2.3-.3.5-.5.3-.2.7-.3.9-.3h0zm-1.2-.1c-.2.2-.5.4-.7.7 0 0-.1 0-.1 0-.1 0-.2-.1-.4-.1h-.3-.3c.6-.3 1.2-.5 1.9-.5 0 0 0 0 0 0zm4.1 6.3l-.1-.4-.1-.5.2-.2c.1-.1.2-.2.2-.3l.2-.2c0 .6-.2 1.1-.4 1.6zM6.5 8c.3 0 .5-.2.5-.5s-.3-.6-.5-.6c-.3 0-.5.2-.5.5s.2.5.5.5z'/%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='plosone.org']:hover::after,
+#markdownBody a[href*='plos.org']:hover::after,
+#markdownBody a[href*='www.plos']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='plosone.org']::after,
+#markdownBody a[href*='plos.org']::after,
+#markdownBody a[href*='www.plos']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 1px 3px;
+    opacity: 0.50;
+}
+
+/* Patreon: used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don't like the new one */
+#markdownBody a[href*='patreon.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M8.3.3C5.2.3 2.2 2.1 1 4.9.4 6.1.4 7.3.4 8.6v6.2h8.4c3-.2 5.9-2.2 6.9-5.1.8-2.4.1-5.3-1.7-7C12.5 1.1 10.4.3 8.3.3z'/%3E%3Cpath d='M7.9 2c-2.3 0-4.7 1.3-5.5 3.5C1.9 6.6 2.1 7.8 2 9v5h2.3V7C4.5 5.4 6 4.2 7.5 4.1c1.6-.2 3.4.8 3.8 2.4.4 1.3-.4 2.8-1.6 3.4-1.1.6-2.6.6-3.7-.1V12c.8.3 1.7.4 2.6.3 2.2-.2 4.4-1.7 5-3.9.6-1.9-.2-4-1.7-5.1C10.7 2.4 9.3 2 7.9 2zm-.2 10.4z' fill='%23fff'/%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='patreon.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='patreon.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;}
 
 /* Wired */
 #markdownBody a[href*='wired.com']::after {
@@ -1345,6 +1429,25 @@ article > :not(#TOC) a:hover {
     opacity: 0.45;
 }
 #markdownBody a[href*='nytimes.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 0.8em;
+    margin:0 0 2px 3px;
+    opacity: 0.60;
+}
+
+/* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
+#markdownBody a[href*='nlm.nih.gov']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='16' height='16' viewBox='0 0 10.76 10.77'%3E%3Cpath d='M5.32.5c-1.03.13-2.06.35-3 .8-.38.2-.78.45-.93.87-.1.36.13.7.38.93.52.48 1.18.77 1.82 1.05l.36.16c-.6-.3-1.2-.65-1.63-1.17-.18-.2-.3-.54-.1-.78.24-.32.65-.44 1-.55.68-.2 1.4-.26 2.1-.32M5.2 10c1.1-.08 2.18-.32 3.14-.86.34-.2.7-.5.78-.9.05-.42-.24-.77-.55-1-.6-.5-1.36-.8-2.07-1.12a5.1 5.1 0 0 1 1.76 1.3c.14.2.2.5.01.7-.3.33-.74.43-1.15.53a12.3 12.3 0 0 1-1.92.24m.23-4.3c1-.07 2.03-.13 2.92-.63.37-.4.13-1.03-.25-1.32-.38-.3-.83-.5-1.2-.8.82.34 1.7.74 2.2 1.5.24.57-.2 1.18-.7 1.44-1.56.86-3.38.94-5.1 1.17-.5.08-1.08.2-1.4.64-.23.4.06.86.4 1.1.3.25.7.4 1 .65-.4-.1-.78-.34-1.13-.57-.36-.27-.72-.6-.86-1.04-.08-.68.5-1.23 1.1-1.47a8 8 0 0 1 3.05-.67z' fill='%23231f20'/%3E%3Cg stroke='%23000'%3E%3Cg stroke-width='.92'%3E%3Cpath d='M5.32.37C2.7.65-1.12 1.93 3.46 3.9 5.86 4.9-2 1.92 5.3 1.5m-.2 8.34c2.62-.28 6.44-1.7 1.85-3.68-2.3-1 5.46 2.12-1.85 2.54' opacity='0'/%3E%3Cpath d='M5.2 4.47c7.2-.42-.55-3.53 1.75-2.55 4.58 1.98.76 3.4-1.85 3.68h.22C-2 6.03 5.86 9 3.57 8c-4.7-1.98-.76-3.25 1.75-3.53' opacity='0'/%3E%3C/g%3E%3Cg stroke-width='.24'%3E%3Cpath d='M3.28 3.82c-1.2-.54-1.83-1.05-1.94-1.54-.02-.1-.01-.26.03-.35.12-.28.4-.53.85-.76C2.9.83 3.97.55 5.1.4l.2-.02c0 0 .01.25.01.56v.56l-.43.03-.93.1c-1.5.22-2.1.64-1.72 1.24a3.6 3.6 0 0 0 1.27 1.01l.1.07c0 .01-.05-.01-.33-.13z' opacity='0'/%3E%3Cpath d='M5.3.38a9.6 9.6 0 0 0-.2.02c-1.14.15-2.22.43-2.9.77-.46.23-.73.48-.85.76-.04.1-.05.25-.03.35.1.5.75 1 1.94 1.54l.33.13c0 0-.05-.03-.1-.07-.2-.1-.45-.27-.64-.4A2.9 2.9 0 0 1 2.32 3l-.04-.05-.04-.06c-.03-.04-.05-.08-.07-.12l-.02-.06c-.04-.12-.04-.24.01-.35 0 0 0 .03-.01.06s-.02.07-.02.1c0 .02 0 .02.02-.02.02-.07.06-.13.14-.22.26-.28.85-.5 1.77-.63.16-.03.2-.03.15-.04-.06-.01.33-.05.68-.08l.43-.03V.94.38zM4.12 1.6c.03 0 .02 0-.02.01-.03.01-.07.01-.1.01s-.02 0 0-.01l.08-.01h.02zm-.18.02c.03.01.02.01 0 .01s-.03 0-.02 0h.03zm-.1.02c.03 0-.01.01-.1.02l-.46.1c-.02 0 .08-.02.2-.05h.04l.1-.02.18-.03h.04zm-.6.12c-.04.02-.07.02-.05.01l.04-.01zm-.1.02c.01 0-.03.02-.08.03-.13.04-.15.04-.12.02.01 0 .03-.01.04-.02l.08-.02h.07zm-.24.07c.01 0-.04.02-.1.05l-.2.1-.1.04c.03-.03.08-.05.13-.07l.27-.1zm-.42.18c.01 0-.02.02-.07.05-.04.03-.1.08-.14.1-.03.03-.06.05-.06.04.03-.03.05-.06.1-.1l.06-.05c.03-.02.07-.04.1-.07z' opacity='0'/%3E%3C/g%3E%3C/g%3E%3Chead/%3E%3Cg fill='%23231f20'%3E%3Cpath d='M198.32-445.92c-113 12.98-289.85 71.3-78.6 162 103.17 45.36-250.55-90.72 78.6-116.64M193.4-11.72c113-12.98 289.86-77.77 78.6-168.5C168.85-225.58 522.57-83 193.4-63.57'/%3E%3Cuse xlink:href='%23B'/%3E%3C/g%3E%3Cg stroke='%23000'%3E%3Cg stroke-width='41.94'%3E%3Cuse xlink:href='%23C' opacity='0'/%3E%3Cuse xlink:href='%23D' opacity='0'/%3E%3Cuse xlink:href='%23E' opacity='0'/%3E%3C/g%3E%3Cg stroke-width='10.81'%3E%3Cuse xlink:href='%23F' opacity='0'/%3E%3Cuse xlink:href='%23G' opacity='0'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%23231f20'%3E%3Cpath d='M198.32-445.92c-113 12.98-289.85 71.3-78.6 162 103.17 45.36-250.55-90.72 78.6-116.64M193.4-11.72c113-12.98 289.86-77.77 78.6-168.5C168.85-225.58 522.57-83 193.4-63.57'/%3E%3Cuse xlink:href='%23B'/%3E%3C/g%3E%3Cg stroke='%23000'%3E%3Cg stroke-width='41.94'%3E%3Cuse xlink:href='%23C' opacity='0'/%3E%3Cuse xlink:href='%23D' opacity='0'/%3E%3Cuse xlink:href='%23E' opacity='0'/%3E%3C/g%3E%3Cg stroke-width='10.81'%3E%3Cuse xlink:href='%23F' opacity='0'/%3E%3Cuse xlink:href='%23G' opacity='0'/%3E%3C/g%3E%3C/g%3E%3Cdefs %3E%3Cpath id='B' d='M193.4-257.97c329.16-19.44-24.57-162 78.6-116.65 211.26 90.72 34.38 155.54-78.6 168.5h9.83C-125.9-186.7 222.9-50.6 119.73-95.96c-206.34-90.74-34.4-149.06 83.52-162'/%3E%3Cpath id='C' d='M198.32-452.4c-117.9 12.96-289.85 71.3-83.5 162 108.08 45.36-245.64-90.72 83.5-110.16'/%3E%3Cpath id='D' d='M188.5-18.2c117.9-12.96 289.85-77.75 83.52-168.5-103.17-45.36 245.64 97.2-83.52 116.64'/%3E%3Cpath id='E' d='M193.4-264.45c324.25-19.46-24.57-162 78.6-116.65 206.33 90.72 34.38 155.52-83.52 168.5h9.8c-329.14 19.44 24.58 155.52-78.6 110.16-211.26-90.72-34.4-149.05 78.6-162'/%3E%3Cpath id='F' d='M106.7-294.37c-53.63-24.72-82.62-48.13-87.3-70.47a34.5 34.5 0 0 1 1.27-16.11c5.2-12.96 17.45-24.12 38.26-34.8 30.04-15.44 78.56-28.6 129.92-35.26l8.93-1.1c.22 0 .4 11.53.4 25.62v25.62l-19.47 1.5c-14.33 1.1-28.62 2.7-42.03 4.66-67.95 9.97-94.34 29.37-77.5 57 8.46 13.9 29.82 31.2 57.08 46.26 2.82 1.56 5.13 2.94 5.13 3.06 0 .65-2.46-.36-14.67-5.98z'/%3E%3Cpath id='G' d='M197.78-452.12c-.22 0-4.24.5-8.93 1.1-51.36 6.65-99.88 19.82-129.92 35.26-20.8 10.7-33.07 21.85-38.26 34.8-1.6 4-2.2 11.65-1.27 16.12 4.68 22.34 33.67 45.75 87.3 70.47 12.2 5.63 14.67 6.63 14.67 5.98 0-.12-2.3-1.5-5.13-3.06-9.27-5.12-20.34-12.2-28.73-18.28-10.33-7.63-18.7-15.27-24.3-22.3l-1.12-1.46-.76-1.02a54.9 54.9 0 0 1-1.79-2.65c-.01-.02-.02-.04-.04-.05a41.8 41.8 0 0 1-3-5.64c-.37-.85-.68-1.7-.96-2.53-1.88-5.7-1.7-11 .5-15.88.1.2-.15 1.43-.57 2.84-.43 1.46-.76 3.3-.74 4.07.03 1.13.18.95.73-.87 1-3.3 2.74-6 6.4-9.94 11.7-12.62 38.45-22.36 79.77-29.03 7.16-1.16 8.78-1.55 6.93-1.7-2.86-.24 15.04-2.3 30.4-3.5l19.2-1.5v-25.62c0-14.1-.18-25.62-.4-25.62zm-53.2 56.4c1.18.02.97.14-.8.47-1.32.24-3.12.43-4 .4-.9-.02-.7-.12.1-.3l3.74-.52c.33-.02.73-.06.96-.06zm-8.2 1.06c.32 0 .63.03.87.1.5.14.1.25-.93.25-.8 0-1.22-.07-1.12-.17l1.18-.18zm-4.6.76c1.47-.14-.57.34-4.53 1.07a602.4 602.4 0 0 0-13.66 2.72c-3.55.76-6.67 1.36-6.93 1.32-.83-.1 3.6-1.14 8.92-2.24l1.92-.4 4.4-.84 7.88-1.38c.75-.1 1.5-.22 2.02-.27zm-26.67 5.27c.86.01.8.1-.27.45-1.75.58-3.1.6-1.98.06l1.93-.47c.1-.01.23-.04.32-.04zm-4.1 1.14c.22-.03.36-.03.4 0 .12.13-1.76.8-4.18 1.47-5.75 1.62-6.88 1.86-5.2 1.1.42-.2 1.15-.44 1.93-.7l3.8-1.12a33.7 33.7 0 0 1 3.26-.76zm-11 3.17c.38.01-1.7.97-4.65 2.13a159.8 159.8 0 0 0-9.07 3.91l-4.13 2.02c-.22.1-.4.06-.4-.1 0-.04.07-.1.14-.16a80.4 80.4 0 0 1 5.92-3.03l.16-.07c3.58-1.65 7.57-3.2 11.96-4.68.02 0 .06-.01.08-.01zm-18.86 8.3c.24.01-.85.9-3 2.36-1.7 1.15-4.48 3.45-6.2 5.13-1.47 1.43-2.5 2.23-2.57 2.02 1.14-1.4 2.47-2.77 4-4.1.93-.78 1.9-1.57 2.87-2.3a56.8 56.8 0 0 1 4.66-3.04c.1-.05.2-.08.24-.08z'/%3E%3C/defs%3E%3C/svg%3E");
+    }
+#markdownBody a[href*='nlm.nih.gov']:hover::after {
+    opacity: 0.45;
+}
+#markdownBody a[href*='nlm.nih.gov']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -1413,13 +1516,16 @@ article > :not(#TOC) a:hover {
     opacity: 0.50;
 }
 
-/* HN+Y Combinator (shared logo): */
+/* PG/HN/YC (shared logo): */
+#markdownBody a[href*='paulgraham.com']::after,
 #markdownBody a[href*='ycombinator.com']::after {
     background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 20010904//EN' 'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'%3E%3Csvg version='1.0' viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(0 256) scale(.1 -.1)'%3E%3Cpath d='m6 2537c-8-29-8-2485 0-2514l6-23h1268 1268l6 23c8 29 8 2485 0 2514l-6 23h-1268-1268l-6-23zm1080-854c69-142 142-292 162-333l35-75 166 333 166 332h97c54 0 98-3 98-6 0-4-99-192-220-419l-220-414v-265-266h-90-90v267 267l-220 411c-121 227-220 415-220 419 0 3 47 6 105 6h104l127-257z'/%3E%3C/g%3E%3C/svg%3E%0A");
 }
+#markdownBody a[href*='paulgraham.com']:hover::after,
 #markdownBody a[href*='ycombinator.com']:hover::after {
     opacity: 0.4;
 }
+#markdownBody a[href*='paulgraham.com']::after,
 #markdownBody a[href*='ycombinator.com']::after {
     content: "";
     display: inline-block;
@@ -1632,6 +1738,28 @@ article > :not(#TOC) a:hover {
     opacity: 0.60;
 }
 
+/* Dropbox: old file-host, deprecated since they've started killing inactive accounts */
+#markdownBody a[href*='dropbox.com']::after,
+#markdownBody a[href*='dropboxusercontent.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 528 512'%3E%3Cpath d='M264.4 116.3l-132 84.3 132 84.3-132 84.3L0 284.1l132.3-84.3L0 116.3 132.3 32l132.1 84.3zM131.6 395.7l132-84.3 132 84.3-132 84.3-132-84.3zm132.8-111.6l132-84.3-132-83.6L395.7 32 528 116.3l-132.3 84.3L528 284.8l-132.3 84.3-131.3-85z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='dropbox.com']:hover::after,
+#markdownBody a[href*='dropboxusercontent.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='dropbox.com']::after,
+#markdownBody a[href*='dropboxusercontent.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.50;
+}
+
 /* Megaupload/Mega: filesharing (used for big files) */
 #markdownBody a[href*='mega.nz']::after {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0a12 12 0 1 0 0 24 12 12 0 1 0 0-24zm6.23 16.244a.371.371 0 0 1-.373.372H16.3a.371.371 0 0 1-.372-.372v-4.828c0-.04-.046-.06-.08-.033l-3.32 3.32a.742.742 0 0 1-1.043 0l-3.32-3.32c-.027-.027-.08-.007-.08.033v4.828a.371.371 0 0 1-.372.372H6.136a.371.371 0 0 1-.372-.372V7.757a.37.37 0 0 1 .372-.372h1.076a.75.75 0 0 1 .525.22l4.13 4.13a.18.18 0 0 0 .26 0l4.13-4.13c.14-.14.325-.22.525-.22h1.075a.37.37 0 0 1 .372.372z'/%3E%3C/svg%3E");
@@ -1651,13 +1779,22 @@ article > :not(#TOC) a:hover {
     opacity: 0.60;
 }
 
-#markdownBody a[href*='archive.org']::after {
+#markdownBody a[href*='archive.org']::after,
+#markdownBody a[href*='archive-it.org']::after,
+#markdownBody a[href*='archiveteam.org']::after,
+#markdownBody a[href*='waybackmachine.org']::after {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 13.1 15'%3E%3Cpath d='M.1 1.5c.08.12.12.3.23.4H12.6l.3-.4L6.5 0 .1 1.5zm.3 1h12.2v1.1H.4zM1 4.2h1l.2.1.2 3.7-.1 4.5H1l-.3-.1L.5 8c0-1.5.2-3.7.2-3.7l.3-.1zm10 0h1.1l.2.1.2 3.7-.1 4.5-.3.1h-1l-.3-.1-.2-4.4c0-1.5.2-3.7.2-3.7l.2-.2zm-6.7 0h1l.2.1.2 3.7-.1 4.5-.3.1h-.9l-.3-.1-.2-4.4c0-1.5.2-3.7.2-3.7l.2-.2zm3.4 0H9l.2 3.7-.1 4.5-.3.1h-1l-.3-.1L7.3 8c0-1.5.2-3.7.2-3.7l.2-.1zM.4 13.1h12.3v.6H.4zM0 14.3h13.1v.7H0z'/%3E%3Chead/%3E%3Cg stroke='%231a1a1a' stroke-width='.32'%3E%3Cuse xlink:href='%23B' opacity='0' fill='%231a1a1a' fill-opacity='.42'/%3E%3Cpath d='M6.5.01L.1 1.5l.2.4h12.3l.14-.2.14-.2c0 0-1.44-.34-3.2-.75L6.5.01z' opacity='0' fill-opacity='.42'/%3E%3Cpath d='M6.5.01L.1 1.5l.2.4h12.3l.14-.2.14-.2c0 0-1.44-.34-3.2-.75L6.5.01z' opacity='0'/%3E%3Cuse xlink:href='%23B' opacity='0'/%3E%3C/g%3E%3Cg stroke='%23000'%3E%3Cpath d='M.4 3.05V2.5h12.2v1.1H.4z' opacity='0' stroke-width='.32'/%3E%3Cuse xlink:href='%23B' opacity='0' stroke-width='.32'/%3E%3C/g%3E%3Cdefs %3E%3Cpath id='B' d='M.2 1.7l-.1-.2H.2L6.5.01l6.38 1.5c0 0-.06.1-.14.2l-.15.2H.3z'/%3E%3C/defs%3E%3C/svg%3E");
 }
-#markdownBody a[href*='archive.org']:hover::after {
+#markdownBody a[href*='archive.org']:hover::after,
+#markdownBody a[href*='archive-it.org']:hover::after,
+#markdownBody a[href*='archiveteam.org']:hover::after,
+#markdownBody a[href*='waybackmachine.org']:hover::after {
     opacity: 0.3;
 }
-#markdownBody a[href*='archive.org']::after {
+#markdownBody a[href*='archive.org']::after,
+#markdownBody a[href*='archive-it.org']::after,
+#markdownBody a[href*='archiveteam.org']::after,
+markdownBody a[href*='waybackmachine.org']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -1682,6 +1819,8 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href$='/pdf' i]::after,
 #markdownBody a[href$='type=pdf' i]::after,
 #markdownBody a[href*='.pdf#' i]::after,
+#markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
+#markdownBody a[href*='citeseerx.ist.psu.edu' i]::after,
 /*  Textfiles */
 #markdownBody a[href$='.opml' i]::after,
 #markdownBody a[href$='.page' i]::after,
@@ -1742,6 +1881,8 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href$='/pdf' i]:hover::after,
 #markdownBody a[href$='type=pdf' i]:hover::after,
 #markdownBody a[href*='.pdf#' i]:hover::after,
+#markdownBody a[href*='pdfs.semanticscholar.org' i]:hover::after,
+#markdownBody a[href*='citeseerx.ist.psu.edu' i]:hover::after,
 /*  Textfiles */
 #markdownBody a[href$='.opml' i]:hover::after,
 #markdownBody a[href$='.page' i]:hover::after,
@@ -1795,7 +1936,9 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href$='.pdf' i]::after,
 #markdownBody a[href$='/pdf' i]::after,
 #markdownBody a[href$='type=pdf' i]::after,
-#markdownBody a[href*='.pdf#' i]::after {
+#markdownBody a[href*='.pdf#' i]::after,
+#markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
+#markdownBody a[href*='citeseerx.ist.psu.edu' i]::after {
     opacity: 0.5;
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
