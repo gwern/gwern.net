@@ -398,4 +398,5 @@
    , ("static/plugins/interwiki.hs", "/static/plugins/Interwiki.hs")
    , ("TANKS", "/Tanks")
    , ("docs/transhumanism/1990-regis-greatmambochicken.pdf", "/docs/transhumanism/1990-regis-greatmambochickenandthetranshumancondition.pdf")
+   , ("docs/anime/2014-tamerlane-animeyearbyyear-2012.html", "/docs/anime/2014-tamerlane-animeyearbyyear-2001.html")
    ]
