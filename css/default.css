@@ -1096,11 +1096,11 @@ article > :not(#TOC) a:hover {
     content: none;
 }
 
-/*  Internal (within-site) links.
-    */
-#markdownBody a[href^="."]::after,
-#markdownBody a[href^="https://www.gwern.net/"]::after {
-    content: "\1D50A";
+/*  Internal (within-site) links. Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
+ */
+#markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after,
+#markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after {
+    content: "\1D50A"; */* Gothic G */
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
