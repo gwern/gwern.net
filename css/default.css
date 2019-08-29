@@ -1119,6 +1119,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="bbc.co.uk"]::after,
 #markdownBody a[href*="bitcointalk.org"]::after,
 #markdownBody a[href*="bloomberg.com"]::after,
+#markdownBody a[href*="bmj.com"]::after,
 #markdownBody a[href*="economist.com"]::after,
 #markdownBody a[href*="evageeks.org"]::after,
 #markdownBody a[href*="evamonkey.com"]::after,
@@ -1131,6 +1132,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="harney.com"]::after,
 #markdownBody a[href*="justice.gov"]::after,
 #markdownBody a[href*="khara.co.jp"]::after,
+#markdownBody a[href*="kk.org"]::after,
 #markdownBody a[href*="lesswrong.com"]::after,
 #markdownBody a[href*="longbets.org"]::after,
 #markdownBody a[href*="longnow.org"]::after,
@@ -1140,13 +1142,15 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="nature.com"]::after,
 #markdownBody a[href*="onegeek.org"]::after,
 #markdownBody a[href*="overcomingbias.com"]::after,
+#markdownBody a[href*="pnas.org"]::after,
 #markdownBody a[href*="poniesatdawn.bandcamp.com"]::after,
 #markdownBody a[href*="predictionbook.com"]::after,
 #markdownBody a[href*="r-project.org"]::after,
 #markdownBody a[href*="rosettaproject.org"]::after,
 #markdownBody a[href*="rstudio.com"]::after,
 #markdownBody a[href*="salon.com"]::after,
-#markdownBody a[href*="sciencemag.com"]::after,
+#markdownBody a[href*="sciencemag.org"]::after,
+#markdownBody a[href*="sciencedirect.com"]::after,
 #markdownBody a[href*="scholars-stage.blogspot.com"]::after,
 #markdownBody a[href*="slate.com"]::after,
 #markdownBody a[href*="slatestarcodex"]::after,
@@ -1162,7 +1166,10 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="tumblr.com"]::after,
 #markdownBody a[href*="tvtropes.org"]::after,
 #markdownBody a[href*="urth.net"]::after,
+#markdownBody a[href*="www.nber.org"]::after,
 #markdownBody a[href*="www.wsj.com"]::after,
+#markdownBody a[href*="www.google.com"]::after,
+#markdownBody a[href*="wiley.com"]::after,
 #markdownBody a[href*="yunnansourcing.com"]::after,
 #markdownBody a[href*="yvain"]::after,
 #markdownBody a[href*="unsongbook.com"]::after,
@@ -1182,6 +1189,49 @@ article > :not(#TOC) a:hover {
 /* likewise */
 #markdownBody a[href*="medium.com"]::after {
     content: "𝐌"; }
+
+/* Kevin Kelly */
+#markdownBody a[href*="kk.org"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "KK"; }
+
+/* Google searches, other tools; note that there are many Google subdomains, so we narrow down with just 'www' */
+#markdownBody a[href*="www.google.com"]::after {
+    content: "𝐆"; }
+
+/* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
+#markdownBody a[href*="wiley.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "W"; }
+
+/* PNAS: they don't have a real logo, but their favicon does a nice little compact square, and we can replicate that in CSS: */
+#markdownBody a[href*="pnas.org"]::after {
+  content: "PNAS";
+  font-size: 0.5em;
+  width: 1.4em;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-family: Baskerville;
+  line-height: 0.7;
+  text-align: center;
+  position: relative;
+  bottom: 0.3em;
+  left: 0.1em; }
+
+#markdownBody a[href*="www.nber.org"]:not([href$=".pdf"])::after {
+  content: "NBER";
+  font-size: 0.5em;
+  width: 1.35em;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+  font-style: italic;
+  line-height: 0.7;
+  text-align: center;
+  position: relative;
+  bottom: 0.3em;
+  left: 0.1em; }
+
 
 /* Bitcoin Talk: close enough! */
 #markdownBody a[href*="wikipedia.org"]::after {
@@ -1210,10 +1260,16 @@ article > :not(#TOC) a:hover {
 
 /* Ars is an orange box, not usable */
 #markdownBody a[href*="arstechnica.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     content: "ars"; }
 
+/* British Medical Journal or just 'bmj' */
+#markdownBody a[href*="bmj.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "bmj"; }
+
 /* Science is just typeset in red */
-#markdownBody a[href*="sciencemag.com"]::after {
+#markdownBody a[href*="sciencemag.org"]::after {
     content: "S"; }
 
 /* SSC logo too bad to use */
@@ -1254,11 +1310,18 @@ article > :not(#TOC) a:hover {
 
 /* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */
 #markdownBody a[href*="technologyreview.com"]::after {
-    content: "T"; }
+    content: "T";
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif; }
 
 /* Economist: logo is just 'Economist'... */
 #markdownBody a[href*="economist.com"]::after {
-    content: "E"; }
+    content: "E";
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif; }
+
+/* Elsevier/Sciencedirect.com: also an 'E' */
+#markdownBody a[href*="sciencedirect.com"]::after {
+    content: "E";
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif; }
 
 /* Favicon is a little normal distribution/histogram */
 #markdownBody a[href*="andrewgelman.com"]::after,
@@ -1273,6 +1336,7 @@ article > :not(#TOC) a:hover {
 /* BBC: no usable logo */
 #markdownBody a[href*="bbc.com"]::after,
 #markdownBody a[href*="bbc.co.uk"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     content: "BBC"; }
 
 /* R: at this point R Studio has taken over a lot of control, so might as well treat them as official too... */
@@ -1287,6 +1351,7 @@ article > :not(#TOC) a:hover {
 
 /* MAL: the blue of their logo doesn't work, so just text */
 #markdownBody a[href*="myanimelist.net"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     content: "MAL"; }
 
 /* Gene Wolfe mailing list; no logo */
@@ -1306,6 +1371,7 @@ article > :not(#TOC) a:hover {
 
 /* The Atlantic: replicate sloping by italics */
 #markdownBody a[href*="theatlantic.com"]::after {
+    font-style: italic;
     content: "A"; }
 
 /* Filfre.net/The Digital Antiquarian has no logo or usable substitue... */
@@ -1314,6 +1380,7 @@ article > :not(#TOC) a:hover {
 
 /* ANN */
 #markdownBody a[href*="animenewsnetwork.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     content: "ANN"; }
 
 /* TV Tropes: their lampshade icon is unrecognizable & hard to see small */
@@ -1361,6 +1428,25 @@ article > :not(#TOC) a:hover {
     opacity: 0.3;
 }
 #markdownBody a[href*='biorxiv.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* Google Scholar */
+#markdownBody a[href*='scholar.google.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='9.9' fill-rule='evenodd'%3E%3Cpath d='M3.8 1.8L0 3.5a193 193 0 0 0 3.9 1.8L7.7 7l5.8-2.6c0 0 0 .3 0 .6 0 .5 0 .6-.1.6-.6 0-.8 1.1-.3 1.6l.3.3-.3 2.1c0 .1 0 .1.7.1.8 0 .8.1.6-1.3l-.1-.9.3-.2c.5-.4.4-1.2-.1-1.5l-.2-.1V4.1l.7-.3c.4-.2.6-.3.6-.4C15.3 3.4 8 .2 7.8.1a83 83 0 0 0-3.9 1.7m-.3 4.4c-.1.2-.2.6-.2 1v.6h.5c1.5.2 2.9 1 3.7 2.1l.2.3.2-.2c.8-1.1 2.1-1.9 3.4-2.2l.8-.1V7c0-.6-.2-1.2-.4-1.2 0 0-.9.4-2 .8l-2 .8c-.1 0-.9-.4-2-.8-2.2-1-2-.9-2.2-.5'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='scholar.google.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='scholar.google.com']::after {
     content: "";
     display: inline-block;
     position: static;
