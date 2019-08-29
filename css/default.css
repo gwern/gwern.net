@@ -1117,15 +1117,18 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="arxiv.org"]::after,
 #markdownBody a[href*="bbc.com"]::after,
 #markdownBody a[href*="bbc.co.uk"]::after,
+#markdownBody a[href*="bitcointalk.org"]::after,
 #markdownBody a[href*="bloomberg.com"]::after,
 #markdownBody a[href*="economist.com"]::after,
 #markdownBody a[href*="evageeks.org"]::after,
 #markdownBody a[href*="evamonkey.com"]::after,
 #markdownBody a[href*="evaotaku.com"]::after,
+#markdownBody a[href*="www.fanfiction.net"]::after,
 #markdownBody a[href*="filfre.net"]::after,
 #markdownBody a[href*="gainax.co.jp"]::after,
 #markdownBody a[href*="goodreads.com"]::after,
 #markdownBody a[href*="haskell.org"]::after,
+#markdownBody a[href*="harney.com"]::after,
 #markdownBody a[href*="justice.gov"]::after,
 #markdownBody a[href*="khara.co.jp"]::after,
 #markdownBody a[href*="lesswrong.com"]::after,
@@ -1142,6 +1145,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="r-project.org"]::after,
 #markdownBody a[href*="rosettaproject.org"]::after,
 #markdownBody a[href*="rstudio.com"]::after,
+#markdownBody a[href*="salon.com"]::after,
 #markdownBody a[href*="sciencemag.com"]::after,
 #markdownBody a[href*="scholars-stage.blogspot.com"]::after,
 #markdownBody a[href*="slate.com"]::after,
@@ -1153,11 +1157,15 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="theinterval.org"]::after,
 #markdownBody a[href*="theparisreview.org"]::after,
 #markdownBody a[href*="tinyletter.com"]::after,
+#markdownBody a[href*="www.mail-archive.com"]::after,
+#markdownBody a[href*="groups.google.com"]::after,
 #markdownBody a[href*="tumblr.com"]::after,
 #markdownBody a[href*="tvtropes.org"]::after,
 #markdownBody a[href*="urth.net"]::after,
 #markdownBody a[href*="www.wsj.com"]::after,
+#markdownBody a[href*="yunnansourcing.com"]::after,
 #markdownBody a[href*="yvain"]::after,
+#markdownBody a[href*="unsongbook.com"]::after,
 #markdownBody a[href*="neweva.blog103.fc2.com"]::after {
     font-size: 0.8em;
     font-weight: 600;
@@ -1175,8 +1183,26 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="medium.com"]::after {
     content: "𝐌"; }
 
+/* Bitcoin Talk: close enough! */
+#markdownBody a[href*="wikipedia.org"]::after {
+    content: "฿⃝"; }
+
+#markdownBody a[href*="salon.com"]::after {
+    content: "s"; }
+
+/* The Harney & Sons logo is too fancy to scale down reasonably */
+#markdownBody a[href*="harney.com"]::after {
+    content: "H"; }
+
+/* The FF.net logo is pretty crazy, and I don't think anyone would recognize it in monochrome */
+#markdownBody a[href*="www.fanfiction.net"]::after {
+    content: "FF"; }
+
 #markdownBody a[href*="poniesatdawn.bandcamp.com"]::after {
     content: "P@D"; }
+
+#markdownBody a[href*="yunnansourcing.com"]::after {
+    content: "ʸₛ"; }
 
 /* Avoid the unfortunate connotations of 'SS' */
 #markdownBody a[href*="scholars-stage.blogspot.com"]::after {
@@ -1194,6 +1220,9 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="yvain"]::after,
 #markdownBody a[href*="slatestarcodex"]::after {
     content: "SSC"; }
+/* SSC's book */
+#markdownBody a[href*="unsongbook.com"]::after {
+    content: "א"; }
 
 /* OB logo too bad to use */
 #markdownBody a[href*="overcomingbias.com"]::after {
@@ -1264,8 +1293,10 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="urth.net"]::after {
     content: "U"; }
 
-/* TinyLetter's icon, without color, isn't memorable enough */
-#markdownBody a[href*="tinyletter.com"]::after {
+/* TinyLetter's icon, without color, isn't memorable enough; throw in the other email services */
+#markdownBody a[href*="tinyletter.com"]::after,
+#markdownBody a[href*="groups.google.com"]::after,
+#markdownBody a[href*="www.mail-archive.com"]::after {
     content: "✉"; }
 
 /* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
@@ -1374,6 +1405,24 @@ article > :not(#TOC) a:hover {
     opacity: 0.3;
 }
 #markdownBody a[href*='patreon.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;}
+
+/* Upton Tea */
+#markdownBody a[href*='uptontea.com']::after {
+              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='9.6'%3E%3Cpath d='M14.9 2c-.7-.5-1-.4-1-.4-1.2.5-1.6 2.4-1.6 2.4-.1.4-.7.4-1.2.3v-.1c-.3-.8-1.2-1.5-1.2-1.5-.3-.2-.3-.5-.3-.5.1-.2.1-.3.1-.3-.2-.5-2.2-.6-2.2-.6-.3 0-.3-.3-.3-.3.2-.1.2-.4.2-.4 0-.6-.7-.6-.8-.6s-.8 0-.8.6c0 0 0 .3.2.4 0 0 0 .3-.3.3 0 0-2.1.1-2.2.6 0 0-.1.2.1.3 0 0 0 .3-.3.5v.1c-.3-.4-1-1.1-2.1-.7 0 0-1 .3-1 1.8 0 0 0 1.4 1.4 2.4 0 0 .3.2.6.4.2.7.6 1.4 1.5 1.9 0 0 .2.2.2.5 0 0 .7.5 2.6.5h.5c1.9 0 2.6-.5 2.6-.5 0-.3.2-.5.2-.5.7-.4 1.1-1 1.3-1.5 2.3-.4 2.6-3.2 2.6-3.2.2-1.5 1.2-1.6 1.2-1.6.4 0 .2-.3.2-.3zM1.2 5.5s-.9-1-.7-2c0 0 .1-.8.9-1 0 0 1-.1 1.1.8h0c-.2.2-.4.6-.5.9 0 0-.2.8-.2 1.7-.2-.1-.5-.3-.7-.5z'/%3E%3Cpath d='M14.9 2c-.5-.6-1.5-.4-1.8.3-.4.6-.6 1.3-.8 1.9-.6.6-1.4 0-1.5-.7-.3-.6-1.1-.8-1.1-1.5-.1-.7-1-.6-1.6-.7-.6.1-1.1-.2-.7-.8C7.2-.2 6-.2 5.8.4c0 .4.3.9-.4.9-.7.1-1.5 0-2 .6.2.5-.4 1.2-.7.5C2 1.6.4 2 .1 3.1-.3 4.4.5 5.9 1.7 6.5c.5.5.6 1.3 1.2 1.8.6.3.7 1.2 1.5 1.2 1.4.2 2.8.3 4.2 0 .8.1.8-.8 1.4-1 .6-.5.8-1.4 1.7-1.5 1.2-.6 1.7-2 1.8-3.2.1-.8.8-1.3 1.4-1.5v-.1l-.1-.1zM1.2 5.5C.6 4.8.2 3.7.8 2.9c.5-.7 1.7-.4 1.8.4C1.9 4 1.8 5 1.8 6c-.2-.1-.5-.3-.7-.5z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='uptontea.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='uptontea.com']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -1633,7 +1682,10 @@ article > :not(#TOC) a:hover {
 }
 
 /* Wikipedia */
-#markdownBody a[href*="wikipedia.org/wiki/"]::after {
+#markdownBody a[href*="wikipedia.org"]::after,
+#markdownBody a[href*="wikimedia.org"]::after,
+#markdownBody a[href*="wikimediafoundation.org"]::after,
+#markdownBody a[href*="wikisource.org"]::after {
     content: "";
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj48cGF0aCBkPSJNNjQwIDUxLjJsLS4zIDEyLjJjLTI4LjEuOC00NSAxNS44LTU1LjggNDAuMy0yNSA1Ny44LTEwMy4zIDI0MC0xNTUuMyAzNTguNkg0MTVsLTgxLjktMTkzLjFjLTMyLjUgNjMuNi02OC4zIDEzMC05OS4yIDE5My4xLS4zLjMtMTUgMC0xNS0uM0MxNzIgMzUyLjMgMTIyLjggMjQzLjQgNzUuOCAxMzMuNCA2NC40IDEwNi43IDI2LjQgNjMuNC4yIDYzLjdjMC0zLjEtLjMtMTAtLjMtMTQuMmgxNjEuOXYxMy45Yy0xOS4yIDEuMS01Mi44IDEzLjMtNDMuMyAzNC4yIDIxLjkgNDkuNyAxMDMuNiAyNDAuMyAxMjUuNiAyODguNiAxNS0yOS43IDU3LjgtMTA5LjIgNzUuMy0xNDIuOC0xMy45LTI4LjMtNTguNi0xMzMuOS03Mi44LTE2MC05LjctMTcuOC0zNi4xLTE5LjQtNTUuOC0xOS43VjQ5LjhsMTQyLjUuM3YxMy4xYy0xOS40LjYtMzguMSA3LjgtMjkuNCAyNi4xIDE4LjkgNDAgMzAuNiA2OC4xIDQ4LjEgMTA0LjcgNS42LTEwLjggMzQuNy02OS40IDQ4LjEtMTAwLjggOC45LTIwLjYtMy45LTI4LjYtMzguNi0yOS40LjMtMy42IDAtMTAuMy4zLTEzLjYgNDQuNC0uMyAxMTEuMS0uMyAxMjMuMS0uNnYxMy42Yy0yMi41LjgtNDUuOCAxMi44LTU4LjEgMzEuN2wtNTkuMiAxMjIuOGM2LjQgMTYuMSA2My4zIDE0Mi44IDY5LjIgMTU2LjdMNTU5LjIgOTEuOGMtOC42LTIzLjEtMzYuNC0yOC4xLTQ3LjItMjguM1Y0OS42bDEyNy44IDEuMS4yLjV6Ii8+PC9zdmc+');
     background-repeat: no-repeat;
@@ -1645,7 +1697,10 @@ article > :not(#TOC) a:hover {
     vertical-align: baseline;
     opacity: 0.85;
 }
-#markdownBody a[href*="wikipedia.org/wiki/"]:hover::after {
+#markdownBody a[href*="wikipedia.org"]:hover::after,
+#markdownBody a[href*="wikimedia.org"]:hover::after,
+#markdownBody a[href*="wikimediafoundation.org"]:hover::after,
+#markdownBody a[href*="wikisource.org"]:hover::after {
     opacity: 0.6;
 }
 
@@ -1821,6 +1876,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href*='.pdf#' i]::after,
 #markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
 #markdownBody a[href*='citeseerx.ist.psu.edu' i]::after,
+#markdownBody a[href*='eprint.iacr.org' i]::after,
 /*  Textfiles */
 #markdownBody a[href$='.opml' i]::after,
 #markdownBody a[href$='.page' i]::after,
@@ -1883,6 +1939,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href*='.pdf#' i]:hover::after,
 #markdownBody a[href*='pdfs.semanticscholar.org' i]:hover::after,
 #markdownBody a[href*='citeseerx.ist.psu.edu' i]:hover::after,
+#markdownBody a[href*='eprint.iacr.org' i]:hover::after,
 /*  Textfiles */
 #markdownBody a[href$='.opml' i]:hover::after,
 #markdownBody a[href$='.page' i]:hover::after,
@@ -1938,7 +1995,8 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='type=pdf' i]::after,
 #markdownBody a[href*='.pdf#' i]::after,
 #markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
-#markdownBody a[href*='citeseerx.ist.psu.edu' i]::after {
+#markdownBody a[href*='citeseerx.ist.psu.edu' i]::after,
+#markdownBody a[href*='eprint.iacr.org' i]::after {
     opacity: 0.5;
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
