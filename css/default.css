@@ -1185,7 +1185,7 @@ article > :not(#TOC) a:hover {
 
 /* Bitcoin Talk: close enough! */
 #markdownBody a[href*="wikipedia.org"]::after {
-    content: "฿⃝"; }
+    content: "₿⃝"; }
 
 #markdownBody a[href*="salon.com"]::after {
     content: "s"; }
