@@ -1117,6 +1117,11 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="arxiv.org"]::after,
 #markdownBody a[href*="bbc.com"]::after,
 #markdownBody a[href*="bbc.co.uk"]::after,
+#markdownBody a[href*="www.cdc.gov"]::after,
+#markdownBody a[href*="www.vox.com"]::after,
+#markdownBody a[href*="www.vanityfair.com"]::after,
+#markdownBody a[href*="www.motherjones.com"]::after,
+#markdownBody a[href*="www.edge.org"]::after,
 #markdownBody a[href*="bitcointalk.org"]::after,
 #markdownBody a[href*="bloomberg.com"]::after,
 #markdownBody a[href*="bmj.com"]::after,
@@ -1168,6 +1173,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="tvtropes.org"]::after,
 #markdownBody a[href*="urth.net"]::after,
 #markdownBody a[href*="www.nber.org"]::after,
+#markdownBody a[href*="mlp.fandom.com"]::after,
 #markdownBody a[href*="www.wsj.com"]::after,
 #markdownBody a[href*="www.google.com"]::after,
 #markdownBody a[href*="wiley.com"]::after,
@@ -1233,6 +1239,19 @@ article > :not(#TOC) a:hover {
   bottom: 0.3em;
   left: 0.1em; }
 
+#markdownBody a[href*="mlp.fandom.com"]::after {
+  content: "MLPW";
+  font-size: 0.5em;
+  width: 1.35em;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+  font-style: italic;
+  line-height: 0.7;
+  text-align: center;
+  position: relative;
+  bottom: 0.3em;
+  left: 0.1em; }
 
 /* Bitcoin Talk: close enough! */
 #markdownBody a[href*="wikipedia.org"]::after {
@@ -1240,6 +1259,21 @@ article > :not(#TOC) a:hover {
 
 #markdownBody a[href*="salon.com"]::after {
     content: "s"; }
+
+#markdownBody a[href*="www.vox.com"]::after {
+    font-style: italic;
+    content: "Vox"; }
+
+#markdownBody a[href*="www.vanityfair.com"]::after {
+    content: "VF"; }
+
+#markdownBody a[href*="www.motherjones.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "MJ"; }
+
+#markdownBody a[href*="www.edge.org"]::after {
+    font-style: italic;
+    content: "E"; }
 
 /* The Harney & Sons logo is too fancy to scale down reasonably */
 #markdownBody a[href*="harney.com"]::after {
@@ -1387,6 +1421,9 @@ article > :not(#TOC) a:hover {
 /* TV Tropes: their lampshade icon is unrecognizable & hard to see small */
 #markdownBody a[href*="tvtropes.org"]::after {
     content: "TV"; }
+
+#markdownBody a[href*="www.cdc.gov"]::after {
+    content: "CDC"; }
 
 /* US federal Department of Justice */
 #markdownBody a[href*="justice.gov"]::after {
@@ -1620,13 +1657,16 @@ article > :not(#TOC) a:hover {
 }
 
 /* El Grauniad */
-#markdownBody a[href*='theguardian.com']::after {
+#markdownBody a[href*='theguardian.com']::after,
+#markdownBody a[href*='www.guardian.co.uk']::after {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16.15'%3E%3Cpath d='M7.536 16.143C4.497 16 1.683 13.932.58 11.103-.63 8.166.092 4.55 2.377 2.334 4.557.087 8.118-.628 11 .586c3.024 1.2 5.114 4.38 4.994 7.634.006 3.32-2.29 6.478-5.442 7.512-.97.335-1.994.45-3.016.41zm1.085-1.763c.09-.542-1.052-.224-1.298-.763-1.16-1.134-1.415-2.85-1.524-4.398-.042-2.013-.07-4.197 1.067-5.95.392-.602 1.054-1.023 1.78-1.048.024-.583-1.003-.11-1.368-.163-2.434.412-4.6 2.357-5 4.833-.295 1.8.002 3.803 1.225 5.233 1.232 1.475 3.2 2.39 5.128 2.257zm1.127-.305a7.02 7.02 0 0 0 2.377-1.255l.027-3.9c.26-.145.616-.22.82-.408.08-.413-.477-.15-.7-.223l-3.805.01c-.06.56 1.2.27.866 1.05l.01 4.83c.142-.02.28-.063.416-.103zm2.36-8.444l.013-2.266c-.74-.734-1.747-1.186-2.76-1.386-.02.66.833 1.273 1.162 1.9l1.313 1.785c.086-.013.204.033.272-.033z'/%3E%3C/svg%3E");
 }
-#markdownBody a[href*='theguardian.com']:hover::after {
+#markdownBody a[href*='theguardian.com']:hover::after,
+#markdownBody a[href*='www.guardian.co.uk']:hover::after {
     opacity: 0.3;
 }
-#markdownBody a[href*='theguardian.com']::after {
+#markdownBody a[href*='theguardian.com']::after,
+#markdownBody a[href*='www.guardian.co.uk']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -1984,6 +2024,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 /*  Word */
 #markdownBody a[href$='.doc' i]::after,
 #markdownBody a[href$='.docx' i]::after,
+#markdownBody a[href*='docs.google.com' i]::after,
 /*  Excel */
 #markdownBody a[href$='.xls' i]::after,
 #markdownBody a[href$='.xlsx' i]::after,
@@ -2047,6 +2088,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 /*  Word */
 #markdownBody a[href$='.doc' i]:hover::after,
 #markdownBody a[href$='.docx' i]:hover::after,
+#markdownBody a[href*='docs.google.com' i]:hover::after,
 /*  Excel */
 #markdownBody a[href$='.xls' i]:hover::after,
 #markdownBody a[href$='.xlsx' i]:hover::after,
@@ -2116,7 +2158,8 @@ markdownBody a[href*='waybackmachine.org']::after {
 /*  Word (& compatible) documents.
     */
 #markdownBody a[href$='.doc' i]::after,
-#markdownBody a[href$='.docx' i]::after {
+#markdownBody a[href$='.docx' i]::after,
+#markdownBody a[href*='docs.google.com' i]::after {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em01Ny4xIDEyMEgzMDVjNy43IDAgMTMuNCA3LjEgMTEuNyAxNC43bC0zOCAxNjhjLTEuMiA1LjUtNi4xIDkuMy0xMS43IDkuM2gtMzhjLTUuNSAwLTEwLjMtMy44LTExLjYtOS4xLTI1LjgtMTAzLjUtMjAuOC04MS4yLTI1LjYtMTEwLjVoLS41Yy0xLjEgMTQuMy0yLjQgMTcuNC0yNS42IDExMC41LTEuMyA1LjMtNi4xIDkuMS0xMS42IDkuMUgxMTdjLTUuNiAwLTEwLjUtMy45LTExLjctOS40bC0zNy44LTE2OGMtMS43LTcuNSA0LTE0LjYgMTEuNy0xNC42aDI0LjVjNS43IDAgMTAuNyA0IDExLjggOS43IDE1LjYgNzggMjAuMSAxMDkuNSAyMSAxMjIuMiAxLjYtMTAuMiA3LjMtMzIuNyAyOS40LTEyMi43IDEuMy01LjQgNi4xLTkuMSAxMS43LTkuMWgyOS4xYzUuNiAwIDEwLjQgMy44IDExLjcgOS4yIDI0IDEwMC40IDI4LjggMTI0IDI5LjYgMTI5LjQtLjItMTEuMi0yLjYtMTcuOCAyMS42LTEyOS4yIDEtNS42IDUuOS05LjUgMTEuNS05LjV6TTM4NCAxMjEuOXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
 }
 
