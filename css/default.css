@@ -1125,6 +1125,7 @@ article > :not(#TOC) a:hover {
 #markdownBody a[href*="evamonkey.com"]::after,
 #markdownBody a[href*="evaotaku.com"]::after,
 #markdownBody a[href*="www.fanfiction.net"]::after,
+#markdownBody a[href*="fda.gov"]::after,
 #markdownBody a[href*="filfre.net"]::after,
 #markdownBody a[href*="gainax.co.jp"]::after,
 #markdownBody a[href*="goodreads.com"]::after,
@@ -1390,6 +1391,11 @@ article > :not(#TOC) a:hover {
 /* US federal Department of Justice */
 #markdownBody a[href*="justice.gov"]::after {
     content: "DoJ"; }
+
+/* FDA/Food & Drug Agency */
+#markdownBody a[href*="fda.gov"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "FDA"; }
 
 /* The Paris Review: not even going to try to make their weird bird logo work */
 #markdownBody a[href*="theparisreview.org"]::after {
