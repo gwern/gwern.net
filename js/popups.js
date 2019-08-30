@@ -1,3 +1,5 @@
+
+
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // 2019
@@ -12,7 +14,7 @@
 
 // On mobile, clicking on links (as opposed to hovering over links on desktop) will bring up the annotation or preview; another click on it or the popup will then go to it. A click outside it de-activates it.
 
-// For an example of a Hakyll library which generates annotations for Wikipedia/Pubmed Central/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
+// For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 document.querySelectorAll("#popups-styles").forEach(style => style.remove());
 document.querySelector("head").insertAdjacentHTML("beforeend", "<style id='popups-styles'>" + `
@@ -148,6 +150,9 @@ Extracts = {
     popupFadeTimeout: false,
     popupKillTimeout: false,
     popupTimeout: false,
+    popupBreathingRoomFactor: 1.25,
+    popupBreathingRoomConstantX: 15,
+    popupBreathingRoomConstantY: 15,
     popup: null,
     encoder: new TextEncoder(),
     previewsPath: "/static/previews/",
@@ -240,10 +245,9 @@ Extracts = {
                                             </div>`;
 
             } else {
-                var canonicalHref = "";
                 // the SHA-1 hashes are generated of local paths like 'docs/statistics/decision/2006-drescher-goodandreal.pdf', not 'https://www.gwern.net/docs/statistics/decision/2006-drescher-goodandreal.pdf', so we can't just use `target.href` for those.
                 // If it's a remote URL, then it's fine.
-                if (target.href.startsWith("https://www.gwern.net/")) { canonicalHref = target.pathname.substr(1); } else { canonicalHref = target.href; }
+                const canonicalHref = target.href.startsWith("https://www.gwern.net/") ? target.pathname.substr(1) : target.href;
                 const hashPromise = crypto.subtle.digest('SHA-1', Extracts.encoder.encode(canonicalHref));
                 hashPromise.then(async (linkURLArrayBuffer) => {
                     const linkURLHash = Array.from(new Uint8Array(linkURLArrayBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -264,8 +268,8 @@ Extracts = {
                 the popup).
                 */
             var popupBreathingRoom = {
-                x:  (Math.round(targetAbsoluteRect.height) * 1.25),
-                y:  (Math.round(targetAbsoluteRect.height) * 1.25)
+                x:  (Math.round(targetAbsoluteRect.height) * Extracts.popupBreathingRoomFactor + Extracts.popupBreathingRoomConstantX),
+                y:  (Math.round(targetAbsoluteRect.height) * Extracts.popupBreathingRoomFactor + Extracts.popupBreathingRoomConstantY)
             };
 
             /*  Set the horizontal position first; this causes the popup to be
@@ -274,8 +278,9 @@ Extracts = {
             var popupLeft = targetPosition.left;
             if (popupLeft + Extracts.minPopupWidth > layoutParentAbsoluteRect.width)
                 popupLeft = layoutParentAbsoluteRect.width - Extracts.minPopupWidth;
+            popupLeft += popupBreathingRoom.x;
             if (popupLeft < 0)
-                popupLeft = 0;
+                popupLeft = popupBreathingRoom.x;
             Extracts.popup.style.left = popupLeft + "px";
 
             //  Now we know how tall the popup is...
