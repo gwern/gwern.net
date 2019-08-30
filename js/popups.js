@@ -1,5 +1,3 @@
-
-
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // 2019
@@ -75,6 +73,9 @@ document.querySelector("head").insertAdjacentHTML("beforeend", "<style id='popup
 #popupdiv > div.popup-screenshot img {
     display: block;
 }
+#popupdiv > div.popup-screenshot a::after {
+    content: none;
+}
 
 .popup-close {
     display: none;
@@ -137,6 +138,9 @@ document.querySelector("head").insertAdjacentHTML("beforeend", "<style id='popup
     filter: none;
     cursor: initial;
     transform: none;
+}
+#markdownBody #popupdiv .popup-screenshot a img {
+    cursor: pointer;
 }
 ` + "</style>");
 
@@ -252,7 +256,7 @@ Extracts = {
                 hashPromise.then(async (linkURLArrayBuffer) => {
                     const linkURLHash = Array.from(new Uint8Array(linkURLArrayBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
                     Extracts.popup.innerHTML = `<div class='popup-screenshot'>
-                                                    <img src='${Extracts.previewsPath}${linkURLHash}.${Extracts.previewsFileExtension}'>
+                                                    <a alt='Screenshot of page at ${target.href}' title='${target.href}' target='_new' href='${target.href}'><img src='${Extracts.previewsPath}${linkURLHash}.${Extracts.previewsFileExtension}'></a>
                                                 </div>`;
                 });
             }
