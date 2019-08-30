@@ -236,7 +236,7 @@ Extracts = {
                 Extracts.popup.innerHTML =
                     `<div class='popup-extract' onclick='parentNode.remove()'>
                         ${closeBtn}
-                        <p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a><a class='title-link' href='${target.href}' title='${target.href}'>${target.dataset.popupTitle || ""}</a></p>
+                        <p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a><a class='title-link' target='_new' href='${target.href}' title='${target.href}'>${target.dataset.popupTitle || ""}</a></p>
                         <p class='data-field author-plus-date'>${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}</p>
                         <div class='data-field abstract' onclick='parentNode.remove()'>${target.dataset.popupAbstract || ""}</div>
                     </div>`;
@@ -251,7 +251,7 @@ Extracts = {
             } else {
                 // the SHA-1 hashes are generated of local paths like 'docs/statistics/decision/2006-drescher-goodandreal.pdf', not 'https://www.gwern.net/docs/statistics/decision/2006-drescher-goodandreal.pdf', so we can't just use `target.href` for those.
                 // If it's a remote URL, then it's fine.
-                const canonicalHref = target.href.startsWith("https://www.gwern.net/") ? target.pathname.substr(1) : target.href;
+                const canonicalHref = target.href.startsWith("https://www.gwern.net/") ? (target.pathname.substr(1)+target.hash) : target.href;
                 const hashPromise = crypto.subtle.digest('SHA-1', Extracts.encoder.encode(canonicalHref));
                 hashPromise.then(async (linkURLArrayBuffer) => {
                     const linkURLHash = Array.from(new Uint8Array(linkURLArrayBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
