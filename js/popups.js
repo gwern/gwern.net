@@ -118,7 +118,7 @@ document.querySelector("head").insertAdjacentHTML("beforeend", "<style id='popup
 
 Extracts = {
     contentContainerSelector: "#markdownBody",
-    targetElementsSelector: "#markdownBody a[href^='http']",
+    targetElementsSelector: "#markdownBody a[href^='http'], #markdownBody a[href^='./']",
     minPopupWidth: 480,
     popupTriggerDelay: 50,
     popupFadeoutDelay: 50,
@@ -192,7 +192,12 @@ Extracts = {
                         <div class='data-field abstract'>${target.dataset.popupAbstract || ""}</div>
                     </div>`;
             } else {
-                const hashPromise = crypto.subtle.digest('SHA-1', Extracts.encoder.encode(target.href));
+                var canonicalHref = "";
+                console.log(target.href);
+                // the SHA-1 hashes are generated of local paths like 'docs/statistics/decision/2006-drescher-goodandreal.pdf', not 'https://www.gwern.net/docs/statistics/decision/2006-drescher-goodandreal.pdf', so we can't just use `target.href` for those.
+                // If it's a remote URL, then it's fine.
+                if (target.href.startsWith("https://www.gwern.net/")) { canonicalHref = target.pathname.substr(1); } else { canonicalHref = target.href; }
+                const hashPromise = crypto.subtle.digest('SHA-1', Extracts.encoder.encode(canonicalHref));
                 hashPromise.then((linkURLArrayBuffer) => {
                     const linkURLHash = Array.from(new Uint8Array(linkURLArrayBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
                     Extracts.popup.innerHTML = `<div class='popup-screenshot'>
