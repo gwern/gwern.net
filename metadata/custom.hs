@@ -399,6 +399,13 @@
    , ""
    , "Subscription page for the monthly gwern.net newsletter. There are monthly updates, which will include summaries of projects I've worked on that month (the same as the <a href=\"https://www.gwern.net/Changelog\">changelog</a>), collations of links or discussions from <a href=\"https://www.reddit.com/r/gwern/\">my subreddit</a>, and book/movie reviews. You can also browse <a href=\"https://www.gwern.net/tags/newsletter\">the archives since December 2013</a>.")
   ),
+  ("/tags/newsletter",
+   ("Gwern.net newsletter archives"
+   , "Gwern Branwen"
+   , "2013-12-01"
+   , ""
+   , "Newsletter tag: archive of all issues back to 2013 for the gwern.net newsletter (monthly updates, which will include summaries of projects I've worked on that month (the same as the <a href=\"https://www.gwern.net/Changelog\">changelog</a>), collations of links or discussions from <a href=\"https://www.reddit.com/r/gwern/\">my subreddit</a>, and book/movie reviews.)")
+  ),
   ("https://www.reddit.com/r/gwern/",
     ("/r/gwern subreddit"
     , "Gwern Branwen"
@@ -1219,5 +1226,12 @@
      , "2014-04-07"
      , "10.1002/pmj.21409"
      , "This paper takes stock of megaproject management, an emerging and hugely costly field of study. First, it answers the question of how large megaprojects are by measuring them in the units mega, giga, and tera, concluding we are presently entering a new "tera era" of trillion-dollar projects. Second, total global megaproject spending is assessed, at USD 6-9 trillion annually, or 8 percent of total global GDP, which denotes the biggest investment boom in human history. Third, four \"sublimes\" – political, technological, economic, and aesthetic – are identified to explain the increased size and frequency of megaprojects. Fourth, the \"iron law of megaprojects\" is laid out and documented: Over budget, over time, over and over again. Moreover, the \"break-fix model\" of megaproject management is introduced as an explanation of the iron law. Fifth, Albert O. Hirschman's theory of the Hiding Hand is revisited and critiqued as unfounded and corrupting for megaproject thinking in both the academy and policy. Sixth, it is shown how megaprojects are systematically subject to \"survival of the unfittest,\" explaining why the worst projects get built instead of the best. Finally, it is argued that the conventional way of managing megaprojects has reached a \"tension point,\" where tradition is challenged and reform is emerging.")
+    ),
+    ("https://psyarxiv.com/g4x6r/",
+     ("Low Base Rates Prevented Terman from Identifying Future Nobelists"
+      , "Russell Warne, Ross Larsen, Jonathan Clark"
+      , "2019-08-28"
+      , "10.31234/osf.io/g4x6r"
+      , "Although the accomplishments of the 1,528 subjects of the Genetic Studies of Genius are impressive, they do not represent the pinnacle of human achievement. Since the early 1990s, commentators (e.g., Bond, 2014; Gladwell, 2006; Heilman, 2016; Shurkin, 1992) have drawn attention to the fact that two future Nobelists—William Shockley and Luis Alvarez—were among the 168,000 candidates screened for the study; but they were rejected because their IQ scores were too low. Critics see this as a flaw of Terman’s methodology and/or intelligence testing. However, events with a low base rate (such as winning a Nobel prize) are difficult to predict (Taylor & Russell, 1939). This study simulates the Terman’s sampling procedure to estimate the probability that Terman’s sampling procedure would have selected one or both future Nobelists from a population of 168,000 candidates. Using data simulations, we created a model that realistically reflected the test-retest and split-half reliability of the IQ scores used to select individuals for the Genetic Studies of Genius and the relationship between IQ and Nobelist status. Results showed that it was unlikely for Terman to identify children who would later earn Nobel prizes, mostly due to the low base rates of such high future achievement and the high minimum IQ needed to be selected for Terman’s study. Changes to the methodology that would have been required to select one or both Nobelists for the longitudinal study were not practical. Therefore, Alvarez’s and Shockley’s absence from the Genetic Studies of Genius sample does not invalidate intelligence testing or Terman’s landmark study.")
     )
 ]
