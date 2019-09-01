@@ -138,7 +138,7 @@
    , "Said Achmiz"
    , "2019-08-21"
    , ""
-   , "<code>popups.js</code>: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading. Whenever any such link is mouse-overed by the user, popups.js will pop up a large tooltip-like square with the contents of the attributes. This is particularly intended for references, where it is extremely convenient to autopopulate links such as to Arxiv.org/Biorxiv.org/Wikipedia with the link's title/author/date/abstract, so the reader can see it instantly.<br><code>popups.js</code> parses a HTML document and looks for <code>&lt;a&gt;</code> links which have the <code>docMetadata</code> attribute class, and the attributes <code>data-popup-title</code>, <code>data-popup-author</code>, <code>data-popup-date</code>, <code>data-popup-doi</code>, <code>data-popup-abstract</code>. (These attributes are expected to be populated already by the HTML document's compiler, however, they can also be done dynamically. See <a href=\"https://www.gwern.net/static/js/wikipedia-popups.js\"><code>wikipedia-popups.js</code></a> for an example of a library which does Wikipedia-only dynamically on page loads.)<br>For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see <a href=\"https://www.gwern.net/LinkMetadata.hs\"><code>LinkMetadata.hs</code></a> ; for a live demonstration, see the links in <a href=\"https://www.gwern.net/newsletter/2019/07\">the July 2019 newsletter</a>.")
+   , "<code>popups.js</code>: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading, with mobile and YouTube support. Whenever any such link is mouse-overed by the user, popups.js will pop up a large tooltip-like square with the contents of the attributes. This is particularly intended for references, where it is extremely convenient to autopopulate links such as to Arxiv.org/Biorxiv.org/Pubmed/gwern.net/Wikipedia with the link's title/author/date/abstract, so the reader can see it instantly.<br><code>popups.js</code> parses a HTML document and looks for <code>&lt;a&gt;</code> links which have the <code>docMetadata</code> attribute class, and the attributes <code>data-popup-title</code>, <code>data-popup-author</code>, <code>data-popup-date</code>, <code>data-popup-doi</code>, <code>data-popup-abstract</code>. (These attributes are expected to be populated already by the HTML document's compiler, however, they can also be done dynamically. See <a href=\"https://www.gwern.net/static/js/wikipedia-popups.js\"><code>wikipedia-popups.js</code></a> for an example of a library which does Wikipedia-only dynamically on page loads.)<br>For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see <a href=\"https://www.gwern.net/LinkMetadata.hs\"><code>LinkMetadata.hs</code></a> ; for a live demonstration, see the links in <a href=\"https://www.gwern.net/newsletter/2019/07\">the July 2019 newsletter</a>.")
   ),
   ("/static/js/wikipedia-popups.js",
    ("wikipedia-popups.js"
@@ -1312,7 +1312,7 @@
      , "<p>Some nights, can’t sleep, I draw up a list,<br />Of everything I’ve never done wrong.<br />To look at me now, you might insist<br />My list could hardly be long,<br />But I’ve stolen no gnomes from my neighbor’s yard,<br />Or struck his dog, backing out my car.<br />Never ate my way up and down the Loire<br />On a stranger’s credit card.<br /></p><p>I’ve never given a cop the slip,<br />Stuffed stiffs in a gravel quarry,<br />Or silenced Cub Scouts on a first camping trip<br />With an unspeakable ghost story.<br />Never lifted a vase from a museum foyer,<br />Or rifled a Turkish tourist’s backpack.<br />Never cheated at golf. Or slipped out a blackjack<br />And flattened a patent lawyer.<br /></p><p>I never forged a lottery ticket,<br />Took three on a two-for-one pass,<br />Or, as a child, toasted a cricket<br />With a magnifying glass.<br />I never said “air” to mean “err,” or obstructed<br />Justice, or defrauded a securities firm.<br />Never mulcted—so far as I understand the term.<br />Or unjustly usufructed.<br /></p><p>I never swindled a widow of all her stuff<br />By means of a false deed and title<br />Or stood up and shouted, <em>My God, that’s enough!</em><br />At a nephew’s piano recital.<br />Never practiced arson, even as a prank,<br />Brightened church-suppers with off-color jokes,<br />Concocted an archeological hoax—<br />Or dumped bleach in a goldfish tank.<br /></p><p>Never smoked opium. Or smuggled gold<br />Across the Panamanian Isthmus.<br />Never hauled back and knocked a rival out cold,<br />Or missed a family Christmas.<br />Never borrowed a book I <em>intended</em> to keep.<br />… My list, once started, continues to grow,<br />Which is all for the good, but just goes to show<br />It’s the good who do not sleep.</p>")
     ),
     ("/docs/psychology/2018-brouwers.pdf",
-     ("Pristine inner experience while silent reading: It’s <em>not</em> silent speaking of the text",
+     ("Pristine inner experience while silent reading: It’s <em>not</em> silent speaking of the text"
       , "Vincent P. Brouwers, Christopher L. Heavey, Leiszle Lapping-Carr, Stefanie Moynihan, Jason Kelsey, Russell T. Hurlburt"
       , "2018-01-01"
       , ""
@@ -1324,7 +1324,47 @@
      , "2019-07-09"
      , "10.1080/10720537.2019.1633572"
      , "The construction of existing self-report measures of inner speech is guided by a priori theoretical views regarding how it is experienced or what functions it serves. We present two studies aimed at constructing and validating a more ecologically valid tool called the General Inner Speech Questionnaire (GISQ). Study 1 employed an open-format thought-listing procedure inviting 227 participants to freely recall what they talk to themselves about in general. The most frequently self-generated inner speech instances were about negative emotions, problem solving/thinking, planning, self-motivating, emotional control, and self. In Study 2, we used this inner speech content to construct the 57-item GISQ. The GISQ is normally distributed, shows acceptable internal consistency, and contains four moderately strong factors: self-reflection, self-observation, cognition, and inner speech accompanying activities. Importantly, the GISQ correlates positively with other measures of inner speech and self-related process.")
-    )
-
-
-]
+    ),
+    ("/newsletter/2019/07#evangelion-3.0",
+     ("Review: <em>Rebuild 3.0</em> (<em>Evangelion: 3.0 You Can (Not) Redo</em>)"
+     , "Gwern Branwen"
+     , "2019-07-31"
+     , ""
+     , "[Review of the third <em>Rebuild</em> film. The long-delayed tetralogy, which now stretches over a decade of production, shows a lack of artistic vision or interest by anyone at Studio Khara, particularly director Hideaki Anno. It appears now to be a naked cash grab for launching a new studio with a guaranteed moneymaker. <em>3.0</em>, the last chance for <em>Rebuild</em> to redeem itself and deliver a satisfying whole, wastes its time with irrelevancies and fails to deliver on anything promised by Anno and Khara, lazily embracing the worst parts of the Evangelion style while destroying much of what was good about characters like Kaworu. It is the worst Evangelion film ever made, and so bad that it has largely destroyed my interest in the franchise.]")
+    ),
+    ("https://wiki.evageeks.org/Episode_06",
+     ("NGE TV, Episode 6: \"Showdown in Tokyo-3\"/\"Rei-3\""
+      , "EvaGeeks EvaWiki"
+      , ""
+      , ""
+      , "Continuing from the previous episode, the Angel Ramiel is drilling down into the GeoFront to attack Nerv HQ directly. After Shinji barely survived a direct confrontation with it, Misato devises a plan to have Eva-00 and Eva-01 defeat the Angel by sniping it from a distance using a positron rifle which requires the total electric output of Japan to power up...Misato codenames the plan she creates to defeat the Angel Ramiel as \"Operation Yashima\". This is named after the <a href=\"https://en.wikipedia.org/wiki/Battle_of_Yashima\">Battle of Yashima</a> which occurred in 1185 in medieval Japan, which also included a feat of conspicuously talented archery.")
+    ),
+    ("http://www.animenewsservice.com/archives-dec13/",
+     ("12-11-99: Japan Maritime Self-Defence Force Series Supervised By Hideaki Anno"
+     , "J-Dream Direct Newsletter, J-Dream Web"
+     , "1999-12-20"
+     , ""
+     , "The filming of Japan Self-Defense Force equipment and training, supervised by Gainax director, Hideaki Anno (Evangelion), is being released in Japan on LD and DVD. The first volume: “JUSDF FLEET POWER1 -Yokosuka- Japan Maritime Self-Defense Force” went on sale on Nov. 25th. The first volume includes scenes of carrier-based aircraft and asroc shooting and retails for 5800 Yen.")
+    ),
+    ("/otaku#karekano-research",
+      ("Please Listen To Me, Mr. Anno! Anno Hideaki X Highschool Boys & Girls [excerpts]"
+      , "Hideaki Anno et al"
+      , "1998"
+      , ""
+      , "In 1998, Hideaki Anno, prior to production of <em><a href=\"https://en.wikipedia.org/wiki/Kare_Kano\">His and Her Circumstances</a></em>, engaged in a series of dialogues with students in several high schools (Toyoko Academy High School/Fujimi High School/Kanagawa Prefectural Ikuta High School/The Meiji University Associated Junior-High and High Schools of Nakano and Hachioji/Tokyo Toyama Public High School/Tokyo Nishi Public High School), which were published by the <em>Mainichi Intermediate-School News</em> and eventually translated & republished on the Gainax website. The dialogues are interesting because of the wide range of material discussed like contemporary politics.")
+    ),
+    ("https://www.newscientist.com/article/2208777-exclusive-five-couples-lined-up-for-crispr-babies-to-avoid-deafness/",
+     ("Exclusive: Five couples lined up for CRISPR babies to avoid deafness"
+     , "Michael Le Page"
+     , "2019-07-04"
+     , ""
+     , "Five Russian couples who are deaf want to try the CRISPR gene-editing technique so they can have a biological child who can hear, biologist Denis Rebrikov has told New Scientist. He plans to apply to the relevant Russian authorities for permission in “a couple of weeks”...Both would-be parents in each couple have a recessive form of deafness, meaning that all their children would normally inherit the same condition. While the vast majority of genetic diseases can be prevented by screening IVF embryos before implantation, with no need for gene-editing, this is not an option for these couples. Several reports have suggested that—if it can be done safely—editing the genes of babies might be justified in this kind of situation...Now Rebrikov has told New Scientist that he also wants to prevent children inheriting a form of deafness caused by mutations in the GJB2 gene. In western Siberia, many people have a missing DNA letter in position 35 of the GJB2 gene. Having one copy has no effect, but those who inherit this mutation from both parents never develop the ability to hear. Rebrikov has found five couples in which both would-be parents are deaf because of this mutation and don’t want their children to be deaf too. So he plans to use CRISPR to correct this mutation in IVF embryos from these couples. All these embryos will have the mutation in both copies of the GJB2 gene—correcting one copy using a method known as homology-directed repair will prevent deafness. “Technically, it is achievable,” says Burgio.")
+    ),
+     ("/docs/economics/2019-mckenzie.pdf",
+      ("Predicting entrepreneurial success is hard: Evidence from a business plan competition in Nigeria"
+      , "David McKenzie, Dario Sansone"
+      , "2019-11-01"
+      , "10.1016/j.jdeveco.2019.07.002"
+      , "We compare the absolute and relative performance of three approaches to predicting outcomes for entrants in a business plan competition in Nigeria: Business plan scores from judges, simple ad-hoc prediction models used by researchers, and machine learning approaches. We find that (i) business plan scores from judges are uncorrelated with business survival, employment, sales, or profits three years later; (ii) a few key characteristics of entrepreneurs such as gender, age, ability, and business sector do have some predictive power for future outcomes; (iii) modern machine learning methods do not offer noticeable improvements; (iv) the overall predictive power of all approaches is very low, highlighting the fundamental difficulty of picking competition winners.")
+     )
+  ]
