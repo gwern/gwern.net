@@ -27,6 +27,7 @@ Extracts = {
     minPopupWidth: 360,
     maxPopupWidth: 640,
     screenshotSize: 768,
+    popupBorderWidth: 3.0,
     videoPopupWidth: 495,
     videoPopupHeight: 310,
     popupTriggerDelay: 150,
@@ -136,6 +137,11 @@ Extracts = {
     },
     //  The mouseover event.
     targetover: (event) => {
+        //  Get the target.
+        let target = event.target.closest("a");
+        if (target.classList.contains("footnote-ref"))
+            return;
+
         event.preventDefault();
 
         //  Stop the countdown to un-pop the popup.
@@ -146,8 +152,6 @@ Extracts = {
         document.querySelector("html").style.transform = "translateX(0)";
 
         Extracts.popupSpawnTimer = setTimeout(() => {
-            //  Get the target.
-            let target = event.target.closest("a");
             target.onclick = () => {};
 
             let popupContainerViewportRect = Extracts.popupContainer.getBoundingClientRect();
@@ -187,6 +191,10 @@ Extracts = {
                 Extracts.popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {
                     captionWrapper.style.minWidth = "";
                 });
+                Extracts.popup.querySelectorAll("a:not([href^='#'])").forEach(externalLink => {
+                    externalLink.target = "_new";
+                    externalLink.title = externalLink.href + "\n[Opens in new window]";
+                });
                 Extracts.popup.style.width = Extracts.maxPopupWidth + "px";
                 Extracts.popup.style.maxHeight = (Extracts.maxPopupWidth * 0.75) + "px";
             } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
@@ -223,6 +231,7 @@ Extracts = {
                 var popupIntrinsicWidth = Extracts.popup.clientWidth;
                 var popupIntrinsicHeight = Extracts.popup.clientHeight;
 
+                var tocLink = target.closest("#TOC");
                 var offToTheSide = false;
 
                 var provisionalPopupXPosition;
@@ -235,8 +244,9 @@ Extracts = {
                                                               targetOriginInPopupContainer.y + targetViewportRect.height - (popupBreathingRoom.y * 2.0));
                 var popupSpawnYOriginForSpawnBelow = Math.max(mouseOverEventPositionInPopupContainer.y + popupBreathingRoom.y,
                                                               targetOriginInPopupContainer.y + (popupBreathingRoom.y * 2.0));
-                if (target.closest("#TOC")) {
-                    provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - popupBreathingRoom.y;
+                if (tocLink) {
+                    provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
+                    provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
                 } else if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
                     //  Above.
                     provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
@@ -250,10 +260,7 @@ Extracts = {
                     offToTheSide = true;
                 }
 
-                if (target.closest("#TOC")) {
-                    provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right - popupContainerViewportRect.left;
-                } else if (offToTheSide) {
-                    //  Determine popup X position.
+                if (offToTheSide) {
                     popupBreathingRoom.x *= 2.0;
                     provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
 
@@ -274,7 +281,7 @@ Extracts = {
                         //  Off to the left.
                         provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
                     }
-                } else {
+                } else if (!tocLink) {
                     /*  Place popup off to the right (and either above or below),
                         as per the previous block of code.
                         */
@@ -431,6 +438,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     height: 100%;
     max-height: inherit;
     padding: 12px 24px 14px 24px;
+    overflow-x: hidden;
 }
 #popupdiv > div.popup-section-embed > h1:first-child,
 #popupdiv > div.popup-section-embed > h2:first-child,
