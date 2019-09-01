@@ -23,7 +23,7 @@ Extracts = {
     popupStylesID: "popups-styles",
     popupContainerID: "popup-container",
     popupContainerParentSelector: "#markdownBody",
-    targetElementsSelector: "#markdownBody a[href^='http'], #markdownBody a[href^='./']",
+    targetElementsSelector: "#markdownBody a[href^='http'], #markdownBody a[href^='./'], #markdownBody p a[href^='#'], #TOC a",
     minPopupWidth: 360,
     maxPopupWidth: 640,
     screenshotSize: 768,
@@ -42,14 +42,14 @@ Extracts = {
     previewsPath: "/static/previews/",
     previewsFileExtension: "png",
     isMobileMediaQuery: matchMedia("not screen and (hover:hover) and (pointer:fine)"),
-    extractForTarget: function(target) {
+    extractForTarget: (target) => {
         return `<div class='popup-extract' onclick='parentNode.remove()'>` +
                     `<p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a><a class='title-link' target='_new' href='${target.href}' title='${target.href}'>${target.dataset.popupTitle || ""}</a></p>` +
                     `<p class='data-field author-plus-date'>${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}</p>` +
                     `<div class='data-field abstract' onclick='parentNode.remove()'>${target.dataset.popupAbstract || ""}</div>` +
                 `</div>`;
     },
-    youtubeId: function youtubeId(url) {
+    youtubeId: (url) => {
         let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
         if (match && match[2].length == 11) {
             return match[2];
@@ -57,13 +57,13 @@ Extracts = {
             return '';
         }
     },
-    videoForTarget: function(target, videoId) {
+    videoForTarget: (target, videoId) => {
         return `<div class='popup-screenshot' onclick="parentNode.remove()">` +
             `<iframe width="${Extracts.videoPopupWidth}px" height="${Extracts.videoPopupHeight}px"` +
             `src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen>` +
             `</iframe></div>`;
     },
-    previewForTarget: function(target) {
+    previewForTarget: (target) => {
         /*  The SHA-1 hashes are generated of local paths like 'docs/statistics/decision/2006-drescher-goodandreal.pdf',
             not 'https://www.gwern.net/docs/statistics/decision/2006-drescher-goodandreal.pdf',
             so we can't just use `target.href` for those.
@@ -80,7 +80,14 @@ Extracts = {
         });
         return "";
     },
-    unbind: function() {
+    sectionEmbedForTarget: (target) => {
+        let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
+        return `<div class='popup-section-embed'>${targetSectionHTML}</div>`;
+    },
+    localImageForTarget: (target) => {
+        return `<div class='popup-local-image'><img src='${target.href}'></div>`;
+    },
+    unbind: () => {
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
             //  Unbind existing mouseover/mouseout events, if any.
             target.removeEventListener("mouseover", Extracts.targetover);
@@ -90,25 +97,25 @@ Extracts = {
         if (Extracts.popupContainer)
             Extracts.popupContainer.removeEventListener("mouseup", Extracts.popupContainerClicked);
     },
-    cleanup: function() {
+    cleanup: () => {
         console.log("popups.js: Cleaning up...");
 
-        // Unbind event listeners.
+        //  Unbind event listeners.
         Extracts.unbind();
 
-        // Remove popups container and injected styles.
+        //  Remove popups container and injected styles.
         document.querySelectorAll(`#${Extracts.popupStylesID}, #${Extracts.popupContainerID}`).forEach(element => element.remove());
     },
-    setup: function() {
-        // Run cleanup.
+    setup: () => {
+        //  Run cleanup.
         Extracts.cleanup();
 
         console.log("popups.js: Setting up...");
 
-        // Inject styles.
+        //  Inject styles.
         document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.popupStylesHTML);
 
-        // Inject popups container.
+        //  Inject popups container.
         var popupContainerParent = document.querySelector(Extracts.popupContainerParentSelector);
         document.querySelector(Extracts.popupContainerParentSelector).insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}'></div>`);
         requestAnimationFrame(() => {
@@ -122,7 +129,7 @@ Extracts = {
             target.addEventListener("mouseover", Extracts.targetover);
             target.addEventListener("mouseout", Extracts.targetout);
 
-            // Remove the title attribute.
+            //  Remove the title attribute.
             target.removeAttribute("title");
             target.onclick = () => { return false; };
         });
@@ -165,19 +172,27 @@ Extracts = {
                 Extracts.popup.className = target.className;
             }
 
-            var isScreenshot = false;
             var isVideo = false;
             let videoId = Extracts.youtubeId(target.href);
 
             //  Inject the contents of the popup into the popup div.
+            Extracts.popup.removeAttribute("style");
             if (target.classList.contains("docMetadata")) {
                 Extracts.popup.innerHTML = Extracts.extractForTarget(target);
             } else if (videoId) {
                 Extracts.popup.innerHTML = Extracts.videoForTarget(target, videoId);
                 isVideo = true;
+            } else if (target.getAttribute("href").startsWith("#")) {
+                Extracts.popup.innerHTML = Extracts.sectionEmbedForTarget(target);
+                Extracts.popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {
+                    captionWrapper.style.minWidth = "";
+                });
+                Extracts.popup.style.width = Extracts.maxPopupWidth + "px";
+                Extracts.popup.style.maxHeight = (Extracts.maxPopupWidth * 0.75) + "px";
+            } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
+                Extracts.popup.innerHTML = Extracts.localImageForTarget(target);
             } else {
                 Extracts.popup.innerHTML = Extracts.previewForTarget(target);
-                isScreenshot = true;
             }
 
             //  Inject the popup into the page.
@@ -191,6 +206,7 @@ Extracts = {
             Extracts.popup.addEventListener("mouseover", Extracts.divover);
             Extracts.popup.addEventListener("mouseout", Extracts.targetout);
 
+            //  Wait for the “naive” layout to be completed, and then...
             requestAnimationFrame(() => {
                 /*  How much “breathing room” to give the target (i.e., offset of
                     the popup).
@@ -219,11 +235,13 @@ Extracts = {
                                                               targetOriginInPopupContainer.y + targetViewportRect.height - (popupBreathingRoom.y * 2.0));
                 var popupSpawnYOriginForSpawnBelow = Math.max(mouseOverEventPositionInPopupContainer.y + popupBreathingRoom.y,
                                                               targetOriginInPopupContainer.y + (popupBreathingRoom.y * 2.0));
-                if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
-                    // Above.
+                if (target.closest("#TOC")) {
+                    provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - popupBreathingRoom.y;
+                } else if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
+                    //  Above.
                     provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
                 } else if (  popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight <= (popupContainerViewportRect.y * -1) + window.innerHeight) {
-                    // Below.
+                    //  Below.
                     provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
                 } else {
                     /*  The popup does not fit above or below! We will have to
@@ -232,26 +250,28 @@ Extracts = {
                     offToTheSide = true;
                 }
 
-                if (offToTheSide) {
-                    // Determine popup X position.
+                if (target.closest("#TOC")) {
+                    provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right - popupContainerViewportRect.left;
+                } else if (offToTheSide) {
+                    //  Determine popup X position.
                     popupBreathingRoom.x *= 2.0;
                     provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
 
-                    // Determine whether to put the popup off to the right, or left.
+                    //  Determine whether to put the popup off to the right, or left.
                     if (  mouseOverEventPositionInPopupContainer.x
                         + popupBreathingRoom.x
                         + popupIntrinsicWidth
                           <=
                           popupContainerViewportRect.x * -1
                         + window.innerWidth) {
-                        // Off to the right.
+                        //  Off to the right.
                         provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x + popupBreathingRoom.x;
                     } else if (  mouseOverEventPositionInPopupContainer.x
                                - popupBreathingRoom.x
                                - popupIntrinsicWidth
                                  >=
                                  popupContainerViewportRect.x * -1) {
-                        // Off to the left.
+                        //  Off to the left.
                         provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
                     }
                 } else {
@@ -371,6 +391,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     overscroll-behavior: none;
     touch-action: none;
     user-select: none;
+    min-width: ${Extracts.minPopupWidth}px;
     max-width: ${Extracts.maxPopupWidth}px;
 }
 #popupdiv > div .data-field {
@@ -405,6 +426,20 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 }
 #popupdiv > div.popup-screenshot a::after {
     content: none;
+}
+#popupdiv > div.popup-section-embed {
+    height: 100%;
+    max-height: inherit;
+    padding: 12px 24px 14px 24px;
+}
+#popupdiv > div.popup-section-embed > h1:first-child,
+#popupdiv > div.popup-section-embed > h2:first-child,
+#popupdiv > div.popup-section-embed > h3:first-child,
+#popupdiv > div.popup-section-embed > h4:first-child  {
+    margin-top: 0;
+}
+#popupdiv > div.popup-section-embed > :last-child {
+    margin-bottom: 12px;
 }
 #popupdiv > div .icon {
     background-image: none !important;
