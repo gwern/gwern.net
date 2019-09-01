@@ -410,4 +410,11 @@
    , ("Turin?fbclid=IwAR0z4c8HyrkAfrrjPo1iPirhQMPfnwNPz702wATzD0KGv4juZx7j34pnjRw", "/Turing-complete")
    , ("docs/psychology/2017-kirschner.pdf%3Chttps:/urldefense.proofpoint.com/v2/url?u=https-3A__www.gwern.net_docs_psychology_2017-2Dkirschner.pdf&d=DwMGaQ&c=vTCSeBKl9YZZHWJzz-zQUQ&r=NksmNiFKmjbXK3ezGHAsXhxdv5libDtFX85gzp0R0pw&m=D0F0E40PvqIZzhM2Ov5JCcnJYQ_rNPX7MoYFshqzcuM&s=a_Fc_OTEo95w-GpcwvsMV45l6oXGq2LFE-Eg08Tv27w&e=", "/docs/psychology/2017-kirschner.pdf")
    , ("docs/psychology/okcupid/yourlooksandyourinbox.html](https://www.gwern.net/docs/psychology/okcupid/yourlooksandyourinbox.html?fbclid=IwAR3STIttwvWrr9HAjjWeT275ts23qkxu-WdxcAo03pMmo30NpLyM6X_qkD4", "/docs/psychology/okcupid/yourlooksandyourinbox.html")
+   , ("docs/1999-bradbury-matrioshkabrains.pdf&amp", "/docs/ai/1999-bradbury-matrioshkabrains.pdf")
+   , ("nootropics/index.html", "/Nootropics")
+   , ("docs/psychology/1995-westby.pdf](https://www.gwern.net/docs/psychology/1995-westby.pdf", "/docs/psychology/1995-westby.pdf")
+   , (".../weexperimentonhumanbeings.html", "/docs/psychology/okcupid/weexperimentonhumanbeings.html")
+   , (".../okcupid/yourlooksandyourinbox.html", "/docs/psychology/okcupid/yourlooksandyourinbox.html")
+
+
    ]
