@@ -118,8 +118,13 @@
     <!-- floating footnotes fallback from sidenotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ ; not lazy-loaded as (almost) all pages have footnotes -->
     <script src="/static/js/footnotes.js" defer></script>
 
-    <!-- JS library for annotating hyperlinks with introduction/summary from various sources -->
+    <!-- JS library for annotating hyperlinks with introduction/summary from various sources; likewise -->
     <script src="/static/js/popups.js" defer></script>
+
+    <!-- JS library for clickable/zoomable images, for images larger than can be displayed in -->
+    <!-- the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css -->
+    <!-- not lazy-loaded due to various bugs -->
+    <script src="/static/js/image-focus.js" defer></script>
 
     <!-- Async load Google Analytics  -->
     <script id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" async></script>
@@ -130,7 +135,7 @@
       gtag('config', 'UA-18912926-1');
     </script>
 
-    <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter & image-zooming as well, as those are on only a subset of pages -->
+    <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter, as tables are on only a very small subset of pages -->
     <div id="comments">
       <div id="disqus_thread"></div>
       <script>
@@ -169,10 +174,6 @@
 
       // 2. sort tables: http://tablesorter.com/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions
       lazyLoadObserver(function(){dynamicallyLoadScript('/static/js/tablesorter.js')}, 'table');
-
-      // 3. JS library for clickable/zoomable images, for images larger than can be displayed in
-      // the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css
-      lazyLoadObserver(function(){dynamicallyLoadScript('/static/js/image-focus.js')}, 'figure');
       </script>
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
