@@ -415,6 +415,8 @@
    , ("docs/psychology/1995-westby.pdf](https://www.gwern.net/docs/psychology/1995-westby.pdf", "/docs/psychology/1995-westby.pdf")
    , (".../weexperimentonhumanbeings.html", "/docs/psychology/okcupid/weexperimentonhumanbeings.html")
    , (".../okcupid/yourlooksandyourinbox.html", "/docs/psychology/okcupid/yourlooksandyourinbox.html")
-
-
+   , ("DNM-busts", "/DNM-arrests")
+   , ("docs/smpy/1994-heller-competenceandresponsibility3rdconference.pdf", "/docs/iq/smpy/1994-heller-competenceandresponsibility3rdconference.pdf")
+   , ("T3JkZXItc3", "/index")
+   , ("Drug-heuristics arguements for flowers of Algernon", "/Drug-heuristics")
    ]
