@@ -420,5 +420,5 @@
    , ("T3JkZXItc3", "/index")
    , ("Drug-heuristics arguements for flowers of Algernon", "/Drug-heuristics")
    , ("docs/bitcoin/pirateat40/SEC vs. pirateat40 1.pdf", "/docs/bitcoin/pirateat40/secvs.pirateat401.pdf")
-   , ("docs/bitcoin/pirateat40/SEC vs. pirateat40 1.pdf", "/docs/bitcoin/pirateat40/secvs.pirateat402.pdf")
+   , ("docs/bitcoin/pirateat40/SEC vs. pirateat40 2.pdf", "/docs/bitcoin/pirateat40/secvs.pirateat402.pdf")
    ]
