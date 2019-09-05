@@ -3482,12 +3482,12 @@ hr {
 }
 
 /* hide the ad in the ad A/B test by default */
-ads {
+#adsense {
     display: block;
     text-align: center;
     display: none;
 }
-ads a img {
+#adsense a img {
     max-width: 100%;
 }
 
