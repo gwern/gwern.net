@@ -421,4 +421,12 @@
    , ("Drug-heuristics arguements for flowers of Algernon", "/Drug-heuristics")
    , ("docs/bitcoin/pirateat40/SEC vs. pirateat40 1.pdf", "/docs/bitcoin/pirateat40/secvs.pirateat401.pdf")
    , ("docs/bitcoin/pirateat40/SEC vs. pirateat40 2.pdf", "/docs/bitcoin/pirateat40/secvs.pirateat402.pdf")
+   , ("docs/statistics/decision/1994-benter.PDF", "/docs/statistics/decision/1994-benter.pdf")
+   , ("Complement...keep", "/Complement")
+   , ("docs/sociology/1974-martinson.pdf.", "/docs/sociology/1974-martinson.pdf")
+   , ("docs/sociology/2003-murray-", "/docs/sociology/2003-murray-humanaccomplishment.pdf")
+   , ("Everything - gossetstudent-1904", "/Everything#gossetstudent-1904")
+   , ("index.xml", "/sitemap.xml")
+   , ("tags/python", "/tags/Python")
+   , ("docs/longevity/2019-fahy.pdf&ved=2ahUKEwiC0LDiqcHkAhVBYKwKHY8JBmsQFjADegQIAxAB&usg=AOvVaw0CzpLPM0KGjknvhLo5y8ih", "/docs/longevity/2019-fahy.pdf")
    ]
