@@ -429,4 +429,5 @@
    , ("index.xml", "/sitemap.xml")
    , ("tags/python", "/tags/Python")
    , ("docs/longevity/2019-fahy.pdf&ved=2ahUKEwiC0LDiqcHkAhVBYKwKHY8JBmsQFjADegQIAxAB&usg=AOvVaw0CzpLPM0KGjknvhLo5y8ih", "/docs/longevity/2019-fahy.pdf")
+   , ("docs/genetics/heritable/2019-karlsson.pdf", "/docs/genetics/correlation/2019-karlsson.pdf")
    ]
