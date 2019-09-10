@@ -1968,5 +1968,20 @@
   , "2019-04-04"
   , "10.1093/rfs/hhz015"
   , "Cryptocurrencies are among the largest unregulated markets in the world. We find that approximately one-quarter of bitcoin users are involved in illegal activity. We estimate that around $76 billion of illegal activity per year involve bitcoin (46% of bitcoin transactions), which is close to the scale of the U.S. and European markets for illegal drugs. The illegal share of bitcoin activity declines with mainstream interest in bitcoin and with the emergence of more opaque cryptocurrencies. The techniques developed in this paper have applications in cryptocurrency surveillance. Our findings suggest that cryptocurrencies are transforming the black markets by enabling “black e-commerce.”")
+     ),
+     ("https://osf.io/preprints/socarxiv/y4wgm/",
+      ("Exit, Voice and Political Change: Evidence from Swedish Mass Migration to the United States"
+      , "Mounir Karadja, Erik Prawitz"
+      , "2019-09-06"
+      , "10.1086/701682"
+      "We study the political effects of mass emigration to the United States in the nineteenth century using data from Sweden. To instrument for total emigration over several decades, we exploit severe local frost shocks that sparked an initial wave of emigration, interacted with within-country travel costs. Our estimates show that emigration substantially increased the local demand for political change, as measured by labor movement membership, strike participation, and voting. Emigration also led to de facto political change, increasing welfare expenditures as well as the likelihood of adopting more inclusive political institutions.")
+     ),
+     ("/docs/sr/2019-du.pdf",
+      ("Identifying High-Impact Opioid Products and Key Sellers in Dark Net Marketplaces: An Interpretable Text Analytics Approach"
+      , "Po-Yi Du, Mohammadreza Ebrahimi, Ning Zhang, Hsinchun Chen, Randall A. Brown, Sagar Samtani"
+      , "2019-07-01"
+      , "10.1109/ISI.2019.8823196"
+      , "As the Internet based applications become more and more ubiquitous, drug retailing on Dark Net Marketplaces (DNMs) has raised public health and law enforcement concerns due to its highly accessible and anonymous nature. To combat illegal drug transaction among DNMs, authorities often require agents to impersonate DNM customers in order to identify key actors within the community. This process can be costly in time and resource. Research in DNMs have been conducted to provide better understanding of DNM characteristics and drug sellers’ behavior. Built upon the existing work, researchers can further leverage predictive analytics techniques to take proactive measures and reduce the associated costs. To this end, we propose a systematic analytical approach to identify key opioid sellers in DNMs. Utilizing machine learning and text analysis, this research provides prediction of high-impact opioid products in two major DNMs. Through linking the high-impact products and their sellers, we then identify the key opioid sellers among the communities. This work intends to help law enforcement authorities to formulate strategies by providing specific targets within the DNMs and reduce the time and resources required for prosecuting and eliminating the criminals from the market.")
      )
+
  ]
