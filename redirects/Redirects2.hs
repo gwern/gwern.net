@@ -430,4 +430,10 @@
    , ("tags/python", "/tags/Python")
    , ("docs/longevity/2019-fahy.pdf&ved=2ahUKEwiC0LDiqcHkAhVBYKwKHY8JBmsQFjADegQIAxAB&usg=AOvVaw0CzpLPM0KGjknvhLo5y8ih", "/docs/longevity/2019-fahy.pdf")
    , ("docs/genetics/heritable/2019-karlsson.pdf", "/docs/genetics/correlation/2019-karlsson.pdf")
+   , ("docs/ai/2019-anumanchipalli.pdf原文網址：https://kknews.cc/science/pp9n2rz.html", "/docs/ai/2019-anumanchipalli.pdf")
+   , ("docs/ai/2019/topol.pdf", "/docs/ai/2019-topol.pdf")
+   , ("DOCS/LONGEVITY/2019-FAHY.PDF", "/docs/longevity/2019-fahy.pdf")
+   , ("docs/longevity/2019-fahy.pdf&sa=U&ved=2ahUKEwiAuM6W1sTkAhVDUK0KHeDjAwoQFjAAegQIABAB&usg=AOvVaw3dI6jk97wnLvVP6qNj3_e1", "/docs/longevity/2019-fahy.pdf")
+   , ("docs/sociology/1979-sechrest.pdf 1965", "/docs/sociology/1979-sechrest.pdf")
+   , ("newsletter/2019/00", "/newsletter/2019/01")
    ]
