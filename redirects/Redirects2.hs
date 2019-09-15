@@ -447,5 +447,5 @@
    , ("supplements", "/Nootropics")
    , ("images/gan/thiswaifudoesnotexist-283.pngukm", "/images/gan/thiswaifudoesnotexist-283.png")
    , ("docs/japanese/2005-debary-sourcesofjapanesetradition.pdf", "/docs/japanese/2001-debary-sourcesofjapanesetradition.pdf")
-   , (" docs/psychology/okcupid/whyyoushouldneverpayforonlinedating.html", "/docs/psychology/okcupid/whyyoushouldneverpayforonlinedating.html"),
+   , (" docs/psychology/okcupid/whyyoushouldneverpayforonlinedating.html", "/docs/psychology/okcupid/whyyoushouldneverpayforonlinedating.html")
    ]
