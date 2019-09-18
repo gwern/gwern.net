@@ -4,7 +4,6 @@
 /* General desktop/mobile: loaded in initial.css */
 /* default.css: contains everything else, like drop caps, link icons, tables, etc */
 
-
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -464,7 +463,7 @@ article > :not(#TOC) a:hover,
  */
 #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after,
 #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after {
-    content: "\1D50A"; */* Gothic G */
+    content: "\1D50A"; /* Gothic G */
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
@@ -2638,7 +2637,7 @@ p.hang {
     body.drop-caps-goudy #abstract + p::first-letter,
     body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-goudy::first-letter {
-        font-family: Goudy Initialen;
+        font-family: "Goudy Initialen";
         font-size: 7em;
         line-height: 1;
         margin: 0 0.02em -0.25em 0;
@@ -2658,7 +2657,7 @@ p.hang {
     body.drop-caps-de-zs #abstract + p::first-letter,
     body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-de-zs::first-letter {
-        font-family: Deutsche Zierschrift;
+        font-family: "Deutsche Zierschrift";
         font-size: 6.5em;
         line-height: 1.1;
         margin: 0.01em 0.03em -0.25em 0;
@@ -2673,7 +2672,7 @@ p.hang {
     body.drop-caps-cheshire #abstract + p::first-letter,
     body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-cheshire::first-letter {
-        font-family: Cheshire Initials;
+        font-family: "Cheshire Initials";
         font-size: 6.75em;
         line-height: 1;
         margin: 0.02em 0.04em -0.25em 0;
@@ -2683,7 +2682,7 @@ p.hang {
     body.drop-caps-kanzlei #abstract + p::first-letter,
     body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
     #markdownBody .drop-cap-kanzlei::first-letter {
-        font-family: Kanzlei Initialen;
+        font-family: "Kanzlei Initialen";
         font-size: 7em;
         line-height: 1;
         margin: 0 0.01em -0.25em -0.03em;
