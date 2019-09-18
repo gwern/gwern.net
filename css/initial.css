@@ -1,0 +1,952 @@
+@charset "UTF-8"
+
+/*********/
+/* FONTS */
+/*********/
+/* fonts are now loaded from /static/css/fonts.css */
+
+/*************/
+/* VARIABLES */
+/*************/
+
+:root {
+    --GW-blockquote-background-color: #f5f5f5
+}
+
+html {
+    padding: 0;
+    margin: 0;
+    background-color: #fff;
+    color: #000;
+    font-weight: 400;
+    font-family: "Source Serif Pro", Baskerville, "Libre Baskerville", serif
+}
+
+body {
+    max-width: 112ch
+}
+
+@media only screen and (max-width:64.9ch) {
+    html {
+        font-size: 18px
+    }
+}
+
+@media only screen and (min-width:65ch) {
+    body {
+        padding: 0 1.5ch 0 0.5ch;
+        margin: 0 auto
+    }
+    @media only screen and (min-width:118.5ch) {
+        body {
+            padding: 0 6ch 0 0.5ch
+        }
+    }
+    main {
+        min-height: 100vh;
+        display: flex;
+        flex-flow: column
+    }
+    /*  Breakpoint for sidenotes.
+        */
+    @media only screen and (min-width:176.1ch) {
+        main {
+            position: relative;
+            right: 4ch
+        }
+    }
+    /*  Special styles for special browsers.
+        */
+    @supports (-moz-user-focus:normal) {
+        @media only screen and (min-width: 176.1ch) {
+            main {
+                right: 0
+            }
+        }
+    }
+    article {
+        flex: 1 1 auto
+    }
+    #sidebar {
+        position: absolute
+    }
+    header,
+    article {
+        margin-left: 15ch
+    }
+    @media only screen and (max-width:120ch) {
+        header,
+        article {
+            margin-left: 14.5ch
+        }
+    }
+    @media only screen and (max-width:112ch) {
+        header,
+        article {
+            margin-left: 14ch
+        }
+    }
+    @media only screen and (max-width:104ch) {
+        header,
+        article {
+            margin-left: 13.5ch
+        }
+    }
+    @media only screen and (max-width:96ch) {
+        header,
+        article {
+            margin-left: 13ch
+        }
+    }
+}
+
+@media only screen and (max-width:64.9ch) {
+    body {
+        margin: 0 1ch
+    }
+}
+
+/***********/
+/* SIDEBAR */
+/***********/
+
+#sidebar code {
+    border: none;
+    background-color: transparent;
+    padding: 0
+}
+
+#sidebar a {
+    display: block
+}
+
+@media only screen and (min-width:65ch) {
+    #sidebar {
+        font-variant: small-caps;
+        padding: 0 4ch 0 1ch;
+        width: 10ch
+    }
+    #sidebar a#logo {
+        margin: 1em 0 2em 0
+    }
+    #sidebar a#logo img {
+        width: 64px
+    }
+    #sidebar a.new,
+    #sidebar a.patreon {
+        border-top: 1px dotted #aaa
+    }
+    #sidebar a.new {
+        margin: 1.25em 0 0.5em 0;
+        padding-top: 1.125em;
+        box-shadow: 0 1.125em 0 0 #fff inset
+    }
+    #sidebar a.patreon {
+        font-size: 0.9em;
+        margin-top: 1.375em;
+        padding-top: 1.25em;
+        box-shadow: 0 1.25em 0 0 #fff inset;
+        white-space: nowrap
+    }
+    #sidebar a.mail,
+    #sidebar a.r_gwern {
+        line-height: 1;
+        padding-left: 0.25em;
+        font-size: 1.05em
+    }
+    #sidebar a.mail::before,
+    #sidebar a.r_gwern::before {
+        content: "°\2007";
+        text-shadow: 0 0 0 #000;
+        position: relative;
+        top: 0.25em
+    }
+    #sidebar code {
+        font-variant: none;
+        text-transform: uppercase;
+        font-size: 0.7em
+    }
+}
+
+@media only screen and (max-width:64.9ch) {
+    #sidebar {
+        justify-content: center;
+        margin: 0 0 0.5em 0
+    }
+    #sidebar a {
+        border: 1px dotted #000;
+        padding: 3px 10px;
+        text-align: center;
+        margin: 1px
+    }
+    #sidebar a#logo {
+        padding: 8px 5px 3px 5px
+    }
+    #sidebar,
+    #sidebar-links {
+        display: flex
+    }
+    #sidebar-links {
+        flex-flow: row wrap;
+        margin: 0.5em 0 0 0
+    }
+    #sidebar a.home,
+    #sidebar a.site,
+    #sidebar a.links {
+        flex: 1 1 20%
+    }
+    #sidebar a.new,
+    #sidebar a.mail,
+    #sidebar a.r_gwern {
+        padding: 3px 10px;
+        flex: 1 1 auto
+    }
+    #sidebar a.patreon {
+        display: none
+    }
+    #sidebar #logo {
+        margin: calc(0.5em + 1px) 1px 1px 0
+    }
+    #sidebar #logo img {
+        width: 2.5rem
+    }
+}
+
+/***************/
+/* PAGE HEADER */
+/***************/
+
+header {
+    overflow: auto
+}
+
+header h1 {
+    margin: 0.75em 0;
+    text-align: center;
+    text-transform: none;
+    font-variant: small-caps;
+    font-size: 2.5em;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -1px
+}
+
+@media only screen and (max-width:64.9ch) {
+    header h1 {
+        font-size: 2em
+    }
+}
+
+/***********************/
+/* PAGE METADATA BLOCK */
+/***********************/
+
+#page-metadata hr {
+    display: none
+}
+
+#page-metadata {
+    margin: 0 0 2rem 0;
+    overflow: auto;
+    font-size: 0.95em;
+    line-height: 1.5
+}
+
+#page-metadata #page-description {
+    display: block;
+    margin: 0 auto 0.5em auto
+}
+
+#page-metadata #page-description+br {
+    display: none
+}
+
+#page-metadata span:nth-of-type(n+3) {
+    white-space: nowrap
+}
+
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+#TOC {
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    margin: 0 2rem 1.5rem 0;
+    line-height: 1.25;
+    padding: 10px 10px 2px 14px;
+    position: relative;
+    z-index: 1
+}
+
+#TOC:empty {
+    display: none;
+}
+
+/*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
+    */
+@media only screen and (max-width:128ch) {
+    #TOC {
+        font-size: 0.95rem
+    }
+}
+
+@media only screen and (max-width:120ch) {
+    #TOC {
+        font-size: 0.90rem
+    }
+}
+
+@media only screen and (max-width:112ch) {
+    #TOC {
+        font-size: 0.85rem;
+        margin: 0 1.5rem 1.25rem 0
+    }
+}
+
+@media only screen and (max-width:104ch) {
+    #TOC {
+        font-size: 0.80rem;
+        margin: 0 1.25rem 1rem 0
+    }
+}
+
+@media only screen and (max-width:96ch) {
+    #TOC {
+        margin: 0 1rem 1rem 0
+    }
+}
+
+@media only screen and (min-width:90ch) {
+    #TOC {
+        float: left;
+        max-width: 30ch
+    }
+}
+
+@media only screen and (max-width:90ch) {
+    #TOC {
+        float: none;
+        margin: 2em auto;
+        font-size: 1rem
+    }
+    #TOC>ul>li>ul {
+        column-count: 2
+    }
+}
+
+@media only screen and (max-width:64.9ch) {
+    #TOC a {
+        display: inline-block
+    }
+    #TOC>ul>li>ul {
+        column-count: 1
+    }
+    #TOC li li a {
+        padding: 0 0 1px 0
+    }
+    #TOC li li li a {
+        padding: 0 0 2px 0;
+    }
+    #TOC li li li li a {
+        padding: 0 0 3px 0;
+    }
+    #TOC li li li li a {
+        padding: 0 0 4px 0;
+    }
+}
+
+/*=-----------------=*/
+/*= TOC list layout =*/
+/*=-----------------=*/
+
+#TOC ul {
+    list-style-type: none;
+    padding-left: 0em;
+    margin-bottom: 0;
+    margin-top: 4px;
+    padding-left: 1.4em;
+    text-indent: 0;
+    padding: 0
+}
+
+#TOC ul ul {
+    list-style-type: none;
+    padding-left: 0.7em;
+    margin-top: 2px
+}
+
+#TOC li {
+    font-weight: bold;
+    margin: 5px 0 10px 0;
+    padding-left: 1.125em;
+    position: relative;
+    overflow-wrap: break-word
+}
+
+#TOC li li {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 0.9em
+}
+
+#TOC p {
+    margin-top: 9px;
+    margin-bottom: 3px;
+}
+
+/*=------------------=*/
+/*= TOC link styling =*/
+/*=------------------=*/
+
+#TOC a {
+    border: 0;
+    display: block;
+    position: relative
+}
+
+#TOC a:hover {
+    background-color: rgba(0,0,0,0.05);
+    color: #000;
+}
+#TOC a:hover::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background-color: #ccc;
+    width: 0.25em;
+    height: 100%;
+}
+
+/*=--------------------------=*/
+/*= Inline code in TOC links =*/
+/*=--------------------------=*/
+
+#TOC code {
+    font-family: inherit;
+    font-size: inherit;
+    border: none;
+    padding: 0;
+    background-color: inherit;
+}
+
+/*=-------------------------------=*/
+/*= Wikipedia-style TOC numbering =*/
+/*=-------------------------------=*/
+
+#TOC > ul {
+    counter-reset: htoc_1;
+}
+#TOC > ul > li::before {
+    counter-increment: htoc_1;
+    content: counter(htoc_1) "\2006  ";
+}
+#TOC > ul ul {
+    counter-reset: htoc_2;
+}
+#TOC > ul ul li::before {
+    counter-increment: htoc_2;
+    content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
+}
+#TOC > ul ul ul {
+    counter-reset: htoc_3;
+}
+#TOC > ul ul ul li::before {
+    counter-increment: htoc_3;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
+}
+#TOC > ul ul ul ul {
+    counter-reset: htoc_4;
+}
+#TOC > ul ul ul ul li::before {
+    counter-increment: htoc_4;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
+}
+#TOC > ul ul ul ul ul {
+    counter-reset: htoc_5;
+}
+#TOC > ul ul ul ul ul li::before {
+    counter-increment: htoc_5;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
+}
+#TOC > ul ul ul ul ul ul {
+    counter-reset: htoc_6;
+}
+#TOC > ul ul ul ul ul ul li::before {
+    counter-increment: htoc_6;
+    content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
+}
+#TOC ul li::before {
+    position: absolute;
+    right: calc(100% - 1em);
+    width: 12ch;
+    text-align: right;
+    font-weight: normal;
+    opacity: 0.4;
+    pointer-events: none;
+}
+#TOC ul li:hover::before {
+    opacity: 0.7;
+}
+
+/****************/
+/* MAIN CONTENT */
+/****************/
+
+#markdownBody {
+    /*  Try to avoid scrollbars on paragraphs: prevents long unbroken
+        un-hyphenatable lines from causing H-scrolling
+        */
+    overflow-wrap: break-word
+}
+
+/*  Breakpoint for sidenotes.
+    */
+@media only screen and (min-width:176.1ch) {
+    #markdownBody {
+        position: relative
+    }
+}
+
+@media only screen and (min-width:65ch) {
+    @media only screen and (max-width: 100ch) {
+    /*  Replaces A/B-test-set average value; the wider the screen, the more
+        line-height is necessary, and no one size suits all, so set 3 brackets
+        of increasing height.
+        */
+        #markdownBody {
+            line-height: 1.45
+        }
+    }
+    @media only screen and (min-width:100.1ch) and (max-width:120ch) {
+        #markdownBody {
+            line-height: 1.5
+        }
+    }
+    @media only screen and (min-width:120.1ch) {
+        #markdownBody {
+            line-height: 1.55
+        }
+    }
+}
+
+/*  Use justified text (words get broken/hyphenated as necessary to avoid a
+    'ragged margin'), undoing the default of 'flush left, ragged' right (see
+    https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
+    */
+@supports (-webkit-hyphens:auto) or (-ms-hyphens:auto) or (hyphens:auto) {
+    #markdownBody p,
+    #markdownBody li {
+        text-align: justify;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto
+    }
+}
+
+
+/*  Cute 'old-style' numerals, look a little nicer inline in text:
+    https://practicaltypography.com/alternate-figures.html#oldstyle-figures
+    */
+#markdownBody p {
+    font-variant-numeric: oldstyle-nums
+}
+
+#abstract blockquote {
+    margin: 0 0 1.5em 0;
+    box-shadow: 0 0 0 5px #fff inset,
+                0 0 0 6px #ccc inset;
+    border-color: #bbb;
+    padding: 0.9rem 1.25rem 0.95rem 1.25rem
+}
+
+h1 {
+    margin: 1.25em 0 0.5em -0.75rem;
+    font-weight: bold;
+    position: relative
+}
+
+@media only screen and (max-width:65ch) {
+    h1 {
+        margin: 1.25em 0 0.5em 0
+    }
+}
+
+/*=----------------=*/
+/*= Heading levels =*/
+/*=----------------=*/
+h1 {
+    font-feature-settings: 'smcp';
+    font-size: 1.75em;
+    line-height: 1.25;
+    letter-spacing: -0.75px
+}
+
+
+/*********/
+/* LINKS */
+/*********/
+a {
+    color: #3c3c3c; /* off-black */
+    text-decoration: none
+}
+
+#markdownBody a {
+    word-wrap: break-word /* force the occasional inline URL or other long word to break at max-width */
+}
+
+
+/*=------------------------=*/
+/*= Fancy link underlining =*/
+/*=------------------------=*/
+
+/*  Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
+    The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
+    is that when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
+    by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined.
+    Unfortunately, we don't want to add underlines to the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
+    I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead.
+*/
+
+article > :not(#TOC) a:link {
+    text-decoration: none;
+    background-image:
+        linear-gradient(#fff, #fff),
+        linear-gradient(#fff, #fff),
+        linear-gradient(#333, #333);
+    background-size:
+        0.05em 1px,
+        0.05em 1px,
+           1px 1px;
+    background-repeat:
+        no-repeat,
+        no-repeat,
+        repeat-x;
+    background-position:
+          0% 90%,
+        100% 90%,
+          0% 90%;
+    text-shadow:
+         0.03em 0       #fff,
+        -0.03em 0       #fff,
+         0      0.03em  #fff,
+         0     -0.03em  #fff,
+         0.06em 0       #fff,
+        -0.06em 0       #fff,
+         0.09em 0       #fff,
+        -0.09em 0       #fff,
+         0.12em 0       #fff,
+        -0.12em 0       #fff,
+         0.15em 0       #fff,
+        -0.15em 0       #fff;
+
+    /*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
+    font-variant-numeric: lining-nums;
+}
+article > :not(#TOC) a:hover {
+    background-image:
+        linear-gradient(#fff, #fff),
+        linear-gradient(#fff, #fff),
+        linear-gradient(#999, #999);
+}
+
+/*********/
+/* LISTS */
+/*********/
+
+#markdownBody ul,
+#markdownBody ol {
+    list-style-type: none;
+    margin: 1.25em 0 1.5em 0;
+    padding: 0 0 0 2.5em;
+    overflow: hidden;
+}
+#markdownBody li > ul,
+#markdownBody li > ol {
+    margin: 0.5em 0;
+}
+
+#markdownBody ul > li,
+#markdownBody ol > li {
+    position: relative;
+    margin: 0;
+}
+#markdownBody ul > li:nth-of-type(n+2),
+#markdownBody ol > li:nth-of-type(n+2) {
+    margin: 0.5em 0 0 0;
+}
+
+#markdownBody ul > li::before,
+#markdownBody ol > li::before {
+    position: absolute;
+    z-index: 1;
+}
+
+@media only screen and (max-width: 64.9ch) {
+    #markdownBody ul,
+    #markdownBody ol {
+        padding: 0 0 0 1.75em;
+    }
+}
+
+/***************/
+/* BLOCKQUOTES */
+/***************/
+
+blockquote {
+    margin: 1.625em 0 1.75em 0;
+    border: 1px solid #ccc;
+    font-size: 0.95em;
+    padding: 1em 1.25em;
+}
+
+@media only screen and (min-width: 65ch) {
+    blockquote {
+        overflow: hidden;
+    }
+}
+@media only screen and (max-width: 64.9ch) {
+    /* even less horizontal is available on mobile! */
+    blockquote {
+        margin: 1.25em 0 1.5em 0;
+    }
+}
+
+/*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
+
+    See A/B tests: this highlighting is better than no highlighting.
+    */
+blockquote,
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
+    z-index: -2;
+    background-color: var(--GW-blockquote-background-color);
+}
+blockquote blockquote,
+blockquote blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+    background-color: #e6e6e6;
+}
+
+article > :not(#TOC) a:link q,
+article > :not(#TOC) q a:link,
+article > :not(#TOC) span.quote-mark.open + a:link,
+article > :not(#TOC) blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
+    text-shadow:
+         0.03em 0       var(--GW-blockquote-background-color),
+        -0.03em 0       var(--GW-blockquote-background-color),
+         0      0.03em  var(--GW-blockquote-background-color),
+         0     -0.03em  var(--GW-blockquote-background-color),
+         0.06em 0       var(--GW-blockquote-background-color),
+        -0.06em 0       var(--GW-blockquote-background-color),
+         0.09em 0       var(--GW-blockquote-background-color),
+        -0.09em 0       var(--GW-blockquote-background-color),
+         0.12em 0       var(--GW-blockquote-background-color),
+        -0.12em 0       var(--GW-blockquote-background-color),
+         0.15em 0       var(--GW-blockquote-background-color),
+        -0.15em 0       var(--GW-blockquote-background-color);
+}
+article > :not(#TOC) blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
+    text-shadow:
+         0.03em 0       #e6e6e6,
+        -0.03em 0       #e6e6e6,
+         0      0.03em  #e6e6e6,
+         0     -0.03em  #e6e6e6,
+         0.06em 0       #e6e6e6,
+        -0.06em 0       #e6e6e6,
+         0.09em 0       #e6e6e6,
+        -0.09em 0       #e6e6e6,
+         0.12em 0       #e6e6e6,
+        -0.12em 0       #e6e6e6,
+         0.15em 0       #e6e6e6,
+        -0.15em 0       #e6e6e6;
+}
+
+blockquote blockquote {
+    margin: 1em 1px;
+}
+
+/*=--------------------=*/
+/*= Various edge cases =*/
+/*=--------------------=*/
+
+#markdownBody blockquote blockquote:first-child {
+    margin: 0.25em 1px 1em 1px;
+}
+
+#markdownBody blockquote > :last-child,
+#markdownBody blockquote > :last-child > :last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child > :last-child {
+    margin-bottom: 0;
+}
+#markdownBody blockquote > :first-child,
+#markdownBody blockquote > :first-child > :first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child > :first-child {
+    margin-top: 0;
+}
+
+/*  Special case for tables in blockquotes.
+    */
+#markdownBody blockquote > table:last-child,
+#markdownBody blockquote > :last-child > table:last-child,
+#markdownBody blockquote > :last-child > :last-child > table:last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child > table:last-child {
+    margin-bottom: 0.5em;
+}
+#markdownBody blockquote > table:first-child,
+#markdownBody blockquote > :first-child > table:first-child,
+#markdownBody blockquote > :first-child > :first-child > table:first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child > table:first-child {
+    margin-top: 0.5em;
+}
+
+#markdownBody blockquote > ul:only-child,
+#markdownBody blockquote > ol:only-child {
+    margin-left: 1.5em;
+}
+
+/*  Interviews (e.g. https://www.gwern.net/Morning-writing#examples).
+    */
+blockquote p > code:first-child,
+blockquote p > a:first-child code:first-child {
+    border: none;
+    background-color: transparent;
+    font-weight: bold;
+    font-family: inherit;
+    padding: 0;
+    font-size: inherit;
+}
+
+/*  Tables in blockquotes.
+    */
+blockquote table {
+    font-size: 0.7em;
+}
+
+
+/**************/
+/* PARAGRAPHS */
+/**************/
+
+p {
+    margin: 0;
+}
+p + p {
+    text-indent: 2.5em;
+}
+@media only screen and (max-width: 64.9ch) {
+    p + p {
+        text-indent: 1em;
+    }
+}
+
+/***************/
+/* CODE BLOCKS */
+/***************/
+
+code {
+    padding: 0 4px;
+    /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+    font-family: "Liberation Mono", Consolas, Courier, monospace;
+    font-size: 0.9em;
+    border: 1px solid #c8c8c8;
+    background-color: #fafafa;
+}
+pre {
+    overflow: auto;
+    margin: 1.75em auto;
+    border: 1px solid #c8c8c8;
+    background-color: #fafafa;
+    cursor: text;
+    max-height: calc(100vh - 8em);
+    overscroll-behavior: none;
+}
+pre code {
+    display: block;
+    padding: 8px 14px;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+}
+
+/********/
+/* MISC */
+/********/
+
+/*  enable standard Pandoc attribute-based syntax for small-caps like '[foo]{.smallcaps}'; see https://pandoc.org/MANUAL.html#small-caps
+    */
+span.smallcaps {
+    font-feature-settings: 'smcp';
+}
+/*  All-caps: '[foo]{.allcaps}'
+    */
+span.allcaps {
+    text-transform: uppercase;
+}
+
+hr {
+    border: none;
+    height: 0;
+    border-bottom: 1px solid #aaa;
+    margin: 1em 0
+}
+
+/* hide the ad in the ad A/B test by default */
+#adsense {
+    display: block;
+    text-align: center;
+    display: none;
+}
+#adsense a img {
+    max-width: 100%;
+}
+
+/*************/
+/* DARK MODE */
+/*************/
+/* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
+/* bright-white or darker (eg for darker at evening to avoid straining eyes & disrupting circadian rhyhms); this then is */
+/* exposed by Safari as a CSS variable which can be selected on. This is also currently supported by Firefox weakly as an */
+/* about:config variable. Hypothetically, iOS in the future might use its camera or the clock to set 'dark mode' */
+/* automatically. https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme */
+/* https://webkit.org/blog/8718/new-webkit-features-in-safari-12-1/ */
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme For gwern.net, the default white-black */
+/* scheme is 'light', and it can be flipped to a 'dark' scheme fairly easily by inverting it; the main visual problem is */
+/* that blockquotes appear to become much harder to see & image-focus.js doesn't work well without additional tweaks. */
+@media (prefers-color-scheme:dark) {
+    :root {
+        --GW-blockquote-background-color: #ddd
+    }
+    body>*,
+    body::before {
+        filter: invert(90%)
+    }
+    body::before {
+        content: "";
+        width: 100vw;
+        height: 100%;
+        position: fixed;
+        left: 0;
+        top: 0;
+        background-color: #fff;
+        z-index: -1
+    }
+    #markdownBody {
+        text-shadow: 0 0 0 #000
+    }
+    article>:not(#TOC) a:link {
+        text-shadow: 0 0 #777, 0.03em 0 #fff, -0.03em 0 #fff, 0 0.03em #fff, 0 -0.03em #fff, 0.06em 0 #fff, -0.06em 0 #fff, 0.09em 0 #fff, -0.09em 0 #fff, 0.12em 0 #fff, -0.12em 0 #fff, 0.15em 0 #fff, -0.15em 0 #fff
+    }
+    article>:not(#TOC) blockquote a:link {
+        text-shadow: 0 0 #777, 0.03em 0 var(--GW-blockquote-background-color), -0.03em 0 var(--GW-blockquote-background-color), 0 0.03em var(--GW-blockquote-background-color), 0 -0.03em var(--GW-blockquote-background-color), 0.06em 0 var(--GW-blockquote-background-color), -0.06em 0 var(--GW-blockquote-background-color), 0.09em 0 var(--GW-blockquote-background-color), -0.09em 0 var(--GW-blockquote-background-color), 0.12em 0 var(--GW-blockquote-background-color), -0.12em 0 var(--GW-blockquote-background-color), 0.15em 0 var(--GW-blockquote-background-color), -0.15em 0 var(--GW-blockquote-background-color)
+    }
+}

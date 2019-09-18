@@ -27,7 +27,8 @@
     <link rel="preload" href="/images/logo-smooth.svg" as="image" type="image/svg+xml">
     <link href="https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on" type="application/atom+xml" rel="alternate" title="ATOM/RSS feed of Gwern.net additions/miscellaneous writings" />
     <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/initial.css" />
+    <link rel="preload"    as="style"      href="/static/css/default.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/fonts.css" />
 
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
@@ -114,6 +115,9 @@
 
       </article>
     </main>
+
+    <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
 
     <!-- floating footnotes fallback from sidenotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ ; not lazy-loaded as (almost) all pages have footnotes -->
     <script src="/static/js/footnotes.js" defer></script>
