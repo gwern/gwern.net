@@ -2473,6 +2473,21 @@
   , "2015"
   , "10.1145/2783258.2788583"
   , "<p>Over the past 10+ years, online companies large and small have adopted widespread A/B testing as a robust data-based method for evaluating potential product improvements. In online experimentation, it is straightforward to measure the short-term effect, i.e., the impact observed during the experiment. However, the short-term effect is not always predictive of the long-term effect, i.e., the final impact once the product has fully launched and users have changed their behavior in response. Thus, the challenge is how to determine the long-term user impact while still being able to make decisions in a timely manner.</p><p>We tackle that challenge in this paper by first developing experiment methodology for quantifying long-term user learning. We then apply this methodology to ads shown on Google search, more specifically, to determine and quantify the drivers of ads blindness and sightedness, the phenomenon of users changing their inherent propensity to click on or interact with ads.</p><p>We use these results to create a model that uses metrics measurable in the short-term to predict the long-term. We learn that user satisfaction is paramount: ads blindness and sightedness are driven by the quality of previously viewed or clicked ads, as measured by both ad relevance and landing page quality. Focusing on user satisfaction both ensures happier users but also makes business sense, as our results illustrate. We describe two major applications of our findings: a conceptual change to our search ads auction that further increased the importance of ads quality, and a 50% reduction of the ad load on Google’s mobile search interface.</p><p>The results presented in this paper are generalizable in two major ways. First, the methodology may be used to quantify user learning effects and to evaluate online experiments in contexts other than ads. Second, the ads blindness/sightedness results indicate that a focus on user satisfaction could help to reduce the ad load on the internet at large with long-term neutral, or even positive, business impact. [Keywords: Controlled experiments; A/B testing; predictive modeling; overall evaluation criterion]</p>")
-  )
+  ),
+  ("http://www.ushakrisna.com/cogability_proof.pdf",
+    ("Cognitive Abilities and Household Financial Decision Making"
+    , "Sumit Agarwal, Bhashkar Mazumder"
+    , "2013"
+    , "10.1257/app.5.1.193"
+    , "We analyze the effects of cognitive abilities [AFQT] on two examples of consumer financial decisions where suboptimal behavior is well defined. The first example features the optimal use of credit cards for convenience transactions after a balance transfer and the second involves a financial mistake on a home equity loan application. We find that consumers with higher overall test scores, and specifically those with higher math scores, are substantially less likely to make a financial mistake. These mistakes are generally not associated with nonmath test scores.")
+  ),
+  ("https://d4mucfpksywv.cloudfront.net/emergent-tool-use/paper/Multi_Agent_Emergence_2019.pdf#openai",
+  ("Emergent Tool Use From Multi-Agent Autocurricula"
+  , "Bowen Baker, Ingmar Kanitscheider, Todor Markov, Yi Wu, Glenn Powell, Bob McGrew, Igor Mordatch"
+  , "2019-09-17"
+  , ""
+  , "Through multi-agent competition, the simple objective of *hide-and-seek*, and standard reinforcement learning algorithms at scale, we find that agents create a self-supervised autocurriculum inducing multiple distinct rounds of emergent strategy, many of which require sophisticated tool use and coordination. We find clear evidence of six emergent phases in agent strategy in our environment, each of which creates a new pressure for the opposing team to adapt; for instance, agents learn to build multi-object shelters using movable boxes which in turn leads to agents discovering that they can overcome obstacles using ramps. We further provide evidence that multi-agent competition may scale better with increasing environment complexity and leads to behavior that centers around far more human-relevant skills than other self-supervised reinforcement learning methods such as intrinsic motivation. Finally, we propose transfer and fine-tuning as a way to quantitatively evaluate targeted capabilities, and we compare hide-and-seek agents to both intrinsic motivation and random initialization baselines in a suite of domain-specific intelligence tests.")
+)
+
 
  ]
