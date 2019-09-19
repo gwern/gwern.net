@@ -21,6 +21,9 @@
 
     <title>$title$ - Gwern.net</title>
 
+    <link href="https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on" type="application/atom+xml" rel="alternate" title="ATOM/RSS feed of Gwern.net additions/miscellaneous writings" />
+    <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.png" />
+
     <!-- fetch the title & body fonts & logo immediately to avoid re-rendering -->
     <link rel="preload" href="/images/logo-smooth.svg" as="image" type="image/svg+xml">
     <!-- CSS inline for speed -->
@@ -34,6 +37,7 @@
     <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Regular.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Semibold.ttf"       as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/SourceSerifPro-BASIC-SemiboldItalic.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-RegularItalic.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
     <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/fonts.css" /> -->
     <!-- Inline minimal font CSS for speed: -->
     <style>
@@ -44,6 +48,14 @@
         src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 400;
+        font-style: italic;
+        src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap;
     }
     @font-face {
         font-family: 'Source Serif Pro';
@@ -87,12 +99,14 @@
         font-display: swap
     }
     </style>
-    <link href="https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on" type="application/atom+xml" rel="alternate" title="ATOM/RSS feed of Gwern.net additions/miscellaneous writings" />
 
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
     <script src="/static/js/sidenotes.js" async></script> <!-- since sidenotes visibly render, unlike the other JS libs, we prioritize its loading in the head -->
+    <!-- Hint at necessary third-party domains -->
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-    <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.png" />
+
   </head>
   <body class="$safeURL$ $cssExtension$">
 

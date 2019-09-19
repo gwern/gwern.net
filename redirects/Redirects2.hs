@@ -450,4 +450,11 @@
    , (" docs/psychology/okcupid/whyyoushouldneverpayforonlinedating.html", "/docs/psychology/okcupid/whyyoushouldneverpayforonlinedating.html")
    , ("docs/music-distraction/2014-miller.pdf.", "/docs/music-distraction/2014-miller.pdf")
    , ("docs/iq/2018-gensowski.pdf (https://www.gwern.net/docs/iq/2018-gensowski.pdf)", "/docs/iq/2018-gensowski.pdf")
+   , ("DNB-FAQта", "/DNB-FAQ")
+   , ("docs/japanese/1964-debary-sourcesofjapanesetradition.pdf", "/docs/japanese/2001-debary-sourcesofjapanesetradition.pdf")
+   , ("docs/psychology/2019-hsu", "/docs/psychology/2019-hsu.pdf")
+   , ("docs/psychology/2019-hsu.pdf,", "/docs/psychology/2019-hsu.pdf")
+   , ("LinkMetadata.hs.", "/LinkMetadata.hs")
+   , ("static/font/SourceSerifPro-BASIC-Italic.ttf", "/static/font/SourceSerifPro-BASIC-RegularItalic.ttf")
+   , ("static/font/SourceSansPro-BASIC-Italic.ttf", "/static/font/SourceSansPro-BASIC-RegularItalic.ttf")
    ]
