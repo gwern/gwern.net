@@ -657,6 +657,9 @@ article > :not(#TOC) a:hover {
 /* LISTS */
 /*********/
 
+/* the /index needs more space in the lists for mobile users */
+@media only screen and (max-width:64.9ch) { body.siteIndex #markdownBody li { line-height: 1.65; } }
+
 #markdownBody ul,
 #markdownBody ol {
     list-style-type: none;
