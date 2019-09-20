@@ -457,4 +457,5 @@
    , ("LinkMetadata.hs.", "/LinkMetadata.hs")
    , ("static/font/SourceSerifPro-BASIC-Italic.ttf", "/static/font/SourceSerifPro-BASIC-RegularItalic.ttf")
    , ("static/font/SourceSansPro-BASIC-Italic.ttf", "/static/font/SourceSansPro-BASIC-RegularItalic.ttf")
+   , ("Story-Of-Your-Life)", "/Story-Of-Your-Life")
    ]
