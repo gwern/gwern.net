@@ -458,4 +458,8 @@
    , ("static/font/SourceSerifPro-BASIC-Italic.ttf", "/static/font/SourceSerifPro-BASIC-RegularItalic.ttf")
    , ("static/font/SourceSansPro-BASIC-Italic.ttf", "/static/font/SourceSansPro-BASIC-RegularItalic.ttf")
    , ("Story-Of-Your-Life)", "/Story-Of-Your-Life")
+   , ("docs/sr/2018-tzanetakis.pdf%20http://linkinghub.elsevier.com/retrieve/pii/S095539591830029X", "/docs/sr/2018-tzanetakis.pdf")
+   , ("docs/genetics/correlation/201The%20prediction%20of%20school%20achievement%20from%20a%20behavior%20genetic%20perspective:Results%20from%20the%20German%20twin%20study%20on%20Cognitive%20Ability,%20Self-ReportedMotivation,%20and%20School%20Achievement%20(CoSMoS)-gottschling.pdf", "/docs/genetics/correlation/2012-gottschling.pdf")
+   , ("docs/genetics/correlation/201The prediction of school achievement from a behavior genetic perspective:Results from the German twin study on Cognitive Ability, Self-ReportedMotivation, and School Achievement (CoSMoS)-gottschling.pdf", "/docs/genetics/correlation/2012-gottschling.pdf")
+   , ("docs/psychology/1941-cleckley-maskofsanity.pdf&as_qdr=y15", "/docs/psychology/1941-cleckley-maskofsanity.pdf")
    ]
