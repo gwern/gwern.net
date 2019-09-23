@@ -158,7 +158,7 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 		if (!sidenotesBrowserWorkaroundStyleBlock) {
 			sidenotesBrowserWorkaroundStyleBlock = document.createElement("style");
 			sidenotesBrowserWorkaroundStyleBlock.id = "sidenotes-browser-workaround";
-			document.querySelector("head").appendChild(sidenotesBrowserWorkaroundStyleBlock);
+			document.querySelector("body").appendChild(sidenotesBrowserWorkaroundStyleBlock);
 		}
 		sidenotesBrowserWorkaroundStyleBlock.innerHTML = `
 			${GW.firefoxTargetingSelector} {
