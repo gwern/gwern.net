@@ -462,4 +462,10 @@
    , ("docs/genetics/correlation/201The%20prediction%20of%20school%20achievement%20from%20a%20behavior%20genetic%20perspective:Results%20from%20the%20German%20twin%20study%20on%20Cognitive%20Ability,%20Self-ReportedMotivation,%20and%20School%20Achievement%20(CoSMoS)-gottschling.pdf", "/docs/genetics/correlation/2012-gottschling.pdf")
    , ("docs/genetics/correlation/201The prediction of school achievement from a behavior genetic perspective:Results from the German twin study on Cognitive Ability, Self-ReportedMotivation, and School Achievement (CoSMoS)-gottschling.pdf", "/docs/genetics/correlation/2012-gottschling.pdf")
    , ("docs/psychology/1941-cleckley-maskofsanity.pdf&as_qdr=y15", "/docs/psychology/1941-cleckley-maskofsanity.pdf")
+   , ("Faceshttps://www.gwern.net/Faceshttps://www.gwern.net/Faces", "/Faces")
+   , ("docs/economics/1688-delavega-confusionofconfusions.Do Individual Investors Drive Post-Earnings Announcement Drift?Direct Evidence from Personal Trades.=", "/docs/economics/1688-delavega-confusionofconfusions.pdf")
+   , ("Everythingslatestarcodex", "/Everything")
+   , (" GPT-2.", "/GPT-2")
+   , ("docs/genetics/selection/2019-hecht", "/docs/genetics/selection/2019-hecht.pdf")
+   , ("docs/statistics/decision/2006-drescher-goodandreal.pdf',", "/docs/statistics/decision/2006-drescher-goodandreal.pdf")
    ]
