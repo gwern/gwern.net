@@ -1717,6 +1717,12 @@ figcaption {
     }
 }
 
+/* enable the various `![caption](/images/foo.jpg){.full-width}` uses; analogous to full-width tables */
+figure.full-width {
+  position: relative;
+  max-width: unset;
+}
+
 /*  Layout fix for images outside of <figure>.
     REMOVE once all images are properly within <figure>!
     */

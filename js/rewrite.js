@@ -16,36 +16,40 @@ function doWhenPageLoaded(f) {
         window.addEventListener("load", f);
 }
 
-/*=--------=*/
-/*= Tables =*/
-/*=--------=*/
+/*=------------------=*/
+/*= Tables & Figures =*/
+/*=------------------=*/
 
-/*  Expands all tables whose wrapper block is marked with class "full-width"
-    to span the viewport (minus a specified margin on both sides).
-    */
-function expandFullWidthTables() {
-    let fullWidthTableMargin = "2.5ch";
-    let pageWidth = document.querySelector("html").clientWidth;
+/*	Expands all tables & figures whose wrapper block is marked with class
+	"full-width" to span the viewport (minus a specified margin on both sides).
+	*/
+function expandFullWidthBlocks() {
+	document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
+		fullWidthImage.closest("figure").classList.add("full-width");
+	});
 
-    /*  Find all full-width tables; set their position and size.
-        */
-    document.querySelectorAll(".tableWrapper.full-width").forEach(fullWidthTable => {
-        fullWidthTable.removeAttribute("style");
-        fullWidthTable.style.left = `calc(${(fullWidthTable.getBoundingClientRect().left * -1) + "px"} + ${fullWidthTableMargin})`;
-        fullWidthTable.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthTableMargin}))`;
-    });
+	let fullWidthBlockMargin = "2.5ch";
+	let pageWidth = document.querySelector("html").clientWidth;
 
-    /*  If sidenotes exist, update sidenote positions.
-        */
-    requestAnimationFrame(() => {
-        if (typeof window.GW == "undefined" ||
-            typeof GW.sidenotes == "undefined" ||
-            GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-            GW.sidenotes.sidenoteDivs.length == 0)
-            return;
+	/*	Find all full-width blocks; set their position and size.
+		*/
+	document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
+		fullWidthBlock.removeAttribute("style");
+		fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+		fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
+	});
 
-            updateSidenotePositions();
-    });
+	/*	If sidenotes exist, update sidenote positions.
+		*/
+	requestAnimationFrame(() => {
+		if (typeof window.GW == "undefined" ||
+			typeof GW.sidenotes == "undefined" ||
+			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+			GW.sidenotes.sidenoteDivs.length == 0)
+			return;
+
+			updateSidenotePositions();
+	});
 }
 
 /*=-----------------=*/
@@ -103,8 +107,8 @@ document.querySelectorAll("table").forEach(table => {
 /*  Expand full-width tables, and add a listener to recompute their size and
     position upon window resize.
     */
-doWhenPageLoaded(expandFullWidthTables);
-window.addEventListener("resize", expandFullWidthTables);
+doWhenPageLoaded(expandFullWidthBlocks);
+window.addEventListener("resize", expandFullWidthBlocks);
 
 /*  Unwrap pre.sourceCode blocks from their extraneous containing divs.
     */
