@@ -2907,7 +2907,7 @@ body.siteIndex #markdownBody > section ~ p {
 
 /*  Internal links on the home page need no decoration.
     */
-body.siteIndex #markdownBody a[href^="."]:not([href$=".pdf"])::after,
+body.siteIndex #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
 body.siteIndex #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
     content: none;
 }
