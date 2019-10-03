@@ -1,0 +1,1147 @@
+/*=-----------------------------------------=*/
+/*= Icons for certain link types: by target =*/
+/*=-----------------------------------------=*/
+
+/*  Within-page (anchor) links.
+    */
+#markdownBody section > :not(:first-child) a[href^='#']::after,
+#markdownBody p a[href^='#']::after {
+    content: "\00B6";
+    margin: 0 1px 0 3px;
+    font-size: 0.75em;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.45em;
+    opacity: 0.6;
+}
+#markdownBody section > :not(:first-child) a[href^='#'].footnote-ref::after,
+#markdownBody p a[href^='#'].footnote-ref::after,
+#markdownBody section > :not(:first-child) a[href^='#'].footnote-back::after,
+#markdownBody p a[href^='#'].footnote-back::after {
+    content: none;
+}
+
+/*  Internal (within-site) links. Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
+ */
+#markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after,
+#markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after {
+    content: "\1D50A"; /* Gothic G */
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.15em;
+    opacity: 0.55;
+}
+
+/* TEXTUAL PER-DOMAIN LINK ICONS: */
+/* Common style */
+#markdownBody a[href*="17th-angel.tumblr.com"]::after,
+#markdownBody a[href*="andrewgelman.com"]::after,
+#markdownBody a[href*="animenewsnetwork.com"]::after,
+#markdownBody a[href*="arstechnica.com"]::after,
+#markdownBody a[href*="arxiv.org"]::after,
+#markdownBody a[href*="bbc.com"]::after,
+#markdownBody a[href*="bbc.co.uk"]::after,
+#markdownBody a[href*="www.cdc.gov"]::after,
+#markdownBody a[href*="www.vox.com"]::after,
+#markdownBody a[href*="www.vanityfair.com"]::after,
+#markdownBody a[href*="www.motherjones.com"]::after,
+#markdownBody a[href*="www.edge.org"]::after,
+#markdownBody a[href*="bitcointalk.org"]::after,
+#markdownBody a[href*="bloomberg.com"]::after,
+#markdownBody a[href*="bmj.com"]::after,
+#markdownBody a[href*="economist.com"]::after,
+#markdownBody a[href*="evageeks.org"]::after,
+#markdownBody a[href*="evamonkey.com"]::after,
+#markdownBody a[href*="evaotaku.com"]::after,
+#markdownBody a[href*="www.fanfiction.net"]::after,
+#markdownBody a[href*="fda.gov"]::after,
+#markdownBody a[href*="filfre.net"]::after,
+#markdownBody a[href*="gainax.co.jp"]::after,
+#markdownBody a[href*="goodreads.com"]::after,
+#markdownBody a[href*="haskell.org"]::after,
+#markdownBody a[href*="harney.com"]::after,
+#markdownBody a[href*="justice.gov"]::after,
+#markdownBody a[href*="khara.co.jp"]::after,
+#markdownBody a[href*="kk.org"]::after,
+#markdownBody a[href*="lesswrong.com"]::after,
+#markdownBody a[href*="longbets.org"]::after,
+#markdownBody a[href*="longnow.org"]::after,
+#markdownBody a[href*="marginalrevolution.com"]::after,
+#markdownBody a[href*="medium.com"]::after,
+#markdownBody a[href*="myanimelist.net"]::after,
+#markdownBody a[href*="nature.com"]::after,
+#markdownBody a[href*="onegeek.org"]::after,
+#markdownBody a[href*="overcomingbias.com"]::after,
+#markdownBody a[href*="pnas.org"]::after,
+#markdownBody a[href*="poniesatdawn.bandcamp.com"]::after,
+#markdownBody a[href*="predictionbook.com"]::after,
+#markdownBody a[href*="r-project.org"]::after,
+#markdownBody a[href*="rosettaproject.org"]::after,
+#markdownBody a[href*="rstudio.com"]::after,
+#markdownBody a[href*="salon.com"]::after,
+#markdownBody a[href*="sciencemag.org"]::after,
+#markdownBody a[href*="sciencedirect.com"]::after,
+#markdownBody a[href*="scholars-stage.blogspot.com"]::after,
+#markdownBody a[href*="slate.com"]::after,
+#markdownBody a[href*="slatestarcodex"]::after,
+#markdownBody a[href*="statmodeling.stat.columbia.edu"]::after,
+#markdownBody a[href*="t.umblr.com"]::after,
+#markdownBody a[href*="technologyreview.com"]::after,
+#markdownBody a[href*="theatlantic.com"]::after,
+#markdownBody a[href*="theinterval.org"]::after,
+#markdownBody a[href*="theparisreview.org"]::after,
+#markdownBody a[href*="tinyletter.com"]::after,
+#markdownBody a[href*="www.mail-archive.com"]::after,
+#markdownBody a[href*="groups.google.com"]::after,
+#markdownBody a[href*="tumblr.com"]::after,
+#markdownBody a[href*="tvtropes.org"]::after,
+#markdownBody a[href*="urth.net"]::after,
+#markdownBody a[href*="www.nber.org"]::after,
+#markdownBody a[href*="mlp.fandom.com"]::after,
+#markdownBody a[href*="www.wsj.com"]::after,
+#markdownBody a[href*="www.google.com"]::after,
+#markdownBody a[href*="wiley.com"]::after,
+#markdownBody a[href*="yunnansourcing.com"]::after,
+#markdownBody a[href*="yvain"]::after,
+#markdownBody a[href*="unsongbook.com"]::after,
+#markdownBody a[href*="neweva.blog103.fc2.com"]::after {
+    font-size: 0.8em;
+    font-weight: 600;
+    margin: 0 0 0 2px;
+    vertical-align: baseline;
+    position: relative;
+    bottom: 0.2em;
+    opacity: 0.6;
+}
+/* MR: cheaper to abuse Unicode */
+#markdownBody a[href*="marginalrevolution.com"]::after {
+    content: "M𝐑"; }
+
+/* likewise */
+#markdownBody a[href*="medium.com"]::after {
+    content: "𝐌"; }
+
+/* Kevin Kelly */
+#markdownBody a[href*="kk.org"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "KK"; }
+
+/* Google searches, other tools; note that there are many Google subdomains, so we narrow down with just 'www' */
+#markdownBody a[href*="www.google.com"]::after {
+    content: "𝐆"; }
+
+/* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
+#markdownBody a[href*="wiley.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "W"; }
+
+/* PNAS: they don't have a real logo, but their favicon does a nice little compact square, and we can replicate that in CSS: */
+#markdownBody a[href*="pnas.org"]::after {
+  content: "PNAS";
+  font-size: 0.5em;
+  width: 1.4em;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-family: Baskerville;
+  line-height: 0.7;
+  text-align: center;
+  position: relative;
+  bottom: 0.3em;
+  left: 0.1em; }
+
+#markdownBody a[href*="www.nber.org"]:not([href$=".pdf"])::after {
+  content: "NBER";
+  font-size: 0.5em;
+  width: 1.35em;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+  font-style: italic;
+  line-height: 0.7;
+  text-align: center;
+  position: relative;
+  bottom: 0.3em;
+  left: 0.1em; }
+
+#markdownBody a[href*="mlp.fandom.com"]::after {
+  content: "MLPW";
+  font-size: 0.5em;
+  width: 1.35em;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+  font-style: italic;
+  line-height: 0.7;
+  text-align: center;
+  position: relative;
+  bottom: 0.3em;
+  left: 0.1em; }
+
+/* Bitcoin Talk: close enough! */
+#markdownBody a[href*="wikipedia.org"]::after {
+    content: "₿⃝"; }
+
+#markdownBody a[href*="salon.com"]::after {
+    content: "s"; }
+
+#markdownBody a[href*="www.vox.com"]::after {
+    font-style: italic;
+    content: "Vox"; }
+
+#markdownBody a[href*="www.vanityfair.com"]::after {
+    content: "VF"; }
+
+#markdownBody a[href*="www.motherjones.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "MJ"; }
+
+#markdownBody a[href*="www.edge.org"]::after {
+    font-style: italic;
+    content: "E"; }
+
+/* The Harney & Sons logo is too fancy to scale down reasonably */
+#markdownBody a[href*="harney.com"]::after {
+    content: "H"; }
+
+/* The FF.net logo is pretty crazy, and I don't think anyone would recognize it in monochrome */
+#markdownBody a[href*="www.fanfiction.net"]::after {
+    content: "FF"; }
+
+#markdownBody a[href*="poniesatdawn.bandcamp.com"]::after {
+    content: "P@D"; }
+
+#markdownBody a[href*="yunnansourcing.com"]::after {
+    content: "ʸₛ"; }
+
+/* Avoid the unfortunate connotations of 'SS' */
+#markdownBody a[href*="scholars-stage.blogspot.com"]::after {
+    content: "Ss"; }
+
+/* Ars is an orange box, not usable */
+#markdownBody a[href*="arstechnica.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "ars"; }
+
+/* British Medical Journal or just 'bmj' */
+#markdownBody a[href*="bmj.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "bmj"; }
+
+/* Science is just typeset in red */
+#markdownBody a[href*="sciencemag.org"]::after {
+    content: "S"; }
+
+/* SSC logo too bad to use */
+#markdownBody a[href*="yvain"]::after,
+#markdownBody a[href*="slatestarcodex"]::after {
+    content: "SSC"; }
+/* SSC's book */
+#markdownBody a[href*="unsongbook.com"]::after {
+    content: "א"; }
+
+/* OB logo too bad to use */
+#markdownBody a[href*="overcomingbias.com"]::after {
+    content: "OB"; }
+
+/* LW logo is just a colored 'LW', so no point in converting */
+#markdownBody a[href*="lesswrong.com"]::after {
+    content: "LW"; }
+
+/* PB logo is confusing. A purple question mark...? */
+#markdownBody a[href*="predictionbook.com"]::after {
+    content: "\FE56"; }
+
+/* GoodReads: logo doesn't make sense as a grayscale */
+#markdownBody a[href*="goodreads.com"]::after {
+    content: "GR"; }
+
+/* Long Now Foundation projects: */
+#markdownBody a[href*="longbets.org"]::after,
+#markdownBody a[href*="longnow.org"]::after,
+#markdownBody a[href*="rosettaproject.org"]::after,
+#markdownBody a[href*="theinterval.org"]::after {
+    content: "X";
+    text-decoration: overline; }
+
+/* ArXiv: Chi (their logo is too bad to use) */
+#markdownBody a[href*="arxiv.org"]::after {
+    content: "\1D6D8"; }
+
+/* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */
+#markdownBody a[href*="technologyreview.com"]::after {
+    content: "T";
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif; }
+
+/* Economist: logo is just 'Economist'... */
+#markdownBody a[href*="economist.com"]::after {
+    content: "E";
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif; }
+
+/* Elsevier/Sciencedirect.com: also an 'E' */
+#markdownBody a[href*="sciencedirect.com"]::after {
+    content: "E";
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif; }
+
+/* Favicon is a little normal distribution/histogram */
+#markdownBody a[href*="andrewgelman.com"]::after,
+#markdownBody a[href*="statmodeling.stat.columbia.edu"]::after {
+    content: "▅▇▃";
+    font-size: 0.6em; }
+
+/* Bloomberg: no usable logo, just an inset-B */
+#markdownBody a[href*="bloomberg.com"]::after {
+    content: "𝐁"; }
+
+/* BBC: no usable logo */
+#markdownBody a[href*="bbc.com"]::after,
+#markdownBody a[href*="bbc.co.uk"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "BBC"; }
+
+/* R: at this point R Studio has taken over a lot of control, so might as well treat them as official too... */
+#markdownBody a[href*="r-project.org"]::after,
+#markdownBody a[href*="rstudio.com"]::after {
+    content: "R";
+}
+
+/* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
+#markdownBody a[href*="haskell.org"]::after {
+    content: "𝛌"; }
+
+/* MAL: the blue of their logo doesn't work, so just text */
+#markdownBody a[href*="myanimelist.net"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "MAL"; }
+
+/* Gene Wolfe mailing list; no logo */
+#markdownBody a[href*="urth.net"]::after {
+    content: "U"; }
+
+/* TinyLetter's icon, without color, isn't memorable enough; throw in the other email services */
+#markdownBody a[href*="tinyletter.com"]::after,
+#markdownBody a[href*="groups.google.com"]::after,
+#markdownBody a[href*="www.mail-archive.com"]::after {
+    content: "✉"; }
+
+/* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
+#markdownBody a[href*="tumblr.com"]::after,
+#markdownBody a[href*="t.umblr.com"]::after {
+    content: "ʈ"; }
+
+/* The Atlantic: replicate sloping by italics */
+#markdownBody a[href*="theatlantic.com"]::after {
+    font-style: italic;
+    content: "A"; }
+
+/* Filfre.net/The Digital Antiquarian has no logo or usable substitue... */
+#markdownBody a[href*="filfre.net"]::after {
+    content: "F"; }
+
+/* ANN */
+#markdownBody a[href*="animenewsnetwork.com"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "ANN"; }
+
+/* TV Tropes: their lampshade icon is unrecognizable & hard to see small */
+#markdownBody a[href*="tvtropes.org"]::after {
+    content: "TV"; }
+
+#markdownBody a[href*="www.cdc.gov"]::after {
+    content: "CDC"; }
+
+/* US federal Department of Justice */
+#markdownBody a[href*="justice.gov"]::after {
+    content: "DoJ"; }
+
+/* FDA/Food & Drug Agency */
+#markdownBody a[href*="fda.gov"]::after {
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    content: "FDA"; }
+
+/* The Paris Review: not even going to try to make their weird bird logo work */
+#markdownBody a[href*="theparisreview.org"]::after {
+    content: "PR"; }
+
+/* The Wall Street Journal */
+#markdownBody a[href*="www.wsj.com"]::after {
+    content: "WSJ"; }
+
+/* Slate */
+#markdownBody a[href*="slate.com"]::after {
+    content: "S"; }
+
+/* Nature */
+#markdownBody a[href*="nature.com"]::after {
+    content: "N"; }
+
+/* Evangelion: we'll split this into EGF-related and other NGE sites */
+#markdownBody a[href*="evageeks.org"]::after,
+#markdownBody a[href*="evamonkey.com"]::after {
+    content: "EG"; }
+#markdownBody a[href*="onegeek.org"]::after,
+#markdownBody a[href*="evaotaku.com"]::after,
+#markdownBody a[href*="khara.co.jp"]::after,
+#markdownBody a[href*="gainax.co.jp"]::after,
+#markdownBody a[href*="17th-angel.tumblr.com"]::after,
+#markdownBody a[href*="neweva.blog103.fc2.com"]::after {
+    content: "NGE"; }
+
+/* IMAGE-BASED PER-DOMAIN LINK ICONS: */
+/* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
+#markdownBody a[href*='biorxiv.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14.903' height='13.896'%3E%3Cpath d='M2.26.002C2.2-.001 2.14 0 2.082.002 1.3.03.54.424 0 .867.784.93 1.886.897 2.752 2.15L6.07 6.587.43 13.896l2.525-.004c1.38-1.85 1.63-5.913 4.3-5.807 2.993.12 2.51 3.435 3.926 5.087.605.965 3.52.96 3.72-.07-1.714-.16-1.593.19-3.1-1.562-1.23-1.43-2.647-3.428-3.526-4.62l4.956-6.9-2.48.036c-1.22 1.697-1.3 5.3-3.74 5.283S5 2.244 3.475.412c-.4-.274-.804-.396-1.217-.4z'/%3E%3Chead/%3E%3Cpath d='M2.725 1.083l7.953-.008zm1.872 1.98l5.006-.002zm5.52 7.224l-6-.02zM3.208 12.1l7.37.02z' opacity='.7' fill='none' stroke='%23000' stroke-width='.358'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='biorxiv.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='biorxiv.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* Google Scholar */
+#markdownBody a[href*='scholar.google.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 841.89 595.28'%3E%3Cpath d='M725.2 235.87l35.35-15.16-339.62-145.6-339.6 145.6 339.6 145.6L671.7 258.8z'/%3E%3Cpath d='M704.04 300.8l-.4-77.63H674.9l-.85 77.63c-15.38 6.14-26.28 21.44-26.28 39.35 0 16.9 9.7 31.5 23.73 38.24-2.6 48.3-6.35 75.78-9.38 87.04 14.15 4.2 32.36 6.64 53.43-.03-3-11.52-6.43-39.7-8.96-87.02 14.02-6.75 23.73-21.33 23.73-38.24.02-17.9-10.88-33.2-26.26-39.34zm-106.68 31.94l-176.38 75.82-176.42-75.82c-22.54 20.12-24.65 85.17-24.3 77.4 107.8 0 198.66 106.67 200.7 110.02 2.03-3.34 94.9-110.02 200.7-110.02.01 0-1.8-58.28-24.3-77.4z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='scholar.google.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='scholar.google.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* PLOS ONE in all their domain permutations... */
+#markdownBody a[href*='plosone.org']::after,
+#markdownBody a[href*='plos.org']::after,
+#markdownBody a[href*='www.plos']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='14.9'%3E%3Cpath d='M12.4 3.2c.6.2 1.1-.2 1.3-.7s-.2-1.1-.7-1.3-1.1.1-1.3.7c-.2.6.2 1.1.7 1.3zm2.5 5.3c.1-.3-.1-.6-.3-.7-.3-.1-.6.1-.6.3-.1.3.1.6.3.6.3.1.6-.1.7-.3zM9.2 1c.3.1.6-.1.7-.3S9.8 0 9.5 0s-.6.1-.7.3.1.6.3.7zm-7.4 9.3c-.3-.1-.6.1-.7.3-.1.3.1.6.3.6.3.1.6-.1.6-.3.1-.3-.1-.6-.3-.7zm9.3 2.5c-.4-.1-.7.1-.9.5s.1.7.5.9.7-.1.9-.5-.1-.7-.5-.9zm-7-10.5c.1-.5-.1-.9-.6-1.1s-.9.1-1.1.6.1.9.6 1.1c.5.2.9-.1 1.1-.6zm1.8 10.9c-.5-.2-.9.1-1.1.6s.1.9.6 1.1.9-.1 1.1-.6c.2-.5-.1-.9-.6-1.1zM.8 5c-.3-.1-.7.1-.8.4-.1.3.1.7.4.8s.7-.1.8-.4c.1-.3-.1-.7-.4-.8z'/%3E%3Cpath d='M11.8 4.7c-.7-1.1-1.8-1.9-3.1-2.2-.4-.1-.8-.2-1.2-.2-.9 0-1.9.3-2.7.8-2.4 1.5-3.1 4.6-1.6 7.1.9 1.5 2.6 2.4 4.3 2.4.9 0 1.9-.3 2.7-.8 2.4-1.5 3.1-4.6 1.6-7.1zm-2 6.5c-.6.4-1.3.6-2 .6.6-.5 1.1-1.2 1.5-2.2l.4-.2 1.1-.7.1.9c0 .1 0 .2 0 .2 0 .1 0 .2-.1.2-.1.3-.6.8-1.1 1.1zM3.7 9.8l.2.1.3.1.6.2c.1.4.2.7.3 1-.6-.3-1.1-.8-1.5-1.4zm1.7-5.9h.3c.1 0 .2 0 .3.1l.3.1c-.3.4-.5.8-.8 1.3-.4.9-.7 1.9-.8 2.9-.1.5 0 .9 0 1.4h-.1l-.3-.1-.3-.1-.2-.1c-.1 0-.2-.1-.2-.2s-.1-.1-.2-.2c-.2-.2-.3-.5-.3-.5-.4-1.6 0-3.2 1.2-4.3.2-.2.6-.4 1.1-.4zm5.7 1.1c.1.2.2.4.3.7l.1.4.1.4c0 .2 0 .3 0 .5l-.1.2c0 .1-.1.2-.1.2-.1.1-.1.2-.2.2-.1.1-.1.2-.2.2L11 8l-.5-.9c-.1-.1-.2-.3-.2-.4l-.2-.3c.1-1.1 0-2-.3-2.7.5.3 1 .8 1.4 1.4zm-3.9 6.3c-.3.2-.6.4-.9.3s-.6-.3-.7-.6c-.1-.3-.2-.5-.3-.8h.9c.2 0 .3 0 .4 0h.5L8 10c.1 0 .3-.1.4-.1-.3.6-.7 1.1-1.2 1.5zm-2-3c.1-1 .3-1.9.7-2.8.2-.5.5-1 .8-1.4l.7.4c.1.1.2.2.4.2l1.6 1.5c-.1 1-.3 1.9-.6 2.8l-.1.2-.7.2-1.3.2c-.1 0-.3 0-.4 0h-.8c-.1 0-.1 0-.2 0-.1-.5-.1-1 0-1.4zm4.8-1.3l.5.9c0 .1.1.2.1.3 0 0-.1 0-.1.1l-.3.2-.7.4c.2-.6.4-1.3.5-1.9zM8.5 3.2c.2.1.4.3.6.6.2.5.3 1.1.3 1.9l-.7-.6c-.1-.1-.2-.2-.4-.3L8 4.5c-.1-.1-.2-.2-.4-.2L7 3.9c.2-.2.3-.3.5-.5.3-.2.7-.3.9-.3h0zm-1.2-.1c-.2.2-.5.4-.7.7 0 0-.1 0-.1 0-.1 0-.2-.1-.4-.1h-.3-.3c.6-.3 1.2-.5 1.9-.5 0 0 0 0 0 0zm4.1 6.3l-.1-.4-.1-.5.2-.2c.1-.1.2-.2.2-.3l.2-.2c0 .6-.2 1.1-.4 1.6zM6.5 8c.3 0 .5-.2.5-.5s-.3-.6-.5-.6c-.3 0-.5.2-.5.5s.2.5.5.5z'/%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='plosone.org']:hover::after,
+#markdownBody a[href*='plos.org']:hover::after,
+#markdownBody a[href*='www.plos']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='plosone.org']::after,
+#markdownBody a[href*='plos.org']::after,
+#markdownBody a[href*='www.plos']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 1px 3px;
+    opacity: 0.50;
+}
+
+/* Patreon: used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don't like the new one */
+#markdownBody a[href*='patreon.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M8.3.3C5.2.3 2.2 2.1 1 4.9.4 6.1.4 7.3.4 8.6v6.2h8.4c3-.2 5.9-2.2 6.9-5.1.8-2.4.1-5.3-1.7-7C12.5 1.1 10.4.3 8.3.3z'/%3E%3Cpath d='M7.9 2c-2.3 0-4.7 1.3-5.5 3.5C1.9 6.6 2.1 7.8 2 9v5h2.3V7C4.5 5.4 6 4.2 7.5 4.1c1.6-.2 3.4.8 3.8 2.4.4 1.3-.4 2.8-1.6 3.4-1.1.6-2.6.6-3.7-.1V12c.8.3 1.7.4 2.6.3 2.2-.2 4.4-1.7 5-3.9.6-1.9-.2-4-1.7-5.1C10.7 2.4 9.3 2 7.9 2zm-.2 10.4z' fill='%23fff'/%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='patreon.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='patreon.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;}
+
+/* Upton Tea */
+#markdownBody a[href*='uptontea.com']::after {
+              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='9.6'%3E%3Cpath d='M14.9 2c-.7-.5-1-.4-1-.4-1.2.5-1.6 2.4-1.6 2.4-.1.4-.7.4-1.2.3v-.1c-.3-.8-1.2-1.5-1.2-1.5-.3-.2-.3-.5-.3-.5.1-.2.1-.3.1-.3-.2-.5-2.2-.6-2.2-.6-.3 0-.3-.3-.3-.3.2-.1.2-.4.2-.4 0-.6-.7-.6-.8-.6s-.8 0-.8.6c0 0 0 .3.2.4 0 0 0 .3-.3.3 0 0-2.1.1-2.2.6 0 0-.1.2.1.3 0 0 0 .3-.3.5v.1c-.3-.4-1-1.1-2.1-.7 0 0-1 .3-1 1.8 0 0 0 1.4 1.4 2.4 0 0 .3.2.6.4.2.7.6 1.4 1.5 1.9 0 0 .2.2.2.5 0 0 .7.5 2.6.5h.5c1.9 0 2.6-.5 2.6-.5 0-.3.2-.5.2-.5.7-.4 1.1-1 1.3-1.5 2.3-.4 2.6-3.2 2.6-3.2.2-1.5 1.2-1.6 1.2-1.6.4 0 .2-.3.2-.3zM1.2 5.5s-.9-1-.7-2c0 0 .1-.8.9-1 0 0 1-.1 1.1.8h0c-.2.2-.4.6-.5.9 0 0-.2.8-.2 1.7-.2-.1-.5-.3-.7-.5z'/%3E%3Cpath d='M14.9 2c-.5-.6-1.5-.4-1.8.3-.4.6-.6 1.3-.8 1.9-.6.6-1.4 0-1.5-.7-.3-.6-1.1-.8-1.1-1.5-.1-.7-1-.6-1.6-.7-.6.1-1.1-.2-.7-.8C7.2-.2 6-.2 5.8.4c0 .4.3.9-.4.9-.7.1-1.5 0-2 .6.2.5-.4 1.2-.7.5C2 1.6.4 2 .1 3.1-.3 4.4.5 5.9 1.7 6.5c.5.5.6 1.3 1.2 1.8.6.3.7 1.2 1.5 1.2 1.4.2 2.8.3 4.2 0 .8.1.8-.8 1.4-1 .6-.5.8-1.4 1.7-1.5 1.2-.6 1.7-2 1.8-3.2.1-.8.8-1.3 1.4-1.5v-.1l-.1-.1zM1.2 5.5C.6 4.8.2 3.7.8 2.9c.5-.7 1.7-.4 1.8.4C1.9 4 1.8 5 1.8 6c-.2-.1-.5-.3-.7-.5z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='uptontea.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='uptontea.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;}
+
+/* Wired */
+#markdownBody a[href*='wired.com']::after {
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='f' d='M.2 0h199.6v39.9H.2z'/%3E%3C/defs%3E%3CclipPath id='e'%3E%3Cuse overflow='visible' xlink:href='%23f'/%3E%3C/clipPath%3E%3Cpath d='M37.4 6.2h-5.2L28.4 28 24 7.8c-.2-1.4-.8-1.6-2-1.6h-2.8c-1.2 0-1.8.4-2 1.6L12.8 28 9 6.2H3.4l5.4 26.2c.2 1.2.6 1.4 2 1.4h3.8c1.2 0 1.6-.2 2-1.4l4.2-19 4.2 19c.2 1.2.6 1.4 2 1.4h3.6c1.2 0 1.8-.2 2-1.4l4.8-26.2zm2.8 33.7H.2V0h39.9v39.9z' clip-path='url(%23e)'/%3E%3C/svg%3E%0A");
+}
+#markdownBody a[href*='wired.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='wired.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.50;
+}
+
+/* The Washington Post: truncated their blackletter to 'WP' */
+#markdownBody a[href*='washingtonpost.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Chead/%3E%3Cpath d='M9.21 11.347l-.104-.1c.028-.042.138.072.104.1zm-1.655-6.15l-.952-.973-.196.22.874.877v5.726l.274-.274zm-.417.192l-.82-.822-.47.507V9.95l1.278 1.178.013-.014zm-2.53 5.07V5.374L3.5 4.223l-.21.22 1.043 1.055v5.1l1.76 1.603.21-.206zm-.417-4.89L3.2 4.552l-.522.562v4.85l1.187 1.055.326-.384zm-2.75-1.37c0-.562-.47-.753-.47-1.1 0-.493.182-.904.47-1.288l-.026-.014C1.024 2.1.66 2.607.66 3.1s.508.726.508 1.165V6.69h.274zm0 6.288v-2.9H.71a.54.54 0 0 0-.574.493L.15 8.1c.13-.15.26-.233.56-.233h.456v2.767l1.72 1.562.196-.247zm4.655 1.918l-1.813-1.644L2.9 12.402l-1.878-1.7V8.018H.66c-.326 0-.495.22-.574.48h-.04a2.28 2.28 0 0 1-.065-.52c0-.356.09-1.288 1.043-1.288V4.333c0-.452-.508-.63-.508-1.233 0-.78.704-1.548 1.995-2.028l.052.04c-.47.288-.717.562-.717 1.15 0 .904.834.67.834 2.096v.548l1.526-1.685L5.81 4.88l1.513-1.658 1.46 1.507V9.8z'/%3E%3Cpath d='M16.11 11.064c-50.462 2.712-25.23 1.356 0 0zm-1.684-6.202L13.557 4l-.204.23.804.784v6.284l.268-.216zm-1.94 6.067v.35c.434.108.612.243.92.62l.294-.243a1.63 1.63 0 0 0-1.212-.73zm1.53-5.85l-.753-.73-.778.892v4.756c.664.068 1.123.27 1.52.73l.013-.013zm-1.672.31l-.28.31v7.824l.28.27zm-1.493-.77l-.638-.62-.204.23.574.54v1.527h.268zm0 2.433h-.702c-.485 0-.676.324-.69.703l.013.013a.7.7 0 0 1 .612-.405h.498v7.365l.268-.27zm-.408 3.878c-.523.108-.893.446-1.136.892l.013.027c.358-.324.69-.473 1.123-.58zm2.948 1.19c-.357-.405-.485-.54-.906-.662v2.65l-.026.013-.5-.487-1.48 1.446-.026-.013V11.43c-.447.108-.92.35-1.378.838l-.025-.013c.09-1.04.574-1.81 1.404-2.108V7.5h-.268c-.37 0-.574.203-.753.567h-.038c-.038-.12-.064-.31-.064-.62 0-.568.396-1.162 1.047-1.162h.076v-1.46l-.523-.5-.255.27-.09-.095 1.29-1.446 1.2 1.162v1.23l.28-.324V3.578h.14l.038.582 1.203-1.19 1.898 1.487v5.878z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='washingtonpost.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='washingtonpost.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0px 3px;
+    opacity: 0.60;
+}
+
+/* The New York Times: reduction of full SVG logo to just the 'T' they use as an icon */
+#markdownBody a[href*='nytimes.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M13.994 2.824c0-1.565-1.7-1.956-3.025-1.956v.235c.8 0 1.423.235 1.423.783 0 .313-.267.783-1.067.783-.623 0-1.957-.313-2.936-.626-1.156-.39-2.224-.704-3.113-.704-1.78 0-3.025 1.174-3.025 2.504 0 1.174.98 1.565 1.334 1.722l.09-.157c-.178-.157-.445-.313-.445-.783 0-.313.356-.86 1.245-.86.8 0 1.868.313 3.29.704 1.245.313 2.58.548 3.29.626V7.52L9.724 8.537v.078l1.334 1.017v3.365c-.712.39-1.512.47-2.224.47-1.334 0-2.49-.313-3.47-1.252l3.647-1.565v-5.4L4.565 6.972C4.92 5.955 5.9 5.25 6.878 4.78l-.09-.235c-2.67.626-5.07 2.817-5.07 5.478 0 3.13 2.936 5.478 6.227 5.478 3.558 0 5.87-2.504 5.87-5.087h-.178c-.534 1.017-1.334 1.956-2.313 2.426v-3.21l1.423-1.017v-.078L11.325 7.52V5.094c1.334 0 2.67-.783 2.67-2.27zm-7.74 8.608l-1.067.47c-.623-.704-.98-1.643-.98-2.974 0-.548 0-1.174.178-1.643l1.868-.704zm8.273 2.582c-8.54 4.07-4.27 2.035 0 0z'/%3E%3Chead/%3E%3C/svg%3E");}
+#markdownBody a[href*='nytimes.com']:hover::after {
+    opacity: 0.45;
+}
+#markdownBody a[href*='nytimes.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 0.8em;
+    margin:0 0 2px 3px;
+    opacity: 0.60;
+}
+
+/* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
+#markdownBody a[href*='nlm.nih.gov']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='16' height='16' viewBox='0 0 10.76 10.77'%3E%3Cpath d='M5.32.5c-1.03.13-2.06.35-3 .8-.38.2-.78.45-.93.87-.1.36.13.7.38.93.52.48 1.18.77 1.82 1.05l.36.16c-.6-.3-1.2-.65-1.63-1.17-.18-.2-.3-.54-.1-.78.24-.32.65-.44 1-.55.68-.2 1.4-.26 2.1-.32M5.2 10c1.1-.08 2.18-.32 3.14-.86.34-.2.7-.5.78-.9.05-.42-.24-.77-.55-1-.6-.5-1.36-.8-2.07-1.12a5.1 5.1 0 0 1 1.76 1.3c.14.2.2.5.01.7-.3.33-.74.43-1.15.53a12.3 12.3 0 0 1-1.92.24m.23-4.3c1-.07 2.03-.13 2.92-.63.37-.4.13-1.03-.25-1.32-.38-.3-.83-.5-1.2-.8.82.34 1.7.74 2.2 1.5.24.57-.2 1.18-.7 1.44-1.56.86-3.38.94-5.1 1.17-.5.08-1.08.2-1.4.64-.23.4.06.86.4 1.1.3.25.7.4 1 .65-.4-.1-.78-.34-1.13-.57-.36-.27-.72-.6-.86-1.04-.08-.68.5-1.23 1.1-1.47a8 8 0 0 1 3.05-.67z' fill='%23231f20'/%3E%3Cg stroke='%23000'%3E%3Cg stroke-width='.92'%3E%3Cpath d='M5.32.37C2.7.65-1.12 1.93 3.46 3.9 5.86 4.9-2 1.92 5.3 1.5m-.2 8.34c2.62-.28 6.44-1.7 1.85-3.68-2.3-1 5.46 2.12-1.85 2.54' opacity='0'/%3E%3Cpath d='M5.2 4.47c7.2-.42-.55-3.53 1.75-2.55 4.58 1.98.76 3.4-1.85 3.68h.22C-2 6.03 5.86 9 3.57 8c-4.7-1.98-.76-3.25 1.75-3.53' opacity='0'/%3E%3C/g%3E%3Cg stroke-width='.24'%3E%3Cpath d='M3.28 3.82c-1.2-.54-1.83-1.05-1.94-1.54-.02-.1-.01-.26.03-.35.12-.28.4-.53.85-.76C2.9.83 3.97.55 5.1.4l.2-.02c0 0 .01.25.01.56v.56l-.43.03-.93.1c-1.5.22-2.1.64-1.72 1.24a3.6 3.6 0 0 0 1.27 1.01l.1.07c0 .01-.05-.01-.33-.13z' opacity='0'/%3E%3Cpath d='M5.3.38a9.6 9.6 0 0 0-.2.02c-1.14.15-2.22.43-2.9.77-.46.23-.73.48-.85.76-.04.1-.05.25-.03.35.1.5.75 1 1.94 1.54l.33.13c0 0-.05-.03-.1-.07-.2-.1-.45-.27-.64-.4A2.9 2.9 0 0 1 2.32 3l-.04-.05-.04-.06c-.03-.04-.05-.08-.07-.12l-.02-.06c-.04-.12-.04-.24.01-.35 0 0 0 .03-.01.06s-.02.07-.02.1c0 .02 0 .02.02-.02.02-.07.06-.13.14-.22.26-.28.85-.5 1.77-.63.16-.03.2-.03.15-.04-.06-.01.33-.05.68-.08l.43-.03V.94.38zM4.12 1.6c.03 0 .02 0-.02.01-.03.01-.07.01-.1.01s-.02 0 0-.01l.08-.01h.02zm-.18.02c.03.01.02.01 0 .01s-.03 0-.02 0h.03zm-.1.02c.03 0-.01.01-.1.02l-.46.1c-.02 0 .08-.02.2-.05h.04l.1-.02.18-.03h.04zm-.6.12c-.04.02-.07.02-.05.01l.04-.01zm-.1.02c.01 0-.03.02-.08.03-.13.04-.15.04-.12.02.01 0 .03-.01.04-.02l.08-.02h.07zm-.24.07c.01 0-.04.02-.1.05l-.2.1-.1.04c.03-.03.08-.05.13-.07l.27-.1zm-.42.18c.01 0-.02.02-.07.05-.04.03-.1.08-.14.1-.03.03-.06.05-.06.04.03-.03.05-.06.1-.1l.06-.05c.03-.02.07-.04.1-.07z' opacity='0'/%3E%3C/g%3E%3C/g%3E%3Chead/%3E%3Cg fill='%23231f20'%3E%3Cpath d='M198.32-445.92c-113 12.98-289.85 71.3-78.6 162 103.17 45.36-250.55-90.72 78.6-116.64M193.4-11.72c113-12.98 289.86-77.77 78.6-168.5C168.85-225.58 522.57-83 193.4-63.57'/%3E%3Cuse xlink:href='%23B'/%3E%3C/g%3E%3Cg stroke='%23000'%3E%3Cg stroke-width='41.94'%3E%3Cuse xlink:href='%23C' opacity='0'/%3E%3Cuse xlink:href='%23D' opacity='0'/%3E%3Cuse xlink:href='%23E' opacity='0'/%3E%3C/g%3E%3Cg stroke-width='10.81'%3E%3Cuse xlink:href='%23F' opacity='0'/%3E%3Cuse xlink:href='%23G' opacity='0'/%3E%3C/g%3E%3C/g%3E%3Cg fill='%23231f20'%3E%3Cpath d='M198.32-445.92c-113 12.98-289.85 71.3-78.6 162 103.17 45.36-250.55-90.72 78.6-116.64M193.4-11.72c113-12.98 289.86-77.77 78.6-168.5C168.85-225.58 522.57-83 193.4-63.57'/%3E%3Cuse xlink:href='%23B'/%3E%3C/g%3E%3Cg stroke='%23000'%3E%3Cg stroke-width='41.94'%3E%3Cuse xlink:href='%23C' opacity='0'/%3E%3Cuse xlink:href='%23D' opacity='0'/%3E%3Cuse xlink:href='%23E' opacity='0'/%3E%3C/g%3E%3Cg stroke-width='10.81'%3E%3Cuse xlink:href='%23F' opacity='0'/%3E%3Cuse xlink:href='%23G' opacity='0'/%3E%3C/g%3E%3C/g%3E%3Cdefs %3E%3Cpath id='B' d='M193.4-257.97c329.16-19.44-24.57-162 78.6-116.65 211.26 90.72 34.38 155.54-78.6 168.5h9.83C-125.9-186.7 222.9-50.6 119.73-95.96c-206.34-90.74-34.4-149.06 83.52-162'/%3E%3Cpath id='C' d='M198.32-452.4c-117.9 12.96-289.85 71.3-83.5 162 108.08 45.36-245.64-90.72 83.5-110.16'/%3E%3Cpath id='D' d='M188.5-18.2c117.9-12.96 289.85-77.75 83.52-168.5-103.17-45.36 245.64 97.2-83.52 116.64'/%3E%3Cpath id='E' d='M193.4-264.45c324.25-19.46-24.57-162 78.6-116.65 206.33 90.72 34.38 155.52-83.52 168.5h9.8c-329.14 19.44 24.58 155.52-78.6 110.16-211.26-90.72-34.4-149.05 78.6-162'/%3E%3Cpath id='F' d='M106.7-294.37c-53.63-24.72-82.62-48.13-87.3-70.47a34.5 34.5 0 0 1 1.27-16.11c5.2-12.96 17.45-24.12 38.26-34.8 30.04-15.44 78.56-28.6 129.92-35.26l8.93-1.1c.22 0 .4 11.53.4 25.62v25.62l-19.47 1.5c-14.33 1.1-28.62 2.7-42.03 4.66-67.95 9.97-94.34 29.37-77.5 57 8.46 13.9 29.82 31.2 57.08 46.26 2.82 1.56 5.13 2.94 5.13 3.06 0 .65-2.46-.36-14.67-5.98z'/%3E%3Cpath id='G' d='M197.78-452.12c-.22 0-4.24.5-8.93 1.1-51.36 6.65-99.88 19.82-129.92 35.26-20.8 10.7-33.07 21.85-38.26 34.8-1.6 4-2.2 11.65-1.27 16.12 4.68 22.34 33.67 45.75 87.3 70.47 12.2 5.63 14.67 6.63 14.67 5.98 0-.12-2.3-1.5-5.13-3.06-9.27-5.12-20.34-12.2-28.73-18.28-10.33-7.63-18.7-15.27-24.3-22.3l-1.12-1.46-.76-1.02a54.9 54.9 0 0 1-1.79-2.65c-.01-.02-.02-.04-.04-.05a41.8 41.8 0 0 1-3-5.64c-.37-.85-.68-1.7-.96-2.53-1.88-5.7-1.7-11 .5-15.88.1.2-.15 1.43-.57 2.84-.43 1.46-.76 3.3-.74 4.07.03 1.13.18.95.73-.87 1-3.3 2.74-6 6.4-9.94 11.7-12.62 38.45-22.36 79.77-29.03 7.16-1.16 8.78-1.55 6.93-1.7-2.86-.24 15.04-2.3 30.4-3.5l19.2-1.5v-25.62c0-14.1-.18-25.62-.4-25.62zm-53.2 56.4c1.18.02.97.14-.8.47-1.32.24-3.12.43-4 .4-.9-.02-.7-.12.1-.3l3.74-.52c.33-.02.73-.06.96-.06zm-8.2 1.06c.32 0 .63.03.87.1.5.14.1.25-.93.25-.8 0-1.22-.07-1.12-.17l1.18-.18zm-4.6.76c1.47-.14-.57.34-4.53 1.07a602.4 602.4 0 0 0-13.66 2.72c-3.55.76-6.67 1.36-6.93 1.32-.83-.1 3.6-1.14 8.92-2.24l1.92-.4 4.4-.84 7.88-1.38c.75-.1 1.5-.22 2.02-.27zm-26.67 5.27c.86.01.8.1-.27.45-1.75.58-3.1.6-1.98.06l1.93-.47c.1-.01.23-.04.32-.04zm-4.1 1.14c.22-.03.36-.03.4 0 .12.13-1.76.8-4.18 1.47-5.75 1.62-6.88 1.86-5.2 1.1.42-.2 1.15-.44 1.93-.7l3.8-1.12a33.7 33.7 0 0 1 3.26-.76zm-11 3.17c.38.01-1.7.97-4.65 2.13a159.8 159.8 0 0 0-9.07 3.91l-4.13 2.02c-.22.1-.4.06-.4-.1 0-.04.07-.1.14-.16a80.4 80.4 0 0 1 5.92-3.03l.16-.07c3.58-1.65 7.57-3.2 11.96-4.68.02 0 .06-.01.08-.01zm-18.86 8.3c.24.01-.85.9-3 2.36-1.7 1.15-4.48 3.45-6.2 5.13-1.47 1.43-2.5 2.23-2.57 2.02 1.14-1.4 2.47-2.77 4-4.1.93-.78 1.9-1.57 2.87-2.3a56.8 56.8 0 0 1 4.66-3.04c.1-.05.2-.08.24-.08z'/%3E%3C/defs%3E%3C/svg%3E");
+    }
+#markdownBody a[href*='nlm.nih.gov']:hover::after {
+    opacity: 0.45;
+}
+#markdownBody a[href*='nlm.nih.gov']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 0.8em;
+    margin:0 0 2px 3px;
+    opacity: 0.60;
+}
+
+/* The New Yorker: the Dandy SVG, simplified & rotated more vertically */
+#markdownBody a[href*='newyorker.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 3.52 3.36' width='16' height='16' fill='%23ffffff' fill-rule='nonzero' stroke='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M.74 1.12c-1.28 1.56-.64.78 0 0z' fill='%23c9252c'/%3E%3Cpath d='M2.93 2.52l.4.27c.02.01.04-.01.04-.03v-.02c-.01-.07-.07-.34-.24-.63-.07-.11-.15-.22-.25-.33L3.31.62c.01-.01.01-.03 0-.05 0-.01-.04-.1-.14-.21S2.9.11 2.65.03C2.29-.08 2.09-.08 2-.06c-.04.01-.06.01-.06.02-.01.01-.02.02-.03.03L1.36 1.3H1.3c-.45.08-.7.31-.7.31-.01.01-.01.02-.01.03s.01.02.02.02l.46.19C1 1.99.9 2.12.8 2.2l-.14.12c-.02.02-.03.03-.04.05s-.01.05-.01.07.01.04.03.06c.02.03.05.05.08.06.04.02.08.02.12.03h.03l.09.11-.01.14c-.01.01-.02.03-.03.05-.29.5.15.8.42.2.09-.11.24-.23.49-.31l.14-.03.05-.01c.19-.03.31-.01.37.02.02.01.29.15.31.16.72-.82-.49-.72.23-.41zm-1.67.49c-.04.05-.07.1-.1.16h-.01c-.02 0-.04-.01-.06-.02-.01-.01-.03-.02-.04-.03s-.02-.03-.02-.06c-.01-.03 0-.06.01-.09l.02-.03.01-.01.02-.02.01-.19h.02l.02-.01.02-.01.01-.02h0v-.01-.01h0 0 0l-.02-.01-.03-.01h-.02-.01-.03l-.07-.08.03-.02.04-.03.02-.04v-.01-.01-.01h-.01-.01-.01-.03l-.04.01H.95l-.02.01c-.03.01-.06.02-.1.02H.81c-.02 0-.04-.01-.05-.01l-.02-.01h0c0-.01.02-.02.04-.04l.1-.09c.12-.1.22-.26.31-.4l.02-.04v-.01l.11-.22c.08.01.28.05.52.15l.06.03c-.01.01-.01.01-.02.02-.05.06-.08.14-.09.25-.03.01-.05.01-.06.02s-.02.01-.03.02-.03.02-.05.04c-.03.04-.06.1-.06.17-.04.01-.1.03-.15.08s-.09.13-.09.24c-.06.02-.12.06-.15.11-.02.02-.02.04-.03.07s-.02.05-.02.07v.06.01.01l.01.01h.01l.01-.01v-.01l.03-.04c.01-.02.02-.04.04-.06l.02-.03s.04-.07.14-.09c.03 0 .05-.03.05-.06 0-.11.03-.16.06-.2s.07-.05.1-.05h.02.06v-.06c0-.08.02-.12.03-.14s.05-.03.07-.04c.01 0 .02 0 .03 0h.01 0l.06.01v-.07c0-.13.03-.19.07-.23.02-.02.04-.03.06-.04l.08.04c.07.04.14.09.21.15-.02.02-.04.04-.06.06-.02.01-.03.03-.05.04l-.06.04c0 .03.08.03.08.03.03 0 .06-.01.09-.02l.05-.02.02-.02c.01-.01.02-.02.03-.03.11.09.21.21.3.34l.03.04h0c0 .01 0 .02 0 .03-.01.04-.02.06-.05.1-.03.04-.07.05-.11.06-.02 0-.04 0-.06 0h-.02-.01c-.02-.02-.05-.04-.08-.05-.02-.01-.04-.02-.06-.02.02-.01.03-.03.05-.04s.04-.06.05-.08.02-.04.02-.06c0-.01 0-.02 0-.03s0-.02 0-.03c0-.02-.01-.03-.02-.05l-.01-.02-.01-.01c-.02-.01-.02.01-.02.01s0 .02 0 .04c0 .01 0 .02-.01.03s-.01.02-.01.03c-.01.02-.02.03-.03.05l-.03.04-.02.02c-.04.05-.11.08-.17.09-.06 0-.11.01-.17.02s-.13.03-.2.05l-.03.01c-.25.08-.41.21-.51.33zm.88-1.16zm.11-.46l-.04-.01-.02-.01.45-1.21.09.03-.47 1.2zm-.18-.05a2 2 0 0 0-.37-.06L2.19.06c.08.01.19.02.32.06z' fill='%23000'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='newyorker.com']:hover::after {
+    opacity: 0.45;
+}
+#markdownBody a[href*='newyorker.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.3em;
+    width: 0.9em;
+    margin: 0 0 0px 2px;
+    opacity: 0.60;
+}
+
+/* El Grauniad */
+#markdownBody a[href*='theguardian.com']::after,
+#markdownBody a[href*='www.guardian.co.uk']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16.15'%3E%3Cpath d='M7.536 16.143C4.497 16 1.683 13.932.58 11.103-.63 8.166.092 4.55 2.377 2.334 4.557.087 8.118-.628 11 .586c3.024 1.2 5.114 4.38 4.994 7.634.006 3.32-2.29 6.478-5.442 7.512-.97.335-1.994.45-3.016.41zm1.085-1.763c.09-.542-1.052-.224-1.298-.763-1.16-1.134-1.415-2.85-1.524-4.398-.042-2.013-.07-4.197 1.067-5.95.392-.602 1.054-1.023 1.78-1.048.024-.583-1.003-.11-1.368-.163-2.434.412-4.6 2.357-5 4.833-.295 1.8.002 3.803 1.225 5.233 1.232 1.475 3.2 2.39 5.128 2.257zm1.127-.305a7.02 7.02 0 0 0 2.377-1.255l.027-3.9c.26-.145.616-.22.82-.408.08-.413-.477-.15-.7-.223l-3.805.01c-.06.56 1.2.27.866 1.05l.01 4.83c.142-.02.28-.063.416-.103zm2.36-8.444l.013-2.266c-.74-.734-1.747-1.186-2.76-1.386-.02.66.833 1.273 1.162 1.9l1.313 1.785c.086-.013.204.033.272-.033z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='theguardian.com']:hover::after,
+#markdownBody a[href*='www.guardian.co.uk']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='theguardian.com']::after,
+#markdownBody a[href*='www.guardian.co.uk']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* Reddit */
+#markdownBody a[href*='reddit.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 341.8 341.8'%3E%3Cellipse cx='170.9' cy='170.035' rx='170.301' ry='170.95'/%3E%3Cpath d='M284.434 170.035c0-13.796-11.154-24.993-24.898-24.993-6.772 0-12.748 2.6-17.13 6.998-16.93-12.196-40.434-20.194-66.328-21.194l11.353-53.384 36.85 7.798c.398 9.397 8.166 16.995 17.727 16.995 9.76 0 17.727-7.998 17.727-17.795s-7.967-17.795-17.727-17.795c-6.97 0-12.947 4-15.735 9.997l-41.23-8.797c-1.195-.2-2.4 0-3.386.6s-1.593 1.6-1.992 2.8l-12.548 59.583c-26.49.8-50.194 8.597-67.324 21.194-4.382-4.2-10.557-6.998-17.13-6.998-13.744 0-24.898 11.197-24.898 24.993 0 10.197 5.975 18.795 14.74 22.793-.398 2.4-.598 5-.598 7.598 0 38.39 44.418 69.38 99.392 69.38s99.392-30.99 99.392-69.38c0-2.6-.2-5-.598-7.398 8.166-4 14.34-12.796 14.34-22.993zm-170.3 17.795c0-9.797 7.967-17.795 17.727-17.795s17.727 7.998 17.727 17.795-7.967 17.795-17.727 17.795-17.727-7.998-17.727-17.795zm98.994 46.986c-12.15 12.196-35.255 12.996-42.027 12.996s-30.077-1-42.027-12.996c-1.793-1.8-1.793-4.8 0-6.598a4.68 4.68 0 0 1 6.573 0c7.57 7.598 23.902 10.397 35.654 10.397s27.886-2.8 35.654-10.397a4.68 4.68 0 0 1 6.573 0c1.394 2 1.394 4.8-.398 6.598zm-3.187-29.19c-9.76 0-17.727-7.998-17.727-17.795s7.967-17.795 17.727-17.795 17.727 7.998 17.727 17.795-7.967 17.795-17.727 17.795z' fill='%23fff'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='reddit.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='reddit.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.50;
+}
+
+/* PG/HN/YC (shared logo): */
+#markdownBody a[href*='paulgraham.com']::after,
+#markdownBody a[href*='ycombinator.com']::after {
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 20010904//EN' 'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'%3E%3Csvg version='1.0' viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(0 256) scale(.1 -.1)'%3E%3Cpath d='m6 2537c-8-29-8-2485 0-2514l6-23h1268 1268l6 23c8 29 8 2485 0 2514l-6 23h-1268-1268l-6-23zm1080-854c69-142 142-292 162-333l35-75 166 333 166 332h97c54 0 98-3 98-6 0-4-99-192-220-419l-220-414v-265-266h-90-90v267 267l-220 411c-121 227-220 415-220 419 0 3 47 6 105 6h104l127-257z'/%3E%3C/g%3E%3C/svg%3E%0A");
+}
+#markdownBody a[href*='paulgraham.com']:hover::after,
+#markdownBody a[href*='ycombinator.com']:hover::after {
+    opacity: 0.4;
+}
+#markdownBody a[href*='paulgraham.com']::after,
+#markdownBody a[href*='ycombinator.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 0 4px;
+    opacity: 0.60;
+}
+
+/* MIRI/intelligence.org */
+#markdownBody a[href*='intelligence.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21.581' height='19.341'%3E%3Cpath d='M20.23.795c-2.333 1.507-3.84 2.88-5.43 4.904-1.05 1.353-1.455 1.996-2.056 3.3-.36.777-.45.854-1.133.95-.248.03-.495.106-.563.173-.15.134-.233.672-.308 2.015l-.06 1.056-.038-1.516c-.03-1.132-.06-1.536-.143-1.593-.053-.048-.33-.115-.615-.144-.833-.106-.968-.22-1.373-1.132-.555-1.22-1.118-2.13-2.026-3.292C5.6 4.385 4.302 3.09 3.14 2.158 2.412 1.573.19.095.048.095c-.098 0-.038 1.45.1 2.17l.083.48.803.317c1.7.662 3.293 1.584 4.516 2.63.63.537 1.575 1.516 1.913 1.996.128.163-.03.038-.338-.288-1.088-1.16-2.663-2.198-4.29-2.83C1.91 4.212.686 3.876.62 3.962c-.068.077.18.74.578 1.555l.383.768.72.03c1.388.048 2.918.49 4.02 1.17.743.45 1.08.768.458.422-.63-.355-1.403-.585-2.34-.72-.818-.106-2.198-.038-2.198.115 0 .077 1.185 1.44 1.47 1.68.128.115.248.096.885-.106.93-.307 2.108-.326 2.746-.048L7.753 9h-.638c-.353.01-.848.077-1.088.154-.465.154-1.238.576-1.238.662 0 .077 1.253.864 1.703 1.065l.383.173.368-.403c.383-.432.983-.873 1.193-.873.068 0 .173.077.225.163.083.144.045.23-.233.614-.353.49-.518.816-.428.893.03.02.27.086.54.144.975.22.87.115 1.118 1.094.45 1.804.833 4.597.833 6.046 0 .413.03.633.075.595.045-.03.075-.25.075-.48 0-1.276.398-3.887.878-5.74l.338-1.315h.248c.24 0 1.448-.25 1.7-.345.068-.03.128-.086.128-.125 0-.154-.54-.864-.848-1.132-.18-.154-.315-.326-.293-.393.083-.317 1 .058 1.7.69.27.24.548.44.615.44.143 0 1.966-1.113 1.966-1.2 0-.106-.72-.45-1.35-.643a3.46 3.46 0 0 0-1.343-.154l-.698.038.398-.192c.593-.278 2.49-.27 3.293.01l.563.202.375-.365c.525-.518 1.2-1.42 1.133-1.507-.03-.048-.443-.096-.908-.106-1.373-.058-3.06.345-4.05.96-.225.134-.263.144-.15.03.248-.26 1.313-.883 1.936-1.142.848-.355 2.063-.633 3.038-.7l.848-.058.285-.633c.338-.74.645-1.622.593-1.7-.06-.077-1.133.23-2.093.585-1.68.633-3.376 1.7-4.494 2.83l-.488.49.54-.672c1.298-1.584 3.84-3.31 6.174-4.165.345-.125.645-.288.675-.365.158-.355.293-2.486.158-2.486-.038 0-.623.355-1.298.797z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='intelligence.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='intelligence.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* DeepMind; match articles or anchors about DM too */
+#markdownBody a[href*='deepmind']::after {
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'%3E%3Csvg version='1.1' viewBox='0 0 640 640' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='a' d='m317.79 6.58c-108.65 2.51-195.49 95.25-195.58 208.85 0.09 109.07 80.38 199.75 184.39 208.26-50.55-5.95-88.78-50.64-88.81-103.82 0-57.74 44.77-104.54 100-104.54 110.46 0 200 93.61 200 209.08-0.06 108.51-79.53 198.94-182.96 208.19 158.67-9.44 282.77-146.59 282.97-312.73-0.15-163.73-120.74-299.79-276.89-312.4-6.21-0.68-12.45-1.05-18.7-1.11-0.39 0.02-0.79 0.04-1.18 0.06-1.08-0.06-2.16-0.12-3.24-0.17v0.33z'/%3E%3ClinearGradient id='d' x1='116.94' x2='623.06' y1='319.42' y2='319.42' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-color='%23a3a3a3' offset='0'/%3E%3Cstop stop-color='%23fff' offset='1'/%3E%3C/linearGradient%3E%3Cpath id='b' d='m322.21 633.42c108.65-2.51 195.49-95.25 195.58-208.85-0.09-109.07-80.38-199.75-184.39-208.26 50.55 5.95 88.78 50.64 88.81 103.82 0 57.74-44.77 104.54-100 104.54-110.46 0-200-93.61-200-209.08 0.06-108.51 79.53-198.94 182.96-208.19-158.67 9.44-282.77 146.59-282.97 312.73 0.15 163.73 120.74 299.79 276.89 312.4 6.21 0.68 12.45 1.05 18.7 1.11 0.39-0.02 0.79-0.04 1.18-0.06 1.08 0.06 2.16 0.12 3.24 0.17v-0.33z'/%3E%3ClinearGradient id='c' x1='16.94' x2='523.06' y1='320.41' y2='320.41' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0'/%3E%3Cstop stop-color='%23969696' offset='1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cuse fill='url(%23d)' xlink:href='%23a'/%3E%3Cuse fill-opacity='0' stroke='%23ffffff' stroke-width='2' xlink:href='%23a'/%3E%3Cuse fill='url(%23c)' xlink:href='%23b'/%3E%3Cuse fill-opacity='0' stroke='%23ffffff' stroke-width='2' xlink:href='%23b'/%3E%3C/svg%3E%0A");
+}
+#markdownBody a[href*='deepmind']:hover::after {
+    opacity: 0.5;
+}
+#markdownBody a[href*='deepmind']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 1px 4px;
+    opacity: 0.60;
+}
+
+#markdownBody a[href*='openai']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M6.3 7L8 6l1.7 1v2L8 10 6.3 9V7zm-.7 1.6l-1.4-.8v-4c.1-1.7 2-3 3.7-2.5.3.1 1.5.5.9.7L5.7 3.7c-.3.4-.1.9-.2 1.4v3.4zM14 5.8l-3.4-2c-.5 0-.8.4-1.3.5l-3 1.7c0-.5 0-1.1 0-1.6l3.5-2c1.6-.8 3.7.3 4.1 1.9.1.4.1.9.1 1.3zm-1.3 2L8.8 5.6c.5-.2.9-.6 1.4-.8l3.6 2.1a3 3 0 0 1 .4 4.3c-.2.2-1.1 1.1-1.2.6V8.1c0-.1-.1-.2-.3-.3zM1.6 5.3c.3-.5 1.2-1.4 1.6-1.2v3.8c.2.4.7.5 1.1.8l3 1.7c-.5.3-.9.6-1.4.8l-3.5-2C1.2 8.3.8 6.5 1.6 5.3zm.8 6.9c-.3-.5-.6-1.6-.3-1.9l3.3 1.9c.5 0 .8-.4 1.3-.5l3-1.7c0 .5 0 1.1 0 1.6l-3.6 2c-1.3.5-3 0-3.7-1.3zm6.5 2.7c-.6 0-1.7-.3-1.8-.7l3.3-1.9c.3-.4.1-.9.2-1.4V7.4l1.4.8v4c-.1 1.5-1.5 2.7-3 2.7zm6-8.4c.7-2-.5-4.4-2.5-5-.9-.5-2.1.2-2.7-.6C8-.5 5.3-.2 4 1.6c-.5.6-.6 1.4-1.5 1.5C.6 3.9-.4 6.3.4 8.2c.3.7 1 1.2.6 2-.3 2.1 1.4 4.1 3.4 4.4.8.1 1.6-.2 2.1.5 1.7 1.3 4.3.9 5.6-.8.5-.6.6-1.5 1.5-1.5 1.9-.8 2.9-3.2 2.1-5.1a4 4 0 0 0-.8-1.2z'/%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='openai']:hover::after {
+    opacity: 0.5;
+}
+#markdownBody a[href*='openai']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1.1em;
+    width: 1em;
+    margin: 0 0 0px 3px;
+    opacity: 0.60;
+}
+
+/* Twitter */
+#markdownBody a[href*='twitter.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 612 612'%3E%3Cpath d='M612 116.26c-22.525 9.98-46.694 16.75-72.088 19.772 25.93-15.527 45.777-40.155 55.184-69.41C570.774 81 543.927 91.44 515.32 97.1c-22.907-24.437-55.5-39.658-91.63-39.658-69.334 0-125.55 56.217-125.55 125.5 0 9.828 1.11 19.427 3.25 28.606-104.33-5.24-196.84-55.223-258.75-131.17-10.823 18.5-16.98 40.078-16.98 63.1 0 43.56 22.18 81.993 55.835 104.48-20.575-.688-39.926-6.348-56.867-15.756v1.568c0 60.806 43.29 111.55 100.7 123.1-10.517 2.83-21.607 4.398-33.08 4.398a120.5 120.5 0 0 1-23.634-2.333c15.985 49.907 62.336 86.2 117.25 87.194-42.947 33.654-97.1 53.655-155.92 53.655-10.134 0-20.116-.612-29.944-1.72 55.567 35.68 121.54 56.485 192.44 56.485 230.95 0 357.2-191.3 357.2-357.2l-.42-16.253c24.666-17.593 46.005-39.697 62.794-64.86z' fill='%23010002'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='twitter.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='twitter.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 4px;
+    opacity: 0.60;
+}
+
+/* Erowid */
+#markdownBody a[href*='erowid.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 2.646 2.646' height='10' width='10'%3E%3Cg transform='translate(0 -124.49)'%3E%3Cpath d='M2.364 126.372l-1.07.54-1.065-.545.003-1.086 1.07-.54 1.065.545z' fill='none' stroke='%23a7a7a7' stroke-width='.097'/%3E%3Cg transform='matrix(.013486 .020614 -.023358 .011902 1.863146 123.54988)' id='A'%3E%3Ccircle cx='71.626' cy='30.716' r='15.025' fill='%23fff' stroke='%23000' stroke-width='3.175'/%3E%3Cpath d='M73.025 9.913l-3.176 1.54.38 40.064 3.174-.03z' dominant-baseline='auto' fill-rule='evenodd'/%3E%3Ccircle cx='71.72' cy='30.905' r='9.26' fill='%23fff' stroke='%23a7a7a7' stroke-width='4.233'/%3E%3C/g%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.13866 61.893758)' id='B' xlink:href='%23A'/%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.11676 61.891213)' id='C' xlink:href='%23B'/%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.12689 61.898075)' id='D' xlink:href='%23C'/%3E%3Cuse transform='matrix(.5 .764295 -.981296 .5 124.09497 61.898045)' id='E' xlink:href='%23D'/%3E%3Cuse transform='scale(0)' xlink:href='%23E'/%3E%3Cuse transform='matrix(.5 -.764295 .981296 .5 -122.80377 63.920586)' xlink:href='%23A'/%3E%3C/g%3E%3Chead/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='erowid.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='erowid.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+/* Wikipedia */
+#markdownBody a[href*="wikipedia.org"]::after,
+#markdownBody a[href*="wikimedia.org"]::after,
+#markdownBody a[href*="wikimediafoundation.org"]::after,
+#markdownBody a[href*="wikisource.org"]::after {
+    content: "";
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj48cGF0aCBkPSJNNjQwIDUxLjJsLS4zIDEyLjJjLTI4LjEuOC00NSAxNS44LTU1LjggNDAuMy0yNSA1Ny44LTEwMy4zIDI0MC0xNTUuMyAzNTguNkg0MTVsLTgxLjktMTkzLjFjLTMyLjUgNjMuNi02OC4zIDEzMC05OS4yIDE5My4xLS4zLjMtMTUgMC0xNS0uM0MxNzIgMzUyLjMgMTIyLjggMjQzLjQgNzUuOCAxMzMuNCA2NC40IDEwNi43IDI2LjQgNjMuNC4yIDYzLjdjMC0zLjEtLjMtMTAtLjMtMTQuMmgxNjEuOXYxMy45Yy0xOS4yIDEuMS01Mi44IDEzLjMtNDMuMyAzNC4yIDIxLjkgNDkuNyAxMDMuNiAyNDAuMyAxMjUuNiAyODguNiAxNS0yOS43IDU3LjgtMTA5LjIgNzUuMy0xNDIuOC0xMy45LTI4LjMtNTguNi0xMzMuOS03Mi44LTE2MC05LjctMTcuOC0zNi4xLTE5LjQtNTUuOC0xOS43VjQ5LjhsMTQyLjUuM3YxMy4xYy0xOS40LjYtMzguMSA3LjgtMjkuNCAyNi4xIDE4LjkgNDAgMzAuNiA2OC4xIDQ4LjEgMTA0LjcgNS42LTEwLjggMzQuNy02OS40IDQ4LjEtMTAwLjggOC45LTIwLjYtMy45LTI4LjYtMzguNi0yOS40LjMtMy42IDAtMTAuMy4zLTEzLjYgNDQuNC0uMyAxMTEuMS0uMyAxMjMuMS0uNnYxMy42Yy0yMi41LjgtNDUuOCAxMi44LTU4LjEgMzEuN2wtNTkuMiAxMjIuOGM2LjQgMTYuMSA2My4zIDE0Mi44IDY5LjIgMTU2LjdMNTU5LjIgOTEuOGMtOC42LTIzLjEtMzYuNC0yOC4xLTQ3LjItMjguM1Y0OS42bDEyNy44IDEuMS4yLjV6Ii8+PC9zdmc+');
+    background-repeat: no-repeat;
+    background-size: 0.75em;
+    background-position: right 1px top;
+    width: 0.85em;
+    height: 0.85em;
+    display: inline-block;
+    vertical-align: baseline;
+    opacity: 0.85;
+}
+#markdownBody a[href*="wikipedia.org"]:hover::after,
+#markdownBody a[href*="wikimedia.org"]:hover::after,
+#markdownBody a[href*="wikimediafoundation.org"]:hover::after,
+#markdownBody a[href*="wikisource.org"]:hover::after {
+    opacity: 0.6;
+}
+
+/* YouTube/Bandcamp/Soundcloud links */
+#markdownBody a[href*='youtube.com']::after,
+#markdownBody a[href*='youtu.be']::after,
+#markdownBody a[href*='soundcloud.com']::after,
+#markdownBody a[href*='bandcamp.com']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1NzYgNTEyIj48cGF0aCBkPSJNNTQ5LjY1NSAxMjQuMDgzYy02LjI4MS0yMy42NS0yNC43ODctNDIuMjc2LTQ4LjI4NC00OC41OTdDNDU4Ljc4MSA2NCAyODggNjQgMjg4IDY0UzExNy4yMiA2NCA3NC42MjkgNzUuNDg2Yy0yMy40OTcgNi4zMjItNDIuMDAzIDI0Ljk0Ny00OC4yODQgNDguNTk3LTExLjQxMiA0Mi44NjctMTEuNDEyIDEzMi4zMDUtMTEuNDEyIDEzMi4zMDVzMCA4OS40MzggMTEuNDEyIDEzMi4zMDVjNi4yODEgMjMuNjUgMjQuNzg3IDQxLjUgNDguMjg0IDQ3LjgyMUMxMTcuMjIgNDQ4IDI4OCA0NDggMjg4IDQ0OHMxNzAuNzggMCAyMTMuMzcxLTExLjQ4NmMyMy40OTctNi4zMjEgNDIuMDAzLTI0LjE3MSA0OC4yODQtNDcuODIxIDExLjQxMi00Mi44NjcgMTEuNDEyLTEzMi4zMDUgMTEuNDEyLTEzMi4zMDVzMC04OS40MzgtMTEuNDEyLTEzMi4zMDV6bS0zMTcuNTEgMjEzLjUwOFYxNzUuMTg1bDE0Mi43MzkgODEuMjA1LTE0Mi43MzkgODEuMjAxeiIvPjwvc3ZnPg==');
+}
+#markdownBody a[href*='youtube.com']:hover::after,
+#markdownBody a[href*='youtu.be']:hover::after,
+#markdownBody a[href*='soundcloud.com']:hover::after,
+#markdownBody a[href*='bandcamp.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='youtube.com']::after,
+#markdownBody a[href*='youtu.be']::after,
+#markdownBody a[href*='soundcloud.com']::after,
+#markdownBody a[href*='bandcamp.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 0 3px;
+    opacity: 0.60;
+}
+
+/* The *Exchange/*Overflow family of websites: */
+#markdownBody a[href*="overflow.net"]::after,
+#markdownBody a[href*="overflow.com"]::after,
+#markdownBody a[href*="stackexchange.com"]::after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 50 50' version='1.1'%3E%3Cpath d='M13 2C9.687 2 7 4.688 7 8v2h36V8c0-3.313-2.688-6-6-6zM7 12v8h36v-8zm0 10v8h36v-8zm0 10v2c0 3.313 2.688 6 6 6h15v8l8-8h1c3.313 0 6-2.688 6-6v-2z' id='surface1'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 0.75em;
+    background-position: right 1px top;
+    width: 0.85em;
+    height: 0.85em;
+    display: inline-block;
+    vertical-align: baseline;
+    opacity: 0.85;
+}
+#markdownBody a[href*="overflow.net"]:hover::after,
+#markdownBody a[href*="overflow.com"]::after,
+#markdownBody a[href*="stackexchange.com"]:hover::after {
+    opacity: 0.6;
+}
+
+/* Amazon */
+#markdownBody a[href*="amazon.com"]::after,
+#markdownBody a[href*="amazon.co."]::after,
+#markdownBody a[href*="amzn.com"]::after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M257.2 162.7c-48.7 1.8-169.5 15.5-169.5 117.5 0 109.5 138.3 114 183.5 43.2 6.5 10.2 35.4 37.5 45.3 46.8l56.8-56S341 288.9 341 261.4V114.3C341 89 316.5 32 228.7 32 140.7 32 94 87 94 136.3l73.5 6.8c16.3-49.5 54.2-49.5 54.2-49.5 40.7-.1 35.5 29.8 35.5 69.1zm0 86.8c0 80-84.2 68-84.2 17.2 0-47.2 50.5-56.7 84.2-57.8v40.6zm136 163.5c-7.7 10-70 67-174.5 67S34.2 408.5 9.7 379c-6.8-7.7 1-11.3 5.5-8.3C88.5 415.2 203 488.5 387.7 401c7.5-3.7 13.3 2 5.5 12zm39.8 2.2c-6.5 15.8-16 26.8-21.2 31-5.5 4.5-9.5 2.7-6.5-3.8s19.3-46.5 12.7-55c-6.5-8.3-37-4.3-48-3.2-10.8 1-13 2-14-.3-2.3-5.7 21.7-15.5 37.5-17.5 15.7-1.8 41-.8 46 5.7 3.7 5.1 0 27.1-6.5 43.1z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 0.75em;
+    background-position: right 1px top;
+    width: 1.1em;
+    height: 0.9em;
+    display: inline-block;
+    vertical-align: baseline;
+    opacity: 0.85;
+}
+#markdownBody a[href*="amazon.com"]:hover::after,
+#markdownBody a[href*="amazon.co."]:hover::after,
+#markdownBody a[href*="amzn.com"]:hover::after {
+    opacity: 0.6;
+}
+
+/* Github; I exclude github.io because that's blogs */
+#markdownBody a[href*='github.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 .297a12 12 0 0 0-12 12c0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577L9 21.065c-3.338.724-4.042-1.6-4.042-1.6C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.73.084-.73 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.81 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.3.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.9 1.23 3.22 0 4.6-2.805 5.625-5.475 5.92.42.36.8 1.096.8 2.22l-.015 3.286c0 .315.2.7.825.57 4.8-1.574 8.236-6.074 8.236-11.37 0-6.627-5.373-12-12-12'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='github.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='github.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.60;
+}
+
+/* Dropbox: old file-host, deprecated since they've started killing inactive accounts */
+#markdownBody a[href*='dropbox.com']::after,
+#markdownBody a[href*='dropboxusercontent.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 528 512'%3E%3Cpath d='M264.4 116.3l-132 84.3 132 84.3-132 84.3L0 284.1l132.3-84.3L0 116.3 132.3 32l132.1 84.3zM131.6 395.7l132-84.3 132 84.3-132 84.3-132-84.3zm132.8-111.6l132-84.3-132-83.6L395.7 32 528 116.3l-132.3 84.3L528 284.8l-132.3 84.3-131.3-85z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='dropbox.com']:hover::after,
+#markdownBody a[href*='dropboxusercontent.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='dropbox.com']::after,
+#markdownBody a[href*='dropboxusercontent.com']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.50;
+}
+
+/* Megaupload/Mega: filesharing (used for big files) */
+#markdownBody a[href*='mega.nz']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0a12 12 0 1 0 0 24 12 12 0 1 0 0-24zm6.23 16.244a.371.371 0 0 1-.373.372H16.3a.371.371 0 0 1-.372-.372v-4.828c0-.04-.046-.06-.08-.033l-3.32 3.32a.742.742 0 0 1-1.043 0l-3.32-3.32c-.027-.027-.08-.007-.08.033v4.828a.371.371 0 0 1-.372.372H6.136a.371.371 0 0 1-.372-.372V7.757a.37.37 0 0 1 .372-.372h1.076a.75.75 0 0 1 .525.22l4.13 4.13a.18.18 0 0 0 .26 0l4.13-4.13c.14-.14.325-.22.525-.22h1.075a.37.37 0 0 1 .372.372z'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='mega.nz']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='mega.nz']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.60;
+}
+
+#markdownBody a[href*='archive.org']::after,
+#markdownBody a[href*='archive-it.org']::after,
+#markdownBody a[href*='archiveteam.org']::after,
+#markdownBody a[href*='waybackmachine.org']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 13.1 15'%3E%3Cpath d='M.1 1.5c.08.12.12.3.23.4H12.6l.3-.4L6.5 0 .1 1.5zm.3 1h12.2v1.1H.4zM1 4.2h1l.2.1.2 3.7-.1 4.5H1l-.3-.1L.5 8c0-1.5.2-3.7.2-3.7l.3-.1zm10 0h1.1l.2.1.2 3.7-.1 4.5-.3.1h-1l-.3-.1-.2-4.4c0-1.5.2-3.7.2-3.7l.2-.2zm-6.7 0h1l.2.1.2 3.7-.1 4.5-.3.1h-.9l-.3-.1-.2-4.4c0-1.5.2-3.7.2-3.7l.2-.2zm3.4 0H9l.2 3.7-.1 4.5-.3.1h-1l-.3-.1L7.3 8c0-1.5.2-3.7.2-3.7l.2-.1zM.4 13.1h12.3v.6H.4zM0 14.3h13.1v.7H0z'/%3E%3Chead/%3E%3Cg stroke='%231a1a1a' stroke-width='.32'%3E%3Cuse xlink:href='%23B' opacity='0' fill='%231a1a1a' fill-opacity='.42'/%3E%3Cpath d='M6.5.01L.1 1.5l.2.4h12.3l.14-.2.14-.2c0 0-1.44-.34-3.2-.75L6.5.01z' opacity='0' fill-opacity='.42'/%3E%3Cpath d='M6.5.01L.1 1.5l.2.4h12.3l.14-.2.14-.2c0 0-1.44-.34-3.2-.75L6.5.01z' opacity='0'/%3E%3Cuse xlink:href='%23B' opacity='0'/%3E%3C/g%3E%3Cg stroke='%23000'%3E%3Cpath d='M.4 3.05V2.5h12.2v1.1H.4z' opacity='0' stroke-width='.32'/%3E%3Cuse xlink:href='%23B' opacity='0' stroke-width='.32'/%3E%3C/g%3E%3Cdefs %3E%3Cpath id='B' d='M.2 1.7l-.1-.2H.2L6.5.01l6.38 1.5c0 0-.06.1-.14.2l-.15.2H.3z'/%3E%3C/defs%3E%3C/svg%3E");
+}
+#markdownBody a[href*='archive.org']:hover::after,
+#markdownBody a[href*='archive-it.org']:hover::after,
+#markdownBody a[href*='archiveteam.org']:hover::after,
+#markdownBody a[href*='waybackmachine.org']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='archive.org']::after,
+#markdownBody a[href*='archive-it.org']::after,
+#markdownBody a[href*='archiveteam.org']::after,
+markdownBody a[href*='waybackmachine.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
+    opacity: 0.60;
+}
+
+/*=--------------------------------------------=*/
+/*= Icons for certain link types: by file type =*/
+/*=--------------------------------------------=*/
+/*  Note: some file extension link types have are selected additionally by
+    origin on gwern.net, because they frequently appear at the ends of ordinary
+    web page URLs.
+    */
+
+/*  PDFs */
+#markdownBody a[href$='.pdf' i]::after,
+#markdownBody a[href$='/pdf' i]::after,
+#markdownBody a[href$='type=pdf' i]::after,
+#markdownBody a[href*='.pdf#' i]::after,
+#markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
+#markdownBody a[href*='citeseerx.ist.psu.edu' i]::after,
+#markdownBody a[href*='eprint.iacr.org' i]::after,
+/*  Textfiles */
+#markdownBody a[href$='.opml' i]::after,
+#markdownBody a[href$='.page' i]::after,
+#markdownBody a[href$='.txt' i]::after,
+#markdownBody a[href$='.xml' i]::after,
+/*  Code */
+#markdownBody a[href$='.css' i]::after,
+#markdownBody a[href$='.hs' i]::after,
+#markdownBody a[href$='.js' i]::after,
+#markdownBody a[href$='.json' i]::after,
+#markdownBody a[href^="."][href$='.php' i]::after,
+#markdownBody a[href$='.sh' i]::after,
+/*  Word */
+#markdownBody a[href$='.doc' i]::after,
+#markdownBody a[href$='.docx' i]::after,
+#markdownBody a[href*='docs.google.com' i]::after,
+/*  Excel */
+#markdownBody a[href$='.xls' i]::after,
+#markdownBody a[href$='.xlsx' i]::after,
+/*  CSV */
+#markdownBody a[href$='.csv' i]::after,
+/*  Images */
+#markdownBody a[href$='.gif' i]::after,
+#markdownBody a[href$='.ico' i]::after,
+#markdownBody a[href$='.jpg' i]::after,
+#markdownBody a[href$='.png' i]::after,
+#markdownBody a[href$='.svg' i]::after,
+#markdownBody a[href$='.xcf' i]::after,
+#markdownBody a[href*='imgur.com']::after,
+/*  Audio */
+#markdownBody a[href$='.maff' i]::after,
+#markdownBody a[href$='.ogg' i]::after,
+/*  Video */
+#markdownBody a[href$='.avi' i]::after,
+#markdownBody a[href$='.mp4' i]::after,
+#markdownBody a[href$='.webm' i]::after,
+/*  Archives */
+#markdownBody a[href$='.tar' i]::after,
+#markdownBody a[href$='.zip' i]::after,
+#markdownBody a[href$='.xz' i]::after,
+/*  Misc */
+#markdownBody a[href$='.ebt' i]::after,
+#markdownBody a[href$='.epub' i]::after,
+#markdownBody a[href$='.mdb' i]::after,
+#markdownBody a[href$='.mht' i]::after,
+#markdownBody a[href$='.ttf' i]::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 0 2px;
+    opacity: 0.55;
+}
+/*  PDFs */
+#markdownBody a[href$='.pdf' i]:hover::after,
+#markdownBody a[href$='/pdf' i]:hover::after,
+#markdownBody a[href$='type=pdf' i]:hover::after,
+#markdownBody a[href*='.pdf#' i]:hover::after,
+#markdownBody a[href*='pdfs.semanticscholar.org' i]:hover::after,
+#markdownBody a[href*='citeseerx.ist.psu.edu' i]:hover::after,
+#markdownBody a[href*='eprint.iacr.org' i]:hover::after,
+/*  Textfiles */
+#markdownBody a[href$='.opml' i]:hover::after,
+#markdownBody a[href$='.page' i]:hover::after,
+#markdownBody a[href$='.txt' i]:hover::after,
+#markdownBody a[href$='.xml' i]:hover::after,
+/*  Code */
+#markdownBody a[href$='.css' i]:hover::after,
+#markdownBody a[href$='.hs' i]:hover::after,
+#markdownBody a[href$='.js' i]:hover::after,
+#markdownBody a[href$='.json' i]:hover::after,
+#markdownBody a[href^="."][href$='.php' i]:hover::after,
+#markdownBody a[href$='.sh' i]:hover::after,
+/*  Word */
+#markdownBody a[href$='.doc' i]:hover::after,
+#markdownBody a[href$='.docx' i]:hover::after,
+#markdownBody a[href*='docs.google.com' i]:hover::after,
+/*  Excel */
+#markdownBody a[href$='.xls' i]:hover::after,
+#markdownBody a[href$='.xlsx' i]:hover::after,
+/*  CSV */
+#markdownBody a[href$='.csv' i]:hover::after,
+/*  Images */
+#markdownBody a[href$='.gif' i]:hover::after,
+#markdownBody a[href$='.ico' i]:hover::after,
+#markdownBody a[href$='.jpg' i]:hover::after,
+#markdownBody a[href*='imgur.com']:hover::After,
+#markdownBody a[href$='.png' i]:hover::after,
+#markdownBody a[href$='.svg' i]:hover::after,
+#markdownBody a[href$='.xcf' i]:hover::after,
+/*  Audio */
+#markdownBody a[href$='.maff' i]:hover::after,
+#markdownBody a[href$='.ogg' i]:hover::after,
+/*  Video */
+#markdownBody a[href$='.avi' i]:hover::after,
+#markdownBody a[href$='.mp4' i]:hover::after,
+#markdownBody a[href$='.webm' i]:hover::after,
+/*  Archives */
+#markdownBody a[href$='.tar' i]:hover::after,
+#markdownBody a[href$='.zip' i]:hover::after,
+#markdownBody a[href$='.xz' i]:hover::after,
+/*  Misc */
+#markdownBody a[href$='.ebt' i]:hover::after,
+#markdownBody a[href$='.epub' i]:hover::after,
+#markdownBody a[href$='.mdb' i]:hover::after,
+#markdownBody a[href$='.mht' i]:hover::after,
+#markdownBody a[href$='.ttf' i]:hover::after {
+    opacity: 0.3;
+}
+
+/*  PDFs.
+    */
+#markdownBody a[href$='.pdf' i]::after,
+#markdownBody a[href$='/pdf' i]::after,
+#markdownBody a[href$='type=pdf' i]::after,
+#markdownBody a[href*='.pdf#' i]::after,
+#markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
+#markdownBody a[href*='citeseerx.ist.psu.edu' i]::after,
+#markdownBody a[href*='eprint.iacr.org' i]::after {
+    opacity: 0.5;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
+}
+
+/*  Textfiles.
+    */
+#markdownBody a[href$='.opml' i]::after,
+#markdownBody a[href$='.page' i]::after,
+#markdownBody a[href$='.txt' i]::after,
+#markdownBody a[href$='.xml' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02NCAyMzZjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEydjh6bTAtNjRjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEydjh6bTAtNzJ2OGMwIDYuNi01LjQgMTItMTIgMTJIMTA4Yy02LjYgMC0xMi01LjQtMTItMTJ2LThjMC02LjYgNS40LTEyIDEyLTEyaDE2OGM2LjYgMCAxMiA1LjQgMTIgMTJ6bTk2LTExNC4xdjYuMUgyNTZWMGg2LjFjNi40IDAgMTIuNSAyLjUgMTcgN2w5Ny45IDk4YzQuNSA0LjUgNyAxMC42IDcgMTYuOXoiLz48L3N2Zz4=');
+}
+
+/*  Code, scripts, etc.
+    */
+#markdownBody a[href$='.css' i]::after,
+#markdownBody a[href$='.hs' i]::after,
+#markdownBody a[href$='.js' i]::after,
+#markdownBody a[href$='.json' i]::after,
+#markdownBody a[href^="."][href$='.php' i]::after,
+#markdownBody a[href$='.sh' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YzYuMzY1IDAgMTIuNDcgMi41MjkgMTYuOTcxIDcuMDI5bDk3Ljk0MSA5Ny45NDFBMjQuMDA1IDI0LjAwNSAwIDAgMSAzODQgMTIxLjk0MXpNMjQ4IDE2MGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRWMEgyNEMxMC43NDUgMCAwIDEwLjc0NSAwIDI0djQ2NGMwIDEzLjI1NSAxMC43NDUgMjQgMjQgMjRoMzM2YzEzLjI1NSAwIDI0LTEwLjc0NSAyNC0yNFYxNjBIMjQ4ek0xMjMuMjA2IDQwMC41MDVhNS40IDUuNCAwIDAgMS03LjYzMy4yNDZsLTY0Ljg2Ni02MC44MTJhNS40IDUuNCAwIDAgMSAwLTcuODc5bDY0Ljg2Ni02MC44MTJhNS40IDUuNCAwIDAgMSA3LjYzMy4yNDZsMTkuNTc5IDIwLjg4NWE1LjQgNS40IDAgMCAxLS4zNzIgNy43NDdMMTAxLjY1IDMzNmw0MC43NjMgMzUuODc0YTUuNCA1LjQgMCAwIDEgLjM3MiA3Ljc0N2wtMTkuNTc5IDIwLjg4NHptNTEuMjk1IDUwLjQ3OWwtMjcuNDUzLTcuOTdhNS40MDIgNS40MDIgMCAwIDEtMy42ODEtNi42OTJsNjEuNDQtMjExLjYyNmE1LjQwMiA1LjQwMiAwIDAgMSA2LjY5Mi0zLjY4MWwyNy40NTIgNy45N2E1LjQgNS40IDAgMCAxIDMuNjggNi42OTJsLTYxLjQ0IDIxMS42MjZhNS4zOTcgNS4zOTcgMCAwIDEtNi42OSAzLjY4MXptMTYwLjc5Mi0xMTEuMDQ1bC02NC44NjYgNjAuODEyYTUuNCA1LjQgMCAwIDEtNy42MzMtLjI0NmwtMTkuNTgtMjAuODg1YTUuNCA1LjQgMCAwIDEgLjM3Mi03Ljc0N0wyODQuMzUgMzM2bC00MC43NjMtMzUuODc0YTUuNCA1LjQgMCAwIDEtLjM3Mi03Ljc0N2wxOS41OC0yMC44ODVhNS40IDUuNCAwIDAgMSA3LjYzMy0uMjQ2bDY0Ljg2NiA2MC44MTJhNS40IDUuNCAwIDAgMS0uMDAxIDcuODc5eiIvPjwvc3ZnPg==');
+}
+
+/*  Word (& compatible) documents.
+    */
+#markdownBody a[href$='.doc' i]::after,
+#markdownBody a[href$='.docx' i]::after,
+#markdownBody a[href*='docs.google.com' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em01Ny4xIDEyMEgzMDVjNy43IDAgMTMuNCA3LjEgMTEuNyAxNC43bC0zOCAxNjhjLTEuMiA1LjUtNi4xIDkuMy0xMS43IDkuM2gtMzhjLTUuNSAwLTEwLjMtMy44LTExLjYtOS4xLTI1LjgtMTAzLjUtMjAuOC04MS4yLTI1LjYtMTEwLjVoLS41Yy0xLjEgMTQuMy0yLjQgMTcuNC0yNS42IDExMC41LTEuMyA1LjMtNi4xIDkuMS0xMS42IDkuMUgxMTdjLTUuNiAwLTEwLjUtMy45LTExLjctOS40bC0zNy44LTE2OGMtMS43LTcuNSA0LTE0LjYgMTEuNy0xNC42aDI0LjVjNS43IDAgMTAuNyA0IDExLjggOS43IDE1LjYgNzggMjAuMSAxMDkuNSAyMSAxMjIuMiAxLjYtMTAuMiA3LjMtMzIuNyAyOS40LTEyMi43IDEuMy01LjQgNi4xLTkuMSAxMS43LTkuMWgyOS4xYzUuNiAwIDEwLjQgMy44IDExLjcgOS4yIDI0IDEwMC40IDI4LjggMTI0IDI5LjYgMTI5LjQtLjItMTEuMi0yLjYtMTcuOCAyMS42LTEyOS4yIDEtNS42IDUuOS05LjUgMTEuNS05LjV6TTM4NCAxMjEuOXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+}
+
+/*  Excel (& compatible) documents.
+    */
+#markdownBody a[href$='.xls' i]::after,
+#markdownBody a[href$='.xlsx' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02MC4xIDEwNi41TDIyNCAzMzZsNjAuMSA5My41YzUuMSA4LS42IDE4LjUtMTAuMSAxOC41aC0zNC45Yy00LjQgMC04LjUtMi40LTEwLjYtNi4zQzIwOC45IDQwNS41IDE5MiAzNzMgMTkyIDM3M2MtNi40IDE0LjgtMTAgMjAtMzYuNiA2OC44LTIuMSAzLjktNi4xIDYuMy0xMC41IDYuM0gxMTBjLTkuNSAwLTE1LjItMTAuNS0xMC4xLTE4LjVsNjAuMy05My41LTYwLjMtOTMuNWMtNS4yLTggLjYtMTguNSAxMC4xLTE4LjVoMzQuOGM0LjQgMCA4LjUgMi40IDEwLjYgNi4zIDI2LjEgNDguOCAyMCAzMy42IDM2LjYgNjguNSAwIDAgNi4xLTExLjcgMzYuNi02OC41IDIuMS0zLjkgNi4yLTYuMyAxMC42LTYuM0gyNzRjOS41LS4xIDE1LjIgMTAuNCAxMC4xIDE4LjR6TTM4NCAxMjEuOXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+}
+
+/*  CSV files.
+    */
+#markdownBody a[href$='.csv' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0tOTYgMTQ0YzAgNC40Mi0zLjU4IDgtOCA4aC04Yy04Ljg0IDAtMTYgNy4xNi0xNiAxNnYzMmMwIDguODQgNy4xNiAxNiAxNiAxNmg4YzQuNDIgMCA4IDMuNTggOCA4djE2YzAgNC40Mi0zLjU4IDgtOCA4aC04Yy0yNi41MSAwLTQ4LTIxLjQ5LTQ4LTQ4di0zMmMwLTI2LjUxIDIxLjQ5LTQ4IDQ4LTQ4aDhjNC40MiAwIDggMy41OCA4IDh2MTZ6bTQ0LjI3IDEwNEgxNjBjLTQuNDIgMC04LTMuNTgtOC04di0xNmMwLTQuNDIgMy41OC04IDgtOGgxMi4yN2M1Ljk1IDAgMTAuNDEtMy41IDEwLjQxLTYuNjIgMC0xLjMtLjc1LTIuNjYtMi4xMi0zLjg0bC0yMS44OS0xOC43N2MtOC40Ny03LjIyLTEzLjMzLTE3LjQ4LTEzLjMzLTI4LjE0IDAtMjEuMyAxOS4wMi0zOC42MiA0Mi40MS0zOC42MkgyMDBjNC40MiAwIDggMy41OCA4IDh2MTZjMCA0LjQyLTMuNTggOC04IDhoLTEyLjI3Yy01Ljk1IDAtMTAuNDEgMy41LTEwLjQxIDYuNjIgMCAxLjMuNzUgMi42NiAyLjEyIDMuODRsMjEuODkgMTguNzdjOC40NyA3LjIyIDEzLjMzIDE3LjQ4IDEzLjMzIDI4LjE0LjAxIDIxLjI5LTE5IDM4LjYyLTQyLjM5IDM4LjYyek0yNTYgMjY0djIwLjhjMCAyMC4yNyA1LjcgNDAuMTcgMTYgNTYuODggMTAuMy0xNi43IDE2LTM2LjYxIDE2LTU2Ljg4VjI2NGMwLTQuNDIgMy41OC04IDgtOGgxNmM0LjQyIDAgOCAzLjU4IDggOHYyMC44YzAgMzUuNDgtMTIuODggNjguODktMzYuMjggOTQuMDktMy4wMiAzLjI1LTcuMjcgNS4xMS0xMS43MiA1LjExcy04LjctMS44Ni0xMS43Mi01LjExYy0yMy40LTI1LjItMzYuMjgtNTguNjEtMzYuMjgtOTQuMDlWMjY0YzAtNC40MiAzLjU4LTggOC04aDE2YzQuNDIgMCA4IDMuNTggOCA4em0xMjEtMTU5TDI3OS4xIDdjLTQuNS00LjUtMTAuNi03LTE3LTdIMjU2djEyOGgxMjh2LTYuMWMwLTYuMy0yLjUtMTIuNC03LTE2Ljl6Ii8+PC9zdmc+');
+}
+
+/*  Images.
+    */
+#markdownBody a[href$='.gif' i]::after,
+#markdownBody a[href$='.ico' i]::after,
+#markdownBody a[href$='.jpg' i]::after,
+#markdownBody a[href$='.png' i]::after,
+#markdownBody a[href$='.svg' i]::after,
+#markdownBody a[href$='.xcf' i]::after,
+#markdownBody a[href*='imgur.com']::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YTI0IDI0IDAgMCAxIDE2Ljk3IDcuMDI5bDk3Ljk0MSA5Ny45NDFhMjQuMDAyIDI0LjAwMiAwIDAgMSA3LjAzIDE2Ljk3MXpNMjQ4IDE2MGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRWMEgyNEMxMC43NDUgMCAwIDEwLjc0NSAwIDI0djQ2NGMwIDEzLjI1NSAxMC43NDUgMjQgMjQgMjRoMzM2YzEzLjI1NSAwIDI0LTEwLjc0NSAyNC0yNFYxNjBIMjQ4em0tMTM1LjQ1NSAxNmMyNi41MSAwIDQ4IDIxLjQ5IDQ4IDQ4cy0yMS40OSA0OC00OCA0OC00OC0yMS40OS00OC00OCAyMS40OTEtNDggNDgtNDh6bTIwOCAyNDBoLTI1NmwuNDg1LTQ4LjQ4NUwxMDQuNTQ1IDMyOGM0LjY4Ni00LjY4NiAxMS43OTktNC4yMDEgMTYuNDg1LjQ4NUwxNjAuNTQ1IDM2OCAyNjQuMDYgMjY0LjQ4NWM0LjY4Ni00LjY4NiAxMi4yODQtNC42ODYgMTYuOTcxIDBMMzIwLjU0NSAzMDR2MTEyeiIvPjwvc3ZnPg==');
+}
+
+/*  Audio files.
+    */
+#markdownBody a[href$='.maff' i]::after,
+#markdownBody a[href$='.ogg' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0tNjQgMjY4YzAgMTAuNy0xMi45IDE2LTIwLjUgOC41TDEwNCAzNzZINzZjLTYuNiAwLTEyLTUuNC0xMi0xMnYtNTZjMC02LjYgNS40LTEyIDEyLTEyaDI4bDM1LjUtMzYuNWM3LjYtNy42IDIwLjUtMi4yIDIwLjUgOC41djEzNnptMzMuMi00Ny42YzkuMS05LjMgOS4xLTI0LjEgMC0zMy40LTIyLjEtMjIuOCAxMi4yLTU2LjIgMzQuNC0zMy41IDI3LjIgMjcuOSAyNy4yIDcyLjQgMCAxMDAuNC0yMS44IDIyLjMtNTYuOS0xMC40LTM0LjQtMzMuNXptODYtMTE3LjFjNTQuNCA1NS45IDU0LjQgMTQ0LjggMCAyMDAuOC0yMS44IDIyLjQtNTctMTAuMy0zNC40LTMzLjUgMzYuMi0zNy4yIDM2LjMtOTYuNSAwLTEzMy44LTIyLjEtMjIuOCAxMi4zLTU2LjMgMzQuNC0zMy41ek0zODQgMTIxLjl2Ni4xSDI1NlYwaDYuMWM2LjQgMCAxMi41IDIuNSAxNyA3bDk3LjkgOThjNC41IDQuNSA3IDEwLjYgNyAxNi45eiIvPjwvc3ZnPg==');
+}
+
+/*  Video files.
+    */
+#markdownBody a[href$='.avi' i]::after,
+#markdownBody a[href$='.mp4' i]::after,
+#markdownBody a[href$='.webm' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YzYuMzY1IDAgMTIuNDcgMi41MjkgMTYuOTcxIDcuMDI5bDk3Ljk0MSA5Ny45NDFBMjQuMDA1IDI0LjAwNSAwIDAgMSAzODQgMTIxLjk0MXpNMjI0IDEzNlYwSDI0QzEwLjc0NSAwIDAgMTAuNzQ1IDAgMjR2NDY0YzAgMTMuMjU1IDEwLjc0NSAyNCAyNCAyNGgzMzZjMTMuMjU1IDAgMjQtMTAuNzQ1IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em05NiAxNDQuMDE2djExMS45NjNjMCAyMS40NDUtMjUuOTQzIDMxLjk5OC00MC45NzEgMTYuOTcxTDIyNCAzNTMuOTQxVjM5MmMwIDEzLjI1NS0xMC43NDUgMjQtMjQgMjRIODhjLTEzLjI1NSAwLTI0LTEwLjc0NS0yNC0yNFYyODBjMC0xMy4yNTUgMTAuNzQ1LTI0IDI0LTI0aDExMmMxMy4yNTUgMCAyNCAxMC43NDUgMjQgMjR2MzguMDU5bDU1LjAyOS01NS4wMTNjMTUuMDExLTE1LjAxIDQwLjk3MS00LjQ5MSA0MC45NzEgMTYuOTd6Ii8+PC9zdmc+');
+}
+
+/*  Archive files.
+    */
+#markdownBody a[href$='.tar' i]::after,
+#markdownBody a[href$='.zip' i]::after,
+markdownBody a[href$='.xz' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzc3IDEwNUwyNzkuMSA3Yy00LjUtNC41LTEwLjYtNy0xNy03SDI1NnYxMjhoMTI4di02LjFjMC02LjMtMi41LTEyLjQtNy0xNi45ek0xMjguNCAzMzZjLTE3LjkgMC0zMi40IDEyLjEtMzIuNCAyNyAwIDE1IDE0LjYgMjcgMzIuNSAyN3MzMi40LTEyLjEgMzIuNC0yNy0xNC42LTI3LTMyLjUtMjd6TTIyNCAxMzZWMGgtNjMuNnYzMmgtMzJWMEgyNEMxMC43IDAgMCAxMC43IDAgMjR2NDY0YzAgMTMuMyAxMC43IDI0IDI0IDI0aDMzNmMxMy4zIDAgMjQtMTAuNyAyNC0yNFYxNjBIMjQ4Yy0xMy4yIDAtMjQtMTAuOC0yNC0yNHpNOTUuOSAzMmgzMnYzMmgtMzJ6bTMyLjMgMzg0Yy0zMy4yIDAtNTgtMzAuNC01MS40LTYyLjlMOTYuNCAyNTZ2LTMyaDMydi0zMmgtMzJ2LTMyaDMydi0zMmgtMzJWOTZoMzJWNjRoMzJ2MzJoLTMydjMyaDMydjMyaC0zMnYzMmgzMnYzMmgtMzJ2MzJoMjIuMWM1LjcgMCAxMC43IDQuMSAxMS44IDkuN2wxNy4zIDg3LjdjNi40IDMyLjQtMTguNCA2Mi42LTUxLjQgNjIuNnoiLz48L3N2Zz4=');
+}
+
+/*  Miscellaneous files (for which there is no specific icon).
+    */
+#markdownBody a[href$='.ebt' i]::after,
+#markdownBody a[href$='.epub' i]::after,
+#markdownBody a[href$='.mdb' i]::after,
+#markdownBody a[href$='.mht' i]::after,
+#markdownBody a[href$='.ttf' i]::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0xNjAtMTQuMXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+}
