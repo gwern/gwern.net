@@ -436,6 +436,7 @@
    , ("docs/ai/2019-topol.pdfhttps://www.softwebsolutions.com/resources/AI-powered-virtual-assistants.html", "/docs/ai/2019-topol.pdf")
    , ("DOCS/LONGEVITY/2019-FAHY.PDF", "/docs/longevity/2019-fahy.pdf")
    , ("docs/longevity/2019-fahy.pdf&sa=U&ved=2ahUKEwiAuM6W1sTkAhVDUK0KHeDjAwoQFjAAegQIABAB&usg=AOvVaw3dI6jk97wnLvVP6qNj3_e1", "/docs/longevity/2019-fahy.pdf")
+   , ("docs/longevity/2019-fahy", "/docs/longevity/2019-fahy.pdf")
    , ("docs/sociology/1979-sechrest.pdf 1965", "/docs/sociology/1979-sechrest.pdf")
    , ("newsletter/2019/00", "/newsletter/2019/01")
    , ("tags/iq", "/tags/IQ")
@@ -482,4 +483,7 @@
    , ("meletonin", "/Melatonin")
    , ("MP", "/MLP")
    , ("zeo/Vitamin-", "/zeo/Vitamin-D")
+   , ("docs/genetics/heritable/1986-plomin-thestudyoftemperamen6. Why is the social-interactionist perspective attractive to many investigators of language development?t.pdf=", "/docs/genetics/heritable/1986-plomin-thestudyoftemperament.pdf")
+   , ("docs/genetics/heritable/1995-serpell-thedomesticdDogs : how to choose and care for a dogog.pdf", "/docs/genetics/heritable/1995-serpell-thedomesticdog.pdf")
+   , ("docs/sociology/1974-martinson.pdf (martinson)", "/docs/sociology/1974-martinson.pdf")
    ]
