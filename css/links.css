@@ -23,8 +23,8 @@
 
 /*  Internal (within-site) links. Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
  */
-#markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after,
-#markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"])::after {
+#markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
+#markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after {
     content: "\1D50A"; /* Gothic G */
     margin: 0 0 0 2px;
     vertical-align: baseline;
@@ -390,7 +390,7 @@
 /* IMAGE-BASED PER-DOMAIN LINK ICONS: */
 /* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
 #markdownBody a[href*='biorxiv.org']::after {
-    background-image: url("/images/icons/dhi-dna.svg");
+    background-image: url("/images/icons/chi-dna.svg");
 }
 #markdownBody a[href*='biorxiv.org']:hover::after {
     opacity: 0.3;
@@ -402,7 +402,7 @@
     background-repeat: no-repeat;
     background-position: bottom center;
     height: 1em;
-    width: 1em;
+    width: 0.9em;
     margin: 0 0 0 2px;
     opacity: 0.60;
 }
