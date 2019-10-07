@@ -486,4 +486,12 @@
    , ("docs/genetics/heritable/1986-plomin-thestudyoftemperamen6. Why is the social-interactionist perspective attractive to many investigators of language development?t.pdf=", "/docs/genetics/heritable/1986-plomin-thestudyoftemperament.pdf")
    , ("docs/genetics/heritable/1995-serpell-thedomesticdDogs : how to choose and care for a dogog.pdf", "/docs/genetics/heritable/1995-serpell-thedomesticdog.pdf")
    , ("docs/sociology/1974-martinson.pdf (martinson)", "/docs/sociology/1974-martinson.pdf")
+   , ("docs/.../1986-modgil-hanseysenckconsensusandcontroversy.pdf", "/docs/psychology/1986-modgil-hanseysenckconsensusandcontroversy.pdf")
+   , ("docs/rotten.com/library/history/countries/egypt/index.html", "/docs/rotten.com/library/index.html")
+   , ("docs/rotten.com/library/history/countries/Egypt/index.html", "/docs/rotten.com/library/index.html")
+   , ("docs/music-distraction/1989-salame.pdf)", "/docs/music-distraction/1989-salame.pdf")
+   , ("docs/music-distraction/2002-hallam.pdfYoung Adults, Music and Psychological Well-Being: Exploring the Prospects.", "/docs/music-distraction/2002-hallam.pdf")
+   , ("docs/psychology/2006frattaroli.pdf", "/docs/psychology/2006-frattaroli.pdf")
+   , ("docs/spacedrepet...", "/docs/spacedrepetition/index.html")
+   , ("Inflation", "Inflation.hs")
    ]
