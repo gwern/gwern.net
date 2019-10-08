@@ -494,4 +494,12 @@
    , ("docs/psychology/2006frattaroli.pdf", "/docs/psychology/2006-frattaroli.pdf")
    , ("docs/spacedrepet...", "/docs/spacedrepetition/index.html")
    , ("Inflation", "Inflation.hs")
+   , ("mugging-dp", "/Mugging-DP")
+   , ("Mugging-dp", "/Mugging-DP")
+   , ("mugging-DP", "/Mugging-DP")
+   , ("muggingDP", "/Mugging-DP")
+   , ("muggingdp", "/Mugging-DP")
+   , ("muggingd", "/Mugging-DP")
+   , ("Mugging-D", "/Mugging-DP")
+   , ("Mugging-", "/Mugging-DP")
    ]
