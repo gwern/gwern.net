@@ -1695,7 +1695,7 @@ body.siteIndex #abstract {
     */
 body.siteIndex section:not(.collapse) > h1:first-child {
     font-size: 1.5em;
-    line-height: 0.875;
+    line-height: 1.125;
     box-shadow: none;
     text-align: left;
     font-weight: bold;
