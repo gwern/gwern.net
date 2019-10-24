@@ -547,7 +547,6 @@
    , ("rss2.xml", "https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on")
    , ("atom.xml", "https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on")
    , ("sr/index.html", "/docs/sr/index.html")
-   -- Cambridge University DMCA takedown, 23 October 2019: (27 files)
    , ("docs/ai/2013-clark.pdf", "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.259.7600&rep=rep1&type=pdf")
    , ("docs/catnip/2000-turner-thedomesticcat.pdf", "/static/404.html")
    , ("docs/cs/2004-hughes.pdf", "https://pdfs.semanticscholar.org/1511/691d858038f5078a647c21e2ac62b790d31b.pdf")

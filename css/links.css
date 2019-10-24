@@ -373,7 +373,7 @@
 
 /* Nature */
 #markdownBody a[href*="nature.com"]::after {
-    content: "N"; }
+    content: "n"; }
 
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
 #markdownBody a[href*="evageeks.org"]::after,
