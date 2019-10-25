@@ -390,7 +390,7 @@
 /* IMAGE-BASED PER-DOMAIN LINK ICONS: */
 /* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
 #markdownBody a[href*='biorxiv.org']::after {
-    background-image: url("/images/icons/chi-dna.svg");
+    background-image: url("/static/img/icons/chi-dna.svg");
 }
 #markdownBody a[href*='biorxiv.org']:hover::after {
     opacity: 0.3;
@@ -409,7 +409,7 @@
 
 /* Google Scholar */
 #markdownBody a[href*='scholar.google.com']::after {
-    background-image: url("/images/icons/google-scholar.svg");
+    background-image: url("/static/img/icons/google-scholar.svg");
 }
 #markdownBody a[href*='scholar.google.com']:hover::after {
     opacity: 0.3;
@@ -430,7 +430,7 @@
 #markdownBody a[href*='plosone.org']::after,
 #markdownBody a[href*='plos.org']::after,
 #markdownBody a[href*='www.plos']::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='14.9'%3E%3Cpath d='M12.4 3.2c.6.2 1.1-.2 1.3-.7s-.2-1.1-.7-1.3-1.1.1-1.3.7c-.2.6.2 1.1.7 1.3zm2.5 5.3c.1-.3-.1-.6-.3-.7-.3-.1-.6.1-.6.3-.1.3.1.6.3.6.3.1.6-.1.7-.3zM9.2 1c.3.1.6-.1.7-.3S9.8 0 9.5 0s-.6.1-.7.3.1.6.3.7zm-7.4 9.3c-.3-.1-.6.1-.7.3-.1.3.1.6.3.6.3.1.6-.1.6-.3.1-.3-.1-.6-.3-.7zm9.3 2.5c-.4-.1-.7.1-.9.5s.1.7.5.9.7-.1.9-.5-.1-.7-.5-.9zm-7-10.5c.1-.5-.1-.9-.6-1.1s-.9.1-1.1.6.1.9.6 1.1c.5.2.9-.1 1.1-.6zm1.8 10.9c-.5-.2-.9.1-1.1.6s.1.9.6 1.1.9-.1 1.1-.6c.2-.5-.1-.9-.6-1.1zM.8 5c-.3-.1-.7.1-.8.4-.1.3.1.7.4.8s.7-.1.8-.4c.1-.3-.1-.7-.4-.8z'/%3E%3Cpath d='M11.8 4.7c-.7-1.1-1.8-1.9-3.1-2.2-.4-.1-.8-.2-1.2-.2-.9 0-1.9.3-2.7.8-2.4 1.5-3.1 4.6-1.6 7.1.9 1.5 2.6 2.4 4.3 2.4.9 0 1.9-.3 2.7-.8 2.4-1.5 3.1-4.6 1.6-7.1zm-2 6.5c-.6.4-1.3.6-2 .6.6-.5 1.1-1.2 1.5-2.2l.4-.2 1.1-.7.1.9c0 .1 0 .2 0 .2 0 .1 0 .2-.1.2-.1.3-.6.8-1.1 1.1zM3.7 9.8l.2.1.3.1.6.2c.1.4.2.7.3 1-.6-.3-1.1-.8-1.5-1.4zm1.7-5.9h.3c.1 0 .2 0 .3.1l.3.1c-.3.4-.5.8-.8 1.3-.4.9-.7 1.9-.8 2.9-.1.5 0 .9 0 1.4h-.1l-.3-.1-.3-.1-.2-.1c-.1 0-.2-.1-.2-.2s-.1-.1-.2-.2c-.2-.2-.3-.5-.3-.5-.4-1.6 0-3.2 1.2-4.3.2-.2.6-.4 1.1-.4zm5.7 1.1c.1.2.2.4.3.7l.1.4.1.4c0 .2 0 .3 0 .5l-.1.2c0 .1-.1.2-.1.2-.1.1-.1.2-.2.2-.1.1-.1.2-.2.2L11 8l-.5-.9c-.1-.1-.2-.3-.2-.4l-.2-.3c.1-1.1 0-2-.3-2.7.5.3 1 .8 1.4 1.4zm-3.9 6.3c-.3.2-.6.4-.9.3s-.6-.3-.7-.6c-.1-.3-.2-.5-.3-.8h.9c.2 0 .3 0 .4 0h.5L8 10c.1 0 .3-.1.4-.1-.3.6-.7 1.1-1.2 1.5zm-2-3c.1-1 .3-1.9.7-2.8.2-.5.5-1 .8-1.4l.7.4c.1.1.2.2.4.2l1.6 1.5c-.1 1-.3 1.9-.6 2.8l-.1.2-.7.2-1.3.2c-.1 0-.3 0-.4 0h-.8c-.1 0-.1 0-.2 0-.1-.5-.1-1 0-1.4zm4.8-1.3l.5.9c0 .1.1.2.1.3 0 0-.1 0-.1.1l-.3.2-.7.4c.2-.6.4-1.3.5-1.9zM8.5 3.2c.2.1.4.3.6.6.2.5.3 1.1.3 1.9l-.7-.6c-.1-.1-.2-.2-.4-.3L8 4.5c-.1-.1-.2-.2-.4-.2L7 3.9c.2-.2.3-.3.5-.5.3-.2.7-.3.9-.3h0zm-1.2-.1c-.2.2-.5.4-.7.7 0 0-.1 0-.1 0-.1 0-.2-.1-.4-.1h-.3-.3c.6-.3 1.2-.5 1.9-.5 0 0 0 0 0 0zm4.1 6.3l-.1-.4-.1-.5.2-.2c.1-.1.2-.2.2-.3l.2-.2c0 .6-.2 1.1-.4 1.6zM6.5 8c.3 0 .5-.2.5-.5s-.3-.6-.5-.6c-.3 0-.5.2-.5.5s.2.5.5.5z'/%3E%3Chead/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/plos.svg");
 }
 #markdownBody a[href*='plosone.org']:hover::after,
 #markdownBody a[href*='plos.org']:hover::after,
@@ -453,7 +453,7 @@
 
 /* Patreon: used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don't like the new one */
 #markdownBody a[href*='patreon.com']::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M8.3.3C5.2.3 2.2 2.1 1 4.9.4 6.1.4 7.3.4 8.6v6.2h8.4c3-.2 5.9-2.2 6.9-5.1.8-2.4.1-5.3-1.7-7C12.5 1.1 10.4.3 8.3.3z'/%3E%3Cpath d='M7.9 2c-2.3 0-4.7 1.3-5.5 3.5C1.9 6.6 2.1 7.8 2 9v5h2.3V7C4.5 5.4 6 4.2 7.5 4.1c1.6-.2 3.4.8 3.8 2.4.4 1.3-.4 2.8-1.6 3.4-1.1.6-2.6.6-3.7-.1V12c.8.3 1.7.4 2.6.3 2.2-.2 4.4-1.7 5-3.9.6-1.9-.2-4-1.7-5.1C10.7 2.4 9.3 2 7.9 2zm-.2 10.4z' fill='%23fff'/%3E%3Chead/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/patreon.svg");
 }
 #markdownBody a[href*='patreon.com']:hover::after {
     opacity: 0.3;
@@ -471,7 +471,7 @@
 
 /* Upton Tea */
 #markdownBody a[href*='uptontea.com']::after {
-              background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='9.6'%3E%3Cpath d='M14.9 2c-.7-.5-1-.4-1-.4-1.2.5-1.6 2.4-1.6 2.4-.1.4-.7.4-1.2.3v-.1c-.3-.8-1.2-1.5-1.2-1.5-.3-.2-.3-.5-.3-.5.1-.2.1-.3.1-.3-.2-.5-2.2-.6-2.2-.6-.3 0-.3-.3-.3-.3.2-.1.2-.4.2-.4 0-.6-.7-.6-.8-.6s-.8 0-.8.6c0 0 0 .3.2.4 0 0 0 .3-.3.3 0 0-2.1.1-2.2.6 0 0-.1.2.1.3 0 0 0 .3-.3.5v.1c-.3-.4-1-1.1-2.1-.7 0 0-1 .3-1 1.8 0 0 0 1.4 1.4 2.4 0 0 .3.2.6.4.2.7.6 1.4 1.5 1.9 0 0 .2.2.2.5 0 0 .7.5 2.6.5h.5c1.9 0 2.6-.5 2.6-.5 0-.3.2-.5.2-.5.7-.4 1.1-1 1.3-1.5 2.3-.4 2.6-3.2 2.6-3.2.2-1.5 1.2-1.6 1.2-1.6.4 0 .2-.3.2-.3zM1.2 5.5s-.9-1-.7-2c0 0 .1-.8.9-1 0 0 1-.1 1.1.8h0c-.2.2-.4.6-.5.9 0 0-.2.8-.2 1.7-.2-.1-.5-.3-.7-.5z'/%3E%3Cpath d='M14.9 2c-.5-.6-1.5-.4-1.8.3-.4.6-.6 1.3-.8 1.9-.6.6-1.4 0-1.5-.7-.3-.6-1.1-.8-1.1-1.5-.1-.7-1-.6-1.6-.7-.6.1-1.1-.2-.7-.8C7.2-.2 6-.2 5.8.4c0 .4.3.9-.4.9-.7.1-1.5 0-2 .6.2.5-.4 1.2-.7.5C2 1.6.4 2 .1 3.1-.3 4.4.5 5.9 1.7 6.5c.5.5.6 1.3 1.2 1.8.6.3.7 1.2 1.5 1.2 1.4.2 2.8.3 4.2 0 .8.1.8-.8 1.4-1 .6-.5.8-1.4 1.7-1.5 1.2-.6 1.7-2 1.8-3.2.1-.8.8-1.3 1.4-1.5v-.1l-.1-.1zM1.2 5.5C.6 4.8.2 3.7.8 2.9c.5-.7 1.7-.4 1.8.4C1.9 4 1.8 5 1.8 6c-.2-.1-.5-.3-.7-.5z'/%3E%3C/svg%3E");
+              background-image: url("/static/img/icons/uptontea.svg");
 }
 #markdownBody a[href*='uptontea.com']:hover::after {
     opacity: 0.3;
@@ -489,7 +489,7 @@
 
 /* Wired */
 #markdownBody a[href*='wired.com']::after {
-    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Cdefs%3E%3Cpath id='f' d='M.2 0h199.6v39.9H.2z'/%3E%3C/defs%3E%3CclipPath id='e'%3E%3Cuse overflow='visible' xlink:href='%23f'/%3E%3C/clipPath%3E%3Cpath d='M37.4 6.2h-5.2L28.4 28 24 7.8c-.2-1.4-.8-1.6-2-1.6h-2.8c-1.2 0-1.8.4-2 1.6L12.8 28 9 6.2H3.4l5.4 26.2c.2 1.2.6 1.4 2 1.4h3.8c1.2 0 1.6-.2 2-1.4l4.2-19 4.2 19c.2 1.2.6 1.4 2 1.4h3.6c1.2 0 1.8-.2 2-1.4l4.8-26.2zm2.8 33.7H.2V0h39.9v39.9z' clip-path='url(%23e)'/%3E%3C/svg%3E%0A");
+    background-image: url("/static/img/icons/wired.svg");
 }
 #markdownBody a[href*='wired.com']:hover::after {
     opacity: 0.3;
@@ -508,7 +508,7 @@
 
 /* The Washington Post: truncated their blackletter to 'WP' */
 #markdownBody a[href*='washingtonpost.com']::after {
-    background-image: url("/images/icons/washingtonpost.svg");
+    background-image: url("/static/img/icons/washingtonpost.svg");
 }
 #markdownBody a[href*='washingtonpost.com']:hover::after {
     opacity: 0.3;
@@ -527,7 +527,7 @@
 
 /* The New York Times: reduction of full SVG logo to just the 'T' they use as an icon */
 #markdownBody a[href*='nytimes.com']::after {
-    background-image: url("/images/icons/newyorktimes.svg");}
+    background-image: url("/static/img/icons/newyorktimes.svg");}
 #markdownBody a[href*='nytimes.com']:hover::after {
     opacity: 0.45;
 }
@@ -545,7 +545,7 @@
 
 /* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
 #markdownBody a[href*='nlm.nih.gov']::after {
-    background-image: url("/images/icons/nlm-ncbi.svg");
+    background-image: url("/static/img/icons/nlm-ncbi.svg");
     }
 #markdownBody a[href*='nlm.nih.gov']:hover::after {
     opacity: 0.45;
@@ -564,7 +564,7 @@
 
 /* The New Yorker: the Dandy SVG, simplified & rotated more vertically */
 #markdownBody a[href*='newyorker.com']::after {
-    background-image: url("/images/icons/thenewyorker.svg");
+    background-image: url("/static/img/icons/thenewyorker.svg");
 }
 #markdownBody a[href*='newyorker.com']:hover::after {
     opacity: 0.45;
@@ -584,7 +584,7 @@
 /* El Grauniad */
 #markdownBody a[href*='theguardian.com']::after,
 #markdownBody a[href*='www.guardian.co.uk']::after {
-    background-image: url("/images/icons/theguardian.svg");
+    background-image: url("/static/img/icons/theguardian.svg");
 }
 #markdownBody a[href*='theguardian.com']:hover::after,
 #markdownBody a[href*='www.guardian.co.uk']:hover::after {
@@ -605,7 +605,7 @@
 
 /* Reddit */
 #markdownBody a[href*='reddit.com']::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 341.8 341.8'%3E%3Cellipse cx='170.9' cy='170.035' rx='170.301' ry='170.95'/%3E%3Cpath d='M284.434 170.035c0-13.796-11.154-24.993-24.898-24.993-6.772 0-12.748 2.6-17.13 6.998-16.93-12.196-40.434-20.194-66.328-21.194l11.353-53.384 36.85 7.798c.398 9.397 8.166 16.995 17.727 16.995 9.76 0 17.727-7.998 17.727-17.795s-7.967-17.795-17.727-17.795c-6.97 0-12.947 4-15.735 9.997l-41.23-8.797c-1.195-.2-2.4 0-3.386.6s-1.593 1.6-1.992 2.8l-12.548 59.583c-26.49.8-50.194 8.597-67.324 21.194-4.382-4.2-10.557-6.998-17.13-6.998-13.744 0-24.898 11.197-24.898 24.993 0 10.197 5.975 18.795 14.74 22.793-.398 2.4-.598 5-.598 7.598 0 38.39 44.418 69.38 99.392 69.38s99.392-30.99 99.392-69.38c0-2.6-.2-5-.598-7.398 8.166-4 14.34-12.796 14.34-22.993zm-170.3 17.795c0-9.797 7.967-17.795 17.727-17.795s17.727 7.998 17.727 17.795-7.967 17.795-17.727 17.795-17.727-7.998-17.727-17.795zm98.994 46.986c-12.15 12.196-35.255 12.996-42.027 12.996s-30.077-1-42.027-12.996c-1.793-1.8-1.793-4.8 0-6.598a4.68 4.68 0 0 1 6.573 0c7.57 7.598 23.902 10.397 35.654 10.397s27.886-2.8 35.654-10.397a4.68 4.68 0 0 1 6.573 0c1.394 2 1.394 4.8-.398 6.598zm-3.187-29.19c-9.76 0-17.727-7.998-17.727-17.795s7.967-17.795 17.727-17.795 17.727 7.998 17.727 17.795-7.967 17.795-17.727 17.795z' fill='%23fff'/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/reddit.svg");
 }
 #markdownBody a[href*='reddit.com']:hover::after {
     opacity: 0.3;
@@ -625,7 +625,7 @@
 /* PG/HN/YC (shared logo): */
 #markdownBody a[href*='paulgraham.com']::after,
 #markdownBody a[href*='ycombinator.com']::after {
-    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3C!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 20010904//EN' 'http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd'%3E%3Csvg version='1.0' viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cg transform='translate(0 256) scale(.1 -.1)'%3E%3Cpath d='m6 2537c-8-29-8-2485 0-2514l6-23h1268 1268l6 23c8 29 8 2485 0 2514l-6 23h-1268-1268l-6-23zm1080-854c69-142 142-292 162-333l35-75 166 333 166 332h97c54 0 98-3 98-6 0-4-99-192-220-419l-220-414v-265-266h-90-90v267 267l-220 411c-121 227-220 415-220 419 0 3 47 6 105 6h104l127-257z'/%3E%3C/g%3E%3C/svg%3E%0A");
+    background-image: url("/static/img/icons/hn.svg");
 }
 #markdownBody a[href*='paulgraham.com']:hover::after,
 #markdownBody a[href*='ycombinator.com']:hover::after {
@@ -646,7 +646,7 @@
 
 /* MIRI/intelligence.org */
 #markdownBody a[href*='intelligence.org']::after {
-    background-image: url("/images/icons/miri.svg");
+    background-image: url("/static/img/icons/miri.svg");
 }
 #markdownBody a[href*='intelligence.org']:hover::after {
     opacity: 0.3;
@@ -665,7 +665,7 @@
 
 /* DeepMind; match articles or anchors about DM too */
 #markdownBody a[href*='deepmind']::after {
-    background-image: url("/images/icons/deepmind.svg");
+    background-image: url("/static/img/icons/deepmind.svg");
 }
 #markdownBody a[href*='deepmind']:hover::after {
     opacity: 0.5;
@@ -683,7 +683,7 @@
 }
 
 #markdownBody a[href*='openai']::after {
-    background-image: url("/images/icons/openai.svg");
+    background-image: url("/static/img/icons/openai.svg");
 }
 #markdownBody a[href*='openai']:hover::after {
     opacity: 0.5;
@@ -702,7 +702,7 @@
 
 /* Twitter */
 #markdownBody a[href*='twitter.com']::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 612 612'%3E%3Cpath d='M612 116.26c-22.525 9.98-46.694 16.75-72.088 19.772 25.93-15.527 45.777-40.155 55.184-69.41C570.774 81 543.927 91.44 515.32 97.1c-22.907-24.437-55.5-39.658-91.63-39.658-69.334 0-125.55 56.217-125.55 125.5 0 9.828 1.11 19.427 3.25 28.606-104.33-5.24-196.84-55.223-258.75-131.17-10.823 18.5-16.98 40.078-16.98 63.1 0 43.56 22.18 81.993 55.835 104.48-20.575-.688-39.926-6.348-56.867-15.756v1.568c0 60.806 43.29 111.55 100.7 123.1-10.517 2.83-21.607 4.398-33.08 4.398a120.5 120.5 0 0 1-23.634-2.333c15.985 49.907 62.336 86.2 117.25 87.194-42.947 33.654-97.1 53.655-155.92 53.655-10.134 0-20.116-.612-29.944-1.72 55.567 35.68 121.54 56.485 192.44 56.485 230.95 0 357.2-191.3 357.2-357.2l-.42-16.253c24.666-17.593 46.005-39.697 62.794-64.86z' fill='%23010002'/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/twitter.svg");
 }
 #markdownBody a[href*='twitter.com']:hover::after {
     opacity: 0.3;
@@ -721,7 +721,7 @@
 
 /* Erowid */
 #markdownBody a[href*='erowid.org']::after {
-    background-image: url("/images/icons/erowid.svg");
+    background-image: url("/static/img/icons/erowid.svg");
 }
 #markdownBody a[href*='erowid.org']:hover::after {
     opacity: 0.3;
@@ -744,6 +744,7 @@
 #markdownBody a[href*="wikimediafoundation.org"]::after,
 #markdownBody a[href*="wikisource.org"]::after {
     content: "";
+    /* WP is used on almsot every page, so make an exception and inline it */
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj48cGF0aCBkPSJNNjQwIDUxLjJsLS4zIDEyLjJjLTI4LjEuOC00NSAxNS44LTU1LjggNDAuMy0yNSA1Ny44LTEwMy4zIDI0MC0xNTUuMyAzNTguNkg0MTVsLTgxLjktMTkzLjFjLTMyLjUgNjMuNi02OC4zIDEzMC05OS4yIDE5My4xLS4zLjMtMTUgMC0xNS0uM0MxNzIgMzUyLjMgMTIyLjggMjQzLjQgNzUuOCAxMzMuNCA2NC40IDEwNi43IDI2LjQgNjMuNC4yIDYzLjdjMC0zLjEtLjMtMTAtLjMtMTQuMmgxNjEuOXYxMy45Yy0xOS4yIDEuMS01Mi44IDEzLjMtNDMuMyAzNC4yIDIxLjkgNDkuNyAxMDMuNiAyNDAuMyAxMjUuNiAyODguNiAxNS0yOS43IDU3LjgtMTA5LjIgNzUuMy0xNDIuOC0xMy45LTI4LjMtNTguNi0xMzMuOS03Mi44LTE2MC05LjctMTcuOC0zNi4xLTE5LjQtNTUuOC0xOS43VjQ5LjhsMTQyLjUuM3YxMy4xYy0xOS40LjYtMzguMSA3LjgtMjkuNCAyNi4xIDE4LjkgNDAgMzAuNiA2OC4xIDQ4LjEgMTA0LjcgNS42LTEwLjggMzQuNy02OS40IDQ4LjEtMTAwLjggOC45LTIwLjYtMy45LTI4LjYtMzguNi0yOS40LjMtMy42IDAtMTAuMy4zLTEzLjYgNDQuNC0uMyAxMTEuMS0uMyAxMjMuMS0uNnYxMy42Yy0yMi41LjgtNDUuOCAxMi44LTU4LjEgMzEuN2wtNTkuMiAxMjIuOGM2LjQgMTYuMSA2My4zIDE0Mi44IDY5LjIgMTU2LjdMNTU5LjIgOTEuOGMtOC42LTIzLjEtMzYuNC0yOC4xLTQ3LjItMjguM1Y0OS42bDEyNy44IDEuMS4yLjV6Ii8+PC9zdmc+');
     background-repeat: no-repeat;
     background-size: 0.75em;
@@ -766,7 +767,7 @@
 #markdownBody a[href*='youtu.be']::after,
 #markdownBody a[href*='soundcloud.com']::after,
 #markdownBody a[href*='bandcamp.com']::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1NzYgNTEyIj48cGF0aCBkPSJNNTQ5LjY1NSAxMjQuMDgzYy02LjI4MS0yMy42NS0yNC43ODctNDIuMjc2LTQ4LjI4NC00OC41OTdDNDU4Ljc4MSA2NCAyODggNjQgMjg4IDY0UzExNy4yMiA2NCA3NC42MjkgNzUuNDg2Yy0yMy40OTcgNi4zMjItNDIuMDAzIDI0Ljk0Ny00OC4yODQgNDguNTk3LTExLjQxMiA0Mi44NjctMTEuNDEyIDEzMi4zMDUtMTEuNDEyIDEzMi4zMDVzMCA4OS40MzggMTEuNDEyIDEzMi4zMDVjNi4yODEgMjMuNjUgMjQuNzg3IDQxLjUgNDguMjg0IDQ3LjgyMUMxMTcuMjIgNDQ4IDI4OCA0NDggMjg4IDQ0OHMxNzAuNzggMCAyMTMuMzcxLTExLjQ4NmMyMy40OTctNi4zMjEgNDIuMDAzLTI0LjE3MSA0OC4yODQtNDcuODIxIDExLjQxMi00Mi44NjcgMTEuNDEyLTEzMi4zMDUgMTEuNDEyLTEzMi4zMDVzMC04OS40MzgtMTEuNDEyLTEzMi4zMDV6bS0zMTcuNTEgMjEzLjUwOFYxNzUuMTg1bDE0Mi43MzkgODEuMjA1LTE0Mi43MzkgODEuMjAxeiIvPjwvc3ZnPg==');
+    background-image: url('/static/img/icons/video.svg');
 }
 #markdownBody a[href*='youtube.com']:hover::after,
 #markdownBody a[href*='youtu.be']:hover::after,
@@ -794,7 +795,7 @@
 #markdownBody a[href*="overflow.com"]::after,
 #markdownBody a[href*="stackexchange.com"]::after {
     content: "";
-    background-image: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 50 50' version='1.1'%3E%3Cpath d='M13 2C9.687 2 7 4.688 7 8v2h36V8c0-3.313-2.688-6-6-6zM7 12v8h36v-8zm0 10v8h36v-8zm0 10v2c0 3.313 2.688 6 6 6h15v8l8-8h1c3.313 0 6-2.688 6-6v-2z' id='surface1'/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/stackexchange.svg");
     background-repeat: no-repeat;
     background-size: 0.75em;
     background-position: right 1px top;
@@ -815,7 +816,7 @@
 #markdownBody a[href*="amazon.co."]::after,
 #markdownBody a[href*="amzn.com"]::after {
     content: "";
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'%3E%3Cpath d='M257.2 162.7c-48.7 1.8-169.5 15.5-169.5 117.5 0 109.5 138.3 114 183.5 43.2 6.5 10.2 35.4 37.5 45.3 46.8l56.8-56S341 288.9 341 261.4V114.3C341 89 316.5 32 228.7 32 140.7 32 94 87 94 136.3l73.5 6.8c16.3-49.5 54.2-49.5 54.2-49.5 40.7-.1 35.5 29.8 35.5 69.1zm0 86.8c0 80-84.2 68-84.2 17.2 0-47.2 50.5-56.7 84.2-57.8v40.6zm136 163.5c-7.7 10-70 67-174.5 67S34.2 408.5 9.7 379c-6.8-7.7 1-11.3 5.5-8.3C88.5 415.2 203 488.5 387.7 401c7.5-3.7 13.3 2 5.5 12zm39.8 2.2c-6.5 15.8-16 26.8-21.2 31-5.5 4.5-9.5 2.7-6.5-3.8s19.3-46.5 12.7-55c-6.5-8.3-37-4.3-48-3.2-10.8 1-13 2-14-.3-2.3-5.7 21.7-15.5 37.5-17.5 15.7-1.8 41-.8 46 5.7 3.7 5.1 0 27.1-6.5 43.1z'/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/amazon.svg");
     background-repeat: no-repeat;
     background-size: 0.75em;
     background-position: right 1px top;
@@ -833,7 +834,7 @@
 
 /* Github; I exclude github.io because that's blogs */
 #markdownBody a[href*='github.com']::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 .297a12 12 0 0 0-12 12c0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577L9 21.065c-3.338.724-4.042-1.6-4.042-1.6C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.73.084-.73 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.81 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.3.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.9 1.23 3.22 0 4.6-2.805 5.625-5.475 5.92.42.36.8 1.096.8 2.22l-.015 3.286c0 .315.2.7.825.57 4.8-1.574 8.236-6.074 8.236-11.37 0-6.627-5.373-12-12-12'/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/github.svg");
 }
 #markdownBody a[href*='github.com']:hover::after {
     opacity: 0.3;
@@ -853,7 +854,7 @@
 /* Dropbox: old file-host, deprecated since they've started killing inactive accounts */
 #markdownBody a[href*='dropbox.com']::after,
 #markdownBody a[href*='dropboxusercontent.com']::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 528 512'%3E%3Cpath d='M264.4 116.3l-132 84.3 132 84.3-132 84.3L0 284.1l132.3-84.3L0 116.3 132.3 32l132.1 84.3zM131.6 395.7l132-84.3 132 84.3-132 84.3-132-84.3zm132.8-111.6l132-84.3-132-83.6L395.7 32 528 116.3l-132.3 84.3L528 284.8l-132.3 84.3-131.3-85z'/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/dropbox.svg");
 }
 #markdownBody a[href*='dropbox.com']:hover::after,
 #markdownBody a[href*='dropboxusercontent.com']:hover::after {
@@ -874,7 +875,7 @@
 
 /* Megaupload/Mega: filesharing (used for big files) */
 #markdownBody a[href*='mega.nz']::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0a12 12 0 1 0 0 24 12 12 0 1 0 0-24zm6.23 16.244a.371.371 0 0 1-.373.372H16.3a.371.371 0 0 1-.372-.372v-4.828c0-.04-.046-.06-.08-.033l-3.32 3.32a.742.742 0 0 1-1.043 0l-3.32-3.32c-.027-.027-.08-.007-.08.033v4.828a.371.371 0 0 1-.372.372H6.136a.371.371 0 0 1-.372-.372V7.757a.37.37 0 0 1 .372-.372h1.076a.75.75 0 0 1 .525.22l4.13 4.13a.18.18 0 0 0 .26 0l4.13-4.13c.14-.14.325-.22.525-.22h1.075a.37.37 0 0 1 .372.372z'/%3E%3C/svg%3E");
+    background-image: url("/static/img/icons/mega.svg");
 }
 #markdownBody a[href*='mega.nz']:hover::after {
     opacity: 0.3;
@@ -895,7 +896,7 @@
 #markdownBody a[href*='archive-it.org']::after,
 #markdownBody a[href*='archiveteam.org']::after,
 #markdownBody a[href*='waybackmachine.org']::after {
-    background-image: url("/images/icons/internetarchive.svg");
+    background-image: url("/static/img/icons/internetarchive.svg");
 }
 #markdownBody a[href*='archive.org']:hover::after,
 #markdownBody a[href*='archive-it.org']:hover::after,
@@ -906,7 +907,7 @@
 #markdownBody a[href*='archive.org']::after,
 #markdownBody a[href*='archive-it.org']::after,
 #markdownBody a[href*='archiveteam.org']::after,
-markdownBody a[href*='waybackmachine.org']::after {
+#markdownBody a[href*='waybackmachine.org']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -932,6 +933,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='type=pdf' i]::after,
 #markdownBody a[href*='.pdf#' i]::after,
 #markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
+#markdownBody a[href$='.epub' i]::after,
 #markdownBody a[href*='citeseerx.ist.psu.edu' i]::after,
 #markdownBody a[href*='eprint.iacr.org' i]::after,
 /*  Textfiles */
@@ -946,6 +948,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='.json' i]::after,
 #markdownBody a[href^="."][href$='.php' i]::after,
 #markdownBody a[href$='.sh' i]::after,
+#markdownBody a[href$='.R' i]::after,
 /*  Word */
 #markdownBody a[href$='.doc' i]::after,
 #markdownBody a[href$='.docx' i]::after,
@@ -953,20 +956,27 @@ markdownBody a[href*='waybackmachine.org']::after {
 /*  Excel */
 #markdownBody a[href$='.xls' i]::after,
 #markdownBody a[href$='.xlsx' i]::after,
+#markdownBody a[href$='.ods' i]::after,
 /*  CSV */
 #markdownBody a[href$='.csv' i]::after,
 /*  Images */
 #markdownBody a[href$='.gif' i]::after,
+#markdownBody a[href$='.bmp' i]::after,
 #markdownBody a[href$='.ico' i]::after,
 #markdownBody a[href$='.jpg' i]::after,
+#markdownBody a[href$='.jpeg' i]::after,
 #markdownBody a[href$='.png' i]::after,
 #markdownBody a[href$='.svg' i]::after,
 #markdownBody a[href$='.xcf' i]::after,
 #markdownBody a[href*='imgur.com']::after,
 /*  Audio */
-#markdownBody a[href$='.maff' i]::after,
+#markdownBody a[href$='.mp3' i]::after,
+#markdownBody a[href$='.wav' i]::after,
+#markdownBody a[href$='.flac' i]::after,
 #markdownBody a[href$='.ogg' i]::after,
+#markdownBody a[href$='.rm' i]::after,
 /*  Video */
+#markdownBody a[href$='.swf' i]::after,
 #markdownBody a[href$='.avi' i]::after,
 #markdownBody a[href$='.mp4' i]::after,
 #markdownBody a[href$='.webm' i]::after,
@@ -974,9 +984,9 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='.tar' i]::after,
 #markdownBody a[href$='.zip' i]::after,
 #markdownBody a[href$='.xz' i]::after,
+#markdownBody a[href$='.img' i]::after,
 /*  Misc */
 #markdownBody a[href$='.ebt' i]::after,
-#markdownBody a[href$='.epub' i]::after,
 #markdownBody a[href$='.mdb' i]::after,
 #markdownBody a[href$='.mht' i]::after,
 #markdownBody a[href$='.ttf' i]::after {
@@ -995,6 +1005,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='/pdf' i]:hover::after,
 #markdownBody a[href$='type=pdf' i]:hover::after,
 #markdownBody a[href*='.pdf#' i]:hover::after,
+#markdownBody a[href$='.epub' i]:hover::after,
 #markdownBody a[href*='pdfs.semanticscholar.org' i]:hover::after,
 #markdownBody a[href*='citeseerx.ist.psu.edu' i]:hover::after,
 #markdownBody a[href*='eprint.iacr.org' i]:hover::after,
@@ -1010,6 +1021,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='.json' i]:hover::after,
 #markdownBody a[href^="."][href$='.php' i]:hover::after,
 #markdownBody a[href$='.sh' i]:hover::after,
+#markdownBody a[href$='.R' i]:hover::after,
 /*  Word */
 #markdownBody a[href$='.doc' i]:hover::after,
 #markdownBody a[href$='.docx' i]:hover::after,
@@ -1017,20 +1029,27 @@ markdownBody a[href*='waybackmachine.org']::after {
 /*  Excel */
 #markdownBody a[href$='.xls' i]:hover::after,
 #markdownBody a[href$='.xlsx' i]:hover::after,
+#markdownBody a[href$='.ods' i]:hover::after,
 /*  CSV */
 #markdownBody a[href$='.csv' i]:hover::after,
 /*  Images */
 #markdownBody a[href$='.gif' i]:hover::after,
+#markdownBody a[href$='.bmp' i]:hover::after,
 #markdownBody a[href$='.ico' i]:hover::after,
 #markdownBody a[href$='.jpg' i]:hover::after,
+#markdownBody a[href$='.jpeg' i]:hover::after,
 #markdownBody a[href*='imgur.com']:hover::After,
 #markdownBody a[href$='.png' i]:hover::after,
 #markdownBody a[href$='.svg' i]:hover::after,
 #markdownBody a[href$='.xcf' i]:hover::after,
 /*  Audio */
-#markdownBody a[href$='.maff' i]:hover::after,
+#markdownBody a[href$='.mp3' i]:hover::after,
+#markdownBody a[href$='.wav' i]:hover::after,
+#markdownBody a[href$='.flac' i]:hover::after,
 #markdownBody a[href$='.ogg' i]:hover::after,
+#markdownBody a[href$='.rm' i]:hover::after,
 /*  Video */
+#markdownBody a[href$='.swf' i]:hover::after,
 #markdownBody a[href$='.avi' i]:hover::after,
 #markdownBody a[href$='.mp4' i]:hover::after,
 #markdownBody a[href$='.webm' i]:hover::after,
@@ -1038,9 +1057,9 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='.tar' i]:hover::after,
 #markdownBody a[href$='.zip' i]:hover::after,
 #markdownBody a[href$='.xz' i]:hover::after,
+#markdownBody a[href$='.img' i]:hover::after,
 /*  Misc */
 #markdownBody a[href$='.ebt' i]:hover::after,
-#markdownBody a[href$='.epub' i]:hover::after,
 #markdownBody a[href$='.mdb' i]:hover::after,
 #markdownBody a[href$='.mht' i]:hover::after,
 #markdownBody a[href$='.ttf' i]:hover::after {
@@ -1053,10 +1072,12 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='/pdf' i]::after,
 #markdownBody a[href$='type=pdf' i]::after,
 #markdownBody a[href*='.pdf#' i]::after,
+#markdownBody a[href$='.epub' i]::after,
 #markdownBody a[href*='pdfs.semanticscholar.org' i]::after,
 #markdownBody a[href*='citeseerx.ist.psu.edu' i]::after,
 #markdownBody a[href*='eprint.iacr.org' i]::after {
     opacity: 0.5;
+    /* PDFs are linked on every page, so make another exception */
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
 
@@ -1066,7 +1087,7 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='.page' i]::after,
 #markdownBody a[href$='.txt' i]::after,
 #markdownBody a[href$='.xml' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02NCAyMzZjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEydjh6bTAtNjRjMCA2LjYtNS40IDEyLTEyIDEySDEwOGMtNi42IDAtMTItNS40LTEyLTEydi04YzAtNi42IDUuNC0xMiAxMi0xMmgxNjhjNi42IDAgMTIgNS40IDEyIDEydjh6bTAtNzJ2OGMwIDYuNi01LjQgMTItMTIgMTJIMTA4Yy02LjYgMC0xMi01LjQtMTItMTJ2LThjMC02LjYgNS40LTEyIDEyLTEyaDE2OGM2LjYgMCAxMiA1LjQgMTIgMTJ6bTk2LTExNC4xdjYuMUgyNTZWMGg2LjFjNi40IDAgMTIuNSAyLjUgMTcgN2w5Ny45IDk4YzQuNSA0LjUgNyAxMC42IDcgMTYuOXoiLz48L3N2Zz4=');
+    background-image: url('/static/img/icons/txt.svg');
 }
 
 /*  Code, scripts, etc.
@@ -1075,9 +1096,10 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='.hs' i]::after,
 #markdownBody a[href$='.js' i]::after,
 #markdownBody a[href$='.json' i]::after,
+#markdownBody a[href$='.R' i]::after,
 #markdownBody a[href^="."][href$='.php' i]::after,
 #markdownBody a[href$='.sh' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YzYuMzY1IDAgMTIuNDcgMi41MjkgMTYuOTcxIDcuMDI5bDk3Ljk0MSA5Ny45NDFBMjQuMDA1IDI0LjAwNSAwIDAgMSAzODQgMTIxLjk0MXpNMjQ4IDE2MGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRWMEgyNEMxMC43NDUgMCAwIDEwLjc0NSAwIDI0djQ2NGMwIDEzLjI1NSAxMC43NDUgMjQgMjQgMjRoMzM2YzEzLjI1NSAwIDI0LTEwLjc0NSAyNC0yNFYxNjBIMjQ4ek0xMjMuMjA2IDQwMC41MDVhNS40IDUuNCAwIDAgMS03LjYzMy4yNDZsLTY0Ljg2Ni02MC44MTJhNS40IDUuNCAwIDAgMSAwLTcuODc5bDY0Ljg2Ni02MC44MTJhNS40IDUuNCAwIDAgMSA3LjYzMy4yNDZsMTkuNTc5IDIwLjg4NWE1LjQgNS40IDAgMCAxLS4zNzIgNy43NDdMMTAxLjY1IDMzNmw0MC43NjMgMzUuODc0YTUuNCA1LjQgMCAwIDEgLjM3MiA3Ljc0N2wtMTkuNTc5IDIwLjg4NHptNTEuMjk1IDUwLjQ3OWwtMjcuNDUzLTcuOTdhNS40MDIgNS40MDIgMCAwIDEtMy42ODEtNi42OTJsNjEuNDQtMjExLjYyNmE1LjQwMiA1LjQwMiAwIDAgMSA2LjY5Mi0zLjY4MWwyNy40NTIgNy45N2E1LjQgNS40IDAgMCAxIDMuNjggNi42OTJsLTYxLjQ0IDIxMS42MjZhNS4zOTcgNS4zOTcgMCAwIDEtNi42OSAzLjY4MXptMTYwLjc5Mi0xMTEuMDQ1bC02NC44NjYgNjAuODEyYTUuNCA1LjQgMCAwIDEtNy42MzMtLjI0NmwtMTkuNTgtMjAuODg1YTUuNCA1LjQgMCAwIDEgLjM3Mi03Ljc0N0wyODQuMzUgMzM2bC00MC43NjMtMzUuODc0YTUuNCA1LjQgMCAwIDEtLjM3Mi03Ljc0N2wxOS41OC0yMC44ODVhNS40IDUuNCAwIDAgMSA3LjYzMy0uMjQ2bDY0Ljg2NiA2MC44MTJhNS40IDUuNCAwIDAgMS0uMDAxIDcuODc5eiIvPjwvc3ZnPg==');
+    background-image: url('/static/img/icons/code.svg');
 }
 
 /*  Word (& compatible) documents.
@@ -1085,63 +1107,70 @@ markdownBody a[href*='waybackmachine.org']::after {
 #markdownBody a[href$='.doc' i]::after,
 #markdownBody a[href$='.docx' i]::after,
 #markdownBody a[href*='docs.google.com' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em01Ny4xIDEyMEgzMDVjNy43IDAgMTMuNCA3LjEgMTEuNyAxNC43bC0zOCAxNjhjLTEuMiA1LjUtNi4xIDkuMy0xMS43IDkuM2gtMzhjLTUuNSAwLTEwLjMtMy44LTExLjYtOS4xLTI1LjgtMTAzLjUtMjAuOC04MS4yLTI1LjYtMTEwLjVoLS41Yy0xLjEgMTQuMy0yLjQgMTcuNC0yNS42IDExMC41LTEuMyA1LjMtNi4xIDkuMS0xMS42IDkuMUgxMTdjLTUuNiAwLTEwLjUtMy45LTExLjctOS40bC0zNy44LTE2OGMtMS43LTcuNSA0LTE0LjYgMTEuNy0xNC42aDI0LjVjNS43IDAgMTAuNyA0IDExLjggOS43IDE1LjYgNzggMjAuMSAxMDkuNSAyMSAxMjIuMiAxLjYtMTAuMiA3LjMtMzIuNyAyOS40LTEyMi43IDEuMy01LjQgNi4xLTkuMSAxMS43LTkuMWgyOS4xYzUuNiAwIDEwLjQgMy44IDExLjcgOS4yIDI0IDEwMC40IDI4LjggMTI0IDI5LjYgMTI5LjQtLjItMTEuMi0yLjYtMTcuOCAyMS42LTEyOS4yIDEtNS42IDUuOS05LjUgMTEuNS05LjV6TTM4NCAxMjEuOXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+    background-image: url('/static/img/icons/worddoc.svg');
 }
 
 /*  Excel (& compatible) documents.
     */
 #markdownBody a[href$='.xls' i]::after,
+#markdownBody a[href$='.ods' i]::after,
 #markdownBody a[href$='.xlsx' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em02MC4xIDEwNi41TDIyNCAzMzZsNjAuMSA5My41YzUuMSA4LS42IDE4LjUtMTAuMSAxOC41aC0zNC45Yy00LjQgMC04LjUtMi40LTEwLjYtNi4zQzIwOC45IDQwNS41IDE5MiAzNzMgMTkyIDM3M2MtNi40IDE0LjgtMTAgMjAtMzYuNiA2OC44LTIuMSAzLjktNi4xIDYuMy0xMC41IDYuM0gxMTBjLTkuNSAwLTE1LjItMTAuNS0xMC4xLTE4LjVsNjAuMy05My41LTYwLjMtOTMuNWMtNS4yLTggLjYtMTguNSAxMC4xLTE4LjVoMzQuOGM0LjQgMCA4LjUgMi40IDEwLjYgNi4zIDI2LjEgNDguOCAyMCAzMy42IDM2LjYgNjguNSAwIDAgNi4xLTExLjcgMzYuNi02OC41IDIuMS0zLjkgNi4yLTYuMyAxMC42LTYuM0gyNzRjOS41LS4xIDE1LjIgMTAuNCAxMC4xIDE4LjR6TTM4NCAxMjEuOXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+    background-image: url('/static/img/icons/spreadsheet.svg');
 }
 
 /*  CSV files.
     */
 #markdownBody a[href$='.csv' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0tOTYgMTQ0YzAgNC40Mi0zLjU4IDgtOCA4aC04Yy04Ljg0IDAtMTYgNy4xNi0xNiAxNnYzMmMwIDguODQgNy4xNiAxNiAxNiAxNmg4YzQuNDIgMCA4IDMuNTggOCA4djE2YzAgNC40Mi0zLjU4IDgtOCA4aC04Yy0yNi41MSAwLTQ4LTIxLjQ5LTQ4LTQ4di0zMmMwLTI2LjUxIDIxLjQ5LTQ4IDQ4LTQ4aDhjNC40MiAwIDggMy41OCA4IDh2MTZ6bTQ0LjI3IDEwNEgxNjBjLTQuNDIgMC04LTMuNTgtOC04di0xNmMwLTQuNDIgMy41OC04IDgtOGgxMi4yN2M1Ljk1IDAgMTAuNDEtMy41IDEwLjQxLTYuNjIgMC0xLjMtLjc1LTIuNjYtMi4xMi0zLjg0bC0yMS44OS0xOC43N2MtOC40Ny03LjIyLTEzLjMzLTE3LjQ4LTEzLjMzLTI4LjE0IDAtMjEuMyAxOS4wMi0zOC42MiA0Mi40MS0zOC42MkgyMDBjNC40MiAwIDggMy41OCA4IDh2MTZjMCA0LjQyLTMuNTggOC04IDhoLTEyLjI3Yy01Ljk1IDAtMTAuNDEgMy41LTEwLjQxIDYuNjIgMCAxLjMuNzUgMi42NiAyLjEyIDMuODRsMjEuODkgMTguNzdjOC40NyA3LjIyIDEzLjMzIDE3LjQ4IDEzLjMzIDI4LjE0LjAxIDIxLjI5LTE5IDM4LjYyLTQyLjM5IDM4LjYyek0yNTYgMjY0djIwLjhjMCAyMC4yNyA1LjcgNDAuMTcgMTYgNTYuODggMTAuMy0xNi43IDE2LTM2LjYxIDE2LTU2Ljg4VjI2NGMwLTQuNDIgMy41OC04IDgtOGgxNmM0LjQyIDAgOCAzLjU4IDggOHYyMC44YzAgMzUuNDgtMTIuODggNjguODktMzYuMjggOTQuMDktMy4wMiAzLjI1LTcuMjcgNS4xMS0xMS43MiA1LjExcy04LjctMS44Ni0xMS43Mi01LjExYy0yMy40LTI1LjItMzYuMjgtNTguNjEtMzYuMjgtOTQuMDlWMjY0YzAtNC40MiAzLjU4LTggOC04aDE2YzQuNDIgMCA4IDMuNTggOCA4em0xMjEtMTU5TDI3OS4xIDdjLTQuNS00LjUtMTAuNi03LTE3LTdIMjU2djEyOGgxMjh2LTYuMWMwLTYuMy0yLjUtMTIuNC03LTE2Ljl6Ii8+PC9zdmc+');
+    background-image: url('/static/img/icons/csv.svg');
 }
 
 /*  Images.
     */
 #markdownBody a[href$='.gif' i]::after,
+#markdownBody a[href$='.bmp' i]::after,
 #markdownBody a[href$='.ico' i]::after,
 #markdownBody a[href$='.jpg' i]::after,
+#markdownBody a[href$='.jpeg' i]::after,
 #markdownBody a[href$='.png' i]::after,
 #markdownBody a[href$='.svg' i]::after,
 #markdownBody a[href$='.xcf' i]::after,
 #markdownBody a[href*='imgur.com']::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YTI0IDI0IDAgMCAxIDE2Ljk3IDcuMDI5bDk3Ljk0MSA5Ny45NDFhMjQuMDAyIDI0LjAwMiAwIDAgMSA3LjAzIDE2Ljk3MXpNMjQ4IDE2MGMtMTMuMiAwLTI0LTEwLjgtMjQtMjRWMEgyNEMxMC43NDUgMCAwIDEwLjc0NSAwIDI0djQ2NGMwIDEzLjI1NSAxMC43NDUgMjQgMjQgMjRoMzM2YzEzLjI1NSAwIDI0LTEwLjc0NSAyNC0yNFYxNjBIMjQ4em0tMTM1LjQ1NSAxNmMyNi41MSAwIDQ4IDIxLjQ5IDQ4IDQ4cy0yMS40OSA0OC00OCA0OC00OC0yMS40OS00OC00OCAyMS40OTEtNDggNDgtNDh6bTIwOCAyNDBoLTI1NmwuNDg1LTQ4LjQ4NUwxMDQuNTQ1IDMyOGM0LjY4Ni00LjY4NiAxMS43OTktNC4yMDEgMTYuNDg1LjQ4NUwxNjAuNTQ1IDM2OCAyNjQuMDYgMjY0LjQ4NWM0LjY4Ni00LjY4NiAxMi4yODQtNC42ODYgMTYuOTcxIDBMMzIwLjU0NSAzMDR2MTEyeiIvPjwvc3ZnPg==');
+    background-image: url('/static/img/icons/image.svg');
 }
 
 /*  Audio files.
     */
-#markdownBody a[href$='.maff' i]::after,
+#markdownBody a[href$='.mp3' i]::after,
+#markdownBody a[href$='.wav' i]::after,
+#markdownBody a[href$='.flac' i]::after,
+#markdownBody a[href$='.rm' i]::after,
 #markdownBody a[href$='.ogg' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0tNjQgMjY4YzAgMTAuNy0xMi45IDE2LTIwLjUgOC41TDEwNCAzNzZINzZjLTYuNiAwLTEyLTUuNC0xMi0xMnYtNTZjMC02LjYgNS40LTEyIDEyLTEyaDI4bDM1LjUtMzYuNWM3LjYtNy42IDIwLjUtMi4yIDIwLjUgOC41djEzNnptMzMuMi00Ny42YzkuMS05LjMgOS4xLTI0LjEgMC0zMy40LTIyLjEtMjIuOCAxMi4yLTU2LjIgMzQuNC0zMy41IDI3LjIgMjcuOSAyNy4yIDcyLjQgMCAxMDAuNC0yMS44IDIyLjMtNTYuOS0xMC40LTM0LjQtMzMuNXptODYtMTE3LjFjNTQuNCA1NS45IDU0LjQgMTQ0LjggMCAyMDAuOC0yMS44IDIyLjQtNTctMTAuMy0zNC40LTMzLjUgMzYuMi0zNy4yIDM2LjMtOTYuNSAwLTEzMy44LTIyLjEtMjIuOCAxMi4zLTU2LjMgMzQuNC0zMy41ek0zODQgMTIxLjl2Ni4xSDI1NlYwaDYuMWM2LjQgMCAxMi41IDIuNSAxNyA3bDk3LjkgOThjNC41IDQuNSA3IDEwLjYgNyAxNi45eiIvPjwvc3ZnPg==');
+    background-image: url('/static/img/icons/audio.svg');
 }
 
 /*  Video files.
-    */
+ */
+#markdownBody a[href$='.swf' i]::after,
 #markdownBody a[href$='.avi' i]::after,
 #markdownBody a[href$='.mp4' i]::after,
 #markdownBody a[href$='.webm' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzg0IDEyMS45NDFWMTI4SDI1NlYwaDYuMDU5YzYuMzY1IDAgMTIuNDcgMi41MjkgMTYuOTcxIDcuMDI5bDk3Ljk0MSA5Ny45NDFBMjQuMDA1IDI0LjAwNSAwIDAgMSAzODQgMTIxLjk0MXpNMjI0IDEzNlYwSDI0QzEwLjc0NSAwIDAgMTAuNzQ1IDAgMjR2NDY0YzAgMTMuMjU1IDEwLjc0NSAyNCAyNCAyNGgzMzZjMTMuMjU1IDAgMjQtMTAuNzQ1IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em05NiAxNDQuMDE2djExMS45NjNjMCAyMS40NDUtMjUuOTQzIDMxLjk5OC00MC45NzEgMTYuOTcxTDIyNCAzNTMuOTQxVjM5MmMwIDEzLjI1NS0xMC43NDUgMjQtMjQgMjRIODhjLTEzLjI1NSAwLTI0LTEwLjc0NS0yNC0yNFYyODBjMC0xMy4yNTUgMTAuNzQ1LTI0IDI0LTI0aDExMmMxMy4yNTUgMCAyNCAxMC43NDUgMjQgMjR2MzguMDU5bDU1LjAyOS01NS4wMTNjMTUuMDExLTE1LjAxIDQwLjk3MS00LjQ5MSA0MC45NzEgMTYuOTd6Ii8+PC9zdmc+');
+    background-image: url('/static/img/icons/video.svg');
 }
 
 /*  Archive files.
     */
 #markdownBody a[href$='.tar' i]::after,
 #markdownBody a[href$='.zip' i]::after,
-markdownBody a[href$='.xz' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzc3IDEwNUwyNzkuMSA3Yy00LjUtNC41LTEwLjYtNy0xNy03SDI1NnYxMjhoMTI4di02LjFjMC02LjMtMi41LTEyLjQtNy0xNi45ek0xMjguNCAzMzZjLTE3LjkgMC0zMi40IDEyLjEtMzIuNCAyNyAwIDE1IDE0LjYgMjcgMzIuNSAyN3MzMi40LTEyLjEgMzIuNC0yNy0xNC42LTI3LTMyLjUtMjd6TTIyNCAxMzZWMGgtNjMuNnYzMmgtMzJWMEgyNEMxMC43IDAgMCAxMC43IDAgMjR2NDY0YzAgMTMuMyAxMC43IDI0IDI0IDI0aDMzNmMxMy4zIDAgMjQtMTAuNyAyNC0yNFYxNjBIMjQ4Yy0xMy4yIDAtMjQtMTAuOC0yNC0yNHpNOTUuOSAzMmgzMnYzMmgtMzJ6bTMyLjMgMzg0Yy0zMy4yIDAtNTgtMzAuNC01MS40LTYyLjlMOTYuNCAyNTZ2LTMyaDMydi0zMmgtMzJ2LTMyaDMydi0zMmgtMzJWOTZoMzJWNjRoMzJ2MzJoLTMydjMyaDMydjMyaC0zMnYzMmgzMnYzMmgtMzJ2MzJoMjIuMWM1LjcgMCAxMC43IDQuMSAxMS44IDkuN2wxNy4zIDg3LjdjNi40IDMyLjQtMTguNCA2Mi42LTUxLjQgNjIuNnoiLz48L3N2Zz4=');
+#markdownBody a[href$='.zip' i]::after,
+#markdownBody a[href$='.img' i]::after {
+    background-image: url('/static/img/icons/archive.svg');
 }
 
 /*  Miscellaneous files (for which there is no specific icon).
     */
 #markdownBody a[href$='.ebt' i]::after,
-#markdownBody a[href$='.epub' i]::after,
 #markdownBody a[href$='.mdb' i]::after,
 #markdownBody a[href$='.mht' i]::after,
 #markdownBody a[href$='.ttf' i]::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMjI0IDEzNlYwSDI0QzEwLjcgMCAwIDEwLjcgMCAyNHY0NjRjMCAxMy4zIDEwLjcgMjQgMjQgMjRoMzM2YzEzLjMgMCAyNC0xMC43IDI0LTI0VjE2MEgyNDhjLTEzLjIgMC0yNC0xMC44LTI0LTI0em0xNjAtMTQuMXY2LjFIMjU2VjBoNi4xYzYuNCAwIDEyLjUgMi41IDE3IDdsOTcuOSA5OGM0LjUgNC41IDcgMTAuNiA3IDE2Ljl6Ii8+PC9zdmc+');
+    background-image: url('/static/img/icons/misc.svg');
 }

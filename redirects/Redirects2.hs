@@ -575,4 +575,17 @@
    , ("docs/math/1986-littlewood-littlewoodsmiscellany.pdf", "https://archive.org/details/mathematiciansmi033496mbp/page/n1")
    , ("docs/math/1988-korner-fourieranalysis.pdf", "/static/404.html")
    , ("docs/statistics/1963-aitchison-thelognormaldistribution.pdf", "/static/404.html")
+, ("images/icons/chi-dna.svg", "/static/img/icons/chi-dna.svg")
+, ("images/icons/deepmind.svg", "/static/img/icons/deepmind.svg")
+, ("images/icons/erowid.svg", "/static/img/icons/erowid.svg")
+, ("images/icons/google-scholar.svg", "/static/img/icons/google-scholar.svg")
+, ("images/icons/internetarchive.svg", "/static/img/icons/internetarchive.svg")
+, ("images/icons/miri.svg", "/static/img/icons/miri.svg")
+, ("images/icons/newyorktimes.svg", "/static/img/icons/newyorktimes.svg")
+, ("images/icons/nlm-ncbi.svg", "/static/img/icons/nlm-ncbi.svg")
+, ("images/icons/openai.svg", "/static/img/icons/openai.svg")
+, ("images/icons/theguardian.svg", "/static/img/icons/theguardian.svg")
+, ("images/icons/thenewyorker.svg", "/static/img/icons/thenewyorker.svg")
+, ("images/icons/washingtonpost.svg", "/static/img/icons/washingtonpost.svg")
+
    ]
