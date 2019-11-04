@@ -600,4 +600,13 @@
    , ("dnbfaq", "/DNB-FAQ")
    , ("docs/sr/2019-04-22-deepdotweb-dnmlist,html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
    , ("tag/newsletter", "/tags/newsletter")
+   , ("docs/borges/1951-borges-kafkaand", "/docs/borges/1951-borges-kafkaandhisprecursors.pdf")
+   , ("DNM-arrests since we should typically good, better than competitors", "/DNM-arrests")
+   , ("docs/genetics/correlation/1978-nance-twinresearchpartapsychologymethodology.pdf", "/docs/genetics/correlation/1978-nance-twinresearchparta-psychologymethodology.pdf")
+   , ("Black-market arrest", "/DNM-arrests")
+   , ("Danbooru2018%20%E5%8E%9F%E6%96%87%E7%B6%B2%E5%9D%80%EF%BC%9Ahttps://kknews.cc/comic/3a3ap4a.html"," /Danbooru2018")
+   , ("D‌N‌M‌‌-survival", "/DNM-survival")
+   , ("docs/psychology/1941-cleckley-maskofsanity.pdf,", "/docs/psychology/1941-cleckley-maskofsanity.pdf")
+   , ("docs/sociology/1974-Martinson.pdf", "/docs/sociology/1974-martinson.pdf")
+   , ("docs/genetics/heritable/2019-kandler-2.pdfA", "/docs/genetics/heritable/2019-kandler-2.pdf")
    ]
