@@ -48,6 +48,7 @@
 #markdownBody a[href*="www.motherjones.com"]::after,
 #markdownBody a[href*="www.edge.org"]::after,
 #markdownBody a[href*="bitcointalk.org"]::after,
+#markdownBody a[href*="bitcoin.t"]::after,
 #markdownBody a[href*="bloomberg.com"]::after,
 #markdownBody a[href*="bmj.com"]::after,
 #markdownBody a[href*="economist.com"]::after,
@@ -105,6 +106,9 @@
 #markdownBody a[href*="yunnansourcing.com"]::after,
 #markdownBody a[href*="yvain"]::after,
 #markdownBody a[href*="unsongbook.com"]::after,
+#markdownBody a[href*="groups.yahoo.com"]::after,
+#markdownBody a[href*="publicdomainreview.org"]::after,
+#markdownBody a[href*="meltingasphalt.com"]::after,
 #markdownBody a[href*="neweva.blog103.fc2.com"]::after {
     font-size: 0.8em;
     font-weight: 600;
@@ -178,8 +182,25 @@
   bottom: 0.3em;
   left: 0.1em; }
 
+#markdownBody a[href*="publicdomainreview.org"]::after {
+  content: "TPDR";
+  font-size: 0.5em;
+  width: 1.4em;
+  display: inline-block;
+  overflow-wrap: break-word;
+  font-family: Baskerville;
+  line-height: 0.7;
+  text-align: center;
+  position: relative;
+  bottom: 0.3em;
+  left: 0.1em; }
+
+#markdownBody a[href*="meltingasphalt.com"]::after {
+    content: "▲▲△"; }
+
 /* Bitcoin Talk: close enough! */
-#markdownBody a[href*="wikipedia.org"]::after {
+#markdownBody a[href*="bitcointalk.org"]::after,
+#markdownBody a[href*="bitcoin.it"]::after {
     content: "₿⃝"; }
 
 #markdownBody a[href*="salon.com"]::after {
@@ -321,6 +342,7 @@
 /* TinyLetter's icon, without color, isn't memorable enough; throw in the other email services */
 #markdownBody a[href*="tinyletter.com"]::after,
 #markdownBody a[href*="groups.google.com"]::after,
+#markdownBody a[href*="groups.yahoo.com"]::after,
 #markdownBody a[href*="www.mail-archive.com"]::after {
     content: "✉"; }
 
