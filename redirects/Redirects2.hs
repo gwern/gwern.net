@@ -671,4 +671,8 @@
    , ("docs/ai/2019-07-21-taotehching-all-1ksamples.txt", "/docs/ai/poetry/2019-07-21-taotehching-all-1ksamples.txt")
    , ("docs/ai/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt", "/docs/ai/poetry/2019-10-17-117m-poetry-cleanprojectgutenberg-samples.txt")
    , ("docs/ai/2019-10-19-117m-poetryfoundation-samples.txt", "/docs/ai/poetry/2019-10-19-117m-poetryfoundation-samples.txt")
+   , ("docs/2013-ioannidis.pdf", "/docs/statistics/bias/2013-ioannidis.pdf")
+   , ("docs/music-distraction/2014-perham.pdf Another example explaining how the different types of music work differently comes from SEMATIC SCHOLAR after an experiment. “The results demonstrated that college students recall more content after listening to pop music or silence during study when compared to classical music", "/docs/music-distraction/2014-perham.pdf")
+   , ("docs/history/1969-boorman-theprotractedgame.pdf`qtyuiop[]/8/]=[-0p98y67t5r4wqQSWDEFRGTHY JUKILO", "/docs/history/1969-boorman-theprotractedgame.pdf")
+   , ("the-melancholy-of-subulture-society", "/The-Melancholy-of-Subculture-Society")
    ]
