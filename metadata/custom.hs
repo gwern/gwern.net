@@ -3022,17 +3022,17 @@
      , "Digital platforms, such as Facebook, Uber, and AirBnB, create value by connecting users, creators, and contractors of different types. Their rapid growth, untraditional business model, and disruptive nature presents challenges for managers and asset pricers. These features also, arguably, make them natural monopolies, leading to increasing calls for special regulations and taxes. We construct and illustrate a approach for modeling digital platforms. The model allows for heterogeneity in elasticity of demand and heterogeneous network effects across different users. We parameterize our model using a survey of over 40,000 US internet users on their demand for Facebook. Facebook creates about 11.2 billion dollars in consumer surplus a month for US users age 25 or over, in line with previous estimates. We find Facebook has too low a level of advertising relative to their revenue maximizing strategy, suggesting that they also value maintaining a large user base. We simulate six proposed government policies for digital platforms, taking Facebook’s optimal response into account. Taxes only slightly change consumer surplus. Three more radical proposals, including ‘data as labor’ and nationalization, have the potential to raise consumer surplus by up to 42%. But a botched regulation that left the US with two smaller, non-competitive social media monopolies would decrease consumer surplus by 44%.")
     ),
     ("http://pawsoflife-org.k9handleracademy.com/Library/Scent/Porter2006.pdf",
-     ("Mechanisms of scent-tracking in humans",
-     ,"Jess Porter, Brent Craven, Rehan M Khan, Shao-Ju Chang, Irene Kang, Benjamin Judkewitz, Jason Volpe, Gary Settles, Noam Sobel"
+     ("Mechanisms of scent-tracking in humans"
+     , "Jess Porter, Brent Craven, Rehan M Khan, Shao-Ju Chang, Irene Kang, Benjamin Judkewitz, Jason Volpe, Gary Settles, Noam Sobel"
      , "2006-12-17"
      , "10.1038/nn1819"
      , "Whether mammalian scent-tracking is aided by inter-nostril comparisons is unknown. We assessed this in humans and found that (i) humans can scent-track, (ii) they improve with practice, (iii) the human nostrils sample spatially distinct regions separated by ∼3.5 cm and, critically, (iv) scent-tracking is aided by inter-nostril comparisons. These findings reveal fundamental mechanisms of scent-tracking and suggest that the poor reputation of human olfaction may reflect, in part, behavioral demands rather than ultimate abilities.")
     ),
     ("/docs/economics/2019-hoynes.pdf",
-("Universal Basic Income in the United States and Advanced Countries"
-  , "Hilary Hoynes, Jesse Rothstein"
-  , "2019-08"
-  , "10.1146/annurev-ec-11"
-  , "We discuss the potential role of universal basic incomes (UBIs) in advanced countries. A feature of advanced economies that distinguishes them from developing countries is the existence of well-developed, if often incomplete, safety nets. We develop a framework for describing transfer programs that is flexible enough to encompass most existing programs as well as UBIs, and we use this framework to compare various UBIs to the existing constellation of programs in the United States. A UBI would direct much larger shares of transfers to childless, nonelderly, nondisabled households than existing programs, and much more to middle-income rather than poor households. A UBI large enough to increase transfers to low-income families would be enormously expensive. We review the labor supply literature for evidence on the likely impacts of a UBI. We argue that the ongoing UBI pilot studies will do little to resolve the major outstanding questions. [Keywords: safety net, income transfer, universal basic income, labor supply, JEL I38, JEL H24]")
+     ("Universal Basic Income in the United States and Advanced Countries"
+     , "Hilary Hoynes, Jesse Rothstein"
+     , "2019-08"
+     , "10.1146/annurev-ec-11"
+     , "We discuss the potential role of universal basic incomes (UBIs) in advanced countries. A feature of advanced economies that distinguishes them from developing countries is the existence of well-developed, if often incomplete, safety nets. We develop a framework for describing transfer programs that is flexible enough to encompass most existing programs as well as UBIs, and we use this framework to compare various UBIs to the existing constellation of programs in the United States. A UBI would direct much larger shares of transfers to childless, nonelderly, nondisabled households than existing programs, and much more to middle-income rather than poor households. A UBI large enough to increase transfers to low-income families would be enormously expensive. We review the labor supply literature for evidence on the likely impacts of a UBI. We argue that the ongoing UBI pilot studies will do little to resolve the major outstanding questions. [Keywords: safety net, income transfer, universal basic income, labor supply, JEL I38, JEL H24]")
     )
  ]
