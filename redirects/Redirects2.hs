@@ -685,4 +685,5 @@
    , ("srs", "/Spaced-repetition")
    , ("docs/rotten.com/library/imagery/subliminal/neo-geo/index.html", "/docs/rotten.com/library/imagery/subliminal/advertising/neo-geo/index.html")
    , ("Greenland.", "/Greenland")
+   , ("static/metadata/custom.hs", "/static/metadata/custom.yaml")
    ]
