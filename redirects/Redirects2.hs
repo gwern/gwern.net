@@ -686,4 +686,8 @@
    , ("docs/rotten.com/library/imagery/subliminal/neo-geo/index.html", "/docs/rotten.com/library/imagery/subliminal/advertising/neo-geo/index.html")
    , ("Greenland.", "/Greenland")
    , ("static/metadata/custom.hs", "/static/metadata/custom.yaml")
+   , ("docs/statistics/2015-franco.pdf%20http://journals.sagepub.com/doi/10.1177/1948550615598377", "/docs/statistics/2015-franco.pdf")
+   , ("Resorter](Resorter)", "/Resorter")
+   , ("docs/culture/2018-micola", "/docs/culture/2018-micola.pdf")
+   , ("Notex", "/Notes")
    ]
