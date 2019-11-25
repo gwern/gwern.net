@@ -718,4 +718,7 @@
    , ("docs/genetics/heritable/1973-dobzhansky-geneticdiversityandhumanequality.pdf.", "/docs/genetics/heritable/1973-dobzhansky-geneticdiversityandhumanequality.pdf")
    , ("docs/history/1963-deroover-theriseanddeclineofmedicibank.pdf", "/docs/history/1963-deroover-theriseanddeclineofthemedicibank.pdf")
    , ("Spaced٪20repetition", "/Spaced%20repetition")
+   , ("red", "/Red")
+   , ("Rubrication", "/Red")
+   , ("rubrication", "/Red")
    ]
