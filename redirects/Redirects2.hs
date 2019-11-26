@@ -728,4 +728,5 @@
    , ("doc[...]ctsthemessagesyouget.html", "/docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html")
    , ("docs/music-distraction/2019-gonzalez.pdf (", "/docs/music-distraction/2019-gonzalez.pdf")
    , ("docs/sociology/1962-calhoun.pdf.", "/docs/sociology/1962-calhoun.pdf")
+   , ("images/rl/2017-12-24-alphagozero-meme-addmorelayers.jpg", "/images/rl/2017-12-24-meme-nnlayers-alphagozero.jpg")
    ]
