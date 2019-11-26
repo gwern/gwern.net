@@ -721,4 +721,5 @@
    , ("red", "/Red")
    , ("Rubrication", "/Red")
    , ("rubrication", "/Red")
+   , ("docs/statistics/1990-tufte-envisioninginformation-ch5-bryneseuclid.pdf", "/docs/statistics/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf")
    ]
