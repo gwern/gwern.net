@@ -547,6 +547,7 @@
    , ("nudes", "/TWDNE")
    , ("rss2.xml", "https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on")
    , ("atom.xml", "https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on")
+   , ("feeds", "https://www.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on")
    , ("sr/index.html", "/docs/sr/index.html")
    , ("docs/ai/2013-clark.pdf", "http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.259.7600&rep=rep1&type=pdf")
    , ("docs/catnip/2000-turner-thedomesticcat.pdf", "/static/404.html")
@@ -722,4 +723,9 @@
    , ("Rubrication", "/Red")
    , ("rubrication", "/Red")
    , ("docs/statistics/1990-tufte-envisioninginformation-ch5-bryneseuclid.pdf", "/docs/statistics/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf")
+   , ("docs/psychology/1993-brand-painthegiftnobodywants.PDF", "/docs/psychology/1993-brand-painthegiftnobodywants.pdf")
+   , ("docs/psychology/2019-vanhiel.pdf&ved=2ahUKEwi627XX0IbmAhV3H7kGHVfBAjIQFjAAegQIAhAB&usg=AOvVaw2d-NFKD7mG8MBWZWnk2an6", "/docs/psychology/2019-vanhiel.pdf")
+   , ("doc[...]ctsthemessagesyouget.html", "/docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html")
+   , ("docs/music-distraction/2019-gonzalez.pdf (", "/docs/music-distraction/2019-gonzalez.pdf")
+   , ("docs/sociology/1962-calhoun.pdf.", "/docs/sociology/1962-calhoun.pdf")
    ]
