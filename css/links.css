@@ -842,11 +842,11 @@
     background-repeat: no-repeat;
     background-size: 0.75em;
     background-position: right 1px top;
-    width: 1.1em;
-    height: 0.9em;
+    width: 1em;
+    height: 0.8em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.85;
+    opacity: 0.81;
 }
 #markdownBody a[href*="amazon.com"]:hover::after,
 #markdownBody a[href*="amazon.co."]:hover::after,
