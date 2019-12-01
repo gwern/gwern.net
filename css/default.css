@@ -927,7 +927,8 @@ a.footnote-ref {
     */
 @media only screen and (max-width: 176ch) {
     #sidenote-column-left,
-    #sidenote-column-right {
+    #sidenote-column-right,
+    .marginnote {
         display: none;
     }
 }
@@ -936,7 +937,8 @@ a.footnote-ref {
 @supports (-moz-user-focus: normal) {
     @media only screen and (max-width: 176ch) {
         #sidenote-column-left,
-        #sidenote-column-right {
+        #sidenote-column-right,
+        .marginnote {
             display: initial;
         }
     }
@@ -1136,6 +1138,25 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 }
 #sidenote-column-right .sidenote > .sidenote-self-link {
     left: 3px;
+}
+
+/*=--------------=*/
+/*= Margin notes *=/
+/*=--------------=*/
+.marginnote {
+    float: right;
+    position: absolute;
+    left: calc(100% + 3em);
+    text-align: left;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
+    text-indent: 0;
+    width: calc((100vw - 112ch) / 2 - 5em);
+    font-size: 0.85em;
+    opacity: 0.85;
+    /* slightly bold it; italics are already heavily-used, so may not be a good idea */
+    font-weight: 550;
 }
 
 /**********/

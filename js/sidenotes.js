@@ -164,11 +164,12 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 			${GW.firefoxTargetingSelector} {
 				@media only screen and (max-width: ${viewportWidthBreakpointInPixels}px) {
 					#sidenote-column-left,
-					#sidenote-column-right {
+					#sidenote-column-right,
+					.marginnote {
 						display: none;
 					}
 				}
-				@media only screen and (min-width: ${viewportWidthBreakpointInPixels + 1}px) {
+				@media only screen and (min-width: ${viewportWidthBreakpointInPixels+1}px) {
 					main {
 						position: relative;
 						right: 4ch;
