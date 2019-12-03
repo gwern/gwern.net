@@ -185,11 +185,11 @@
 #markdownBody a[href*="publicdomainreview.org"]::after {
   content: "TPDR";
   font-size: 0.5em;
-  width: 1.4em;
+  width: 1.6em;
   display: inline-block;
   overflow-wrap: break-word;
   font-family: Baskerville;
-  line-height: 0.7;
+  line-height: 0.8em;
   text-align: center;
   position: relative;
   bottom: 0.3em;
@@ -698,8 +698,8 @@
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 0.75em;
-    width: 0.75em;
+    height: 1.1em;
+    width: 1.1em;
     margin: 0 0 1px 4px;
     opacity: 0.60;
 }
