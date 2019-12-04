@@ -19,6 +19,10 @@
     <meta name="description" content="$description$">
     <meta name="og:description" content="$description$">
     <meta name="twitter:description" content="$description$">
+    $if(thumbnail)$
+      <meta name="twitter:image" content="https://www.gwern.net$thumbnail$" />
+      <meta property="og:image" content="https://www.gwern.net$thumbnail$">
+    $endif$
     <meta name="keywords" content="$tags$">
     <meta name="dc.date.issued" content="$created$">
     <meta name="citation_publication_date" content="$created$">
