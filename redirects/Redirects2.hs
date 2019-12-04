@@ -753,4 +753,12 @@
    , ("newsletter/2013/13", "/tags/newsletter")
    , ("newsletter/YEAR/11", "/tags/newsletter")
    , ("newsletter/YEAR/14", "/tags/newsletter")
+   , ("Modafinil mail", "/Modafinil")
+   , ("docs/conscienctiuosness/2019-wilmot.pdf", "/docs/conscientiousness/2019-wilmot.pdf")
+   , ("docs/anime/1995-newitz.pdf.", "/docs/anime/1995-newitz.pdf")
+   , ("hydrocephalus", "/Hydrocephalus")
+   , ("hydrocephaly", "/Hydrocephalus")
+   , ("Hydrocephaly", "/Hydrocephalus")
+   , ("hemispherectomy", "/Hydrocephalus")
+   , ("Hemispherectomy", "/Hydrocephalus")
    ]
