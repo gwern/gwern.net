@@ -792,4 +792,6 @@
    , ("reproducibility-crisis", "/Replication")
    , ("docs/dnb/2010-colom.pdfdoi: 10.1080/10627197.2015.997614", "/docs/dnb/2010-colom.pdf")
    , ("docs/psychology/2014-matter-storr-themanwhodestroyedamericasego.html", "/docs/sociology/2014-02-25-matter-themanwhodestroyedamericasego.html")
+   , ("docs/music-distraction/1989-salame.pdf.%20Accessed%201%20Oct.%202019.", "/docs/music-distraction/1989-salame.pdf.%20Accessed%201%20Oct.%202019.")
+   , ("%22https://arxiv.org/abs/1909.05858/%22", "https://arxiv.org/abs/1909.05858")
    ]
