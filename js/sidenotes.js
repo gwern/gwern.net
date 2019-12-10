@@ -8,6 +8,7 @@ Author: Said Achmiz
 license: MIT (derivative of footnotes.js, which is PD)
 */
 
+
 if (typeof window.GW == "undefined")
 	window.GW = { };
 
@@ -169,7 +170,7 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
 						display: none;
 					}
 				}
-				@media only screen and (min-width: ${viewportWidthBreakpointInPixels+1}px) {
+				@media only screen and (min-width: ${viewportWidthBreakpointInPixels + 1}px) {
 					main {
 						position: relative;
 						right: 4ch;
@@ -500,15 +501,21 @@ function updateSidenotePositions() {
 	}
 
 	/*	Determine proscribed vertical ranges (i.e., bands of the page from which
-		sidenotes are excluded, by the presence of a full-width table).
+		sidenotes are excluded, by the presence of, e.g., a full-width table).
 		*/
 	var proscribedVerticalRanges = [ ];
 	let rightColumnBoundingRect = GW.sidenotes.sidenoteColumnRight.getBoundingClientRect();
-	document.querySelectorAll(".tableWrapper.full-width").forEach(fullWidthTable => {
-		let tableBoundingRect = fullWidthTable.getBoundingClientRect();
-		proscribedVerticalRanges.push({ top: tableBoundingRect.top - rightColumnBoundingRect.top,
-										bottom: tableBoundingRect.bottom  - rightColumnBoundingRect.top });
+	/*	Examine all potentially overlapping elements (i.e., non-sidenote
+		elements that may appear in, or extend into, the side columns).
+		*/
+	GW.sidenotes.potentiallyOverlappingElementsSelector = ".marginnote, .tableWrapper.full-width, figure.full-width";
+	document.querySelectorAll(GW.sidenotes.potentiallyOverlappingElementsSelector).forEach(potentiallyOverlappingElement => {
+		let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
+		proscribedVerticalRanges.push({ top: elementBoundingRect.top - rightColumnBoundingRect.top,
+										bottom: elementBoundingRect.bottom - rightColumnBoundingRect.top });
 	});
+	/*	The bottom of the right column is also a "proscribed vertical range".
+		*/
 	proscribedVerticalRanges.push({
 		top:	GW.sidenotes.sidenoteColumnRight.clientHeight,
 		bottom:	GW.sidenotes.sidenoteColumnRight.clientHeight
