@@ -1157,6 +1157,7 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     opacity: 0.85;
     /* slightly bold it; italics are already heavily-used, so may not be a good idea */
     font-weight: 550;
+    z-index: 1;
 }
 
 /**********/
