@@ -616,6 +616,33 @@ q::before,
 q::after {
     content: none;
 }
+/*  Special styles for special browsers.
+    */
+@supports (-moz-user-focus: normal) {
+    q {
+        position: relative;
+        margin: 0 calc(1ch + 5px);
+    }
+    q::before,
+    q::after {
+        position: relative;
+        display: inline-block;
+        width: 0;
+        text-indent: 0;
+    }
+    q::before {
+        content: "“";
+        left: calc(-1 * (1ch + 2px));
+    }
+    q::after {
+        content: "”";
+        right: -3px;
+    }
+    span.quote-mark {
+        display: none;
+    }
+}
+
 
 span.quote-mark {
     opacity: 0.9;
