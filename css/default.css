@@ -535,6 +535,7 @@ figure + figure {
         margin-top: 2em;
     }
 }
+figure audio,
 figure img,
 figure video {
     display: block;
