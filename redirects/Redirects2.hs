@@ -845,4 +845,6 @@
   , ("docs/ai/music/2019-10-23-gwern-gpt2-irish-hickeystune.ogg", "/docs/ai/music/2019-10-23-gwern-gpt2-irish-hickeystune.mp3")
   , ("docs/ai/music/2019-12-09-gpt2-combinedabc-100samples.ogg", "/docs/ai/music/2019-12-09-gpt2-combinedabc-100samples.mp3")
   , ("docs/ai/music/2019-10-30-thelonelyfireside.ogg", "/docs/ai/music/2019-10-30-thelonelyfireside.mp3")
+  , ("docs/sr/2019-04-22-deepdotweb-dnmlist.hml", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
+  , ("Self-decrypting. 2011", "/Self-decrypting")
  ]
