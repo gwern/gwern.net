@@ -535,7 +535,6 @@ figure + figure {
         margin-top: 2em;
     }
 }
-figure audio,
 figure img,
 figure video {
     display: block;
@@ -544,6 +543,11 @@ figure video {
     width: auto;
     margin: 0 auto;
     outline: 1px solid #888;
+}
+/* WARNING: work around Chrome layout bug */
+figure audio {
+    display: block;
+    margin: 0 auto;
 }
 figure img {
     max-height: calc(100vh - 8em);
