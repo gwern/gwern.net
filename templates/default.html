@@ -141,41 +141,6 @@
         </div>
       </div>
 
-       <!-- Selling out -->
-       <div id="adsense">
-         <div id="ads" style="display: none; visibility: hidden; max-width:100%;"><a rel="nofollow" href="https://triplebyte.com/a/Lpa4wbK/d"><img alt="Banner ad for the tech recruiting company Triplebyte: 'Triplebyte is building a background-blind screening process for hiring software engineers'" width="500" height="128" src="/static/img/ads-triplebyte-banner.png"></a></div>
-       </div>
-
-      <!-- A/B test of ad effects on site traffic, static ad version: randomize blocks of 7-days based on day-of-year pre-generated randomness -->
-      <script id="adsABTestJS">
-      // create Date object for current location
-      var d = new Date();
-      // convert to msec
-      // add local time zone offset
-      // get UTC time in msec
-      var utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-      // create new Date object for different timezone, EST/UTC-4
-      var now = new Date(utc + (3600000*-4));
-
-      start = new Date("2019-04-13"); var diff = now - start;
-      var oneDay = 1000 * 60 * 60 * 24; var day = Math.floor(diff / oneDay);
-      randomness = [0,1,0,0,0,1,1,1,0,0,0,0,1,1,1,0,1,1,1,1,0,0,0,0,1,0,1,1,0,0,1,0,0,1,0,
-                    0,0,0,1,1,0,0,0,1,0,1,0,0,1,0,1,1,1,1,0,1,1,0,0,0,0,0,0,1,1,0,1,0,0,1,
-                    1,0,0,0,1,1,1,1,1,1,0,1,1,1,0,1,1,0,0,0,0,1,0,1,1,0,0,1,1,0,1,1,1,1,1,
-                    1,1,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,1,0,0,1,0,1,0,1,1,0,0,0,0,1,1,0,
-                    1,0,0,0,0,1,1,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,1,0,0,1,1,1,1,
-                    1,1,1,1,0,1,0,0,1,0,0,0,1,1,0,1,0,0,0,0,1,0,0,1,1,0,0,0,0,0,1,0,0,1,1,
-                    1,1,1,0,0,1,1,1,0,0,0,1,1,0,1,0,1,0,0,0,1,0,0,1,1,0,1,1,0,0,0,1,1,0,1,
-                    0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,0,1,1,0,0,1,0,1,0,1,0,1,0,0,0,
-                    1,1,0,1,0,1,0,0,1,1,0,1,1,0,1,1,1,0,1,0,0,0,1,1,0,0,1,1,0,0,0,1,1,0,0,
-                    0,1,1,1,0,1,0,0,0,1,0,1,1,0,0,1,0,0,1,0,0,1,0,1,1,1,0,0,0,0,1,1,1,1,0,
-                    1,0,1,1,1,0,1];
-      if (randomness[day]) {
-        document.getElementById("ads").style.display = "block";
-        document.getElementById("ads").style.visibility = "visible";
-      }
-      </script>
-
       <header>
         <h1>$title$</h1>
       </header>
