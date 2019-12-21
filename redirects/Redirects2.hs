@@ -873,4 +873,7 @@
   , ("preferencelearning", "/GPT-2-preference-learning")
   , ("preference-learning", "/GPT-2-preference-learning")
   , ("Preference-learning", "/GPT-2-preference-learning")
+  , ("docs/spacedrepetition/1939-spitzer.pd", "/docs/spacedrepetition/1939-spitzer.pdf")
+  , ("docs/genetics/editing/2019-ceze", "/docs/genetics/editing/2019-ceze.pdf")
+  , ("inde", "/index")
  ]
