@@ -971,6 +971,8 @@
 #markdownBody a[href^="."][href$='.php' i]::after,
 #markdownBody a[href$='.sh' i]::after,
 #markdownBody a[href$='.R' i]::after,
+#markdownBody a[href$='.patch' i]::after,
+#markdownBody a[href$='.diff' i]::after,
 /*  Word */
 #markdownBody a[href$='.doc' i]::after,
 #markdownBody a[href$='.docx' i]::after,
@@ -1044,6 +1046,8 @@
 #markdownBody a[href^="."][href$='.php' i]:hover::after,
 #markdownBody a[href$='.sh' i]:hover::after,
 #markdownBody a[href$='.R' i]:hover::after,
+#markdownBody a[href$='.patch' i]:hover::after,
+#markdownBody a[href$='.diff' i]:hover::after,
 /*  Word */
 #markdownBody a[href$='.doc' i]:hover::after,
 #markdownBody a[href$='.docx' i]:hover::after,
@@ -1119,6 +1123,8 @@
 #markdownBody a[href$='.js' i]::after,
 #markdownBody a[href$='.json' i]::after,
 #markdownBody a[href$='.R' i]::after,
+#markdownBody a[href$='.diff' i]::after,
+#markdownBody a[href$='.patch' i]::after,
 #markdownBody a[href^="."][href$='.php' i]::after,
 #markdownBody a[href$='.sh' i]::after {
     background-image: url('/static/img/icons/code.svg');
