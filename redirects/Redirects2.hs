@@ -876,4 +876,7 @@
   , ("docs/spacedrepetition/1939-spitzer.pd", "/docs/spacedrepetition/1939-spitzer.pdf")
   , ("docs/genetics/editing/2019-ceze", "/docs/genetics/editing/2019-ceze.pdf")
   , ("inde", "/index")
+  , ("docs/iq/1927-spearman-theabilitiesofman.pdfHorn, J.L. (1991). Measurement of intellectual capabilities: A review of theory. In K.S. McGrew, J.K. Werder, 8r R.W. Woodcock (Eds.), WJ-R technical manuul. Allen, TX: DLM.", "/docs/iq/1927-spearman-theabilitiesofman.pdf")
+  , ("docs/iq/1927-spearman-theabilitiesofman.pdfHorn, J.L. (1991Horn, J.L. (1991). Measurement of intellectual capabilities: A review of theory. In K.S. McGrew, J.K. Werder, 8r R.W. Woodcock (Eds.), WJ-R technical manuul. Allen, TX: DLM.20Measurement of intellectual capabilities: A review of theory. In K.S. McGrew, J.K. Werder, 8r R.W. Woodcock (Eds.), WJ-R technical manuul. Allen, TX: DLM.", "/docs/iq/1927-spearman-theabilitiesofman.pdf")
+  , ("GPT2-2", "/GPT-2")
  ]
