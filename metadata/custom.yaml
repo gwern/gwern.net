@@ -13792,4 +13792,5 @@
   - OpenAI
   - 2019-09-14
   - ''
+  - ''
   - ! '<p><strong>Status:</strong> Archive (code is provided as-is, no updates expected)</p><h1 id="lm-human-preferences">lm-human-preferences</h1><p>This repository contains code for the paper <a href="https://arxiv.org/abs/1909.08593">Fine-Tuning Language Models from Human Preferences</a>. See also our <a href="https://openai.com/blog/fine-tuning-gpt-2/">blog post</a>.</p><p>We provide code for:</p><ul><li>Training reward models from human labels</li><li>Fine-tuning language models using those reward models</li></ul><p>It does not contain code for generating labels. However, we have released human labels collected for our experiments, at <code>gs://lm-human-preferences/labels</code>. For those interested, the question and label schemas are simple and documented in <a href="https://github.com/openai/lm-human-preferences/blob/master/lm_human_preferences/label_types.py"><code>label_types.py</code></a>.</p><p>The code has only been tested using the smallest GPT-2 model (124M parameters).</p>'
