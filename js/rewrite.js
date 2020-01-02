@@ -20,36 +20,36 @@ function doWhenPageLoaded(f) {
 /*= Tables & Figures =*/
 /*=------------------=*/
 
-/*	Expands all tables & figures whose wrapper block is marked with class
-	"full-width" to span the viewport (minus a specified margin on both sides).
-	*/
+/*  Expands all tables & figures whose wrapper block is marked with class
+    "full-width" to span the viewport (minus a specified margin on both sides).
+    */
 function expandFullWidthBlocks() {
-	document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
-		fullWidthImage.closest("figure").classList.add("full-width");
-	});
+    document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
+        fullWidthImage.closest("figure").classList.add("full-width");
+    });
 
-	let fullWidthBlockMargin = "2.5ch";
-	let pageWidth = document.querySelector("html").clientWidth;
+    let fullWidthBlockMargin = "2.5ch";
+    let pageWidth = document.querySelector("html").clientWidth;
 
-	/*	Find all full-width blocks; set their position and size.
-		*/
-	document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
-		fullWidthBlock.removeAttribute("style");
-		fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
-		fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
-	});
+    /*  Find all full-width blocks; set their position and size.
+        */
+    document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
+        fullWidthBlock.removeAttribute("style");
+        fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+        fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
+    });
 
-	/*	If sidenotes exist, update sidenote positions.
-		*/
-	requestAnimationFrame(() => {
-		if (typeof window.GW == "undefined" ||
-			typeof GW.sidenotes == "undefined" ||
-			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-			GW.sidenotes.sidenoteDivs.length == 0)
-			return;
+    /*  If sidenotes exist, update sidenote positions.
+        */
+    requestAnimationFrame(() => {
+        if (typeof window.GW == "undefined" ||
+            typeof GW.sidenotes == "undefined" ||
+            GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+            GW.sidenotes.sidenoteDivs.length == 0)
+            return;
 
-			updateSidenotePositions();
-	});
+            updateSidenotePositions();
+    });
 }
 
 /*=-----------------=*/
@@ -241,4 +241,22 @@ document.querySelectorAll("header *, #page-metadata *").forEach(element => {
     */
 document.querySelectorAll(".footnote-back").forEach(backlink => {
     backlink.textContent += "\u{FE0E}";
+});
+
+/*  Set the display form of margin notes (margin vs. inline).
+ */
+function updateMarginNoteStyle() {
+    document.querySelectorAll(".marginnote").forEach(marginNote => {
+        if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches) {
+            marginNote.classList.add("inline");
+            marginNote.classList.remove("sidenote");
+        } else {
+            marginNote.classList.remove("inline");
+            marginNote.classList.add("sidenote");
+        }
+    });
+}
+doWhenPageLoaded (() => {
+    updateMarginNoteStyle();
+    GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(updateMarginNoteStyle);
 });
