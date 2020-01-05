@@ -896,6 +896,9 @@
   , ("docs/longevity/2019-decabo.pdf](https://www.gwern.net/docs/longevity/2019-decabo.pdf)", "/docs/longevity/2019-decabo.pdf")
   , ("docs/longewity/2019-decabo.pdf", "/docs/longevity/2019-decabo.pdf")
   , ("docs/longevity/2019-decabo.pdf」", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/longevity/2019-decabo.net", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/longevity/2019-debaco.pdf", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/loquartzngevity/2019-decabo.pdf", "/docs/longevity/2019-decabo.pdf")
   , ("docs/spacedrepet…", "/docs/spacedrepetition/index.html")
   , ("docs/psychology/2016-ferguson.pd", "/docs/psychology/2016-ferguson.pdf")
   , ("docs/music-ddissonância cognitivaistraction/2013-brodsky.pdf", "/docs/music-distraction/2013-brodsky.pdf")
@@ -914,4 +917,5 @@
   , ("docs/nicotine/2019-hajek.", "/docs/nicotine/2019-hajek.pdf")
   , ("docs/personal/rss-subscriptions", "/docs/personal/rss-subscriptions.opml")
   , ("docs/statistics/bias/1975-rosenthal-experimenterexpectancyeffects.pdf", "/docs/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf")
+  , ("docs/genetics/heritable/1997-rowe.pdf.", "/docs/genetics/heritable/1997-rowe.pdf")
  ]
