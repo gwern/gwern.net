@@ -899,6 +899,10 @@
   , ("docs/longevity/2019-decabo.net", "/docs/longevity/2019-decabo.pdf")
   , ("docs/longevity/2019-debaco.pdf", "/docs/longevity/2019-decabo.pdf")
   , ("docs/loquartzngevity/2019-decabo.pdf", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/longevity/2019-decabo.pdf?fbclid=IwAR0gBkmsGmq8e5Wy4IWtpYTJKTJZniLiZqzmmCocAC2JyZQpQf898RrvArs😉", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/longevity/2019-decabo.pdf&ved=2ahUKEwj8-8rz1vHmAhXsDbkGHRi-DWsQFjAAegQIARAB&usg=AOvVaw3wetTjnugKCL2sIYPjQeCI&cshid=1578406936233?fbclid=IwAR0EL3gxd7PSqTEb_So80MfxoWVnsDss7PJ-oqVfVyY_ba7XHQigsfvAm_0", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/longevity/2019-decabo.pdffiesta se vs s", "/docs/longevity/2019-decabo.pdf")
+
   , ("docs/spacedrepet…", "/docs/spacedrepetition/index.html")
   , ("docs/psychology/2016-ferguson.pd", "/docs/psychology/2016-ferguson.pdf")
   , ("docs/music-ddissonância cognitivaistraction/2013-brodsky.pdf", "/docs/music-distraction/2013-brodsky.pdf")
@@ -918,4 +922,9 @@
   , ("docs/personal/rss-subscriptions", "/docs/personal/rss-subscriptions.opml")
   , ("docs/statistics/bias/1975-rosenthal-experimenterexpectancyeffects.pdf", "/docs/statistics/bias/1976-rosenthal-experimenterexpectancyeffects.pdf")
   , ("docs/genetics/heritable/1997-rowe.pdf.", "/docs/genetics/heritable/1997-rowe.pdf")
+  , ("Danbooru2018）。我将在数据部分讨论它的优缺点，其中一个主要缺点是缺乏多样性：难以生成男性图像。下面所有的例子都是用这个工具生成的。我最初是在", "/Danbooru2018")
+  , ("docs/borges/1952-borges", "/docs/borges/1952-borges-thenightingaleofkeats.pdf")
+  , ("docs/iq/2006-dickerson.pdfhttps://www.gwern.net/docs/iq/2006-dickerson.pdf", "/docs/iq/2006-dickerson.pdf")
+  , ("Char-RNN", "/RNN-metadata")
+  , ("RNN-Metadata", "/RNN-metadata")
  ]
