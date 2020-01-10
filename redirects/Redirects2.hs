@@ -816,6 +816,7 @@
    , ("docs/genetics/heritable/1995-serpell-thedomesticdog", "/docs/genetics/heritable/1995-serpell-thedomesticdog.pdf")
    , ("docs/iq/2018-warne-2.pdfg", "/docs/iq/2018-warne-2.pdf")
    , ("docs/sociology/2987-murray-humanaccomplishment.pdf", "/docs/sociology/2003-murray-humanaccomplishment.pdf")
+   , ("docs/sociology/203-murray-humanaccomplishment", "/docs/sociology/2003-murray-humanaccomplishment.pdf")
    , ("GPT-2-Music", "/GPT-2-music")
    , ("gpt-2-music", "/GPT-2-music")
    , ("GPT-music", "/GPT-2-music")
@@ -902,7 +903,8 @@
   , ("docs/longevity/2019-decabo.pdf?fbclid=IwAR0gBkmsGmq8e5Wy4IWtpYTJKTJZniLiZqzmmCocAC2JyZQpQf898RrvArs😉", "/docs/longevity/2019-decabo.pdf")
   , ("docs/longevity/2019-decabo.pdf&ved=2ahUKEwj8-8rz1vHmAhXsDbkGHRi-DWsQFjAAegQIARAB&usg=AOvVaw3wetTjnugKCL2sIYPjQeCI&cshid=1578406936233?fbclid=IwAR0EL3gxd7PSqTEb_So80MfxoWVnsDss7PJ-oqVfVyY_ba7XHQigsfvAm_0", "/docs/longevity/2019-decabo.pdf")
   , ("docs/longevity/2019-decabo.pdffiesta se vs s", "/docs/longevity/2019-decabo.pdf")
-
+  , ("2019-decabo.pdf", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/longevity/2019?fbclid=IwAR0AotwhsWwzCxasZ2ylVEMjl_CEI8OtvIpieYMLo2UWhwuczY7ChPkuaMo", "/docs/longevity/2019-decabo.pdf")
   , ("docs/spacedrepet…", "/docs/spacedrepetition/index.html")
   , ("docs/psychology/2016-ferguson.pd", "/docs/psychology/2016-ferguson.pdf")
   , ("docs/music-ddissonância cognitivaistraction/2013-brodsky.pdf", "/docs/music-distraction/2013-brodsky.pdf")
@@ -927,4 +929,8 @@
   , ("docs/iq/2006-dickerson.pdfhttps://www.gwern.net/docs/iq/2006-dickerson.pdf", "/docs/iq/2006-dickerson.pdf")
   , ("Char-RNN", "/RNN-metadata")
   , ("RNN-Metadata", "/RNN-metadata")
+  , ("docs/genetic/heritable/2019-bai.pdf", "/docs/genetics/heritable/2019-bai.pdf")
+  , ("docs/genetics/heritabe", "/docs/genetics/heritable/index.html")
+  , ("docs/spacedrepetition/1916", "/docs/spacedrepetition/1916-murphy.pdf")
+  , ("indexnews", "/index")
  ]
