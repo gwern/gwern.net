@@ -192,36 +192,46 @@ section.collapse:target > .disclosure-button::before {
         0 0 5px #e00;
 }
 
-/*  Ellipsis or "Click to expand".
+/*  "Click to expand".
     */
-.collapse:not(:target) > .disclosure-button:not(:checked)::after {
+.collapse:not(:target) > .disclosure-button::after {
     width: 100%;
     position: absolute;
     text-align: center;
     color: #777;
     pointer-events: none;
-    content: "…";
-    font-size: 3em;
-    line-height: 0;
-    top: calc(100% - 18px);
+    content: "Click to expand";
+    font-size: 1em;
+    font-weight: bold;
+    color: #777;
     text-shadow:
          1px -1px 0 #fff,
         -1px  1px 0 #fff,
         -1px -1px 0 #fff,
          1px  1px 0 #fff;
+    top: calc(100% - 13px);
 }
-.collapse:not(:target) > .disclosure-button:not(:checked):hover::after {
-    content: "Click to expand";
-    font-size: 1em;
-    font-weight: bold;
+.collapse:not(:target) > .disclosure-button:hover::after {
     color: #444;
-    top: calc(100% - 10px);
+    text-shadow:
+         2px -2px 0 #fff,
+        -2px  2px 0 #fff,
+        -2px -2px 0 #fff,
+         2px  2px 0 #fff;
+}
+.collapse:not(:target) > .disclosure-button:checked::after {
+    content: "Click to collapse";
+}
+section.collapse:not(:target) > .disclosure-button:checked::after {
+    top: -6px;
+    text-align: right;
+    right: 24px;
 }
 :not(section).collapse:not(:target) > .disclosure-button:not(:checked)::after {
-    top: calc(100% - 20px);
+    top: calc(100% - 9px);
 }
-:not(section).collapse:not(:target) > .disclosure-button:not(:checked):hover::after {
-    top: calc(100% - 12px);
+:not(section).collapse:not(:target) > .disclosure-button:checked::after {
+    top: -7px;
 }
 .disclosure-button:not(:checked):hover {
     border: 1px dotted #777;
