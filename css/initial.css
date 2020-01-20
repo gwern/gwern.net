@@ -873,7 +873,6 @@ pre {
     background-color: #fafafa;
     cursor: text;
     max-height: calc(100vh - 8em);
-    overscroll-behavior: none;
 }
 pre code {
     display: block;
