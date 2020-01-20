@@ -966,4 +966,8 @@
   , ("docs/psychology/writing/1970-vernon-creativity.pdf overachievement", "/docs/psychology/writing/1970-vernon-creativity.pdf")
   , ("docs/spacedrepetition/2001-maquet.pdf.", "/docs/spacedrepetition/2001-maquet.pdf")
   , ("Replications", "/Replication")
+  , ("docs/sociology/1999-lee.pdf]", "/docs/sociology/1999-lee.pdf")
+  , ("Coin-flip.html", "/Coin-flip")
+  , ("docs/genetics/heritable/2019-bai.pdf https://jamanetwork.com/journals/jamapsychiatry/article-abstract/2737582", "/docs/genetics/heritable/2019-bai.pdf")
+  , ("Melatoniin", "/Melatonin")
  ]
