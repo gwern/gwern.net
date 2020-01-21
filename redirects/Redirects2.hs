@@ -622,6 +622,7 @@
    , ("docs/sr/2019-04-22-deepotwep-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
    , ("docs/sr/2019-04-22-darknet-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
    , ("docs/genetics/heritable/1965-scott-geneticsandthesocialbehaviourofthedog.pdf", "/docs/genetics/heritable/1965-scott-geneticsandthesocialbehaviorofthedog.pdf")
+   , ("docs/genetics/heritable/1965-scott geneticsandthesocialbehaviorofthedog.pdf", "/docs/genetics/heritable/1965-scott-geneticsandthesocialbehaviorofthedog.pdf")
    , ("docs/ai/2019-bashivan.pdf et un truc qui nous interesse pour notre modele a plus laurent", "/docs/ai/2019-bashivan.pdf")
    , ("docs/culture/2010dobelli.pdf", "/docs/culture/2010-dobelli.pdf")
    , ("About.pag", "/About.page")
@@ -969,5 +970,7 @@
   , ("docs/sociology/1999-lee.pdf]", "/docs/sociology/1999-lee.pdf")
   , ("Coin-flip.html", "/Coin-flip")
   , ("docs/genetics/heritable/2019-bai.pdf https://jamanetwork.com/journals/jamapsychiatry/article-abstract/2737582", "/docs/genetics/heritable/2019-bai.pdf")
+  , ("docs/genetics/heritable/2019-bai.pdf%20https://jamanetwork.com/journals/jamapsychiatry/article-abstract/2737582", "/docs/genetics/heritable/2019-bai.pdf")
   , ("Melatoniin", "/Melatonin")
+  , ("docs/sr/201dream9-04-22-deepdotweb-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
  ]
