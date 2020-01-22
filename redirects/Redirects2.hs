@@ -973,4 +973,10 @@
   , ("docs/genetics/heritable/2019-bai.pdf%20https://jamanetwork.com/journals/jamapsychiatry/article-abstract/2737582", "/docs/genetics/heritable/2019-bai.pdf")
   , ("Melatoniin", "/Melatonin")
   , ("docs/sr/201dream9-04-22-deepdotweb-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
+  , ("docs/rotten.com/library/bio/presidents/ ronald-reagan/index.html", "/docs/rotten.com/library/bio/presidents/ronald-reagan/index.html")
+  , ("docs/rotten.com/library/bio/presidents/ronald-reagan/index.html.", "/docs/rotten.com/library/bio/presidents/ronald-reagan/index.html")
+  , ("DNM-archives.", "/DNM-archives")
+  , ("doc[...]ndattraction20092014.html", "/docs/psychology/okcupid/raceandattraction20092014.html")
+  , ("doc/melatonin/2014-boergers.pdf", "/docs/melatonin/2014-boergers.pdf")
+  , ("docs/psychology/2019-letexier.pdf.", "/docs/psychology/2019-letexier.pdf")
  ]
