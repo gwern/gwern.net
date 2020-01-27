@@ -2478,7 +2478,7 @@
  , ("+silkroad", "/Silk-Road")
  , ("Spaced-repeti", "/Spaced-repetition")
  , ("haskell/haskell/Wikipedia-Archive-Bot", "/haskell/Wikipedia-Archive-Bot")
- , ("newsletter/2017/Site traffic", "/About#january-2017---july-2017")
+ , ("newsletter/2017/Site traffic", "/Traffic#january-2017---july-2017")
  , ("docs/rl/2017-silver.pdf(", "/docs/rl/2017-silver.pdf")
  , ("docs/rl/2017-silver.pdf)", "/docs/rl/2017-silver.pdf")
  , ("docs/rl/2017-silver", "/docs/rl/2017-silver.pdf")
