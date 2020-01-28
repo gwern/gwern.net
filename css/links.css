@@ -1007,7 +1007,7 @@
 /*  Archives */
 #markdownBody a[href$='.tar' i]::after,
 #markdownBody a[href$='.zip' i]::after,
-#markdownBody a[href$='.xz' i]::after,
+#markdownBody a[href$='.xz'  i]::after,
 #markdownBody a[href$='.img' i]::after,
 /*  Misc */
 #markdownBody a[href$='.ebt' i]::after,
@@ -1082,7 +1082,7 @@
 /*  Archives */
 #markdownBody a[href$='.tar' i]:hover::after,
 #markdownBody a[href$='.zip' i]:hover::after,
-#markdownBody a[href$='.xz' i]:hover::after,
+#markdownBody a[href$='.xz'  i]:hover::after,
 #markdownBody a[href$='.img' i]:hover::after,
 /*  Misc */
 #markdownBody a[href$='.ebt' i]:hover::after,
@@ -1189,7 +1189,7 @@
     */
 #markdownBody a[href$='.tar' i]::after,
 #markdownBody a[href$='.zip' i]::after,
-#markdownBody a[href$='.zip' i]::after,
+#markdownBody a[href$='.xz' i]::after,
 #markdownBody a[href$='.img' i]::after {
     background-image: url('/static/img/icons/archive.svg');
 }
