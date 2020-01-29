@@ -14890,4 +14890,17 @@
   - "The Cambist and Lord Iron: A Fairy Tale of Economics"
   - Daniel Abraham
   - '2007'
+  - ''
   - ! '<p>(<a href="https://en.wikipedia.org/wiki/The_Cambist_and_Lord_Iron">WP</a>; <a href="https://tvtropes.org/pmwiki/pmwiki.php/Literature/TheCambistAndLordIron">TVTropes</a>; <a href="http://lesswrong.com/lw/3d6/the_cambist_and_lord_iron_a_fairy_tale_of/">LW discussion</a>; <a href="http://www.lightspeedmagazine.com/fiction/the-cambist-and-lord-iron-a-fairy-tale-of-economics/">non-PDF version</a>) 2007 short story, set in a Renaissance-esque fantasy historical setting, featuring a cambist (a money-exchanger) who is set three dangerous tasks by a bored and dissolute aristocrat. The 3 challenges illustrate principles of economics:</p><ol type="1"><li>the <a href="https://en.wikipedia.org/wiki/Exchange_value">exchange</a> theory of <a href="https://en.wikipedia.org/wiki/Value_(economics)">value</a>: the value of something is what you can exchange it for in the market</li><li><a href="https://en.wikipedia.org/wiki/Revealed_preference">revealed preferences</a>: the choices individuals and groups reveal the true value set on things, regardless of what they may say</li><li><a href="https://en.wikipedia.org/wiki/Gains_from_trade">gains from trade</a>: a trade of 2 things, which remain unchanged, can make <em>both</em> parties better off</li></ol>'
+- - http://abcnotation.com/wiki/abc:standard:v2.1#xreference_number
+  - 'The abc music standard 2.1: section 3.1.1: <code>X:</code> - reference number'
+  - Chris Walshaw et al
+  - 2011-12
+  - ''
+  - ! '<p>The <code>X:</code> (reference number) field is used to assign to each tune within a tunebook a unique reference number (a positive integer), for example: <code>X:23</code>.</p><p>The <code>X:</code> field is also used to indicate the start of the tune (and hence the <a href="http://abcnotation.com/wiki/abc:standard:v2.1#tune_header_definition" title="abc:standard:v2.1 ↵" class="wikilink1">tune header</a>), so all tunes must start with an <code>X:</code> field and only one <code>X:</code> field is allowed per tune.</p><p>The <code>X:</code> field may be empty, although this is not recommended.</p><p><em> Recommendation for developers: </em> Software which writes <a href="http://abcnotation.com/wiki/abc:standard:v2.1#abc_file_definition" title="abc:standard:v2.1 ↵" class="wikilink1">abc files</a> is recommended to offer users the possibility to manage <code>X:</code> field numbering automatically. <abbr title="Graphical User Interface">GUI</abbr> applications may even hide the <code>X:</code> field from users although they should always allow the user access to the raw <a href="http://abcnotation.com/wiki/abc:standard:v2.1#abc_file_definition" title="abc:standard:v2.1 ↵" class="wikilink1">abc file</a>.</p>'
+- - /Faces#reversing-stylegan-to-control-modify-images
+  - 'Making Anime Faces With StyleGAN: Reversing StyleGAN To Control & Modify Images'
+  - Gwern Branwen
+  - 2019-03-24
+  - ''
+  - ! 'Discussion of how to modify existing images with GANs. There are several possibilities: train another NN to turn an image back into the original encoding; run blackbox search on encodings, repeatedly tweaking it to approximate a target face; or the whitebox approach, directly backpropagating through the model from the image <em>to</em> the encoding while holding the model fixed. All of these have been implemented for StyleGAN, and a combination works best. There are even GUIs for editing StyleGAN anime faces!'
