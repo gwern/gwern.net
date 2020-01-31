@@ -1009,6 +1009,5 @@
   , ("docs/rotten.com/library/history/huac/index.htm", "/docs/rotten.com/library/history/huac/index.html")
   , ("docs/statistics/bayes/1814-laplace-philosophicalessayonprobabilities-ch1probabilitiestestimonies.pdf", "/docs/statistics/bayes/1814-laplace-philosophicalessayonprobabilities-ch5probabilitiestestimonies.pdf")
   , ("docs/statistics/bayes/1814-laplace-philosophicalessayonprobabilities", "/docs/statistics/bayes/1814-laplace-philosophicalessayonprobabilities-ch5probabilitiestestimonies.pdf")
-  , ("docs/statistics/bayes/1814-laplace-philosophicalessayonprobabilities-ch1probabilitiestestimonies.pdf", "/docs/statistics/bayes/1814-laplace-philosophicalessayonprobabilities-ch5probabilitiestestimonies.pdf")
   , ("docs/ai/2019-toppol.pdf", "/docs/ai/2019-topol.pdf")
  ]
