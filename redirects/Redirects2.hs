@@ -1021,4 +1021,9 @@
   , ("Benter", "/docs/statistics/decision/1994-benter.pdf")
   , ("benter", "/docs/statistics/decision/1994-benter.pdf")
   , ("Searchreply", "/Search")
+  , ("docs/sociology/1981-gubaeffectiveevaluation.pdf", "/docs/sociology/1981-guba-effectiveevaluation.pdf")
+  , ("docs/genetics/heritable/2019-xing.pdf.", "/docs/genetics/heritable/2019-xing.pdf")
+  , ("docs/music-distraction-2019-gonzales.pdf", "/docs/music-distraction.2019-gonzales.pdf")
+  , ("Searc?fbclid=IwAR1J9DvAR7wMeL3rH0gVsx__JH6e4wOLepJAupoFVoILeqo8zXUD1y47tCk", "/Search")
+  , ("Searc", "/Search")
  ]
