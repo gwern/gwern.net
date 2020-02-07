@@ -146,6 +146,7 @@
    , ("docs/sr/docs/sr/2016-11-04-deepdotweb-belgianvendorarrestedinsufficientpostage.html", "/docs/sr/2016-11-04-deepdotweb-belgianvendorarrestedinsufficientpostage.html")
    , ("docs/sr/docs/sr/2017-04-07-deepdotweb-afterhoursentenced.html", "/docs/sr/2017-04-07-deepdotweb-afterhoursentenced.html")
    , ("docs/sr/docs/sr/2019-01-24-deepdotweb-dnmlistchangelog.html", "/docs/sr/2019-01-24-deepdotweb-dnmlistchangelog.html")
+   , ("docs/sr/2019-01-24-deepdotweb-dnmlistchanghydraruzxpnew4afelog.html", "/docs/sr/2019-01-24-deepdotweb-dnmlistchangelog.html")
    , ("docs/sr/docs/sr/2019-04-22-deepdotweb-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
    , ("docs/sr/2019-06-??-deepdotweb-dnmlist.html=", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
    , ("Drug-heurist", "/Drug-heuristics")
@@ -1037,4 +1038,7 @@
   , ("docs/music-distraction/2014.perham.pdf", "/docs/music-distraction/2014-perham.pdf")
   , ("wp-login.php%3Faction%3Dregister", "/index")
   , ("docs/ai/2019-07-22-gpt2-345m-taotehching-all-ch181.tar.xz", "/docs/ai/poetry/2019-07-22-gpt2-345m-taotehching-all-ch181.tar.xz")
+  , ("docs/bitcoin/2008-nakamotovox", "/docs/bitcoin/2008-nakamoto")
+  , ("docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html_", "/docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html")
+  , ("Spaced-repetition__", "/Spaced-repetition")
  ]
