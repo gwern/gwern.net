@@ -1035,5 +1035,5 @@
   , ("docs/catnip/2017-vanhaaften.pdfterminal santa luzia uberlandia xerox endereço", "/docs/catnip/2017-vanhaaften.pdf")
   , ("docs/co2/2015-stafford.pdf] in", "/docs/co2/2015-stafford.pdf")
   , ("docs/music-distraction/2014.perham.pdf", "/docs/music-distraction/2014-perham.pdf")
-  , ("wp-login.php?action=register", "/index")
+  , ("wp-login.php%3Faction%3Dregister", "/index")
  ]
