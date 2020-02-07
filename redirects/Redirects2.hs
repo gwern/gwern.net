@@ -1036,4 +1036,5 @@
   , ("docs/co2/2015-stafford.pdf] in", "/docs/co2/2015-stafford.pdf")
   , ("docs/music-distraction/2014.perham.pdf", "/docs/music-distraction/2014-perham.pdf")
   , ("wp-login.php%3Faction%3Dregister", "/index")
+  , ("docs/ai/2019-07-22-gpt2-345m-taotehching-all-ch181.tar.xz", "/docs/ai/poetry/2019-07-22-gpt2-345m-taotehching-all-ch181.tar.xz")
  ]
