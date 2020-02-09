@@ -1041,4 +1041,5 @@
   , ("docs/bitcoin/2008-nakamotovox", "/docs/bitcoin/2008-nakamoto")
   , ("docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html_", "/docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html")
   , ("Spaced-repetition__", "/Spaced-repetition")
+  , ("Docs/Statistics/Bayes/1995-Cavin.pdf.", "/docs/statistics/bayes/1995-cavin.pdf")
  ]
