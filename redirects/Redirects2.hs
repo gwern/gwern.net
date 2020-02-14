@@ -1049,4 +1049,5 @@
   , ("docs/sr/2018-tzanetakis.pdf http://linkinghub.elsevier.com/retrieve/pii/UzA5NTUzOT", "/docs/sr/2018-tzanetakis.pdf")
   , ("U3BhY2VkJT", "/index")
   , ("docs/psychology/2019-lim.pdftetracoricas y policoricas", "docs/psychology/2019-lim.pdf")
+  , ("static/robots.txt", "/robots.txt")
  ]
