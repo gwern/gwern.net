@@ -987,6 +987,7 @@
   , ("doc[...]ndattraction20092014.html", "/docs/psychology/okcupid/raceandattraction20092014.html")
   , ("doc/melatonin/2014-boergers.pdf", "/docs/melatonin/2014-boergers.pdf")
   , ("docs/psychology/2019-letexier.pdf.", "/docs/psychology/2019-letexier.pdf")
+  , ("does/psychology/2019-letexier.pdf", "/docs/psychology/2019-letexier.pdf")
   , ("statiic/imgg/icons/newyorktimes.svg", "/static/img/icons/newyorktimes.svg")
   , ("static/imgg/icons/newyorktimes.svg", "/static/img/icons/newyorktimes.svg")
   , ("Borges", "/docs/borges/index.html")
@@ -1042,4 +1043,10 @@
   , ("docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html_", "/docs/psychology/okcupid/howyourraceaffectsthemessagesyouget.html")
   , ("Spaced-repetition__", "/Spaced-repetition")
   , ("Docs/Statistics/Bayes/1995-Cavin.pdf.", "/docs/statistics/bayes/1995-cavin.pdf")
+  , ("docs/rotten.com/library/religion/Marian_Apparitions/index.html", "/docs/rotten.com/library/religion/marian-apparitions/index.html")
+  , ("docs/catnip/2017-espiniturbe.pdf.", "/docs/catnip/2017-espiniturbe.pdf")
+  , ("docs/longevity/2019-decabo.pd", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/sr/2018-tzanetakis.pdf http://linkinghub.elsevier.com/retrieve/pii/UzA5NTUzOT", "/docs/sr/2018-tzanetakis.pdf")
+  , ("U3BhY2VkJT", "/index")
+  , ("docs/psychology/2019-lim.pdftetracoricas y policoricas", "docs/psychology/2019-lim.pdf")
  ]
