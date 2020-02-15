@@ -1,7 +1,7 @@
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2019-11-21 18:14:53 gwern"
+// When:  Time-stamp: "2020-02-15 10:45:03 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -73,18 +73,14 @@ Extracts = {
             not 'https://www.gwern.net/docs/statistics/decision/2006-drescher-goodandreal.pdf',
             so we can't just use `target.href` for those.
             If it's a remote URL, then it's fine.
-            */
-        const canonicalHref = target.href.startsWith("https://www.gwern.net/") ? target.pathname.substr(1)+target.hash : target.href;
-        const hashPromise = crypto.subtle.digest('SHA-1', Extracts.encoder.encode(canonicalHref));
-        hashPromise.then(async (linkURLArrayBuffer) => {
-            const linkURLHash = Array.from(new Uint8Array(linkURLArrayBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-            let imageWidth = target.dataset.popupImageWidth + "px";
-            let imageHeight = target.dataset.popupImageHeight + "px";
-            Extracts.popup.innerHTML = `<div class='popup-screenshot'>` +
-                `<a alt='Screenshot of page at ${target.href}' title='${target.href}\n[Opens in new window]' target='_new' href='${target.href}'>` +
-                `<img src='${Extracts.previewsPath}${linkURLHash}.${Extracts.previewsFileExtension}' style='width:${imageWidth}; height:${imageHeight};'>` +
-                `</a></div>`;
-        });
+        */
+        let linkURL = target.dataset.popupImageOriginalUrl;
+        let imageWidth = target.dataset.popupImageWidth + "px";
+        let imageHeight = target.dataset.popupImageHeight + "px";
+        Extracts.popup.innerHTML = `<div class='popup-screenshot'>` +
+            `<a alt='Screenshot of page at ${target.href}' title='${target.href}\n[Opens in new window]' target='_new' href='${target.href}'>` +
+            `<img src='${Extracts.previewsPath}${linkURL}.${Extracts.previewsFileExtension}' style='width:${imageWidth}; height:${imageHeight};'>` +
+            `</a></div>`;
         return "";
     },
     sectionEmbedForTarget: (target) => {
