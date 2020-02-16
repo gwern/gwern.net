@@ -1050,4 +1050,6 @@
   , ("U3BhY2VkJT", "/index")
   , ("docs/psychology/2019-lim.pdftetracoricas y policoricas", "docs/psychology/2019-lim.pdf")
   , ("static/robots.txt", "/robots.txt")
+  , ("docs/psychology/okcupid/shortermenaremorelikelytobegay.Dunno", "/docs/psychology/okcupid/shortermenaremorelikelytobegay.html")
+  , ("Banbooru2019", "/Danbooru2019")
  ]
