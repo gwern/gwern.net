@@ -1052,4 +1052,7 @@
   , ("static/robots.txt", "/robots.txt")
   , ("docs/psychology/okcupid/shortermenaremorelikelytobegay.Dunno", "/docs/psychology/okcupid/shortermenaremorelikelytobegay.html")
   , ("Banbooru2019", "/Danbooru2019")
+  , ("Danbooru2018), crop the faces using [lbpcascade_animeface](https://github.com/nagadomi/lbpcascade_animeface", "/Danbooru2018")
+  , ("docs/rotten.com/library/sex/watersports/index.htmlhorror porn pissing woman", "/docs/rotten.com/library/sex/watersports/index.html")
+  , ("Search.age", "/Search.page")
  ]
