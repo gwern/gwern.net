@@ -1,7 +1,7 @@
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-02-15 10:45:03 gwern"
+// When:  Time-stamp: "2020-02-17 16:44:42 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -38,18 +38,17 @@ Extracts = {
     popupBreathingRoomY: 16.0,
     popup: null,
     encoder: new TextEncoder(),
-    previewsPath: "/static/previews/",
-    previewsFileExtension: "png",
     isMobileMediaQuery: matchMedia("not screen and (hover:hover) and (pointer:fine)"),
     extractForTarget: (target) => {
         var doi = "";
+        var archive = (target.dataset.urlOriginal != undefined) ? ` <span class="originalURL"><code>[<a href="${target.dataset.urlOriginal}" title="${target.dataset.popupTitle} (original URL for local gwern.net mirror)" alt="Original URL for this archived link; may be broken.">URL</a>]</a></code></span>` : ""
         if (target.dataset.popupDoi != undefined) {
             doi = `; <a href="https://ricon.dev/citations_for_doi?doi=${target.dataset.popupDoi}" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Semantic Scholar">citations</a>`; } else if (target.href.includes("pdf"))
         { doi = `; <a href="https://ricon.dev/citations_for_title?title=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' by title in Semantic Scholar">citations</a>`; } else {
                 doi = `; <a href="https://www.google.com/search?num=100&q=link%3A${target.href}" target='_new' title="Links to this page '${target.dataset.popupTitle}' in Google">citations</a>`; }
 
         return `<div class='popup-extract' onclick='parentNode.remove()'>` +
-                    `<p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a><a class='title-link' target='_new' href='${target.href}' title='${target.href}'>${target.dataset.popupTitle || ""}</a></p>` +
+                    `<p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a><a class='title-link' target='_new' href='${target.href}' title='${target.href}'>${target.dataset.popupTitle || ""}</a>` + archive + `</p>` +
                     `<p class='data-field author-plus-date'>${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}</p>` +
                     `<div class='data-field abstract' onclick='parentNode.remove()'>${target.dataset.popupAbstract || ""}</div>` +
                 `</div>`;
@@ -79,7 +78,7 @@ Extracts = {
         let imageHeight = target.dataset.popupImageHeight + "px";
         Extracts.popup.innerHTML = `<div class='popup-screenshot'>` +
             `<a alt='Screenshot of page at ${target.href}' title='${target.href}\n[Opens in new window]' target='_new' href='${target.href}'>` +
-            `<img src='${Extracts.previewsPath}${linkURL}.${Extracts.previewsFileExtension}' style='width:${imageWidth}; height:${imageHeight};'>` +
+            `<img src='${linkURL}' style='width:${imageWidth}; height:${imageHeight};'>` +
             `</a></div>`;
         return "";
     },
@@ -515,6 +514,11 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #markdownBody #popupdiv .popup-screenshot a img {
     cursor: pointer;
 }
+
+#popupdiv .originalURL {
+  font-size: 75%;
+}
+
 </style>`;
 
 if (document.readyState == "complete") {
