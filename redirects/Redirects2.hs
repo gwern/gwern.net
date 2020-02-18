@@ -1057,4 +1057,12 @@
   , ("Search.age", "/Search.page")
   , ("docs/biology/aboutidx.html" , "/docs/biology/index.html")
   , ("newsletter/2019/docs/www/danluu.com/2f03db95954c6aae4c9e2273ffac2ee574a113cb.html", "https://danluu.com/term-latency/")
+  , ("docs/genetics/editing/2019-anzalone.pdf&ved=2ahUKEwiOqJqbi9vnAhWtJzQIHYTgCjsQFjAQegQICBAB&usg=AOvVaw3ynnQMoiRhqDcwf9lVa23X&cshid=1582028506912", "/docs/genetics/editing/2019-anzalone.pdf")
+  , ("docs/genetics/editing/2019-anzalone.pdf&ved=2ahUKEwiOqJqbi9vnAhWtJzQIHYTgCjsQFjAQegQICBAB&usg=AOvVaw3ynnQMoiRhqDcwf9lVa23X&cshid=1582028582189", "/docs/genetics/editing/2019-anzalone.pdf")
+  , ("docs/music-distraction/1989-salame.pdf citation", "/docs/music-distraction/1989-salame.pdf")
+  , ("newsletter/2019/docs/www/old.reddit.com/4af39bdcabcf613916ab4b8077dc0f09e83c2b58.html", "/docs/www/old.reddit.com/4af39bdcabcf613916ab4b8077dc0f09e83c2b58.html")
+  , ("assets/20171109/biped/learning_to_fall.gif", "http://blog.otoro.net/assets/20171109/biped/learning_to_fall.gif")
+  , ("blog/chasing-10x-leveraging-a-poor-memory-in-software-engineering/index.html", "https://senrigan.io/blog/chasing-10x-leveraging-a-poor-memory-in-software-engineering/")
+  , ("nicotene", "/Nicotine")
+  , ("poetry", "/GPT-2-poetry")
  ]
