@@ -1055,4 +1055,6 @@
   , ("Danbooru2018), crop the faces using [lbpcascade_animeface](https://github.com/nagadomi/lbpcascade_animeface", "/Danbooru2018")
   , ("docs/rotten.com/library/sex/watersports/index.htmlhorror porn pissing woman", "/docs/rotten.com/library/sex/watersports/index.html")
   , ("Search.age", "/Search.page")
+  , ("docs/biology/aboutidx.html" , "/docs/biology/index.html")
+  , ("newsletter/2019/docs/www/danluu.com/2f03db95954c6aae4c9e2273ffac2ee574a113cb.html", "https://danluu.com/term-latency/")
  ]
