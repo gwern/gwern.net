@@ -162,19 +162,6 @@ document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
     });
 });
 
-/*  Inject spans to contain curly quotes within <q> elements.
-    */
-document.querySelectorAll("q").forEach(q => {
-    let openQuote = `<span class='quote-mark open'>${q.innerHTML.substring(0, 1)}</span>`;
-    let closeQuote = `<span class='quote-mark close'>${q.innerHTML.substring(q.innerHTML.length - 1)}</span>`;
-    q.innerHTML = q.innerHTML.substring(1, q.innerHTML.length - 1);
-    if (q.parentElement.tagName == "A" && q.parentElement.childNodes.length == 1) {
-        q.parentElement.outerHTML = `${openQuote}${q.parentElement.outerHTML}${closeQuote}`;
-    } else {
-        q.outerHTML = `${openQuote}${q.outerHTML}${closeQuote}`;
-    }
-});
-
 /*  Wrap all captions in figures in a span.
     */
 getAllCaptionedMedia().forEach(captionedMedia => {
