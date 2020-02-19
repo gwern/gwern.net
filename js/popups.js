@@ -1,7 +1,9 @@
+
+
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-02-17 16:44:42 gwern"
+// When:  Time-stamp: "2020-02-17 20:20:31 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -41,16 +43,55 @@ Extracts = {
     isMobileMediaQuery: matchMedia("not screen and (hover:hover) and (pointer:fine)"),
     extractForTarget: (target) => {
         var doi = "";
-        var archive = (target.dataset.urlOriginal != undefined) ? ` <span class="originalURL"><code>[<a href="${target.dataset.urlOriginal}" title="${target.dataset.popupTitle} (original URL for local gwern.net mirror)" alt="Original URL for this archived link; may be broken.">URL</a>]</a></code></span>` : ""
+        var archive = (target.dataset.urlOriginal != undefined) ?
+                        (`<span class="originalURL"><code>[` +
+                         `<a href="${target.dataset.urlOriginal}" ` +
+                         `title="${target.dataset.popupTitle} (original URL for local gwern.net mirror)" ` +
+                         `alt="Original URL for this archived link; may be broken.">URL</a>` +
+                         `]</code></span>`) :
+                         "";
         if (target.dataset.popupDoi != undefined) {
-            doi = `; <a href="https://ricon.dev/citations_for_doi?doi=${target.dataset.popupDoi}" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Semantic Scholar">citations</a>`; } else if (target.href.includes("pdf"))
-        { doi = `; <a href="https://ricon.dev/citations_for_title?title=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' by title in Semantic Scholar">citations</a>`; } else {
-                doi = `; <a href="https://www.google.com/search?num=100&q=link%3A${target.href}" target='_new' title="Links to this page '${target.dataset.popupTitle}' in Google">citations</a>`; }
+            doi = `; ` +
+                  `<a href="https://ricon.dev/citations_for_doi?doi=${target.dataset.popupDoi}" ` +
+                  `target='_new' ` +
+                  `title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Semantic Scholar">` +
+                  `citations</a>`;
+        } else if (target.href.includes("pdf")) {
+            doi = `; ` +
+                  `<a href="https://ricon.dev/citations_for_title?title=%22${target.dataset.popupTitle}%22" ` +
+                  `target='_new' ` +
+                  `title="Reverse citations of the paper '${target.dataset.popupTitle}' by title in Semantic Scholar">` +
+                  `citations</a>`;
+        } else {
+            doi = `; ` +
+                  `<a href="https://www.google.com/search?num=100&q=link%3A${target.href}" ` +
+                  `target='_new' ` +
+                  `title="Links to this page '${target.dataset.popupTitle}' in Google">` +
+                  `citations</a>`;
+        }
 
         return `<div class='popup-extract' onclick='parentNode.remove()'>` +
-                    `<p class='data-field title'><a class='icon' target='_new' href='${target.href}' title='Open this reference in a new window'></a><a class='title-link' target='_new' href='${target.href}' title='${target.href}'>${target.dataset.popupTitle || ""}</a>` + archive + `</p>` +
-                    `<p class='data-field author-plus-date'>${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}</p>` +
-                    `<div class='data-field abstract' onclick='parentNode.remove()'>${target.dataset.popupAbstract || ""}</div>` +
+                    `<p class='data-field title'>` +
+                        `<a
+                            class='icon'
+                            target='_new'
+                            href='${target.href}'
+                            title='Open this reference in a new window'
+                             ></a>
+                         <a
+                            class='title-link'
+                            target='_new'
+                            href='${target.href}'
+                            title='${target.href}'
+                                >${target.dataset.popupTitle || ""}</a>` +
+                         archive +
+                    `</p>` +
+                    `<p class='data-field author-plus-date'>` +
+                        `${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}` +
+                    `</p>` +
+                    `<div class='data-field abstract' onclick='parentNode.remove()'>` +
+                        `${target.dataset.popupAbstract || ""}` +
+                    `</div>` +
                 `</div>`;
     },
     youtubeId: (url) => {
@@ -76,11 +117,19 @@ Extracts = {
         let linkURL = target.dataset.popupImageOriginalUrl;
         let imageWidth = target.dataset.popupImageWidth + "px";
         let imageHeight = target.dataset.popupImageHeight + "px";
-        Extracts.popup.innerHTML = `<div class='popup-screenshot'>` +
-            `<a alt='Screenshot of page at ${target.href}' title='${target.href}\n[Opens in new window]' target='_new' href='${target.href}'>` +
-            `<img src='${linkURL}' style='width:${imageWidth}; height:${imageHeight};'>` +
-            `</a></div>`;
-        return "";
+        return `<div class='popup-screenshot'>` +
+                    `<a
+                        alt='Screenshot of page at ${target.href}'
+                        title='${target.href}\n[Opens in new window]'
+                        target='_new'
+                        href='${target.href}'
+                            >` +
+                    `<img
+                        src='${linkURL}'
+                        style='width:${imageWidth}; height:${imageHeight};'
+                            >` +
+                    `</a>` +
+                `</div>`;
     },
     sectionEmbedForTarget: (target) => {
         let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
@@ -155,7 +204,7 @@ Extracts = {
         clearTimeout(Extracts.popupDespawnTimer);
         clearTimeout(Extracts.popupSpawnTimer);
 
-//      document.querySelector("html").style.transform = "translateX(0)";
+//    document.querySelector("html").style.transform = "translateX(0)";
 
         Extracts.popupSpawnTimer = setTimeout(() => {
             target.onclick = () => {};
@@ -222,9 +271,9 @@ Extracts = {
             Extracts.popup.addEventListener("mouseover", Extracts.divover);
             Extracts.popup.addEventListener("mouseout", Extracts.targetout);
 
-            //  Wait for the “naive” layout to be completed, and then...
+            //  Wait for the "naive" layout to be completed, and then...
             requestAnimationFrame(() => {
-                /*  How much “breathing room” to give the target (i.e., offset of
+                /*  How much "breathing room" to give the target (i.e., offset of
                     the popup).
                     */
                 var popupBreathingRoom = {
@@ -233,7 +282,7 @@ Extracts = {
                 };
 
                 /*  This is the width and height of the popup, as already determined
-                    by the layout system, and taking into account the popup’s content,
+                    by the layout system, and taking into account the popupâ€™s content,
                     and the max-width, min-width, etc., CSS properties.
                     */
                 var popupIntrinsicWidth = Extracts.popup.clientWidth;
@@ -300,7 +349,7 @@ Extracts = {
 
                 /*  Does the popup extend past the right edge of the container?
                     If so, move it left, until its right edge is flush with
-                    the container’s right edge.
+                    the container's right edge.
                     */
                 if (provisionalPopupXPosition + popupIntrinsicWidth > popupContainerViewportRect.width) {
                     provisionalPopupXPosition -= provisionalPopupXPosition + popupIntrinsicWidth - popupContainerViewportRect.width;
@@ -308,7 +357,7 @@ Extracts = {
 
                 /*  Now (after having nudged the popup left, if need be),
                     does the popup extend past the *left* edge of the container?
-                    Make its left edge flush with the container’s left edge.
+                    Make its left edge flush with the container's left edge.
                     */
                 if (provisionalPopupXPosition < 0) {
                     provisionalPopupXPosition = 0;
@@ -338,7 +387,7 @@ Extracts = {
             }, Extracts.popupFadeoutDuration);
         }, Extracts.popupFadeoutDelay);
     },
-    //  The “user moved mouse back into popup” mouseover event.
+    //  The "user moved mouse back into popup" mouseover event.
     divover: (event) => {
         clearTimeout(Extracts.popupFadeTimer);
         clearTimeout(Extracts.popupDespawnTimer);
