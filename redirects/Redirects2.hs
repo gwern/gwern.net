@@ -1065,4 +1065,7 @@
   , ("blog/chasing-10x-leveraging-a-poor-memory-in-software-engineering/index.html", "https://senrigan.io/blog/chasing-10x-leveraging-a-poor-memory-in-software-engineering/")
   , ("nicotene", "/Nicotine")
   , ("poetry", "/GPT-2-poetry")
+  , ("links.page", "/Links")
+  , ("newsletter/2020/1", "/newsletter/2020/01")
+  , ("tracker?aat=1", "/index")
  ]
