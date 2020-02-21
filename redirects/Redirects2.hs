@@ -1068,4 +1068,5 @@
   , ("links.page", "/Links")
   , ("newsletter/2020/1", "/newsletter/2020/01")
   , ("tracker?aat=1", "/index")
+  , ("images/iq/oliviera-2012-hydrocephaly-retracted-mislabeledimage.jpg", "/images/iq/oliveira-2012-hydrocephaly-retracted-mislabeledimage.jpg")
  ]
