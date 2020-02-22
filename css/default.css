@@ -385,7 +385,7 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
     color: #485555;
 }
 #markdownBody section > :first-child a::after {
-    content: "\00B6";
+    content: "\00B6"; /* Pilcrow sign: ¶ */
     font-size: 0.75em;
     position: relative;
     top: -0.2em;
