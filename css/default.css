@@ -1751,6 +1751,21 @@ p.hang {
     }
 }
 
+/*****************/
+/* MULTI-COLUMNS */
+/*****************/
+/* Inspired by Markdeep (https://casual-effects.com/markdeep/features.md.html#multiplecolumns); limited multi-column support as a div class annotation */
+/* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /DNM-archives#overall-coverage or /Replication */
+/* Uses CSS3 columns: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts https://www.caniuse.com/#feat=multicolumn */
+/* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
+#markdownBody .columns > ul, #markdownBody .columns > ol {
+  column-width: 30ch;
+  column-gap: 6ch;
+}
+#markdownBody .columns > ul li, #markdownBody .columns > ol li {
+  text-align: left;
+}
+
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
