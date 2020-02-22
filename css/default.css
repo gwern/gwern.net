@@ -1766,6 +1766,109 @@ p.hang {
   text-align: left;
 }
 
+/***************/
+/* ADMONITIONS */
+/***************/
+/* Highlighted boxes: 'admonitions' are small break-out boxes with notes, tips, warnings, etc. for the reader.  */
+/* These are particularly useful in didactic technical writing, where there are many ways to slip up while using or coding something. */
+/* Available (in increasing order of minatoriness): 'tip', 'note', 'warning', 'error'. */
+/* Based on Markdeep's implementation: https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions */
+/* and modified to grayscale (increasing intensity == increasing warning) for gwern.net. */
+/* Usage examples: */
+/* - <div class="admonition tip"><div class="admonition-title">Tip title (optional)</div> text</div> */
+/* - <div class="admonition note"><div class="admonition-title">Note title (*)</div> text</div> */
+/* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
+/* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
+.admonition {
+ position:relative;
+ margin:1em 0;
+ padding:.4rem 1rem;
+ border-radius:.2rem;
+ border-left:2.5rem solid rgb(150, 150, 150);
+ background-color:rgb(216, 216, 216)
+}
+.admonition.note::before {
+ content:"\261E"; /* U+261E ☞ WHITE RIGHT POINTING INDEX */
+ font-weight:bold;
+ font-size:200%;
+ position:relative;
+ top:-10px;
+ left:-2.95rem;
+ display:block;
+ width:0;
+ height:0;
+}
+.admonition-title {
+ font-weight:bold;
+ border-bottom:solid 1px rgba(150, 150, 150);
+ padding-bottom:4px;
+ margin-bottom:4px;
+ margin-left: -1rem;
+ padding-left:1rem;
+ margin-right:-1rem;
+}
+.admonition.tip {
+ border-left:2.5rem solid rgba(216, 216, 216);
+ background-color:rgba(250, 250, 250);
+}
+.admonition.tip::before {
+ content:"\24d8"; /* Circled Latin Small Letter 'ⓘ' */
+ font-weight:bold;
+ font-size:170%;
+ position:relative;
+ top:-8px;
+ left:-2.95rem;
+ display:block;
+ width:0;
+ height:0
+}
+.admonition.warn,
+.admonition.warning {
+ border-left:2.5rem solid rgba(90, 90, 90);
+ background-color:rgba(150, 150, 150);
+ color: white;
+}
+.admonition.warn::before,
+.admonition.warning::before {
+ content:"\26A0"; /* Warning Sign '⚠' */
+ font-weight:bold;
+ font-size:170%;
+ position:relative;
+ top:-5px;
+ color: white;
+ left:-2.95rem;
+ display:block;
+ width:0;
+ height:0;
+}
+.admonition.warn>.admonition-title,
+.admonition.warning>.admonition-title {
+ border-color:rgba(90, 90, 90);
+}
+.admonition.error {
+ border-left: 2.5rem solid rgba(45, 45, 45);
+ background-color:rgba(90, 90, 90);
+       color: white;
+}
+.admonition.error>.admonition-title {
+ border-color:rgba(45, 45, 45);
+}
+.admonition.error::before {
+ content: "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
+ font-family:"Arial";
+ font-size: 250%;
+ position:relative;
+ color:white;
+ top:2px;
+ left:-3rem;
+ display:block;
+ width:0;
+ height:0
+}
+.admonition p:last-child {
+ margin-bottom:0
+}
+
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
