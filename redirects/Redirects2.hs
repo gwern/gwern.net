@@ -1074,8 +1074,9 @@
   , ("docs/www/reddit.com/2ba72007b23422f532f93511f38a2ba1c5afe3c7.html", "https://www.reddit.com/r/SubSimulatorGPT2Meta/comments/ccvspt/update_experimenting_with_generating_hybrid/")
   , ("SearchResults.jsp?q=securities+regulation", "/index")
   , ("DNM-archives&lt", "/DNM-archives")
-  , ("docs/iq/1992-shurkin-termA basic principle governing operant conditioning is that a. behaviors are controlled by their consequences b. animals can only be conditioned to perform behaviors that appear spontaneously c. for operant conditioning to occur, a conditioned stimulus must precede an unconditioned stimulus d. behaviors are controlled by internal causesanskids.pdf", "/docs/iq/1992-shurkin-termanskids.pdf")
   , ("docs/www/fivethirtyeight.com/bc564ad2036c7dee26bf7c670ea3bc95116bea8d.htmlscheme=https&postMessageOrigin=https://www.gwern.net/docs/www/fivethirtyeight.com/bc564ad2036c7dee26bf7c670ea3bc95116bea8d.html&config=PROD&logLevel=INFO&topHost=www.gwern.net&cssOverride=https://fivethirtyeight.com/wp-content/themes/espn-fivethirtyeight/assets/css/oneid.min.css&responderPage=https://fivethirtyeight.com/oneid-responder&buildId=16ff932d35f", "/docs/www/fivethirtyeight.com/bc564ad2036c7dee26bf7c670ea3bc95116bea8d.html")
   , ("docs/www/neomarxisme.com/.http://neomarxisme.com/wdmwordpress/index.html?p=88", "http://neomarxisme.com/wdmwordpress/?p=88")
   , ("flexible", "/About#design")
+  , ("docs/longevity/2019-decabo.pdf%E2%80%AC", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/longevity/2019-decabo.pdf%E2%80%AC?fbclid=IwAR0fgZ07Ju5O9IKpUyfTgRFK67S1Mnqnx6r84-uX6N64THchjS1yedHJfMw", "/docs/longevity/2019-decabo.pdf")
  ]
