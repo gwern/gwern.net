@@ -1780,93 +1780,109 @@ p.hang {
 /* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
 /* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
 .admonition {
- position:relative;
- margin:1em 0;
- padding:.4rem 1rem;
- border-radius:.2rem;
- border-left:2.5rem solid rgb(150, 150, 150);
- background-color:rgb(216, 216, 216)
-}
-.admonition.note::before {
- content:"\261E"; /* U+261E ☞ WHITE RIGHT POINTING INDEX */
- font-weight:bold;
- font-size:200%;
- position:relative;
- top:-10px;
- left:-2.95rem;
- display:block;
- width:0;
- height:0;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-size: 0.875em;
+    position: relative;
+    margin: 2em 0 1.5em 0;
+    padding: 0.75em 1.25em 0.875em 1.125em;
+    border-left: 2.5rem solid #969696;
+    background-color: #d8d8d8;
 }
 .admonition-title {
- font-weight:bold;
- border-bottom:solid 1px rgba(150, 150, 150);
- padding-bottom:4px;
- margin-bottom:4px;
- margin-left: -1rem;
- padding-left:1rem;
- margin-right:-1rem;
+    font-weight: bold;
+    padding-bottom: 0.625em;
+    margin-bottom: 0.625em;
+}
+.admonition-title::after {
+    content: "";
+    width: 100%;
+    height: 1px;
+    background-color: #969696;
+    top: 2.875em;
+    left: 0;
+    position: absolute;
 }
 .admonition.tip {
- border-left:2.5rem solid rgba(216, 216, 216);
- background-color:rgba(250, 250, 250);
-}
-.admonition.tip::before {
- content:"\24d8"; /* Circled Latin Small Letter 'ⓘ' */
- font-weight:bold;
- font-size:170%;
- position:relative;
- top:-8px;
- left:-2.95rem;
- display:block;
- width:0;
- height:0
+    border-left-color: #d8d8d8;
+    background-color: #fafafa;
 }
 .admonition.warn,
 .admonition.warning {
- border-left:2.5rem solid rgba(90, 90, 90);
- background-color:rgba(150, 150, 150);
- color: white;
+    border-left-color: #5a5a5a;
+    background-color: #969696;
+    color: #fff;
+}
+.admonition.warn > .admonition-title::after,
+.admonition.warning > .admonition-title::after {
+    background-color: #5a5a5a;
+}
+.admonition.error {
+    border-left-color: #2d2d2d;
+    background-color: #5a5a5a;
+    color: #fff;
+}
+.admonition.error > .admonition-title::after {
+    background-color: #2d2d2d;
+}
+
+.admonition.note::before,
+.admonition.tip::before,
+.admonition.warn::before,
+.admonition.warning::before,
+.admonition.error::before {
+    font-weight: bold;
+    width: 2.5rem;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 100%;
+    text-align: center;
+}
+
+.admonition.note::before {
+    content: "\261E"; /* White Right Pointing Index '☞' (U+261E)  */
+    font-size: 1.875em;
+    color: #fff;
+    padding: 0.1em 0 0 0;
+}
+.admonition.tip::before {
+    content: "\24d8"; /* Circled Latin Small Letter 'ⓘ' (U+24D8) */
+    font-size: 1.7em;
+    top: -8px;
+    left: -2.95rem;
 }
 .admonition.warn::before,
 .admonition.warning::before {
- content:"\26A0"; /* Warning Sign '⚠' */
- font-weight:bold;
- font-size:170%;
- position:relative;
- top:-5px;
- color: white;
- left:-2.95rem;
- display:block;
- width:0;
- height:0;
-}
-.admonition.warn>.admonition-title,
-.admonition.warning>.admonition-title {
- border-color:rgba(90, 90, 90);
-}
-.admonition.error {
- border-left: 2.5rem solid rgba(45, 45, 45);
- background-color:rgba(90, 90, 90);
-       color: white;
-}
-.admonition.error>.admonition-title {
- border-color:rgba(45, 45, 45);
+    content: "\26A0"; /* Warning Sign '⚠' (U+26A0) */
+    font-size: 1.75em;
+    color: #fff;
+    padding: 0.25em 0 0 0;
 }
 .admonition.error::before {
- content: "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
- font-family:"Arial";
- font-size: 250%;
- position:relative;
- color:white;
- top:2px;
- left:-3rem;
- display:block;
- width:0;
- height:0
+    content:  "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
+    font-size: 2.25em;
+    color: #fff;
 }
+
 .admonition p:last-child {
- margin-bottom:0
+    margin-bottom: 0
+}
+
+.admonition code {
+    background-color: transparent;
+    border: none;
+    padding-left: 0;
+    font-size: unset;
+}
+
+article > :not(#TOC) .admonition a:link {
+    text-shadow: none;
+    color: currentColor;
+    background-image: none;
+    text-decoration: underline;
+}
+article > :not(#TOC) .admonition a:hover {
+    text-decoration: dotted underline;
 }
 
 /*******************************/
