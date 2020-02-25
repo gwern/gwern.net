@@ -1079,4 +1079,5 @@
   , ("flexible", "/About#design")
   , ("docs/longevity/2019-decabo.pdf%E2%80%AC", "/docs/longevity/2019-decabo.pdf")
   , ("docs/longevity/2019-decabo.pdf%E2%80%AC?fbclid=IwAR0fgZ07Ju5O9IKpUyfTgRFK67S1Mnqnx6r84-uX6N64THchjS1yedHJfMw", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/https://www.gwern.net/docs/longevity/2019-decabo.pdf", "/docs/longevity/2019-decabo.pdf")
  ]
