@@ -33,6 +33,28 @@
     opacity: 0.55;
 }
 
+/* If a link has an automatic or custom link annotation (eg a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
+/* so users don't get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */
+/* At some point, if enough links get annotated & annotation is the default, we might flip this to be a warning for non-annotated links. */
+/* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
+body:not(.siteIndex) #markdownBody a.docMetadata {
+  position: relative;
+  padding: 0 0 0 1ch;
+  margin: 0 0 0 0.25ch;
+}
+body:not(.siteIndex) a.docMetadata::before {
+  content: "\25E4"; /* '◤' U+25E4 Black Upper Left Triangle */
+  z-index: -1;
+  position: absolute;
+  left: 1px;
+  bottom: 1em;
+  text-indent: 0;
+  font-size: 50%;
+  opacity: 0.65;
+  font-style: normal;
+  position: static; /* avoid line-breaking putting it on a different line */
+}
+
 /* TEXTUAL PER-DOMAIN LINK ICONS: */
 /* Common style */
 #markdownBody a[href*="17th-angel.tumblr.com"]::after,
