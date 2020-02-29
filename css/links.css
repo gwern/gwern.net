@@ -52,7 +52,6 @@ body:not(.siteIndex) a.docMetadata::before {
   font-size: 50%;
   opacity: 0.65;
   font-style: normal;
-  position: static; /* avoid line-breaking putting it on a different line */
 }
 
 /* TEXTUAL PER-DOMAIN LINK ICONS: */
