@@ -1102,4 +1102,10 @@
   , ("Modafinil]", "/Modafinil")
   , ("newsletter/13", "/tags/newsletter")
   , ("images/1737-bayle-dictionary-vol4-pg901.jpg", "/images/design/1737-bayle-dictionary-vol4-pg901.jpg")
+  , ("djhshih/argparser/src/master/index.html", "https://bitbucket.org/djhshih/argparser/src/master/")
+  , ("improvenets", "/Improvements")
+  , ("improvents", "/Improvements")
+  , ("improvent", "/Improvements")
+  , ("lllyasviel/style2paints", "https://github.com/lllyasviel/style2paints")
+  , ("refs", "/index")
  ]
