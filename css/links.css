@@ -39,21 +39,15 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
-    body:not(.siteIndex) #markdownBody a.docMetadata {
-        position: relative;
-        padding: 0 0 0 1ch;
-        margin: 0 0 0 0.25ch;
-    }
     body:not(.siteIndex) a.docMetadata::before {
-        content: "\25E4"; /* '◤' U+25E4 Black Upper Left Triangle */
-        z-index: -1;
-        position: absolute;
-        left: 1px;
-        bottom: 1em;
-        text-indent: 0;
-        font-size: 50%;
-        opacity: 0.65;
-        font-style: normal;
+        content: "\25E4"; /* 'â—¤' U+25E4 Black Upper Left Triangle */
+        margin: 0 0 0 2px;
+        vertical-align: baseline;
+        position: relative;
+        bottom: 0.37em;
+        opacity: 0.55;
+        font-size: 65%;
+        right: 0.17em;
     }
 }
 
