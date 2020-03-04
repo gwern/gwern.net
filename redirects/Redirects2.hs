@@ -983,6 +983,7 @@
   , ("docs/sr/2019-04-22-deepdotweb-dnmlistJUSQU A QUELLE HEURE LE COURRIER EST MIVR2html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
   , ("docs/sr/2019-03-22-deepdotweb-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
   , ("docs/sr/2019-03-22-deepdotyweb-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
+  , ("docs/sr/2019-04-22-http://tt2mopgckifmberr.onion-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
   , ("docs/rotten.com/library/bio/presidents/ ronald-reagan/index.html", "/docs/rotten.com/library/bio/presidents/ronald-reagan/index.html")
   , ("docs/rotten.com/library/bio/presidents/ronald-reagan/index.html.", "/docs/rotten.com/library/bio/presidents/ronald-reagan/index.html")
   , ("DNM-archives.", "/DNM-archives")
@@ -1108,4 +1109,9 @@
   , ("improvent", "/Improvements")
   , ("lllyasviel/style2paints", "https://github.com/lllyasviel/style2paints")
   , ("refs", "/index")
+  , ("docs/statistics/causality/2019-schellenberg.dock", "/docs/statistics/causality/2019-schellenberg.pdf")
+  , ("docs/math/1990-thomason.pdf)", "/docs/math/1990-thomason.pdf")
+  , ("SearchResults.jsp?q=C", "/Search")
+  , ("docs.iq/2014-warne.pdf", "/docs/iq/2014-warne.pdf")
+  , ("Fdocs/statistics/decision/1994-benter.pdf", "/docs/statistics/decision/1994-benter.pdf")
  ]
