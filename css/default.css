@@ -144,7 +144,7 @@ section.collapse:target > .disclosure-button {
     background-color: rgba(255,255,255,0.3);
 }
 
-/*  Triangle symbol.
+/*  Triangle/chevron/angle symbol. (Copied from WikiMedia's default 'Vector' skin where it's used on mobile to, by default, collapse sections; this means everyone in the world is familiar with it as a symbol of 'collapse'/'uncollapse'.)
     */
 .disclosure-button::before {
     content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M11.05 3.996l-.965-1.053-4.035 3.86-3.947-3.86L1.05 3.996l5 5 5-5' fill='%23222'/%3E%3C/svg%3E%0A");
@@ -1489,6 +1489,9 @@ code span.st { color: #bf0303; } /* String */
 code span.va { color: #0057ae; } /* Variable */
 code span.vs { color: #bf0303; } /* VerbatimString */
 code span.wa { color: #bf0303; } /* Warning */
+
+/* Alternative to full-width code blocks: codeblocks expand (rightwards) on mouse-over to make it easier to read long lines */
+.sourceCode:hover, .sourceCode:focus { width: min-content; }
 
 /********/
 /* MATH */
