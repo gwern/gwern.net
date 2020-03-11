@@ -1127,4 +1127,8 @@
   , ("docs/iq/1966-shuey-thetestingofnegrointelligencevol2.pdf", "/docs/iq/1982-osborne-thetestingofnegrointelligencevol2.pdf")
   , ("Improvements)", "/Improvements")
   , ("Faces<https://urldefense.proofpoint.com/v2/url?u=https-3A__www.gwern.net_Faces&d=DwMFaQ&c=zwPfxOisiRWGoGc9Pq9Wrg&r=Vuy6f--MIX_gzOBL1_VqW58GN_cdVbrY0fLGqljxDGw&m=jelmvHiyhFyCsqmZAcwDorgw6Y5-E0qr45RrS5cafhg&s=a-cRB5NsQcZke8wHKTkrttmivGqRDERk75e4bU5zrrA&e=", "/Faces")
+  , ("docs/sr/pickard/2003-pickard-lsd-trial-transcript-gordontoddskinner-05-1.pdf", "/docs/sr/pickard/2003-pickard-lsd-trial-transcript-gordontoddskinner-05.pdf")
+  , ("elephant", "https://www.thenewatlantis.com/publications/do-elephants-have-souls")
+  , ("docs/it/1963-rosenthal.pdu", "/docs/iq/1963-rosenthal.pdf")
+  , ("STATIC/JS/POPUPS.JS", "/static/js/popups.js")
  ]
