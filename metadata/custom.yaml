@@ -6955,26 +6955,6 @@
   - ''
   - Partial bibliography of fulltext papers discussing intelligence and income or
     socioeconomic status.
-- - /Embryo-selection#embryo-selection-and-dynasties
-  - ! 'Embryo Selection and Dynasties: A Liability Threshold Model'
-  - Gwern Branwen
-  - 2018-02-08
-  - ''
-  - <p>Genetic selection &amp; engineering technologies, if banned or highly regulated,
-    could exacerbate existing social inequality by increasing genetic differences
-    between groups on key traits like intelligence or Conscientiousness or ethnocentrism
-    and ensuring near-permanent continuity of wealth or power. Whether this is a serious
-    problem quantitatively with feasible levels of embryo selection has not been much
-    examined. I consider the specific scenario of a single family, such as a royal
-    family or wealthy corporate owner, which wishes to increase the odds of succession
-    to a sufficiently-competent heir who can maintain the dynasty. I suggest a toy
-    model treating it as a repeated liability-threshold model in which heirs are selected
-    as order statistics and if any heir is above a threshold, the dynasty survives
-    another generation; given average numbers of generations and heirs, this defines
-    a unique threshold of competence. Adding embryo selection turns this into a two-stage
-    selection process. In some scenarios, assuming a threshold of ~+1SD and advanced
-    polygenic scores for multiple selection, embryo selection could considerably increase
-    the lifespan of a dynasty due to tail effects on the increased mean in each stage.</p>
 - - /Archiving-URLs#sort---key-compression-trick
   - The <code>sort --key</code> compression trick (CLI folklore)
   - Gwern Branwen
@@ -13782,18 +13762,6 @@
   - ''
   - ''
   - ! '<p><strong>Status:</strong> Archive (code is provided as-is, no updates expected)</p><h1 id="lm-human-preferences">lm-human-preferences</h1><p>This repository contains code for the paper <a href="https://arxiv.org/abs/1909.08593">Fine-Tuning Language Models from Human Preferences</a>. See also our <a href="https://openai.com/blog/fine-tuning-gpt-2/">blog post</a>.</p><p>We provide code for:</p><ul><li>Training reward models from human labels</li><li>Fine-tuning language models using those reward models</li></ul><p>It does not contain code for generating labels. However, we have released human labels collected for our experiments, at <code>gs://lm-human-preferences/labels</code>. For those interested, the question and label schemas are simple and documented in <a href="https://github.com/openai/lm-human-preferences/blob/master/lm_human_preferences/label_types.py"><code>label_types.py</code></a>.</p><p>The code has only been tested using the smallest GPT-2 model (124M parameters).</p>'
-- - https://www.ism.ac.jp/editsec/aism/pdf/011_3_0195.pdf
-  - "Bivariate Extreme Statistics, I"
-  - Masaaki Sibuya
-  - '1960'
-  - '10.1007/BF01682329'
-  - ! '<p>The largest and the smallest value in a sample, and other statistics related to them are generally named extreme statistics. Their sampling distributions, especially the limit distributions, have been studied by many authors, and principal results are summarized in the recent Gumbel book.</p><p>The author extends here the notion of extreme statistics into bivariate distributions and considers the joint distributions of maxima of components in sample vectors. This Part I treats asymptotic properties of the joint distributions.</p><p>In the univariate case the limit distributions of the sample maximum were limited to only three types. In the bivariate case, however, types of the limit joint distribution are various: Theorem 5 in Chapter 2 shows that infinitely many types of limit distributions may exist. For a wide class of distributions, two maxima are asymptotically independent or degenerate on a curve. Theorems 2 and 4 give the attraction domains for such limits. In bivariate normal case, two maxima are asymptotically independent unless the correlation coefficient is equal to one.</p><p>Throughout these arguments we remark only the dependence between marginal distributions, whose behaviors are well established. For this purpose a fundamental notion of ‘dependence function’ is introduced and discussed in Section 1.</p>'
-- - /docs/statistics/order/1967-srivastava.pdf
-  - "Asymptotic Independence of Certain Statistics Connected with the Extreme Order Statistics in a Bivariate Distribution"
-  - "O. P. Srivastava"
-  - "1967-06"
-  - "10.2307/25049462"
-  - ! 'The exact distribution of extremes in a sample and its limiting forms are well known in the univariate case. The limiting form for the largest observation in a sample was derived by Fisher and Tippet (1928) as early as 1927 by a functional equation, and that for the smallest was studied by Smirnov (1952). Though the joint distribution of two extremes has not been fully studied yet Sibuya (1960) gave a necessary and sufficient condition for the asymptotic independence of two largest extremes in a bivariate distribution. In this paper a necessary and sufficient condition for the asymptotic independence of two smallest observations in a bivariate sample has been derived, and the result has been used to find the condition for the asymptotic independence of any pair of extreme order statistics, one in each component of the bivariate sample. This result is further extended to find the condition for asymptotic independence of the pair of distances between two order statistics, arising from each component.'
 - - /docs/statistics/order/1964-mardia.pdf
   - Asymptotic Independence of Bivariate Extremes
   - K. V. Mardia
@@ -16033,3 +16001,59 @@
   - '2005'
   - 10.1111/j.1467-9620.2005.00544.x
   - ! 'This article reports findings of a meta-analytical study of research on distance education. The purpose of this study was to identify factors that affect the effectiveness of distance education. The results show that although the aggregated data of available studies show no significant difference in outcomes between distance education and face-to-face education as previous research reviews suggest, there is remarkable difference across the studies. Further examination of the difference reveals that distance education programs, just like traditional education programs, vary a great deal in their outcomes, and the outcome of distance education is associated with a number of pedagogical and technological factors. This study led to some important data-driven suggestions for and about distance education.'
+- - /Embryo-selection#embryo-selection-and-dynasties
+  - ! 'Embryo Selection and Dynasties: A Liability Threshold Model'
+  - Gwern Branwen
+  - 2018-02-08
+  - ''
+  - <p>Genetic selection &amp; engineering technologies, if banned or highly regulated,
+    could exacerbate existing social inequality by increasing genetic differences
+    between groups on key traits like intelligence or Conscientiousness or ethnocentrism
+    and ensuring near-permanent continuity of wealth or power. Whether this is a serious
+    problem quantitatively with feasible levels of embryo selection has not been much
+    examined. I consider the specific scenario of a single family, such as a royal
+    family or wealthy corporate owner, which wishes to increase the odds of succession
+    to a sufficiently-competent heir who can maintain the dynasty. I suggest a toy
+    model treating it as a repeated liability-threshold model in which heirs are selected
+    as order statistics and if any heir is above a threshold, the dynasty survives
+    another generation; given average numbers of generations and heirs, this defines
+    a unique threshold of competence. Adding embryo selection turns this into a two-stage
+    selection process. In some scenarios, assuming a threshold of ~+1SD and advanced
+    polygenic scores for multiple selection, embryo selection could considerably increase
+    the lifespan of a dynasty due to tail effects on the increased mean in each stage.</p>
+- - https://www.ism.ac.jp/editsec/aism/pdf/011_3_0195.pdf
+  - "Bivariate Extreme Statistics, I"
+  - Masaaki Sibuya
+  - '1960'
+  - '10.1007/BF01682329'
+  - ! '<p>The largest and the smallest value in a sample, and other statistics related to them are generally named extreme statistics. Their sampling distributions, especially the limit distributions, have been studied by many authors, and principal results are summarized in the recent Gumbel book.</p><p>The author extends here the notion of extreme statistics into bivariate distributions and considers the joint distributions of maxima of components in sample vectors. This Part I treats asymptotic properties of the joint distributions.</p><p>In the univariate case the limit distributions of the sample maximum were limited to only three types. In the bivariate case, however, types of the limit joint distribution are various: Theorem 5 in Chapter 2 shows that infinitely many types of limit distributions may exist. For a wide class of distributions, two maxima are asymptotically independent or degenerate on a curve. Theorems 2 and 4 give the attraction domains for such limits. In bivariate normal case, two maxima are asymptotically independent unless the correlation coefficient is equal to one.</p><p>Throughout these arguments we remark only the dependence between marginal distributions, whose behaviors are well established. For this purpose a fundamental notion of ‘dependence function’ is introduced and discussed in Section 1.</p>'
+- - /docs/statistics/order/1967-srivastava.pdf
+  - "Asymptotic Independence of Certain Statistics Connected with the Extreme Order Statistics in a Bivariate Distribution"
+  - "O. P. Srivastava"
+  - "1967-06"
+  - "10.2307/25049462"
+  - ! 'The exact distribution of extremes in a sample and its limiting forms are well known in the univariate case. The limiting form for the largest observation in a sample was derived by Fisher and Tippet (1928) as early as 1927 by a functional equation, and that for the smallest was studied by Smirnov (1952). Though the joint distribution of two extremes has not been fully studied yet Sibuya (1960) gave a necessary and sufficient condition for the asymptotic independence of two largest extremes in a bivariate distribution. In this paper a necessary and sufficient condition for the asymptotic independence of two smallest observations in a bivariate sample has been derived, and the result has been used to find the condition for the asymptotic independence of any pair of extreme order statistics, one in each component of the bivariate sample. This result is further extended to find the condition for asymptotic independence of the pair of distances between two order statistics, arising from each component.'
+- - https://cran.r-project.org/web/packages/copula/vignettes/rhoAMH-dilog.pdf
+  - "Spearman’s Rho for the AMH Copula: a Beautiful Formula"
+  - Martin M̈achler
+  - 2014-06
+  - ''
+  - ! '<p>We derive a beautiful series expansion for <a href="https://en.wikipedia.org/wiki/Spearman%27s_rank_correlation_coefficient">Spearman’s rho</a>, ρ(θ) of the Ali-Mikhail-Haq (<span class="smallcaps">AMH</span>) copula with parameter θ which is also called α or θ. Further, via experiments we determine the cutoffs to be used for practically fast and accurate computation of ρ(θ) for all θ ∈ [−1,1].</p><p>[Keywords: Archimedean copulas, Spearman’s rho.]</p>'
+- - https://www.lesswrong.com/posts/dC7mP5nSwvpL65Qu5/why-the-tails-come-apart
+  - Why the tails come apart
+  - Thrasymachus
+  - 2014-08-01
+  - ''
+  - ! '<p style="color: #333333; font-family: Georgia, &#39;Times New Roman&#39;, &#39;Bitstream Charter&#39;, Times, serif; font-size: 13px; line-height: 19px;">Many outcomes of interest have pretty good predictors. It seems that height correlates to performance in basketball (the average height in the <span class="smallcaps">NBA</span> is around <a href="http://en.wikipedia.org/wiki/NBA_league_average_height,_weight,_age_and_playing_experience">6’7"</a>). Faster serves in tennis improve one’s likelihood of winning. IQ scores are known to predict a slew of factors, from <a href="http://thesocietypages.org/socimages/2008/02/06/correlations-of-iq-with-income-and-wealth/">income</a>, to chance of <a href="http://www.sagepub.com/schram/study/materials/reference/90851_04.2r.pdf">being imprisoned</a>, to<a href="http://www.bmj.com/content/322/7290/819"> lifespan</a>.</p><p style="color: #333333; font-family: Georgia, &#39;Times New Roman&#39;, &#39;Bitstream Charter&#39;, Times, serif; font-size: 13px; line-height: 19px;">What’s interesting is what happens to these relationships ‘out on the tail’: extreme outliers of a given predictor are seldom similarly extreme outliers on the outcome it predicts, and vice versa. Although 6’7" is very tall, it lies within a <a href="http://www.wolframalpha.com/input/?i=male+height+distribution">couple of standard deviations</a> of the median US adult male height—there are many thousands of US men taller than the average <span class="smallcaps">NBA</span> player, yet are not in the <span class="smallcaps">NBA</span>. Although elite tennis players have very fast serves, if you look at the players serving <a href="http://en.wikipedia.org/wiki/Fastest_recorded_tennis_serves">the fastest serves ever recorded</a>, they aren’t the very best players of their time. It is harder to look at the IQ case due to test ceilings, but again there seems to be some divergence near the top: the very highest earners tend<a href="http://infoproc.blogspot.co.uk/2009/11/if-youre-so-smart-why-arent-you-rich.html"> to be very smart</a>, but their intelligence is not in step with their income (their cognitive ability is around +3 to +4 SD above the mean, yet their wealth is much higher than this) (1).</p><p style="color: #333333; font-family: Georgia, &#39;Times New Roman&#39;, &#39;Bitstream Charter&#39;, Times, serif; font-size: 13px; line-height: 19px;">The trend seems to be that even when two factors are correlated, their tails diverge: the fastest servers are good tennis players, but not the very best (and the very best players serve fast, but not the very fastest); the very richest tend to be smart, but not the very smartest (and vice versa). Why?</p><ul><li>The simple graphical explanation</li><li>An intuitive explanation of the graphical explanation</li><li>A parallel geometric explanation</li></ul>'
+- - /docs/statistics/order/2005-dosanjos.pdf
+  - 'Copula associated to order statistics'
+  - Ulisses U. dos Anjos, Nikolai Kolev, Nelson I. Tanaka
+  - '2005-12'
+  - '10.2307/43601062'
+  - ! '<p>We exhibit a copula representation of the (<em>r</em>, <em>s</em>)-th bivariate order statistics from an independent sample of size <em>n</em>. We give conditions when such a representation converges weakly to a bivariate Gaussian copula. A recurrence relationship between the density of the order statistics is presented and related Fréchet bounds are given. The usefulness of those results are stressed through examples.</p><p>[Key words: Bivariate binomial, copula, Fréchet bounds, normal asymptotics, order statistics.]</p>'
+- - /Order-statistics#probability-of-bivariate-maximum
+  - Probability of Bivariate Maximum
+  - Gwern Branwen
+  - 2020-03-11
+  - ''
+  - ! '<p>Given a sample of <em>n</em> pairs of 2 normal variables A &amp; B which are correlated <em>r</em>, what is the probability <em>P</em><sub>max</sub> that the maximum on the first variable A is also the maximum on the second variable B? This is analogous to many testing or screening situations, such as employee hiring (“what is the probability the top-scoring applicant on the first exam is the top-scorer on the second as well?”) or athletic contests (“what is the probability the current world champ will win the next championship?”).</p><p>Order statistics has long proven that asymptotically, <em>P</em><sub>max</sub> approaches <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mn>1</mn><mi>n</mi></mfrac><annotation encoding="application/x-tex"></annotation></semantics></math>. Exact answers are hard to find, but confirm the asymptotics; the closest that exists is for an approximation &amp; special-case of the Ali-Mikhail-Haq copula: which roughly indicates that <em>r</em> functions as a constant factor boost in <em>P</em><sub>max</sub>, and the boost from <em>r</em> fades out as <em>n</em> increases.</p><p>As long as <em>r</em>≠1, “the tails will come apart”. <em>n</em> increases the difficult too fast for any fixed <em>r</em> to overcome. This has implications for interpreting extremes and test metrics.</p>'
