@@ -21,16 +21,6 @@
     dimensions. Genotypes were not related to whether dogs passed, but there was a
     weak relationship between Distractibility and a 5HTT haplotype (<em>p</em> &lt;
     0.05).'
-- - /static/js/wikipedia-popups.js
-  - wikipedia-popups.js
-  - Said Achmiz
-  - '2019'
-  - ''
-  - <code>wikipedia-popups.js</code> is a stand-alone Javascript library which parses
-    a page for English Wikipedia links and, when those links are mouse-overed, displays
-    a 'popup' (a large tooltip) of the Wikipedia article's HTML summary as returned
-    by the WP REST API, typically the introduction of each article. The summaries
-    are requested on the initial page load to minimize UI latency as much as possible.
 - - https://onlinelibrary.wiley.com/doi/full/10.1111/joim.12926
   - ! 'The Chinese National Twin Registry: a ''gold mine'' for scientific research'
   - W. Gao, W. Cao, J. Lv, C. Yu, T. Wu, S. Wang, L. Meng, D. Wang, Z. Wang, Z. Pang,
@@ -97,20 +87,11 @@
     by the spectacular feats of the human mind, <em>The Origins of Genius</em> offers
     a revolutionary new way of understanding the very nature of creativity.
 - - http://cogprints.org/772/3/152.pdf#page=8
-  - ! 'Emergenesis: Genetic Traits That May Not Run in Families'
+  - ! 'Emergenesis: Genetic Traits That May Not Run in Families: Genius'
   - D. T. Lykken, M. McGue, A. Tellegen, T. J. Bouchard, J
   - '1992'
   - ''
-  - Traits that are influenced by a configuration, rather than by a simple sum, of
-    polymorphic genes may not be seen to be genetic unless one studies monozygotic
-    twins (who share all their genes and thus all gene configurations) because such
-    'emergenic' traits will tend not to run in families. Personal idiosyncrasies that
-    have been found to be surprisingly concordant among monozygotic twins separated
-    in infancy and reared apart may be emergenic traits. More speculatively, important
-    human traits like leadership, genius in its many manifestations, being an effective
-    therapist or parent, as well as certain psychopathological syndromes may also
-    be emergenic. These ideas reemphasize the importance of the role played in human
-    affairs by genetic variation.
+  - ! '<p>[Further discussion of “emergenesis” and relationship to genius: why are geniuses, while sometimes clearly affiliated with entire clans, so sporadic even within those? This is difficult to explain on any environmental or simple additive genetic grounds, suggesting that it may require entire complexes of exactly aligned genes and environmental factors.]</p><p>Human genius has always been a problem for both environmentalists and hereditarians to understand (Galton, 1869; Kroeber, 1944; Simonton, 1988.) There have been families of genius, of course—the Bernoullis and the Baths, the Darwins and the Huxleys, the musical Marsalis family—but it is the solitary genius, rising like a great oak in a forest of scrub and bramble, who challenges our understanding. Carl Friedrich Gauss, ranked with Archimedes and Newton as one of the “princes of mathematics,” had uneducated parents. His mother was illiterate, yet the boy had taught himself to read and to do simple arithmetic by the time he was 3 years old (Buhler, 1981).</p><p>…Suppose that Gauss or Ramanujan had been born with a healthy MZ twin who was spirited away to be reared by some country parson in Oxfordshire. Barring cholera or other accident, is it not likely that the parson’s surname too would now be immortal? Ramanujan died young without offspring; his parents and one brother apparently were unexceptional. Although Gauss provided rich stimulation and opportunity for his six offspring (by two different and highly cultivated wives), none of them distinguished themselves.<sup>2</sup> But if the genius of these men was prefigured in their genes, why was it never manifested elsewhere in their lineage? The answer is, we think, that genius consists of unique configurations of attributes that cannot be transmitted in half helpings.</p>'
 - - http://cogprints.org/772/3/152.pdf
   - ! 'Emergenesis: Genetic Traits That May Not Run in Families'
   - D. T. Lykken, M. McGue, A. Tellegen, T. J. Bouchard, J
@@ -919,22 +900,6 @@
     in a number of European countries. "There was something wrong with each one,"
     Meeker remembers. "Nothing gave us the legibility we were looking for." The team
     immediately realized that it would have to draw something from scratch.</p>'
-- - https://spqr.eecs.umich.edu/papers/Kwong-HDDphone-IEEE-SP-2019.pdf
-  - ! 'Hard Drive of Hearing: Disks that Eavesdrop with a Synthesized Microphone'
-  - Andrew Kwong, Wenyuan Xu, Kevin Fu
-  - 2019-05-01
-  - 10.1145/2903140
-  - Security conscious individuals may take considerable measures to disable sensors
-    in order to protect their privacy. However, they often overlook the cyber-physical
-    attack surface exposed by devices that were never designed to be sensors in the
-    first place. Our research demonstrates that the mechanical components in magnetic
-    hard disk drives behave as microphones with sufficient precision to extract and
-    parse human speech. These unintentional microphones sense speech with high enough
-    fidelity for the Shazam service to recognize a song recorded through the hard
-    drive. This proof of concept attack sheds light on the possibility of invasion
-    of privacy even in absence of traditional sensors. We also present defense mechanisms,
-    such as the use of ultrasonic aliasing, that can mitigate acoustic eavesdropping
-    by synthesized microphones in hard disk drives.
 - - https://www.ribbonfarm.com/2012/03/08/halls-law-the-nineteenth-century-prequel-to-moores-law/
   - ! 'Hall''s Law: The Nineteenth Century Prequel to Moore''s Law'
   - Venkatesh Rao
@@ -1242,26 +1207,12 @@
     the procrastinator becomes a useful citizen. Indeed, the procrastinator can even
     acquire, as I have, a reputation for getting a lot done.</p>
 - - https://sites.duke.edu/tomasellolabduke/files/2016/09/Herrmann_PsychScience_2010.pdf#page=4
-  - The Structure of Individual Differences in the Cognitive Abilities of Children
-    and Chimpanzees
+  - 'The Structure of Individual Differences in the Cognitive Abilities of Children and Chimpanzees: Table 1. Primate Cognition Test Battery: Description of Tasks and Mean Proportion (With Standard Deviation) of Correct Responses by Chimpanzees and Human Children'
   - Esther Herrmann, Maria Victoria Hernández-Lloreda, Josep Call, Brian Hare, Michael
     Tomasello
   - 2010-01-01
   - 10.1177/0956797609356511
-  - ! 'Most studies of animal cognition focus on group performance and neglect individual
-    differences and the correlational structure of cognitive abilities. Moreover,
-    no previous studies have compared the correlational structure of cognitive abilities
-    in nonhuman animals and humans. We compared the structure of individual differences
-    of 106 chimpanzees and 105 two-year-old human children using 15 cognitive tasks
-    that posed problems about the physical or social world. We found a similar factor
-    of spatial cognition for the two species. But whereas the chimpanzees had only
-    a single factor in addition to spatial cognition, the children had two distinct
-    additional factors: one for physical cognition and one for social cognition. These
-    findings, in combination with previous research, support the proposal that humans
-    share many cognitive skills with nonhuman apes, especially for dealing with the
-    physical world, but in addition have evolved some specialized skills of social
-    cognition. [Keywords: individual differences, chimpanzees, human children, social
-    cognition, physical cognition]'
+  - ! '[Table comparing human children and chimpanzee performance. The means are similar.]'
 - - https://sites.duke.edu/tomasellolabduke/files/2016/09/Herrmann_PsychScience_2010.pdf
   - The Structure of Individual Differences in the Cognitive Abilities of Children
     and Chimpanzees
@@ -2620,23 +2571,6 @@
     For example, the number of ideas a scientist can bring into awareness at one time
     may control his ability to make an invention and his rate of invention may increase
     very rapidly with this number.
-- - /docs/psychology/1993-lipsey.pdf
-  - ! 'The Efficacy of Psychological, Educational, and Behavioral Treatment: Confirmation
-    from Meta-Analysis'
-  - Mark W. Lipsey, David B. Wilson
-  - '1993'
-  - ''
-  - Conventional reviews of research on the efficacy of psychological, educational,
-    and behavioral treatments often find considerable variation in outcome among studies
-    and, as a consequence, fail to reach firm conclusions about the overall effectiveness
-    of the interventions in question. In contrast meta-analytic reviews show a strong,
-    dramatic pattern of positive overall effects that cannot readily be explained
-    as artifacts of meta-analytic technique or generalized placebo effects. Moreover,
-    the effects are not so small that they can be dismissed as lacking practical or
-    clinical significance. Although meta-analysis has limitations, there are good
-    reasons to believe that its results are more credible than those of conventional
-    reviews and to conclude that well-developed psychological, educational, and behavioral
-    treatment is generally efficacious.
 - - /docs/nootropics/2013-rojas.pdf
   - Neurological and psychological applications of transcranial lasers and LEDs
   - Julio C.Rojas, F.Gonzalez-Lima
@@ -5038,19 +4972,6 @@
     information do not stem from undue deference, but from a fit between the communicated
     information and the audience’s preexisting beliefs.</p><p>[Keywords: epistemic
     vigilance, gullibility, trust]</p>'
-- - https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/45530.pdf
-  - Deep Neural Networks for YouTube Recommendations
-  - Paul Covington, Jay Adams, Emre Sargin
-  - 2016-09-15
-  - 10.1145/2959100.2959190
-  - ! 'YouTube represents one of the largest scale and most sophisticated industrial
-    recommendation systems in existence. In this paper, we describe the system at
-    a high level and focus on the dramatic performance improvements brought by deep
-    learning. The paper is split according to the classic two-stage information retrieval
-    dichotomy: first, we detail a deep candidate generation model and then describe
-    a separate deep ranking model. We also provide practical lessons and insights
-    derived from designing, iterating and maintaining a massive recommendation system
-    with enormous user-facing impact.'
 - - https://www.youtube.com/watch?v=HEqQ2_1XRTs
   - ! 'Reinforcement Learning for Recommender Systems: A Case Study on Youtube'
   - Minmin Chen
@@ -7357,21 +7278,6 @@
     impacts. [Keywords: Public assistance programs, Analytical models, Analytical
     estimating, Employment, Control groups, Estimation methods, Random sampling, Human
     resources, Public works legislation, Statistical significance]'
-- - /docs/radiance/1995-mackenzie.pdf
-  - Tacit Knowledge, Weapons Design, and the Uninvention of Nuclear Weapons
-  - Donald MacKenzie, Graham Spinardi
-  - '1995'
-  - 10.1086/230699
-  - Tacit knowledge, embodied in people rather than words, equations,or diagrams,
-    plays a vital role in science. The historical record of the development and spread
-    of nuclear weapons and the recollections of their designers suggest that tacit
-    knowledge is also crucial to nuclear weapons development. Therefore, if design
-    ceases, and if there is no new generation of designers to whom that tacit knowledge
-    can be passed, then in an important (though qualified) sense nuclear weapons will
-    have been uninvented. Their renewed development would thus have some of the characteristics
-    of reinvention rather than simply copying. In addition, knowledge may be lost
-    not only as a result of complete disarmament, but also as a consequence of likely
-    measures such as a nuclear test ban.
 - - /docs/iq/2018-lee.pdf
   - Gene discovery and polygenic prediction from a genome-wide association study of
     educational attainment in 1.1 million individuals
@@ -8359,36 +8265,6 @@
     reduced gray matter volume in ASPD. To our knowledge, this is the first study
     showing genome-wide significant and replicable findings on genetic variants associated
     with any personality disorder.</p>
-- - https://www.nature.com/articles/tp2016155
-  - Genome-wide association study of antisocial personality disorder
-  - M-R. Rautiainen, T. Paunio, E. Repo-Tiihonen, M. Virkkunen, H. M. Ollila, S. Sulkava,
-    O. Jolanki, A. Palotie, J. Tiihonen
-  - 2016-09-06
-  - 10.1038/tp.2016.155
-  - <p>The pathophysiology of antisocial personality disorder (ASPD) remains unclear.
-    Although the most consistent biological finding is reduced grey matter volume
-    in the frontal cortex, about 50% of the total liability to developing ASPD has
-    been attributed to genetic factors. The contributing genes remain largely unknown.
-    Therefore, we sought to study the genetic background of ASPD. We conducted a genome-wide
-    association study (GWAS) and a replication analysis of Finnish criminal offenders
-    fulfilling DSM-IV criteria for ASPD (<em>N</em>=370, <em>N</em>=5850 for controls,
-    GWAS; <em>N</em>=173, <em>N</em>=3766 for controls and replication sample). The
-    GWAS resulted in suggestive associations of two clusters of single-nucleotide
-    polymorphisms at 6p21.2 and at 6p21.32 at the human leukocyte antigen (HLA) region.
-    Imputation of HLA alleles revealed an independent association with DRB1*01:01
-    (odds ratio (OR)=2.19 (1.53–3.14), <em>p</em>=1.9 × 10<sup>-5</sup>). Two polymorphisms
-    at 6p21.2 LINC00951–LRFN2 gene region were replicated in a separate data set,
-    and rs4714329 reached genome-wide significance (OR=1.59 (1.37–1.85), <em>p</em>=1.6
-    × 10<sup>−9</sup>) in the meta-analysis. The risk allele also associated with
-    antisocial features in the general population conditioned for severe problems
-    in childhood family (<em>β</em>=0.68, <em>p</em>=0.012). Functional analysis in
-    brain tissue in open access GTEx and Braineac databases revealed eQTL associations
-    of rs4714329 with LINC00951 and LRFN2 in cerebellum. In humans, LINC00951 and
-    LRFN2 are both expressed in the brain, especially in the frontal cortex, which
-    is intriguing considering the role of the frontal cortex in behavior and the neuroanatomical
-    findings of reduced gray matter volume in ASPD. To our knowledge, this is the
-    first study showing genome-wide significant and replicable findings on genetic
-    variants associated with any personality disorder.</p>
 - - https://karpathy.github.io/2015/05/21/rnn-effectiveness/
   - The Unreasonable Effectiveness of Recurrent Neural Networks
   - Andrej Karpathy
@@ -8511,37 +8387,6 @@
     the details. The biggest unanswered question is just how much further our selective-breeding
     experiment can go. The domestic fox is not a domestic dog, but we believe that
     it has the genetic potential to become more and more doglike.</p>'
-- - http://www.nature.com/mp/journal/vaop/ncurrent/full/mp201645a.html
-  - Genome-wide association study of cognitive functions and educational attainment
-    in UK Biobank (<em>N</em>=112 151)
-  - G. Davies, R. E. Marioni, D. C. Liewald, W. D. Hill, S. P. Hagenaars, S. E. Harris,
-    S. J. Ritchie, M. Luciano, C. Fawns-Ritchie, D. Lyall, B. Cullen, S. R. Cox, C.
-    Hayward, D. J. Porteous, J. Evans, A. M. McIntosh, J. Gallacher, N. Craddock,
-    J. P. Pell, D. J. Smith, C. R. Gale, I. J. Deary
-  - 2016-04-05
-  - 10.1038/mp.2016.45
-  - <p>People’s differences in cognitive functions are partly heritable and are associated
-    with important life outcomes. Previous genome-wide association (GWA) studies of
-    cognitive functions have found evidence for polygenic effects yet, to date, there
-    are few replicated genetic associations. Here we use data from the UK Biobank
-    sample to investigate the genetic contributions to variation in tests of three
-    cognitive functions and in educational attainment. GWA analyses were performed
-    for verbal–numerical reasoning (<em>N</em>=36 035), memory (<em>N</em>=112 067),
-    reaction time (<em>N</em>=111 483) and for the attainment of a college or a university
-    degree (<em>N</em>=111 114). We report genome-wide significant single-nucleotide
-    polymorphism (SNP)-based associations in 20 genomic regions, and significant gene-based
-    findings in 46 regions. These include findings in the <em>ATXN2</em>, <em>CYP2DG</em>,
-    <em>APBA1</em> and <em>CADM2</em> genes. We report replication of these hits in
-    published GWA studies of cognitive function, educational attainment and childhood
-    intelligence. There is also replication, in UK Biobank, of SNP hits reported previously
-    in GWA studies of educational attainment and cognitive function. GCTA-GREML analyses,
-    using common SNPs (minor allele frequency&gt;0.01), indicated significant SNP-based
-    heritabilities of 31% (s.e.m.=1.8%) for verbal–numerical reasoning, 5% (s.e.m.=0.6%)
-    for memory, 11% (s.e.m.=0.6%) for reaction time and 21% (s.e.m.=0.6%) for educational
-    attainment. Polygenic score analyses indicate that up to 5% of the variance in
-    cognitive test scores can be predicted in an independent cohort. The genomic regions
-    identified include several novel loci, some of which have been associated with
-    intracranial volume, neurodegeneration, Alzheimer’s disease and schizophrenia.</p>
 - - https://www.nature.com/articles/mp201645
   - Genome-wide association study of cognitive functions and educational attainment
     in UK Biobank (<em>N</em>=112 151)
@@ -8573,44 +8418,6 @@
     cognitive test scores can be predicted in an independent cohort. The genomic regions
     identified include several novel loci, some of which have been associated with
     intracranial volume, neurodegeneration, Alzheimer’s disease and schizophrenia.</p>
-- - http://www.nature.com/mp/journal/vaop/ncurrent/full/mp2016244a.html
-  - ! 'GWAS meta-analysis reveals novel loci and genetic correlates for general cognitive
-    function: a report from the COGENT consortium'
-  - J. W. Trampush, M. L. Z. Yang, J. Yu, E. Knowles, G. Davies, D. C. Liewald, J.
-    M. Starr, S. Djurovic, I. Melle, K. Sundet, A. Christoforou, I. Reinvang, P. DeRosse,
-    A. J. Lundervold, V. M. Steen, T. Espeseth, K. Räikkönen, E. Widen, A. Palotie,
-    J. G. Eriksson, I. Giegling, B. Konte, P. Roussos, S. Giakoumaki, K. E. Burdick,
-    A. Payton, W. Ollier, M. Horan, O. Chiba-Falek, D. K. Attix, A. C. Need, E. T.
-    Cirulli, A. N. Voineskos, N. C. Stefanis, D. Avramopoulos, A. Hatzimanolis, D.
-    E. Arking, N. Smyrnis, R. M. Bilder, N. A. Freimer, T. D. Cannon, E. London, R.
-    A. Poldrack, F. W. Sabb, E. Congdon, E. D. Conley, M. A. Scult, D. Dickinson,
-    R. E. Straub, G. Donohoe, D. Morris, A. Corvin, M. Gill, A. R. Hariri, D. R. Weinberger,
-    N. Pendleton, P. Bitsios, D. Rujescu, J. Lahti, S. Le Hellard, M. C. Keller, O.
-    A. Andreassen, I. J. Deary, D. C. Glahn, A. K. Malhotra, T. Lencz
-  - 2017-01-17
-  - 10.1038/mp.2016.244
-  - ! 'The complex nature of human cognition has resulted in cognitive genomics lagging
-    behind many other fields in terms of gene discovery using genome-wide association
-    study (GWAS) methods. In an attempt to overcome these barriers, the current study
-    utilized GWAS meta-analysis to examine the association of common genetic variation
-    (~8M single-nucleotide polymorphisms (SNP) with minor allele frequency ⩾1%) to
-    general cognitive function in a sample of 35 298 healthy individuals of European
-    ancestry across 24 cohorts in the Cognitive Genomics Consortium (COGENT). In addition,
-    we utilized individual SNP lookups and polygenic score analyses to identify genetic
-    overlap with other relevant neurobehavioral phenotypes. Our primary GWAS meta-analysis
-    identified two novel SNP loci (top SNPs: rs76114856 in the CENPO gene on chromosome
-    2 and rs6669072 near LOC105378853 on chromosome 1) associated with cognitive performance
-    at the genome-wide significance level (<em>p</em><5 × 10^−8^). Gene-based analysis
-    identified an additional three Bonferroni-corrected significant loci at chromosomes
-    17q21.31, 17p13.1 and 1p13.3. Altogether, common variation across the genome resulted
-    in a conservatively estimated SNP heritability of 21.5% (s.e.=0.01%) for general
-    cognitive function. Integration with prior GWAS of cognitive performance and educational
-    attainment yielded several additional significant loci. Finally, we found robust
-    polygenic correlations between cognitive performance and educational attainment,
-    several psychiatric disorders, birth length/weight and smoking behavior, as well
-    as a novel genetic association to the personality trait of openness. These data
-    provide new insight into the genetics of neurocognitive function with relevance
-    to understanding the pathophysiology of neuropsychiatric illness.'
 - - https://www.nature.com/articles/mp2016244
   - ! 'GWAS meta-analysis reveals novel loci and genetic correlates for general cognitive
     function: a report from the COGENT consortium'
@@ -8666,53 +8473,7 @@
     achievement and ~2.5% in family SES. This study provides the first molecular evidence
     for substantial genetic influence on differences in children’s educational achievement
     and its association with family SES.
-- - https://www.nature.com/articles/mp20152
-  - Genetic link between family socioeconomic status and children’s educational achievement
-    estimated from genome-wide SNPs
-  - Eva Krapohl, Robert Plomin
-  - 2015-03-10
-  - 10.1038/mp.2015.2
-  - One of the best predictors of children’s educational achievement is their family’s
-    socioeconomic status (SES), but the degree to which this association is genetically
-    mediated remains unclear. For 3000 UK-representative unrelated children we found
-    that genome-wide single-nucleotide polymorphisms could explain a third of the
-    variance of scores on an age-16 UK national examination of educational achievement
-    and half of the correlation between their scores and family SES. Moreover, genome-wide
-    polygenic scores based on a previously published genome-wide association meta-analysis
-    of total number of years in education accounted for ~3.0% variance in educational
-    achievement and ~2.5% in family SES. This study provides the first molecular evidence
-    for substantial genetic influence on differences in children’s educational achievement
-    and its association with family SES.
 - - http://www.nature.com/mp/journal/v16/n10/full/mp201185a.html
-  - Genome-wide association studies establish that human intelligence is highly heritable
-    and polygenic
-  - G. Davies, A. Tenesa, A. Payton, J. Yang, S. E. Harris, D. Liewald, X. Ke, S.
-    Le Hellard, A. Christoforou, M. Luciano, K. McGhee, L. Lopez, A. J. Gow, J. Corley,
-    P. Redmond, H. C. Fox, P. Haggarty, L. J. Whalley, G. McNeill, M. E. Goddard,
-    T. Espeseth, A. J. Lundervold, I. Reinvang, A. Pickles, V. M. Steen, W. Ollier,
-    D. J. Porteous, M. Horan, J. M. Starr, N. Pendleton, P. M. Visscher, I. J. Deary
-  - 2011-08-09
-  - 10.1038/mp.2011.85
-  - General intelligence is an important human quantitative trait that accounts for
-    much of the variation in diverse cognitive abilities. Individual differences in
-    intelligence are strongly associated with many important life outcomes, including
-    educational and occupational attainments, income, health and lifespan. Data from
-    twin and family studies are consistent with a high heritability of intelligence,
-    but this inference has been controversial. We conducted a genome-wide analysis
-    of 3511 unrelated adults with data on 549 692 single nucleotide polymorphisms
-    (SNPs) and detailed phenotypes on cognitive traits. We estimate that 40% of the
-    variation in crystallized-type intelligence and 51% of the variation in fluid-type
-    intelligence between individuals is accounted for by linkage disequilibrium between
-    genotyped common SNP markers and unknown causal variants. These estimates provide
-    lower bounds for the narrow-sense heritability of the traits. We partitioned genetic
-    variation on individual chromosomes and found that, on average, longer chromosomes
-    explain more variation. Finally, using just SNP data we predicted ∼1% of the variance
-    of crystallized and fluid cognitive phenotypes in an independent sample (<em>p</em>=0.009
-    and 0.028, respectively). Our results unequivocally confirm that a substantial
-    proportion of individual differences in human intelligence is due to genetic variation,
-    and are consistent with many genes of small effects underlying the additive genetic
-    influences on intelligence.
-- - https://www.nature.com/articles/mp201185
   - Genome-wide association studies establish that human intelligence is highly heritable
     and polygenic
   - G. Davies, A. Tenesa, A. Payton, J. Yang, S. E. Harris, D. Liewald, X. Ke, S.
@@ -9236,31 +8997,6 @@
     showed an 83% success rate, suggesting that they had become familiar with about
     6,600 images during their ordeal. Other volunteers, trained on a smaller collection
     of 1,000 images selected for vividness, had a 94% success rate.</p>'
-- - /docs/economics/2014-lewis.pdf
-  - ! 'Managing an iconic old luxury brand in a new luxury economy: Hermès handbags
-    in the US market'
-  - Tasha L. Lewis, Brittany Haas
-  - 2014-03
-  - 10.1386/gfb.1.1.167_1
-  - The Hermès brand is synonymous with a wealthy global elite clientele and its products
-    have maintained an enduring heritage of craftsmanship that has distinguished it
-    among competing luxury brands in the global market. Hermès has remained a family
-    business for generations and has successfully avoided recent acquisition attempts
-    by luxury group LVMH. Almost half of the luxury firm’s revenue ($1.5B in 2012)
-    is derived from the sale of its leather goods and saddlery, which includes its
-    handbags. A large contributor to sales is global demand for one of its leather
-    accessories, the Birkin bag, ranging in price from $10,000 to $250,000. Increased
-    demand for the bag in the United States since 2002 resulted in an extensive customer
-    waitlist lasting from months to a few years. Hermès retired the famed waitlist
-    (sometimes called the ‘dream list’) in the United States in 2010, and while the
-    waitlist has been removed, demand for the Birkin bag has not diminished and making
-    the bag available to luxury consumers requires extensive, careful distribution
-    management. In addition to inventory constraints related to demand for the Birkin
-    bag in the United States, Hermès must also manage a range of other factors in
-    the US market. These factors include competition with ‘affordable’ luxury brands
-    like Coach, monitoring of unsolicited brand endorsers as well as counterfeit goods
-    and resellers. This article examines some of the allocation practices used to
-    carefully manage the Hermès brand in the US market.
 - - https://www.cs.dartmouth.edu/~sergey/wm/
   - What are Weird Machines?
   - Sergey Bratus
@@ -10680,76 +10416,6 @@
     like Coach, monitoring of unsolicited brand endorsers as well as counterfeit goods
     and resellers. This article examines some of the allocation practices used to
     carefully manage the Hermès brand in the US market.
-- - https://digitalcommons.sia.edu/cgi/viewcontent.cgi?article=1007&context=stu_proj
-  - ! 'Birkin Demand: A Sage & Stylish Investment'
-  - Brittanny Newsom
-  - 2017-12-19
-  - ''
-  - <p>What Is A Birkin? / History / Design / Craftsmanship &amp; Quality / How To
-    Buy A Birkin / Demand &amp; Exclusivity / The Secondhand Market / Clientele /
-    Why the Birkin Is A Safe Investment / Investment Factors / Investment Pricing
-    Factors / Comparisons with Other Investments / Fake vs. Real / How the Birkin
-    Remains Dominant / The Media / The Defaced Birkin / Conclusion</p><p>Pricing factors
-    for the Birkin are a huge piece of investing in these bags. Several factors make
-    determining Birkin prices tricky. The first is the price variations that occur
-    year to year at the discretion of Hermès. “They know they have a valuable product
-    and generally increase the prices by between 5% and 10% annually for a new bag.”
-    The bag’s price can vary among Hermès’s extended leather options, color, size
-    and that’s before you start looking at exotic skins, custom hardware, and other
-    personal touches which can bring the price upwards. Pricing for a Birkin can range
-    from around $7,000 and can go as high as $300,000. As many collectors venture
-    into the market for value when purchasing a Birkin, one of the most important
-    consideration when looking at a Birkin is the condition. “If a bag is in good
-    condition it can fetch up to or more than 80% of what the previous owner invested,
-    a bag in excellent condition up to or more than 100%, and if a bag in pristine
-    condition up to or more than 120% of what the previous owner invested.” When investing
-    in a Birkin, it’s also wise to consider the length of the investment. For instance,
-    if you are planning to hold on to the bag over a long period of time, or if you
-    are planning on wearing or holding on to the bag, neutral colors are more advisable
-    such as black, gold, brown or gray. These classic colors will never go out of
-    style, and the bag will maintain its value. “Most people want something they can
-    live in–that they can wear with jeans, with a suit, or carry on an airplane. So
-    the most practical choice is a neutral”. However, one of the traits, which make
-    Birkin handbags unique, is the variety of colors available, which are introduced
-    every season, many of which are specific and exclusive to Hermès. New colors have
-    shown to be more popular in the immediate resale market for collectors as a short
-    term investment. These would include vivid colors such as bright red, blue or
-    orange, which is Hermès signature company color. Most importantly, it is imperative
-    to know your leathers when purchasing a Birkin bag. Each leather has its uniqueness,
-    and each leather requires different levels of maintenance. Some of the standard
-    leathers such as Togo, Clemence and Epsom are textured to protect them from scratches
-    and tear. Rare and exotic skin Birkins are more valuable on the resale market
-    due to the difficulty Hermès has in obtaining them. These skins include crocodile,
-    alligator, lizard, snake, and ostrich. Crocodile, for example, is one of the most
-    expensive leathers because Hermès has to obey strict ethical standards. The skin
-    also takes decades to reach maturity, making it very rare. In June 2016, Christie’s
-    Hong Kong sold a 3040cm Himalayan Birkin, with white gold hardware set with 245F
-    color diamonds weighing close to ten karats for $300,168. This particular sale
-    was expensive because the bag was in pristine condition, and aside from it being
-    crocodile, it was white which is the hardest color to achieve with crocodile skin,
-    as you have to remove all of its natural pigment. Bought in 2008 by the seller,
-    the Himalayan bag had a presale estimate of $190,000 and was billed as the “most
-    valuable handbag in the world”.</p><p>…Simply stated, it appears that the bag’s
-    success hinges on this prestigious perception. A Birkin, terribly difficult to
-    get is therefore highly coveted. In our global economy, that’s all the brand needs
-    to pack the infinite waiting list. It is fashion’s version of Darwinism. We always
-    want what we can’t have, so we will do whatever we can to get it. For instance,
-    Victoria Beckham, the posh clothing designer, and wife of David Beckham reportedly
-    owns about 100 Birkins, collectively valued at $2 million. It includes a pink
-    Ostrich leather Birkin worth $150,000. Despite the fact that she has introduced
-    her own line of handbags, she’s been spotted by the paparazzi wearing a Birkin
-    bag. Kris Jenner also has a massive Birkin collection that she flaunts via social
-    media and the willing participation of paparazzi. Her collection includes an Electric
-    Blue 35cm which is supposedly worth $19,000. Actress Katie Holmes has gained attention
-    for a bold red Birkin, while Julianne Moore has been seen wearing a hunter green
-    40cm with gold hardware. Julia Roberts and Eva Longoria all have even been seen
-    with the bag. Even B-listed personalities such as reality star, Nicole Richie,
-    with a black Birkin workout bag, is famously noted as frequently asking the paparazzi,
-    “Did you get my bag?”. The Birkin has looked extra special on the arms of models,
-    Alessandra Ambrosio and Kate Moss. Singers such as Jennifer Lopez and Courtney
-    Love ironically show off their Birkins, and even world leaders such as Princess
-    Mary of Denmark, with her black crocodile Birkin worth $44,500, is aware of its
-    meaning and status.</p>
 - - https://www.newyorker.com/magazine/2010/11/22/natures-spoils
   - ! 'Nature''s Spoils: The underground food movement ferments revolution'
   - Burkhard Bilger (New Yorker)
@@ -11656,26 +11322,6 @@
     mechanisms to enable funding to public goods. We’ll explore a few of these in
     future rounds, and are especially interested in inflation funding mechanisms to
     fund public infrastructure.</p>
-- - https://old.reddit.com/r/gwern/comments/deqvft/how_often_do_researchers_not_read_the_papers_they/
-  - How often do researchers not read the papers they cite?
-  - Gwern Branwen
-  - 2019-10-07
-  - ''
-  - ! 'How often do authors not read their cites? This might seem near-impossible
-    to answer, but bibliographic analysis offers a cute trick. In olden times, citations
-    and bibliographies had to be compiled by hand; this is an error-prone process,
-    but one may make a different error from another author citing the same paper,
-    and one might correct any error on reading the original. On the other hand, if
-    you cite a paper because you blindly copied the citation from another paper and
-    never get around to reading it, you may introduce additional errors but you definitely
-    won''t fix any error in what you copied. So one can get an idea of how frequent
-    non-reads are by <em>tracing lineages of bibliographic errors</em>: the more people
-    copy around the same wrong version of a citation (out of the total set of citations
-    for that cite), the fewer of them must be actually reading it. Such copied errors
-    turn out to be quite common and represent a large fraction of citations, and thus
-    suggests that many paper are being cited without being read. Simkin & Roychowdhury
-    venture a guess that as many as 80% of authors citing a paper have not actually
-    read the original. [Bibliography of papers in the area.]'
 - - https://numinous.productions/ttft/
   - How Can We Develop Transformative Tools For Thought?
   - <a href="https://andymatuschak.org/">Andy Matuschak</a>, <a href="http://michaelnielsen.org/">Michael
@@ -13756,12 +13402,6 @@
   - 2019-04-22
   - ''
   - ! 'The Discriminator of a GAN is trained to detect outliers or bad datapoints. So it can be used for cleaning the original dataset of aberrant samples. This works reasonably well and I obtained BigGAN/StyleGAN quality improvements by manually deleting the worst samples (typically badly-cropped or low-quality faces), but has peculiar behavior which indicates that the Discriminator is not learning anything equivalent to a "quality" score but may be doing some form of <em>memorization</em> of specific real datapoints. What does this mean for how GANs work?'
-- - 'lm-human-preferences GitHub repo'
-  - OpenAI
-  - 2019-09-14
-  - ''
-  - ''
-  - ! '<p><strong>Status:</strong> Archive (code is provided as-is, no updates expected)</p><h1 id="lm-human-preferences">lm-human-preferences</h1><p>This repository contains code for the paper <a href="https://arxiv.org/abs/1909.08593">Fine-Tuning Language Models from Human Preferences</a>. See also our <a href="https://openai.com/blog/fine-tuning-gpt-2/">blog post</a>.</p><p>We provide code for:</p><ul><li>Training reward models from human labels</li><li>Fine-tuning language models using those reward models</li></ul><p>It does not contain code for generating labels. However, we have released human labels collected for our experiments, at <code>gs://lm-human-preferences/labels</code>. For those interested, the question and label schemas are simple and documented in <a href="https://github.com/openai/lm-human-preferences/blob/master/lm_human_preferences/label_types.py"><code>label_types.py</code></a>.</p><p>The code has only been tested using the smallest GPT-2 model (124M parameters).</p>'
 - - /docs/statistics/order/1964-mardia.pdf
   - Asymptotic Independence of Bivariate Extremes
   - K. V. Mardia
@@ -14133,7 +13773,7 @@
   - Gwern Branwen
   - 2019-10-07
   - ''
-  - ! 'One fertile source of leprechauns seems to be the observation that researchers do not read many of the papers that they cite in their own papers. The frequency of this can be inferred from pre-digital papers, based on bibliographic errors: if a citation has mistakes in it, such that one could not have actually looked up the paper in a library or database, and those mistakes were copied from another paper, then the authors almost certainly did not read the paper (otherwise they would have fixed the mistakes when they found them out the hard way) and simply copied the citation. The empirically-measured spread of bibliographic errors suggest that researchers frequently do not read the papers they cite. The frequency can be further confirmed by examining citations to see when the citers misdescribe the original paper, "quotation errors", showing that the errors involved are substantial and not merely bibliographic.'
+  - ! 'One fertile source of leprechauns seems to be the observation that researchers do not read many of the papers that they cite in their own papers. The frequency of this can be inferred from pre-digital papers, based on bibliographic errors: if a citation has mistakes in it, such that one could not have actually looked up the paper in a library or database, and those mistakes were copied from another paper, then the authors almost certainly did not read the paper (otherwise they would have fixed the mistakes when they found them out the hard way) and simply copied the citation. The empirically-measured spread of bibliographic errors suggest that researchers frequently do not read the papers they cite. The frequency can be further confirmed by examining citations to see when the citers misdescribe the original paper, "quotation errors", showing that the errors involved are substantial and not merely bibliographic. ... How often do authors not read their cites? This might seem near-impossible to answer, but bibliographic analysis offers a cute trick. In olden times, citations and bibliographies had to be compiled by hand; this is an error-prone process, but one may make a different error from another author citing the same paper, and one might correct any error on reading the original. On the other hand, if you cite a paper because you blindly copied the citation from another paper and never get around to reading it, you may introduce additional errors but you definitely won''t fix any error in what you copied. So one can get an idea of how frequent non-reads are by <em>tracing lineages of bibliographic errors</em>: the more people copy around the same wrong version of a citation (out of the total set of citations for that cite), the fewer of them must be actually reading it. Such copied errors turn out to be quite common and represent a large fraction of citations, and thus suggests that many paper are being cited without being read. Simkin & Roychowdhury venture a guess that as many as 80% of authors citing a paper have not actually read the original. [Bibliography of papers in the area.]'
 - - https://www.lesswrong.com/posts/NkjPp86uuyunxDoB8/subscripting-typographic-convention-for-citations-dates
   - "Subscripting Typographic Convention For Citations/Dates/Sources/Evidentials: A Proposal"
   - Gwern Branwen
@@ -14416,12 +14056,6 @@
   - 2019-11-19
   - 10.7326/M19-0655
   - ! '<p><em>Background</em>: Dietary guidelines generally recommend limiting intake of red and processed meat. However, the quality of evidence implicating red and processed meat in adverse health outcomes remains unclear.</p><p><em>Purpose</em>: To evaluate the association between red and processed meat consumption and all-cause mortality, cardiometabolic outcomes, quality of life, and satisfaction with diet among adults.</p><p><em>Data Sources</em>: <span class="smallcaps">EMBASE</span> (Elsevier), Cochrane Central Register of Controlled Trials (Wiley), Web of Science (Clarivate Analytics), <span class="smallcaps">CINAHL</span> (<span class="smallcaps">EBSCO</span>), and ProQuest from inception until July 2018 and <span class="smallcaps">MEDLINE</span> from inception until April 2019, without language restrictions, as well as bibliographies of relevant articles.</p><p><em>Study Selection</em>: Cohort studies with at least 1000 participants that reported an association between unprocessed red or processed meat intake and outcomes of interest.</p><p><em>Data Extraction</em>: Teams of 2 reviewers independently extracted data and assessed risk of bias. One investigator assessed certainty of evidence, and the senior investigator confirmed the assessments.</p><p><em>Data Synthesis</em>: Of 61 articles reporting on 55 cohorts with more than 4 million participants, none addressed quality of life or satisfaction with diet. Low-certainty evidence was found that a reduction in unprocessed red meat intake of 3 servings per week is associated with a very small reduction in risk for cardiovascular mortality, stroke, myocardial infarction (MI), and type 2 diabetes. Likewise, low-certainty evidence was found that a reduction in processed meat intake of 3 servings per week is associated with a very small decrease in risk for all-cause mortality, cardiovascular mortality, stroke, MI, and type 2 diabetes.</p><p><em>Limitation</em>: Inadequate adjustment for known confounders, residual confounding due to observational design, and recall bias associated with dietary measurement.</p><p><em>Conclusion</em>: The magnitude of association between red and processed meat consumption and all-cause mortality and adverse cardiometabolic outcomes is very small, and the evidence is of low certainty.</p>'
-- - /docs/psychology/2008-macknik.pdf
-  - "Attention and awareness in stage magic: turning tricks into research"
-  - Stephen L. Macknik, Mac King, James Randi, Apollo Robbins, Teller, John Thompson, Susana Martinez-Conde
-  - 2008-07-30
-  - 10.1038/nrn2473
-  - ! "Just as vision scientists study visual art and illusions to elucidate the workings of the visual system, so too can cognitive scientists study cognitive illusions to elucidate the underpinnings of cognition. Magic shows are a manifestation of accomplished magic performers' deep intuition for and understanding of human attention and awareness. By studying magicians and their techniques, neuroscientists can learn powerful methods to manipulate attention and awareness in the laboratory. Such methods could be exploited to directly study the behavioural and neural basis of consciousness itself, for instance through the use of brain imaging and other neural recording techniques."
 - - https://www.tensorflow.org/tfrc
   - "TensorFlow Research Cloud (TFRC): Accelerate your cutting-edge machine learning research with free Cloud TPUs"
   - TFRC (Google)
@@ -14560,12 +14194,6 @@
   - 1997-07
   - 10.2307/1399911
   - ! '<blockquote><p>Once Ejo asked: “What is meant by the expression: ‘Cause and effect are not clouded’?” Dogen said: “Cause and effect are immovable.” Ejo asked: “If this is so, how can we escape?” Dogen replied: “Cause and effect emerge clearly at the same time.” Ejo asked: “If this is so, does cause prompt the next effect, or does effect bring about the next cause?” Dogen said: “If everything were like that, it would be like Nan-ch’uan cutting the cat. Because the assembly was unable to say anything, Nan-ch’uan cut the cat in two. Later, when Nan-ch’uan told this story to Chao-chou, the latter put his straw sandal on his head and went out, an excellent performance. If I had been Nan-ch’uan, I would have said: ‘Even if you can speak, I will cut the cat, and even if you cannot speak, I will still cut it. Who is arguing about the cat? Who can save the cat?’”</p></blockquote><p>—Dogen, <em>Shobogenzo Zuimonki</em>, 1.6<sup>1</sup></p><blockquote><p>…“One day a student asked me, ‘Does a man of enlightenment fall under the yoke of causation or not?’ I answered, ‘No, he does not.’ Since then I have been doomed to undergo five hundred rebirths as a fox. I beg you now to give the turning word to release me from my life as a fox. Tell me, does a man of enlightenment fall under the yoke of causation or not?” Hyakujo answered, “He does not ignore [cloud] causation [cause and effect].” No sooner had the old man heard these words than he was enlightened.<sup>2</sup></p></blockquote><p>“Causation” in this passage refers to “moral causation.” The Buddhist concept of karma acknowledges that good/bad deeds, thoughts, and so forth result in good/bad effects. Thus the import of the question posed by the “fox” is whether or not the enlightened person is subject to karma. Hyakujo’s answer, in effect, affirms that the enlightened person is subject to moral causation. Katsuki Sekida offers a common Zen interpretation of this passage in his comment: “Thus to ignore causation only compounds one’s malady. To recognize causation constitutes the remedy for it.”<sup>4</sup></p><p>Dōgen’s employment of this story in the “Daishugyo” chapter of the <a href="https://en.wikipedia.org/wiki/Sh%C5%8Db%C5%8Dgenz%C5%8D"><em>Shōbōgenzō</em></a> implies that, on one level, he thinks Hyakujo’s answer indeed provides a “remedy” for the old man’s predicament.<sup>5</sup> Yet Dogen was rarely content with merely citing traditional Zen interpretations of passages; typically, he sought to push his students to a further understanding by a creative reinterpretation of a passage. Lest his disciple therefore think this not-ignoring/recognition of causation is de facto a release from it in an ultimate sense, Dogen answers that the passage means “cause and effect are immovable.” In other words, moral causation, for Dogen, is an inexorable fact of human existence.</p><p>Given this fact, Ejo then asks how we can ever “escape” moral causation. Dogen’s response is enigmatic: “Cause and effect arise at the same time.” Nowhere in the <em>Shōbōgenzō Zuimonki</em> does he further clarify this passage. However, the key to understanding this statement can be gleaned from his discussion of causation in the “Shoakumakusa” chapter of the <em>Shōbōgenzō</em>, wherein he observes that “cause is not before and effect is not after.”<sup>6</sup> As Hee-Jin Kim explains, Dogen saw cause and effect as absolutely discontinuous moments that, in any given action, arise simultaneously from “thusness.” Therefore,</p><blockquote><p>no sooner does one choose and act according to a particular course of action than are the results thereof (heavens, hells, or otherwise) realized in it …. Man lives in the midst of causation from which he cannot escape even for a moment; nevertheless, he can live from moment to moment in such a way that these moments are the fulfilled moments of moral and spiritual freedom and purity in thusness.<sup>7</sup></p></blockquote><p>…Dogen’s own proposed response helps us to see the point he is trying to make via the words of the old Master: “In expressing full function, there are no fixed methods.” In other words, there is no fixed formula for expressing and eliciting without-thinking. Nan-ch’uan, in Dogen’s view, betrayed an attachment to only two positions—to kill or not kill the cat. He was “fixated,” we might say, by these two possibilities. This is evidenced by the fact that he does indeed carry out one of them precisely as he said he would.</p>'
-- - https://www.goodreads.com/review/show/396645245
-  - "Review of R. Scott Bakker's <em>Second Apocalypse</em>"
-  - Gwern Branwen
-  - 2017-08-03
-  - ''
-  - ! '<p>Review of <a href="https://en.wikipedia.org/wiki/R._Scott_Bakker">R. Scott Bakker’s</a> epic fantasy series, <em>The Second Apocalypse</em>, a philosophically-oriented retelling of the Crusades in a universe where advanced aliens, having learned that nothing matters and consciousness is an illusion and the gods are actually demons who feast on the suffering of the damned in the afterlife, seek to cut the world off from Hell and save themselves from eternal torment.</p><p>The series follows a monk from a hidden monastery of monks who have devoted themselves to the mastery of all intellectual / physical capabilities and freedom from any external influence or control or manipulation, which they call “the darkness that comes before” , who comes out into the world on a mission to assassinate his defector father who might interfere with the monastery’s mission, and, using his hyper-developed abilities, takes over countries to launch a crusade against his father, founds an empire, and succeeds in killing his father.</p><p>He then turns his crusade against the aliens, who are a threat to all humanity. Contemporaneously, the last survivor of the monks achieves enlightenment and commits suicide. After fighting across a continent and reaching the very throne room of the aliens and on the brink of defeating them, he fails when his son turns out to be the missing key to the aliens’ technology, enabling them to resurrect the ‘no-god’ which seals off the world from Hell.</p><p>I note that <em>The Second Apocalypse</em> draws heavily on Frank Herbert’s <em>Dune</em>, and both deal with similar themes of human capability and free will. But where Herbert sees increasing human freedom and capabilities as desirable and a progression without end, leading to endless destinations in a universe going on to infinity, Bakker sees liberation as leading to a ‘semantic holocaust’, where one realizes the empty illusion of consciousness and the nonexistence of morals, yielding only hedonism and nihilism; the monks’ goal of absolute freedom leads to an enlightenment whose logical consummation is death.</p>'
 - - https://believermag.com/under-the-weather/
   - "Under the Weather: As Psychiatrists And Philosophers Begin To Define A Pervasive Mental Health Crisis Triggered By Climate Change, They Ask Who Is Really Sick: The Individual Or Society?"
   - Ash Sanders (The Believer)
@@ -14698,7 +14326,7 @@
   - 2019-10-14
   - ''
   - ! 'Fairy tale opera: a despotic Oriental princess chops off the heads of suitors if they cannot answer her riddle. A random prince happens to do so, sets her a counter-riddle, she fails, he tells her the answer, she falls in love with him for no reason, The End. Yeah, pretty dumb. Some amazing costumes and sets, though.'
-- - '/newsletter/2019/05#dialogues-des-carmelites'
+- - /newsletter/2019/05#dialogues-des-carmelites
   - 'Review of <em>Dialogues des Carmélites</em> (opera)'
   - Gwern Branwen
   - 2019-05-20
@@ -15545,12 +15173,6 @@
   - 2019-06-11
   - 10.7554/eLife.45183
   - ! '<p>The ability to identify medical reversals and other low-value medical practices is an essential prerequisite for efforts to reduce spending on such practices. Through an analysis of more than 3000 randomized controlled trials (<span class="smallcaps">RCT</span>s) published in three leading medical journals (the Journal of the American Medical Association, the Lancet, and the New England Journal of Medicine), we have identified 396 medical reversals. Most of the studies (92%) were conducted on populations in high-income countries, cardiovascular disease was the most common medical category (20%), and medication was the most common type of intervention (33%).</p>'
-- - /docs/statistics/bias/2019-kvarven.pdf
-  - Comparing meta-analyses and preregistered multiple-laboratory replication projects
-  - Amanda Kvarven, Eirik Strømland, Magnus Johannesson
-  - 2019-12-23
-  - 10.1038/s41562-019-0787-z
-  - ! '<p>Many researchers rely on meta-analysis to summarize research evidence. However, there is a concern that publication bias and selective reporting may lead to biased meta-analytic effect sizes. We compare the results of meta-analyses to large-scale preregistered replications in psychology carried out at multiple laboratories. The multiple-laboratory replications provide precisely estimated effect sizes that do not suffer from publication bias or selective reporting. We searched the literature and identified 15 meta-analyses on the same topics as multiple-laboratory replications. We find that meta-analytic effect sizes are significantly different from replication effect sizes for 12 out of the 15  meta-replication pairs. These differences are systematic and, on average, meta-analytic effect sizes are almost three times as large as replication effect sizes. We also implement three methods of correcting meta-analysis for bias, but these methods do not substantively improve the meta-analytic results.</p>'
 - - /docs/music-distraction/2011-kampfe.pdf
   - 'The impact of background music on adult listeners: A meta-analysis'
   - Juliane Kämpfe, Peter Sedlmeier, Frank Renkewitz
@@ -16129,3 +15751,15 @@
   - '2011'
   - '10.2752/175470810X12863771378671'
   - ! '<p>The decades surrounding the Second World War saw an intense wave of interest in pictographic communication, with social scientists and graphic designers promoting the potential of universal pictographic “language” to bring about international understanding and co-operation. This article explores the historical relationship between pictographic design and internationalist politics in this era through the work of Rudolf Modley, a pioneering designer of information graphics whose career spanned from the socialist experiments of 1920s Vienna to humanist advocacy projects in late-1960s America. Tracing the complex relationship between visual communication, commerce and politics in mid-twentieth-century design, this article further reflects on the decline of the pictographic project after the 1970s, when pictographs at once gained a broad global currency and lost their political thrust just as the dream of an international visual language was ironically realized in the triumph of a global traffic in mass-consumable images. [Keywords: pictographic design, internationalism, information design, Rudolf Modley, Otto Neurath, Margaret Mead]</p>'
+- - /docs/genetics/heritable/2012-kirzinger.pdf
+  - Genetic and Environmental Influences on Media Use and Communication Behaviors
+  - Ashley E. Kirzinger, Christopher Weber, Martin Johnson
+  - 2014-04-01
+  - 10.1111/j.1468-2958.2011.01424.x
+  - ! '<p>A great deal of scholarly work has explored the motivations behind media consumption and other various communication traits. However, little research has investigated the sources of these motivations and virtually no research considers their potential genetic underpinnings. Drawing on the field of behavior genetics, we use a classical twin design study to examine the genetic and environmental influences on nine communication behaviors. Our findings indicate a substantial portion of the total variance in media habits can be attributed to genes, as much as one-third of the variance in some instances. Mass communication scholars would benefit by paying closer attention to heritability when thinking about the causes as well as the consequences of media traits in contemporary society.</p>'
+- - /docs/history/2018-wang.pdf
+  - 'Sons and Lovers: Political Stability in China and Europe Before the Great Divergence'
+  - Yuhua Wang
+  - 2018-10-25
+  - 10.2139/ssrn.3058065
+  - ! '<p>Rulers’ long duration in the medieval period had contributed to the rise of Europe. But what explained premodern ruler duration? While the extant answers focus on formal, political institutions, I examine the role of marriage and inheritance norms in affecting ruler survival. Using a novel dataset of over 1,000 monarchs in China and Europe from 1000 to 1800 CE, I obtain two findings that have been overlooked by the existing literature. First, contrary to the view that European rulers had exceptional stability, I find that Chinese monarchs stayed in power longer than their European counterparts. Second, I find a strong effect of family practices on ruler survival. More liberal marriage and inheritance norms provided Chinese emperors with sustained availability of male heirs, which reduced palace coups. But the Church’s control of royal marriage and inheritance in Europe decreased the number of male heirs, which increased the probability of a deposition. [Keywords: Ruler duration, succession politics, informal institutions, China, Europe]</p>'
