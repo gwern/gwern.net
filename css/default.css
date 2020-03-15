@@ -604,71 +604,6 @@ figure.full-width {
     height: auto;
 }
 
-/*****************/
-/* INLINE QUOTES */
-/*****************/
-
-article > :not(#TOC) span.quote-mark.open + a,
-q {
-    background-color: rgba(0,0,0,0.04);
-    box-shadow: 0 0 0 2px rgba(0,0,0,0.04);
-}
-span.quote-mark.open + a q {
-    background-color: transparent;
-    box-shadow: none;
-}
-article > :not(#TOC) blockquote span.quote-mark.open + a,
-blockquote q {
-    border-color: transparent;
-    background-color: transparent;
-    box-shadow: none;
-}
-/*  WARNING: because of the use of <q>s to get fancy highlighted quotes as syntax-highlighting,
-    quote marks are not by default included in browser copy-paste, possibly annoying users.
-    You need the following CSS & a line of JS in default.html to insert real quotes.
-    */
-q::before,
-q::after {
-    content: none;
-}
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    q {
-        position: relative;
-        margin: 0 calc(1ch + 5px);
-    }
-    q::before,
-    q::after {
-        position: relative;
-        display: inline-block;
-        width: 0;
-        text-indent: 0;
-    }
-    q::before {
-        content: "“";
-        left: calc(-1 * (1ch + 2px));
-    }
-    q::after {
-        content: "”";
-        right: -3px;
-    }
-    span.quote-mark {
-        display: none;
-    }
-}
-
-
-span.quote-mark {
-    opacity: 0.9;
-}
-span.quote-mark.open {
-    margin: 0 3px 0 2px;
-}
-span.quote-mark.close {
-    margin: 0 2px 0 3px;
-}
-
 /*************/
 /* EPIGRAPHS */
 /*************/
@@ -689,13 +624,13 @@ span.quote-mark.close {
     z-index: 1;
     overflow: visible;
 }
-.epigraph q {
+.epigraph p:nth-child(1)  {
     font-style: italic;
     background-color: inherit;
 }
 /*  Reverse back to normal when italics are used inside an epigraph.
     */
-.epigraph q em {
+.epigraph p:nth-child(1) em {
     font-style: normal;
 }
 .epigraph blockquote > p:nth-last-child(2) > span.quote-mark:first-child,
@@ -712,10 +647,7 @@ span.quote-mark.close {
     font-size: 0.875em;
     text-indent: 0;
 }
-.epigraph p:nth-last-of-type(n+2) > q::before,
-.epigraph p:nth-last-of-type(n+2) > q::after {
-    display: none;
-}
+
 .epigraph blockquote::before,
 .epigraph blockquote::after {
     display: block;
@@ -734,9 +666,7 @@ span.quote-mark.close {
     bottom: -1em;
 }
 
-article > :not(#TOC) .epigraph blockquote a:link,
-article > :not(#TOC) .epigraph blockquote a:link q,
-article > :not(#TOC) .epigraph blockquote q a:link {
+article > :not(#TOC) .epigraph blockquote a:link{
     text-shadow:
          0.03em 0       #fff,
         -0.03em 0       #fff,
