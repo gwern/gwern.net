@@ -624,13 +624,13 @@ figure.full-width {
     z-index: 1;
     overflow: visible;
 }
-.epigraph p:nth-child(1)  {
+.epigraph p  {
     font-style: italic;
     background-color: inherit;
 }
-/*  Reverse back to normal when italics are used inside an epigraph.
+/*  Reverse back to normal when italics are used inside an epigraph, or final block.
     */
-.epigraph p:nth-child(1) em {
+.epigraph p:nth-child(1) em, .epigraph p:last-child {
     font-style: normal;
 }
 .epigraph blockquote > p:nth-last-child(2) > span.quote-mark:first-child,
@@ -1705,7 +1705,7 @@ p.hang {
 /* Highlighted boxes: 'admonitions' are small break-out boxes with notes, tips, warnings, etc. for the reader.  */
 /* These are particularly useful in didactic technical writing, where there are many ways to slip up while using or coding something. */
 /* Available (in increasing order of minatoriness): 'tip', 'note', 'warning', 'error'. */
-/* Based on Markdeep's implementation: https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions */
+/* Based on Markdeep's implementation: https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions (which appears loosely inspired by Wikipedia's notification templates like `{{NPOV}}`) */
 /* and modified to grayscale (increasing intensity == increasing warning) for gwern.net. */
 /* Usage examples: */
 /* - <div class="admonition tip"><div class="admonition-title">Tip title (optional)</div> text</div> */
@@ -1781,8 +1781,8 @@ p.hang {
 .admonition.tip::before {
     content: "\24d8"; /* Circled Latin Small Letter 'ⓘ' (U+24D8) */
     font-size: 1.7em;
-    top: -8px;
-    left: -2.95rem;
+    top: -3px;
+    left: -2.5rem;
 }
 .admonition.warn::before,
 .admonition.warning::before {
