@@ -692,7 +692,6 @@
    , ("Greenland.", "/Greenland")
    , ("static/metadata/custom.hs", "/static/metadata/custom.yaml")
    , ("docs/statistics/2015-franco.pdf%20http://journals.sagepub.com/doi/10.1177/1948550615598377", "/docs/statistics/2015-franco.pdf")
-   , ("docs/statistics/2015-franco.pdf http://journals.sagepub.com/doi/10.1177/1948550615598377", "/docs/statistics/2015-franco.pdf")
    , ("Resorter](Resorter)", "/Resorter")
    , ("docs/culture/2018-micola", "/docs/culture/2018-micola.pdf")
    , ("Notex", "/Notes")
@@ -1132,4 +1131,10 @@
   , ("elephant", "https://www.thenewatlantis.com/publications/do-elephants-have-souls")
   , ("docs/it/1963-rosenthal.pdu", "/docs/iq/1963-rosenthal.pdf")
   , ("STATIC/JS/POPUPS.JS", "/static/js/popups.js")
- ]
+  , ("docs/cs/1955-nash)", "/docs/cs/1955-nash")
+  , ("docs/economics/2018-creditsuisse.pdf", "/docs/economics/2013-creditsuisse.pdf")
+  , ("docs/longevity/2019-decabo.pdf‬?fbclid=IwAR0jxCyTPmI_sk41ue_IjeHqbpLiYLCkUTwrWFolIzoOEU044BDj3PXdByo", "/docs/longevity/2019-decabo.pdf")
+  , ("indes", "/index")
+  , ("space-repetition", "/Spaced-repetition")
+  , ("Melatonin.", "/Melatonin")
+  ]
