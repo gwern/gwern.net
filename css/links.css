@@ -213,8 +213,12 @@
   bottom: 0.3em;
   left: 0.1em; }
 
+/* Kevin Simler's Melting Asphalt blog */
 #markdownBody a[href*="meltingasphalt.com"]::after {
-    content: "▲▲△"; }
+    content: "▲▲△";
+   font-size: 60%;
+    bottom: 1em;
+    letter-spacing: -0.1em; xo}
 
 /* Bitcoin Talk: close enough! */
 #markdownBody a[href*="bitcointalk.org"]::after,
@@ -579,7 +583,7 @@
     background-position: bottom center;
     height: 1em;
     width: 0.8em;
-    margin:0 0 2px 3px;
+    margin: 0 0 2px 3px;
     opacity: 0.60;
 }
 
@@ -598,7 +602,7 @@
     background-position: bottom center;
     height: 1em;
     width: 0.8em;
-    margin:0 0 2px 3px;
+    margin: 0 0 2px 3px;
     opacity: 0.60;
 }
 
