@@ -215,7 +215,7 @@
 
 /* Kevin Simler's Melting Asphalt blog */
 #markdownBody a[href*="meltingasphalt.com"]::after {
-    content: "▲▲△";
+    content: "▲▲";
    font-size: 60%;
     bottom: 1em;
     letter-spacing: -0.1em; xo}
