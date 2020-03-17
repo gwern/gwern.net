@@ -1137,4 +1137,8 @@
   , ("indes", "/index")
   , ("space-repetition", "/Spaced-repetition")
   , ("Melatonin.", "/Melatonin")
+  , ("docs /borges/1977-borges-blindness.pdf", "/docs/borges/1977-borges-blindness.pdf")
+  , ("docs/iq/2014-hyde.pdfmerger,", "/docs/iq/2014-hyde.pdf")
+  , ("docs/nicotine/2003-shiffman.pdf'I", "/docs/nicotine/2003-shiffman.pdf")
+  , ("ttft/print/TTFT.pdf", "https://numinous.productions/ttft/print/TTFT.pdf")
   ]
