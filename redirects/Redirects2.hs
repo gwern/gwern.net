@@ -1141,4 +1141,6 @@
   , ("docs/iq/2014-hyde.pdfmerger,", "/docs/iq/2014-hyde.pdf")
   , ("docs/nicotine/2003-shiffman.pdf'I", "/docs/nicotine/2003-shiffman.pdf")
   , ("ttft/print/TTFT.pdf", "https://numinous.productions/ttft/print/TTFT.pdf")
+  , ("Improvements。", "/Improvements")
+  , ("docs/SR/2019-04-22-deepdotweb-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
   ]
