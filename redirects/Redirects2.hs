@@ -1143,4 +1143,6 @@
   , ("ttft/print/TTFT.pdf", "https://numinous.productions/ttft/print/TTFT.pdf")
   , ("Improvements。", "/Improvements")
   , ("docs/SR/2019-04-22-deepdotweb-dnmlist.html", "/docs/sr/2019-04-22-deepdotweb-dnmlist.html")
+  , ("docs/www.rs.io/4813bcac7d8f0a12e17f151fd5ad87771b364373.html", "https://rs.io/anki-tips/")
+  , ("Mugging", "/mugging")
   ]
