@@ -1147,4 +1147,11 @@
   , ("docs/www/rs.io/4813bcac7d8f0a12e17f151fd5ad87771b364373.html", "https://rs.io/anki-tips/")
   , ("Mugging", "/mugging")
   , ("docs/iq/1963-rosenthal.pdf Select", "/docs/iq/1963-rosenthal.pdf")
+  , ("Faces)", "/Faces")
+  , ("blog/everything-i-know-strategies-tips-and-tricks-for-spaced-repetition-anki/index.html", "https://senrigan.io/blog/everything-i-know-strategies-tips-and-tricks-for-spaced-repetition-anki/")
+  , ("site.cabal", "/hakyll.hs")
+  , ("stack.cabal", "/hakyll.hs")
+  , ("stack.taml", "/hakyll.hs")
+  , ("stack.yaml", "/hakyll.hs")
+  , ("wiki.cabal", "/hakyll.hs")
   ]
