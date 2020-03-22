@@ -735,8 +735,6 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
     background-color: #e6e6e6;
 }
 
-article > :not(#TOC) a:link,
-article > :not(#TOC) span.quote-mark.open + a:link,
 article > :not(#TOC) blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote a:link,
 article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {

@@ -25,8 +25,8 @@
     position: relative;
 }
 
-/*  Collapsible section elements.
-    */
+/*  Collapsible section elements. */
+#markdownBody .collapse + p { margin-top: 1em; }
 section.collapse {
     overflow: hidden;
     margin: 1.5em 0 0 -1em;
@@ -97,6 +97,7 @@ section.collapse > :first-child > a::before {
 /*  The interactable region to expand/collapse.
     */
 .disclosure-button {
+    z-index: 1;
     position: absolute;
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -1691,7 +1692,8 @@ p.hang {
 /* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /DNM-archives#overall-coverage or /Replication */
 /* Uses CSS3 columns: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts https://www.caniuse.com/#feat=multicolumn */
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
-#markdownBody .columns > ul, #markdownBody .columns > ol {
+#markdownBody .columns > ul li, #markdownBody .columns > ol li,
+ #markdownBody .columns > ul li p, #markdownBody .columns > ol li p {
   column-width: 30ch;
   column-gap: 6ch;
 }
