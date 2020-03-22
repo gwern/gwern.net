@@ -1154,4 +1154,6 @@
   , ("stack.taml", "/hakyll.hs")
   , ("stack.yaml", "/hakyll.hs")
   , ("wiki.cabal", "/hakyll.hs")
+  , ("Adsssss", "/Ads")
+  , ("newsletter/2014/index.html", "/tags/newsletter")
   ]
