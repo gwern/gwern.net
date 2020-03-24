@@ -1595,7 +1595,7 @@ p.hang {
         body.drop-caps-cheshire #abstract + p::first-letter,
         body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-cheshire::first-letter,
-        #markdownBody .drop-cap-goudy > p::first-letter {
+        #markdownBody .drop-cap-cheshire > p::first-letter {
             font-size: 6.625em;
         }
         body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
