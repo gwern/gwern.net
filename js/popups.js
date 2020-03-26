@@ -1,7 +1,7 @@
 // popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-03-20 19:47:18 gwern"
+// When:  Time-stamp: "2020-03-26 13:44:27 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -38,13 +38,13 @@ Extracts = {
     isMobileMediaQuery: matchMedia("not screen and (hover:hover) and (pointer:fine)"),
     extractForTarget: (target) => {
         var doi = "";
-        var archive = (target.dataset.urlOriginal != undefined) ?
-                        (`<span class="originalURL"><code>[` +
-                         `<a href="${target.dataset.urlOriginal}" ` +
-                         `title="${target.dataset.popupTitle} (original URL for local gwern.net mirror)" ` +
-                         `alt="Original URL for this archived link; may be broken.">URL</a>` +
-                         `]</code></span>`) :
-                         "";
+        var archive = "";
+        if (target.dataset.urlOriginal != undefined) {
+            archive = (`<span class="originalURL"><code>[` +
+                       `<a href="${target.dataset.urlOriginal}" ` +
+                       `title="Link to original URL: '${target.dataset.urlOriginal}' (for '${target.dataset.popupTitle}')" ` +
+                       `alt="Original URL for this archived link; may be broken.">URL</a>` +
+                       `]</code></span>`); }
         if (target.dataset.popupDoi != undefined) {
             doi = `; ` +
                   `<a href="https://ricon.dev/citations_for_doi?doi=${target.dataset.popupDoi}" ` +
@@ -446,7 +446,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv > div {
     background-color: #fff;
     padding: 12px 16px 14px 16px;
-    border: 3px double #aaa;
+    border: 3px solid #ccc;
     line-height: 1.45;
     overflow: auto;
     overscroll-behavior: none;
