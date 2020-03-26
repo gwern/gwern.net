@@ -252,6 +252,7 @@ header h1 {
     display: block;
     margin: 0 auto 0.5em auto
 }
+#page-metadata #page-description ~ * { font-size: 0.9em; }
 
 #page-metadata #page-description+br {
     display: none
