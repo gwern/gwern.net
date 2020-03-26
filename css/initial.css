@@ -132,13 +132,10 @@ body {
     #sidebar a#logo img {
         width: 64px
     }
-    #sidebar a.new,
     #sidebar a.patreon {
         border-top: 1px dotted #aaa
     }
     #sidebar a.new {
-        margin: 1.25em 0 0.5em 0;
-        padding-top: 1.125em;
         box-shadow: 0 1.125em 0 0 #fff inset
     }
     #sidebar a.patreon {
@@ -190,7 +187,6 @@ body {
         flex-flow: row wrap;
         margin: 0.5em 0 0 0
     }
-    #sidebar a.home,
     #sidebar a.site,
     #sidebar a.links {
         flex: 1 1 20%
@@ -556,8 +552,6 @@ header h1 {
 
 #abstract blockquote {
     margin: 0 0 1.5em 0;
-    box-shadow: 0 0 0 5px #fff inset,
-                0 0 0 6px #ccc inset;
     border-color: #bbb;
     padding: 0.9rem 1.25rem 0.95rem 1.25rem
 }

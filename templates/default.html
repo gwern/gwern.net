@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="title" content="$title$">
+    <meta name="citation_title" content="$title$">
+    <meta name="og:title" content="$title$">
+    <meta name="twitter:title" content="$title$">
+    <meta name="generator" content="hakyll">
+    <meta name="creator" content="gwern.net">
+    <meta name="author" content="$author$">
+    <meta name="citation_author" content="$author$">
+    <meta name="contact" content="https://www.gwern.net/Links#contact">
+    <link rel="index" title="Gwern.net" href="http://www.gwern.net/">
+    <meta name="twitter:creator" content="gwern">
+    <meta name="twitter:site" content="gwern.net">
+    <meta name="og:site" content="gwern.net">
+    <meta name="og:type" content="article">
+    <meta name="description" content="$description$">
+    <meta name="og:description" content="$description$">
+    <meta property="og:image" content="https://www.gwern.net$thumbnail$">
+    <meta name="keywords" content="$tags$">
+    <meta name="dc.date.issued" content="$created$">
+    <meta name="citation_publication_date" content="$created$">
+    <meta name="dcterms.modified" content="$modified$">
+    <link rel="schema.dcterms" href="http://purl.org/dc/terms/">
+    <meta name="dcterms.rights" content="CC PD-0">
+    <meta name="dc.rights" content="https://creativecommons.org/publicdomain/zero/1.0/">
+    <link rel="canonical" href="https://www.gwern.net$url$">
+    <meta name="citation_fulltext_html_url" content="https://www.gwern.net$url$">
+    <meta name="og:url" content="https://www.gwern.net$url$">
+    <meta name="page-source" content="https://www.gwern.net$url$.page">
+    <meta name="citation_fulltext_world_readable" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+
+    <title>$title$ - Gwern.net</title>
+
+    <link href="https://old.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&amp;sort=new&amp;restrict_sr=on" type="application/atom+xml" rel="alternate" title="ATOM/RSS feed of Gwern.net additions/miscellaneous writings" />
+    <link rel="shortcut icon" type="image/x-icon" href="/static/img/favicon.png" />
+
+    <!-- fetch the title & body fonts & logo immediately to avoid re-rendering -->
+    <link rel="preload" href="/images/logo-smooth.svg" as="image" type="image/svg+xml">
+    <!-- CSS inline for speed -->
+    <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/initial.css" /> -->
+    <style>$partial("static/css/initial.css")$</style>
+    <link rel="preload" as="style"      href="/static/css/default.css" />
+    <link rel="preload" href="/static/font/SourceSansPro-BASIC-Regular.ttf"         as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSansPro-BASIC-RegularItalic.ttf"   as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSansPro-BASIC-Semibold.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Bold.ttf"           as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Regular.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Semibold.ttf"       as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-SemiboldItalic.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-RegularItalic.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
+    <!-- Full font CSS is loaded in footer. Here, inline only the minimal set of font CSS needed for initial screen, for speed: -->
+    <style>
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 400;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 400;
+        font-style: italic;
+        src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 600;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 700;
+        font-style: normal;
+        src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: 'Source Sans Pro';
+        font-weight: 400;
+        font-style: normal;
+        src: url('/static/font/SourceSansPro-BASIC-Regular.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Sans Pro';
+        font-weight: 400;
+        font-style: italic;
+        src: url('/static/font/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Sans Pro';
+        font-weight: 700;
+        font-style: normal;
+        src: url('/static/font/SourceSansPro-BASIC-Bold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    </style>
+
+    <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
+    <script src="/static/js/sidenotes.js" async></script> <!-- since sidenotes visibly render, unlike the other JS libs, we prioritize its loading in the head -->
+    <!-- Hint at necessary third-party domains -->
+    <link rel="preconnect" href="https://www.google-analytics.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://stats.g.doubleclick.net">
+
+  </head>
+  <body class="$safeURL$ $cssExtension$">
+
+    <main>
+      <div id="sidebar">
+        <a id="logo" rel="home me contents" href="/index" title="Homepage: categorized list of articles index">
+          <img alt="Gwern.net Site Logo (a Gothic/Fraktur blackletter capital G)" src="/images/logo-smooth.svg">
+        </a>
+        <div id="sidebar-links">
+        <a class="site" href="/About" title="Site ideals, source, content, traffic, examples, license" rel="author">Site</a>
+        <a class="links" href="/Links" title="Who am I online, what have I done, what am I like? Contact information; sites I use; things I've worked on" rel="author">Me</a>
+        <a class="new" href="/Changelog" title="Changelog of what's new or updated">New:</a>
+        <a class="mail" href="https://tinyletter.com/gwern" title="Monthly mailing list: newsletter signup form" rel="me"><i>mail</i></a>
+        <a class="r_gwern" href="https://old.reddit.com/r/gwern/" title="Gwern subreddit: link-sharing &amp; commentary (the links typically are included in the monthly newsletter)" rel="me"><em><code>/r/gwern</code></em></a>
+        <a class="patreon" href="https://www.patreon.com/gwern" title="Link to Patreon donation profile to support my writing" rel="me">support on<br><span>PATREON</span></a>
+        </div>
+      </div>
+
+      <header>
+        <h1>$title$</h1>
+      </header>
+
+      <article>
+
+        <noscript><div class="admonition warning"><div class="admonition-title">JS Disabled</div> For support of <a href="/About#design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (table-sorting/collapsible-sections/image-zooms/floating-footnotes/Disqus-comment), please enable JavaScript.</div></noscript>
+
+        <div id="page-metadata">
+          <p><span id="page-description" title="Short description of page: longer than title, but shorter than abstract."><em>$description$</em></span>
+            <br/>
+            <span id="tags" title="List of tags for this page."><em>$tagsHTML$</em></span> (<span id="creation" title="Date page contents were begun."><em>$created$</em></span>–<span id="page-source"><a title="Link to latest revision of the raw Markdown text source for this page, '$title$': $url$.page" href="$url$.page"><span id="modified" title="Date of last major modification to this page."><em>$modified$</em></span></a></span>; <span id="status" title="Writing status of current page: ranges 'abandoned'/'notes'/'draft'/'in progress'/'finished'"><em>$status$</em></span>; <a href="/About#confidence-tags" title="Explanation of 'confidence' metadata: probability of overall being meaningfully correct, expressed as Kesselman Estimative Words (ranging 0–100%: 'certain'/'highly likely'/'likely'/'possible'/'unlikely'/'highly unlikely'/'remote'/'impossible')"><em>$confidence$</em></a>; <a href="/About#importance-tags" title="Explanation of 'importance' metadata: rating 1–10 about how much a topic matters to the world."><em>$importance$</em></a>)</p>
+          <hr>
+        </div>
+
+        $body$
+
+        <div id="footer">
+          <p><a href="https://docs.google.com/forms/d/17cNf0ohMHKeTwmUM_V_hDVkirjsf8HLMWsJco8gt2Eg/viewform" title="Google Docs web form for submitting anonymized feedback to Gwern Branwen"><em>Submit Anonymous Feedback</em></a></p>
+        </div>
+
+      </article>
+    </main>
+
+    <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
+    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/links.css" />
+
+    <!-- floating footnotes fallback from sidenotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ ; not lazy-loaded as (almost) all pages have footnotes -->
+    <script src="/static/js/footnotes.js" defer></script>
+
+    <!-- JS library for annotating hyperlinks with introduction/summary from various sources; likewise -->
+    <script src="/static/js/popups.js" defer></script>
+
+    <!-- JS library for clickable/zoomable images, for images larger than can be displayed in -->
+    <!-- the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css -->
+    <!-- not lazy-loaded due to various bugs -->
+    <script src="/static/js/image-focus.js" defer></script>
+
+    <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
+    <script src="/static/js/darkmode.js" defer></script>
+
+    <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. cover source-code block listings too (for large R sections especially) -->
+    <script src="/static/js/rewrite.js" defer></script>
+
+    <!-- Async load Google Analytics  -->
+    <script id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" async></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-18912926-1');
+    </script>
+
+    <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter, as tables are on only a very small subset of pages -->
+    <div id="comments">
+      <div id="disqus_thread"></div>
+      <script>
+        function dynamicallyLoadScript(url) {
+            var script = document.createElement("script");
+            script.src = url;
+            document.head.appendChild(script);
+        }
+
+       var lazyLoadObserver = function(f, selectors) {
+           if (('IntersectionObserver' in window) &&
+               ('IntersectionObserverEntry' in window) &&
+               ('intersectionRatio' in window.IntersectionObserverEntry.prototype)) {
+                var intersectionObserver = new IntersectionObserver(function(entries) {
+                     if (entries[0].intersectionRatio <= 0) return;
+
+                     f();
+               }, { rootMargin: '140%' } );
+
+               var target = document.querySelector(selectors);
+               if (!(target === null)) { intersectionObserver.observe(target); }
+           }
+           else { f(); }
+      }
+
+       var disqus_shortname = ''; // declare variable globally as a way to make sure insertDisqus runs once and only once
+       var insertDisqus = function() {
+        if (disqus_shortname == '') {
+           disqus_shortname = 'gwern';
+           (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+           })();
+        }
+       }
+      // 1. Load Disqus comments
+      lazyLoadObserver(insertDisqus, '#disqus_thread');
+
+      // 2. sort tables: http://tablesorter.com/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions
+      lazyLoadObserver(function(){dynamicallyLoadScript('/static/js/tablesorter.js')}, 'table');
+      </script>
+      <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
+    </div>
+
+  </body>
+</html>
