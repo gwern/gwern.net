@@ -139,7 +139,7 @@ section.collapse:target > .disclosure-button {
     pointer-events: none;
 }
 .collapse:not(:target) > .disclosure-button:not(:checked) {
-    background-color: rgba(255,255,255,0.5);
+    background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.7));
 }
 .collapse:not(:target) > .disclosure-button:not(:checked):hover {
     background-color: rgba(255,255,255,0.3);
@@ -769,11 +769,13 @@ a.footnote-ref {
 /*=------------------------=*/
 
 .footnotes .footnote-back {
-    margin: 0 0 0 5px;
+    margin: 0 0 0 10px;
     position: relative;
     font-weight: bold;
     line-height: 1;
+    border: 1px dotted #000;
     display: inline-block;
+    padding: 5px 5px 0 6px;
     text-indent: 0;
     vertical-align: bottom;
     bottom: 2px;
@@ -894,10 +896,6 @@ a.footnote-ref {
     left: calc(100% + 7.5ch);
 }
 
-/* If in a sidenote, the sidenote & anchor are both simultaneously displayed, and the matching anchor appears on hover; therefore, there is no need to show the anchor link, since you are already in the right place. */
-#sidenote-column-left .footnote-back,
-#sidenote-column-right .footnote-back { display: none; }
-
 /*  Hide sidenote columns on narrow viewports.
     */
 @media only screen and (max-width: 176ch) {
@@ -937,7 +935,9 @@ a.footnote-ref {
     background-color: #fff;
     box-shadow:
         0 0 0 10px #fff,
-        0 0 0 11px #aaa;
+        0 0 0 11px #aaa,
+        0 0 0 12px #fff,
+        0 0 0 13px #aaa;
     opacity: 1.0;
 }
 .sidenote:target {
@@ -1086,7 +1086,7 @@ a.footnote-ref {
     font-weight: 600;
     position: absolute;
     top: 3px;
-    outline: 3px solid #ccc;
+    outline: 3px double #ccc;
     width: 2em;
     height: 2em;
     display: flex;
@@ -1103,7 +1103,7 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 .sidenote:hover > .sidenote-self-link,
 .sidenote:target > .sidenote-self-link,
 .sidenote.targeted > .sidenote-self-link {
-    outline: 3px solid #aaa;
+    outline: 3px double #aaa;
 }
 #sidenote-column-left .sidenote > .sidenote-self-link {
     right: 3px;
@@ -1398,7 +1398,7 @@ code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
 code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
 code span.ch { color: #924c9d; } /* Char */
 code span.cn { color: #aa5500; } /* Constant */
-code span.co { color: #898887; } /* Comment */
+code span.co { color: #787878; } /* Comment */
 code span.cv { color: #0095ff; } /* CommentVar */
 code span.do { color: #607880; } /* Documentation */
 code span.dt { color: #0057ae; } /* DataType */
