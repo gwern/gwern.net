@@ -16087,3 +16087,9 @@
   - '1979'
   - 10.1080/00461527909529204
   - ! '<p>In spite of all its announced advantages, the implementation of mastery learning instruction often falls short of theoretical expectations. As discussed under the four major characteristics of mastery learning [systematic design of instruction/instructional correctives/ample time to learn/clear criterion of mastery], these implementation weaknesses pose serious problems for unsuspecting students, teachers, and instructional designers alike.</p>'
+- - /docs/iq/2006-jones.pdf
+  - 'Intelligence, Human Capital, and Economic Growth: A Bayesian Averaging of Classical Estimates (BACE) Approach'
+  - Garett Jones, William Joel Schneider
+  - '2006'
+  - 10.1007/s10887-006-7407-2
+  - ! '<p>Human capital plays an important role in the theory of economic growth, but it has been difficult to measure this abstract concept. We survey the psychological literature on cross-cultural IQ tests and conclude that intelligence tests provide one useful measure of human capital. Using a new database of national average IQ, we show that in growth regressions that include only robust control variables, IQ is statistically significant in 99.8% of these 1330 regressions, easily passing a Bayesian model-averaging robustness test. A 1 point increase in a nation’s average IQ is associated with a persistent 0.11% annual increase in <span class="smallcaps">GDP</span> per capita.</p>'
