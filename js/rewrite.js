@@ -173,6 +173,12 @@ getAllCaptionedMedia().forEach(captionedMedia => {
     //  Re-insert the wrapped caption into the figure.
     let figure = captionedMedia.media.closest("figure");
     figure.appendChild(wrapper);
+
+	// Tag the figure with the image’s float class.
+	if (captionedMedia.media.classList.contains("float-left"))
+		captionedMedia.media.closest("figure").classList.add("float-left");
+	if (captionedMedia.media.classList.contains("float-right"))
+		captionedMedia.media.closest("figure").classList.add("float-right");
 });
 
 /*  Set minimum caption box width, and add listener to recalculate on

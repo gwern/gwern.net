@@ -645,21 +645,25 @@ figure.full-width {
     height: auto;
 }
 
-/*  Floating figures.
-    */
-figure.float-right {
-    float: right;
-    max-width: calc(50% - 1.5em);
-    margin: 0 0 1em 1.5em;
-}
-figure.float-left {
-    float: left;
-    max-width: calc(50% - 1.5em);
-    margin: 0 1.5em 1em 0;
-}
-p ~ figure.float-right,
-p ~ figure.float-left {
-    margin-top: 1em;
+/* Floating figures. (Mostly for amusing asides/memes.) */
+@media only screen and (min-width: 65ch) {
+	figure.float-right {
+		float: right;
+		max-width: calc(50% - 1.5em);
+		margin: 0 0 1em 1.5em;
+	}
+	figure.float-left {
+		float: left;
+		max-width: calc(50% - 1.5em);
+		margin: 0 1.5em 1em 0;
+	}
+	p ~ figure.float-right,
+	p ~ figure.float-left {
+		margin-top: 1em;
+	}
+	blockquote {
+		clear: both;
+	}
 }
 
 /***************/
