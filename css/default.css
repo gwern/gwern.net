@@ -453,6 +453,46 @@ article > :not(#TOC) a:hover,
 
 /* Now handled in /static/css/links.css */
 
+
+/*********/
+/* LISTS */
+/*********/
+
+#markdownBody ul,
+#markdownBody ol {
+    list-style-type: none;
+    margin: 1.25em 0 1.5em 0;
+    padding: 0 0 0 2.5em;
+    overflow: hidden;
+}
+#markdownBody li > ul,
+#markdownBody li > ol {
+    margin: 0.5em 0;
+}
+
+#markdownBody ul > li,
+#markdownBody ol > li {
+    position: relative;
+    margin: 0;
+}
+#markdownBody ul > li:nth-of-type(n+2),
+#markdownBody ol > li:nth-of-type(n+2) {
+    margin: 0.5em 0 0 0;
+}
+
+#markdownBody ul > li::before,
+#markdownBody ol > li::before {
+    position: absolute;
+    z-index: 1;
+}
+
+@media only screen and (max-width: 64.9ch) {
+    #markdownBody ul,
+    #markdownBody ol {
+        padding: 0 0 0 1.75em;
+    }
+}
+
 /*=-----------------------=*/
 /*= Bulleted list markers =*/
 /*=-----------------------=*/
@@ -603,6 +643,146 @@ figure.full-width {
 #markdownBody :not(figure) img {
     max-width: 100%;
     height: auto;
+}
+
+/*  Floating figures.
+    */
+figure.float-right {
+    float: right;
+    max-width: calc(50% - 1.5em);
+    margin: 0 0 1em 1.5em;
+}
+figure.float-left {
+    float: left;
+    max-width: calc(50% - 1.5em);
+    margin: 0 1.5em 1em 0;
+}
+p ~ figure.float-right,
+p ~ figure.float-left {
+    margin-top: 1em;
+}
+
+/***************/
+/* BLOCKQUOTES */
+/***************/
+
+/* avoid problems with floating */
+blockquote {
+    clear: both;
+}
+
+/*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
+
+    See A/B tests: this highlighting is better than no highlighting.
+    */
+blockquote,
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
+    z-index: -2;
+    background-color: var(--GW-blockquote-background-color);
+}
+blockquote blockquote,
+blockquote blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+    background-color: #e6e6e6;
+}
+
+article > :not(#TOC) blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
+    text-shadow:
+         0.03em 0       var(--GW-blockquote-background-color),
+        -0.03em 0       var(--GW-blockquote-background-color),
+         0      0.03em  var(--GW-blockquote-background-color),
+         0     -0.03em  var(--GW-blockquote-background-color),
+         0.06em 0       var(--GW-blockquote-background-color),
+        -0.06em 0       var(--GW-blockquote-background-color),
+         0.09em 0       var(--GW-blockquote-background-color),
+        -0.09em 0       var(--GW-blockquote-background-color),
+         0.12em 0       var(--GW-blockquote-background-color),
+        -0.12em 0       var(--GW-blockquote-background-color),
+         0.15em 0       var(--GW-blockquote-background-color),
+        -0.15em 0       var(--GW-blockquote-background-color);
+}
+article > :not(#TOC) blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
+article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
+    text-shadow:
+         0.03em 0       #e6e6e6,
+        -0.03em 0       #e6e6e6,
+         0      0.03em  #e6e6e6,
+         0     -0.03em  #e6e6e6,
+         0.06em 0       #e6e6e6,
+        -0.06em 0       #e6e6e6,
+         0.09em 0       #e6e6e6,
+        -0.09em 0       #e6e6e6,
+         0.12em 0       #e6e6e6,
+        -0.12em 0       #e6e6e6,
+         0.15em 0       #e6e6e6,
+        -0.15em 0       #e6e6e6;
+}
+
+blockquote blockquote {
+    margin: 1em 1px;
+}
+
+/*=--------------------=*/
+/*= Various edge cases =*/
+/*=--------------------=*/
+
+#markdownBody blockquote blockquote:first-child {
+    margin: 0.25em 1px 1em 1px;
+}
+
+#markdownBody blockquote > :last-child,
+#markdownBody blockquote > :last-child > :last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child > :last-child {
+    margin-bottom: 0;
+}
+#markdownBody blockquote > :first-child,
+#markdownBody blockquote > :first-child > :first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child > :first-child {
+    margin-top: 0;
+}
+
+/*  Special case for tables in blockquotes.
+    */
+#markdownBody blockquote > table:last-child,
+#markdownBody blockquote > :last-child > table:last-child,
+#markdownBody blockquote > :last-child > :last-child > table:last-child,
+#markdownBody blockquote > :last-child > :last-child > :last-child > table:last-child {
+    margin-bottom: 0.5em;
+}
+#markdownBody blockquote > table:first-child,
+#markdownBody blockquote > :first-child > table:first-child,
+#markdownBody blockquote > :first-child > :first-child > table:first-child,
+#markdownBody blockquote > :first-child > :first-child > :first-child > table:first-child {
+    margin-top: 0.5em;
+}
+
+#markdownBody blockquote > ul:only-child,
+#markdownBody blockquote > ol:only-child {
+    margin-left: 1.5em;
+}
+
+/*  Interviews (e.g. https://www.gwern.net/Morning-writing#examples).
+    */
+blockquote p > code:first-child,
+blockquote p > a:first-child code:first-child {
+    border: none;
+    background-color: transparent;
+    font-weight: bold;
+    font-family: inherit;
+    padding: 0;
+    font-size: inherit;
+}
+
+/*  Tables in blockquotes.
+    */
+blockquote table {
+    font-size: 0.7em;
 }
 
 /*************/
@@ -1329,6 +1509,34 @@ pre::-webkit-scrollbar-thumb {
 }
 pre::-webkit-scrollbar-thumb:hover {
     background-color: #999;
+}
+
+/***************/
+/* CODE BLOCKS */
+/***************/
+
+code {
+    padding: 0 4px;
+    /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+    font-family: "Liberation Mono", Consolas, Courier, monospace;
+    font-size: 0.9em;
+    border: 1px solid #c8c8c8;
+    background-color: #fafafa;
+}
+pre {
+    overflow: auto;
+    margin: 1.75em auto;
+    border: 1px solid #c8c8c8;
+    background-color: #fafafa;
+    cursor: text;
+    max-height: calc(100vh - 8em);
+}
+pre code {
+    display: block;
+    padding: 8px 14px;
+    margin: 0;
+    border: none;
+    background-color: transparent;
 }
 
 /*=-------------------------------------------------------------------------=*/
