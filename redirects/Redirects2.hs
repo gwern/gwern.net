@@ -1179,7 +1179,6 @@
   , ("DNM-survival\"", "/DNM-survival")
   , ("docs/rotten.com/library/index.htmlhttps://www.gwern.net/docs/rotten.com/library/index.html", "/docs/rotten.com/library/index.html")
   , ("library", "/docs/rotten.com/library/index.html")
-  , ("rotten.com", "/docs/rotten.com/library/index.html")
   , ("Docs/rotten.com/library", "/docs/rotten.com/library/index.html")
   , ("Abo", "/About")
   , ("dics/pacedrepetition/1939-spitzer.pdf", "/docs/spacedrepetition/1939-spitzer.pdf")
@@ -1188,4 +1187,8 @@
   , ("Nootropicsmindlab pro", "/Nootropics")
   , ("docs/economics/2019-hoynes.pdfhttps://www.odi.org/sites/odi.org.uk/files/resource-documents/11316.pdf", "/docs/economics/2019-hoynes.pdf")
   , ("silkroad", "/Silk-Road")
+  , ("docs/ ai/1986-michie-onmachineintelligence.pdf", "/docs/ai/1986-michie-onmachineintelligence.pdf")
+  , ("Danbooru2018 作者：同和杂拌通 https://www.bilibili.com/read/cv4212136 出处： bilibili", "/Danbooru2018")
+  , ("Danbooru2018 作者：同和杂拌通 https://www.bilibili.com/read/cv4212136/ 出处： bilibili", "/Danbooru2018")
+  , ("docs/longevity/2019-decabo.pf?fbclid=IwAR3nXsOl8NXpykwVhPcN3tF3GpK0PMpzNOqox4Fiy2fZ_Wr7BcDnnKS8g4E", "/docs/longevity/2019-decabo.pdf")
   ]
