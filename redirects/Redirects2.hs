@@ -1191,4 +1191,8 @@
   , ("Danbooru2018 作者：同和杂拌通 https://www.bilibili.com/read/cv4212136 出处： bilibili", "/Danbooru2018")
   , ("Danbooru2018 作者：同和杂拌通 https://www.bilibili.com/read/cv4212136/ 出处： bilibili", "/Danbooru2018")
   , ("docs/longevity/2019-decabo.pf?fbclid=IwAR3nXsOl8NXpykwVhPcN3tF3GpK0PMpzNOqox4Fiy2fZ_Wr7BcDnnKS8g4E", "/docs/longevity/2019-decabo.pdf")
+  , ("docs/ai/music/2020-03-30-fifteenai-twilightsparkle-sel-presentdaypresentime.mp3", "/docs/ai/music/2020-03-30-fifteenai-twilightsparkle-sel-presentdaypresenttime.mp3")
+  , ("docs/sociology/1974martinson.pdf", "/docs/sociology/1974-martinson.pdf")
+  , ("docs/rotten.com/library/sex/elongated-penis/index.html", "/docs/rotten.com/library/sex/elongated-labia/index.html")
+  , ("Bakewell<a href=", "/Bakewell")
   ]
