@@ -405,13 +405,13 @@
     attribute class, and the attributes <code>data-popup-title</code>, <code>data-popup-author</code>,
     <code>data-popup-date</code>, <code>data-popup-doi</code>, <code>data-popup-abstract</code>.
     (These attributes are expected to be populated already by the HTML document''s
-    compiler, however, they can also be done dynamically. See <a href="/static/js/wikipedia-popups.js"><code>wikipedia-popups.js</code></a>
+    compiler, however, they can also be done dynamically. See <a href="https://share.obormot.net/misc/gwern/wikipedia-popups.js"><code>wikipedia-popups.js</code></a>
     for an example of a library which does Wikipedia-only dynamically on page loads.)</p><p>For
     an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined
     links, see <a href="/LinkMetadata.hs"><code>LinkMetadata.hs</code></a>;
     for a live demonstration, see the links in <a href="/newsletter/2019/07">the
     July 2019 newsletter</a>.</p>'
-- - /static/js/wikipedia-popups.js
+- - https://share.obormot.net/misc/gwern/wikipedia-popups.js
   - wikipedia-popups.js
   - Said Achmiz
   - 2019-07-29
