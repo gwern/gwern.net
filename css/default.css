@@ -1633,9 +1633,6 @@ code span.va { color: #0057ae; } /* Variable */
 code span.vs { color: #bf0303; } /* VerbatimString */
 code span.wa { color: #bf0303; } /* Warning */
 
-/* Alternative to full-width code blocks: codeblocks expand (rightwards) on mouse-over to make it easier to read long lines */
-.sourceCode:hover, .sourceCode:focus { width: min-content; }
-
 /********/
 /* MATH */
 /********/
