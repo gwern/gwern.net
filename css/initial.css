@@ -704,10 +704,9 @@ span.smallcaps {
     font-feature-settings: 'smcp';
 }
 
-/* Enable smallcaps for auto-annotated abbreviations/acronyms */
+/* Enable SSfP smallcaps for auto-annotated abbreviations/acronyms */
 span.smallcaps-auto {
-    font-feature-settings: 'smcp';
-    text-transform: lowercase;
+    font-feature-settings: 'smcp', 'c2sc';
 }
 
 hr {
