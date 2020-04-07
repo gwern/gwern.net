@@ -704,6 +704,12 @@ span.smallcaps {
     font-feature-settings: 'smcp';
 }
 
+/* Enable smallcaps for auto-annotated abbreviations/acronyms */
+span.smallcaps-auto {
+    font-feature-settings: 'smcp';
+    text-transform: lowercase;
+}
+
 hr {
     border: none;
     height: 0;
