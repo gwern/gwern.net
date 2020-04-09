@@ -647,23 +647,23 @@ figure.full-width {
 
 /* Floating figures. (Mostly for amusing asides/memes.) */
 @media only screen and (min-width: 65ch) {
-	figure.float-right {
-		float: right;
-		max-width: calc(50% - 1.5em);
-		margin: 0 0 1em 1.5em;
-	}
-	figure.float-left {
-		float: left;
-		max-width: calc(50% - 1.5em);
-		margin: 0 1.5em 1em 0;
-	}
-	p ~ figure.float-right,
-	p ~ figure.float-left {
-		margin-top: 1em;
-	}
-	blockquote {
-		clear: both;
-	}
+    figure.float-right {
+        float: right;
+        max-width: calc(50% - 1.5em);
+        margin: 0 0 1em 1.5em;
+    }
+    figure.float-left {
+        float: left;
+        max-width: calc(50% - 1.5em);
+        margin: 0 1.5em 1em 0;
+    }
+    p ~ figure.float-right,
+    p ~ figure.float-left {
+        margin-top: 1em;
+    }
+    blockquote {
+        clear: both;
+    }
 }
 
 /***************/
@@ -1901,13 +1901,16 @@ p.hang {
 /* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /DNM-archives#overall-coverage or /Replication */
 /* Uses CSS3 columns: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts https://www.caniuse.com/#feat=multicolumn */
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
-#markdownBody .columns > ul li, #markdownBody .columns > ol li,
- #markdownBody .columns > ul li p, #markdownBody .columns > ol li p {
-  column-width: 30ch;
-  column-gap: 6ch;
+#markdownBody .columns > ul,
+#markdownBody .columns > ol {
+    column-width: 30ch;
+    column-gap: 6ch;
 }
-#markdownBody .columns > ul li, #markdownBody .columns > ol li {
-  text-align: left;
+#markdownBody .columns > ul li,
+#markdownBody .columns > ol li,
+#markdownBody .columns > ul li p,
+#markdownBody .columns > ol li p {
+    text-align: left;
 }
 
 /***************/
