@@ -707,6 +707,7 @@ span.smallcaps {
 /* Enable SSfP smallcaps for auto-annotated abbreviations/acronyms */
 span.smallcaps-auto {
     font-feature-settings: 'smcp', 'c2sc';
+    font-variant-numeric: tabular-nums;
 }
 
 hr {
