@@ -936,18 +936,21 @@
     opacity: 0.60;
 }
 
+#markdownBody a[href*='mementoweb.org']::after,
 #markdownBody a[href*='archive.org']::after,
 #markdownBody a[href*='archive-it.org']::after,
 #markdownBody a[href*='archiveteam.org']::after,
 #markdownBody a[href*='waybackmachine.org']::after {
     background-image: url("/static/img/icons/internetarchive.svg");
 }
+#markdownBody a[href*='mementoweb.org']:hover::after,
 #markdownBody a[href*='archive.org']:hover::after,
 #markdownBody a[href*='archive-it.org']:hover::after,
 #markdownBody a[href*='archiveteam.org']:hover::after,
 #markdownBody a[href*='waybackmachine.org']:hover::after {
     opacity: 0.3;
 }
+#markdownBody a[href*='mementoweb.org']::after,
 #markdownBody a[href*='archive.org']::after,
 #markdownBody a[href*='archive-it.org']::after,
 #markdownBody a[href*='archiveteam.org']::after,
