@@ -1,7 +1,7 @@
 // popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-04-10 11:09:40 gwern"
+// When:  Time-stamp: "2020-04-10 17:10:33 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -11,7 +11,7 @@
 
 // Popups save the user both time and bandwidth as they can instantly see a summary, and decide whether to pursue it further; if they had to click on it, that is both heavy-weight interaction, uses possibly several seconds to load & render, and will use many times the bandwidth.
 
-// On mobile, clicking on links (as opposed to hovering over links on desktop) will bring up the annotation or preview; another click on it or the popup will then go to it. A click outside it de-activates it.
+// On mobile, clicking on links (as opposed to hovering over links on desktop) will bring up the annotation or image or video; another click on it or the popup will then go to it. A click outside it de-activates it.
 
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
@@ -108,29 +108,6 @@ Extracts = {
             `<iframe width="${Extracts.videoPopupWidth}px" height="${Extracts.videoPopupHeight}px"` +
             `src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen>` +
             `</iframe></div>`;
-    },
-    previewForTarget: (target) => {
-        /*  The SHA-1 hashes are generated of local paths like 'docs/statistics/decision/2006-drescher-goodandreal.pdf',
-            not 'https://www.gwern.net/docs/statistics/decision/2006-drescher-goodandreal.pdf',
-            so we can't just use `target.href` for those.
-            If it's a remote URL, then it's fine.
-        */
-        let linkURL = target.dataset.popupImageOriginalUrl;
-        let imageWidth = target.dataset.popupImageWidth + "px";
-        let imageHeight = target.dataset.popupImageHeight + "px";
-        return `<div class='popup-screenshot'>` +
-                    `<a
-                        alt='Screenshot of page at ${target.href}'
-                        title='${target.href}\n[Opens in new window]'
-                        target='_new'
-                        href='${target.href}'
-                            >` +
-                    `<img
-                        src='${linkURL}'
-                        style='width:${imageWidth}; height:${imageHeight};'
-                            >` +
-                    `</a>` +
-                `</div>`;
     },
     sectionEmbedForTarget: (target) => {
         let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
@@ -254,11 +231,7 @@ Extracts = {
             } else if (target.href.startsWith("https://www.gwern.net/images/")) {
                 Extracts.popup.innerHTML = Extracts.localImageForTarget(target);
             } else if (target.classList.contains("docMetadata")) {
-                if (target.dataset.popupImageWidth) {
-                    Extracts.popup.innerHTML = Extracts.previewForTarget(target);
-                } else {
-                    Extracts.popup.innerHTML = Extracts.extractForTarget(target);
-                }
+                Extracts.popup.innerHTML = Extracts.extractForTarget(target);
             }
 
             //  Inject the popup into the page.
