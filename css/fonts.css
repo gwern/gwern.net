@@ -26,7 +26,7 @@
     font-weight: 200;
     font-style: italic;
     src: url('/static/font/SourceSerifPro-BASIC-ExtraLightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -34,7 +34,7 @@
     font-weight: 300;
     font-style: normal;
     src: url('/static/font/SourceSerifPro-BASIC-Light.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -42,7 +42,7 @@
     font-weight: 300;
     font-style: italic;
     src: url('/static/font/SourceSerifPro-BASIC-LightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -50,7 +50,7 @@
     font-weight: 400;
     font-style: normal;
     src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -58,7 +58,7 @@
     font-weight: 400;
     font-style: italic;
     src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -66,7 +66,7 @@
     font-weight: 600;
     font-style: normal;
     src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -74,7 +74,7 @@
     font-weight: 600;
     font-style: italic;
     src: url('/static/font/SourceSerifPro-BASIC-SemiboldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -82,7 +82,7 @@
     font-weight: 700;
     font-style: normal;
     src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -90,7 +90,7 @@
     font-weight: 700;
     font-style: italic;
     src: url('/static/font/SourceSerifPro-BASIC-BoldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -98,7 +98,7 @@
     font-weight: 900;
     font-style: normal;
     src: url('/static/font/SourceSerifPro-BASIC-Black.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -106,7 +106,7 @@
     font-weight: 900;
     font-style: italic;
     src: url('/static/font/SourceSerifPro-BASIC-BlackItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 
@@ -120,7 +120,7 @@
     font-weight: 200;
     font-style: normal;
     src: url('/static/font/SourceSansPro-BASIC-ExtraLight.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -128,7 +128,7 @@
     font-weight: 200;
     font-style: italic;
     src: url('/static/font/SourceSansPro-BASIC-ExtraLightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -136,7 +136,7 @@
     font-weight: 300;
     font-style: normal;
     src: url('/static/font/SourceSansPro-BASIC-Light.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -144,7 +144,7 @@
     font-weight: 300;
     font-style: italic;
     src: url('/static/font/SourceSansPro-BASIC-LightItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -152,7 +152,7 @@
     font-weight: 400;
     font-style: normal;
     src: url('/static/font/SourceSansPro-BASIC-Regular.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -160,7 +160,7 @@
     font-weight: 400;
     font-style: italic;
     src: url('/static/font/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -168,7 +168,7 @@
     font-weight: 600;
     font-style: normal;
     src: url('/static/font/SourceSansPro-BASIC-Semibold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -176,7 +176,7 @@
     font-weight: 600;
     font-style: italic;
     src: url('/static/font/SourceSansPro-BASIC-SemiboldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -184,7 +184,7 @@
     font-weight: 700;
     font-style: normal;
     src: url('/static/font/SourceSansPro-BASIC-Bold.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -192,7 +192,7 @@
     font-weight: 700;
     font-style: italic;
     src: url('/static/font/SourceSansPro-BASIC-BoldItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -200,7 +200,7 @@
     font-weight: 900;
     font-style: normal;
     src: url('/static/font/SourceSansPro-BASIC-Black.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 @font-face {
@@ -208,7 +208,7 @@
     font-weight: 900;
     font-style: italic;
     src: url('/static/font/SourceSansPro-BASIC-BlackItalic.ttf') format('truetype');
-    unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+    unicode-range: U+0020-007E, U+00A0-00FF, U+2010, U+2013-2014, U+2018-2019, U+201C-201D, U+2212;
     font-display: swap;
 }
 
