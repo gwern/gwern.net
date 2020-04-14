@@ -230,12 +230,6 @@ document.querySelectorAll("header *, #page-metadata *").forEach(element => {
     });
 });
 
-/*  Guard against emojification of footnote backlinks.
-    */
-document.querySelectorAll(".footnote-back").forEach(backlink => {
-    backlink.textContent += "\u{FE0E}";
-});
-
 /*  Set the display form of margin notes (margin vs. inline).
  */
 function updateMarginNoteStyle() {
