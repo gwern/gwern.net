@@ -271,6 +271,19 @@ header h1 {
     white-space: nowrap
 }
 
+/* interpunct separators for the metadata fields; looks nicer than semicolons or slashes */
+#metadata > span:not(:last-child)::after {
+  content: "\00B7"; /* MIDDLE DOT (U+00B7) '·' */
+  display: inline-block;
+  margin: 0 0.5em 0 0.75em;
+}
+#metadata > span:nth-child(1)::after {
+  margin-left: 0.875em;
+}
+#metadata > span:nth-child(2)::after {
+  margin-left: 0.8125em;
+}
+
 /*********************/
 /* TABLE OF CONTENTS */
 /*********************/
