@@ -5741,16 +5741,16 @@
     are a series of short, programming-language-neutral, humorous statements about
     computers and programming, distilling lessons he had learned over his career,
     which are widely quoted.]</p><p>8. A programming language is low level when its
-    programs require attention to the irrelevant. 19. A language that doesn’t affect
-    the way you think about programming, is not worth knowing. 54. Beware of the Turing
+    programs require attention to the irrelevant.…19. A language that doesn’t affect
+    the way you think about programming, is not worth knowing.…54. Beware of the Turing
     tar-pit in which everything is possible but nothing of interest is easy.</p><p>15.
-    Everything should be built top-down, except the first time. 30. In programming,
+    Everything should be built top-down, except the first time.…30. In programming,
     everything we do is a special case of something more general—and often we know
-    it too quickly. 31. Simplicity does not precede complexity, but follows it. 58.
+    it too quickly.…31. Simplicity does not precede complexity, but follows it.…58.
     Fools ignore complexity. Pragmatists suffer it. Some can avoid it. Geniuses remove
-    it. 65. Make no mistake about it: Computers process numbers—not symbols. We measure
+    it.…65. Make no mistake about it: Computers process numbers—not symbols. We measure
     our understanding (and control) by the extent to which we can arithmetize an activity.
-    56. Software is under a constant tension. Being symbolic it is arbitrarily perfectible;
+    …56. Software is under a constant tension. Being symbolic it is arbitrarily perfectible;
     but also it is arbitrarily changeable.</p><p>1. One man’s constant is another
     man’s variable. 34. The string is a stark data structure and everywhere it is
     passed there is much duplication of process. It is a perfect vehicle for hiding
@@ -5763,16 +5763,16 @@
     because it’s the best book on anything for the layman.</p><p>77. The cybernetic
     exchange between man, computer and algorithm is like a game of musical chairs:
     The frantic search for balance always leaves one of the 3 standing ill at ease.
-    79. A year spent in artificial intelligence is enough to make one believe in God.
-    84. Motto for a research laboratory: What we work on today, others will first
+    …79. A year spent in artificial intelligence is enough to make one believe in God.
+    …84. Motto for a research laboratory: What we work on today, others will first
     think of tomorrow.</p><p>91. The computer reminds one of Lon Chaney—it is the
     machine of a thousand faces.</p><p>7. It is easier to write an incorrect program
-    than understand a correct one. 93. When someone says “I want a programming language
-    in which I need only say what I wish done,” give him a lollipop. 102. One can’t
+    than understand a correct one.…93. When someone says “I want a programming language
+    in which I need only say what I wish done,” give him a lollipop.…102. One can’t
     proceed from the informal to the formal by formal means.</p><p>100. We will never
     run out of things to program as long as there is a single program around.</p><p>108.
-    Whenever 2 programmers meet to criticize their programs, both are silent. 112.
-    Computer Science is embarrassed by the computer. 115. Most people find the concept
+    Whenever 2 programmers meet to criticize their programs, both are silent.…112.
+    Computer Science is embarrassed by the computer.…115. Most people find the concept
     of programming obvious, but the doing impossible. 116. You think you know when
     you can learn, are more sure when you can write, even more when you can teach,
     but certain when you can program. 117. It goes against the grain of modern education
@@ -16510,9 +16510,15 @@
 - - https://www.cs.utexas.edu/users/EWD/transcriptions/EWD03xx/EWD340.html
   - 'The Humble Programmer (EWD340)'
   - '<a href="https://en.wikipedia.org/wiki/Edsger_W._Dijkstra">Edsger W. Dijkstra</a>'
-  - 1972
+  - '1972'
   - ''
   -  ! '<p>[<span class="smallcaps-auto">ACM</span> Turing Lecture 1972]</p><p>…I had to make up my mind, either to stop programming and become a real, respectable theoretical physicist, or to carry my study of physics to a formal completion only, with a minimum of effort, and to become….., yes what? A programmer? But was that a respectable profession? For after all, what was programming? Where was the sound body of knowledge that could support it as an intellectually respectable discipline? I remember quite vividly how I envied my hardware colleagues, who, when asked about their professional competence, could at least point out that they knew everything about vacuum tubes, amplifiers and the rest, whereas I felt that, when faced with that question, I would stand empty-handed. Full of misgivings I knocked on van Wijngaarden’s office door, asking him whether I could “speak to him for a moment”; when I left his office a number of hours later, I was another person. For after having listened to my problems patiently, he agreed that up till that moment there was not much of a programming discipline, but then he went on to explain quietly that automatic computers were here to stay, that we were just at the beginning and could not I be one of the persons called to make programming a respectable discipline in the years to come? This was a turning point in my life and I completed my study of physics formally as quickly as I could.</p><p>…To put it quite bluntly: as long as there were no machines, programming was no problem at all; when we had a few weak computers, programming became a mild problem, and now we have gigantic computers, programming had become an equally gigantic problem. In this sense the electronic industry has not solved a single problem, it has only created them, it has created the problem of using its products. To put it in another way: as the power of available machines grew by a factor of more than a thousand, society’s ambition to apply these machines grew in proportion, and it was the poor programmer who found his job in this exploded field of tension between ends and means. The increased power of the hardware, together with the perhaps even more dramatic increase in its reliability, made solutions feasible that the programmer had not dared to dream about a few years before.</p><p>…Automatic computers have now been with us for a quarter of a century. They have had a great impact on our society in their capacity of tools, but in that capacity their influence will be but a ripple on the surface of our culture, compared with the much more profound influence they will have in their capacity of intellectual challenge without precedent in the cultural history of mankind.</p>'
+- - https://www.ohyouprettythings.com/free
+  - "Free Movie Of the Week"
+  - Oh You Pretty Things
+  - '2020'
+  - ''
+  - ! 'Filmmaker <a href="https://www.hustwit.com/">Gary Hustwit</a> is streaming his documentaries free worldwide during the global <span class="smallcaps-auto">COVID</span>-19 crisis. Each Tuesday we’ll be posting another film here. We hope you enjoy them, and please stay strong.</p><p class="" style="white-space:pre-wrap;"><p>March 14 to 21: <a href="https://www.hustwit.com/helvetica">Helvetica</a><br>March 24 to 31: <a href="https://www.hustwit.com/objectified">Objectified</a><br>March 31 to April 7: <a href="https://www.hustwit.com/urbanized">Urbanized</a><br>April 7 to 14: <a href="https://www.hustwit.com/rams">Rams</a> <br><br>April 14 to 21: <strong><em>Workplace</em></strong> (2016, 64 minutes) is a film about the past, present, and future of the office….</p><p><br><br>April 21 to 28: <span class="smallcaps-auto">TBA</span><br>April 28 to May 5: <span class="smallcaps-auto">TBA</span>&lt;/p</p><p>[<em>Oh You Pretty Things</em> is a web shop run by a collective of filmmakers and visual artists based in Brooklyn NY. We make films, art, books, posters, photographs, clothing, and other fine stuff.]</p>'
 - - https://www.atlasobscura.com/articles/what-bread-did-ancient-egyptians-eat
   - "How the Man Who Invented Xbox Baked a 4,500-Year-Old Egyptian Sourdough: It took three experts, two museums, and one clay pot to bake a truly ancient loaf"
   - Luke Fater (Atlas Obscura)
