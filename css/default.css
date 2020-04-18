@@ -685,25 +685,11 @@ figure.full-width {
 /* BLOCKQUOTES */
 /***************/
 
+/* main gray background is implemented in initial.css to avoid 'flash' on load */
+
 /* avoid problems with floating */
 blockquote {
     clear: both;
-}
-
-/*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
-
-    See A/B tests: this highlighting is better than no highlighting.
-    */
-blockquote,
-blockquote blockquote blockquote,
-blockquote blockquote blockquote blockquote blockquote {
-    z-index: -2;
-    background-color: var(--GW-blockquote-background-color);
-}
-blockquote blockquote,
-blockquote blockquote blockquote blockquote,
-blockquote blockquote blockquote blockquote blockquote blockquote {
-    background-color: #e6e6e6;
 }
 
 article > :not(#TOC) blockquote a:link,

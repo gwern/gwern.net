@@ -6,12 +6,29 @@
 /***************/
 /* BLOCKQUOTES */
 /***************/
+/* additional blockquote styling done in default.css */
 
 blockquote {
     margin: 1.625em 0 1.75em 0;
     border: 1px solid #ccc;
     font-size: 0.95em;
     padding: 1em 1.25em;
+}
+
+/*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
+
+    See A/B tests: this highlighting is better than no highlighting.
+    */
+blockquote,
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
+    z-index: -2;
+    background-color: var(--GW-blockquote-background-color);
+}
+blockquote blockquote,
+blockquote blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+    background-color: #e6e6e6;
 }
 
 /*************/
