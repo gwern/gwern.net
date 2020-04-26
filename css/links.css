@@ -6,7 +6,7 @@
     */
 #markdownBody section > :not(:first-child) a[href^='#']::after,
 #markdownBody p a[href^='#']::after {
-    content: "\00B6";
+    content: "\00B6"; /* Pilcrow */
     margin: 0 1px 0 3px;
     font-size: 0.75em;
     vertical-align: baseline;
@@ -19,6 +19,10 @@
 #markdownBody section > :not(:first-child) a[href^='#'].footnote-back::after,
 #markdownBody p a[href^='#'].footnote-back::after {
     content: none;
+}
+/* Override Pandoc LineAnchors inside codeblocks - we didn't ask for them, but the links still get generated with '#cb-x-y' self-links (see https://github.com/jgm/pandoc/issues/4386 ) so it'd trigger the section icons */
+#markdownBody code a[href^='#']::after {
+    display: none;
 }
 
 /*  Internal (within-site) links. Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
