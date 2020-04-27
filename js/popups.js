@@ -1,7 +1,7 @@
 // popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-04-10 17:10:33 gwern"
+// When:  Time-stamp: "2020-04-27 11:09:20 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -39,17 +39,20 @@ Extracts = {
     extractForTarget: (target) => {
         var doi = "";
         var archive = "";
-        if (target.dataset.urlOriginal != undefined) {
+        if (target.dataset.urlOriginal != undefined && target.dataset.urlOriginal != target.href) {
             archive = (`<span class="originalURL"><code>[` +
                        `<a href="${target.dataset.urlOriginal}" ` +
                        `title="Link to original URL: '${target.dataset.urlOriginal}' (for '${target.dataset.popupTitle}')" ` +
                        `alt="Original URL for this archived link; may be broken.">URL</a>` +
                        `]</code></span>`); }
         else {
-            archive = (`<span class="iaMirror">` +
-                       `<a title="Search Internet Archive via Memento for mirrors of URL: '${target.href}' (for '${target.dataset.popupTitle}')" ` +
-                       `href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
-                       `<img style="height: 0.75em; width: 0.75em; margin: 0 0 2px 3px; opacity: 0.60"; alt="Internet Archive logo" src="/static/img/icons/internetarchive.svg"></a></span>`); }
+            if ( !target.href.startsWith("https://www.gwern.net") && !target.href.startsWith("https://en.wikipedia.org") && !target.href.startsWith("https://archive.org") && !target.href.startsWith("https://www.biorxiv.org") && !target.href.startsWith("https://arxiv.org") ) {
+                archive = (`<span class="iaMirror">` +
+                           `<a title="Search Internet Archive via Memento for mirrors of URL: '${target.href}' (for '${target.dataset.popupTitle}')" ` +
+                           `href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
+                           `<img style="height: 0.75em; width: 0.75em; margin: 0 0 2px 3px; opacity: 0.60"; alt="Internet Archive logo" src="/static/img/icons/internetarchive.svg"></a></span>`);
+            }
+        }
 
         if (target.dataset.popupDoi != undefined) {
             doi = `; ` +
