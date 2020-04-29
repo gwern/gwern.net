@@ -1,7 +1,7 @@
 // popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-04-27 11:09:20 gwern"
+// When:  Time-stamp: "2020-04-28 19:43:40 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -259,7 +259,7 @@ Extracts = {
                 };
 
                 /*  This is the width and height of the popup, as already determined
-                    by the layout system, and taking into account the popupâ€™s content,
+                    by the layout system, and taking into account the popup's content,
                     and the max-width, min-width, etc., CSS properties.
                     */
                 var popupIntrinsicWidth = Extracts.popup.clientWidth;
