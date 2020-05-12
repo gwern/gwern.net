@@ -1944,16 +1944,6 @@ p.hang {
 }
 .admonition-title {
     font-weight: bold;
-    padding-bottom: 0.625em;
-    margin-bottom: 0.625em;
-}
-.admonition-title::after {
-    content: "";
-    width: 100%;
-    height: 1px;
-    background-color: #969696;
-    left: 0;
-    position: absolute;
 }
 .admonition.tip {
     border-left-color: #d8d8d8;
@@ -1993,10 +1983,9 @@ p.hang {
 }
 
 .admonition.note::before {
-    content: "\261E"; /* White Right Pointing Index '☞' (U+261E)  */
-    font-size: 1.875em;
+    content: "\261E"; /* White Right Pointing Index hand '☞' (U+261E)  */
+    font-size: 2.6em;
     color: #fff;
-    padding: 0.1em 0 0 0;
 }
 .admonition.tip::before {
     content: "\24d8"; /* Circled Latin Small Letter 'ⓘ' (U+24D8) */
@@ -2006,8 +1995,8 @@ p.hang {
 }
 .admonition.warn::before,
 .admonition.warning::before {
-    content: "\26A0"; /* Warning Sign '⚠' (U+26A0) */
-    font-size: 1.75em;
+    content: "\26A0"; /* Warning Sign '⚠' triangle (U+26A0) */
+    font-size: 1.9em;
     color: #fff;
     padding: 0.25em 0 0 0;
 }
