@@ -1,17 +1,15 @@
-// popups.js: standalone Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
+// popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-04-29 09:39:00 gwern"
+// When:  Time-stamp: "2020-05-18 17:23:33 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
 // (These attributes are expected to be populated already by the HTML document's compiler, however, they can also be done dynamically. See 'https://share.obormot.net/misc/gwern/wikipedia-popups.js' for an example of a library which does Wikipedia-only dynamically on page loads.)
 
-// Whenever any such link is mouse-overed by the user, popups.js will pop up a large tooltip-like square with the contents of the attributes. This is particularly intended for references, where it is extremely convenient to autopopulate links such as to Arxiv.org/Biorxiv.org/Wikipedia with the link's title/author/date/abstract, so the reader can see it instantly. Links to 'reverse citations' are provided as much as possible: links with DOIs go to a Semantic Scholar search engine query for that DOI, which prioritizes meta-analyses & systematic reviews to provide context for any given paper (particularly whether it has failed to replicate or otherwise been debunked); for URLs ending in 'PDF' which probably have Semantic Scholar entries, they go to a title search; and for all other URLs, a Google search using the obscure `link:` operator is provided.
+// Whenever any such link is mouse-overed by the user, popups.js will pop up a large tooltip-like square with the contents of the attributes. This is particularly intended for references, where it is extremely convenient to autopopulate links such as to Arxiv.org/Biorxiv.org/Wikipedia with the link's title/author/date/abstract, so the reader can see it instantly. Links to 'reverse citations' are provided as much as possible: links with DOIs go to a Semantic Scholar search engine query for that DOI, which prioritizes meta-analyses & systematic reviews to provide context for any given paper (particularly whether it has failed to replicate or otherwise been debunked); for URLs ending in 'PDF' which probably have Semantic Scholar entries, they go to a title search; and for all other URLs, a Google search using the obscure `link:` operator is provided.. For more details, see `LinkMetadata.hs`.
 
-// Popups save the user both time and bandwidth as they can instantly see a summary, and decide whether to pursue it further; if they had to click on it, that is both heavy-weight interaction, uses possibly several seconds to load & render, and will use many times the bandwidth.
-
-// On mobile, clicking on links (as opposed to hovering over links on desktop) will bring up the annotation or image or video; another click on it or the popup will then go to it. A click outside it de-activates it.
+// On mobile, clicking on links (as opposed to hovering over links on desktop) will bring up the annotation or video; another click on it or the popup will then go to it. A click outside it de-activates it.
 
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
@@ -19,7 +17,7 @@ Extracts = {
     popupStylesID: "popups-styles",
     popupContainerID: "popup-container",
     popupContainerParentSelector: "html",
-    targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody p a[href^='#']",
+    targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody p a[href^='#'], #markdownBody a.footnote-back",
     minPopupWidth: 360,
     maxPopupWidth: 640,
     popupBorderWidth: 3.0,
@@ -115,6 +113,10 @@ Extracts = {
     sectionEmbedForTarget: (target) => {
         let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
         return `<div class='popup-section-embed'>${targetSectionHTML}</div>`;
+    },
+    citationContextForTarget: (target) => {
+        let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, ol, p, pre, section, table, tfoot, ul").innerHTML;
+        return `<div class='popup-citation-context'>… ${citationContextHTML} …</div>`;
     },
     localImageForTarget: (target) => {
         return `<div class='popup-local-image'><img src='${target.href}'></div>`;
@@ -220,18 +222,13 @@ Extracts = {
             if (videoId) {
                 Extracts.popup.innerHTML = Extracts.videoForTarget(target, videoId);
                 isVideo = true;
+            } else if (target.classList.contains("footnote-back")) {
+                Extracts.popup.innerHTML = Extracts.citationContextForTarget(target);
             } else if (target.getAttribute("href").startsWith("#")) {
                 Extracts.popup.innerHTML = Extracts.sectionEmbedForTarget(target);
-                Extracts.popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {
-                    captionWrapper.style.minWidth = "";
-                });
-                Extracts.popup.querySelectorAll("a:not([href^='#'])").forEach(externalLink => {
-                    externalLink.target = "_new";
-                    externalLink.title = externalLink.href + "\n[Opens in new window]";
-                });
                 Extracts.popup.style.width = Extracts.maxPopupWidth + "px";
                 Extracts.popup.style.maxHeight = (Extracts.maxPopupWidth * 0.75) + "px";
-            } else if (target.href.startsWith("https://www.gwern.net/images/")) {
+            } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
                 Extracts.popup.innerHTML = Extracts.localImageForTarget(target);
             } else if (target.classList.contains("docMetadata")) {
                 Extracts.popup.innerHTML = Extracts.extractForTarget(target);
@@ -436,7 +433,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     user-select: none;
     min-width: ${Extracts.minPopupWidth}px;
     max-width: ${Extracts.maxPopupWidth}px;
-    max-height: 60vh;
+    max-height: calc(100vh - 2 * ${Extracts.popupBorderWidth}px - 26px);
 }
 /* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
 #popupdiv a { text-decoration: underline; }
@@ -474,7 +471,8 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv > div.popup-screenshot a::after {
     content: none;
 }
-#popupdiv > div.popup-section-embed {
+#popupdiv > div.popup-section-embed,
+#popupdiv > div.popup-citation-context {
     height: 100%;
     padding: 12px 24px 14px 24px;
     overflow-x: hidden;
