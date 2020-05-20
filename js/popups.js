@@ -1,7 +1,7 @@
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-05-18 17:23:33 gwern"
+// When:  Time-stamp: "2020-05-20 15:44:10 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -53,23 +53,25 @@ Extracts = {
         }
 
         if (target.dataset.popupDoi != undefined) {
-            doi = `; ` +
-                  `<a href="https://ricon.dev/citations_for_doi?doi=${target.dataset.popupDoi}" ` +
-                  `target='_new' ` +
-                  `title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Semantic Scholar">` +
-                  `citations</a>`;
+            doi = `; cites: ` +
+                `<a href="https://ricon.dev/citations_for_doi?doi=${target.dataset.popupDoi}" ` +
+                `target='_new' ` +
+                `title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Semantic Scholar">` +
+                `SS</a>` + '/' +
+                `<a href="https://scholar.google.com/scholar?q=${target.dataset.popupDoi}+OR+%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Google Scholar">GS</a>`;
         } else if (target.href.includes("pdf")) {
-            doi = `; ` +
-                  `<a href="https://ricon.dev/citations_for_title?title=%22${target.dataset.popupTitle}%22" ` +
-                  `target='_new' ` +
-                  `title="Reverse citations of the paper '${target.dataset.popupTitle}' by title in Semantic Scholar">` +
-                  `citations</a>`;
+            doi = `; cites: ` +
+                `<a href="https://ricon.dev/citations_for_title?title=%22${target.dataset.popupTitle}%22" ` +
+                `target='_new' ` +
+                `title="Reverse citations of the paper '${target.dataset.popupTitle}' by title in Semantic Scholar">` +
+                `SS</a>` + `/` +
+                `<a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' in Google Scholar">GS</a>`;
         } else {
             doi = `; ` +
-                  `<a href="https://www.google.com/search?num=100&q=link%3A${target.href}" ` +
+                  `<a href="https://www.google.com/search?num=100&q=link%3A${target.href}+OR+%22${target.dataset.popupTitle}%22" ` +
                   `target='_new' ` +
                   `title="Links to this page '${target.dataset.popupTitle}' in Google">` +
-                  `citations</a>`;
+                  `links</a>`;
         }
 
         return `<div class='popup-extract' onclick='parentNode.remove()'>` +
