@@ -1435,8 +1435,8 @@
     Note that the reward description is still changeable, just as before. Still, the
     current-RF agent will not use the reward-tampering possibility, because it is
     focused on satisfying the current reward description.</p>
-- - https://tinyletter.com/gwern
-  - Gwern.net newsletter (TinyLetter subscription page)
+- - https://gwern.substack.com/
+  - Gwern.net newsletter (Substack subscription page)
   - Gwern Branwen
   - 2013-12-01
   - ''
@@ -17605,3 +17605,9 @@
   - '1984'
   - 10.1037/0033-2909.96.1.72
   - ! '<p>Meta-analysis of the cumulative research on various predictors of job performance shows that for entry-level jobs there is no predictor with validity equal to that of ability, which has a mean validity of 0.53. For selection on the basis of current job performance, the work sample test, with mean validity of 0.54, is slightly better. For federal entry-level jobs, substitution of an alternative predictor would cost from $3.12 billion (job tryout) to $15.89 billion per year (age). Hiring on ability has a utility of $15.61 billion per year, but affects minority groups adversely. Hiring on ability by quotas would decrease this utility by 5%. A third strategy—using a low cutoff score—would decrease utility by 83%. Using other predictors in conjunction with ability tests might improve validity and reduce adverse impact, but there is as yet no data base for studying this possibility.</p>'
+- - /docs/cs/2015-mcsherry.pdf
+  - ! 'Scalability! But at what COST?'
+  - Frank McSherry, Michael Isard, Derek G. Murray
+  - 2015-05
+  - ''
+  - ! '<p>We offer a new metric for big data platforms, <span class="smallcaps-auto">COST</span>, or the Configuration that Outperforms a Single Thread. The <span class="smallcaps-auto">COST</span> of a given platform for a given problem is the hardware configuration required before the platform outperforms a competent single-threaded implementation. <span class="smallcaps-auto">COST</span> weighs a system’s scalability against the overheads introduced by the system, and indicates the actual performance gains of the system, without rewarding systems that bring substantial but parallelizable overheads.</p><p>We survey measurements of data-parallel systems [for graph processing] recently reported in <span class="smallcaps-auto">SOSP</span> and <span class="smallcaps-auto">OSDI</span>, and find that many systems have either a surprisingly large <span class="smallcaps-auto">COST</span>, often hundreds of cores, or simply underperform one thread for all of their reported configurations.</p>'
