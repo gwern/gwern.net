@@ -37,6 +37,9 @@
     opacity: 0.55;
 }
 
+/* workaround for 'PNAS' square block: a text indention somewhere is being applied downstream to links as well, breaking the text link icons, so reset them back to their default. */
+#markdownBody a::after { text-indent: 0; }
+
 /* If a link has an automatic or custom link annotation (eg a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
 /* so users don't get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */
 /* At some point, if enough links get annotated & annotation is the default, we might flip this to be a warning for non-annotated links. */
@@ -162,19 +165,20 @@
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     content: "W"; }
 
-/* PNAS: they don't have a real logo, but their favicon does a nice little compact square, and we can replicate that in CSS: */
+/* PNAS: they don't have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (as white text on black background per our monochrome theme): */
 #markdownBody a[href*="pnas.org"]::after {
-  content: "PNAS";
-  font-size: 0.5em;
-  width: 1.4em;
-  display: inline-block;
-  overflow-wrap: break-word;
-  font-family: Baskerville;
-  line-height: 0.7;
-  text-align: center;
-  position: relative;
-  bottom: 0.3em;
-  left: 0.1em; }
+ content:"PNAS";
+ font-size:.5em;
+ width:1.5em;
+ display:inline-block;
+ overflow-wrap:break-word;
+ font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times","Source Serif Pro", serif;
+ line-height:.75;
+ text-align:center;
+ position:relative;
+ bottom:.3em;
+ left:.1em;
+}
 
 #markdownBody a[href*="www.nber.org"]:not([href$=".pdf"])::after {
   content: "NBER";
@@ -210,7 +214,7 @@
   width: 1.6em;
   display: inline-block;
   overflow-wrap: break-word;
-  font-family: Baskerville;
+  font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times","Source Serif Pro", serif;
   line-height: 0.8em;
   text-align: center;
   position: relative;
