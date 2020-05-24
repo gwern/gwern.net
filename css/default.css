@@ -2649,3 +2649,20 @@ body.bookreviews .tableWrapper#book-reviews-table td:last-of-type {
 .image-wrapper:hover::after {
     opacity: 1.0;
 }
+
+/* LaTeX: Format the LaTeX symbol correctly (a higher up, e lower) (borrowed from https://latex.now.sh/ ) */
+.latex span:nth-child(1) {
+ text-transform:uppercase;
+ font-size:.76em;
+ vertical-align:.25em;
+ margin-left:-.30em;
+ margin-right:-.08em;
+ line-height:1ex
+}
+.latex span:nth-child(2) {
+ text-transform:uppercase;
+ vertical-align:-.5ex;
+ margin-left:-.160em;
+ margin-right:-.120em;
+ line-height:1ex
+}
