@@ -6346,7 +6346,7 @@
   - ''
   - ! 'From a text-generation perspective, the included demos were very impressive:
     the text is coherent over a long horizon, and grammatical syntax and punctuation
-    are near-perfect.</p><p><img src="https://minimaxir.com/img/howto-gpt2/openai-demo.png"></p><p>At
+    are near-perfect.</p><p><img src="/images/ai/2019-openai-gpt2-demo-recyclingtextsample.png"></p><p>At
     the same time, the Python code which allowed anyone to download the model (albeit
     smaller versions out of concern the full model can be abused to mass-generate
     fake news) and the <a href=https://www.tensorflow.org>TensorFlow</a> code to
