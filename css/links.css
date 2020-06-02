@@ -224,9 +224,9 @@
 /* Kevin Simler's Melting Asphalt blog */
 #markdownBody a[href*="meltingasphalt.com"]::after {
     content: "▲▲";
-   font-size: 60%;
+    font-size: 60%;
     bottom: 1em;
-    letter-spacing: -0.1em; xo}
+    letter-spacing: -0.1em; }
 
 /* Bitcoin Talk: close enough! */
 #markdownBody a[href*="bitcointalk.org"]::after,
@@ -716,13 +716,16 @@
 }
 
 /* DeepMind; match articles or anchors about DM too */
-#markdownBody a[href*='deepmind']::after {
+#markdownBody a[href*='deepmind']::after,
+#markdownBody a[href*='docs/.*/*.pdf#deepmind']::after {
     background-image: url("/static/img/icons/deepmind.svg");
 }
-#markdownBody a[href*='deepmind']:hover::after {
+#markdownBody a[href*='deepmind']:hover::after,
+#markdownBody a[href*='docs/.*/*.pdf#deepmind']:hover::after{
     opacity: 0.5;
 }
-#markdownBody a[href*='deepmind']::after {
+#markdownBody a[href*='deepmind']::after,
+#markdownBody a[href*='docs/.*/*.pdf#deepmind']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -734,13 +737,17 @@
     opacity: 0.60;
 }
 
-#markdownBody a[href*='openai']::after {
+/* OpenAI; match articles or anchors about OA too */
+#markdownBody a[href*='openai']::after,
+#markdownBody a[href$='.pdf#openai']::after {
     background-image: url("/static/img/icons/openai.svg");
 }
-#markdownBody a[href*='openai']:hover::after {
+#markdownBody a[href*='openai']:hover::after,
+#markdownBody a[href$='.pdf#openai']:hover::after {
     opacity: 0.5;
 }
-#markdownBody a[href*='openai']::after {
+#markdownBody a[href*='openai']::after,
+#markdownBody a[href$='.pdf#openai']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -750,6 +757,23 @@
     width: 1em;
     margin: 0 0 0px 3px;
     opacity: 0.60;
+}
+
+/* Distill ML journal */
+#markdownBody a[href*="distill.pub"]::after {
+    content: "";
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-607 419 64 64'%3E%3Cpath d='M-573.4,478.9c-8,0-14.6-6.4-14.6-14.5s14.6-25.9,14.6-40.8c0,14.9,14.6,32.8,14.6,40.8S-565.4,478.9-573.4,478.9z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 0.75em;
+    background-position: right 1px top;
+    width: 0.825em;
+    height: 0.825em;
+    display: inline-block;
+    vertical-align: baseline;
+    opacity: 0.825;
+}
+#markdownBody a[href*="distill.pub"]:hover::after {
+    opacity: 0.6;
 }
 
 /* Twitter */
