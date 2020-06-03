@@ -389,7 +389,7 @@
     performance and offers a path toward nurturing high-impact scientists, potentially
     informing future policy decisions.</p>'
 - - /static/js/popups.js
-  - popups.js
+  - '<code>popups.js</code>'
   - Said Achmiz
   - 2019-08-21
   - ''
@@ -412,7 +412,7 @@
     for a live demonstration, see the links in <a href="/newsletter/2019/07">the
     July 2019 newsletter</a>.</p>'
 - - https://share.obormot.net/misc/gwern/wikipedia-popups.js
-  - wikipedia-popups.js
+  - '<code>wikipedia-popups.js</code>'
   - Said Achmiz
   - 2019-07-29
   - ''
@@ -6500,7 +6500,7 @@
   - Education, Intelligence, and Attitude Extremity
   - Michael D. Makowsky, Stephen C. Miller
   - '2014'
-  - doi:10.1093/poq/nfu041
+  - 10.1093/poq/nfu041
   - Education and general intelligence both serve to inform opinions, but do they
     lead to greater attitude extremity? The potential civic returns to education include
     not only the sophistication of citizen opinions, but also their moderation. We
@@ -16086,7 +16086,7 @@
   - '10.1037/0021-9010.78.4.649'
   - ! '<p>The authors administered inventories of vocational and recreational interests and talents to 924 pairs of twins who had been reared together and to 92 pairs separated in infancy and reared apart. Factor analysis of all 291 items yielded 39 identifiable factors and 11 superfactors. The data indicated that about 50% of interests variance (about two thirds of the stable variance) was associated with genetic variation. The authors show that heritability can be conservatively estimated from the within-pair correlations of adult monozygotic twins reared together. Evidence for nonadditive genetic effects on interests may explain why heritability estimates based on family studies are so much lower. The authors propose a model in which precursor traits of aptitude and personality, in part genetically determined, guide the development of interests through the mechanisms of gene-environment correlation and interaction.</p>'
 - - /static/js/darkmode.js
-  - '<cde>darkmode.js</code>'
+  - '<code>darkmode.js</code>'
   - Said Achmiz
   - 2020-03-20
   - ''
@@ -17999,3 +17999,21 @@
   - 2020-05-22
   - ''
   - ! '<p>Companies use about 300,000 times more computation training the best AI systems today than they did in 2012 and algorithmic innovations have also made them 25 times more efficient at the same tasks.</p><p>These are the headline results of two recent papers—<a href="https://openai.com/blog/ai-and-compute/" title="&#39;We’re releasing an analysis showing that since 2012, the amount of compute used in the largest AI training runs has been increasing exponentially with a 3.4-month doubling time (by comparison, Moore’s Law had a 2-year doubling period). Since 2012, this metric has grown by more than 300,000✕ (a 2-year doubling period would yield only a 7✕ increase). Improvements in compute have been a key component of AI progress, so as long as this trend continues, it’s worth preparing for the implications of systems far outside today’s capabilities&#39;, Amodei et al 2018">“AI and Compute”</a> and <a href="https://openai.com/blog/ai-and-efficiency/" title="&#39;AI and Efficiency: We’re releasing an analysis showing that since 2012 the amount of compute needed to train a neural net to the same performance on ImageNet classification has been decreasing by a factor of 2 every 16 months. Compared to 2012, it now takes 44 times less compute to train a neural network to the level of AlexNet (by contrast, Moore’s Law would yield an 11✕ cost improvement over this period). Our results suggest that for AI tasks with high levels of recent investment, algorithmic progress has yielded more gains than classical hardware efficiency&#39;, Hernandez &amp; Brown 2020">“AI and Efficiency”</a>—from the Foresight Team at OpenAI. In today’s episode I spoke with one of the authors, Danny Hernandez, who joined OpenAI after helping develop better forecasting methods at Twitch and Open Philanthropy. Danny and I talk about how to understand his team’s results and what they mean (and don’t mean) for how we should think about progress in AI going forward.</p><p>Debates around the future of AI can sometimes be pretty abstract and theoretical. Danny hopes that providing rigorous measurements of some of the inputs to AI progress so far can help us better understand what causes that progress, as well as ground debates about the future of AI in a better shared understanding of the field…In the interview, Danny and I also discuss a range of other topics, including:</p><ul><li>The question of which experts to believe</li><li>Danny’s journey to working at OpenAI</li><li>The usefulness of “decision boundaries”</li><li>The importance of Moore’s law for people who care about the long-term future</li><li>What OpenAI’s Foresight Team’s findings might imply for policy</li><li>The question whether progress in the performance of AI systems is linear</li><li>The safety teams at OpenAI and who they’re looking to hire</li><li>One idea for finding someone to guide your learning</li><li>The importance of hardware expertise for making a positive impact</li></ul><blockquote><p>If you believe AI progress is fast, what would progress look like that would convince you it’s slow? Paint a picture of that five years from now. What does slow progress look like to you? And now you’re like, “Oh yeah, progress is actually slow”. And what could have happened that would convince you that it’s actually fast. But you can make what would update you clear to yourself and others and that for big decisions, this is generally worthwhile.</p></blockquote>'
+- - /docs/ai/anime/2019-yu.pdf
+  - ! "Generating Furry Face Art from Sketches using a GAN"
+  - Andrew Yu
+  - 2019-12-01
+  - ''
+  - ! '<p>I generate furry face artwork from color sketches. The sketches are procedurally generated from a data set of furry artwork. Sketches are translated back into artwork via a Generative Adversarial Network. I implement the <span class="smallcaps-auto">GAN</span> using a U-Net autoencoder with encoder-decoder skip connections and experiment with adding adaptive instance normalization into upsampling layers. The results show effective mapping of training and dev set sketches back to their input style. However, the model does not perform as effectively on novel user sketches and often fails to add stochastic textures like hair details.</p>'
+- - https://osf.io/preprints/socarxiv/mbj9p/
+  - Understanding the geography of cryptomarkets using administrative data on postal drug deliveries in Scotland
+  - Ben Matthews, Ben Collier, Susan McVie, Chris Dibben
+  - 2020-05-28
+  - 10.31235/osf.io/mbj9p
+  - ! '<p>Cryptomarkets may open up the drugs supply in remote areas where access to drugs was expensive or patchy. However, using cryptomarkets relies on risk-limiting techniques to avoid detection which may be easier in urban areas. However, little is known about the geographical patterning of cryptomarket use, in part because data sources on the locations of cryptomarket purchasers are hard to come by. We use a novel dataset of packages of drugs packages intercepted by Scottish law enforcement, likely reflecting cryptomarket use, to understand the flows of drugs through cryptomarkets at regional and neighbourhood levels. This gives previously unavailable insights into the geographical patterns of cryptomarket use at the sub-national level.</p><p>We use descriptive statistics, Bayesian hierarchical regression models, and exploratory analysis of spatial clustering to describe the relationship between neighbourhood characteristics and expected rate of drugs consignments identified across Scotland.</p><p>The majority of intercepted drug packages were destined for urban centres, but there was a higher than expected delivery rate to some of Scotland’s remote and rural locations. Increased rates of drug delivery within Scottish neighbourhoods was associated with higher levels of crime and deprivation, internet connectivity and with access to services, but not with higher rates of drug-related hospitalisation.</p><p>Analysis of spatial clustering showed that drug delivery to the most remote and rural locations was still associated with good access to services because the packages were typically delivered to addresses in larger settlements within remote locations.</p>'
+- - /docs/xrisks/1993-gott.pdf
+  - ! "Implications of the Copernican principle for our future prospects"
+  - J. Richard Gott III
+  - 1993-05-27
+  - 10.1038/363315a0
+  - ! '<p>Making only the assumption that you are a random intelligent observer, limits for the total longevity of our species of 0.2 million to 8 million years can be derived at the 95% confidence level. Further consideration indicates that we are unlikely to colonize the Galaxy, and that we are likely to have a higher population than the median for intelligent species.</p>'
