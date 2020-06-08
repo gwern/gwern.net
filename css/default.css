@@ -767,11 +767,6 @@ blockquote blockquote {
     margin-top: 0.5em;
 }
 
-#markdownBody blockquote > ul:only-child,
-#markdownBody blockquote > ol:only-child {
-    margin-left: 1.5em;
-}
-
 /*  Interviews (e.g. https://www.gwern.net/Morning-writing#examples).
     */
 blockquote p > code:first-child,

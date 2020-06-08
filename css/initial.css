@@ -284,7 +284,7 @@ header h1 {
     display: none
 }
 
-#page-metadata span:nth-of-type(n+3) {
+#page-metadata-block span:nth-of-type(n+3) {
     white-space: nowrap
 }
 
@@ -590,7 +590,7 @@ header h1 {
     font-variant-numeric: oldstyle-nums
 }
 
-#abstract blockquote {
+#abstract > blockquote {
     margin: 0 0 1.5em 0;
     border-color: #bbb;
     padding: 0.9rem 1.25rem 0.95rem 1.25rem;
