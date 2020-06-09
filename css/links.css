@@ -325,10 +325,10 @@
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
     body:not(.siteIndex) a.docMetadata::before {
         content: "\25E4"; /* 'â—¤' U+25E4 Black Upper Left Triangle */
-        margin: 0 0 0 2px;
+        margin: 0 0 0 3px;
         vertical-align: baseline;
         position: relative;
-        bottom: 0.37em;
+        bottom: 0.35em;
         opacity: 0.55;
         font-size: 65%;
         right: 0.17em;
@@ -1138,6 +1138,7 @@
 #markdownBody a[href*='soundcloud.com']:hover::after,
 #markdownBody a[href*='bandcamp.com']:hover::after {
     opacity: 0.3;
+    font-size: 0.8em;
 }
 #markdownBody a[href*='youtube.com']::after,
 #markdownBody a[href*='youtu.be']::after,
