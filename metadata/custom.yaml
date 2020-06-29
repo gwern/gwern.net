@@ -18400,3 +18400,9 @@
   - 1995-01-01
   - 10.1111/j.1467-9280.1995.tb00301.x
   - ! '<p>Correlation matrices were computed on academic achievement and family environment measures using longitudinal data on siblings. The 8 × 8 correlation matrices were computed on Hispanics, blacks, and whites separately. When compared employing a <span class="smallcaps-auto">LISREL</span> method, the matrices were equal across these ethnic-racial groups. Hence, developmental processes influencing academic achievement may be similar in Hispanics, blacks, and whites. A structural equation model with 4 free parameters was fitted successfully to a correlation matrix pooled across groups. As a single structural equation model fitted all groups, the existence of minority-specific developmental processes was not supported.</p>'
+- - /docs/ai/anime/2020-akita.pdf
+  - ! "Deep–Eyes: Fully Automatic Anime Character Colorization with Painting of Details on Empty Pupils"
+  - Kenta Akita, Yuki Morimoto, Reiji Tsuruno
+  - 2020-01-01
+  - 10.2312/egs.20201023
+  - ! 'Many studies have recently applied deep learning to the automatic colorization of line drawings. However, it is difficult to paint empty pupils using existing methods because the networks are trained with pupils that have edges, which are generated from color images using image processing. Most actual line drawings have empty pupils that artists must paint in. In this paper, we propose a novel network model that transfers the pupil details in a reference color image to input line drawings with empty pupils. We also propose a method for accurately and automatically coloring eyes. In this method, eye patches are extracted from a reference color image and automatically added to an input line drawing as color hints using our eye position estimation network.'
