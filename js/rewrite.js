@@ -142,14 +142,14 @@ document.querySelectorAll(".collapse").forEach(collapseBlock => {
         realCollapseBlock.appendChild(collapseBlock);
     }
 });
-/*  Add listeners to toggle ‘expanded’ class of collapse blocks.
+/*  Add listeners to toggle 'expanded' class of collapse blocks.
     */
 document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
     let collapseBlock = disclosureButton.closest(".collapse");
     disclosureButton.addEventListener("change", (event) => {
         collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
-        //  If it’s a code block, adjust its height.
+        //  If it's a code block, adjust its height.
         if (collapseBlock.lastElementChild.tagName == "PRE") {
             let codeBlock = collapseBlock.lastElementChild.lastElementChild;
             if (codeBlock.tagName != "CODE") return;
@@ -174,11 +174,11 @@ getAllCaptionedMedia().forEach(captionedMedia => {
     let figure = captionedMedia.media.closest("figure");
     figure.appendChild(wrapper);
 
-	// Tag the figure with the image’s float class.
-	if (captionedMedia.media.classList.contains("float-left"))
-		captionedMedia.media.closest("figure").classList.add("float-left");
-	if (captionedMedia.media.classList.contains("float-right"))
-		captionedMedia.media.closest("figure").classList.add("float-right");
+    // Tag the figure with the image's float class.
+    if (captionedMedia.media.classList.contains("float-left"))
+        captionedMedia.media.closest("figure").classList.add("float-left");
+    if (captionedMedia.media.classList.contains("float-right"))
+        captionedMedia.media.closest("figure").classList.add("float-right");
 });
 
 /*  Set minimum caption box width, and add listener to recalculate on
@@ -246,4 +246,38 @@ function updateMarginNoteStyle() {
 doWhenPageLoaded (() => {
     updateMarginNoteStyle();
     GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(updateMarginNoteStyle);
+});
+
+/* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
+/*  Reveals the given node by expanding all containing collapse blocks.
+    */
+function expandAllAncestorsOfNode(node) {
+    // If the node is not an element (e.g. a text node), get its parent element.
+    let element = node instanceof HTMLElement ? node : node.parentElement;
+
+    // Get the closest containing collapse block. If none such, return.
+    let enclosingCollapseBlock = element.closest(".collapse");
+    if (!enclosingCollapseBlock) return;
+
+    // Expand the collapse block by checking the disclosure-button checkbox.
+    enclosingCollapseBlock.querySelector(`#${enclosingCollapseBlock.id} > .disclosure-button`).checked = true;
+
+    // Recursively expand all ancestors of the collapse block.
+    expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
+}
+
+/*  When the window loses focus, add the selectionchange listener.
+    (This will be triggered when a "find in page" UI is opened.)
+    */
+window.addEventListener("blur", () => {
+    document.addEventListener("selectionchange", GW.selectionChangedWhenSearching = (event) => {
+        expandAllAncestorsOfNode((document.getSelection()||{}).anchorNode);
+    });
+});
+
+/*  When the window gains focus, remove the selectionchange listener.
+    (This will be triggered when a "find in page" UI is closed.)
+    */
+window.addEventListener("focus", () => {
+    document.removeEventListener("selectionchange", GW.selectionChangedWhenSearching);
 });
