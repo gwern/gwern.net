@@ -194,7 +194,8 @@ section.collapse:target > .disclosure-button::before {
 }
 
 /*  "Click to expand".
-    */
+ */
+
 .collapse:not(:target) > .disclosure-button::after {
     width: 100%;
     position: absolute;
@@ -202,15 +203,16 @@ section.collapse:target > .disclosure-button::before {
     color: #777;
     pointer-events: none;
     content: "Click to expand";
-    font-size: 1em;
-    font-weight: bold;
+    font-size: 1.25em;
+    font-weight: 600;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     color: #777;
     text-shadow:
          1px -1px 0 #fff,
         -1px  1px 0 #fff,
         -1px -1px 0 #fff,
          1px  1px 0 #fff;
-    top: calc(100% - 13px);
+    top: calc(100% - 1.125em);
 }
 .collapse:not(:target) > .disclosure-button:hover::after {
     color: #444;
