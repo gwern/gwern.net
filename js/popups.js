@@ -1,7 +1,7 @@
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-07-22 17:25:33 gwern"
+// When:  Time-stamp: "2020-08-14 22:42:39 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -122,7 +122,7 @@ Extracts = {
         return `<div class='popup-citation-context'>… ${citationContextHTML} …</div>`;
     },
     localImageForTarget: (target) => {
-        return `<div class='popup-local-image'><img src='${target.href}'></div>`;
+        return `<div class='popup-local-image'><img width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
     unbind: () => {
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
@@ -231,7 +231,8 @@ Extracts = {
                 Extracts.popup.innerHTML = Extracts.sectionEmbedForTarget(target);
                 Extracts.popup.style.width = Extracts.maxPopupWidth + "px";
                 Extracts.popup.style.maxHeight = (Extracts.maxPopupWidth * 0.75) + "px";
-            } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
+                // } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
+                } else if (target.href.startsWith("https://www.gwern.net/images/")) {
                 Extracts.popup.innerHTML = Extracts.localImageForTarget(target);
             } else if (target.classList.contains("docMetadata")) {
                 Extracts.popup.innerHTML = Extracts.extractForTarget(target);
