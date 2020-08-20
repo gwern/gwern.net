@@ -1,7 +1,7 @@
 // popups.js: standaline Javascript library for creating 'popups' which display link metadata (typically, title/author/date/summary), for extremely convenient reference/abstract reading.
 // Author: Said Achmiz, Shawn Presser (mobile & Youtube support)
 // Date: 2019-08-21
-// When:  Time-stamp: "2020-08-14 22:42:39 gwern"
+// When:  Time-stamp: "2020-08-20 12:30:20 gwern"
 // license: MIT (derivative of footnotes.js, which is PD)
 
 // popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
@@ -69,7 +69,7 @@ Extracts = {
                 `<a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' in Google Scholar">GS</a>`;
         } else {
             doi = `; ` +
-                  `<a href="https://www.google.com/search?num=100&q=link%3A${target.href}+OR+%22${target.dataset.popupTitle}%22" ` +
+                  `<a href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" ` +
                   `target='_new' ` +
                   `title="Links to this page '${target.dataset.popupTitle}' in Google">` +
                   `links</a>`;
