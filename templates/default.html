@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-us">
   <head>
 
     <meta charset="utf-8">
@@ -81,6 +81,11 @@
 
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
     <script src="/static/js/sidenotes.js" async></script> <!-- since sidenotes visibly render, unlike the other JS libs, we prioritize its loading in the head -->
+
+    <!-- Work around poor browser hyphenation, especially the desktop Chrome hyphenation issues, using Hyphenopoly -->
+    <script> var Hyphenopoly = { require: { "en-us": "FORCEHYPHENOPOLY" }, setup: { selectors: { "#markdownBody": {} } } };</script>
+    <script src="/static/js/hyphenopoly/Hyphenopoly_Loader.js" async></script>
+
     <!-- Hint at necessary third-party domains -->
     <link rel="preconnect" href="https://www.google-analytics.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">

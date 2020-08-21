@@ -573,14 +573,12 @@ header h1 {
     'ragged margin'), undoing the default of 'flush left, ragged' right (see
     https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
     */
-@supports (-webkit-hyphens:auto) or (-ms-hyphens:auto) or (hyphens:auto) {
-    #markdownBody p,
-    #markdownBody li {
-        text-align: justify;
-        -webkit-hyphens: auto;
-        -ms-hyphens: auto;
-        hyphens: auto
-    }
+#markdownBody p,
+#markdownBody li {
+    text-align: justify;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto
 }
 
 /*  Cute 'old-style' numerals, look a little nicer inline in text, and available natively in the SS fonts:
