@@ -127,7 +127,7 @@ doWhenPageLoaded(() => {
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
 document.querySelectorAll(".collapse").forEach(collapseBlock => {
-    let disclosureButtonHTML = "<input type='checkbox' class='disclosure-button' aria-label='Open/close collapsed section'>";
+    let disclosureButtonHTML = "<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'>";
     if (collapseBlock.tagName == "SECTION") {
         //  Inject the disclosure button.
         collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
