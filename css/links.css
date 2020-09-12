@@ -323,7 +323,8 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
-    body:not(.siteIndex) a.docMetadata::before {
+    body:not(.siteIndex) a.docMetadata::before,
+    body:not(.siteIndex) .defnMetadata::before {
         content: "\25E4"; /* 'â—¤' U+25E4 Black Upper Left Triangle */
         margin: 0 0 0 3px;
         vertical-align: baseline;
@@ -333,6 +334,12 @@
         font-size: 65%;
         right: 0.17em;
     }
+}
+/* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
+span.defnMetadata {
+  cursor: help;
+  color: #444;
+  border-bottom: 1px dotted currentColor;
 }
 
 /* TEXTUAL PER-DOMAIN LINK ICONS: */
