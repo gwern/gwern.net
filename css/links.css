@@ -381,6 +381,12 @@ span.defnMetadata {
 #markdownBody a[href*="medium.com"]::after,
 #markdownBody a[href*="myanimelist.net"]::after,
 #markdownBody a[href*="nature.com"]::after,
+#markdownBody a[href*="xkcd.com"]::after,
+#markdownBody a[href*="rand.org"]::after,
+#markdownBody a[href*="link.springer.com"]::after,
+#markdownBody a[href*="academic.oup.com"]::after,
+#markdownBody a[href*="sagepub.com"]::after,
+#markdownBody a[href*="www.cell.com"]::after,
 #markdownBody a[href*="onegeek.org"]::after,
 #markdownBody a[href*="overcomingbias.com"]::after,
 #markdownBody a[href*="pnas.org"]::after,
@@ -717,9 +723,82 @@ span.defnMetadata {
 #markdownBody a[href*="slate.com"]::after {
     content: "S"; }
 
+#markdownBody a[href*="xkcd.com"]::after {
+ content:"XKCD";
+ font-size:.55em;
+ width:1.5em;
+ display:inline-block;
+ overflow-wrap:break-word;
+ font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+ line-height:.75;
+ text-align:center;
+ position:relative;
+ bottom:.3em;
+ left:.1em;
+ opacity: 1;
+ font-weight: bold;
+ }
+
+#markdownBody a[href*="rand.org"]::after {
+ content:"RAND";
+ font-size:.55em;
+ width:1.5em;
+ display:inline-block;
+ overflow-wrap:break-word;
+ font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+ line-height:.75;
+ text-align:center;
+ position:relative;
+ bottom:.3em;
+ left:.1em;
+ opacity: 1;
+ font-weight: bold;
+}
+
 /* Nature */
 #markdownBody a[href*="nature.com"]::after {
     content: "n"; }
+
+#markdownBody a[href*="link.springer.com"]::after {
+    content: "♘"; /* white chess knight     ♘   U+2658  &#9816;     &#x2658;  */
+    font-size: 150%; }
+
+/* Cell: their logo is unrecognizable (and dumb) */
+#markdownBody a[href*="www.cell.com"]::after {
+ content:"CELL";
+ font-size:.5em;
+ width:1.5em;
+ display:inline-block;
+ overflow-wrap:break-word;
+ font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+ line-height:.75;
+ text-align:center;
+ position:relative;
+ bottom:.3em;
+ left:.1em;
+ opacity: 1;
+ font-weight: bold;
+}
+
+/* Sage Journals's logo is a circled S... but would anyone recognize it? */
+#markdownBody a[href*="sagepub.com"]::after {
+ content:"SAGE";
+ font-size:.6em;
+ width:1.5em;
+ display:inline-block;
+ overflow-wrap:break-word;
+ font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+ line-height:.75;
+ text-align:center;
+ position:relative;
+ bottom:.3em;
+ left:.1em;
+ opacity: 1;
+}
+
+/* Oxford Academic Journals / OUP */
+#markdownBody a[href*="academic.oup.com"]::after {
+    content: "OUP"; }
 
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
 #markdownBody a[href*="evageeks.org"]::after,
@@ -742,6 +821,24 @@ span.defnMetadata {
     opacity: 0.3;
 }
 #markdownBody a[href*='biorxiv.org']::after {
+    content: "";
+    display: inline-block;
+    position: static;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    height: 1em;
+    width: 0.9em;
+    margin: 0 0 0 2px;
+    opacity: 0.60;
+}
+
+#markdownBody a[href*='substack.com']::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMidYMid meet' viewBox='0 0 12.25 12.25' height='16.333' width='16.333' xmlns:v='https://vecta.io/nano'%3E%3Cpath d='M0 0h12.25v12.25H0z'/%3E%3Cpath d='M0 6.125v6.125h12.25V0H0zm9.37-3.08v.435H2.89v-.87h6.48zm0 1.66v.44H2.89v-.882h6.48zm0 3.24L9.36 9.97c-.006 0-.733-.403-1.613-.895L6.13 8.18a140.62 140.62 0 0 0-1.606.889l-1.612.898c-.02.007-.02-.14-.02-2.02v-2.03h6.48z' fill='%23fff'/%3E%3C/svg%3E");
+}
+#markdownBody a[href*='substack.com']:hover::after {
+    opacity: 0.3;
+}
+#markdownBody a[href*='substack.com']::after {
     content: "";
     display: inline-block;
     position: static;
@@ -1264,6 +1361,7 @@ span.defnMetadata {
     opacity: 0.60;
 }
 
+#markdownBody a[href*='webcitation.org']::after,
 #markdownBody a[href*='mementoweb.org']::after,
 #markdownBody a[href*='archive.org']::after,
 #markdownBody a[href*='archive-it.org']::after,
@@ -1271,6 +1369,7 @@ span.defnMetadata {
 #markdownBody a[href*='waybackmachine.org']::after {
     background-image: url("/static/img/icons/internetarchive.svg");
 }
+#markdownBody a[href*='webcitation.org']:hover::after,
 #markdownBody a[href*='mementoweb.org']:hover::after,
 #markdownBody a[href*='archive.org']:hover::after,
 #markdownBody a[href*='archive-it.org']:hover::after,
@@ -1278,6 +1377,7 @@ span.defnMetadata {
 #markdownBody a[href*='waybackmachine.org']:hover::after {
     opacity: 0.3;
 }
+#markdownBody a[href*='webcitation.org']::after,
 #markdownBody a[href*='mementoweb.org']::after,
 #markdownBody a[href*='archive.org']::after,
 #markdownBody a[href*='archive-it.org']::after,
