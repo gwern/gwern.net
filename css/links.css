@@ -280,10 +280,10 @@
 /*=-----------------------------------------=*/
 
 /*  Within-page (anchor) links.
-    */
+ */
 #markdownBody section > :not(:first-child) a[href^='#']::after,
 #markdownBody p a[href^='#']::after {
-    content: "\00B6"; /* Pilcrow */
+    content: "\00B6"; /* '¶' Pilcrow Sign U+00B6 */
     margin: 0 1px 0 3px;
     font-size: 0.75em;
     vertical-align: baseline;
@@ -291,12 +291,51 @@
     bottom: 0.45em;
     opacity: 0.6;
 }
-#markdownBody section > :not(:first-child) a[href^='#'].footnote-ref::after,
+/* avoid pilcrows in the footnote forward/backwards links */
 #markdownBody p a[href^='#'].footnote-ref::after,
-#markdownBody section > :not(:first-child) a[href^='#'].footnote-back::after,
-#markdownBody p a[href^='#'].footnote-back::after {
+#markdownBody p a[href^='#'].footnote-back::after{
     content: none;
 }
+
+
+
+#markdownBody section > :not(:first-child) a[href^='#'].section-link-up::after,
+#markdownBody p a[href^='#'].section-link-up::after,
+#markdownBody section > :not(:first-child) a[href^='#'].section-link-down::after,
+#markdownBody p a[href^='#'].section-link-down::after {
+    content: "";
+    bottom: 0.2em;
+    width: 1em;
+    display: inline-block;
+    height: 1em;
+    background-repeat: no-repeat;
+}
+#markdownBody section > :not(:first-child) a[href^='#'].section-link-up::after,
+#markdownBody p a[href^='#'].section-link-up::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48cGF0aCBkPSJNMzQuOSAyODkuNWwtMjIuMi0yMi4yYy05LjQtOS40LTkuNC0yNC42IDAtMzMuOUwyMDcgMzljOS40LTkuNCAyNC42LTkuNCAzMy45IDBsMTk0LjMgMTk0LjNjOS40IDkuNCA5LjQgMjQuNiAwIDMzLjlMNDEzIDI4OS40Yy05LjUgOS41LTI1IDkuMy0zNC4zLS40TDI2NCAxNjguNlY0NTZjMCAxMy4zLTEwLjcgMjQtMjQgMjRoLTMyYy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYxNjguNkw2OS4yIDI4OS4xYy05LjMgOS44LTI0LjggMTAtMzQuMy40eiIvPjwvc3ZnPg==');
+}
+#markdownBody section > :not(:first-child) a[href^='#'].section-link-down::after,
+#markdownBody p a[href^='#'].section-link-down::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48cGF0aCBkPSJNNDEzLjEgMjIyLjVsMjIuMiAyMi4yYzkuNCA5LjQgOS40IDI0LjYgMCAzMy45TDI0MSA0NzNjLTkuNCA5LjQtMjQuNiA5LjQtMzMuOSAwTDEyLjcgMjc4LjZjLTkuNC05LjQtOS40LTI0LjYgMC0zMy45bDIyLjItMjIuMmM5LjUtOS41IDI1LTkuMyAzNC4zLjRMMTg0IDM0My40VjU2YzAtMTMuMyAxMC43LTI0IDI0LTI0aDMyYzEzLjMgMCAyNCAxMC43IDI0IDI0djI4Ny40bDExNC44LTEyMC41YzkuMy05LjggMjQuOC0xMCAzNC4zLS40eiIvPjwvc3ZnPg==');
+}
+
+/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-up::after, */
+/* #markdownBody p a[href^='#'].section-link-up::after, */
+/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-down::after, */
+/* #markdownBody p a[href^='#'].section-link-down::after { */
+/*     font-size: 0.8em; */
+/*     bottom: 0.4em; */
+/*     opacity: 1.0; */
+/* } */
+/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-up::after, */
+/* #markdownBody p a[href^='#'].section-link-up::after { */
+/*     content: "\2191"; /\* '↑' Upwards Arrow U+2191  *\/ */
+/* } */
+/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-down::after, */
+/* #markdownBody p a[href^='#'].section-link-down::after { */
+/*     content: "\2193"; /\* '↓' Downwards Arrow U+2193  *\/ */
+/* } */
+
 /* Override Pandoc LineAnchors inside codeblocks - we didn't ask for them, but the links still get generated with '#cb-x-y' self-links (see https://github.com/jgm/pandoc/issues/4386 ) so it'd trigger the section icons */
 #markdownBody code a[href^='#']::after {
     display: none;
@@ -325,7 +364,7 @@
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
     body:not(.siteIndex) a.docMetadata::before,
     body:not(.siteIndex) .defnMetadata::before {
-        content: "\25E4"; /* 'â—¤' U+25E4 Black Upper Left Triangle */
+        content: "\25E4"; /* '◤' U+25E4 Black Upper Left Triangle */
         margin: 0 0 0 3px;
         vertical-align: baseline;
         position: relative;
