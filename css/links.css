@@ -397,6 +397,7 @@ span.defnMetadata {
 #markdownBody a[href*="khara.co.jp"]::after,
 #markdownBody a[href*="kk.org"]::after,
 #markdownBody a[href*="lesswrong.com"]::after,
+#markdownBody a[href*="greaterwrong.com"]::after,
 #markdownBody a[href*="longbets.org"]::after,
 #markdownBody a[href*="longnow.org"]::after,
 #markdownBody a[href*="marginalrevolution.com"]::after,
@@ -438,6 +439,7 @@ span.defnMetadata {
 #markdownBody a[href*="www.nber.org"]::after,
 #markdownBody a[href*="mlp.fandom.com"]::after,
 #markdownBody a[href*="www.wsj.com"]::after,
+#markdownBody a[href*="online.wsj.com"]::after,
 #markdownBody a[href*="www.google.com"]::after,
 #markdownBody a[href*="wiley.com"]::after,
 #markdownBody a[href*="yunnansourcing.com"]::after,
@@ -483,7 +485,7 @@ span.defnMetadata {
     content: "𝐆"; }
 
 /* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
-#markdownBody a[href*="wiley.com"]::after {
+#markdownBody a[href*="wiley.com"]::after { /* primary user: onlinelibrary.wiley.com */
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     content: "W"; }
 
@@ -552,7 +554,7 @@ span.defnMetadata {
 
 /* Bitcoin Talk: close enough! */
 #markdownBody a[href*="bitcointalk.org"]::after,
-#markdownBody a[href*="bitcoin.it"]::after {
+#markdownBody a[href*="bitcoin.it"]::after { /* primary user: en.bitcoin.it */
     content: "₿⃝"; }
 
 #markdownBody a[href*="salon.com"]::after {
@@ -607,7 +609,7 @@ span.defnMetadata {
 
 /* SSC logo too bad to use */
 #markdownBody a[href*="yvain"]::after,
-#markdownBody a[href*="slatestarcodex"]::after {
+#markdownBody a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
     content: "SSC"; }
 /* SSC's book */
 #markdownBody a[href*="unsongbook.com"]::after {
@@ -618,7 +620,8 @@ span.defnMetadata {
     content: "OB"; }
 
 /* LW logo is just a colored 'LW', so no point in converting */
-#markdownBody a[href*="lesswrong.com"]::after {
+#markdownBody a[href*="greaterwrong.com"]::after,
+#markdownBody a[href*="lesswrong.com"]::after { /* other user: wiki.lesswrong.com */
     content: "LW"; }
 
 /* PB logo is confusing. A purple question mark...? */
@@ -672,14 +675,14 @@ span.defnMetadata {
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
     content: "BBC"; }
 
-/* R: at this point R Studio has taken over a lot of control, so might as well treat them as official too... */
-#markdownBody a[href*="r-project.org"]::after,
+/* R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... */
+#markdownBody a[href*="r-project.org"]::after, /* primary user: cran.r-project.org */
 #markdownBody a[href*="rstudio.com"]::after {
     content: "R";
 }
 
 /* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
-#markdownBody a[href*="haskell.org"]::after {
+#markdownBody a[href*="haskell.org"]::after { /* primary user: hackage.haskell.org */
     content: "𝛌"; }
 
 /* MAL: the blue of their logo doesn't work, so just text */
@@ -688,7 +691,7 @@ span.defnMetadata {
     content: "MAL"; }
 
 /* Gene Wolfe mailing list; no logo */
-#markdownBody a[href*="urth.net"]::after {
+#markdownBody a[href*="urth.net"]::after { /* primary user: lists.urth.net */
     content: "U"; }
 
 /* TinyLetter's icon, without color, isn't memorable enough; throw in the other email services */
@@ -738,7 +741,8 @@ span.defnMetadata {
     content: "PR"; }
 
 /* The Wall Street Journal */
-#markdownBody a[href*="www.wsj.com"]::after {
+#markdownBody a[href*="www.wsj.com"]::after,
+#markdownBody a[href*="online.wsj.com"]::after {
     content: "WSJ"; }
 
 /* Slate */
@@ -803,7 +807,7 @@ span.defnMetadata {
 }
 
 /* Sage Journals's logo is a circled S... but would anyone recognize it? */
-#markdownBody a[href*="sagepub.com"]::after {
+#markdownBody a[href*="sagepub.com"]::after { /* primary user: journals.sagepub.com */
  content:"SAGE";
  font-size:.6em;
  width:1.5em;
@@ -823,10 +827,10 @@ span.defnMetadata {
     content: "OUP"; }
 
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
-#markdownBody a[href*="evageeks.org"]::after,
+#markdownBody a[href*="evageeks.org"]::after, /* primary user: forum.evageeks.org wiki.evageeks.org */
 #markdownBody a[href*="evamonkey.com"]::after {
     content: "EG"; }
-#markdownBody a[href*="onegeek.org"]::after,
+#markdownBody a[href*="onegeek.org"]::after, /* Primary user: eva.onegeek.org */
 #markdownBody a[href*="evaotaku.com"]::after,
 #markdownBody a[href*="khara.co.jp"]::after,
 #markdownBody a[href*="gainax.co.jp"]::after,
@@ -854,7 +858,7 @@ span.defnMetadata {
     opacity: 0.60;
 }
 
-#markdownBody a[href*='substack.com']::after {
+#markdownBody a[href*='substack.com']::after { /* primary user: gwern.substack.com */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMidYMid meet' viewBox='0 0 12.25 12.25' height='16.333' width='16.333' xmlns:v='https://vecta.io/nano'%3E%3Cpath d='M0 0h12.25v12.25H0z'/%3E%3Cpath d='M0 6.125v6.125h12.25V0H0zm9.37-3.08v.435H2.89v-.87h6.48zm0 1.66v.44H2.89v-.882h6.48zm0 3.24L9.36 9.97c-.006 0-.733-.403-1.613-.895L6.13 8.18a140.62 140.62 0 0 0-1.606.889l-1.612.898c-.02.007-.02-.14-.02-2.02v-2.03h6.48z' fill='%23fff'/%3E%3C/svg%3E");
 }
 #markdownBody a[href*='substack.com']:hover::after {
@@ -893,16 +897,19 @@ span.defnMetadata {
 
 /* PLOS ONE in all their domain permutations... */
 #markdownBody a[href*='plosone.org']::after,
-#markdownBody a[href*='plos.org']::after,
+#markdownBody a[href*='plosmedicine.org']::after,
+#markdownBody a[href*='plos.org']::after, /* primary user: journals.plos.org */
 #markdownBody a[href*='www.plos']::after {
     background-image: url("/static/img/icons/plos.svg");
 }
 #markdownBody a[href*='plosone.org']:hover::after,
+#markdownBody a[href*='plosmedicine.org']:hover::after,
 #markdownBody a[href*='plos.org']:hover::after,
 #markdownBody a[href*='www.plos']:hover::after {
     opacity: 0.3;
 }
 #markdownBody a[href*='plosone.org']::after,
+#markdownBody a[href*='plosmedicine.org']::after,
 #markdownBody a[href*='plos.org']::after,
 #markdownBody a[href*='www.plos']::after {
     content: "";
@@ -1009,7 +1016,7 @@ span.defnMetadata {
 }
 
 /* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
-#markdownBody a[href*='nlm.nih.gov']::after {
+#markdownBody a[href*='nlm.nih.gov']::after { /* primary user: ncbi.nlm.nih.gov */
     background-image: url("/static/img/icons/nlm-ncbi.svg");
     }
 #markdownBody a[href*='nlm.nih.gov']:hover::after {
@@ -1069,7 +1076,7 @@ span.defnMetadata {
 }
 
 /* Reddit */
-#markdownBody a[href*='reddit.com']::after {
+#markdownBody a[href*='reddit.com']::after { /* primary user: old.reddit.com */
     background-image: url("/static/img/icons/reddit.svg");
 }
 #markdownBody a[href*='reddit.com']:hover::after {
@@ -1089,7 +1096,7 @@ span.defnMetadata {
 
 /* PG/HN/YC (shared logo): */
 #markdownBody a[href*='paulgraham.com']::after,
-#markdownBody a[href*='ycombinator.com']::after {
+#markdownBody a[href*='ycombinator.com']::after { /* primary user: news.ycombinator.com */
     background-image: url("/static/img/icons/hn.svg");
 }
 #markdownBody a[href*='paulgraham.com']:hover::after,
@@ -1129,7 +1136,7 @@ span.defnMetadata {
 }
 
 /* DeepMind; match articles or anchors about DM too */
-#markdownBody a[href*='deepmind']::after,
+#markdownBody a[href*='deepmind']::after, /* primary user: deepmind.com */
 #markdownBody a[href*='docs/.*/*.pdf#deepmind']::after {
     background-image: url("/static/img/icons/deepmind.svg");
 }
@@ -1152,7 +1159,7 @@ span.defnMetadata {
 }
 
 /* OpenAI; match articles or anchors about OA too */
-#markdownBody a[href*='openai']::after,
+#markdownBody a[href*='openai']::after, /* primary user: openai.com */
 #markdownBody a[href$='.pdf#openai']::after {
     background-image: url("/static/img/icons/openai.svg");
 }
@@ -1229,10 +1236,11 @@ span.defnMetadata {
 }
 
 /* Wikipedia */
-#markdownBody a[href*="wikipedia.org"]::after,
-#markdownBody a[href*="wikimedia.org"]::after,
+#markdownBody a[href*="wikipedia.org"]::after, /* primary user: en.wikipedia.org */
+#markdownBody a[href*="wikimedia.org"]::after, /* secondary user: meta.wikimedia.org */
+#markdownBody a[href*="wiktionary.org"]::after, /* primary user: en.wiktionary.org */
 #markdownBody a[href*="wikimediafoundation.org"]::after,
-#markdownBody a[href*="wikisource.org"]::after {
+#markdownBody a[href*="wikisource.org"]::after { /* primary user: en.wikisource.org */
     content: "";
     /* WP is used on almost every page, so make an exception and inline it */
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NDAgNTEyIj48cGF0aCBkPSJNNjQwIDUxLjJsLS4zIDEyLjJjLTI4LjEuOC00NSAxNS44LTU1LjggNDAuMy0yNSA1Ny44LTEwMy4zIDI0MC0xNTUuMyAzNTguNkg0MTVsLTgxLjktMTkzLjFjLTMyLjUgNjMuNi02OC4zIDEzMC05OS4yIDE5My4xLS4zLjMtMTUgMC0xNS0uM0MxNzIgMzUyLjMgMTIyLjggMjQzLjQgNzUuOCAxMzMuNCA2NC40IDEwNi43IDI2LjQgNjMuNC4yIDYzLjdjMC0zLjEtLjMtMTAtLjMtMTQuMmgxNjEuOXYxMy45Yy0xOS4yIDEuMS01Mi44IDEzLjMtNDMuMyAzNC4yIDIxLjkgNDkuNyAxMDMuNiAyNDAuMyAxMjUuNiAyODguNiAxNS0yOS43IDU3LjgtMTA5LjIgNzUuMy0xNDIuOC0xMy45LTI4LjMtNTguNi0xMzMuOS03Mi44LTE2MC05LjctMTcuOC0zNi4xLTE5LjQtNTUuOC0xOS43VjQ5LjhsMTQyLjUuM3YxMy4xYy0xOS40LjYtMzguMSA3LjgtMjkuNCAyNi4xIDE4LjkgNDAgMzAuNiA2OC4xIDQ4LjEgMTA0LjcgNS42LTEwLjggMzQuNy02OS40IDQ4LjEtMTAwLjggOC45LTIwLjYtMy45LTI4LjYtMzguNi0yOS40LjMtMy42IDAtMTAuMy4zLTEzLjYgNDQuNC0uMyAxMTEuMS0uMyAxMjMuMS0uNnYxMy42Yy0yMi41LjgtNDUuOCAxMi44LTU4LjEgMzEuN2wtNTkuMiAxMjIuOGM2LjQgMTYuMSA2My4zIDE0Mi44IDY5LjIgMTU2LjdMNTU5LjIgOTEuOGMtOC42LTIzLjEtMzYuNC0yOC4xLTQ3LjItMjguM1Y0OS42bDEyNy44IDEuMS4yLjV6Ii8+PC9zdmc+');
@@ -1247,6 +1255,7 @@ span.defnMetadata {
 }
 #markdownBody a[href*="wikipedia.org"]:hover::after,
 #markdownBody a[href*="wikimedia.org"]:hover::after,
+#markdownBody a[href*="wiktionary.org"]:hover::after,
 #markdownBody a[href*="wikimediafoundation.org"]:hover::after,
 #markdownBody a[href*="wikisource.org"]:hover::after {
     opacity: 0.6;
@@ -1344,7 +1353,7 @@ span.defnMetadata {
 
 /* Dropbox: old file-host, deprecated since they've started killing inactive accounts */
 #markdownBody a[href*='dropbox.com']::after,
-#markdownBody a[href*='dropboxusercontent.com']::after {
+#markdownBody a[href*='dropboxusercontent.com']::after { /* primary user: dl.dropboxusercontent.com */
     background-image: url("/static/img/icons/dropbox.svg");
 }
 #markdownBody a[href*='dropbox.com']:hover::after,
@@ -1385,10 +1394,10 @@ span.defnMetadata {
 
 #markdownBody a[href*='webcitation.org']::after,
 #markdownBody a[href*='mementoweb.org']::after,
-#markdownBody a[href*='archive.org']::after,
+#markdownBody a[href*='archive.org']::after, /* primary user: web.archive.org */
 #markdownBody a[href*='archive-it.org']::after,
 #markdownBody a[href*='archiveteam.org']::after,
-#markdownBody a[href*='waybackmachine.org']::after {
+#markdownBody a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.org */
     background-image: url("/static/img/icons/internetarchive.svg");
 }
 #markdownBody a[href*='webcitation.org']:hover::after,
