@@ -319,23 +319,6 @@
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48cGF0aCBkPSJNNDEzLjEgMjIyLjVsMjIuMiAyMi4yYzkuNCA5LjQgOS40IDI0LjYgMCAzMy45TDI0MSA0NzNjLTkuNCA5LjQtMjQuNiA5LjQtMzMuOSAwTDEyLjcgMjc4LjZjLTkuNC05LjQtOS40LTI0LjYgMC0zMy45bDIyLjItMjIuMmM5LjUtOS41IDI1LTkuMyAzNC4zLjRMMTg0IDM0My40VjU2YzAtMTMuMyAxMC43LTI0IDI0LTI0aDMyYzEzLjMgMCAyNCAxMC43IDI0IDI0djI4Ny40bDExNC44LTEyMC41YzkuMy05LjggMjQuOC0xMCAzNC4zLS40eiIvPjwvc3ZnPg==');
 }
 
-/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-up::after, */
-/* #markdownBody p a[href^='#'].section-link-up::after, */
-/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-down::after, */
-/* #markdownBody p a[href^='#'].section-link-down::after { */
-/*     font-size: 0.8em; */
-/*     bottom: 0.4em; */
-/*     opacity: 1.0; */
-/* } */
-/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-up::after, */
-/* #markdownBody p a[href^='#'].section-link-up::after { */
-/*     content: "\2191"; /\* '↑' Upwards Arrow U+2191  *\/ */
-/* } */
-/* #markdownBody section > :not(:first-child) a[href^='#'].section-link-down::after, */
-/* #markdownBody p a[href^='#'].section-link-down::after { */
-/*     content: "\2193"; /\* '↓' Downwards Arrow U+2193  *\/ */
-/* } */
-
 /* Override Pandoc LineAnchors inside codeblocks - we didn't ask for them, but the links still get generated with '#cb-x-y' self-links (see https://github.com/jgm/pandoc/issues/4386 ) so it'd trigger the section icons */
 #markdownBody code a[href^='#']::after {
     display: none;
