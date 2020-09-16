@@ -724,13 +724,6 @@ span.smallcaps-auto {
     font-variant-numeric: tabular-nums;
 }
 
-hr {
-    border: none;
-    height: 0;
-    border-bottom: 1px solid #aaa;
-    margin: 1em 0
-}
-
 /*************/
 /* DARK MODE */
 /*************/

@@ -419,6 +419,20 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
     text-align: center;
 }
 
+/*********************/
+/* SECTION SEPARATOR */
+/*********************/
+hr {
+  border: 0;
+  margin-bottom: 2em;
+}
+hr::after {
+  content: '⁂'; /* '⁂' ASTERISM U+2042) */
+  display: block;
+  text-align: center;
+  font-weight: bold;
+}
+
 /**********/
 /* DISQUS */
 /**********/
