@@ -215,7 +215,7 @@ body {
     }
     #sidebar a.site,
     #sidebar a.links {
-        flex: 1 1 20%
+        flex: 1 1 40%
     }
     #sidebar a.new,
     #sidebar a.mail,
