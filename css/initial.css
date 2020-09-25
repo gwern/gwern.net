@@ -194,7 +194,7 @@ body {
 @media only screen and (max-width:64.9ch) {
     #sidebar {
         justify-content: center;
-        margin: 0 0 0.5em 0
+        margin: 1.4em 0 0.5em 0;
     }
     #sidebar a {
         border: 1px dotted #000;
