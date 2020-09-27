@@ -11491,42 +11491,6 @@
     welfare and income is that the “scales” are so different. Incomes vary by more
     than a factor of 64 in our sample, i.e., 6,300%, whereas the deviations are on
     the order of 25–50%.</p>'
-- - https://alexandercoppock.com/papers/CHV_ads.pdf
-  - ! 'Persuasive Effects of Presidential Campaign Advertising: Results of 53 Real-time
-    Experiments in 2016'
-  - Alexander Coppock, Seth J. Hill, Lynn Vavreck
-  - 2019-08-23
-  - ''
-  - <p>In this letter, we report the results of 53 randomized advertising experiments
-    conducted over 29 weeks on 34,000 people during the US 2016 Presidential election.
-    Our treatments were drawn in real time from advertisements on air each week. The
-    ads vary on many dimensions:election type (primary or general), tone (attack or
-    promotional), sponsor (candidates or Super<span class="smallcaps-auto">PACS</span>), context (timing), and content
-    (topics). We manipulate which ads respondents see, when they see them, whether
-    they see more than one ad, which ad they see first, and whether they see competing,
-    reinforcing, or no additional information. Owing to the large size of our study,
-    the meta-analytic estimates of the average treatment effects on favorability and
-    vote choice are sometimes distinguishable from zero, but are always quite modest,
-    even accounting for variation across advertisements and contexts…We conducted
-    53 survey experiments over 29 weeks on nationally representative samples totaling
-    34,000 people over 8 months of 2016 campaign.</p><p>…We conducted 53 survey experiments
-    over 29 weeks on nationally-representative samples totaling 34,000 people over
-    8 months of 2016 campaign. The ads we test are actual presidential advertisements
-    resulting from strategies of presidential candidates trying to win the highest
-    office in the land over the entire campaign. In this sense, our treatments—both
-    content and timing—are determined by the equilibrium strategies of people who
-    are highly motivated to persuade voters and win campaigns. This unique design
-    (a) tests the ads that the best in the business thought would be effective and
-    (b) maximizes external validity because these were the actual ads seen by voters
-    delivered contemporaneously by the campaign.</p><p>Week after week, ad after ad,
-    our experiments return modest effects. The estimated effects are <em>consistently</em>
-    modest across many variations in tone, content, sponsor, election type, context,
-    information environments, and characteristics of people. On some outcomes (respondents’
-    positions on the issues in the ads, the importance of the topics in the ads) we
-    find effects that are so small they are essentially non-existent even though we
-    can estimate them very precisely. On candidate favorability and vote choice, we
-    find slightly larger effects that we can sometimes isolate from zero, but that
-    look remarkably similar in magnitude across candidates and features of ads.</p>
 - - /Statistical-notes#program-for-non-spaced-repetition-review-of-past-written-materials-for-serendipity-rediscovery-archive-revisiter
   - ! 'Anti-Spaced Repetition: A Program For Non-Spaced-Repetition Review Of Past
     Written Materials For Serendipity & Rediscovery In Personal Archives'
@@ -20225,3 +20189,15 @@
   - 2017-12-26
   - 10.1111/ssqu.12468
   - ! '<p>The debate over the value of the International Space Station has overlooked a fundamental question: What is the station’s contribution to scientific knowledge? We address this question using a multivariate analysis of publication and patent data from station experiments. We find a relatively high probability that <span class="smallcaps-auto">ISS</span> experiments with PIs drawn from outside <span class="smallcaps-auto">NASA</span> will yield refereed publications and, furthermore, that these experiments have non-negligible probabilities of finding publication in high-impact journals or producing government patents. However, technology demonstrations and experiments with all-<span class="smallcaps-auto">NASA</span> PIs have much weaker track records. These results highlight the complexities inherent to constructing a compelling case for science onboard the <span class="smallcaps-auto">ISS</span> or for crewed spaceflight in general.</p>'
+- - https://advances.sciencemag.org/content/6/36/eabc4046
+  - 'The small effects of political advertising are small regardless of context, message, sender, or receiver: Evidence from 59 real-time randomized experiments'
+  - Alexander Coppock, Seth J. Hill, Lynn Vavreck
+  - 2020-09-02
+  - '10.1126/sciadv.abc4046'
+  - ! '<p>Evidence across social science indicates that average effects of persuasive messages are small. One commonly offered explanation for these small effects is heterogeneity: Persuasion may only work well in specific circumstances. To evaluate heterogeneity, we repeated an experiment weekly in real time using 2016 U.S. presidential election campaign advertisements. We tested 49 political advertisements in 59 unique experiments on 34,000 people. We investigate heterogeneous effects by sender (candidates or groups), receiver (subject partisanship), content (attack or promotional), and context (battleground versus non-battleground, primary versus general election, and early versus late). We find small average effects on candidate favorability and vote. These small effects, however, do not mask substantial heterogeneity even where theory from political science suggests that we should find it. During the primary and general election, in battleground states, for Democrats, Republicans, and Independents, effects are similarly small. Heterogeneity with large offsetting effects is not the source of small average effects.</p>'
+- - /docs/genetics/correlation/2020-morrison.pdf
+  - ! "Genetic and Environmental Influences on Stressful Life Events and their Associations with Executive Functions in Young Adulthood: A Longitudinal Twin Analysis"
+  - Claire L. Morrison, Soo Hyun Rhee, Harry R. Smolker, Robin P. Corley, John K. Hewitt, Naomi P. Friedman
+  - 2020-09-21
+  - 10.1007/s10519-020-10017-9
+  - ! '<p>Although stress is frequently considered an environmental factor, dependent stressful life events (<span class="smallcaps-auto">SLE</span>s)––stressors that result from one’s actions or behaviors––may in fact be evoked by a genetic liability. It has been suggested that dependent <span class="smallcaps-auto">SLE</span>s may be partially caused by poor executive function (EFs), higher-level cognitive abilities that enable individuals to implement goal-directed behavior. We investigated the possibility of genetic and environmental overlap between <span class="smallcaps-auto">SLE</span>s and EFs in a longitudinal twin study. We found high genetic stability in the number of dependent <span class="smallcaps-auto">SLE</span>s from age 23 to age 29, suggesting that the number of dependent stressors show persistence across time due to their genetic etiology. In addition, there was a nominally significant negative genetic correlation between a Common EF latent factor and dependent <span class="smallcaps-auto">SLE</span>s at age 23. The genetic stability of dependent <span class="smallcaps-auto">SLE</span>s and association with Common EF provides insight into how some behaviors may lead to persistent stress. [<strong>Keywords</strong>: dependent stress, independent stress, executive control, genetic correlation, behavior genetics, twins]</p>'
