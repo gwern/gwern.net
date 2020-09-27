@@ -426,7 +426,7 @@ hr {
   margin-bottom: 2em;
 }
 hr::after {
-  content: '⁂'; /* '⁂' ASTERISM U+2042) */
+  content: '⁂'; /* '⁂' ASTERISM (U+2042) */
   display: block;
   text-align: center;
 }
@@ -466,7 +466,6 @@ article > :not(#TOC) a:hover,
 /*=-----------------------------------------=*/
 
 /* Now handled in /static/css/links.css */
-
 
 /*********/
 /* LISTS */
@@ -1529,6 +1528,7 @@ pre::-webkit-scrollbar-thumb:hover {
 code {
     padding: 0 4px;
     /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+    /* TODO: use Source Code Pro? */
     font-family: "Liberation Mono", Consolas, Courier, monospace;
     font-size: 0.9em;
     border: 1px solid #c8c8c8;
