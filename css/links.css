@@ -17,7 +17,6 @@
 #markdownBody a[href*='eprint.iacr.org' i]::after,
 /*  Textfiles */
 #markdownBody a[href$='.opml' i]::after,
-#markdownBody a[href$='.page' i]::after,
 #markdownBody a[href$='.txt' i]::after,
 #markdownBody a[href$='.xml' i]::after,
 /*  Code */
@@ -97,7 +96,6 @@
 #markdownBody a[href*='eprint.iacr.org' i]:hover::after,
 /*  Textfiles */
 #markdownBody a[href$='.opml' i]:hover::after,
-#markdownBody a[href$='.page' i]:hover::after,
 #markdownBody a[href$='.txt' i]:hover::after,
 #markdownBody a[href$='.xml' i]:hover::after,
 /*  Code */
@@ -177,7 +175,6 @@
 /*  Textfiles.
     */
 #markdownBody a[href$='.opml' i]::after,
-#markdownBody a[href$='.page' i]::after,
 #markdownBody a[href$='.txt' i]::after,
 #markdownBody a[href$='.xml' i]::after {
     background-image: url('/static/img/icons/txt.svg');
@@ -292,12 +289,14 @@
     opacity: 0.6;
 }
 /* avoid pilcrows in the footnote forward/backwards links */
+#markdownBody table a[href^='#'].footnote-ref::after,
+#markdownBody table a[href^='#'].footnote-back::after,
+#markdownBody li a[href^='#'].footnote-ref::after,
+#markdownBody li a[href^='#'].footnote-back::after,
 #markdownBody p a[href^='#'].footnote-ref::after,
 #markdownBody p a[href^='#'].footnote-back::after{
     content: none;
 }
-
-
 
 #markdownBody section > :not(:first-child) a[href^='#'].section-link-up::after,
 #markdownBody p a[href^='#'].section-link-up::after,
@@ -379,7 +378,7 @@ span.defnMetadata {
 #markdownBody a[href*="www.motherjones.com"]::after,
 #markdownBody a[href*="www.edge.org"]::after,
 #markdownBody a[href*="bitcointalk.org"]::after,
-#markdownBody a[href*="bitcoin.t"]::after,
+#markdownBody a[href*="bitcoin.it"]::after,
 #markdownBody a[href*="bloomberg.com"]::after,
 #markdownBody a[href*="bmj.com"]::after,
 #markdownBody a[href*="economist.com"]::after,
@@ -549,13 +548,13 @@ span.defnMetadata {
 #markdownBody a[href*="meltingasphalt.com"]::after {
     content: "▲▲";
     font-size: 60%;
-    bottom: 1em;
+    bottom: 0.5em;
     letter-spacing: -0.1em; }
 
 /* Bitcoin Talk: close enough! */
 #markdownBody a[href*="bitcointalk.org"]::after,
 #markdownBody a[href*="bitcoin.it"]::after { /* primary user: en.bitcoin.it */
-    content: "₿⃝"; }
+    content: "₿"; }
 
 #markdownBody a[href*="salon.com"]::after {
     content: "s"; }
@@ -1229,9 +1228,9 @@ span.defnMetadata {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 1em;
-    width: 1em;
-    margin: 0 0 0 2px;
+    height:1.25em;
+    width:1.2em;
+    margin:0 0 0 1px;
     opacity: 0.60;
 }
 
