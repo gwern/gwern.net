@@ -1676,20 +1676,6 @@ code span.wa { color: #bf0303; } /* Warning */
 /* MISC */
 /********/
 
-/*  WHAT IS THIS???
-    */
-p.hang {
-    text-indent: -0.44em;
-}
-
-/*  WHAT IS THIS???
-    */
-/* number formatting */
-.num {
-    font-size: 0.85em
-}
-
-
 /*************/
 /* DROP CAPS */
 /*************/
@@ -1708,7 +1694,6 @@ p.hang {
     literary/historical/humanities pages, yinit is for technical/scientific
     pages, and De-Zs is for everything else.
     */
-
 @media only screen and (min-width: 65ch) {
     body[class*='drop-caps-'] #markdownBody > p:first-child::first-letter,
     body[class*='drop-caps-'] #abstract + p::first-letter,

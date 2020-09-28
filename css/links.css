@@ -468,6 +468,7 @@ span.defnMetadata {
 
 /* Facebook: skip enclosing box */
 #markdownBody a[href*="#facebook"]::after,
+#markdownBody a[href*="#facebook"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
 #markdownBody a[href*="facebook.com"]::after {
     content: "f";
     /* a single lower-case letter is too small to easily see if left at defaults */
