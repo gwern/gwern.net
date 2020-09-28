@@ -318,10 +318,10 @@
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48cGF0aCBkPSJNNDEzLjEgMjIyLjVsMjIuMiAyMi4yYzkuNCA5LjQgOS40IDI0LjYgMCAzMy45TDI0MSA0NzNjLTkuNCA5LjQtMjQuNiA5LjQtMzMuOSAwTDEyLjcgMjc4LjZjLTkuNC05LjQtOS40LTI0LjYgMC0zMy45bDIyLjItMjIuMmM5LjUtOS41IDI1LTkuMyAzNC4zLjRMMTg0IDM0My40VjU2YzAtMTMuMyAxMC43LTI0IDI0LTI0aDMyYzEzLjMgMCAyNCAxMC43IDI0IDI0djI4Ny40bDExNC44LTEyMC41YzkuMy05LjggMjQuOC0xMCAzNC4zLS40eiIvPjwvc3ZnPg==');
 }
 
-/* Override Pandoc LineAnchors inside codeblocks - we didn't ask for them, but the links still get generated with '#cb-x-y' self-links (see https://github.com/jgm/pandoc/issues/4386 ) so it'd trigger the section icons */
-#markdownBody code a[href^='#']::after {
-    display: none;
-}
+/* Override Pandoc LineAnchors inside codeblocks - we didn't ask for them, but the links still get generated with '#cb-x-y' self-links (see https://github.com/jgm/pandoc/issues/4386 ) so it'd trigger the section icons; TODO: appears to be fixed as of 2020-09-28 */
+/* #markdownBody code a[href^='#']::after { */
+/*     display: none; */
+/* } */
 
 /*  Internal (within-site) links. Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
  */
@@ -469,6 +469,7 @@ span.defnMetadata {
 /* Facebook: skip enclosing box */
 #markdownBody a[href*="#facebook"]::after,
 #markdownBody a[href*="#facebook"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
+#markdownBody a[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
 #markdownBody a[href*="facebook.com"]::after {
     content: "f";
     /* a single lower-case letter is too small to easily see if left at defaults */
