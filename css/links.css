@@ -334,7 +334,7 @@
     vertical-align: baseline;
     position: relative;
     bottom: 0.15em;
-    opacity: 0.55;
+    opacity: 0.60;
 }
 
 /* workaround for 'PNAS' square block: a text indention somewhere is being applied downstream to links as well, breaking the text link icons, so reset them back to their default. */

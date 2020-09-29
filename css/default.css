@@ -1964,7 +1964,6 @@ code span.wa { color: #bf0303; } /* Warning */
 .admonition.warn::before,
 .admonition.warning::before,
 .admonition.error::before {
-    font-weight: bold;
     width: 2.5rem;
     height: 100%;
     position: absolute;
@@ -1976,24 +1975,25 @@ code span.wa { color: #bf0303; } /* Warning */
 .admonition.note::before {
     content: "\261E"; /* White Right Pointing Index hand '☞' (U+261E)  */
     font-size: 2.6em;
+    top:-9px;
     color: #fff;
 }
 .admonition.tip::before {
     content: "\24d8"; /* Circled Latin Small Letter 'ⓘ' (U+24D8) */
     font-size: 1.7em;
-    top: -3px;
+    top: 3px;
     left: -2.5rem;
 }
 .admonition.warn::before,
 .admonition.warning::before {
     content: "\26A0"; /* Warning Sign '⚠' triangle (U+26A0) */
-    font-size: 1.9em;
+    font-size: 2em;
     color: #fff;
-    padding: 0.25em 0 0 0;
 }
 .admonition.error::before {
     content:  "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
-    font-size: 2.25em;
+    font-size: 2.20em;
+    top: -3px;
     color: #fff;
 }
 
