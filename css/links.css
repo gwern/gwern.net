@@ -83,7 +83,7 @@
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 0 2px;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 /*  PDFs */
 #markdownBody a[href$='.pdf' i]:hover::after,
@@ -291,6 +291,8 @@
 /* avoid pilcrows in the footnote forward/backwards links */
 #markdownBody table a[href^='#'].footnote-ref::after,
 #markdownBody table a[href^='#'].footnote-back::after,
+#markdownBody figure a[href^='#'].footnote-ref::after,
+#markdownBody figure a[href^='#'].footnote-back::after,
 #markdownBody li a[href^='#'].footnote-ref::after,
 #markdownBody li a[href^='#'].footnote-back::after,
 #markdownBody p a[href^='#'].footnote-ref::after,
@@ -327,7 +329,7 @@
  */
 #markdownBody a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after {
-    content: "\1D50A"; /* Gothic G */
+    content: "\1D50A"; /* '𝔊' Gothic G / MATHEMATICAL FRAKTUR CAPITAL G (U+1D50A) */
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
@@ -456,7 +458,7 @@ span.defnMetadata {
     vertical-align: baseline;
     position: relative;
     bottom: 0.2em;
-    opacity: 0.6;
+    opacity: 0.70;
 }
 /* MR: cheaper to abuse Unicode */
 #markdownBody a[href*="marginalrevolution.com"]::after {
@@ -472,6 +474,7 @@ span.defnMetadata {
 #markdownBody a[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
 #markdownBody a[href*="facebook.com"]::after {
     content: "f";
+    background-image: none;
     /* a single lower-case letter is too small to easily see if left at defaults */
     font-size: 0.9em;
     opacity: 0.9; }
@@ -507,16 +510,16 @@ span.defnMetadata {
 
 #markdownBody a[href*="www.nber.org"]:not([href$=".pdf"])::after {
   content: "NBER";
-  font-size: 0.5em;
+  font-size: 0.6em;
   width: 1.35em;
   display: inline-block;
   overflow-wrap: break-word;
   font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
   font-style: italic;
-  line-height: 0.7;
+  line-height: 0.9;
   text-align: center;
   position: relative;
-  bottom: 0.3em;
+  bottom: 0.2em;
   left: 0.1em; }
 
 #markdownBody a[href*="mlp.fandom.com"]::after {
@@ -588,7 +591,8 @@ span.defnMetadata {
     content: "P@D"; }
 
 #markdownBody a[href*="yunnansourcing.com"]::after {
-    content: "ʸₛ"; }
+    content: "ʸₛ";
+    font-size: 110%; }
 
 /* Avoid the unfortunate connotations of 'SS' */
 #markdownBody a[href*="scholars-stage.blogspot.com"]::after {
@@ -627,7 +631,10 @@ span.defnMetadata {
 
 /* PB logo is confusing. A purple question mark...? */
 #markdownBody a[href*="predictionbook.com"]::after {
-    content: "\FE56"; }
+    margin: 0 0 0 0px;
+    /* Use Unicode question market to distinguish it visually from regular punctuation. */
+    content: "\FE56"; /* '﹖' Small Question Mark (U+FE56) */
+}
 
 /* GoodReads: logo doesn't make sense as a grayscale */
 #markdownBody a[href*="goodreads.com"]::after {
@@ -641,9 +648,11 @@ span.defnMetadata {
     content: "X";
     text-decoration: overline; }
 
-/* ArXiv: Chi (their logo is too bad to use) */
-#markdownBody a[href*="arxiv.org"]::after {
-    content: "\1D6D8"; }
+/* ArXiv: Chi (their logo is too bizarre & off-putting to use, in addition to not working in monochrome) */
+#markdownBody a[href*="arxiv.org"]::after,
+#markdownBody a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after {
+    content: "\1D6D8";
+    background-image: none; }
 
 /* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */
 #markdownBody a[href*="technologyreview.com"]::after {
@@ -705,7 +714,8 @@ span.defnMetadata {
 /* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
 #markdownBody a[href*="tumblr.com"]::after,
 #markdownBody a[href*="t.umblr.com"]::after {
-    content: "ʈ"; }
+    content: "ʈ";
+    bottom: 0.4em; }
 
 /* The Atlantic: replicate sloping by italics */
 #markdownBody a[href*="theatlantic.com"]::after {
@@ -778,7 +788,7 @@ span.defnMetadata {
  position:relative;
  bottom:.3em;
  left:.1em;
- opacity: 1;
+ opacity: 0.95;
  font-weight: bold;
 }
 
@@ -787,8 +797,8 @@ span.defnMetadata {
     content: "n"; }
 
 #markdownBody a[href*="link.springer.com"]::after {
-    content: "♘"; /* white chess knight     ♘   U+2658  &#9816;     &#x2658;  */
-    font-size: 150%; }
+    content: "♘"; /* WHITE CHESS KNIGHT '♘' (U+2658) */
+    font-size: 130%; }
 
 /* Cell: their logo is unrecognizable (and dumb) */
 #markdownBody a[href*="www.cell.com"]::after {
@@ -803,7 +813,7 @@ span.defnMetadata {
  position:relative;
  bottom:.3em;
  left:.1em;
- opacity: 1;
+ opacity: 0.85;
  font-weight: bold;
 }
 
@@ -820,7 +830,7 @@ span.defnMetadata {
  position:relative;
  bottom:.3em;
  left:.1em;
- opacity: 1;
+ opacity: 0.95;
 }
 
 /* Oxford Academic Journals / OUP */
@@ -893,7 +903,7 @@ span.defnMetadata {
     height: 1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.60;
+    opacity: 0.55;
 }
 
 /* PLOS ONE in all their domain permutations... */
@@ -940,7 +950,8 @@ span.defnMetadata {
     height: 1.1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.60;}
+    opacity: 0.55;
+}
 
 /* Upton Tea */
 #markdownBody a[href*='uptontea.com']::after {
@@ -958,7 +969,8 @@ span.defnMetadata {
     height: 1.1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.60;}
+    opacity: 0.50;
+}
 
 /* Wired */
 #markdownBody a[href*='wired.com']::after {
@@ -993,8 +1005,8 @@ span.defnMetadata {
     background-repeat: no-repeat;
     background-position: bottom center;
     height: 1em;
-    width: 1em;
-    margin: 0 0 0px 3px;
+    width: 1.1em;
+    margin: 0 0 0px 2.5px;
     opacity: 0.60;
 }
 
@@ -1013,7 +1025,7 @@ span.defnMetadata {
     height: 1em;
     width: 0.8em;
     margin: 0 0 2px 3px;
-    opacity: 0.60;
+    opacity: 0.55;
 }
 
 /* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
@@ -1071,9 +1083,9 @@ span.defnMetadata {
     background-repeat: no-repeat;
     background-position: bottom center;
     height: 1.1em;
-    width: 1em;
+    width: 1.1em;
     margin: 0 0 0 2px;
-    opacity: 0.60;
+    opacity: 0.50;
 }
 
 /* Reddit */
@@ -1102,7 +1114,7 @@ span.defnMetadata {
 }
 #markdownBody a[href*='paulgraham.com']:hover::after,
 #markdownBody a[href*='ycombinator.com']:hover::after {
-    opacity: 0.4;
+    opacity: 0.2;
 }
 #markdownBody a[href*='paulgraham.com']::after,
 #markdownBody a[href*='ycombinator.com']::after {
@@ -1114,7 +1126,7 @@ span.defnMetadata {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 0 4px;
-    opacity: 0.60;
+    opacity: 0.45;
 }
 
 /* MIRI/intelligence.org */
@@ -1175,8 +1187,8 @@ span.defnMetadata {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height: 1.1em;
-    width: 1em;
+    height: 1.3em;
+    width: 1.3em;
     margin: 0 0 0px 3px;
     opacity: 0.60;
 }
@@ -1192,10 +1204,10 @@ span.defnMetadata {
     height: 0.825em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.825;
+    opacity: 0.50;
 }
 #markdownBody a[href*="distill.pub"]:hover::after {
-    opacity: 0.6;
+    opacity: 0.3;
 }
 
 /* Twitter */
@@ -1214,7 +1226,7 @@ span.defnMetadata {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 4px;
-    opacity: 0.60;
+    opacity: 0.55;
 }
 
 /* Erowid */
@@ -1230,10 +1242,10 @@ span.defnMetadata {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
-    height:1.25em;
-    width:1.2em;
-    margin:0 0 0 1px;
-    opacity: 0.60;
+    height: 1.25em;
+    width: 1.2em;
+    margin: 0 0 0 1px;
+    opacity: 0.70;
 }
 
 /* Wikipedia */
@@ -1273,7 +1285,7 @@ span.defnMetadata {
 #markdownBody a[href*='youtu.be']:hover::after,
 #markdownBody a[href*='soundcloud.com']:hover::after,
 #markdownBody a[href*='bandcamp.com']:hover::after {
-    opacity: 0.3;
+    opacity: 0.2;
     font-size: 0.8em;
 }
 #markdownBody a[href*='youtube.com']::after,
@@ -1288,7 +1300,7 @@ span.defnMetadata {
     height: 1em;
     width: 1em;
     margin: 0 0 0 3px;
-    opacity: 0.60;
+    opacity: 0.45;
 }
 
 /* The *Exchange/*Overflow family of websites: */
@@ -1304,12 +1316,12 @@ span.defnMetadata {
     height: 0.85em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.85;
+    opacity: 0.80;
 }
 #markdownBody a[href*="overflow.net"]:hover::after,
 #markdownBody a[href*="overflow.com"]::after,
 #markdownBody a[href*="stackexchange.com"]:hover::after {
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 /* Amazon */
@@ -1325,12 +1337,12 @@ span.defnMetadata {
     height: 0.8em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.81;
+    opacity: 0.60;
 }
 #markdownBody a[href*="amazon.com"]:hover::after,
 #markdownBody a[href*="amazon.co."]:hover::after,
 #markdownBody a[href*="amzn.com"]:hover::after {
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 /* Github; I exclude github.io because that's blogs */
@@ -1390,7 +1402,7 @@ span.defnMetadata {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.60;
+    opacity: 0.50;
 }
 
 #markdownBody a[href*='webcitation.org']::after,
