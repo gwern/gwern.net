@@ -424,13 +424,13 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 hr {
   border: 0;
   margin-bottom: 2em;
-}
+  margin: 1.5em 0 2em 0; }
 hr::after {
-  content: '⁂'; /* '⁂' ASTERISM (U+2042) */
-  display: block;
-  text-align: center;
+    content: '⁂'; /* '⁂' ASTERISM (U+2042); the SSfp asterism is overriden in fonts.css */
+    font-size: 1.125em;
+    display: block;
+    text-align: center;
 }
-
 /**********/
 /* DISQUS */
 /**********/
