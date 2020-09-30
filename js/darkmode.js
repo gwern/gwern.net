@@ -1,7 +1,7 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2020-09-25 15:04:00 gwern"
+// When:  Time-stamp: "2020-09-29 22:41:31 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
@@ -75,6 +75,8 @@ GW.modeStyles = `
         z-index: -1
     }
     img,
+    #image-focus-overlay,
+    #markdownBody figure img:hover,
     video {
         filter: invert(100%);
     }
