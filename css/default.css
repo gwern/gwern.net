@@ -1973,9 +1973,9 @@ code span.wa { color: #bf0303; } /* Warning */
 }
 
 .admonition.note::before {
-    content: "\261E"; /* White Right Pointing Index hand '☞' (U+261E)  */
+    content: "☛"; /* U+261B ☛ BLACK RIGHT POINTING INDEX  */
     font-size: 2.6em;
-    top:-9px;
+    top:-10px;
     color: #fff;
 }
 .admonition.tip::before {
