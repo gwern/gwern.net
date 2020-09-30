@@ -1,7 +1,7 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2020-09-29 22:41:31 gwern"
+// When:  Time-stamp: "2020-09-30 16:36:26 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
@@ -11,13 +11,14 @@
 /* automatically. https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme */
 /* https://webkit.org/blog/8718/new-webkit-features-in-safari-12-1/ */
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme
+/* Images are handled specially: images are *not* inverted/negated by default; images with a special class, '.invertible-auto' (set on images by automated tools like ImageMagick scripts counting colors) or '.invertible' (set manually), will be inverted. (This is intended to allow inversion of images which would invert well, like statistical graphs or charts, which are typically black-on-white, and are much more pleasant to read in dark mode when inverted to white-on-black.) Inversion is removed on image hover or image-focus.js click-to-zoom. */
 
 /* Because many users do not have access to a browser/OS which explicitly supports dark mode, cannot modify the browser/OS setting without undesired side-effects, wish to opt in only for specific websites, or simply forget that they turned on dark mode & dislike it, we make dark mode controllable by providing a widget at the top of the page. */
 
-/* For gwern.net, the default white-black */
-/* scheme is 'light', and it can be flipped to a 'dark' scheme fairly easily by inverting it; the main visual problem is */
+/* For gwern.net, the default white-black scheme is 'light', and it can be flipped to a 'dark' scheme fairly easily by inverting it; the main visual problem is */
 /* that blockquotes appear to become much harder to see & image-focus.js doesn't work well without additional tweaks. */
-/* Known bugs: images get inverted on zoom or hover; invert filters are slow, leading to 'janky' slow rendering on scrolling. */
+
+/* Known bugs: 'flash of white' on initial load until darkmode.js runs & reads user settings; browser implementations of invert filters are very slow, leading to 'janky' slow rendering on scrolling */
 
 /****************/
 /* MISC HELPERS */
@@ -61,8 +62,9 @@ GW.modeStyles = `
         --GW-blockquote-background-color: #ddd
     }
     body::before,
+    div#popup-container,
     body > * {
-        filter: invert(90%)
+        filter: invert(100%)
     }
     body::before {
         content: '';
@@ -74,7 +76,7 @@ GW.modeStyles = `
         background-color: #fff;
         z-index: -1
     }
-    img,
+    img:not(.invertible-auto):not(.invertible),
     #image-focus-overlay,
     #markdownBody figure img:hover,
     video {
