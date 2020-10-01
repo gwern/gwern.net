@@ -10,22 +10,22 @@
     <style id="inlined-styles">$partial("static/css/initial.css")$</style>
 
     <link rel="preload" as="style"      href="/static/css/default.css" />
-    <link rel="preload" href="/static/font/SourceSansPro-BASIC-Regular.ttf"         as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSansPro-BASIC-RegularItalic.ttf"   as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSansPro-BASIC-Semibold.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Bold.ttf"           as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Regular.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-Semibold.ttf"       as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-SemiboldItalic.ttf" as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-RegularItalic.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/SourceSerifPro-BASIC-BoldItalic.ttf"     as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Regular.ttf"         as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf"   as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf"           as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf"       as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf"     as="font" type="font/ttf" crossorigin="anonymous">
     <!-- Full font CSS is loaded in footer. Here, inline only the minimal set of font CSS needed for initial screen, for speed: -->
     <style>
     @font-face {
         font-family: 'Source Serif Pro';
         font-weight: 400;
         font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap
     }
@@ -33,7 +33,7 @@
         font-family: 'Source Serif Pro';
         font-weight: 400;
         font-style: italic;
-        src: url('/static/font/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap;
     }
@@ -41,7 +41,7 @@
         font-family: 'Source Serif Pro';
         font-weight: 600;
         font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap
     }
@@ -49,7 +49,7 @@
         font-family: 'Source Serif Pro';
         font-weight: 700;
         font-style: normal;
-        src: url('/static/font/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap
     }
@@ -58,7 +58,7 @@
         font-family: 'Source Sans Pro';
         font-weight: 400;
         font-style: normal;
-        src: url('/static/font/SourceSansPro-BASIC-Regular.ttf') format('truetype');
+        src: url('/static/font/ssp/SourceSansPro-BASIC-Regular.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap
     }
@@ -66,7 +66,7 @@
         font-family: 'Source Sans Pro';
         font-weight: 400;
         font-style: italic;
-        src: url('/static/font/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
+        src: url('/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap
     }
@@ -74,7 +74,7 @@
         font-family: 'Source Sans Pro';
         font-weight: 700;
         font-style: normal;
-        src: url('/static/font/SourceSansPro-BASIC-Bold.ttf') format('truetype');
+        src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf') format('truetype');
         unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
         font-display: swap
     }
