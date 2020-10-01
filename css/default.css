@@ -1993,7 +1993,7 @@ code span.wa { color: #bf0303; } /* Warning */
 .admonition.error::before {
     content:  "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
     font-size: 2.20em;
-    top: -3px;
+    top: -2px;
     color: #fff;
 }
 
