@@ -1,7 +1,7 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2020-09-30 16:36:26 gwern"
+// When:  Time-stamp: "2020-10-02 10:29:31 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
@@ -64,7 +64,7 @@ GW.modeStyles = `
     body::before,
     div#popup-container,
     body > * {
-        filter: invert(100%)
+        filter: invert(100%) brightness(97%);
     }
     body::before {
         content: '';
@@ -121,7 +121,7 @@ GW.modeStyles = `
         filter: none;
     }
     #mode-selector {
-        opacity: 0.6;
+        opacity: 0.7;
     }
     #mode-selector:hover {
         background-color: #fff;
