@@ -586,7 +586,7 @@ header h1 {
 /*  Cute 'old-style' numerals, look a little nicer inline in text, and available natively in the SS fonts:
     https://practicaltypography.com/alternate-figures.html#oldstyle-figures
     */
-#markdownBody p {
+#markdownBody {
     font-variant-numeric: oldstyle-nums
 }
 
