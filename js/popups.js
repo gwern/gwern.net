@@ -475,9 +475,9 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv > div .data-field.author-plus-date {
     font-style: italic;
 }
-#popupdiv > div .data-field.abstract {
+#popupdiv > div .data-field.abstract > p {
     text-align: justify;
-    text-indent: 2em;
+    text-indent: 1em;
     hyphens: auto;
 }
 #popupdiv > div.popup-screenshot {
