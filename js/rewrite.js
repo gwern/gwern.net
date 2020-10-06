@@ -190,19 +190,22 @@ getAllCaptionedMedia().forEach(captionedMedia => {
 doWhenPageLoaded(setCaptionsMinimumWidth);
 window.addEventListener('resize', setCaptionsMinimumWidth);
 
-/*  Insert zero-width spaces after problematic characters in links.
+/*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
     (This is to mitigate justification/wrapping problems.)
     */
 let problematicCharacters = '/';
-document.querySelectorAll("p a, p a *").forEach(element => {
+let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
+let problematicCharactersReplacementPattern = "$1\u{200B}$2";
+let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
+document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
     element.childNodes.forEach(node => {
        if (node.childNodes.length > 0) return;
-       node.textContent = node.textContent.replace(new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g'), "$1\u{200B}$2");
+       node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
     });
 });
 
-/*  Rectify straight quotes / apostrophes / etc. in the header and the page metadata.
-    TODO: this should be doable in Hakyll at compile-time
+/*  Rectify straight quotes / apostrophes / etc. in the page metadata.
+    TODO: this should be doable in Hakyll at compile-time, but how? not sure how to read the metadata as Markdown & write out the HTML Hakyll needs to substitute into the HTML template...
     */
 let textCleanRegexps = [
     // beginning "
@@ -224,7 +227,7 @@ let textCleanRegexps = [
     // backwards apostrophe
     [/(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$))/, '$1\u2019'],
 ];
-document.querySelectorAll("header *, #page-metadata *").forEach(element => {
+document.querySelectorAll("#page-metadata *").forEach(element => {
     element.childNodes.forEach(node => {
         if (node.childNodes.length > 0) return;
         textCleanRegexps.forEach(tcr => {
@@ -247,8 +250,15 @@ function updateMarginNoteStyle() {
     });
 }
 doWhenPageLoaded (() => {
-    updateMarginNoteStyle();
-    GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(updateMarginNoteStyle);
+    if (typeof window.GW == "undefined" ||
+        typeof GW.sidenotes == "undefined" ||
+        GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+        GW.sidenotes.sidenoteDivs.length == 0) {
+        return; }
+    else {
+        updateMarginNoteStyle();
+        GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(updateMarginNoteStyle);
+    }
 });
 
 /* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
