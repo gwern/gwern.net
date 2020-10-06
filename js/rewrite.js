@@ -204,38 +204,6 @@ document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(elem
     });
 });
 
-/*  Rectify straight quotes / apostrophes / etc. in the page metadata.
-    TODO: this should be doable in Hakyll at compile-time, but how? not sure how to read the metadata as Markdown & write out the HTML Hakyll needs to substitute into the HTML template...
-    */
-let textCleanRegexps = [
-    // beginning "
-    [/([^A-Za-z0-9_\)]|^)"(\S)/, '$1\u201c$2'],
-    // ending "
-    [/(\u201c[^"]*)"([^"]*$|[^\u201c"]*\u201c)/, '$1\u201d$2'],
-    // remaining " at end of word
-    [/([^0-9])"/, '$1\u201d'],
-    // double quotes
-    [/"(.+?)"/, '\u201c$1\u201d'],
-    // beginning '
-    [/(\W|^)'(\S)/, '$1\u2018$2'],
-    // conjunction's possession
-    [/([a-z])'([a-z])/, '$1\u2019$2'],
-    // abbrev. years like '93
-    [/(\u2018)([0-9]{2}[^\u2019]*)(\u2018([^0-9]|$)|$|\u2019[a-z])/, '\u2019$2$3'],
-    // ending '
-    [/((\u2018[^']*)|[a-z])'([^0-9]|$)/, '$1\u2019$3'],
-    // backwards apostrophe
-    [/(\B|^)\u2018(?=([^\u2018\u2019]*\u2019\b)*([^\u2018\u2019]*\B\W[\u2018\u2019]\b|[^\u2018\u2019]*$))/, '$1\u2019'],
-];
-document.querySelectorAll("#page-metadata *").forEach(element => {
-    element.childNodes.forEach(node => {
-        if (node.childNodes.length > 0) return;
-        textCleanRegexps.forEach(tcr => {
-            node.textContent = node.textContent.replace(new RegExp(tcr[0], 'ig'), tcr[1]);
-        });
-    });
-});
-
 /*  Set the display form of margin notes (margin vs. inline).
  */
 function updateMarginNoteStyle() {

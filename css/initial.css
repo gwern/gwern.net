@@ -277,6 +277,7 @@ header h1 {
 #page-metadata #page-description {
     display: block;
     margin: 0 auto 0.75em auto;
+    font-style: italic;
 }
 #page-metadata #page-description ~ * { font-size: 0.9em; }
 
