@@ -520,7 +520,7 @@ article > :not(#TOC) a:hover,
 /*=-----------------------=*/
 /*= Bulleted list markers =*/
 /*=-----------------------=*/
-
+/* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
 #markdownBody ul > li::before {
     color: #888;
     font-size: 0.875em;
