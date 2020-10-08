@@ -160,8 +160,8 @@ body {
     }
     #sidebar a.patreon {
         font-size: 0.9em;
-        margin-top: 1.375em;
-        padding-top: 1.25em;
+        margin-top: 1.1em;
+        padding-top: 0.7em;
         box-shadow: 0 1.25em 0 0 #fff inset;
         white-space: nowrap
     }
@@ -173,10 +173,12 @@ body {
     }
     #sidebar a.mail::before,
     #sidebar a.r_gwern::before {
-        content: "°\2007";
+        content: "\2727\2007";
         text-shadow: 0 0 0 #000;
+        bottom: 0.2em;
         position: relative;
-        top: 0.25em
+        font-size: 0.6em;
+        color: #888;
     }
 }
 

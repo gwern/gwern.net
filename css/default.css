@@ -561,20 +561,23 @@ article > :not(#TOC) a:hover,
 #markdownBody ul ul ul ul > li::before,
 #popupdiv ul ul > li::before,
 #popupdiv ul ul ul ul > li::before {
-    content: "\2726";
+    content: "\2726"; /* '✦' BLACK FOUR POINTED STAR *U+2726) */
 }
 
 /*=-----------------------=*/
 /*= Numbered list markers =*/
 /*=-----------------------=*/
 
-#markdownBody ol {
+#markdownBody ol,
+#popupdiv ol {
     counter-reset: ol;
 }
-#markdownBody ol > li {
+#markdownBody ol > li,
+#popupdiv ol > li {
     counter-increment: ol;
 }
-#markdownBody ol > li::before {
+#markdownBody ol > li::before,
+#popupdiv ol > li::before {
     content: counter(ol) ".";
     width: 2em;
     right: calc(100% + 0.5em);
@@ -583,17 +586,21 @@ article > :not(#TOC) a:hover,
     color: #444;
 }
 
-#markdownBody ol ol {
+#markdownBody ol ol,
+#popupdiv ol ol {
     list-style-type: lower-roman;
 }
-#markdownBody ol ol > li {
+#markdownBody ol ol > li,
+#popupdiv ol ol > li {
     padding: 0 0 0 0.25em;
 }
-#markdownBody ol ol > li::before {
+#markdownBody ol ol > li::before,
+#popupdiv ol ol > li::before {
     content: none;
 }
 
-#markdownBody ol ol ol {
+#markdownBody ol ol ol,
+#popupdiv ol ol ol {
     list-style-type: lower-alpha;
 }
 
