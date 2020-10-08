@@ -24,7 +24,7 @@ Extracts = {
     popupBorderWidth: 3.0,
     videoPopupWidth: 495,
     videoPopupHeight: 310,
-    popupTriggerDelay: 250,
+    popupTriggerDelay: 200,
     popupFadeoutDelay: 50,
     popupFadeoutDuration: 250,
     popupFadeTimer: false,

@@ -564,6 +564,12 @@ article > :not(#TOC) a:hover,
     content: "\2726"; /* '✦' BLACK FOUR POINTED STAR *U+2726) */
 }
 
+#markdownBody ul ul ul > li::before,
+#markdownBody ul ul ul ul ul > li::before {
+    content: "\2727"; /* '✧' WHITE FOUR POINTED STAR (U+2727) */
+    filter: rotate(45deg);
+}
+
 /*=-----------------------=*/
 /*= Numbered list markers =*/
 /*=-----------------------=*/
