@@ -2260,9 +2260,7 @@ body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(2) {
     width: 7%;
 }
 body.bookreviews .tableWrapper#book-reviews-table th:nth-of-type(3),
-body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(3),
-body.bookreviews .tableWrapper#book-reviews-table th:nth-of-type(5),
-body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(5) {
+body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(3) {
     width: 5%;
 }
 body.bookreviews .tableWrapper#book-reviews-table th:nth-of-type(4),
