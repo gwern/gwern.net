@@ -453,6 +453,18 @@ hr::after {
 }
 
 /*********/
+/* Numbers */
+/*********/
+/*  'tabular figures' to make numbers line up in tables or other monospace/code like contexts:
+        https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
+        https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
+*/
+table, code, pre,
+a, h1, h2, h3, h4, h5, h6 { /* Skip old-style figures in elements with underlining, to reduce the need to cross the underline with skip-ink */
+    font-variant-numeric: tabular-nums;
+}
+
+/*********/
 /* LINKS */
 /*********/
 article > :not(#TOC) a:hover,
@@ -1359,12 +1371,6 @@ table {
     border-style: solid;
     border-color: #000;
     border-width: 2px 0;
-
-    /*  'tabular figures' to make numbers line up in tables:
-        https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
-        https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
-        */
-    font-variant-numeric: tabular-nums;
 }
 
 /*=-------------------=*/
