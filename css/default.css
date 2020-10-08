@@ -495,29 +495,39 @@ article > :not(#TOC) a:hover,
 }
 
 #markdownBody ul,
-#markdownBody ol {
+#markdownBody ol,
+#popupdiv ul,
+#popupdiv ol {
     list-style-type: none;
     margin: 1.25em 0 1.5em 0;
     padding: 0 0 0 2.5em;
     overflow: hidden;
 }
 #markdownBody li > ul,
-#markdownBody li > ol {
+#markdownBody li > ol,
+#popupdiv li > ul,
+#popupdiv li > ol {
     margin: 0.5em 0;
 }
 
 #markdownBody ul > li,
-#markdownBody ol > li {
+#markdownBody ol > li,
+#popupdiv ul > li,
+#popupdiv ol > li {
     position: relative;
     margin: 0;
 }
 #markdownBody ul > li:nth-of-type(n+2),
-#markdownBody ol > li:nth-of-type(n+2) {
+#markdownBody ol > li:nth-of-type(n+2),
+#popupdiv ul > li:nth-of-type(n+2),
+#popupdiv ol > li:nth-of-type(n+2) {
     margin: 0.5em 0 0 0;
 }
 
 #markdownBody ul > li::before,
-#markdownBody ol > li::before {
+#markdownBody ol > li::before,
+#popupdiv ul > li::before,
+#popupdiv ol > li::before {
     position: absolute;
     z-index: 1;
 }
@@ -533,7 +543,8 @@ article > :not(#TOC) a:hover,
 /*= Bulleted list markers =*/
 /*=-----------------------=*/
 /* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
-#markdownBody ul > li::before {
+#markdownBody ul > li::before,
+#popupdiv ul > li::before {
     color: #888;
     font-size: 0.875em;
     top: 0.125em;
@@ -541,11 +552,15 @@ article > :not(#TOC) a:hover,
 }
 
 #markdownBody ul > li::before,
-#markdownBody ul ul ul > li::before {
+#markdownBody ul ul ul > li::before,
+#popupdiv ul > li::before,
+#popupdiv ul ul ul > li::before {
     content: "\2727"; /* '✧' WHITE FOUR POINTED STAR (U+2727) */
 }
 #markdownBody ul ul > li::before,
-#markdownBody ul ul ul ul > li::before {
+#markdownBody ul ul ul ul > li::before,
+#popupdiv ul ul > li::before,
+#popupdiv ul ul ul ul > li::before {
     content: "\2726";
 }
 
@@ -1367,7 +1382,7 @@ table {
     padding: 0;
     border-collapse: collapse;
     width: 100%;
-    font-size: 0.65em;
+    font-size: 0.75em;
     border-style: solid;
     border-color: #000;
     border-width: 2px 0;
@@ -2269,6 +2284,7 @@ body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(4) {
 }
 body.bookreviews .tableWrapper#book-reviews-table td:last-of-type {
     width: 68%;
+    font-size: 1.2em;
 }
 
 /*************************/
