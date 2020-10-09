@@ -1,7 +1,7 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2020-10-04 15:20:07 gwern"
+// When:  Time-stamp: "2020-10-09 13:23:19 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
@@ -53,9 +53,9 @@ GW.mediaQueries.hover = matchMedia("only screen and (hover: hover) and (pointer:
 GW.mediaQueries.systemDarkModeActive = matchMedia("(prefers-color-scheme: dark)");
 
 GW.modeOptions = [
-    [ 'auto', 'Auto', 'Set light or dark mode automatically, according to system-wide setting (Win: Start→Personalization→Colors; Mac: Apple→System-Preferences→General→Appearance; iOS: Settings→Display-and-Brightness; Android: Settings→Display' ],
-    [ 'light', 'Light', 'Light mode at all times override (black-on-white)' ],
-    [ 'dark', 'Dark', 'Dark mode at all times override (inverted: white-on-black)' ]
+    [ 'auto', 'Auto', 'Set light or dark mode automatically, according to system-wide setting (Win: Start→Personalization→Colors; Mac: Apple→System-Preferences→General→Appearance; iOS: Settings→Display-and-Brightness; Android: Settings→Display)' ],
+    [ 'light', 'Light', 'Light mode at all times (black-on-white)' ],
+    [ 'dark', 'Dark', 'Dark mode at all times (inverted: white-on-black)' ]
 ];
 GW.modeStyles = `
     :root {
