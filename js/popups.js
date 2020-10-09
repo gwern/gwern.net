@@ -55,17 +55,19 @@ Extracts = {
 
         if (target.dataset.popupDoi != undefined) {
             doi = `; cites: ` +
-                `<a href="https://ricon.dev/citations_for_doi?doi=${target.dataset.popupDoi}" ` +
-                `target='_new' ` +
-                `title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Semantic Scholar">` +
-                `SS</a>` + '/' +
                 `<a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Google Scholar">GS</a>`;
-        } else if (target.href.includes("pdf")) {
+        } else if (target.href.includes("pdf") ||
+                   /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
+                   target.href.includes("https://arxiv.org") ||
+                   target.href.includes("https://openreview.net") ||
+                   target.href.includes("ieee.org") ||
+                   target.href.includes("rand.org") ||
+                   target.href.includes("dspace.mit.edu") ||
+                   target.href.includes("thegradient.epub") ||
+                   target.href.includes("inkandswitch.com") ||
+                   target.href.includes("nature.com") ||
+                   target.href.includes("sciencemag.org") ) {
             doi = `; cites: ` +
-                `<a href="https://ricon.dev/citations_for_title?title=%22${target.dataset.popupTitle}%22" ` +
-                `target='_new' ` +
-                `title="Reverse citations of the paper '${target.dataset.popupTitle}' by title in Semantic Scholar">` +
-                `SS</a>` + `/` +
                 `<a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' in Google Scholar">GS</a>`;
         } else {
             doi = `; ` +
@@ -92,7 +94,7 @@ Extracts = {
                          archive +
                     `</p>` +
                     `<p class='data-field author-plus-date'>` +
-                        `${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}` +
+                        `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}` +
                     `</p>` +
                     `<div class='data-field abstract' onclick='parentNode.remove()'>` +
                         `${target.dataset.popupAbstract || ""}` +
@@ -105,7 +107,7 @@ Extracts = {
                         `${target.dataset.popupTitle || ""}` +
                     `</p>` +
                     `<p class='data-field author-plus-date'>` +
-                        `${target.dataset.popupAuthor || ""}${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}` +
+                        `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}` +
                     `</p>` +
                     `<div class='data-field abstract' onclick='parentNode.remove()'>` +
                         `${target.dataset.popupAbstract || ""}` +
@@ -135,7 +137,8 @@ Extracts = {
         return `<div class='popup-citation-context'>… ${citationContextHTML} …</div>`;
     },
     localImageForTarget: (target) => {
-        return `<div class='popup-local-image'><img width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
+        // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
+        return `<div class='popup-local-image'><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
     unbind: () => {
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
@@ -472,7 +475,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     font-weight: bold;
     font-size: 1.125em;
 }
-#popupdiv > div .data-field.author-plus-date {
+#popupdiv > div .data-field.author {
     font-style: italic;
 }
 #popupdiv > div .data-field.abstract > p {
