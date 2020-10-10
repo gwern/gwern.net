@@ -83,7 +83,7 @@
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 0 2px;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 /*  PDFs */
 #markdownBody a[href$='.pdf' i]:hover::after,
@@ -486,6 +486,7 @@ span.defnMetadata {
 
 /* Google searches, other tools; note that there are many Google subdomains, so we narrow down with just 'www' */
 #markdownBody a[href*="www.google.com"]::after {
+    opacity: 0.70;
     content: "𝐆"; }
 
 /* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
@@ -632,7 +633,8 @@ span.defnMetadata {
 /* PB logo is confusing. A purple question mark...? */
 #markdownBody a[href*="predictionbook.com"]::after {
     margin: 0 0 0 0px;
-    /* Use Unicode question market to distinguish it visually from regular punctuation. */
+    left: -0.1em;
+    /* Use Unicode question mark to distinguish it visually from regular punctuation. */
     content: "\FE56"; /* '﹖' Small Question Mark (U+FE56) */
 }
 
@@ -652,6 +654,7 @@ span.defnMetadata {
 #markdownBody a[href*="arxiv.org"]::after,
 #markdownBody a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after {
     content: "\1D6D8";
+    opacity: 0.70;
     background-image: none; }
 
 /* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */
@@ -673,11 +676,12 @@ span.defnMetadata {
 #markdownBody a[href*="andrewgelman.com"]::after,
 #markdownBody a[href*="statmodeling.stat.columbia.edu"]::after {
     content: "▅▇▃";
-    opacity: 0.70;
-    font-size: 0.6em; }
+    opacity: 0.65;
+    font-size: 0.5em; }
 
 /* Bloomberg: no usable logo, just an inset-B */
 #markdownBody a[href*="bloomberg.com"]::after {
+    opacity: 0.70;
     content: "𝐁"; }
 
 /* BBC: no usable logo */
@@ -837,6 +841,7 @@ span.defnMetadata {
 
 /* Oxford Academic Journals / OUP */
 #markdownBody a[href*="academic.oup.com"]::after {
+    opacity: 0.85;
     content: "OUP"; }
 
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
@@ -990,7 +995,7 @@ span.defnMetadata {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 
 /* The Washington Post: truncated their blackletter to 'WP' */
@@ -1016,7 +1021,7 @@ span.defnMetadata {
 #markdownBody a[href*='nytimes.com']::after {
     background-image: url("/static/img/icons/newyorktimes.svg");}
 #markdownBody a[href*='nytimes.com']:hover::after {
-    opacity: 0.45;
+    opacity: 0.40;
 }
 #markdownBody a[href*='nytimes.com']::after {
     content: "";
@@ -1065,7 +1070,7 @@ span.defnMetadata {
     height: 1.3em;
     width: 0.9em;
     margin: 0 0 0px 2px;
-    opacity: 0.66;
+    opacity: 0.60;
 }
 
 /* El Grauniad */
@@ -1087,7 +1092,7 @@ span.defnMetadata {
     height: 1.1em;
     width: 1.1em;
     margin: 0 0 0 2px;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 
 /* Reddit */
@@ -1268,32 +1273,32 @@ span.defnMetadata {
     vertical-align: baseline;
     opacity: 0.90;
 }
-#markdownBody a[href*="wikipedia.org"]:hover::after,
-#markdownBody a[href*="wikimedia.org"]:hover::after,
-#markdownBody a[href*="wiktionary.org"]:hover::after,
+#markdownBody a[href*="wikipedia.org"          ]:hover::after,
+#markdownBody a[href*="wikimedia.org"          ]:hover::after,
+#markdownBody a[href*="wiktionary.org"         ]:hover::after,
 #markdownBody a[href*="wikimediafoundation.org"]:hover::after,
-#markdownBody a[href*="wikisource.org"]:hover::after {
+#markdownBody a[href*="wikisource.org"         ]:hover::after {
     opacity: 0.5;
 }
 
 /* YouTube/Bandcamp/SoundCloud links */
-#markdownBody a[href*='youtube.com']::after,
-#markdownBody a[href*='youtu.be']::after,
+#markdownBody a[href*='youtube.com'   ]::after,
+#markdownBody a[href*='youtu.be'      ]::after,
 #markdownBody a[href*='soundcloud.com']::after,
-#markdownBody a[href*='bandcamp.com']::after {
+#markdownBody a[href*='bandcamp.com'  ]::after {
     background-image: url('/static/img/icons/video.svg');
 }
-#markdownBody a[href*='youtube.com']:hover::after,
-#markdownBody a[href*='youtu.be']:hover::after,
+#markdownBody a[href*='youtube.com'   ]:hover::after,
+#markdownBody a[href*='youtu.be'      ]:hover::after,
 #markdownBody a[href*='soundcloud.com']:hover::after,
-#markdownBody a[href*='bandcamp.com']:hover::after {
+#markdownBody a[href*='bandcamp.com'  ]:hover::after {
     opacity: 0.2;
     font-size: 0.8em;
 }
-#markdownBody a[href*='youtube.com']::after,
-#markdownBody a[href*='youtu.be']::after,
+#markdownBody a[href*='youtube.com'   ]::after,
+#markdownBody a[href*='youtu.be'      ]::after,
 #markdownBody a[href*='soundcloud.com']::after,
-#markdownBody a[href*='bandcamp.com']::after {
+#markdownBody a[href*='bandcamp.com'  ]::after {
     content: "";
     display: inline-block;
     position: static;
@@ -1306,8 +1311,8 @@ span.defnMetadata {
 }
 
 /* The *Exchange/*Overflow family of websites: */
-#markdownBody a[href*="overflow.net"]::after,
-#markdownBody a[href*="overflow.com"]::after,
+#markdownBody a[href*="overflow.net"     ]::after,
+#markdownBody a[href*="overflow.com"     ]::after,
 #markdownBody a[href*="stackexchange.com"]::after {
     content: "";
     background-image: url("/static/img/icons/stackexchange.svg");
@@ -1318,18 +1323,18 @@ span.defnMetadata {
     height: 0.85em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.80;
+    opacity: 0.55;
 }
-#markdownBody a[href*="overflow.net"]:hover::after,
-#markdownBody a[href*="overflow.com"]::after,
+#markdownBody a[href*="overflow.net"     ]:hover::after,
+#markdownBody a[href*="overflow.com"     ]:hover::after,
 #markdownBody a[href*="stackexchange.com"]:hover::after {
-    opacity: 0.44;
+    opacity: 0.30;
 }
 
 /* Amazon */
 #markdownBody a[href*="amazon.com"]::after,
 #markdownBody a[href*="amazon.co."]::after,
-#markdownBody a[href*="amzn.com"]::after {
+#markdownBody a[href*="amzn.com"  ]::after {
     content: "";
     background-image: url("/static/img/icons/amazon.svg");
     background-repeat: no-repeat;
@@ -1343,7 +1348,7 @@ span.defnMetadata {
 }
 #markdownBody a[href*="amazon.com"]:hover::after,
 #markdownBody a[href*="amazon.co."]:hover::after,
-#markdownBody a[href*="amzn.com"]:hover::after {
+#markdownBody a[href*="amzn.com"  ]:hover::after {
     opacity: 0.4;
 }
 
@@ -1367,15 +1372,15 @@ span.defnMetadata {
 }
 
 /* Dropbox: old file-host, deprecated since they've started killing inactive accounts */
-#markdownBody a[href*='dropbox.com']::after,
+#markdownBody a[href*='dropbox.com'           ]::after,
 #markdownBody a[href*='dropboxusercontent.com']::after { /* primary user: dl.dropboxusercontent.com */
     background-image: url("/static/img/icons/dropbox.svg");
 }
-#markdownBody a[href*='dropbox.com']:hover::after,
+#markdownBody a[href*='dropbox.com'           ]:hover::after,
 #markdownBody a[href*='dropboxusercontent.com']:hover::after {
     opacity: 0.3;
 }
-#markdownBody a[href*='dropbox.com']::after,
+#markdownBody a[href*='dropbox.com'           ]::after,
 #markdownBody a[href*='dropboxusercontent.com']::after {
     content: "";
     display: inline-block;
@@ -1385,7 +1390,7 @@ span.defnMetadata {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 
 /* MegaUpload/Mega: filesharing (used for big files) */
@@ -1404,30 +1409,30 @@ span.defnMetadata {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 
-#markdownBody a[href*='webcitation.org']::after,
-#markdownBody a[href*='mementoweb.org']::after,
-#markdownBody a[href*='archive.org']::after, /* primary user: web.archive.org */
-#markdownBody a[href*='archive-it.org']::after,
-#markdownBody a[href*='archiveteam.org']::after,
+#markdownBody a[href*='webcitation.org'   ]::after,
+#markdownBody a[href*='mementoweb.org'    ]::after,
+#markdownBody a[href*='archive.org'       ]::after, /* primary user: web.archive.org */
+#markdownBody a[href*='archive-it.org'    ]::after,
+#markdownBody a[href*='archiveteam.org'   ]::after,
 #markdownBody a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.org */
     background-image: url("/static/img/icons/internetarchive.svg");
 }
-#markdownBody a[href*='webcitation.org']:hover::after,
-#markdownBody a[href*='mementoweb.org']:hover::after,
-#markdownBody a[href*='archive.org']:hover::after,
-#markdownBody a[href*='archive-it.org']:hover::after,
-#markdownBody a[href*='archiveteam.org']:hover::after,
+#markdownBody a[href*='webcitation.org'   ]:hover::after,
+#markdownBody a[href*='mementoweb.org'    ]:hover::after,
+#markdownBody a[href*='archive.org'       ]:hover::after,
+#markdownBody a[href*='archive-it.org'    ]:hover::after,
+#markdownBody a[href*='archiveteam.org'   ]:hover::after,
 #markdownBody a[href*='waybackmachine.org']:hover::after {
     opacity: 0.3;
 }
-#markdownBody a[href*='webcitation.org']::after,
-#markdownBody a[href*='mementoweb.org']::after,
-#markdownBody a[href*='archive.org']::after,
-#markdownBody a[href*='archive-it.org']::after,
-#markdownBody a[href*='archiveteam.org']::after,
+#markdownBody a[href*='webcitation.org'   ]::after,
+#markdownBody a[href*='mementoweb.org'    ]::after,
+#markdownBody a[href*='archive.org'       ]::after,
+#markdownBody a[href*='archive-it.org'    ]::after,
+#markdownBody a[href*='archiveteam.org'   ]::after,
 #markdownBody a[href*='waybackmachine.org']::after {
     content: "";
     display: inline-block;
