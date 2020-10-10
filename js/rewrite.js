@@ -273,3 +273,19 @@ document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):n
     if (!header) return;
     sectionLink.classList.add((sectionLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'section-link-down' : 'section-link-up');
 })
+
+/* HYPHENS */
+// Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
+function getSelectionHTML() {
+	var container = document.createElement("div");
+	container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+	return container.innerHTML;
+}
+window.addEventListener("copy", GW.textCopied = (event) => {
+	if(event.target.matches("input, textarea")) return;
+	event.preventDefault();
+	const selectedHTML = getSelectionHTML();
+	const selectedText = getSelection().toString();
+	event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
+	event.clipboardData.setData("text/html", selectedHTML.replace(/\u00AD|\u200b/g, ""));
+});
