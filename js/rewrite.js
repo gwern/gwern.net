@@ -277,15 +277,28 @@ document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):n
 /* HYPHENS */
 // Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
 function getSelectionHTML() {
-	var container = document.createElement("div");
-	container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
-	return container.innerHTML;
+    var container = document.createElement("div");
+    container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+    return container.innerHTML;
 }
 window.addEventListener("copy", GW.textCopied = (event) => {
-	if(event.target.matches("input, textarea")) return;
-	event.preventDefault();
-	const selectedHTML = getSelectionHTML();
-	const selectedText = getSelection().toString();
-	event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
-	event.clipboardData.setData("text/html", selectedHTML.replace(/\u00AD|\u200b/g, ""));
+    if(event.target.matches("input, textarea")) return;
+    event.preventDefault();
+    const selectedHTML = getSelectionHTML();
+    const selectedText = getSelection().toString();
+    event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
+    event.clipboardData.setData("text/html", selectedHTML.replace(/\u00AD|\u200b/g, ""));
 });
+// For X11 Linux, middle-click somehow manages to bypass the copy-paste listener
+// function getTextNodes(node) {
+//  var allTextNodes = [ ];
+//  let walk = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null, false);
+//  while (node = walk.nextNode())
+//      allTextNodes.push(node);
+//  return allTextNodes;
+// }
+// if (navigator.userAgent.match(/X11|Ubuntu/)) {
+//  getTextNodes(document.querySelector("#markdownBody")).forEach(textNode => {
+//      textNode.textContent = textNode.textContent.replace(/\u00ad/g,"");
+//  });
+// }
