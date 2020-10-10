@@ -54,8 +54,7 @@ Extracts = {
         }
 
         if (target.dataset.popupDoi != undefined) {
-            doi = `; cites: ` +
-                `<a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Google Scholar">GS</a>`;
+            doi = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Google Scholar">cites</a>`;
         } else if (target.href.includes("pdf") ||
                    /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
                    target.href.includes("https://arxiv.org") ||
@@ -67,8 +66,7 @@ Extracts = {
                    target.href.includes("inkandswitch.com") ||
                    target.href.includes("nature.com") ||
                    target.href.includes("sciencemag.org") ) {
-            doi = `; cites: ` +
-                `<a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' in Google Scholar">GS</a>`;
+            doi = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' in Google Scholar">cites</a>`;
         } else {
             doi = `; ` +
                   `<a href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" ` +
