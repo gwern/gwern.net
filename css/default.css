@@ -2006,9 +2006,9 @@ code span.wa { color: #bf0303; } /* Warning */
 }
 
 .admonition.note::before {
-    content: "☛"; /* U+261B ☛ BLACK RIGHT POINTING INDEX  */
-    font-size: 2.6em;
-    top:-10px;
+    content: "🖛"; /* U+1F59B 🖛 SIDEWAYS BLACK RIGHT POINTING INDEX */
+    font-size: 1.8em;
+    top: -4px;
     color: #fff;
 }
 .admonition.tip::before {
