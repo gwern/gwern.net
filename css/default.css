@@ -567,7 +567,7 @@ article > :not(#TOC) a:hover,
 #markdownBody ul ul ul > li::before,
 #markdownBody ul ul ul ul ul > li::before {
     content: "\2727"; /* '✧' WHITE FOUR POINTED STAR (U+2727) */
-    filter: rotate(45deg);
+    transform: rotate(45deg);
 }
 
 /*=-----------------------=*/
