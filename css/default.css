@@ -1267,11 +1267,6 @@ a.footnote-ref {
     text-align: left;
 }
 
-.sidenote code {
-    word-break: break-all;
-    hyphens: none;
-}
-
 /*=-----------=*/
 /*= Citations =*/
 /*=-----------=*/
@@ -1557,6 +1552,11 @@ pre::-webkit-scrollbar-thumb:hover {
 /***************/
 /* CODE BLOCKS */
 /***************/
+
+code {
+    word-break: break-all;
+    hyphens: none;
+}
 
 code {
     padding: 0 4px;
