@@ -128,7 +128,10 @@ Extracts = {
     },
     sectionEmbedForTarget: (target) => {
         let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
-        return `<div class='popup-section-embed'>${targetSectionHTML}</div>`;
+        if(targetSectionHTML.length < 2) { // not a section but a random <div> target
+            return Extracts.citationContextForTarget(target);
+        } else {
+            return `<div class='popup-section-embed'>${targetSectionHTML}</div>`; }
     },
     citationContextForTarget: (target) => {
         let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, ol, p, pre, section, table, tfoot, ul").innerHTML;
