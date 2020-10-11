@@ -461,7 +461,6 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv > div .data-field {
     text-align: left;
     text-indent: 0;
-    hyphens: none;
 }
 #popupdiv > div .data-field + .data-field {
     margin-top: 0.25em;

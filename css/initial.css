@@ -579,7 +579,7 @@ header h1 {
     text-align: justify;
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
-    hyphens: auto
+    hyphens: auto;
 }
 
 /*  Cute 'old-style' numerals, look a little nicer inline in text, and available natively in the SS fonts:
