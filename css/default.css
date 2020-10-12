@@ -2264,42 +2264,6 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     width: 20%;
 }
 
-/*=---------------=*/
-/*= /Book-reviews =*/
-/*=---------------=*/
-
-body.bookreviews .tableWrapper#book-reviews-table {
-    clear: both;
-    word-break: break-all;
-}
-body.bookreviews .tableWrapper#book-reviews-table table {
-    table-layout: fixed;
-}
-body.bookreviews .tableWrapper#book-reviews-table td:last-of-type {
-    word-break: normal;
-    hyphens: auto;
-}
-body.bookreviews .tableWrapper#book-reviews-table th:nth-of-type(1),
-body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(1) {
-    width: 12%;
-}
-body.bookreviews .tableWrapper#book-reviews-table th:nth-of-type(2),
-body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(2) {
-    width: 7%;
-}
-body.bookreviews .tableWrapper#book-reviews-table th:nth-of-type(3),
-body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(3) {
-    width: 5%;
-}
-body.bookreviews .tableWrapper#book-reviews-table th:nth-of-type(4),
-body.bookreviews .tableWrapper#book-reviews-table td:nth-of-type(4) {
-    width: 3%;
-}
-body.bookreviews .tableWrapper#book-reviews-table td:last-of-type {
-    width: 68%;
-    font-size: 1.2em;
-}
-
 /*************************/
 /* UI ELEMENTS CONTAINER */
 /*************************/
