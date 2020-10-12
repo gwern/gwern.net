@@ -655,6 +655,7 @@ span.defnMetadata {
 #markdownBody a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after {
     content: "\1D6D8";
     opacity: 0.70;
+    bottom: 0.4em;
     background-image: none; }
 
 /* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */

@@ -239,22 +239,24 @@ Extracts = {
 
             //  Inject the contents of the popup into the popup div.
             Extracts.popup.removeAttribute("style");
-            if (videoId) {
-                Extracts.popup.innerHTML = Extracts.videoForTarget(target, videoId);
-                isVideo = true;
-            } else if (target.classList.contains("footnote-back")) {
-                Extracts.popup.innerHTML = Extracts.citationContextForTarget(target);
-            } else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
-                Extracts.popup.innerHTML = Extracts.sectionEmbedForTarget(target);
-                Extracts.popup.style.width = Extracts.maxPopupWidth + "px";
-                Extracts.popup.style.maxHeight = (Extracts.maxPopupWidth * 0.75) + "px";
-//          } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
-            } else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
-                Extracts.popup.innerHTML = Extracts.localImageForTarget(target);
-            } else if (target.classList.contains("docMetadata")) {
-                Extracts.popup.innerHTML = Extracts.extractForTarget(target);
-            } else if (target.classList.contains("defnMetadata")) {
-                Extracts.popup.innerHTML = Extracts.definitionForTarget(target);
+            if ([ 'H1', 'H2', 'H3', 'H4', 'H5', 'H6' ].contains(target.parentElement.tagName)) {} else {
+                if (videoId) {
+                    Extracts.popup.innerHTML = Extracts.videoForTarget(target, videoId);
+                    isVideo = true;
+                } else if (target.classList.contains("footnote-back")) {
+                    Extracts.popup.innerHTML = Extracts.citationContextForTarget(target);
+                } else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
+                    Extracts.popup.innerHTML = Extracts.sectionEmbedForTarget(target);
+                    Extracts.popup.style.width = Extracts.maxPopupWidth + "px";
+                    Extracts.popup.style.maxHeight = (Extracts.maxPopupWidth * 0.75) + "px";
+    //          } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
+                } else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
+                    Extracts.popup.innerHTML = Extracts.localImageForTarget(target);
+                } else if (target.classList.contains("docMetadata")) {
+                    Extracts.popup.innerHTML = Extracts.extractForTarget(target);
+                } else if (target.classList.contains("defnMetadata")) {
+                    Extracts.popup.innerHTML = Extracts.definitionForTarget(target);
+                }
             }
 
             //  Inject the popup into the page.
