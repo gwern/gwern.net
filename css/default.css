@@ -2057,29 +2057,37 @@ article > :not(#TOC) .admonition a:hover {
 /*=-------------------------=*/
 
 /* the /index needs more space in the lists for mobile users */
-@media only screen and (max-width:64.9ch) { body.siteIndex #markdownBody li { line-height: 1.65; } }
+@media only screen and (max-width:64.9ch) { body.index #markdownBody li { line-height: 1.65; } }
 
 /*  Add some vertical padding for the introduction.
     */
-body.siteIndex #markdownBody {
+body.index #markdownBody {
     padding-top: 1.5ch;
 }
 
 /*  Make the sections reflow; better than fixed-width tables.
     */
-body.siteIndex article section {
+body.index article section {
     display: inline-block;
     vertical-align: top;
 }
 
+body.index #TOC,
+body.index #page-metadata,
+body.index #comments,
+body.index #disqus_thread,
+body.index header {
+    display: none;
+}
+
 /*  No index self-link.
     */
-body.siteIndex #sidebar a#logo {
+body.index #sidebar a#logo {
     pointer-events: none;
 }
 /*  Abstract is not a real abstract.
     */
-body.siteIndex #abstract {
+body.index #abstract {
     padding: 0;
     border: none;
     margin: 0;
@@ -2088,7 +2096,7 @@ body.siteIndex #abstract {
 
 /*  Less fancy headings.
     */
-body.siteIndex section:not(.collapse) > h1:first-child {
+body.index section:not(.collapse) > h1:first-child {
     font-size: 1.5em;
     line-height: 1.125;
     box-shadow: none;
@@ -2100,12 +2108,12 @@ body.siteIndex section:not(.collapse) > h1:first-child {
 
 /*  Nice-looking bottom decoration.
     */
-body.siteIndex article,
+body.index article,
 body.tags article {
     position: relative;
     padding-bottom: 4em;
 }
-body.siteIndex article::after,
+body.index article::after,
 body.tags article::after{
     content: "";
     background-color: #fff;
@@ -2124,7 +2132,7 @@ body.tags article::after{
     padding: 0 10px 0 11px;
     z-index: 1;
 }
-body.siteIndex article::before,
+body.index article::before,
 body.tags article::before{
     content: "";
     display: block;
@@ -2138,24 +2146,24 @@ body.tags article::before{
 
 /*  Lists on the home page.
     */
-body.siteIndex #markdownBody ul,
+body.index #markdownBody ul,
 body.tags #markdownBody ul {
     margin: 1.25em 3em 0 0;
     padding: 0 0 0 1.375em;
 }
-body.siteIndex #markdownBody li > ul,
+body.index #markdownBody li > ul,
 body.tags #markdownBody li > ul {
     margin: 0.25em 0 0.25em 0;
 }
-body.siteIndex #markdownBody li,
+body.index #markdownBody li,
 body.tags #markdownBody li {
     margin-top: 0;
 }
 
 /*  Internal links on the home page need no decoration.
     */
-body.siteIndex #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
-body.siteIndex #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
+body.index #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
+body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
     content: none;
 }
 
@@ -2163,35 +2171,35 @@ body.siteIndex #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"
     /*  Leave enough horizontal room to show multiple sections simultaneously,
         table-like
         */
-    body.siteIndex #markdownBody {
+    body.index #markdownBody {
         width: 135ch;
         max-width: calc(50vw + 42ch);
     }
-    body.siteIndex p,
-    body.siteIndex hr {
+    body.index p,
+    body.index hr {
         max-width: 97ch;
     }
 }
 @media only screen and (max-width: 64.9ch) {
-    body.siteIndex #sidebar #logo {
+    body.index #sidebar #logo {
         border: 1px dotted transparent;
         align-self: flex-start;
         padding: 7px 5px 6px 5px;
     }
-    body.siteIndex #markdownBody section {
+    body.index #markdownBody section {
         max-width: 100%;
     }
-    body.siteIndex #markdownBody ul,
+    body.index #markdownBody ul,
     body.tags #markdownBody ul {
         overflow-wrap: break-word;
         margin-right: 0;
     }
-    body.siteIndex #markdownBody li,
+    body.index #markdownBody li,
     body.tags #markdownBody li {
         padding: 1px 0;
         margin: 2px 0 0 0;
     }
-    body.siteIndex #markdownBody ul > li::before,
+    body.index #markdownBody ul > li::before,
     body.tags #markdownBody ul > li::before {
         top: 0.25em;
     }

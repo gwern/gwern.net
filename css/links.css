@@ -327,8 +327,8 @@ p a[href^='#'].section-link-down::after {
 
 /*  Internal (within-site) links. Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
  */
-#markdownBody a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
-#markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
+body:not(.index) #markdownBody a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
+body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #popupdiv a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #popupdiv a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after {
     content: "\1D50A"; /* '𝔊' Gothic G / MATHEMATICAL FRAKTUR CAPITAL G (U+1D50A) */
@@ -348,8 +348,8 @@ a::after { text-indent: 0; }
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
-    body:not(.siteIndex) a.docMetadata::before,
-    body:not(.siteIndex) .defnMetadata::before {
+    body:not(.index) a.docMetadata::before,
+    body:not(.index) .defnMetadata::before {
         content: "\25E4"; /* '◤' U+25E4 Black Upper Left Triangle */
         margin: 0 0 0 3px;
         vertical-align: baseline;

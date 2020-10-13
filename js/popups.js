@@ -62,7 +62,7 @@ Extracts = {
                    target.href.includes("ieee.org") ||
                    target.href.includes("rand.org") ||
                    target.href.includes("dspace.mit.edu") ||
-                   target.href.includes("thegradient.epub") ||
+                   target.href.includes("thegradient.pub") ||
                    target.href.includes("inkandswitch.com") ||
                    target.href.includes("nature.com") ||
                    target.href.includes("sciencemag.org") ) {
