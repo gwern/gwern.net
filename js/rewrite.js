@@ -21,35 +21,38 @@ function doWhenPageLoaded(f) {
 /*=------------------=*/
 
 /*  Expands all tables & figures whose wrapper block is marked with class
-    "full-width" to span the viewport (minus a specified margin on both sides).
-    */
+	"full-width" to span the viewport (minus a specified margin on both sides).
+	*/
 function expandFullWidthBlocks() {
-    document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
-        fullWidthImage.closest("figure").classList.add("full-width");
-    });
+	let mobileViewportWidth = matchMedia("(max-width: 768px)").matches;
 
-    let fullWidthBlockMargin = "2.5ch";
-    let pageWidth = document.querySelector("html").clientWidth;
+	document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
+		fullWidthImage.closest("figure").classList.add("full-width");
+	});
 
-    /*  Find all full-width blocks; set their position and size.
-        */
-    document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
-        fullWidthBlock.removeAttribute("style");
-        fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
-        fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
-    });
+	let fullWidthBlockMargin = "2.5ch";
+	let pageWidth = document.querySelector("html").clientWidth;
 
-    /*  If sidenotes exist, update sidenote positions.
-        */
-    requestAnimationFrame(() => {
-        if (typeof window.GW == "undefined" ||
-            typeof GW.sidenotes == "undefined" ||
-            GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-            GW.sidenotes.sidenoteDivs.length == 0)
-            return;
+	/*  Find all full-width blocks; set their position and size.
+		*/
+	document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
+		fullWidthBlock.removeAttribute("style");
+		if (mobileViewportWidth) return;
+		fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+		fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
+	});
 
-            updateSidenotePositions();
-    });
+	/*  If sidenotes exist, update sidenote positions.
+		*/
+	requestAnimationFrame(() => {
+		if (typeof window.GW == "undefined" ||
+			typeof GW.sidenotes == "undefined" ||
+			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+			GW.sidenotes.sidenoteDivs.length == 0)
+			return;
+
+			updateSidenotePositions();
+	});
 }
 
 /*=-----------------=*/

@@ -254,6 +254,11 @@ header h1 {
 /* PAGE METADATA BLOCK */
 /***********************/
 
+@media only screen and (max-width:64.9ch) {
+
+    #page-metadata { text-align: center; }
+}
+
 #page-metadata hr {
     display: none
 }
