@@ -516,11 +516,11 @@ header h1 {
     width: 12ch;
     text-align: right;
     font-weight: normal;
-    opacity: 0.4;
+    opacity: 0.5;
     pointer-events: none;
 }
 #TOC ul li:hover::before {
-    opacity: 0.7;
+    opacity: 0.8;
 }
 
 /****************/
@@ -626,14 +626,13 @@ h1 {
 /* LINKS */
 /*********/
 a {
-    color: #3c3c3c; /* off-black */
+    color: #343434; /* off-black */
     text-decoration: none
 }
 
 #markdownBody a {
     word-wrap: break-word /* force the occasional inline URL or other long word to break at max-width */
 }
-
 
 /*=------------------------=*/
 /*= Fancy link underlining =*/

@@ -678,7 +678,9 @@ span.defnMetadata {
 #markdownBody a[href*="statmodeling.stat.columbia.edu"]::after {
     content: "▅▇▃";
     opacity: 0.65;
-    font-size: 0.5em; }
+    font-size: 0.5em;
+    right: 0.25em;
+    margin: 0 0 0 4px; }
 
 /* Bloomberg: no usable logo, just an inset-B */
 #markdownBody a[href*="bloomberg.com"]::after {
@@ -1133,7 +1135,7 @@ span.defnMetadata {
     background-position: bottom center;
     height: 0.75em;
     width: 0.75em;
-    margin: 0 0 0 4px;
+    margin:0 2px 0 2px;
     opacity: 0.45;
 }
 

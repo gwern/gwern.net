@@ -545,7 +545,7 @@ article > :not(#TOC) a:hover,
 /* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
 #markdownBody ul > li::before,
 #popupdiv ul > li::before {
-    color: #888;
+    color: #808080;
     font-size: 0.875em;
     top: 0.125em;
     left: -1.375em;
@@ -699,14 +699,6 @@ figcaption {
 figure.full-width {
   position: relative;
   max-width: unset;
-}
-
-/*  Layout fix for images outside of <figure>.
-    REMOVE once all images are properly within <figure>!
-    */
-#markdownBody :not(figure) img {
-    max-width: 100%;
-    height: auto;
 }
 
 /* Floating figures. (Mostly for amusing asides/memes.) */
@@ -1963,7 +1955,7 @@ code span.wa { color: #bf0303; } /* Warning */
     position: relative;
     margin: 2em 0 1.5em 0;
     padding: 0.75em 1.25em 0.875em 1.125em;
-    border-left: 2.5rem solid #969696;
+    border-left: 2.5rem solid #747373;
     background-color: #d8d8d8;
 }
 .admonition-title {
