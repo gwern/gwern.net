@@ -165,6 +165,8 @@ body {
         box-shadow: 0 1.25em 0 0 #fff inset;
         white-space: nowrap
     }
+    /* add a little bit of separation between the indented list & top half */
+    #sidebar a.mail { margin-top: 0.15em; }
     #sidebar a.mail,
     #sidebar a.r_gwern {
         line-height: 1.1;
@@ -299,6 +301,100 @@ header h1 {
 }
 #page-metadata-block > span:nth-child(2)::after {
   margin-left: 0.8125em;
+}
+
+/*********************/
+/* /index */
+/*********************/
+
+/* on the index page, we hide article-related formatting, begging, comments, to make it more compact & classy */
+body.index #sidebar a.patreon,
+body.tags #sidebar a.patreon,
+body.index #TOC,
+body.index #page-metadata,
+body.index #comments,
+body.index #disqus_thread,
+body.index header {
+    display: none;
+}
+
+/*  No index self-link. */
+body.index #sidebar a#logo {
+    pointer-events: none;
+}
+
+/*  Make the sections reflow; better than fixed-width tables. */
+body.index article section {
+    display: inline-block;
+    vertical-align: top;
+}
+
+/*  Abstract is not a real abstract, just an introduction, no need for the abstract formatting.
+    */
+body.index #abstract {
+    padding: 0;
+    border: none;
+    margin: 0;
+    box-shadow: none;
+}
+
+@media only screen and (min-width: 120ch) {
+    /*  Leave enough horizontal room to show multiple sections simultaneously, table-like */
+    body.index #markdownBody {
+        width: 135ch;
+        max-width: calc(50vw + 42ch);
+    }
+    body.index p,
+    body.index hr {
+        max-width: 97ch;
+    }
+}
+
+/*  Add some vertical padding for the introduction.
+    */
+body.index #markdownBody {
+    padding-top: 1.5ch;
+}
+
+/*  Lists on the home page.
+    */
+body.index #markdownBody ul,
+body.tags #markdownBody ul {
+    margin: 1.25em 3em 0 0;
+    padding: 0 0 0 1.375em;
+}
+body.index #markdownBody li > ul,
+body.tags #markdownBody li > ul {
+    margin: 0.25em 0 0.25em 0;
+}
+body.index #markdownBody li,
+body.tags #markdownBody li {
+    margin-top: 0;
+}
+
+@media only screen and (max-width: 64.9ch) {
+    body.index #sidebar #logo {
+        border: 1px dotted transparent;
+        align-self: flex-start;
+        padding: 7px 5px 6px 5px;
+    }
+    body.index #markdownBody section {
+        max-width: 100%;
+    }
+    body.index #markdownBody ul,
+    body.tags #markdownBody ul {
+        overflow-wrap: break-word;
+        margin-right: 0;
+    }
+    body.index #markdownBody li,
+    body.tags #markdownBody li {
+        padding: 1px 0;
+        margin: 2px 0 0 0;
+    }
+    body.index #markdownBody ul > li::before,
+    body.tags #markdownBody ul > li::before {
+        top: 0.25em;
+    }
 }
 
 /*********************/

@@ -2056,43 +2056,15 @@ article > :not(#TOC) .admonition a:hover {
 /*= Index page & Tags pages =*/
 /*=-------------------------=*/
 
+/*  Internal links on the home page need no decoration. */
+body.index #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
+body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
+    content: none;
+}
+
 /* the /index needs more space in the lists for mobile users */
 @media only screen and (max-width:64.9ch) { body.index #markdownBody li { line-height: 1.65; } }
 
-/*  Add some vertical padding for the introduction.
-    */
-body.index #markdownBody {
-    padding-top: 1.5ch;
-}
-
-/*  Make the sections reflow; better than fixed-width tables.
-    */
-body.index article section {
-    display: inline-block;
-    vertical-align: top;
-}
-
-body.index #TOC,
-body.index #page-metadata,
-body.index #comments,
-body.index #disqus_thread,
-body.index header {
-    display: none;
-}
-
-/*  No index self-link.
-    */
-body.index #sidebar a#logo {
-    pointer-events: none;
-}
-/*  Abstract is not a real abstract.
-    */
-body.index #abstract {
-    padding: 0;
-    border: none;
-    margin: 0;
-    box-shadow: none;
-}
 
 /*  Less fancy headings.
     */
@@ -2142,67 +2114,6 @@ body.tags article::before{
     border-bottom: 1px dotted #000;
     width: 100%;
     opacity: 0.5;
-}
-
-/*  Lists on the home page.
-    */
-body.index #markdownBody ul,
-body.tags #markdownBody ul {
-    margin: 1.25em 3em 0 0;
-    padding: 0 0 0 1.375em;
-}
-body.index #markdownBody li > ul,
-body.tags #markdownBody li > ul {
-    margin: 0.25em 0 0.25em 0;
-}
-body.index #markdownBody li,
-body.tags #markdownBody li {
-    margin-top: 0;
-}
-
-/*  Internal links on the home page need no decoration.
-    */
-body.index #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
-body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
-    content: none;
-}
-
-@media only screen and (min-width: 120ch) {
-    /*  Leave enough horizontal room to show multiple sections simultaneously,
-        table-like
-        */
-    body.index #markdownBody {
-        width: 135ch;
-        max-width: calc(50vw + 42ch);
-    }
-    body.index p,
-    body.index hr {
-        max-width: 97ch;
-    }
-}
-@media only screen and (max-width: 64.9ch) {
-    body.index #sidebar #logo {
-        border: 1px dotted transparent;
-        align-self: flex-start;
-        padding: 7px 5px 6px 5px;
-    }
-    body.index #markdownBody section {
-        max-width: 100%;
-    }
-    body.index #markdownBody ul,
-    body.tags #markdownBody ul {
-        overflow-wrap: break-word;
-        margin-right: 0;
-    }
-    body.index #markdownBody li,
-    body.tags #markdownBody li {
-        padding: 1px 0;
-        margin: 2px 0 0 0;
-    }
-    body.index #markdownBody ul > li::before,
-    body.tags #markdownBody ul > li::before {
-        top: 0.25em;
-    }
 }
 
 /*=-------=*/
@@ -2269,45 +2180,9 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     width: 20%;
 }
 
-
-/*=---------------=*/
-/*= /Book-reviews =*/
-/*=---------------=*/
-
-body.bookreviews #markdownBody blockquote {
-  clear: none;
-}
-body.bookreviews #markdownBody ol {
-  overflow: unset;
-}
-
-body.bookreviews #markdownBody h1 + p {
-    margin: -0.5em 0 1.5em 0;
-    display: flex;
-    flex-flow: row;
-    justify-content: flex-start;
-    max-width: 100%;
-}
-body.bookreviews h1 + p span {
-    white-space: nowrap;
-}
-body.bookreviews h1 + p span + span {
-    margin-left: 1em;
-}
-body.bookreviews h1 + p span:first-of-type {
-    flex: 0 1 auto;
-    max-width: 100%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-body.bookreviews h1 + p span:first-of-type:hover {
-    overflow: visible;
-    white-space: normal;
-    text-align: left;
-    height: 1em;
-    padding-left: 1.5em;
-    text-indent: -1.5em;
-}
+/***************/
+/* IMAGE FOCUS */
+/***************/
 
 /*************************/
 /* UI ELEMENTS CONTAINER */
@@ -2325,10 +2200,6 @@ body.bookreviews h1 + p span:first-of-type:hover {
 #ui-elements-container > * {
     pointer-events: auto;
 }
-
-/***************/
-/* IMAGE FOCUS */
-/***************/
 
 /*=--------------=*/
 /*= Hover styles =*/
