@@ -49,7 +49,7 @@ Extracts = {
                 archive = (`<span class="iaMirror">` +
                            `<a title="Search Internet Archive via Memento for mirrors of URL: '${target.href}' (for '${target.dataset.popupTitle}')" ` +
                            `href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
-                           `<img style="height: 0.75em; width: 0.75em; margin: 0 0 2px 3px; opacity: 0.60"; alt="Internet Archive logo" src="/static/img/icons/internetarchive.svg"></a></span>`);
+                           `</a></span>`);
             }
         }
 
@@ -74,22 +74,24 @@ Extracts = {
                   `title="Links to this page '${target.dataset.popupTitle}' in Google">` +
                   `links</a>`;
         }
-
-        return `<div class='popup-extract' onclick='parentNode.remove()'>` +
-                    `<p class='data-field title'>` +
-                        `<a
+        var icon = "";
+        if ( !target.href.startsWith("https://www.gwern.net") && !target.href.startsWith("/") && !target.href.startsWith(".") ) {
+            icon = `<a
                             class='icon'
                             target='_new'
                             href='${target.href}'
                             title='Open this reference in a new window'
-                             ></a>
-                         <a
+                             ></a>` }
+        return `<div class='popup-extract' onclick='parentNode.remove()'>` +
+                    `<p class='data-field title'>` +
+                         archive +
+                         `<a
                             class='title-link'
                             target='_new'
                             href='${target.href}'
                             title='${target.href}'
                                 >${target.dataset.popupTitle || ""}</a>` +
-                         archive +
+                         icon +
                     `</p>` +
                     `<p class='data-field author-plus-date'>` +
                         `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}` +
