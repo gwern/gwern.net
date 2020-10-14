@@ -81,7 +81,7 @@ Extracts = {
                             target='_new'
                             href='${target.href}'
                             title='Open this reference in a new window'
-                             ></a>` }
+                             ></a>`; }
         return `<div class='popup-extract' onclick='parentNode.remove()'>` +
                     `<p class='data-field title'>` +
                          archive +
@@ -433,6 +433,8 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
         opacity: 0.4;
     }
 }
+
+#popupdiv .iaMirror { padding-right: 0.3em; }
 
 #popupdiv {
     z-index: 10001;

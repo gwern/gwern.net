@@ -80,8 +80,10 @@
     }
     </style>
 
+    $if(index)$ $else$
     <!-- JS library for Tufte-style 'sidenotes' (footnotes popped into the left & right margins on sufficiently-wide screens); much more convenient than floating footnotes & endnotes -->
     <script src="/static/js/sidenotes.js" async></script> <!-- since sidenotes visibly render, unlike the other JS libs, we prioritize its loading in the head -->
+    $endif$
     <!-- Hint at necessary third-party domains -->
     <link rel="preconnect" href="https://www.google-analytics.com">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -147,6 +149,7 @@
 
       <article>
 
+        $if(index)$ $else$
         <div id="page-metadata">
           <p>
             <span id="page-description" title="Short description of page.">$description$</span>
@@ -163,6 +166,7 @@
         </div>
 
         <noscript><div class="admonition warning"><div class="admonition-title">JS Disabled</div> For support of <a href="/About#design" title="About: Gwern.net Design: principles, features, links, tricks">website features</a> (table-sorting/collapsible-sections/image-zooms/link-annotations/floating-footnotes/Disqus-comments), please enable JavaScript.</div></noscript>
+        $endif$
 
         $body$
 
@@ -178,6 +182,7 @@
     <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
     <link rel="stylesheet" type="text/css" href="/static/css/links.css" />
 
+    $if(index)$ $else$
     <!-- floating footnotes fallback from sidenotes; see http://ignorethecode.net/blog/2010/04/20/footnotes/ ; not lazy-loaded as (almost) all pages have footnotes -->
     <script src="/static/js/footnotes.js" defer></script>
 
@@ -189,11 +194,13 @@
     <!-- not lazy-loaded due to various bugs -->
     <script src="/static/js/image-focus.js" defer></script>
 
+    <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. cover source-code block listings too (for large R sections especially) -->
+    <script src="/static/js/rewrite.js" defer></script>
+    $endif$
+
     <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
     <script src="/static/js/darkmode.js" defer></script>
 
-    <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. cover source-code block listings too (for large R sections especially) -->
-    <script src="/static/js/rewrite.js" defer></script>
 
     <!-- Async load Google Analytics  -->
     <script id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" async></script>
@@ -204,6 +211,7 @@
       gtag('config', 'UA-18912926-1');
     </script>
 
+    $if(index)$ $else$
     <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter, as tables are on only a very small subset of pages -->
     <div id="comments">
       <div id="disqus_thread"></div>
@@ -249,6 +257,7 @@
       </script>
       <noscript><p>Enable JavaScript for Disqus comments</p></noscript>
     </div>
+    $endif$
 
   </body>
 </html>

@@ -397,6 +397,8 @@ body.tags #markdownBody li {
     }
 }
 
+body.index #markdownBody ul>li:nth-of-type(n+2) { margin: 0; }
+
 /*********************/
 /* TABLE OF CONTENTS */
 /*********************/
