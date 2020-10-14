@@ -863,13 +863,16 @@ a[href*="neweva.blog103.fc2.com"]::after {
 
 /* IMAGE-BASED PER-DOMAIN LINK ICONS: */
 /* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
-a[href*='biorxiv.org']::after {
+a[href*='biorxiv.org']::after,
+a[href*='medrxiv.org']::after {
     background-image: url("/static/img/icons/chi-dna.svg");
 }
-a[href*='biorxiv.org']:hover::after {
+a[href*='biorxiv.org']:hover::after,
+a[href*='medrxiv.org']:hover::after{
     opacity: 0.3;
 }
-a[href*='biorxiv.org']::after {
+a[href*='biorxiv.org']::after,
+a[href*='medrxiv.org']::after {
     content: "";
     display: inline-block;
     position: static;
