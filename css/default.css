@@ -2116,6 +2116,45 @@ body.tags article::before{
     opacity: 0.5;
 }
 
+
+/*=---------------=*/
+/*= /Book-reviews =*/
+/*=---------------=*/
+body.bookreviews #markdownBody blockquote {
+  clear: none;
+}
+body.bookreviews #markdownBody ol {
+  overflow: unset;
+}
+
+body.bookreviews #markdownBody h2 + p {
+	margin: -0.5em 0 1.5em 0;
+	display: flex;
+	flex-flow: row;
+	justify-content: flex-start;
+	max-width: 100%;
+}
+body.bookreviews h2 + p span {
+	white-space: nowrap;
+}
+body.bookreviews h2 + p span + span {
+	margin-left: 1em;
+}
+body.bookreviews h2 + p span:first-of-type {
+	flex: 0 1 auto;
+	max-width: 100%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+body.bookreviews h2 + p span:first-of-type:hover {
+	overflow: visible;
+	white-space: normal;
+	text-align: left;
+	height: 1em;
+	padding-left: 1.5em;
+	text-indent: -1.5em;
+}
+
 /*=-------=*/
 /*= /Mead =*/
 /*=-------=*/
