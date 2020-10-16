@@ -90,7 +90,7 @@ Extracts = {
                             target='_new'
                             href='${target.href}'
                             title='${target.href}'
-                                >${target.dataset.popupTitle || ""}</a>` +
+                                >${target.dataset.popupTitleHtml || ""}</a>` +
                          icon +
                     `</p>` +
                     `<p class='data-field author-plus-date'>` +
@@ -104,7 +104,7 @@ Extracts = {
     definitionForTarget: (target) => {
         return `<div class='popup-extract' onclick='parentNode.remove()'>` +
                     `<p class='data-field title'>` +
-                        `${target.dataset.popupTitle || ""}` +
+                        `${target.dataset.popupTitleHtml || ""}` +
                     `</p>` +
                     `<p class='data-field author-plus-date'>` +
                         `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}` +
