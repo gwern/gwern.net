@@ -83,7 +83,7 @@ a[href$='.ttf' i]::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 0 2px;
-    opacity: 0.50;
+    opacity: 0.45;
 }
 /*  PDFs */
 a[href$='.pdf' i]:hover::after,
@@ -167,7 +167,7 @@ a[href$='.epub' i]::after,
 a[href*='pdfs.semanticscholar.org' i]::after,
 a[href*='citeseerx.ist.psu.edu' i]::after,
 a[href*='eprint.iacr.org' i]::after {
-    opacity: 0.55;
+    opacity: 0.50;
     /* PDFs are linked on every page, so make another exception */
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
@@ -336,7 +336,7 @@ body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/do
     vertical-align: baseline;
     position: relative;
     bottom: 0.15em;
-    opacity: 0.66;
+    opacity: 0.75;
 }
 
 /* workaround for 'PNAS' square block: a text indention somewhere is being applied downstream to links as well, breaking the text link icons, so reset them back to their default. */
@@ -466,11 +466,13 @@ a[href*="neweva.blog103.fc2.com"]::after {
 }
 /* MR: cheaper to abuse Unicode */
 a[href*="marginalrevolution.com"]::after {
-    content: "M𝐑"; }
+    content: "M𝐑";
+    opacity: 0.70; }
 
 /* likewise */
 a[href*="medium.com"]::after {
-    content: "𝐌"; }
+    content: "𝐌";
+    opacity: 0.65; }
 
 /* Facebook: skip enclosing box */
 a[href*="#facebook"]::after,
@@ -532,7 +534,8 @@ a[href*="www.nber.org"]:not([href$=".pdf"])::after {
   text-align: center;
   position: relative;
   bottom: 0.2em;
-  left: 0.1em; }
+  left: 0.1em;
+  opacity: 0.85; }
 
 a[href*="mlp.fandom.com"]::after {
   content: "MLPW";
@@ -740,7 +743,8 @@ a[href*="t.umblr.com"]::after {
 /* The Atlantic: replicate sloping by italics */
 a[href*="theatlantic.com"]::after {
     font-style: italic;
-    content: "A"; }
+    content: "A";
+    font-size: 0.85em; }
 
 /* Filfre.net/The Digital Antiquarian has no logo or usable substitue... */
 a[href*="filfre.net"]::after {
@@ -808,7 +812,7 @@ a[href*="rand.org"]::after {
  position:relative;
  bottom:.3em;
  left:.1em;
- opacity: 0.95;
+ opacity: 0.90;
  font-weight: bold;
 }
 
@@ -911,7 +915,7 @@ a[href*='medrxiv.org']::after {
     height: 1em;
     width: 0.9em;
     margin: 0 0 0 2px;
-    opacity: 0.66;
+    opacity: 0.60;
 }
 
 /* Google Scholar */
@@ -930,7 +934,7 @@ a[href*='scholar.google.com']::after {
     height: 1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.61;
+    opacity: 0.55;
 }
 
 /* PLOS ONE in all their domain permutations... */
@@ -958,7 +962,7 @@ a[href*='www.plos']::after {
     height: 1.1em;
     width: 1em;
     margin: 0 0 1px 3px;
-    opacity: 0.55;
+    opacity: 0.60;
 }
 
 /* Patreon: used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don't like the new one */
@@ -1055,7 +1059,7 @@ a[href*='nytimes.com']::after {
     height: 1em;
     width: 0.8em;
     margin: 0 0 2px 3px;
-    opacity: 0.61;
+    opacity: 0.55;
 }
 
 /* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
@@ -1074,7 +1078,7 @@ a[href*='nlm.nih.gov']::after {
     height: 1em;
     width: 0.8em;
     margin: 0 0 2px 3px;
-    opacity: 0.66;
+    opacity: 0.70;
 }
 
 /* The New Yorker: the Dandy SVG, simplified & rotated more vertically */
@@ -1093,7 +1097,7 @@ a[href*='newyorker.com']::after {
     height: 1.3em;
     width: 0.9em;
     margin: 0 0 0px 2px;
-    opacity: 0.60;
+    opacity: 0.50;
 }
 
 /* El Grauniad */
@@ -1137,7 +1141,7 @@ a[href*='www.guardian.co.uk']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 
 /* PG/HN/YC (shared logo): */
@@ -1159,7 +1163,7 @@ a[href*='ycombinator.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin:0 2px 0 2px;
-    opacity: 0.45;
+    opacity: 0.40;
 }
 
 /* MIRI/intelligence.org */
@@ -1178,7 +1182,7 @@ a[href*='intelligence.org']::after {
     height: 1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.66;
+    opacity: 0.60;
 }
 
 /* DeepMind; match articles or anchors about DM too */
@@ -1333,7 +1337,7 @@ a[href*='bandcamp.com'  ]::after {
     height: 1em;
     width: 1em;
     margin: 0 0 0 3px;
-    opacity: 0.40;
+    opacity: 0.50;
 }
 
 /* The *Exchange/*Overflow family of websites: */
@@ -1349,7 +1353,7 @@ a[href*="stackexchange.com"]::after {
     height: 0.85em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.55;
+    opacity: 0.50;
 }
 a[href*="overflow.net"     ]:hover::after,
 a[href*="overflow.com"     ]:hover::after,
@@ -1394,7 +1398,7 @@ a[href*='github.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.66;
+    opacity: 0.60;
 }
 
 /* Dropbox: old file-host, deprecated since they've started killing inactive accounts */
@@ -1435,7 +1439,7 @@ a[href*='mega.nz']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.50;
+    opacity: 0.40;
 }
 
 a[href*='webcitation.org'   ]::after,
