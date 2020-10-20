@@ -15,29 +15,29 @@ blockquote {
     padding: 1em 1.25em;
 }
 
-/*  Note the awful hack by which we implement 'alternating'/zebra-stripe coloring of quotes.
+:root {
+    --GW-blockquote-background-color: #f8f8f8;
+}
 
-    See A/B tests: this highlighting is better than no highlighting.
-    */
+/* Three-level of blockquote emphasis (darkening).
+*/
 blockquote,
-blockquote blockquote blockquote,
-blockquote blockquote blockquote blockquote blockquote {
+blockquote blockquote blockquote blockquote {
     z-index: -2;
     background-color: var(--GW-blockquote-background-color);
 }
 blockquote blockquote,
-blockquote blockquote blockquote blockquote,
-blockquote blockquote blockquote blockquote blockquote blockquote {
+blockquote blockquote blockquote blockquote blockquote {
     background-color: #e6e6e6;
+}
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+    background-color: #d8d8d8;
 }
 
 /*************/
 /* VARIABLES */
 /*************/
-
-:root {
-    --GW-blockquote-background-color: #f5f5f5
-}
 
 html {
     padding: 0;
