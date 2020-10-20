@@ -793,6 +793,13 @@ article > :not(#TOC) a:hover {
         linear-gradient(#999, #999);
 }
 
+/* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
+::selection {
+    text-shadow: none;
+    background: #333;
+    color: #fff;
+}
+
 /**************/
 /* PARAGRAPHS */
 /**************/
