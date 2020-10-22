@@ -688,8 +688,8 @@ body.index #markdownBody ul>li:nth-of-type(n+2) { margin: 0; }
 /*  Cute 'old-style' numerals, look a little nicer inline in text, and available natively in the SS fonts:
     https://practicaltypography.com/alternate-figures.html#oldstyle-figures
     */
-#markdownBody, #popupdiv {
-    font-variant-numeric: oldstyle-nums
+html {
+    font-variant-numeric: oldstyle-nums;
 }
 
 #abstract > blockquote {
@@ -705,12 +705,12 @@ body.index #markdownBody ul>li:nth-of-type(n+2) { margin: 0; }
 h1 {
     margin: 1.25em 0 0.5em -0.75rem;
     font-weight: bold;
-    position: relative
+    position: relative;
 }
 
 @media only screen and (max-width:65ch) {
     h1 {
-        margin: 1.25em 0 0.5em 0
+        margin: 1.25em 0 0.5em 0;
     }
 }
 
@@ -727,13 +727,13 @@ h1 {
 /*********/
 /* LINKS */
 /*********/
+#markdownBody a {
+    word-wrap: break-word /* force the occasional inline URL or other long word to break at max-width */
+}
+
 a {
     color: #272727; /* off-black */
     text-decoration: none
-}
-
-#markdownBody a {
-    word-wrap: break-word /* force the occasional inline URL or other long word to break at max-width */
 }
 
 /*=------------------------=*/

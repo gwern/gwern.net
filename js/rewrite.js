@@ -275,7 +275,7 @@ document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):n
     header = document.body.querySelector("#markdownBody *[id='" + sectionLink.hash.substring(1) + "']");
     if (!header) return;
     sectionLink.classList.add((sectionLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'section-link-down' : 'section-link-up');
-})
+});
 
 /* HYPHENS */
 // Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
@@ -290,7 +290,7 @@ window.addEventListener("copy", GW.textCopied = (event) => {
     const selectedHTML = getSelectionHTML();
     const selectedText = getSelection().toString();
     event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
-    event.clipboardData.setData("text/html", selectedHTML.replace(/\u00AD|\u200b/g, ""));
+    event.clipboardData.setData("text/html",  selectedHTML.replace(/\u00AD|\u200b/g, ""));
 });
 // For X11 Linux, middle-click somehow manages to bypass the copy-paste listener
 // function getTextNodes(node) {
