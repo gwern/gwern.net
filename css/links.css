@@ -300,10 +300,11 @@ p a[href^='#'].footnote-back::after{
     content: none;
 }
 
-section > :not(:first-child) a[href^='#'].section-link-up::after,
-p a[href^='#'].section-link-up::after,
-section > :not(:first-child) a[href^='#'].section-link-down::after,
-p a[href^='#'].section-link-down::after {
+/* Dynamically set direction of internal link to an upwards or downwards arrow: */
+section > :not(:first-child) a[href^='#'].identifier-link-up::after,
+p a[href^='#'].identifier-link-up::after,
+section > :not(:first-child) a[href^='#'].identifier-link-down::after,
+p a[href^='#'].identifier-link-down::after {
     content: "";
     bottom: 0.2em;
     width: 1em;
@@ -311,19 +312,15 @@ p a[href^='#'].section-link-down::after {
     height: 1em;
     background-repeat: no-repeat;
 }
-section > :not(:first-child) a[href^='#'].section-link-up::after,
-p a[href^='#'].section-link-up::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48cGF0aCBkPSJNMzQuOSAyODkuNWwtMjIuMi0yMi4yYy05LjQtOS40LTkuNC0yNC42IDAtMzMuOUwyMDcgMzljOS40LTkuNCAyNC42LTkuNCAzMy45IDBsMTk0LjMgMTk0LjNjOS40IDkuNCA5LjQgMjQuNiAwIDMzLjlMNDEzIDI4OS40Yy05LjUgOS41LTI1IDkuMy0zNC4zLS40TDI2NCAxNjguNlY0NTZjMCAxMy4zLTEwLjcgMjQtMjQgMjRoLTMyYy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYxNjguNkw2OS4yIDI4OS4xYy05LjMgOS44LTI0LjggMTAtMzQuMy40eiIvPjwvc3ZnPg==');
+section > :not(:first-child) a[href^='#'].identifier-link-up::after,
+p a[href^='#'].identifier-link-up::after {
+    background-image: url('/static/img/icons/arrow-up.svg');
 }
-section > :not(:first-child) a[href^='#'].section-link-down::after,
-p a[href^='#'].section-link-down::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0NDggNTEyIj48cGF0aCBkPSJNNDEzLjEgMjIyLjVsMjIuMiAyMi4yYzkuNCA5LjQgOS40IDI0LjYgMCAzMy45TDI0MSA0NzNjLTkuNCA5LjQtMjQuNiA5LjQtMzMuOSAwTDEyLjcgMjc4LjZjLTkuNC05LjQtOS40LTI0LjYgMC0zMy45bDIyLjItMjIuMmM5LjUtOS41IDI1LTkuMyAzNC4zLjRMMTg0IDM0My40VjU2YzAtMTMuMyAxMC43LTI0IDI0LTI0aDMyYzEzLjMgMCAyNCAxMC43IDI0IDI0djI4Ny40bDExNC44LTEyMC41YzkuMy05LjggMjQuOC0xMCAzNC4zLS40eiIvPjwvc3ZnPg==');
+section > :not(:first-child) a[href^='#'].identifier-link-down::after,
+p a[href^='#'].identifier-link-down::after {
+    background-image: url('/static/img/icons/arrow-up.svg');
+    transform: rotate(180deg);
 }
-
-/* Override Pandoc LineAnchors inside codeblocks - we didn't ask for them, but the links still get generated with '#cb-x-y' self-links (see https://github.com/jgm/pandoc/issues/4386 ) so it'd trigger the section icons; TODO: appears to be fixed as of 2020-09-28 */
-/* code a[href^='#']::after { */
-/*     display: none; */
-/* } */
 
 /*  Internal (within-site) links. Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
  */

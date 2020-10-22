@@ -547,7 +547,7 @@ article > :not(#TOC) a:hover,
 #popupdiv ul ol:last-child,
 #popupdiv ol ol:last-child,
 #popupdiv ol ul:last-child {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 #markdownBody p + ul, #markdownBody p + ol,
 #popupdiv p + ul, #popupdiv p + ol { margin-top: 0.5em; }
@@ -2003,10 +2003,13 @@ code span.wa { color: #bf0303; } /* Warning */
 }
 
 .admonition.note::before {
-    content: "🖛"; /* U+1F59B 🖛 SIDEWAYS BLACK RIGHT POINTING INDEX */
-    font-size: 1.8em;
-    top: -4px;
-    color: #fff;
+    content: url('/static/img/icons/arrow-up.svg');
+    transform: rotate(90deg);
+    filter: invert(100%);
+    height: 1.3em;
+    width: 1.4em;
+    margin: 8px 5.5px;
+    margin-top: 10px;
 }
 .admonition.tip::before {
     content: "\24d8"; /* Circled Latin Small Letter 'ⓘ' (U+24D8) */
