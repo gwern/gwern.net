@@ -1908,21 +1908,21 @@ code span.wa { color: #bf0303; } /* Warning */
 /* This is particularly useful for extremely long ('skinny') lists where items tend to be short, such as in /DNM-archives#overall-coverage or /Replication */
 /* Uses CSS3 columns: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Columns/Using_multi-column_layouts https://www.caniuse.com/#feat=multicolumn */
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
-#markdownBody .columns > ul,
-#markdownBody .columns > ol {
+.columns > ul,
+.columns > ol {
     column-width: 30ch;
     column-gap: 6ch;
     margin-bottom: 2em;
 }
-#markdownBody .columns > ul li,
-#markdownBody .columns > ol li,
-#markdownBody .columns > ul li p,
-#markdownBody .columns > ol li p {
+.columns > ul li,
+.columns > ol li,
+.columns > ul li p,
+.columns > ol li p {
     text-align: left;
     break-inside: avoid;
 }
 
-#markdownBody .columns > ul figure {
+.columns > ul figure {
     margin: 0 0 1.5em 0;
 }
 
