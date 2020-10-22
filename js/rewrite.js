@@ -21,38 +21,38 @@ function doWhenPageLoaded(f) {
 /*=------------------=*/
 
 /*  Expands all tables & figures whose wrapper block is marked with class
-	"full-width" to span the viewport (minus a specified margin on both sides).
-	*/
+    "full-width" to span the viewport (minus a specified margin on both sides).
+    */
 function expandFullWidthBlocks() {
-	let mobileViewportWidth = matchMedia("(max-width: 768px)").matches;
+    let mobileViewportWidth = matchMedia("(max-width: 768px)").matches;
 
-	document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
-		fullWidthImage.closest("figure").classList.add("full-width");
-	});
+    document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
+        fullWidthImage.closest("figure").classList.add("full-width");
+    });
 
-	let fullWidthBlockMargin = "2.5ch";
-	let pageWidth = document.querySelector("html").clientWidth;
+    let fullWidthBlockMargin = "2.5ch";
+    let pageWidth = document.querySelector("html").clientWidth;
 
-	/*  Find all full-width blocks; set their position and size.
-		*/
-	document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
-		fullWidthBlock.removeAttribute("style");
-		if (mobileViewportWidth) return;
-		fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
-		fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
-	});
+    /*  Find all full-width blocks; set their position and size.
+        */
+    document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
+        fullWidthBlock.removeAttribute("style");
+        if (mobileViewportWidth) return;
+        fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+        fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
+    });
 
-	/*  If sidenotes exist, update sidenote positions.
-		*/
-	requestAnimationFrame(() => {
-		if (typeof window.GW == "undefined" ||
-			typeof GW.sidenotes == "undefined" ||
-			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-			GW.sidenotes.sidenoteDivs.length == 0)
-			return;
+    /*  If sidenotes exist, update sidenote positions.
+        */
+    requestAnimationFrame(() => {
+        if (typeof window.GW == "undefined" ||
+            typeof GW.sidenotes == "undefined" ||
+            GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+            GW.sidenotes.sidenoteDivs.length == 0)
+            return;
 
-			updateSidenotePositions();
-	});
+            updateSidenotePositions();
+    });
 }
 
 /*=-----------------=*/
@@ -272,7 +272,7 @@ let t,e;const n=new Set,o=document.createElement("link"),z=o.relList&&o.relList.
 
 /* Directional navigation links on self-links: for each self-link like "see [later](#later-section)", find the linked section, whether it's before or after, and if it is before/previously, annotate the self-link with '↑' and if after/later, '↓'. This helps the reader know if it's a backwards link to a section already read, or an unread section. */
 document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) > a[href^='#']:not(.footnote-ref):not(.footnote-back):not(.sidenote-self-link):not(.sidenote-back):not(.sidenote)").forEach(sectionLink => {
-    header = document.body.querySelector("#markdownBody section[id='" + sectionLink.hash.substring(1) + "']");
+    header = document.body.querySelector("#markdownBody *[id='" + sectionLink.hash.substring(1) + "']");
     if (!header) return;
     sectionLink.classList.add((sectionLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'section-link-down' : 'section-link-up');
 })
