@@ -586,7 +586,7 @@ article > :not(#TOC) a:hover,
 #markdownBody ol ol ol ol ol > li,
 #popupdiv ol ol > li,
 #popupdiv ol ol ol ol ol > li {
-    list-style-type: lower-roman;
+    list-style-type: upper-roman;
 }
 #markdownBody ol ol ol > li,
 #markdownBody ol ol ol ol ol ol > li,

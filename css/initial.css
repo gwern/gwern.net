@@ -128,7 +128,7 @@ body {
 
 @media only screen and (max-width:64.9ch) {
     body {
-        margin: 0 1ch
+        margin: 0 2ch;
     }
 }
 
@@ -294,7 +294,7 @@ header h1 {
 #page-metadata-block > span:not(:last-child)::after {
   content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
   display: inline-block;
-  margin:0 0.4em 0 0.6em;
+  margin:0 0.2em 0 0.6em;
 }
 #page-metadata-block > span:nth-child(1)::after {
   margin-left: 0.875em;

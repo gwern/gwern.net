@@ -796,7 +796,7 @@ a[href*="xkcd.com"]::after {
  position:relative;
  bottom:.3em;
  left:.1em;
- opacity: 1;
+ opacity: 0.85;
  font-weight: bold;
  }
 
