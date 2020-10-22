@@ -83,7 +83,7 @@ a[href$='.ttf' i]::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 0 2px;
-    opacity: 0.45;
+    opacity: 0.49;
 }
 /*  PDFs */
 a[href$='.pdf' i]:hover::after,
@@ -167,7 +167,7 @@ a[href$='.epub' i]::after,
 a[href*='pdfs.semanticscholar.org' i]::after,
 a[href*='citeseerx.ist.psu.edu' i]::after,
 a[href*='eprint.iacr.org' i]::after {
-    opacity: 0.50;
+    opacity: 0.55;
     /* PDFs are linked on every page, so make another exception */
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
@@ -286,7 +286,7 @@ p a[href^='#']::after {
     vertical-align: baseline;
     position: relative;
     bottom: 0.45em;
-    opacity: 0.66;
+    opacity: 0.72;
 }
 /* avoid pilcrows in the footnote forward/backwards links */
 table a[href^='#'].footnote-ref::after,
@@ -336,7 +336,7 @@ body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/do
     vertical-align: baseline;
     position: relative;
     bottom: 0.15em;
-    opacity: 0.75;
+    opacity: 0.80;
 }
 
 /* workaround for 'PNAS' square block: a text indention somewhere is being applied downstream to links as well, breaking the text link icons, so reset them back to their default. */
@@ -355,7 +355,7 @@ a::after { text-indent: 0; }
         vertical-align: baseline;
         position: relative;
         bottom: 0.35em;
-        opacity: 0.61;
+        opacity: 0.67;
         font-size: 65%;
         right: 0.17em;
     }
@@ -462,17 +462,17 @@ a[href*="neweva.blog103.fc2.com"]::after {
     vertical-align: baseline;
     position: relative;
     bottom: 0.2em;
-    opacity: 0.77;
+    opacity: 0.83;
 }
 /* MR: cheaper to abuse Unicode */
 a[href*="marginalrevolution.com"]::after {
     content: "M𝐑";
-    opacity: 0.70; }
+    opacity: 0.74; }
 
 /* likewise */
 a[href*="medium.com"]::after {
     content: "𝐌";
-    opacity: 0.65; }
+    opacity: 0.70; }
 
 /* Facebook: skip enclosing box */
 a[href*="#facebook"]::after,
@@ -483,7 +483,7 @@ a[href*="facebook.com"]::after {
     background-image: none;
     /* a single lower-case letter is too small to easily see if left at defaults */
     font-size: 0.9em;
-    opacity: 0.95; }
+    opacity: 0.96; }
 
 /* Kevin Kelly */
 a[href*="kk.org"]::after {
@@ -499,7 +499,7 @@ a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv sele
 a[href*="#org=google"][href*="arxiv.org"]::after,
 a[href*='docs/.*/*.pdf#google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
-    opacity: 0.70;
+    opacity: 0.76;
     content: "𝐆"; }
 
 /* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
@@ -535,7 +535,7 @@ a[href*="www.nber.org"]:not([href$=".pdf"])::after {
   position: relative;
   bottom: 0.2em;
   left: 0.1em;
-  opacity: 0.85; }
+  opacity: 0.90; }
 
 a[href*="mlp.fandom.com"]::after {
   content: "MLPW";
@@ -668,7 +668,7 @@ a[href*="theinterval.org"]::after {
 a[href*="arxiv.org"]::after,
 a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after {
     content: "\1D6D8";
-    opacity: 0.70;
+    opacity: 0.77;
     bottom: 0.4em;
     background-image: none; }
 
@@ -691,14 +691,14 @@ a[href*="sciencedirect.com"]::after {
 a[href*="andrewgelman.com"]::after,
 a[href*="statmodeling.stat.columbia.edu"]::after {
     content: "▅▇▃";
-    opacity: 0.65;
+    opacity: 0.70;
     font-size: 0.5em;
     right: 0.25em;
     margin: 0 0 0 4px; }
 
 /* Bloomberg: no usable logo, just an inset-B */
 a[href*="bloomberg.com"]::after {
-    opacity: 0.70;
+    opacity: 0.77;
     content: "𝐁"; }
 
 /* BBC: no usable logo */
@@ -732,7 +732,7 @@ a[href*="groups.google.com"]::after,
 a[href*="groups.yahoo.com"]::after,
 a[href*="www.mail-archive.com"]::after {
     content: "✉";
-    opacity: 0.85; }
+    opacity: 0.91; }
 
 /* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
 a[href*="tumblr.com"]::after,
@@ -837,7 +837,7 @@ a[href*="www.cell.com"]::after {
  position:relative;
  bottom:.3em;
  left:.1em;
- opacity: 0.88;
+ opacity: 0.90;
  font-weight: bold;
 }
 
@@ -854,12 +854,12 @@ a[href*="sagepub.com"]::after { /* primary user: journals.sagepub.com */
  position:relative;
  bottom:.3em;
  left:.1em;
- opacity: 0.97;
+ opacity: 0.98;
 }
 
 /* Oxford Academic Journals / OUP */
 a[href*="academic.oup.com"]::after {
-    opacity: 0.85;
+    opacity: 0.90;
     content: "OUP"; }
 
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
@@ -894,7 +894,7 @@ a[href*='medrxiv.org']::after {
     height: 1em;
     width: 0.9em;
     margin: 0 0 0 2px;
-    opacity: 0.66;
+    opacity: 0.70;
 }
 
 #markdownBody a[href*='substack.com']::after,
@@ -915,7 +915,7 @@ a[href*='medrxiv.org']::after {
     height: 1em;
     width: 0.9em;
     margin: 0 0 0 2px;
-    opacity: 0.60;
+    opacity: 0.66;
 }
 
 /* Google Scholar */
@@ -934,7 +934,7 @@ a[href*='scholar.google.com']::after {
     height: 1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.55;
+    opacity: 0.60;
 }
 
 /* PLOS ONE in all their domain permutations... */
@@ -962,7 +962,7 @@ a[href*='www.plos']::after {
     height: 1.1em;
     width: 1em;
     margin: 0 0 1px 3px;
-    opacity: 0.60;
+    opacity: 0.66;
 }
 
 /* Patreon: used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don't like the new one */
@@ -984,7 +984,7 @@ a[href*='www.plos']::after {
     height: 1.1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.61;
+    opacity: 0.67;
 }
 
 /* Upton Tea */
@@ -1003,7 +1003,7 @@ a[href*='uptontea.com']::after {
     height: 1.1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 
 /* Wired */
@@ -1022,7 +1022,7 @@ a[href*='wired.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 
 /* The Washington Post: truncated their blackletter to 'WP' */
@@ -1041,7 +1041,7 @@ a[href*='washingtonpost.com']::after {
     height: 1em;
     width: 1.1em;
     margin: 0 0 0px 2.5px;
-    opacity: 0.66;
+    opacity: 0.71;
 }
 
 /* The New York Times: reduction of full SVG logo to just the 'T' they use as an icon */
@@ -1059,7 +1059,7 @@ a[href*='nytimes.com']::after {
     height: 1em;
     width: 0.8em;
     margin: 0 0 2px 3px;
-    opacity: 0.55;
+    opacity: 0.60;
 }
 
 /* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
@@ -1078,7 +1078,7 @@ a[href*='nlm.nih.gov']::after {
     height: 1em;
     width: 0.8em;
     margin: 0 0 2px 3px;
-    opacity: 0.70;
+    opacity: 0.76;
 }
 
 /* The New Yorker: the Dandy SVG, simplified & rotated more vertically */
@@ -1097,7 +1097,7 @@ a[href*='newyorker.com']::after {
     height: 1.3em;
     width: 0.9em;
     margin: 0 0 0px 2px;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 
 /* El Grauniad */
@@ -1119,7 +1119,7 @@ a[href*='www.guardian.co.uk']::after {
     height: 1.1em;
     width: 1.1em;
     margin: 0 0 0 2px;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 
 /* Reddit */
@@ -1141,7 +1141,7 @@ a[href*='www.guardian.co.uk']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 
 /* PG/HN/YC (shared logo): */
@@ -1163,7 +1163,7 @@ a[href*='ycombinator.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin:0 2px 0 2px;
-    opacity: 0.40;
+    opacity: 0.44;
 }
 
 /* MIRI/intelligence.org */
@@ -1182,7 +1182,7 @@ a[href*='intelligence.org']::after {
     height: 1em;
     width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.60;
+    opacity: 0.66;
 }
 
 /* DeepMind; match articles or anchors about DM too */
@@ -1205,7 +1205,7 @@ a[href*='docs/.*/*.pdf#deepmind']::after {
     width: 1.1em;
     font-size:0.8em;
     margin: 0 0 1px 4px;
-    opacity: 0.70;
+    opacity: 0.76;
 }
 
 /* OpenAI; match articles or anchors about OA too */
@@ -1227,7 +1227,7 @@ a[href$='.pdf#openai']::after {
     height: 1.3em;
     width: 1.3em;
     margin: 0 0 0px 3px;
-    opacity: 0.66;
+    opacity: 0.70;
 }
 
 /* Distill ML journal */
@@ -1241,7 +1241,7 @@ a[href*="distill.pub"]::after {
     height: 0.825em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.55;
+    opacity: 0.60;
 }
 a[href*="distill.pub"]:hover::after {
     opacity: 0.3;
@@ -1263,7 +1263,7 @@ a[href*='twitter.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 4px;
-    opacity: 0.55;
+    opacity: 0.60;
 }
 
 /* Erowid */
@@ -1282,7 +1282,7 @@ a[href*='erowid.org']::after {
     height: 1.25em;
     width: 1.2em;
     margin: 0 0 0 1px;
-    opacity: 0.77;
+    opacity: 0.80;
 }
 
 /* Wikipedia */
@@ -1337,7 +1337,7 @@ a[href*='bandcamp.com'  ]::after {
     height: 1em;
     width: 1em;
     margin: 0 0 0 3px;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 
 /* The *Exchange/*Overflow family of websites: */
@@ -1353,7 +1353,7 @@ a[href*="stackexchange.com"]::after {
     height: 0.85em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 a[href*="overflow.net"     ]:hover::after,
 a[href*="overflow.com"     ]:hover::after,
@@ -1374,7 +1374,7 @@ a[href*="amzn.com"  ]::after {
     height: 0.8em;
     display: inline-block;
     vertical-align: baseline;
-    opacity: 0.60;
+    opacity: 0.66;
 }
 a[href*="amazon.com"]:hover::after,
 a[href*="amazon.co."]:hover::after,
@@ -1398,7 +1398,7 @@ a[href*='github.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.60;
+    opacity: 0.66;
 }
 
 /* Dropbox: old file-host, deprecated since they've started killing inactive accounts */
@@ -1420,7 +1420,7 @@ a[href*='dropboxusercontent.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.50;
+    opacity: 0.55;
 }
 
 /* MegaUpload/Mega: filesharing (used for big files) */
@@ -1439,7 +1439,7 @@ a[href*='mega.nz']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.40;
+    opacity: 0.44;
 }
 
 a[href*='webcitation.org'   ]::after,
@@ -1472,5 +1472,5 @@ a[href*='waybackmachine.org']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 3px;
-    opacity: 0.66;
+    opacity: 0.60;
 }

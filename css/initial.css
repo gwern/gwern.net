@@ -724,12 +724,11 @@ h1 {
     letter-spacing: -0.75px
 }
 
-
 /*********/
 /* LINKS */
 /*********/
 a {
-    color: #343434; /* off-black */
+    color: #272727; /* off-black */
     text-decoration: none
 }
 
@@ -743,7 +742,7 @@ a {
 
 /*  Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
     The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
-    is that when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
+    is the 'skip-ink': when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
     by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined.
     Unfortunately, we don't want to add underlines to the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
     I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead.
