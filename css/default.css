@@ -539,6 +539,21 @@ article > :not(#TOC) a:hover,
     }
 }
 
+#markdownBody ul ul:last-child,
+#markdownBody ul ol:last-child,
+#markdownBody ol ol:last-child,
+#markdownBody ol ul:last-child,
+#popupdiv ul ul:last-child,
+#popupdiv ul ol:last-child,
+#popupdiv ol ol:last-child,
+#popupdiv ol ul:last-child {
+	margin-bottom: 0;
+}
+#markdownBody p + ul, #markdownBody p + ol,
+#popupdiv p + ul, #popupdiv p + ol { margin-top: 0.5em; }
+blockquote { margin-top: 0.2em; margin-bottom: 0em; }
+p + blockquote { margin-top: 0.5em; }
+
 /*=-----------------------=*/
 /*= Bulleted list markers =*/
 /*=-----------------------=*/
