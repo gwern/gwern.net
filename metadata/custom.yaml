@@ -408,9 +408,7 @@
     compiler, however, they can also be done dynamically. See <a href="https://share.obormot.net/misc/gwern/wikipedia-popups.js"><code>wikipedia-popups.js</code></a>
     for an example of a library which does Wikipedia-only dynamically on page loads.)</p><p>For
     an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined
-    links, see <a href="/LinkMetadata.hs"><code>LinkMetadata.hs</code></a>;
-    for a live demonstration, see the links in <a href="/newsletter/2019/07">the
-    July 2019 newsletter</a>.</p>'
+    links, see <a href="/LinkMetadata.hs"><code>LinkMetadata.hs</code></a>.</p>'
 - - https://share.obormot.net/misc/gwern/wikipedia-popups.js
   - '<code>wikipedia-popups.js</code>'
   - Said Achmiz
@@ -14127,7 +14125,7 @@
   - 2020-01-06
   - ''
   - ! '<p>Your judgment of the new Metropolitan Opera production of Alban Berg’s “Wozzeck,” which runs through January 22<sup>nd</sup>, may depend on how you classify it. The director is the South African artist William Kentridge, who is steeped in the Central European Expressionist milieu from which Berg’s ferocious anti-military opera emerged. If the staging is considered as an entry in Kentridge’s multimedia œuvre, it delivers a potent distillation of signature motifs: brusque drawings and prints of wounded faces and ravaged landscapes; stop-action animation of spasmodically jerking figures; photographic collages and cinematic montages. If, however, you measure the work against the emotional breadth of Berg’s opera, you may find it wanting. On opening night, I admired the virtuosity of the director’s technique but wished that he had paid more heed to the desperate inner lives of the characters.</p><p>…Although the Great War looms over every moment of the staging, it never becomes clear whether we are experiencing Wozzeck’s nightmarish premonitions of the conflict or his shell-shocked recollections of it. Characters often wear gas masks, hobble on crutches, and have bandages on their heads. Maps of troop movements in Flanders are projected onto a large screen behind the stage. The sets, designed by Sabine Theunissen, deploy sculptural accumulations of junk to render the locales where Wozzeck experiences successive humiliations: a captain’s quarters, a doctor’s laboratory, a tavern garden, a soldiers’ barracks. Greta Goiris, the costume designer, applies fantastical touches to drab uniforms and workaday wear. A blood-red gown for Marie stands out against a mostly black-and-white color scheme.</p><p>…Kentridge is at his best when crowds fill the stage, matching the teeming density of his visual aesthetic. His most bravura gesture comes in Act III, as Wozzeck staggers away from the pond where he has murdered Marie and into a bar full of drunkenly dancing figures. Berg prepares the change of scene with two enormous orchestral crescendos on the single note B, the second louder than the first. Kentridge made the inspired decision to have dancers enter during the second crescendo, both on the stage and on the screen at the back. They appear to be emanating from the concentrated beam of sound. Much less successful is Kentridge’s illustration of the overpowering final interlude, which follows Wozzeck’s death, by drowning. The triple-forte climax of the passage was marked by a groaningly obvious sequence of explosions on the screen.</p><p>The unremitting focus on war iconography blotted out the opera’s main narrative thrust: the deterioration of Wozzeck’s mind in the grip of military routine. Crucially, in Büchner’s scenario, the soldier is not at war but serving in a town regiment; violence explodes from the machinery of the system. The baritone Peter Mattei, who took the lead role, is one of the finest singing actors in opera, but in this staging he had little opportunity to trace the character’s arc toward madness; too often he seemed like an extra in a larger tableau. Elza van den Heever, as Marie, was similarly sidelined by the pervasive imagery of masculine aggression. Psychology has never been Kentridge’s strong suit as a director—it was also a blind spot in his previous Met productions, of Shostakovich’s “The Nose” and of Berg’s “Lulu”—but here the characterizations are weaker than ever. It’s instructive to compare this brilliant but somehow hollow affair with “The Head and the Load,” Kentridge’s monumental theatrical tribute to African soldiers who served in the Great War.</p>'
-- - /newsletter/2019/02#carmen
+- - /Movie-reviews#carmen
   - 'Review of <em>Carmen</em> (opera)'
   - Gwern Branwen
   - 2019-03-02
@@ -14139,37 +14137,37 @@
   - '2019-11-06'
   - ''
   - ! '<p><em>Akhnaten</em>, Philip Glass’ “Egyptian opera,” opening at the Metropolitan Opera this weekend, premiered in 1984 and since then has been produced in many different stagings, primarily in European cities, where the composer has a very large and enthusiastic audience. Akhnaten’s American production story has been much more modest.</p><p>…Someone at the party had told Glass that I was studying Egyptian language and culture. He sought me out, introduced himself and asked if I knew anything about Akhnaten, the “heretic Pharaoh.” The party had put me in a jocular mood and my immediate response was “know about him? I just saw him!” I explained that I had only recently returned from Cairo, where the massive statue of Akhnaten in the Cairo Museum was the Egyptian artifact that had made the deepest impression on me. (Later I realized that in my response I was channeling a skit in <em>2000 Year Old Man</em> in which Carl Reiner asks Mel Brooks if he had known Joan of Arc. “What do you mean knew her,” said Brooks, “I dated her!”) Our initial conversation about Egypt and Akhnaten lasted for more than an hour.</p><p>In his remarkably creative way, Glass had been reading widely about Egypt and Akhnaten. He had studied James Henry Breasted’s authoritative <em>History of Egypt</em> and he read Freud’s speculations about Akhnaten in his last book, <em>Moses and Monotheism</em>. We agreed to meet the following week to continue our conversation. I told Glass that for our next meeting I would bring pictures of Akhnaten, his wife Nefertiti, and of his artistic creations. For Akhnaten was an artist and poet, as well as a Pharaoh—or at least that was the claim of some experts. Our subsequent meetings at which I was introduced to Glass’ theater and music collaborators, Robert Israel and Richard Riddell, went very well. They had worked with Glass on <em>Satyagraha</em> and were collaborating with him on the creation of <em>Akhnaten</em>. Asked by Glass if I would be able to serve as a researcher on his Egyptian project, I said yes.</p><p>…His formulation was: “Einstein as the man of science, Gandhi as the man of politics, Akhnaten as the man of religion.”</p><p>In his 1987 book, <em>Music by Philip Glass</em>, the composer explained his fascination with the heretic king: “On becoming Pharaoh, he declared a new religion based upon Aten, associated with the sun, but not actually the sun itself, a very important point theologically. His new god was supreme and alone, making Akhnaten the first declared monotheist in history. … Finally, by not completely identifying his god with the physical sun but emphasizing his independent nature, Akhnaten’s god is the first truly abstract god head we know.” Glass knew that not all historians of religion and culture agreed with this description. But for Glass, the main point was that “Akhnaten had changed his (and our) world through the force of his ideas and not through the force of arms.”</p>'
-- - /newsletter/2019/10#manon
+- - /Movie-reviews#manon
   - "Opera review: <em>Manon</em>"
   - Gwern Branwen
   - 2019-10-27
   - ''
   - ! '<p>Review of <em>Manon</em>, a French opera about a beautiful countryside girl whose craving for the ‘good life’ leads her into the Parisian <em>demimondaine</em> as a courtesan.</p><p>Exemplifying Girardian <em>mimesis</em>, Manon wants what everyone else wants, and wants what she can’t have, like her spurned lover only once he has taken religious vows. She plays off suitors, who compete in negative-sum games for her favors, until eventually she goes too far and is imprisoned, destroying her health; cast down, she realizes that ‘living only for pleasure’ was not the ideal life.</p><p>This scenario seems to exemplify the extent to which polygynous competition can result in negative-sum games, making almost everyone worse off except a few winners (and those possibly only temporarily).</p>'
-- - /newsletter/2019/03#die-walkure
+- - /Movie-reviews#die-walkure
   - 'Review of <em>The Ring: Die Walküre</em> (opera)'
   - Gwern Branwen
   - 2019-04-01
   - ''
   - ! 'Second opera review, after <em>Carmen</em>. Oddly, this is #2 of The Ring cycle but neither #1 nor #3 were broadcast. Not as enjoyable, but impressive in its own right. It works better at providing a mythic sense than contemporary efforts like the Marvel Cinematic Universe, at least.'
-- - /newsletter/2019/11#madama-butterfly
+- - /Movie-reviews#madama-butterfly
   - 'Review of <em>Madama Butterfly</em> (opera)'
   - Gwern Branwen
   - 2019-11-11
   - ''
   - ! 'One of the most popular operas, relies heavily on beautiful visuals and interesting gimmicks like puppeteers, at the cost of establishing plausible psychology for either protagonist or justifying the tragedy. Beautifully staged, this is true "poster art".'
-- - /newsletter/2019/12#the-magic-flute
+- - /Movie-reviews#the-magic-flute
   - 'Review of <em>The Magic Flute</em> (opera)'
   - Gwern Branwen
   - 2019-12-29
   - ''
   - ! 'Rebroadcast of abridged 2006 performance (which demonstrates how much Met HD broadcasts have improved technically over the past decade). Gorgeous nonsense. With excellent music by Mozart, lyrics unusually in English, and eccentrically colorful costumes/sets, but mostly unconvincing characters (not helped by abridgement), and a plot stuffed full of Masonic symbols but lacking any sense.'
-- - /newsletter/2019/10#turandot
+- - /Movie-reviews#turandot
   - 'Review of <em>Turandot</em> (opera)'
   - Gwern Branwen
   - 2019-10-14
   - ''
   - ! 'Fairy tale opera: a despotic Oriental princess chops off the heads of suitors if they cannot answer her riddle. A random prince happens to do so, sets her a counter-riddle, she fails, he tells her the answer, she falls in love with him for no reason, The End. Yeah, pretty dumb. Some amazing costumes and sets, though.'
-- - /newsletter/2019/05#dialogues-des-carmelites
+- - /Movie-reviews#dialogues-des-carmelites
   - 'Review of <em>Dialogues des Carmélites</em> (opera)'
   - Gwern Branwen
   - 2019-05-20
