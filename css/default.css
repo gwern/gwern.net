@@ -423,7 +423,7 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /*********************/
 hr {
   border: 0;
-  margin: 1.5em 0 1.5em 0; }
+  margin: 1.1em 0 1.1em 0; }
 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     text-align: center;
@@ -552,7 +552,8 @@ article > :not(#TOC) a:hover,
 #markdownBody p + ul, #markdownBody p + ol,
 #popupdiv p + ul, #popupdiv p + ol { margin-top: 0.5em; }
 blockquote { margin-top: 0.2em; margin-bottom: 0em; }
-p + blockquote { margin-top: 0.5em; }
+p + blockquote { margin-top: 0.6em; }
+blockquote + p { margin-top: 0.6em; }
 
 /*=-----------------------=*/
 /*= Bulleted list markers =*/
@@ -2006,10 +2007,10 @@ code span.wa { color: #bf0303; } /* Warning */
     content: url('/static/img/icons/arrow-up.svg');
     transform: rotate(90deg);
     filter: invert(100%);
-    height: 1.3em;
-    width: 1.4em;
-    margin: 8px 5.5px;
-    margin-top: 10px;
+    height: 1.1em;
+    width: 1.3em;
+    margin: 0px 7px;
+    margin-top: 11px;
 }
 .admonition.tip::before {
     content: "\24d8"; /* Circled Latin Small Letter 'ⓘ' (U+24D8) */
@@ -2022,6 +2023,8 @@ code span.wa { color: #bf0303; } /* Warning */
     content: "\26A0"; /* Warning Sign '⚠' triangle (U+26A0) */
     font-size: 2em;
     color: #fff;
+    margin-top: -1px;
+
 }
 .admonition.error::before {
     content:  "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
