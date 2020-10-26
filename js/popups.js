@@ -443,8 +443,6 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     position: absolute;
     opacity: 1.0;
     transition: none;
-    touch-action: none;
-    user-select: none;
 }
 #popupdiv.fading {
     opacity: 0.0;
@@ -458,8 +456,6 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     line-height: 1.45;
     overflow: auto;
     overscroll-behavior: none;
-    touch-action: none;
-    user-select: none;
     min-width: ${Extracts.minPopupWidth}px;
     max-width: ${Extracts.maxPopupWidth}px;
     max-height: calc(100vh - 2 * ${Extracts.popupBorderWidth}px - 26px);
