@@ -549,8 +549,8 @@ article > :not(#TOC) a:hover,
 #popupdiv ol ul:last-child {
     margin-bottom: 0;
 }
-#markdownBody p + ul, #markdownBody p + ol,
-#popupdiv p + ul, #popupdiv p + ol { margin-top: 0.5em; }
+#markdownBody p + ul, #markdownBody p + ol { margin-top: 0.5em; }
+#popupdiv p + ul, #popupdiv p + ol { margin-top: 0.2em; margin-bottom: 0.2em; }
 blockquote { margin-top: 0.2em; margin-bottom: 0em; }
 p + blockquote { margin-top: 0.6em; }
 blockquote + p { margin-top: 0.6em; }
