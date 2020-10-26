@@ -167,7 +167,7 @@ a[href$='.epub' i]::after,
 a[href*='pdfs.semanticscholar.org' i]::after,
 a[href*='citeseerx.ist.psu.edu' i]::after,
 a[href*='eprint.iacr.org' i]::after {
-    opacity: 0.55;
+    opacity: 0.50;
     /* PDFs are linked on every page, so make another exception */
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
 }
@@ -496,7 +496,7 @@ a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv sele
 a[href*="#org=google"][href*="arxiv.org"]::after,
 a[href*='docs/.*/*.pdf#google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
-    opacity: 0.76;
+    opacity: 0.73;
     content: "𝐆"; }
 
 /* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
@@ -891,7 +891,7 @@ a[href*='medrxiv.org']::after {
     height: 1em;
     width: 0.9em;
     margin: 0 0 0 2px;
-    opacity: 0.70;
+    opacity: 0.65;
 }
 
 #markdownBody a[href*='substack.com']::after,
@@ -1260,7 +1260,7 @@ a[href*='twitter.com']::after {
     height: 0.75em;
     width: 0.75em;
     margin: 0 0 2px 4px;
-    opacity: 0.60;
+    opacity: 0.50;
 }
 
 /* Erowid */
