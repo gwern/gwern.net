@@ -1245,13 +1245,16 @@ a[href*="distill.pub"]:hover::after {
 }
 
 /* Twitter */
-a[href*='twitter.com']::after {
+a[href*='twitter.com']::after,
+a[href*='nitter.net']::after {
     background-image: url("/static/img/icons/twitter.svg");
 }
-a[href*='twitter.com']:hover::after {
+a[href*='twitter.com']:hover::after,
+a[href*='nitter.net']:hover::after {
     opacity: 0.3;
 }
-a[href*='twitter.com']::after {
+a[href*='twitter.com']::after,
+a[href*='nitter.net']::after {
     content: "";
     display: inline-block;
     position: static;
