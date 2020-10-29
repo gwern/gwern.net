@@ -1323,21 +1323,6 @@ a.footnote-ref {
 article > :not(#TOC) .sidenote > .sidenote-self-link {
     background-image: none;
 }
-/* Double-line the sidenote only when it/anchor are interacted with: */
-.sidenote.highlighted > .sidenote-self-link,
-.sidenote:hover > .sidenote-self-link,
-.sidenote:target > .sidenote-self-link,
-.sidenote.targeted > .sidenote-self-link {
-    outline: 3px double #aaa;
-}
-/* Double-line the footnote return-link for visual consistency: */
-.sidenote.highlighted a.footnote-back,
-.sidenote:hover a.footnote-back,
-.sidenote:target a.footnote-back,
-.sidenote.targeted a.footnote-back {
-    border: none;
-    outline: 3px double #aaa;
-}
 #sidenote-column-left .sidenote > .sidenote-self-link {
     right: 3px;
 }
