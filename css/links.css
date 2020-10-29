@@ -371,6 +371,7 @@ a[href*="andrewgelman.com"]::after,
 a[href*="animenewsnetwork.com"]::after,
 a[href*="arstechnica.com"]::after,
 a[href*="arxiv.org"]::after,
+a[href*="psyarxiv.com"]::after,
 a[href*="bbc.com"]::after,
 a[href*="bbc.co.uk"]::after,
 a[href*="www.cdc.gov"]::after,
@@ -494,10 +495,11 @@ a[href*="#google"]::after,
 a[href*="#org=google"]::after,
 a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
 a[href*="#org=google"][href*="arxiv.org"]::after,
-a[href*='docs/.*/*.pdf#google']::after,
+a[href*='docs/.*/*.pdf#.*google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
     opacity: 0.73;
-    content: "𝐆"; }
+    content: "𝐆";
+    background-image: none; }
 
 /* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
 a[href*="wiley.com"]::after { /* primary user: onlinelibrary.wiley.com */
@@ -664,7 +666,13 @@ a[href*="theinterval.org"]::after {
 /* ArXiv: Chi (their logo is too bizarre & off-putting to use, in addition to not working in monochrome) */
 a[href*="arxiv.org"]::after,
 a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after {
-    content: "\1D6D8";
+    content: "\1D6D8"; /* Mathematical Bold Small Chi '𝛘' (U+1D6D8); bold makes it show up better when tiny */
+    opacity: 0.77;
+    bottom: 0.4em;
+    background-image: none; }
+
+a[href*="psyarxiv.com"]::after {
+    content: "ψ"; /* GREEK SMALL LETTER PSI 'ψ' (0x03C8; codepoint 968, #o1710, #x3c8) */
     opacity: 0.77;
     bottom: 0.4em;
     background-image: none; }
@@ -920,7 +928,7 @@ a[href*='scholar.google.com']::after {
     background-image: url("/static/img/icons/google-scholar.svg");
 }
 a[href*='scholar.google.com']:hover::after {
-    opacity: 0.3;
+    opacity: 0.4;
 }
 a[href*='scholar.google.com']::after {
     content: "";
