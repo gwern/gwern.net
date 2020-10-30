@@ -98,7 +98,7 @@ body {
     }
     header,
     article {
-        margin-left: 15ch
+        margin-left: 15.5ch
     }
     @media only screen and (max-width:120ch) {
         header,
