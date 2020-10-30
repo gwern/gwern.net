@@ -297,7 +297,7 @@ section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
         overflow: hidden;
-        padding: 0 0 5px 0.75rem;
+        padding: 0 0 7px 0.75rem;
         box-shadow:
             0 -5px 0 0 #fff inset,
             0 -6px 0 0 #888 inset;
@@ -317,7 +317,7 @@ h1 em:last-child {
 h2 {
     text-transform: uppercase;
     font-size: 1.25em;
-    padding: 0 0.5em 0 0;
+    padding: 0 0.5em 2px 0;
     line-height: 1.25;
 }
 h2::after {
