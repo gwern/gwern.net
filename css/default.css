@@ -2091,7 +2091,7 @@ body.index article::after,
 body.tags article::after{
     content: "";
     background-color: #fff;
-    background-image: url('/images/logo/logo-smooth.svg');
+    background-image: url('/static/img/logo/logo-smooth.svg');
     display: block;
     position: absolute;
     bottom: 0.75em;

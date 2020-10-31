@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-10-31 14:11:12 gwern"
+When: Time-stamp: "2020-10-31 15:44:30 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -198,7 +198,7 @@ postCtx tags =
     constField "confidence" "log" <>
     constField "importance" "0" <>
     constField "cssExtension" "drop-caps-de-zs" <>
-    constField "thumbnail" "/images/logo-whitebg-large-border.png" <>
+    constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
     escapedTitleField "safeURL"
   where escapedTitleField t = (mapContext (map toLower . filter isLetter . takeBaseName) . pathField) t
         descField d = field d $ \item -> do
