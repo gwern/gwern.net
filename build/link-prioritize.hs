@@ -2,12 +2,12 @@
 {- LinkPrioritize.hs: simple CLI utility for taking a list of URLs, comparing to automatic & manual link annotation databases, and ranking poorly-annotated links by frequency to help prioritize creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2019-11-24 17:57:13 gwern"
+When:  Time-stamp: "2020-10-31 15:28:55 gwern"
 License: CC-0
 Dependencies: none
 
 For writing manual link annotations, a simple way to go is count un-annotated links by frequency.
-Links can be extracted from Markdown documents with `link-extractor.hs` but counting is harder: not appearing in the manual annotation database `/static/metadata/custom.yaml` doesn't mean a link needs to be annotated, because it could be one of the good auto-generated links in `/static/metadata/auto.hs` so we can't simply `grep $URL custom.yaml` for each URL & `sort --unique | sort --numeric-sort`; the list of good auto-generated links also may change over time, because a query failed or new domains become supported.
+Links can be extracted from Markdown documents with `link-extractor.hs` but counting is harder: not appearing in the manual annotation database `/metadata/custom.yaml` doesn't mean a link needs to be annotated, because it could be one of the good auto-generated links in `/metadata/auto.hs` so we can't simply `grep $URL custom.yaml` for each URL & `sort --unique | sort --numeric-sort`; the list of good auto-generated links also may change over time, because a query failed or new domains become supported.
 So instead we take a more heavyweight approach of explicitly parsing both and checking for no or short entries.
 
 Simple use:

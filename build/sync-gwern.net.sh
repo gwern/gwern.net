@@ -19,7 +19,7 @@ if [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && 
 then
     set -e
     cd ~/wiki/ && (git status &)
-    cd ./static/ && (git status &)
+    cd ./static/ && (git status; git pull; git push &)
     cd ./build/
     # Cleanup pre:
     rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
@@ -38,7 +38,7 @@ then
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | fgrep --invert-match -e 'docs/www/' -e 'static/metadata/' | sort | parallel urlencode -m |
+     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | fgrep --invert-match -e 'docs/www/' -e 'metadata/' | sort | parallel urlencode -m |
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
      find -L _site/ -not -name "*.page" -type f | fgrep --invert-match -e 'static/' -e 'docs/' -e 'images/' -e 'Fulltext' | sort | parallel urlencode -m |
@@ -97,10 +97,10 @@ then
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=5000 "fgrep --with-filename -- '————–'"; }
     wrap λ "Broken table"
 
-    λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -- ./static/metadata/custom.yaml; }
+    λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -- ./metadata/custom.yaml; }
     wrap λ "Check possible typo in custom.yaml"
 
-    λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./static/metadata/custom.yaml; }
+    λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/custom.yaml; }
     wrap λ "Check image hotlinking & non-absolute relative image paths in custom.yaml"
 
     λ() {
@@ -216,7 +216,7 @@ then
           cm "text/x-patch; charset=utf-8" 'https://www.gwern.net/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
           cm "text/x-r; charset=utf-8" 'https://www.gwern.net/linkAbstract.R'
           cm "text/x-shellscript; charset=utf-8" 'https://www.gwern.net/linkArchive.sh'
-          cm "text/yaml; charset=utf-8" 'https://www.gwern.net/static/metadata/custom.yaml'
+          cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/custom.yaml'
           cm "video/mp4" 'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "video/x-msvideo" 'https://www.gwern.net/docs/dnb/2009-argumzio-pentuple-nback.avi'; }
@@ -243,7 +243,7 @@ then
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
-    λ(){ fgrep -e '404 Not Found Error: No Page' -e ' may refer to:' ./static/metadata/auto.yaml; }
+    λ(){ fgrep -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
     wrap λ "Broken links or links to Wikipedia disambiguation pages in auto.yaml."
 
     λ(){ find . -type f -name "*--*"; find . -type f -name "*~*"; }
@@ -253,13 +253,13 @@ then
                          parallel --max-args=400 "fgrep --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS;
-         do grep --before-context=3 "$BROKEN_HTML" static/metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
+         do grep --before-context=3 "$BROKEN_HTML" metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
          done; }
     wrap λ "Archives of broken links"
 
     λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" | sort | parallel file | grep -v 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
-             echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" static/metadata/archive.hs;
+             echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" metadata/archive.hs;
          done; }
     wrap λ "Corrupted or broken PDFs"
 

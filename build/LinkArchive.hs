@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-10-26 11:18:56 gwern"
+When:  Time-stamp: "2020-10-31 15:29:32 gwern"
 License: CC-0
 -}
 
@@ -77,7 +77,7 @@ localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescri
 localizeLink _ x = return x
 
 readArchiveMetadata :: IO ArchiveMetadata
-readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "static/metadata/archive.hs") :: IO ArchiveMetadataList
+readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
                          -- check for failed archives:
                          _ <- mapM (\(p,ami) -> case ami of
                                   Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
@@ -115,7 +115,7 @@ insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
                             let adb' = M.insert url a adb
                             temp <- writeSystemTempFile "archive-metadata-auto.db.hs" (ppShow $ M.toAscList adb')
-                            renameFile temp "static/metadata/archive.hs"
+                            renameFile temp "metadata/archive.hs"
 
 currentDay :: IO Integer
 currentDay = fmap (toModifiedJulianDay . utctDay) $ Data.Time.Clock.getCurrentTime

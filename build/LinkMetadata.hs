@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-10-29 17:09:36 gwern"
+When:  Time-stamp: "2020-10-31 15:29:05 gwern"
 License: CC-0
 -}
 
@@ -47,7 +47,7 @@ type Path = String
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             custom <- readYaml  "static/metadata/custom.yaml"
+             custom <- readYaml  "metadata/custom.yaml"
 
              -- Quality checks:
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be
@@ -61,7 +61,7 @@ readLinkMetadata = do
              when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
              -- auto-generated cached definitions; can be deleted if gone stale
-             auto <- readYaml "static/metadata/auto.yaml"
+             auto <- readYaml "metadata/auto.yaml"
 
              -- merge the hand-written & auto-generated link annotations, and return:
              return $ M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
@@ -78,11 +78,11 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 
 -- append a new automatic annotation if its Path is not already in the auto database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l (t,a,d,di,abs) = do auto <- readYaml "static/metadata/auto.yaml"
+writeLinkMetadata l (t,a,d,di,abs) = do auto <- readYaml "metadata/auto.yaml"
                                         when (not (l `elem` (map fst auto))) $ do
                                           let newYaml = Y.encode [(l,t,a,d,di,abs)]
                                           print newYaml
-                                          B.appendFile "static/metadata/auto.yaml" newYaml
+                                          B.appendFile "metadata/auto.yaml" newYaml
 
 annotateLink :: Metadata -> Inline -> IO Inline
 -- Relevant Pandoc types: Link = Link Attr [Inline] Target
