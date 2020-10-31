@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-10-31 15:44:30 gwern"
+When: Time-stamp: "2020-10-31 16:01:51 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -105,7 +105,7 @@ main = hakyll $ do
                  compile $ tagPage tags title pattern
 
              -- handle the simple static non-.page files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
-             let static = route idRoute >> compile symlinkFileCompiler -- NOTE: custom optimization; see https://github.com/jaspervdj/hakyll/issues/786
+             let static = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
              version "static" $ mapM_ (`match` static) [
                                      "docs/**",
                                      "images/**",
@@ -116,6 +116,9 @@ main = hakyll $ do
                                      "**.page",
                                      "**.css",
                                      "**.R",
+                                     "**.svg",
+                                     "**.png",
+                                     "**.jpg",
                                      "static/**.conf",
                                      "static/**.css",
                                      "static/**.gif",
