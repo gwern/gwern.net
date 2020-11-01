@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-10-27 22:40:40 gwern"
+# When:  Time-stamp: "2020-11-01 12:04:47 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -186,7 +186,7 @@ do
         wrap λ "image hotlinking deprecated; impolite, and slows page loads & site compiles"
 
         # Note links which need to be annotated (probably most of them...)
-        λ() { link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' | link-prioritize.hs; }
+        λ() { link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' | runhaskell -istatic/build/ static/build/link-prioritize.hs; }
         wrap λ "Link annotations required"
 
         # we use link annotations on URLs to warn readers about PDFs; if a URL ends in 'pdf', it gets a PDF icon. What about URLs which redirect to or serve PDF?

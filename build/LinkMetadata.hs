@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-10-31 15:29:05 gwern"
+When:  Time-stamp: "2020-11-01 11:55:12 gwern"
 License: CC-0
 -}
 
@@ -47,7 +47,7 @@ type Path = String
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             custom <- readYaml  "metadata/custom.yaml"
+             custom <- readYaml "metadata/custom.yaml"
 
              -- Quality checks:
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be
