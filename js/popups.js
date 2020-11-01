@@ -67,7 +67,7 @@ Extracts = {
                    target.href.includes("nature.com") ||
                    target.href.includes("sciencemag.org") ) {
             doi = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' in Google Scholar">cites</a>`;
-        } else {
+        } else if (!target.href.startsWith("https://en.wikipedia.org")) {
             doi = `; ` +
                   `<a href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" ` +
                   `target='_new' ` +
