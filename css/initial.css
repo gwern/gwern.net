@@ -799,6 +799,15 @@ article > :not(#TOC) a:hover {
     color: #fff;
 }
 
+/*	Prevent code block background color and border from obscuring link
+	underlining, for inline <code> elements in links.
+	*/
+a code {
+	z-index: -1;
+	position: relative;
+	border-bottom-width: 0;
+}
+
 /**************/
 /* PARAGRAPHS */
 /**************/
