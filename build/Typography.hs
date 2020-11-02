@@ -116,5 +116,7 @@ hyphenate x@Table{}     = x
 hyphenate x = walk hyphenateInline x
 hyphenateInline :: Inline -> Inline
 hyphenateInline x@(Str s) = if T.any (=='\173') s then x else -- U+00AD SOFT HYPHEN, HTML: &#173; &shy;
-                              Str $ T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=3}) $ words $ T.unpack s
+                              Str $ T.replace "-\173" "-" $ -- odd edge-case exposed on Safari: because hyphenator breaks on hyphens (why?), interspersing the soft hyphen results in *two* hyphens being displayed should the line break there! since the regular hyphen already ensures a linbreak opportunity
+                                                            -- the soft hyphen is unnecessary, so just delete it
+                              T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=3}) $ words $ T.unpack s
 hyphenateInline x = x
