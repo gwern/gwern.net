@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-01 11:55:12 gwern"
+When:  Time-stamp: "2020-11-04 12:05:03 gwern"
 License: CC-0
 -}
 
@@ -78,11 +78,11 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 
 -- append a new automatic annotation if its Path is not already in the auto database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l (t,a,d,di,abs) = do auto <- readYaml "metadata/auto.yaml"
-                                        when (not (l `elem` (map fst auto))) $ do
-                                          let newYaml = Y.encode [(l,t,a,d,di,abs)]
-                                          print newYaml
-                                          B.appendFile "metadata/auto.yaml" newYaml
+writeLinkMetadata l i@(t,a,d,di,abs) = do auto <- readYaml "metadata/auto.yaml"
+                                          when (not (l `elem` (map fst auto))) $ do
+                                            print i
+                                            let newYaml = Y.encode [(l,t,a,d,di,abs)]
+                                            B.appendFile "metadata/auto.yaml" newYaml
 
 annotateLink :: Metadata -> Inline -> IO Inline
 -- Relevant Pandoc types: Link = Link Attr [Inline] Target
@@ -186,7 +186,7 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
                  | otherwise = return Nothing
 
 -- handles both PM & PLOS right now:
-pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["linkAbstract.R", l]
+pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
                 ExitFailure err -> (print $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
                 _ -> do let (title:author:date:doi:abstract:_) = lines $ U.toString mb
@@ -377,25 +377,31 @@ cleanAbstractsHTML t = trim $
     , ("<h3>Conclusions & Relevance</h3>\n<p>", "<p><strong>Conclusions and Relevance</strong>: ")
     , ("<h3>Trial Registration</h3>\n<p>", "<p><strong>Trial Registration</strong>: ")
     , ("[Keywords: ", "<strong>[Keywords</strong>: ")
-    , ("(r=", "(<em>r</em> = ")
-    , ("(R=", "(<em>r</em> = ")
-    , ("(R = ", "(<em>r</em> = ")
-    , ("(r = ", "(<em>r</em> = ")
-    , ("(N = ", "(<em>N</em> = ")
-    , ("(n = ", "(<em>n</em> = ")
-    , ("(n=", "(<em>n</em> = ")
-    , ("(N=", "(<em>N</em> = ")
-    , (" N=", " <em>N</em> = ")
-    , (" n=", " <em>n</em> = ")
-    , (" P=", " <em>p</em> = ")
-    , (" P = ", " <em>p</em> = ")
-    , (" p=", " <em>p</em> = ")
-    , (" P<", " <em>p</em> < ")
-    , ("(P<", "(<em>p</em> < ")
-    , (" P < ", " <em>p</em> < ")
-    , (" p < ", " <em>p</em> < ")
-    , (" p<", " <em>p</em> < ")
-    , ("(P=", "(<em>p</em> = ")
+    , (" = .",    " = 0.")
+    , (" h2",     " <em>h</em><sup>2</sup>")
+    , ("h2 ",     "<em>h</em><sup>2</sup> ")
+    , ("≤p≤",     " ≤ <em>p</em> ≤ ")
+    , ("(r=",     "(<em>r</em> = ")
+    , ("(R=",     "(<em>r</em> = ")
+    , ("(R = ",   "(<em>r</em> = ")
+    , ("(r = ",   "(<em>r</em> = ")
+    , ("(N = ",   "(<em>N</em> = ")
+    , ("(n = ",   "(<em>n</em> = ")
+    , ("(n=",     "(<em>n</em> = ")
+    , ("(N=",     "(<em>N</em> = ")
+    , (" N=",     " <em>N</em> = ")
+    , (" n=",     " <em>n</em> = ")
+    , (" P=",     " <em>p</em> = ")
+    , (" P = ",   " <em>p</em> = ")
+    , (" p = ",   " <em>p</em> = ")
+    , (" p=",     " <em>p</em> = ")
+    , (" P<",     " <em>p</em> < ")
+    , ("(P<",     "(<em>p</em> < ")
+    , (" P < ",   " <em>p</em> < ")
+    , (" p < ",   " <em>p</em> < ")
+    , (" p<",     " <em>p</em> < ")
+    , (" p<.",    " <em>p</em> < 0.")
+    , ("(P=",     "(<em>p</em> = ")
     , ("P-value", "<em>p</em>-value")
     , ("p-value", "<em>p</em>-value")
     , (" ", " ")

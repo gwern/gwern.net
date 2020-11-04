@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-11-01 21:04:11 gwern"
+When:  Time-stamp: "2020-11-02 22:02:09 gwern"
 License: CC-0
 -}
 
@@ -745,5 +745,6 @@ whiteList url
       , "playground.tensorflow.org" -- interactive
       , "ciechanow.ski" -- interactive, JS widgets didn't preserve right
       , "serendipityrecs.com" -- service
+      , "discord.gg" -- service
       ] = True
     | otherwise = False
