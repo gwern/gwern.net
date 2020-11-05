@@ -917,10 +917,11 @@ a[href*='medrxiv.org']::after {
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
+    background-size: 0.8em;
     height: 1em;
-    width: 0.9em;
+    width: 1em;
     margin: 0 0 0 2px;
-    opacity: 0.66;
+    opacity: 0.6;
 }
 
 /* Google Scholar */
