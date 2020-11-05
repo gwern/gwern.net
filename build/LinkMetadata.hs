@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-04 12:05:03 gwern"
+When:  Time-stamp: "2020-11-04 21:45:00 gwern"
 License: CC-0
 -}
 
@@ -17,22 +17,18 @@ import Control.Monad(when)
 import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- (encode, decode) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import Data.Aeson
+import Data.Aeson (eitherDecode, FromJSON)
 import GHC.Generics
 import Data.List
 import Data.Char
-import qualified Data.Map.Strict as M (fromList, toAscList, insert, lookup, union, Map)
+import qualified Data.Map.Strict as M (fromList, lookup, union, Map)
 import Text.Pandoc
-import qualified Data.Text.IO as TIO
 import qualified Data.Text as T
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import Data.List.Utils (replace, split, uniq)
-import System.Directory
-import System.IO.Temp
 import Network.Api.Arxiv hiding (Link)
 import Text.HTML.TagSoup -- (renderTagsOptions, parseTags, renderOptions, optMinimize, Tag(TagOpen))
-import Text.Show.Pretty (ppShow)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
@@ -78,11 +74,11 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 
 -- append a new automatic annotation if its Path is not already in the auto database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,abs) = do auto <- readYaml "metadata/auto.yaml"
-                                          when (not (l `elem` (map fst auto))) $ do
-                                            print i
-                                            let newYaml = Y.encode [(l,t,a,d,di,abs)]
-                                            B.appendFile "metadata/auto.yaml" newYaml
+writeLinkMetadata l i@(t,a,d,di,abst) = do auto <- readYaml "metadata/auto.yaml"
+                                           when (not (l `elem` (map fst auto))) $ do
+                                             print i
+                                             let newYaml = Y.encode [(l,t,a,d,di,abst)]
+                                             B.appendFile "metadata/auto.yaml" newYaml
 
 annotateLink :: Metadata -> Inline -> IO Inline
 -- Relevant Pandoc types: Link = Link Attr [Inline] Target
@@ -109,16 +105,17 @@ annotateLink md x@(Link _ _ (target, _)) =
 annotateLink _ x = return x
 
 constructAnnotation :: Inline -> MetadataItem -> Inline
-constructAnnotation x@(Link _ text (target, originalTooltip)) (title, author, date, doi, abstract) =
+constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)) (title, author, date, doi, abstract) =
   if abstract == "" then x else -- if no abstract, don't bother
-    let annotationAttributes = ("", ["docMetadata"],
+    let lid' = if lid=="" then generateID (T.unpack target) author date else "" in
+    let annotationAttributes = (lid', "docMetadata":classes,
           (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII title),
                                          ("popup-title-html", htmlToBetterHTML $ T.pack title),
                                          ("popup-author",     htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
                                          ("popup-date",       T.pack date),
                                          ("popup-doi",        T.pack doi),
                                          ("popup-abstract",   htmlToBetterHTML $ T.pack abstract')
-                                         ])) in
+                                         ])++pairs) in
     if T.head target /= '?' then Link annotationAttributes text (target, newTooltip) else
       -- Special in-place annotation definition: `<span data-metadata="Full HTML version" title="ASCII version fallback">original text anchor</span>`
       Span ("", ["defnMetadata"], (third annotationAttributes) ++ [("title", newTooltip)]) text
@@ -145,6 +142,42 @@ constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructA
 trimAuthors, initializeAuthors :: String -> String
 trimAuthors a = let maxLength = 64 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
 initializeAuthors a' = subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
+
+-- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
+--
+-- 1. all citations like 'Foo & Bar 1990' or 'Quux et al 2020' should be hyperlinked (either as a internal anchor or fulltext link);
+-- 2. annotated links get a predictable anchor ID generated from the metadata, like '#foo-et-al-2020' (ie grab the first 4 characters of the date, check
+--    the number of commas in the author field to decide if 'foo 1990' or 'foo & bar 1990' or 'foo et al 1990' etc);
+-- 3. duplicate links will, then, generate invalid HTML as two Foo et al 2020s (which must be links per #1) will both define id='#foo-et-al-2020', and this will trigger htmltidy errors/warnings on sync; so, one of them will be manually edited to either point to another instance which
+--    is part of a larger discussion/context, or be given a manual ID like id='#foo-et-al-2020-2'. (since the annotation is based on the URL not the
+--    ID, this doesn't affect the annotations.)
+--
+-- so, all citations have a hyperlink, supporting hypertextual reading or readers who didn't happen to
+-- memorize the previous use in the page, independent instances of links remain independent while back/forward
+-- references pop up the relevant section with the annotated link in context, htmltidy automatically detects links that need to be updated, and a
+-- regexp can warn about citation-text which needs to be linkified.
+generateID :: String -> String -> String -> T.Text
+generateID url author date
+  -- shikata ga nai:
+  | author == "" = ""
+  | date   == "" = ""
+  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
+  | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
+  -- eg '/Faces' = '#gwern-faces'
+  | "Gwern Branwen" == author = T.pack ("gwern-" ++ (replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" url))
+  -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
+  | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
+                           let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
+                           let authorCount = length authors in
+                             if authorCount == 0 then "" else
+                               let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
+                                 map toLower $ if authorCount >= 3 then
+                                                 firstAuthorSurname ++ "-et-al-" ++ year else
+                                                   if authorCount == 2 then
+                                                     let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ (authors !! 1) in
+                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year
+                                                   else
+                                                     firstAuthorSurname ++ "-" ++ year
 
 -- compile HTML strings to Pandoc's plaintext ASCII outputs (since tooltips can't render HTML like we get from Wikipedia or many hand-written annotations)
 htmlToASCII :: String -> String
@@ -283,7 +316,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                            error ("Error: no title on Arxiv ID " ++ arxivid ++ "; result: " ++ U.toString bs) >> return Nothing
                            else
                              do let aau = initializeAuthors $ intercalate ", " $ getAuthorNames tags
-                                let ad = take 10 $ getUpdated tags
+                                let ad = take 10 $ getPublished tags
                                 let ado = getDoi tags
                                 let aa = processArxivAbstract url $ getSummary tags
                                 return $ Just (url, (at, aau, ad, ado, aa))
@@ -376,19 +409,19 @@ cleanAbstractsHTML t = trim $
     , ("<h3>Conclusions</h3>\n<p>", "<p><strong>Conclusion</strong>: ")
     , ("<h3>Conclusions & Relevance</h3>\n<p>", "<p><strong>Conclusions and Relevance</strong>: ")
     , ("<h3>Trial Registration</h3>\n<p>", "<p><strong>Trial Registration</strong>: ")
-    , ("[Keywords: ", "<strong>[Keywords</strong>: ")
+    , ("\91Keywords: ", "<strong>\91Keywords</strong>: ")
     , (" = .",    " = 0.")
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
-    , ("(r=",     "(<em>r</em> = ")
-    , ("(R=",     "(<em>r</em> = ")
-    , ("(R = ",   "(<em>r</em> = ")
-    , ("(r = ",   "(<em>r</em> = ")
-    , ("(N = ",   "(<em>N</em> = ")
-    , ("(n = ",   "(<em>n</em> = ")
-    , ("(n=",     "(<em>n</em> = ")
-    , ("(N=",     "(<em>N</em> = ")
+    , ("\40r=",     "\40<em>r</em> = ")
+    , ("\40R=",     "\40<em>r</em> = ")
+    , ("\40R = ",   "\40<em>r</em> = ")
+    , ("\40r = ",   "\40<em>r</em> = ")
+    , ("\40N = ",   "\40<em>N</em> = ")
+    , ("\40n = ",   "\40<em>n</em> = ")
+    , ("\40n=",     "\40<em>n</em> = ")
+    , ("\40N=",     "\40<em>N</em> = ")
     , (" N=",     " <em>N</em> = ")
     , (" n=",     " <em>n</em> = ")
     , (" P=",     " <em>p</em> = ")
@@ -396,12 +429,12 @@ cleanAbstractsHTML t = trim $
     , (" p = ",   " <em>p</em> = ")
     , (" p=",     " <em>p</em> = ")
     , (" P<",     " <em>p</em> < ")
-    , ("(P<",     "(<em>p</em> < ")
+    , ("\40P<",     "\40<em>p</em> < ")
     , (" P < ",   " <em>p</em> < ")
     , (" p < ",   " <em>p</em> < ")
     , (" p<",     " <em>p</em> < ")
     , (" p<.",    " <em>p</em> < 0.")
-    , ("(P=",     "(<em>p</em> = ")
+    , ("\40P=",     "\40<em>p</em> = ")
     , ("P-value", "<em>p</em>-value")
     , ("p-value", "<em>p</em>-value")
     , (" ", " ")
