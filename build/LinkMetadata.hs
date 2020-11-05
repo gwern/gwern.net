@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-05 10:50:50 gwern"
+When:  Time-stamp: "2020-11-05 12:40:20 gwern"
 License: CC-0
 -}
 
@@ -107,7 +107,7 @@ annotateLink _ x = return x
 constructAnnotation :: Inline -> MetadataItem -> Inline
 constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)) (title, author, date, doi, abstract) =
   if abstract == "" then x else -- if no abstract, don't bother
-    let lid' = if lid=="" then generateID (T.unpack target) author date else "" in
+    let lid' = if lid=="" then generateID (T.unpack target) author date else lid in
     let annotationAttributes = (lid', "docMetadata":classes,
           (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII title),
                                          ("popup-title-html", htmlToBetterHTML $ T.pack title),
@@ -164,7 +164,7 @@ generateID url author date
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- eg '/Faces' = '#gwern-faces'
-  | "Gwern Branwen" == author = T.pack ("gwern-" ++ (replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" url))
+  | "Gwern Branwen" == author = T.pack (replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url)
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
                            let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
