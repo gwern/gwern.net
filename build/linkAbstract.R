@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2019-09-15 14:40:13 gwern"
+# When:  Time-stamp: "2020-11-05 10:08:50 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -19,14 +19,15 @@
 #
 # NOTE: Pubmed rate-limits the public API; to reduce the risk of being blacklisted, get an API key and set it in R with something lik `Sys.setenv(ENTREZ_KEY="fe7ca39604a5de176be4c2a1cbd2b2902108")`
 #
-# PLOS example:
+# PLOS example (NOTE: ' ' thin spaces are used in the formatting):
 #
 # $ Rscript  linkAbstract.R 'http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0100248'
 # Genetic Variation Associated with Differential Educational Attainment in Adults Has Anticipated Associations with School Performance in Children
 # Mary E. Ward, George McMahon, Beate St Pourcain, David M. Evans, Cornelius A. Rietveld, Daniel J. Benjamin, Philipp D. Koellinger, David Cesarini, NA NA, George Davey Smith, Nicholas J. Timpson
 # 2014-05-22
 # 10.1371/journal.pone.0100248
-# Genome-wide association study results have yielded evidence for the association of common genetic variants with crude measures of completed educational attainment in adults. Whilst informative, these results do not inform as to the mechanism of these effects or their presence at earlier ages and where educational performance is more routinely and more precisely assessed. Single nucleotide polymorphisms exhibiting genome-wide significant associations with adult educational attainment were combined to derive an unweighted allele score in 5,979 and 6,145 young participants from the Avon Longitudinal Study of Parents and Children with key stage 3 national curriculum test results (SATS results) available at age 13 to 14 years in English and mathematics respectively. Standardised (z-scored) results for English and mathematics showed an expected relationship with sex, with girls exhibiting an advantage over boys in English (0.433 SD (95%CI 0.395, 0.470), p<10−10) with more similar results (though in the opposite direction) in mathematics (0.042 SD (95%CI 0.004, 0.080), p = 0.030). Each additional adult educational attainment increasing allele was associated with 0.041 SD (95%CI 0.020, 0.063), p = 1.79×10−04 and 0.028 SD (95%CI 0.007, 0.050), p = 0.01 increases in standardised SATS score for English and mathematics respectively. Educational attainment is a complex multifactorial behavioural trait which has not had heritable contributions to it fully characterised. We were able to apply the results from a large study of adult educational attainment to a study of child exam performance marking events in the process of learning rather than realised adult end product. Our results support evidence for common, small genetic contributions to educational attainment, but also emphasise the likely lifecourse nature of this genetic effect. Results here also, by an alternative route, suggest that existing methods for child examination are able to recognise early life variation likely to be related to ultimate educational attainment.
+# <abstract>
+#   <p>Genome-wide association study results have yielded evidence for the association of common genetic variants with crude measures of completed educational attainment in adults. Whilst informative, these results do not inform as to the mechanism of these effects or their presence at earlier ages and where educational performance is more routinely and more precisely assessed. Single nucleotide polymorphisms exhibiting genome-wide significant associations with adult educational attainment were combined to derive an unweighted allele score in 5,979 and 6,145 young participants from the Avon Longitudinal Study of Parents and Children with key stage 3 national curriculum test results (SATS results) available at age 13 to 14 years in English and mathematics respectively. Standardised (z-scored) results for English and mathematics showed an expected relationship with sex, with girls exhibiting an advantage over boys in English (0.433 SD (95%CI 0.395, 0.470), p&lt;10<sup>−10</sup>) with more similar results (though in the opposite direction) in mathematics (0.042 SD (95%CI 0.004, 0.080), p = 0.030). Each additional adult educational attainment increasing allele was associated with 0.041 SD (95%CI 0.020, 0.063), p = 1.79×10<sup>−04</sup> and 0.028 SD (95%CI 0.007, 0.050), p = 0.01 increases in standardised SATS score for English and mathematics respectively. Educational attainment is a complex multifactorial behavioural trait which has not had heritable contributions to it fully characterised. We were able to apply the results from a large study of adult educational attainment to a study of child exam performance marking events in the process of learning rather than realised adult end product. Our results support evidence for common, small genetic contributions to educational attainment, but also emphasise the likely lifecourse nature of this genetic effect. Results here also, by an alternative route, suggest that existing methods for child examination are able to recognise early life variation likely to be related to ultimate educational attainment.</p>
 
 args = commandArgs(trailingOnly=TRUE)[1]
 
@@ -48,14 +49,14 @@ if (grepl("plos",args)) {
     fulltext <- ft_get(doi, from="plos")
 
     library(pubchunks)
-    y <- (fulltext %>% ft_collect("author", "abstract", "title", "abstract") %>% pub_chunks())
-    y <- y$plos[[1]]
+    y <- (fulltext %>% ft_collect("author", "title") %>% pub_chunks())$plos[[1]]
+    # NOTE: we preserve XML/HTML formatting in the abstract (but not other fields), such as headers or subscripts, by using 'as.character' option
+    abstract <- (fulltext %>% ft_collect("abstract") %>% pub_chunks(extract="as.character"))$plos[[1]]$abstract
 
     title <- y$title
     author <- paste(sapply(y$authors, function(a) { paste(a$given_names, a$surname)}), collapse=", ")
     # doi
     date <- y$history$accepted
-    abstract <- y$abstract
 
     # DOIs are optional since so many fulltext PMC papers are still missing them
     if (any(c(is.list(title), is.list(author), is.list(date), is.list(abstract)))) {

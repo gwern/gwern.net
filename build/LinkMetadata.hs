@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-04 21:45:00 gwern"
+When:  Time-stamp: "2020-11-05 10:50:50 gwern"
 License: CC-0
 -}
 
@@ -222,8 +222,8 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
                 ExitFailure err -> (print $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
-                _ -> do let (title:author:date:doi:abstract:_) = lines $ U.toString mb
-                        return $ Just (l, (trim title, initializeAuthors $ trim author, trim date, trim doi, trim abstract))
+                _ -> do let (title:author:date:doi:abstract) = lines $ U.toString mb
+                        return $ Just (l, (trim title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML (unlines abstract)))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-Date", "-DOI", p]
@@ -338,6 +338,16 @@ cleanAbstractsHTML t = trim $
   -- simple string substitutions:
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
+    , ("<abstract abstract-type=\"summary\"><br/>", "")
+    , ("</p><br/>", "</p>")
+    , ("</p> <br/>", "</p>")
+    , ("  </sec><br/>  ", "")
+    , ("<sec><br/>    ", "")
+    , ("  </sec> <br/>", "")
+    , ("</strong></p>    <p>", "</strong> ")
+    , ("</title>", ":</strong></p>")
+    , ("<title>", "<p><strong>")
+    , ("</title><br/>", "</title>")
     , ("<p>\n\n", "<p>")
     , ("<br></p>", "</p>")
     , ("\n<br />\n", "")
@@ -357,6 +367,9 @@ cleanAbstractsHTML t = trim $
     , ("<h3>ABSTRACT</h3>", "")
     , ("<h3>Abstract</h3>", "")
     , ("<h3>SUMMARY</h3>", "")
+    , ("<abstract>", "")
+    , ("<abstract>\n  ", "")
+    , ("\n</abstract>", "")
     , ("\nHighlights: ", "\n<strong>Highlights</strong>: ")
     , ("\nBackground: ", "\n<strong>Background</strong>: ")
     , ("\nAbstract: ", "\n<strong>Abstract</strong>: ")
@@ -422,7 +435,10 @@ cleanAbstractsHTML t = trim $
     , ("\40n = ",   "\40<em>n</em> = ")
     , ("\40n=",     "\40<em>n</em> = ")
     , ("\40N=",     "\40<em>N</em> = ")
+    , ("<em>p</em> = .", "<em>p</em> = 0.")
+    , ("<em>p</em> < .", "<em>p</em> < 0.")
     , (" N=",     " <em>N</em> = ")
+    , ("\40p=",     "\40<em>p</em> = ")
     , (" n=",     " <em>n</em> = ")
     , (" P=",     " <em>p</em> = ")
     , (" P = ",   " <em>p</em> = ")
