@@ -1,1 +1,71 @@
-<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" viewBox="0 0 12.25 12.25" height="16.333" width="16.333" xmlns:v="https://vecta.io/nano"><path d="M0 0h12.25v12.25H0z"/><path d="M0 6.125v6.125h12.25V0H0zm9.37-3.08v.435H2.89v-.87h6.48zm0 1.66v.44H2.89v-.882h6.48zm0 3.24L9.36 9.97c-.006 0-.733-.403-1.613-.895L6.13 8.18a140.62 140.62 0 0 0-1.606.889l-1.612.898c-.02.007-.02-.14-.02-2.02v-2.03h6.48z" fill="#fff"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   preserveAspectRatio="xMidYMid meet"
+   viewBox="0 0 12.000245 12.000245"
+   height="16"
+   width="16"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="substack.svg"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06">
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1878"
+     inkscape:window-height="1037"
+     id="namedview8"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="28.898549"
+     inkscape:cx="1.1816002"
+     inkscape:cy="5.818638"
+     inkscape:window-x="21"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg6" />
+  <path
+     style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.30306721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 0,0 H 11.996543 V 1.4185072 H 0 Z"
+     id="path14"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.30306721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 0,2.6951637 H 11.996543 V 4.1332365 H 0 Z"
+     id="path4514"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.30306721px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="M 0.00370264,5.3919579 H 12.000245 L 11.978025,12.000245 5.9982672,9.081707 0.040725,11.995353 Z"
+     id="path4516"
+     inkscape:connector-curvature="0" />
+</svg>
