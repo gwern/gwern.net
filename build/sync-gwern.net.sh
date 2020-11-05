@@ -243,8 +243,8 @@ then
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
-    λ(){ fgrep -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
-    wrap λ "Broken links or links to Wikipedia disambiguation pages in auto.yaml."
+    λ(){ fgrep -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
+    wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
 
     λ(){ find . -type f -name "*--*"; find . -type f -name "*~*"; }
     wrap λ "No files should have double hyphens or tildes in their names."
