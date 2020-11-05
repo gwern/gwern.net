@@ -133,11 +133,15 @@ Extracts = {
         if(targetSectionHTML.length < 2) { // not a section but a random <div> target
             return Extracts.citationContextForTarget(target);
         } else {
-            return `<div class='popup-section-embed'>${targetSectionHTML}</div>`; }
+            return Extracts.citationContextForTarget(target); }
+        // NOTE: experiment for supporting link ID popups; testing the length breaks link popups because they're too short
+        // but if we present *everything* as a citation-with-context, the '.closest' selector including '<section>' seems to work acceptably?
+            // return `<div class='popup-section-embed'>${targetSectionHTML}</div>`; }
     },
     citationContextForTarget: (target) => {
-        let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, ol, p, pre, section, table, tfoot, ul").innerHTML;
-        return `<div class='popup-citation-context'>… ${citationContextHTML} …</div>`;
+        let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul").innerHTML;
+        console.log(citationContextHTML);
+        return `<div class='popup-citation-context'>${citationContextHTML}</div>`; // ellipses added via CSS
     },
     localImageForTarget: (target) => {
         // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
@@ -495,12 +499,17 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv > div.popup-screenshot a::after {
     content: none;
 }
+
 #popupdiv > div.popup-section-embed,
 #popupdiv > div.popup-citation-context {
     height: 100%;
     padding: 12px 24px 14px 24px;
     overflow-x: hidden;
 }
+.popup-citation-context h1 { margin: 0 0 0 0; }
+.popup-citation-context:first-child::before,
+.popup-citation-context:last-child::after { content: "…"; }
+
 #popupdiv > div.popup-section-embed > h1:first-child,
 #popupdiv > div.popup-section-embed > h2:first-child,
 #popupdiv > div.popup-section-embed > h3:first-child,
