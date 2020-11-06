@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-11-05 21:59:48 gwern"
+When: Time-stamp: "2020-11-06 09:30:08 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -191,12 +191,15 @@ postCtx tags =
     tagsField "tagsHTML" tags <>
     descField "description" <> -- constField "description" "N/A" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)!
-    -- We also do this with "next"/"previous" navigation links.
     defaultContext <>
     dateField "created" "%F" <>
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
     modificationTimeField "modified" "%F" <>
+    -- page navigation defaults:
+    constField "next" "/index" <>
+    constField "previous" "/index" <>
+    -- metadata:
     constField "description" "N/A" <>
     constField "author" "Gwern Branwen" <>
     constField "status" "notes" <>
@@ -204,6 +207,7 @@ postCtx tags =
     constField "importance" "0" <>
     constField "cssExtension" "drop-caps-de-zs" <>
     constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
+    -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL"
   where escapedTitleField t = (mapContext (map toLower . filter isLetter . takeBaseName) . pathField) t
         descField d = field d $ \item -> do
