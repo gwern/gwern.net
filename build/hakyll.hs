@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-11-01 11:55:15 gwern"
+When: Time-stamp: "2020-11-05 21:59:48 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -191,6 +191,7 @@ postCtx tags =
     tagsField "tagsHTML" tags <>
     descField "description" <> -- constField "description" "N/A" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)!
+    -- We also do this with "next"/"previous" navigation links.
     defaultContext <>
     dateField "created" "%F" <>
     -- if no manually set last-modified time, fall back to checking file modification time:

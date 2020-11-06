@@ -2607,3 +2607,6 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
  margin-right:-.120em;
  line-height:1ex
 }
+
+/* Navigation bar for previous/next page links */
+#navigation { text-align: center; font-size: 2em; }
