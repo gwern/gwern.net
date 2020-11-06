@@ -2608,5 +2608,23 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
  line-height:1ex
 }
 
-/* Navigation bar for previous/next page links */
-#navigation { text-align: center; font-size: 2em; }
+/* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg ) */
+/* override underlining: */
+#navigation #navigation-previous, #navigation #navigation-next { text-shadow: none;
+                                                                 background:#fff;
+                                                                 color:#333; }
+#navigation #navigation-previous {
+    content: url('/static/img/icons/divider-filetarabesque-half.svg');
+    display: inline-block;
+    width: 40%;
+}
+#navigation #navigation-center {
+    content: url('/static/img/icons/divider-filetarabesque-center.svg');
+    display:inline-block;
+}
+#navigation #navigation-next {
+    content: url('/static/img/icons/divider-filetarabesque-half.svg');
+    display: inline-block;
+    transform: rotate(180deg);
+    width: 40%;
+}
