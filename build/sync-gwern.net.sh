@@ -132,7 +132,7 @@ then
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## Randomize sync type - usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
-    SPEED=""; if ((RANDOM % 100 < 95)); then SPEED="--size-only"; else SPEED="--delete"; fi;
+    SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete"; fi;
     rsync --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/ gwern@78.46.86.149:"/home/gwern/gwern.net"
     set +e
 
