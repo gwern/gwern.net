@@ -110,8 +110,8 @@ then
         for PAGE in $PAGES; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
-                       fgrep --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"')
-            if [[ -n $TIDY ]]; then echo "$HTML: $TIDY"; fi
+                       fgrep --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' )
+            if [[ -n $TIDY ]]; then echo -e "\n\e[31m$HTML.page\e[0m:\n$TIDY"; fi
         done;
         set -e; }
     wrap λ "Markdown→HTML pages don't validate as HTML5"
