@@ -2609,10 +2609,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 }
 
 /* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg ) */
-/* override underlining: */
-#navigation #navigation-previous, #navigation #navigation-next { text-shadow: none;
-                                                                 background:#fff;
-                                                                 color:#333; }
+#navigation { text-align: center; }
 #navigation #navigation-previous {
     content: url('/static/img/icons/divider-filetarabesque-half.svg');
     display: inline-block;
@@ -2621,10 +2618,19 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 #navigation #navigation-center {
     content: url('/static/img/icons/divider-filetarabesque-center.svg');
     display:inline-block;
+    margin-left: 0.6em;
+    margin-right: 0.6em;
 }
 #navigation #navigation-next {
     content: url('/static/img/icons/divider-filetarabesque-half.svg');
     display: inline-block;
-    transform: rotate(180deg);
+    transform: scale(-1, 1);
     width: 40%;
 }
+/* Index's special appearance requires some top padding */
+body.index #navigation { margin-top: 2em; }
+/* override underlining: */
+#navigation #navigation-previous, #navigation #navigation-next,
+#navigation #navigation-center { text-shadow: none;
+                                 background:#fff;
+                                 color:#333; }
