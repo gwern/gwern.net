@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-11-01 12:04:47 gwern"
+# When:  Time-stamp: "2020-11-07 13:42:19 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -132,6 +132,8 @@ do
         [ "$(grep -E '^description: ' "$PAGE" | wc --char)" -le 90 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too short.'
         [ "$(grep -E '^description: ' "$PAGE" | wc --char)" -ge 320 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too long.'
         [ "$(grep -E '^modified: 20'  "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "modified:" metadata is missing.'
+        [ "$(grep -E '^next: '        "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "next:" metadata is missing.'
+        [ "$(grep -E '^previous: '    "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "previous:" metadata is missing.'
         [ "$(grep -E '^thumbnail: '   "$PAGE" | wc --char)" -le 20 ] && echo -e '\e[41mWARNING\e[0m: No thumbnail/illustration defined.'
 
         λ() { markdown-length-checker.hs "$PAGE";}
