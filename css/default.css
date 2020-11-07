@@ -2618,14 +2618,15 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 #navigation #navigation-center {
     content: url('/static/img/icons/divider-filetarabesque-center.svg');
     display:inline-block;
-    margin-left: 0.6em;
-    margin-right: 0.6em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    width: 13%;
 }
 #navigation #navigation-next {
     content: url('/static/img/icons/divider-filetarabesque-half.svg');
     display: inline-block;
     transform: scale(-1, 1);
-    width: 40%;
+    width: 39%;
 }
 /* Index's special appearance requires some top padding */
 body.index #navigation { margin-top: 2em; }
