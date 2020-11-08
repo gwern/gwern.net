@@ -331,7 +331,7 @@ body.index article section {
 
 /*  Abstract is not a real abstract, just an introduction, no need for the abstract formatting.
     */
-body.index #abstract {
+body.index .abstract {
     padding: 0;
     border: none;
     margin: 0;
@@ -692,15 +692,15 @@ html {
     font-variant-numeric: oldstyle-nums;
 }
 
-#abstract > blockquote {
+.abstract > blockquote {
     margin: 0 0 1.5em 0;
     border-color: #bbb;
     padding: 0.9rem 1.25rem 0.95rem 1.25rem;
     clear: none;
 }
 
-/* auto-smallcaps the first line of the introduction (= the first `<p>` after `<div id="abstract"></div>`); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
-#abstract + p::first-line, #markdownBody > p:first-child::first-line { font-feature-settings: 'smcp'; }
+/* auto-smallcaps the first line of the introduction (= the first `<p>` after `<div class="abstract"></div>`); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
+.abstract + p::first-line, #markdownBody > p:first-child::first-line { font-feature-settings: 'smcp'; }
 
 #markdownBody h1 {
     margin: 0.6em 0 0.5em -0.75rem;
