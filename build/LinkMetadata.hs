@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-05 12:40:20 gwern"
+When:  Time-stamp: "2020-11-08 18:39:13 gwern"
 License: CC-0
 -}
 
@@ -17,21 +17,25 @@ import Control.Monad(when)
 import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- (encode, decode) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import Data.Aeson (eitherDecode, FromJSON)
-import GHC.Generics
-import Data.List
-import Data.Char
+import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
+import qualified Data.HashMap.Strict as HM (lookup)
+import GHC.Generics (Generic)
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, (\\))
+import Data.Char (isAlpha, isSpace, toLower, toUpper)
 import qualified Data.Map.Strict as M (fromList, lookup, union, Map)
-import Text.Pandoc
-import qualified Data.Text as T
+import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
+                    HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
+                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain)
+import qualified Data.Text as T (head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import Data.List.Utils (replace, split, uniq)
 import Network.Api.Arxiv hiding (Link)
-import Text.HTML.TagSoup -- (renderTagsOptions, parseTags, renderOptions, optMinimize, Tag(TagOpen))
+import Text.HTML.TagSoup (parseTags, isTagOpenName, renderTags, Tag(TagClose, TagOpen))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
+import Data.Maybe (Maybe)
 
 import Typography
 
@@ -259,7 +263,8 @@ doi2Abstract doi = if length doi <7 then return Nothing
                                        Just a -> let trimmedAbstract = cleanAbstractsHTML a
                                                  in return $ Just trimmedAbstract
 
-data WP = WP { title :: !String, extract_html :: !String } deriving (Show,Generic)
+-- WP REST API: https://en.wikipedia.org/api/rest_v1/#/Page_content/get_page_summary_title
+data WP = WP { title :: !String, extract_html :: !String, thumbnail :: Maybe Object } deriving (Show,Generic)
 instance FromJSON WP
 wikipedia p
   | "https://en.wikipedia.org/wiki/Special" `isPrefixOf` p = return Nothing
@@ -280,8 +285,16 @@ wikipedia p
                      _ -> let j = eitherDecode bs :: Either String WP
                           in case j of
                                Left e -> putStrLn ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
-                               Right wp -> let wp' = wp in
-                                            return $ Just (p, (title wp', "English Wikipedia", today, "", cleanAbstractsHTML $ extract_html wp'))
+                               Right wp -> let wpTitle = title wp in
+                                             let wpAbstract = extract_html wp in
+                                               let wpThumbnail = case thumbnail wp of
+                                                     Nothing -> ""
+                                                     Just thumbnailObject -> case (HM.lookup "source" thumbnailObject) of
+                                                                               Nothing -> ""
+                                                                               Just (String href) -> "<p><figure><img class=\"float-right\" src=\"" ++ T.unpack href ++ " title=\"Wikipedia thumbnail image of " ++ wpTitle ++ "\"/></figure></p>"
+                                                                               Just _ -> ""
+                                                         in
+                                            return $ Just (p, (wpTitle, "English Wikipedia", today, "", cleanAbstractsHTML wpAbstract ++ wpThumbnail))
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
