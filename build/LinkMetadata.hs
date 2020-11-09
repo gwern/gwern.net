@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-08 18:39:13 gwern"
+When:  Time-stamp: "2020-11-08 23:55:27 gwern"
 License: CC-0
 -}
 
@@ -291,7 +291,7 @@ wikipedia p
                                                      Nothing -> ""
                                                      Just thumbnailObject -> case (HM.lookup "source" thumbnailObject) of
                                                                                Nothing -> ""
-                                                                               Just (String href) -> "<p><figure><img class=\"float-right\" src=\"" ++ T.unpack href ++ " title=\"Wikipedia thumbnail image of " ++ wpTitle ++ "\"/></figure></p>"
+                                                                               Just (String href) -> "<p><figure><img class=\"float-right\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of " ++ wpTitle ++ "\"/></figure></p>"
                                                                                Just _ -> ""
                                                          in
                                             return $ Just (p, (wpTitle, "English Wikipedia", today, "", cleanAbstractsHTML wpAbstract ++ wpThumbnail))
