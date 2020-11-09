@@ -189,7 +189,7 @@ then
           cm "image/jpeg" 'https://www.gwern.net/docs/rotten.com/library/bio/pornographers/al-goldstein/goldstein-fuck-you.jpeg'
           cm "image/jpeg" 'https://www.gwern.net/docs/rotten.com/library/religion/heresy/circumcellions/circumcellions-augustine.JPG'
           cm "image/png" 'https://www.gwern.net/docs/statistics/order/beanmachine-multistage/beanmachine-demo.png'
-          cm "image/png" 'https://www.gwern.net/images/logo/logo.png'
+          cm "image/png" 'https://www.gwern.net/static/img/logo/logo.png'
           cm "image/svg+xml" 'https://www.gwern.net/images/spacedrepetition/forgetting-curves.svg'
           cm "image/x-icon" 'https://www.gwern.net/static/img/favicon.ico'
           cm "image/x-ms-bmp" 'https://www.gwern.net/docs/rotten.com/library/bio/hackers/robert-morris/morris.bmp'

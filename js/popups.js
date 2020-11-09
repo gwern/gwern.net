@@ -140,7 +140,6 @@ Extracts = {
     },
     citationContextForTarget: (target) => {
         let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul").innerHTML;
-        console.log(citationContextHTML);
         return `<div class='popup-citation-context'>${citationContextHTML}</div>`; // ellipses added via CSS
     },
     localImageForTarget: (target) => {

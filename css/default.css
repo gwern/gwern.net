@@ -1340,7 +1340,6 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 .marginnote.inline::after {
     content: " ";
 }
-
 .marginnote.sidenote {
     float: right;
     position: absolute;
@@ -1358,6 +1357,8 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 .marginnote.sidenote:hover {
     box-shadow: none;
 }
+/* make links in margin notes (somewhat unusual but should be supported simply because that's what one would expect) clickable/hover-able */
+.sidenote.marginnote::after { z-index: -1; }
 
 /**********/
 /* TABLES */
