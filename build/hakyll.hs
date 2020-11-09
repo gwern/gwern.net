@@ -5,13 +5,11 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-11-06 09:30:08 gwern"
+When: Time-stamp: "2020-11-09 18:05:26 gwern"
 License: CC-0
 
 Debian dependencies:
 $ sudo apt-get install libghc-hakyll-dev libghc-pandoc-dev libghc-filestore-dev libghc-tagsoup-dev libghc-yaml-dev imagemagick s3cmd git libghc-aeson-dev libghc-missingh-dev libghc-digest-dev tidy gridsite-clients
-
-Also necessary: 'arxiv'.
 
 (GHC is needed for Haskell; Hakyll & Pandoc do the heavy lifting of compiling Markdown files to HTML; tag soup & ImageMagick are runtime dependencies used to help optimize images, and s3cmd/git upload to hosting/Github respectively.)
 Demo command (for the full script, with all static checks & generation & optimizations, see `sync-gwern.net.sh`):

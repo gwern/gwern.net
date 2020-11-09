@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-08 23:55:27 gwern"
+When:  Time-stamp: "2020-11-09 18:06:09 gwern"
 License: CC-0
 -}
 
@@ -30,8 +30,7 @@ import qualified Data.Text as T (head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import Data.List.Utils (replace, split, uniq)
-import Network.Api.Arxiv hiding (Link)
-import Text.HTML.TagSoup (parseTags, isTagOpenName, renderTags, Tag(TagClose, TagOpen))
+import Text.HTML.TagSoup -- (parseTags, isTagOpenName, renderTags, Tag(TagClose, TagOpen))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
@@ -315,7 +314,6 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                                                       if snd a == "citation_abstract" then snd $ head c else "") metas
                                  return $ Just (p, (title, author, date, doi, abstract))
 
-
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replace "https://arxiv.org/pdf/" "" $ replace ".pdf" "" url
@@ -323,16 +321,44 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
                  ExitFailure _ -> putStrLn ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
-                 _ -> do let tags = parseTags $ U.toString bs
-                         let at = replace "\n  " " " $ getTitle $ drop 8 tags
-                         if (at=="") then
-                           error ("Error: no title on Arxiv ID " ++ arxivid ++ "; result: " ++ U.toString bs) >> return Nothing
-                           else
-                             do let aau = initializeAuthors $ intercalate ", " $ getAuthorNames tags
-                                let ad = take 10 $ getPublished tags
-                                let ado = getDoi tags
-                                let aa = processArxivAbstract url $ getSummary tags
-                                return $ Just (url, (at, aau, ad, ado, aa))
+                 _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
+                         let title = findTxt $ fst $ element "title" tags
+                         let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
+                         let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
+                         let doi = findTxt $ fst $ element "arxiv:doi" tags
+                         let abs = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
+                         return $ Just (url, (title,authors,published,doi,abs))
+-- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
+-- Get the content of a 'TagText'
+findTxt :: [Tag String] -> String
+findTxt [] = ""
+findTxt (t:ts) = case t of
+                   TagText x -> x
+                   _         -> findTxt ts
+getAuthorNames :: [Tag String] -> [String]
+getAuthorNames = go
+  where go s = case element "author" s of
+                 ([],[]) -> []
+                 (a,[])  -> [getString "name" a]
+                 (a,r)   ->  getString "name" a : go r
+        getString :: String -> [Tag String] -> String
+        getString n soup = let (i,_) = element n soup
+                      in if null i then "" else findTxt i
+element :: String -> [Tag String] -> ([Tag String], [Tag String])
+element _  []     = ([],[])
+element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
+                                          in (t:r,rs)
+                  | otherwise          = element nm ts
+  where closeEl :: Int -> [Tag String] -> ([Tag String], [Tag String])
+        closeEl _ [] = ([],[])
+        closeEl i (x:xs) = go i (isTagCloseName nm x) x xs
+        go i b x xs | b && i == 0        = ([x],xs)
+                    | b && i >  0        = let (r,rs) = closeEl (i-1) xs
+                                            in (x:r,rs)
+                    | isTagOpenName nm x = let (r,rs) = closeEl (i+1) xs
+                                            in (x:r,rs)
+                    | otherwise          = let (r,rs) = closeEl i     xs
+                                            in (x:r,rs)
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
