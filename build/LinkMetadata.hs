@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-09 18:06:09 gwern"
+When:  Time-stamp: "2020-11-10 17:41:57 gwern"
 License: CC-0
 -}
 
@@ -284,16 +284,18 @@ wikipedia p
                      _ -> let j = eitherDecode bs :: Either String WP
                           in case j of
                                Left e -> putStrLn ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
-                               Right wp -> let wpTitle = title wp in
-                                             let wpAbstract = extract_html wp in
-                                               let wpThumbnail = case thumbnail wp of
-                                                     Nothing -> ""
+                               Right wp -> do let wpTitle = title wp
+                                              let wpAbstract = extract_html wp
+                                              wpThumbnail <- case thumbnail wp of
+                                                     Nothing -> return ""
                                                      Just thumbnailObject -> case (HM.lookup "source" thumbnailObject) of
-                                                                               Nothing -> ""
-                                                                               Just (String href) -> "<p><figure><img class=\"float-right\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of " ++ wpTitle ++ "\"/></figure></p>"
-                                                                               Just _ -> ""
-                                                         in
-                                            return $ Just (p, (wpTitle, "English Wikipedia", today, "", cleanAbstractsHTML wpAbstract ++ wpThumbnail))
+                                                                               Nothing -> return ""
+                                                                               Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
+                                                                                                        color <- invertImage $ T.unpack href
+                                                                                                        let imgClass = if color then "class=\"float-right invertible-auto\"" else "class=\"float-right\""
+                                                                                                        return ("<p><figure><img " ++ imgClass ++ " src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of " ++ wpTitle ++ "\"/></figure></p>")
+                                                                               Just _ -> return ""
+                                              return $ Just (p, (wpTitle, "English Wikipedia", today, "", cleanAbstractsHTML wpAbstract ++ wpThumbnail))
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]

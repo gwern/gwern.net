@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-11-09 18:05:26 gwern"
+When: Time-stamp: "2020-11-10 17:26:26 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -36,7 +36,7 @@ Explanations:
 
 import Control.Exception (onException)
 import Control.Monad (when, void)
-import Data.ByteString.Lazy.Char8 (unpack)
+import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.Char (toLower, isLetter)
 import Data.List (isPrefixOf, nub, sort)
 import Data.Maybe (fromMaybe)
@@ -53,7 +53,7 @@ import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess,
                tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Template, Tags, unsafeCompiler)
 import System.Exit (ExitCode(ExitFailure))
-import Text.HTML.TagSoup (renderTagsOptions,parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
+import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Pandoc.Shared (blocksToInlines)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     -- Extension(Ext_markdown_in_html_blocks), ReaderOptions(..), bottomUp, topDown,
@@ -224,7 +224,7 @@ postCtx tags =
 -- pandocTransform md adb dict = walkM (\x -> annotateLink md x >>= localizeLink adb) . walk smallcapsfy . walk headerSelflink . annotateFirstDefinitions . walkInlineM (defineAbbreviations dict) . bottomUp mergeSpaces . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md adb = walkM (\x -> annotateLink md x >>= localizeLink adb >>= imageSrcset >>= invertImage) . typographyTransform . walk headerSelflink . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
+pandocTransform md adb = walkM (\x -> annotateLink md x >>= localizeLink adb >>= imageSrcset >>= invertImageInline) . typographyTransform . walk headerSelflink . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
@@ -310,24 +310,8 @@ imageMagickDimensions :: FilePath -> IO (String,String)
 imageMagickDimensions f = do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f]
                              case status of
                                ExitFailure _ -> error f
-                               _ -> do let [height, width] = words $ head $ lines $ (unpack bs)
+                               _ -> do let [height, width] = words $ head $ lines $ (B8.unpack bs)
                                        return (height, width)
-
--- Look at mean color of image, 0-1: if it's close to 0, then it's a monochrome-ish white-heavy image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check every image for color, and set an 'invertible-auto' HTML class on the ones which are low. We can manually specify a 'invertible' class on images which don't pass the heuristic but should.
-invertImage :: Inline -> IO Inline
-invertImage x@(Image (htmlid, classes, kvs) xs (p,t)) = do
-                                       let p' = T.unpack p
-                                       let p'' = if head p' == '/' then tail p' else p'
-                                       color <- imageMagickColor p''
-                                       if color > 0.08 then return x else
-                                         return (Image (htmlid, "invertible-auto":classes, kvs) xs (p,t))
-invertImage x = return x
-imageMagickColor :: FilePath -> IO Float
-imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f, "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
-                        case status of
-                          ExitFailure err -> error $ f ++ ": ImageMagick color read error: " ++ show err
-                          _ -> do let color = read (unpack bs) :: Float
-                                  return color
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
