@@ -50,9 +50,9 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 	background-color: var(--GW-blockquote-background-color-level-three);
 }
 
-/*************/
-/* VARIABLES */
-/*************/
+/***********/
+/* GENERAL */
+/***********/
 
 html {
 	padding: 0;
