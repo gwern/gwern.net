@@ -3,6 +3,18 @@
 /*********/
 /* fonts are now loaded from /static/css/fonts.css */
 
+/**********/
+/* COLORS */
+/**********/
+
+:root {
+	/*	Blockquotes.
+		*/
+    --GW-blockquote-background-color-level-one: #f8f8f8;
+    --GW-blockquote-background-color-level-two: #e6e6e6;
+    --GW-blockquote-background-color-level-three: #d8d8d8;
+}
+
 /***************/
 /* BLOCKQUOTES */
 /***************/
@@ -15,24 +27,20 @@ blockquote {
     padding: 1em 1.25em;
 }
 
-:root {
-    --GW-blockquote-background-color: #f8f8f8;
-}
-
 /* Three-level of blockquote emphasis (darkening).
 */
 blockquote,
 blockquote blockquote blockquote blockquote {
     z-index: -2;
-    background-color: var(--GW-blockquote-background-color);
+    background-color: var(--GW-blockquote-background-color-level-one);
 }
 blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
-    background-color: #e6e6e6;
+    background-color: var(--GW-blockquote-background-color-level-two);
 }
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
-    background-color: #d8d8d8;
+    background-color: var(--GW-blockquote-background-color-level-three);
 }
 
 /*************/
