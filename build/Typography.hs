@@ -142,10 +142,8 @@ invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-inver
                                              ExitFailure _ -> print ("Download failed (unable to check image invertibility): " ++ f) >>
                                                               return False
                                              _ -> do c <- imageMagickColor temp
-                                                     print c
                                                      return $ c < threshold
               | otherwise = do c <- imageMagickColor f
-                               print c
                                return $ c < threshold
               where threshold = 0.09
 
@@ -153,5 +151,5 @@ imageMagickColor :: FilePath -> IO Float
 imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f, "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
                         case status of
                           ExitFailure err -> error $ f ++ ": ImageMagick color read error: " ++ show err
-                          _ -> do let color = read (unpack bs) :: Float
+                          _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
                                   return color
