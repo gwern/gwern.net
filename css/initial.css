@@ -12,6 +12,7 @@
 		*/
 	--GW-body-background-color: #fff;
 	--GW-body-text-color: #000;
+	--GW-body-link-color: #272727;
 
 	/*	Blockquotes.
 		*/
@@ -20,6 +21,25 @@
 	--GW-blockquote-background-color-level-one: #f8f8f8;
 	--GW-blockquote-background-color-level-two: #e6e6e6;
 	--GW-blockquote-background-color-level-three: #d8d8d8;
+	
+	/*	Abstracts.
+		*/
+	--GW-abstract-border-color: #bbb;
+	
+	/*	Sidebar.
+		*/
+	--GW-sidebar-bullet-color: #888;
+	--GW-sidebar-horizontal-rule-color: #aaa;
+	--GW-sidebar-bullet-text-shadow-color: #000;
+	--GW-sidebar-mobile-link-border-color: #000;
+	
+	/*	Table of contents.
+		*/
+	--GW-TOC-border-color: #ccc;
+	--GW-TOC-background-color: #f9f9f9;
+	--GW-TOC-link-hover-background-color: rgba(0, 0, 0, 0.05);
+	--GW-TOC-link-hover-color: #000;
+	--GW-TOC-link-hover-indicator-bar-color: #ccc;
 }
 
 /***************/
@@ -168,16 +188,12 @@ body {
 		width: 64px;
 	}
 	#sidebar a.patreon {
-		border-top: 1px dotted #aaa;
-	}
-	#sidebar a.new {
-		box-shadow: 0 1.125em 0 0 #fff inset;
+		border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
 	}
 	#sidebar a.patreon {
 		font-size: 0.9em;
 		margin-top: 0.7em;
 		padding-top: 0.5em;
-		box-shadow: 0 1.25em 0 0 #fff inset;
 		white-space: nowrap;
 	}
 	/* add a little bit of separation between the indented list & top half */
@@ -191,11 +207,11 @@ body {
 	#sidebar a.mail::before,
 	#sidebar a.r_gwern::before {
 		content: "\2727\2007";
-		text-shadow: 0 0 0 #000;
+		text-shadow: 0 0 0 var(--GW-sidebar-bullet-text-shadow-color);
 		bottom: 0.2em;
 		position: relative;
 		font-size: 0.6em;
-		color: #888;
+		color: var(--GW-sidebar-bullet-color);
 	}
 }
 
@@ -205,7 +221,7 @@ body {
 		margin: 1.4em 0 0.5em 0;
 	}
 	#sidebar a {
-		border: 1px dotted #000;
+		border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
 		padding: 3px 10px;
 		text-align: center;
 		margin: 1px;
@@ -424,8 +440,8 @@ body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 /*********************/
 
 #TOC {
-	border: 1px solid #ccc;
-	background-color: #f9f9f9;
+	border: 1px solid var(--GW-TOC-border-color);
+	background-color: var(--GW-TOC-background-color);
 	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
 	margin: 0 2rem 1.5rem 0;
 	line-height: 1.25;
@@ -561,8 +577,8 @@ body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 }
 
 #TOC a:hover {
-	background-color: rgba(0,0,0,0.05);
-	color: #000;
+	background-color: var(--GW-TOC-link-hover-background-color);
+	color: var(--GW-TOC-link-hover-color);
 }
 #TOC a:hover::after {
 	content: "";
@@ -570,7 +586,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 	position: absolute;
 	left: 100%;
 	top: 0;
-	background-color: #ccc;
+	background-color: var(--GW-TOC-link-hover-indicator-bar-color);
 	width: 0.25em;
 	height: 100%;
 }
@@ -714,7 +730,7 @@ html {
 
 .abstract > blockquote {
 	margin: 0 0 1.5em 0;
-	border-color: #bbb;
+	border-color: var(--GW-abstract-border-color);
 	padding: 0.9rem 1.25rem 0.95rem 1.25rem;
 	clear: none;
 }
@@ -752,7 +768,7 @@ h1 {
 }
 
 a {
-	color: #272727; /* off-black */
+	color: var(--GW-body-link-color); /* off-black */
 	text-decoration: none
 }
 
