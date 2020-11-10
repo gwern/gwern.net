@@ -31,6 +31,7 @@ then
     N="$(if [ ${#} == 0 ]; then echo 8; else echo "$1"; fi)"
     cd ../../ # go to site root
     ./static/build/hakyll build +RTS -N"$N" -RTS || exit 1
+
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So... a hack.
     sed -i -e 's/section id=\"statistics\"/hr> <section id="statistics"/' ./_site/index
 
