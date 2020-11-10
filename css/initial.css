@@ -172,7 +172,7 @@ body {
 /***********/
 
 #sidebar a {
-	display: block
+	display: block;
 }
 
 @media only screen and (min-width: 65ch) {
@@ -263,7 +263,7 @@ body {
 /***************/
 
 header {
-	overflow: auto
+	overflow: auto;
 }
 
 header h1 {
@@ -538,13 +538,13 @@ body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 	margin-top: 4px;
 	padding-left: 1.4em;
 	text-indent: 0;
-	padding: 0
+	padding: 0;
 }
 
 #TOC ul ul {
 	list-style-type: none;
 	padding-left: 0.7em;
-	margin-top: 2px
+	margin-top: 2px;
 }
 
 #TOC li {
@@ -552,13 +552,13 @@ body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 	margin: 5px 0 10px 0;
 	padding-left: 1.125em;
 	position: relative;
-	overflow-wrap: break-word
+	overflow-wrap: break-word;
 }
 
 #TOC li li {
 	margin-bottom: 0;
 	font-weight: normal;
-	font-size: 0.9em
+	font-size: 0.9em;
 }
 
 #TOC p {
@@ -573,7 +573,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 #TOC a {
 	border: 0;
 	display: block;
-	position: relative
+	position: relative;
 }
 
 #TOC a:hover {
@@ -757,19 +757,20 @@ h1 {
 	font-feature-settings: 'smcp';
 	font-size: 1.75em;
 	line-height: 1.25;
-	letter-spacing: -0.75px
+	letter-spacing: -0.75px;
 }
 
 /*********/
 /* LINKS */
 /*********/
 #markdownBody a {
-	word-wrap: break-word /* force the occasional inline URL or other long word to break at max-width */
+	/* force the occasional inline URL or other long word to break at max-width */
+	word-wrap: break-word;
 }
 
 a {
 	color: var(--GW-body-link-color); /* off-black */
-	text-decoration: none
+	text-decoration: none;
 }
 
 /*=------------------------=*/
