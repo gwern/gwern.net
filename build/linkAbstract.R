@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2020-11-05 10:08:50 gwern"
+# When:  Time-stamp: "2020-11-10 18:21:21 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -105,14 +105,15 @@ if (grepl("plos",args)) {
         doi <- ids[ids$idtype=="doi",]$value
         f <- ft_get(doi, from="entrez", callopts=list(http_version = 0L))
         f2 <- f %>% ft_collect()
-        fulltext <- (f %>% ft_collect() %>% pub_chunks(c("title","authors","front","abstract")))$entrez[[1]]
+        fulltext <- (f %>% ft_collect() %>% pub_chunks(c("title","authors","front")))$entrez[[1]]
+        fulltextXML <- (f %>% ft_collect() %>% pub_chunks(c("abstract"), extract="as.character"))$entrez[[1]]
         title    <- fulltext$title
         author   <- paste(sapply(fulltext$authors, function(a) { paste(a$given_names, a$surname)}), collapse=", ")
         date     <- as.character(as.data.frame(fulltext$front)$pub.date[1])
         date     <- if (is.list(date)) { "" } else { date }
         doi      <- fulltext$doi
         doi      <- if (is.list(doi)) { "" } else { doi }
-        abstract <- fulltext$abstract
+        abstract <- fulltextXML$abstract
 
         # if the backup query fails, fail out:
         if (any(c(is.list(title), is.list(author), is.list(date), is.list(abstract)))) {
