@@ -8,8 +8,15 @@
 /**********/
 
 :root {
+	/*	General.
+		*/
+	--GW-body-background-color: #fff;
+	--GW-body-text-color: #000;
+
 	/*	Blockquotes.
 		*/
+	--GW-blockquote-border-color: #ccc;
+		
     --GW-blockquote-background-color-level-one: #f8f8f8;
     --GW-blockquote-background-color-level-two: #e6e6e6;
     --GW-blockquote-background-color-level-three: #d8d8d8;
@@ -22,7 +29,7 @@
 
 blockquote {
     margin: 1.625em 0 1.75em 0;
-    border: 1px solid #ccc;
+    border: 1px solid var(--GW-blockquote-border-color);
     font-size: 0.95em;
     padding: 1em 1.25em;
 }
@@ -50,8 +57,8 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 html {
     padding: 0;
     margin: 0;
-    background-color: #fff;
-    color: #000;
+    background-color: var(--GW-body-background-color);
+    color: var(--GW-body-text-color);
     font-weight: 400;
     font-family: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Times New Roman", "Droid Serif", "Times", serif;
 }
