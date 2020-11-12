@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-09 18:06:09 gwern"
+When:  Time-stamp: "2020-11-10 21:18:13 gwern"
 License: CC-0
 -}
 
@@ -225,8 +225,11 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
                 ExitFailure err -> (print $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
-                _ -> do let (title:author:date:doi:abstract) = lines $ U.toString mb
-                        return $ Just (l, (trim title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML (unlines abstract)))
+                _ -> do
+                        let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
+                        if length parsed < 5 then return Nothing else
+                          do let (title:author:date:doi:abstract:_) = parsed
+                             return $ Just (l, (trim title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML abstract))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-Date", "-DOI", p]
@@ -273,7 +276,6 @@ wikipedia p
   | otherwise = do let p' = replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                    let p'' = [toUpper (head p')] ++ tail p'
                    let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
-                   -- print p''
                    let rq = "https://en.wikipedia.org/api/rest_v1/page/summary/"++p'''++"?redirect=true"
                    -- `--location` is required or redirects will not be followed by *curl*; '?redirect=true' only makes the *API* follow redirects
                    (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", rq, "--user-agent", "gwern+wikipediascraping@gwern.net"]
@@ -284,16 +286,19 @@ wikipedia p
                      _ -> let j = eitherDecode bs :: Either String WP
                           in case j of
                                Left e -> putStrLn ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
-                               Right wp -> let wpTitle = title wp in
-                                             let wpAbstract = extract_html wp in
-                                               let wpThumbnail = case thumbnail wp of
-                                                     Nothing -> ""
+                               Right wp -> do let wpTitle = title wp
+                                              let wpAbstract = extract_html wp
+                                              wpThumbnail <- case thumbnail wp of
+                                                     Nothing -> return ""
                                                      Just thumbnailObject -> case (HM.lookup "source" thumbnailObject) of
-                                                                               Nothing -> ""
-                                                                               Just (String href) -> "<p><figure><img class=\"float-right\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of " ++ wpTitle ++ "\"/></figure></p>"
-                                                                               Just _ -> ""
-                                                         in
-                                            return $ Just (p, (wpTitle, "English Wikipedia", today, "", cleanAbstractsHTML wpAbstract ++ wpThumbnail))
+                                                                               Nothing -> return ""
+                                                                               Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
+                                                                                                        color <- invertImage $ T.unpack href
+                                                                                                        let imgClass = if color then "class=\"float-right invertible-auto\"" else "class=\"float-right\""
+                                                                                                        return ("<p><figure><img " ++ imgClass ++ " src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\"/></figure></p>")
+                                                                               Just _ -> return ""
+                                              return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
+                                                                                                          cleanAbstractsHTML wpAbstract ++ wpThumbnail))
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
@@ -380,6 +385,8 @@ cleanAbstractsHTML t = trim $
     , ("<abstract abstract-type=\"summary\"><br/>", "")
     , ("</p><br/>", "</p>")
     , ("</p> <br/>", "</p>")
+    , ("<p><br/>", "<p>")
+    , ("</li><br/>", "</li>")
     , ("  </sec><br/>  ", "")
     , ("<sec><br/>    ", "")
     , ("  </sec> <br/>", "")
@@ -462,9 +469,33 @@ cleanAbstractsHTML t = trim $
     , ("<h3>Conclusions & Relevance</h3>\n<p>", "<p><strong>Conclusions and Relevance</strong>: ")
     , ("<h3>Trial Registration</h3>\n<p>", "<p><strong>Trial Registration</strong>: ")
     , ("\91Keywords: ", "<strong>\91Keywords</strong>: ")
+    , ("10(-10)", "10<sup>−10</sup>")
+    , ("10(-11)", "10<sup>−11</sup>")
+    , ("10(-13)", "10<sup>−13</sup>")
+    , ("10(-15)", "10<sup>−15</sup>")
+    , ("10(-19)", "10<sup>−19</sup>")
+    , ("10(-26)", "10<sup>−26</sup>")
+    , ("10(-3)", "10<sup>−3</sup>")
+    , ("10(-4)", "10<sup>−4</sup>")
+    , ("10(-5)", "10<sup>−5</sup>")
+    , ("10(-6)", "10<sup>−6</sup>")
+    , ("10(-7)", "10<sup>−7</sup>")
+    , ("10(-8)", "10<sup>−8</sup>")
+    , ("10(-9)", "10<sup>−9</sup>")
+    , ("10(-)(3)", "10<sup>−3</sup>")
+    , ("10(-)(4)", "10<sup>−4</sup>")
+    , ("10(-)(5)", "10<sup>−5</sup>")
+    , ("10(-)(6)", "10<sup>−6</sup>")
+    , ("10(-)(7)", "10<sup>−7</sup>")
+    , ("10(-)(8)", "10<sup>−8</sup>")
+    , ("10(-)(9)", "10<sup>−9</sup>")
+    , ("10(-)(10)", "10<sup>−10</sup>")
+    , ("R (2) ", "R<sup>2</sup> ")
     , (" = .",    " = 0.")
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
+    , ("h(2)",    "<em>h</em><sup>2</sup>")
+    , ("r(g)",    "<em>r</em><sub<em>g</em></sub>")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
     , ("\40r=",     "\40<em>r</em> = ")
     , ("\40R=",     "\40<em>r</em> = ")
@@ -479,8 +510,11 @@ cleanAbstractsHTML t = trim $
     , (" N=",     " <em>N</em> = ")
     , ("\40p=",     "\40<em>p</em> = ")
     , (" n=",     " <em>n</em> = ")
+    , ("p = 0",   "<em>p</em> = 0")
     , (" P=",     " <em>p</em> = ")
     , (" P = ",   " <em>p</em> = ")
+    , ("(P = ",   "(<em>p</em> = ")
+    , ("(P=",     "(<em>p</em> = ")
     , (" p = ",   " <em>p</em> = ")
     , (" p=",     " <em>p</em> = ")
     , (" P<",     " <em>p</em> < ")

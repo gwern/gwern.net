@@ -3,11 +3,14 @@
 -- Module for typographic enhancements of text: adding smallcaps to capitalized phrases, adding line-break tags (`<wbr>`) to slashes so web browsers break at slashes in text, and adding soft hyphens to enable hyphenation on broken web browsers like Google Chrome.
 module Typography where
 
-import Data.List (intercalate)
+import Data.List (intercalate, isPrefixOf)
 import qualified Data.Text as T
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
-
+import System.Exit (ExitCode(ExitFailure))
+import Data.FileStore.Utils (runShellCommand)
 import qualified Text.Hyphenation as H (hyphenate, hyphenatorLeftMin, english_US)
+import Data.ByteString.Lazy.Char8 as B8 (unpack)
+import System.Posix.Temp
 
 import Text.Pandoc
 import Text.Pandoc.Walk (walk)
@@ -121,3 +124,32 @@ hyphenateInline x@(Str s) = if T.any (=='\173') s then x else -- U+00AD SOFT HYP
                                                             -- https://github.com/ekmett/hyphenation/issues/16
                               T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=3}) $ words $ T.unpack s
 hyphenateInline x = x
+
+
+-- Look at mean color of image, 0-1: if it's close to 0, then it's a monochrome-ish white-heavy image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check every image for color, and set an 'invertible-auto' HTML class on the ones which are low. We can manually specify a 'invertible' class on images which don't pass the heuristic but should.
+invertImageInline :: Inline -> IO Inline
+invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
+                                       let p' = T.unpack p
+                                       let p'' = if head p' == '/' then tail p' else p'
+                                       color <- invertImage p''
+                                       if not color then return x else
+                                         return (Image (htmlid, "invertible-auto":classes, kvs) xs (p,t))
+invertImageInline x = return x
+invertImage :: FilePath -> IO Bool
+invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
+                                           (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
+                                           case status of
+                                             ExitFailure _ -> print ("Download failed (unable to check image invertibility): " ++ f) >>
+                                                              return False
+                                             _ -> do c <- imageMagickColor temp
+                                                     return $ c < threshold
+              | otherwise = do c <- imageMagickColor f
+                               return $ c < threshold
+              where threshold = 0.09
+
+imageMagickColor :: FilePath -> IO Float
+imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f, "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
+                        case status of
+                          ExitFailure err -> error $ f ++ ": ImageMagick color read error: " ++ show err
+                          _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
+                                  return color
