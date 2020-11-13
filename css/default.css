@@ -1329,6 +1329,36 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     left: 3px;
 }
 
+/* /\* Sidenotes return links: align to the sidenote box like the sidenote numbering *\/ */
+/* #sidenote-column-left .footnote-back { */
+/*     position: absolute; */
+/*     bottom: -8px; */
+/*     border-color: #aaa; */
+/*     border-width: 1px 1px 0px 1px; */
+/*     width: 1.6em; */
+/*     height: 2em; */
+/*     display: flex; */
+/*     align-items: center; */
+/*     justify-content: center; */
+/*     right: 0px; */
+/* } */
+/* #sidenote-column-right .footnote-back { */
+/*     position: absolute; */
+/*     bottom: -6px; */
+/*     border-color: #aaa; */
+/*     border-width: 1px 1px 0px 1px; */
+/*     width: 1.6em; */
+/*     height: 2em; */
+/*     display: flex; */
+/*     align-items: center; */
+/*     justify-content: center; */
+/*     right: 0px; */
+/* } */
+/* /\* special-case: move the return link into blockquotes to avoid messy partial overlap *\/ */
+/* #sidenote-column-left blockquote + .footnote-back { margin-bottom: 9px; } */
+/* #sidenote-column-right blockquote + .footnote-back { margin-bottom: 7px; } */
+/* #sidenote-column-left ul + .footnote-back { margin-bottom: -11px; } */
+
 /*=--------------=*/
 /*= Margin notes *=/
 /*=--------------=*/
