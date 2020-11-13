@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-11-07 20:52:50 gwern"
+# When:  Time-stamp: "2020-11-12 20:20:49 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -69,7 +69,7 @@ do
                   -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' \
                   -e 'cssExtension: [a-c,e-z]' -- "$PAGE";
               fgp -e '(www' -e ')www' -e '![](' -e ']()' -e ' )' -e '](//' -e '](/wiki/' -e '](wiki/' -e '——–' -e '——' -e '————–' -e ' --- ' \
-                  -e ' percent ' -e "    Pearson'" -e '~~~{.sh}' -e 'library("' -e ' +-' -e ' -+' -e '"collapse Summary"' -e '"CollapseSummary"' -e 'collapseSumary' -e '<!_-' \
+                  -e ' percent ' -e "    Pearson'" -e '~~~{.sh}' -e 'library("' -e ' +-' -e ' -+' -e '"collapse Summary"' -e '"CollapseSummary"' -e 'collapseSumary' -e '<!_-' -e ' bu ' \
                   -e ']{.dropcaps}' -e '{,smallcaps}' -e '[PMC]{.smallcaps}' -e 'nsheppard' -e '<div class-' \
                   -e '^ > [a-Z]' -e '^  > [a-Z]' -e '^   > [a-Z]' -e '^  - [a-Z]' -e '^   - [a-Z]' -e '<div class="abstract">' \
                   -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/docs/genetic/' \
