@@ -823,7 +823,9 @@ a[href*="rand.org"]::after {
 
 /* Nature */
 a[href*="nature.com"]::after {
-    content: "n"; }
+    content: "n";
+    bottom: 0.55em;
+}
 
 a[href*="link.springer.com"]::after {
     content: "♘"; /* WHITE CHESS KNIGHT '♘' (U+2658) */
