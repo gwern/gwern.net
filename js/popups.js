@@ -524,7 +524,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     top: 0.15em;
     font-size: 1.125em;
 }
-#popupdiv > div .icon::after {
+#popupdiv > div .icon:not([href*='sagepub.com'])::after {
     margin: 0 0.175em 0 0;
     width: 1em;
     height: 1em;
