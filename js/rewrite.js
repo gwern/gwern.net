@@ -2,6 +2,9 @@
 /* author: Said Achmiz */
 /* license: MIT (derivative of footnotes.js, which is PD) */
 
+if (typeof window.GW == "undefined")
+    window.GW = { };
+
 /***********/
 /* HELPERS */
 /***********/
