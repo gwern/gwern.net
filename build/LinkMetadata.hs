@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-14 18:47:15 gwern"
+When:  Time-stamp: "2020-11-15 11:00:39 gwern"
 License: CC-0
 -}
 
@@ -117,7 +117,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
                                          ("popup-author",     htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
                                          ("popup-date",       T.pack date),
                                          ("popup-doi",        T.pack doi),
-                                         ("popup-abstract",   htmlToBetterHTML $ T.pack abstract')
+                                         ("popup-abstract",   finalAbstract)
                                          ])++pairs) in
     if T.head target /= '?' then Link annotationAttributes text (target, newTooltip) else
       -- Special in-place annotation definition: `<span data-metadata="Full HTML version" title="ASCII version fallback">original text anchor</span>`
@@ -126,6 +126,9 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      abstract', abstractText, possibleTooltip :: String
     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
      abstract' = if (take 3 abstract) == "<p>" then abstract else "<p>" ++ abstract ++ "</p>"
+     tabstract' = T.pack abstract'
+     -- NOTE: Pandoc erases attributes set on `<figure>` like 'float-right', so skip processing if we see that:
+     finalAbstract = if ("float-right" `isInfixOf` abstract') then tabstract' else htmlToBetterHTML tabstract'
      -- Tooltip rewriting
      -- Progressive enhancement: we create a crude, shortened, ASCII version of the full annotation to use as a regular tooltip, for non-JS users (and possibly bots)
      -- This happens if the existing tooltip is empty; but we *also* override short tooltips (defined as one where the annotation-tooltip is >30% longer than the original tooltip).
@@ -193,6 +196,9 @@ htmlToASCII input = let cleaned = runPure $ do
                  Right output -> trim output
 
 -- clean up abstracts & titles with functions from Typography module: smallcaps & hyphenation (hyphenation is particularly important in popups because of the highly restricted horizontal width).
+-- WARNING: Pandoc is not lossless when reading HTML; eg classes set on unsupported elements like `<figure>` will be erased:
+-- $ echo '<figure class="float-right"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" /></figure>' | pandoc -f html -w html
+-- → '<figure> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" alt="" /> </figure>'
 htmlToBetterHTML :: T.Text -> T.Text
 htmlToBetterHTML html = let cleaned = runPure $ do
                                     pandoc <- readHtml def{ readerExtensions = pandocExtensions } html
@@ -294,11 +300,13 @@ wikipedia p
                                                                                Nothing -> return ""
                                                                                Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
                                                                                                         color <- invertImage $ T.unpack href
-                                                                                                        let imgClass = if color then "class=\"float-right invertible-auto\"" else "class=\"float-right\""
-                                                                                                        return ("<p><figure><img " ++ imgClass ++ " src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\"/></figure></p>")
+                                                                                                        let imgClass = if color then "class=\"invertible-auto\" " else ""
+                                                                                                        return ("<p><figure class=\"float-right\"><img " ++ imgClass ++ "src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure></p> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
-                                                                                                          cleanAbstractsHTML wpAbstract ++ wpThumbnail))
+                                                                                                          -- NOTE: because of Pandoc erasing float-right, we skip 'htmlToBetterHTML' in the regular page-compilation loop for instances with 'float-right' in them; we instead do it here, at annotation-creation-time, where we know it's safe because we avoid running 'htmlToBetterHTML' (with its Pandoc call) on the thumbnail code:
+                                                                                                          let wpAbstract' = if ("float-right" `isInfixOf` wpThumbnail) then (T.unpack $ htmlToBetterHTML $ T.pack $ cleanAbstractsHTML wpAbstract) else cleanAbstractsHTML wpAbstract in
+                                                                                                          wpThumbnail ++ wpAbstract'))
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
@@ -421,6 +429,7 @@ cleanAbstractsHTML t = trim $
     , ("<abstract>", "")
     , ("<abstract>\n  ", "")
     , ("\n</abstract>", "")
+    , ("<p><strong>Abstract</strong>: ", "<p>")
     , ("\nHighlights: ", "\n<strong>Highlights</strong>: ")
     , ("\nBackground: ", "\n<strong>Background</strong>: ")
     , ("\nAbstract: ", "\n<strong>Abstract</strong>: ")
@@ -514,6 +523,7 @@ cleanAbstractsHTML t = trim $
     , ("\40n = ",   "\40<em>n</em> = ")
     , ("\40n=",     "\40<em>n</em> = ")
     , ("\40N=",     "\40<em>N</em> = ")
+    , (" N ~ ",     " <em>n</em> ~ ")
     , ("<em>p</em> = .", "<em>p</em> = 0.")
     , ("<em>p</em> < .", "<em>p</em> < 0.")
     , (" N=",     " <em>N</em> = ")
@@ -537,6 +547,7 @@ cleanAbstractsHTML t = trim $
     , ("p-value", "<em>p</em>-value")
     , (" ", " ")
     , ("∼", "~")
+    , ("GxE", "G×E")
       ]
 
 trim :: String -> String
