@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-11 12:31:31 gwern"
+When:  Time-stamp: "2020-11-14 18:47:15 gwern"
 License: CC-0
 -}
 
@@ -13,7 +13,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata where
 
-import Control.Monad(when)
+import Control.Monad (when)
 import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- (encode, decode) -- TODO: why doesn't using U.toString fix the Unicode problems?
@@ -30,13 +30,13 @@ import qualified Data.Text as T (head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import Data.List.Utils (replace, split, uniq)
-import Text.HTML.TagSoup -- (parseTags, isTagOpenName, renderTags, Tag(TagClose, TagOpen))
+import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 
-import Typography
+import Typography (typographyTransform, invertImage)
 
 type Metadata = M.Map Path MetadataItem -- (Title, Author, Date, DOI, Abstract)
 type MetadataItem = (String, String, String, String, String)
@@ -133,7 +133,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      abstractText = htmlToASCII abstract'
      possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++", " ++ date ++
                         (if doi /= "" then " (DOI:"++doi++")" else "")
-                        ++ "; abstract: \""++(if (length abstractText)>300 then (take 300 abstractText) ++ "…" else abstractText)++"\""
+                        ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ "…" else abstractText))++"\""
      newTooltip :: T.Text
      newTooltip = if (fromIntegral (length possibleTooltip)::Float) > ((fromIntegral $ T.length originalTooltip)*1.3::Float)
                    then T.pack possibleTooltip else originalTooltip
@@ -383,6 +383,10 @@ cleanAbstractsHTML t = trim $
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
     , ("<abstract abstract-type=\"summary\"><br/>", "")
+    , ("<p> ", "<p>")
+    , (" <p>", "<p>")
+    , ("</p> ", "</p>")
+    , (" </p>", "</p>")
     , ("</p><br/>", "</p>")
     , ("</p> <br/>", "</p>")
     , ("<p><br/>", "<p>")
@@ -494,7 +498,9 @@ cleanAbstractsHTML t = trim $
     , ("10(-)(9)", "10<sup>−9</sup>")
     , ("10(-)(10)", "10<sup>−10</sup>")
     , ("R (2) ", "R<sup>2</sup> ")
+    , ("CO(2)", "CO<sub>2</sub>")
     , (" = .",    " = 0.")
+    , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("h(2)",    "<em>h</em><sup>2</sup>")
