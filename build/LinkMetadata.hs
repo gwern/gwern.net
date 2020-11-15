@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-15 11:00:39 gwern"
+When:  Time-stamp: "2020-11-15 11:31:50 gwern"
 License: CC-0
 -}
 
@@ -68,7 +68,7 @@ readLinkMetadata = do
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
                    case file of
-                     Left e -> error $ show e
+                     Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
                      Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> MetadataList
@@ -126,9 +126,9 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      abstract', abstractText, possibleTooltip :: String
     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
      abstract' = if (take 3 abstract) == "<p>" then abstract else "<p>" ++ abstract ++ "</p>"
-     tabstract' = T.pack abstract'
-     -- NOTE: Pandoc erases attributes set on `<figure>` like 'float-right', so skip processing if we see that:
-     finalAbstract = if ("float-right" `isInfixOf` abstract') then tabstract' else htmlToBetterHTML tabstract'
+     tabstract' = htmlToBetterHTML $ T.pack abstract'
+     -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore the float-right if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation, and it's a lot simpler...):
+     finalAbstract = if ("float-right" `isInfixOf` abstract') then T.pack $ replace "<figure>" "<figure class=\"float-right\">" $ T.unpack tabstract' else tabstract'
      -- Tooltip rewriting
      -- Progressive enhancement: we create a crude, shortened, ASCII version of the full annotation to use as a regular tooltip, for non-JS users (and possibly bots)
      -- This happens if the existing tooltip is empty; but we *also* override short tooltips (defined as one where the annotation-tooltip is >30% longer than the original tooltip).
@@ -304,8 +304,7 @@ wikipedia p
                                                                                                         return ("<p><figure class=\"float-right\"><img " ++ imgClass ++ "src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure></p> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
-                                                                                                          -- NOTE: because of Pandoc erasing float-right, we skip 'htmlToBetterHTML' in the regular page-compilation loop for instances with 'float-right' in them; we instead do it here, at annotation-creation-time, where we know it's safe because we avoid running 'htmlToBetterHTML' (with its Pandoc call) on the thumbnail code:
-                                                                                                          let wpAbstract' = if ("float-right" `isInfixOf` wpThumbnail) then (T.unpack $ htmlToBetterHTML $ T.pack $ cleanAbstractsHTML wpAbstract) else cleanAbstractsHTML wpAbstract in
+                                                                                                          let wpAbstract' = cleanAbstractsHTML wpAbstract in
                                                                                                           wpThumbnail ++ wpAbstract'))
 
 -- handles medRxiv too (same codebase)
