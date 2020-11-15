@@ -565,7 +565,7 @@ a[href*="publicdomainreview.org"]::after {
 
 /* Kevin Simler's Melting Asphalt blog */
 a[href*="meltingasphalt.com"]::after {
-    content: "▲▲";
+    content: "▲";
     font-size: 60%;
     bottom: 0.5em;
     letter-spacing: -0.1em; }

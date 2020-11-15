@@ -525,7 +525,8 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     top: 0.15em;
     font-size: 1.125em;
 }
-#popupdiv > div .icon:not([href*='sagepub.com'])::after {
+/* TODO: the 4-letter block link icons defined in 'links.css' interact badly with the popup links, so we have to manually filter them out pending a rewrite: */
+#popupdiv > div .icon:not([href*='sagepub.com']):not([href*='pnas.org']):not([href*='xkcd.com']):not([href*='rand.org']):not([href*='www.cell.com']):not([href*='publicdomainreview.org']):not([href*='mlp.fandom.com']):not([href*='www.nber.org'])::after {
     margin: 0 0.175em 0 0;
     width: 1em;
     height: 1em;
