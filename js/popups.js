@@ -463,6 +463,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
     max-width: ${Extracts.maxPopupWidth}px;
     max-height: calc(100vh - 2 * ${Extracts.popupBorderWidth}px - 26px);
 }
+#popupdiv img { width: 100%; }
 /* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
 #popupdiv a { text-decoration: underline; }
 #popupdiv a:hover { color: #888; }
