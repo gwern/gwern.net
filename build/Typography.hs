@@ -124,6 +124,12 @@ hyphenateInline x@(Str s) = if T.any (=='\173') s then x else -- U+00AD SOFT HYP
                               Str $ T.replace "-\173" "-" $ -- odd edge-case exposed on Safari: because hyphenator breaks on hyphens (why?), interspersing the soft hyphen results in *two* hyphens being displayed should the line break there! since the regular hyphen already ensures a linebreak opportunity
                                                             -- the soft hyphen is unnecessary, so just delete it.
                                                             -- https://github.com/ekmett/hyphenation/issues/16
+                              -- preserve font ligatures at vshabanov's suggestion: "f"++"filjt" (SSfP supports these)
+                              T.replace "f\173f" "ff" $
+                              T.replace "f\173i" "fi" $
+                              T.replace "f\173l" "fl" $
+                              T.replace "f\173j" "fj" $
+                              T.replace "f\173t" "ft" $
                               T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=3}) $ words $ T.unpack s
 hyphenateInline x = x
 
