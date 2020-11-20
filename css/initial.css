@@ -13,6 +13,10 @@
 	--GW-body-background-color: #fff;
 	--GW-body-text-color: #000;
 	--GW-body-link-color: #272727;
+
+	/*	Text.
+		*/
+	--GW-text-background-color: var(--GW-body-background-color);
 	
 	/*	Selection.
 		*/
@@ -21,7 +25,6 @@
 	
 	/*	Link underlining.
 		*/
-	--GW-body-link-underline-gradient-background-color: #fff;
 	--GW-body-link-underline-gradient-line-color: #333;
 	--GW-body-link-underline-gradient-line-color-hover: #999;
 
@@ -773,8 +776,8 @@ May be able at some point to simplify this using regular link underlining, since
 article > :not(#TOC) a:link {
 	text-decoration: none;
 	background-image:
-		linear-gradient(var(--GW-body-link-underline-gradient-background-color), var(--GW-body-link-underline-gradient-background-color)),
-		linear-gradient(var(--GW-body-link-underline-gradient-background-color), var(--GW-body-link-underline-gradient-background-color)),
+		linear-gradient(var(--GW-text-background-color), var(--GW-text-background-color)),
+		linear-gradient(var(--GW-text-background-color), var(--GW-text-background-color)),
 		linear-gradient(var(--GW-body-link-underline-gradient-line-color), var(--GW-body-link-underline-gradient-line-color));
 	background-size:
 		0.05em 1px,
@@ -789,26 +792,26 @@ article > :not(#TOC) a:link {
 		100% 90%,
 		  0% 90%;
 	text-shadow:
-		 0.05em 0	   var(--GW-body-link-underline-gradient-background-color),
-		-0.05em 0	   var(--GW-body-link-underline-gradient-background-color),
-		 0	  0.05em   var(--GW-body-link-underline-gradient-background-color),
-		 0	 -0.05em   var(--GW-body-link-underline-gradient-background-color),
-		 0.08em 0	   var(--GW-body-link-underline-gradient-background-color),
-		-0.08em 0	   var(--GW-body-link-underline-gradient-background-color),
-		 0.11em 0	   var(--GW-body-link-underline-gradient-background-color),
-		-0.11em 0	   var(--GW-body-link-underline-gradient-background-color),
-		 0.14em 0	   var(--GW-body-link-underline-gradient-background-color),
-		-0.14em 0	   var(--GW-body-link-underline-gradient-background-color),
-		 0.17em 0	   var(--GW-body-link-underline-gradient-background-color),
-		-0.17em 0	   var(--GW-body-link-underline-gradient-background-color);
+		 0.05em 0	   var(--GW-text-background-color),
+		-0.05em 0	   var(--GW-text-background-color),
+		 0	  0.05em   var(--GW-text-background-color),
+		 0	 -0.05em   var(--GW-text-background-color),
+		 0.08em 0	   var(--GW-text-background-color),
+		-0.08em 0	   var(--GW-text-background-color),
+		 0.11em 0	   var(--GW-text-background-color),
+		-0.11em 0	   var(--GW-text-background-color),
+		 0.14em 0	   var(--GW-text-background-color),
+		-0.14em 0	   var(--GW-text-background-color),
+		 0.17em 0	   var(--GW-text-background-color),
+		-0.17em 0	   var(--GW-text-background-color);
 
 	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
 	font-variant-numeric: lining-nums;
 }
 article > :not(#TOC) a:hover {
 	background-image:
-		linear-gradient(var(--GW-body-link-underline-gradient-background-color), var(--GW-body-link-underline-gradient-background-color)),
-		linear-gradient(var(--GW-body-link-underline-gradient-background-color), var(--GW-body-link-underline-gradient-background-color)),
+		linear-gradient(var(--GW-text-background-color), var(--GW-text-background-color)),
+		linear-gradient(var(--GW-text-background-color), var(--GW-text-background-color)),
 		linear-gradient(var(--GW-body-link-underline-gradient-line-color-hover), var(--GW-body-link-underline-gradient-line-color-hover));
 }
 
@@ -862,14 +865,17 @@ blockquote,
 blockquote blockquote blockquote blockquote {
 	z-index: -2;
 	background-color: var(--GW-blockquote-background-color-level-one);
+	--GW-text-background-color: var(--GW-blockquote-background-color-level-one);
 }
 blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
 	background-color: var(--GW-blockquote-background-color-level-two);
+	--GW-text-background-color: var(--GW-blockquote-background-color-level-two);
 }
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
 	background-color: var(--GW-blockquote-background-color-level-three);
+	--GW-text-background-color: var(--GW-blockquote-background-color-level-two);
 }
 
 /********/

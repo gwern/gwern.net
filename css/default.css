@@ -4,6 +4,40 @@
 /* General desktop/mobile: loaded in initial.css */
 /* default.css: contains everything else, like drop caps, link icons, tables, etc */
 
+/**********/
+/* COLORS */
+/**********/
+
+:root {
+	/*	Collapse blocks.
+		*/
+	--GW-collapse-block-disclosure-button-color: #999;
+	--GW-table-collapse-block-disclosure-button-color: #ccc;
+	--GW-collapse-block-disclosure-button-hover-color: #666;
+	--GW-table-collapse-block-disclosure-button-hover-color: #eee;
+	--GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
+	--GW-collapse-block-click-to-expand-text-color: #777;
+	--GW-collapse-block-click-to-expand-text-shadow-color: #fff;
+	--GW-collapse-block-click-to-expand-text-hover-color: #444;
+	--GW-collapse-block-hover-border-color: #777;
+
+	/*	Headings.
+		*/
+	--GW-H1-box-shadow-background-color: #fff;
+	--GW-H1-box-shadow-line-color: #888;
+	--GW-H2-bottom-border-color: #888;
+	--GW-heading-self-link-hover-color: #485555;
+
+	--GW-comment-section-top-border-color: #999;
+
+	--GW-link-hover-color: #888;
+
+	--GW-bulleted-list-marker-color: #808080;
+
+	--GW-figure-outline-color: #888;
+	--GW-figure-caption-outline-color: #888;
+}
+
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -156,14 +190,14 @@ section.collapse:target > .disclosure-button {
     top: 0;
     width: 1em;
     height: 1em;
-    color: #999;
+    color: var(--GW-collapse-block-disclosure-button-color);
     padding: 4px 0 4px 8px;
 }
 :not(section).collapse > .disclosure-button::before {
     right: 1px;
 }
 .tableCollapse > .disclosure-button::before {
-    color: #ccc;
+    color: var(--GW-table-collapse-block-disclosure-button-color);
 }
 .disclosure-button:checked::before,
 .collapse:target > .disclosure-button::before {
@@ -175,22 +209,22 @@ section.collapse:target > .disclosure-button {
     right: -2px;
 }
 .collapse > .disclosure-button:hover::before {
-    color: #666;
+    color: var(--GW-collapse-block-disclosure-button-hover-color);
 }
 section.collapse:target > .disclosure-button::before {
     opacity: 0.4;
 }
 .tableCollapse > .disclosure-button:hover::before {
-    color: #eee;
+    color: var(--GW-table-collapse-block-disclosure-button-hover-color);
 }
 .disclosure-button:focus {
     outline: none;
 }
 .disclosure-button:focus::before {
     text-shadow:
-        0 0 1px #e00,
-        0 0 3px #e00,
-        0 0 5px #e00;
+        0 0 1px var(--GW-collapse-block-disclosure-button-focus-text-shadow-color),
+        0 0 3px var(--GW-collapse-block-disclosure-button-focus-text-shadow-color),
+        0 0 5px var(--GW-collapse-block-disclosure-button-focus-text-shadow-color);
 }
 
 /*  "Click to expand" highlight
@@ -199,27 +233,26 @@ section.collapse:target > .disclosure-button::before {
     width: 100%;
     position: absolute;
     text-align: center;
-    color: #777;
     pointer-events: none;
     content: "… Click to expand …";
     font-size: 1.25em;
     font-weight: 600;
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    color: #777;
+    color: var(--GW-collapse-block-click-to-expand-text-color);
     text-shadow:
-         1px -1px 0 #fff,
-        -1px  1px 0 #fff,
-        -1px -1px 0 #fff,
-         1px  1px 0 #fff;
+         1px -1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
+        -1px  1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
+        -1px -1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
+         1px  1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color);
     top: calc(100% - 1.225em);
 }
 .collapse:not(:target) > .disclosure-button:hover::after {
-    color: #444;
+    color: var(--GW-collapse-block-click-to-expand-text-hover-color);
     text-shadow:
-         2px -2px 0 #fff,
-        -2px  2px 0 #fff,
-        -2px -2px 0 #fff,
-         2px  2px 0 #fff;
+         2px -2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
+        -2px  2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
+        -2px -2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
+         2px  2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color);
 }
 .collapse:not(:target) > .disclosure-button:checked::after {
     content: "Click to collapse";
@@ -236,7 +269,7 @@ section.collapse:not(:target) > .disclosure-button:checked::after {
     top: -7px;
 }
 .disclosure-button:not(:checked):hover {
-    border: 1px dotted #777;
+    border: 1px dotted var(--GW-collapse-block-hover-border-color);
 }
 
 /************/
@@ -282,8 +315,8 @@ section:not(.collapse) > h1:first-child {
     text-align: right;
     font-weight: 600;
     box-shadow:
-        0 -2px 0 0 #fff inset,
-        0 -3px 0 0 #888 inset;
+        0 -2px 0 0 var(--GW-H1-box-shadow-background-color) inset,
+        0 -3px 0 0 var(--GW-H1-box-shadow-line-color) inset;
 }
 #markdownBody section:not(.collapse) > h1:first-child a {
     position: relative;
@@ -299,8 +332,8 @@ section:not(.collapse) > h1:first-child {
         overflow: hidden;
         padding: 0 0 7px 0.75rem;
         box-shadow:
-            0 -5px 0 0 #fff inset,
-            0 -6px 0 0 #888 inset;
+            0 -5px 0 0 var(--GW-H1-box-shadow-background-color) inset,
+            0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
     }
     #markdownBody section:not(.collapse) > h1:first-child a::after {
         opacity: 0.4;
@@ -325,7 +358,7 @@ h2::after {
     display: block;
     position: absolute;
     width: 100%;
-    border-bottom: 1px dotted #888;
+    border-bottom: 1px dotted var(--GW-H2-bottom-border-color);
     left: 0;
     bottom: 0.05em;
     pointer-events: none;
@@ -384,7 +417,7 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
     display: block;
 }
 #markdownBody section > :first-child a:hover {
-    color: #485555;
+    color: var(--GW-heading-self-link-hover-color);
 }
 #markdownBody section > :first-child a::after {
     content: "\00B6"; /* Pilcrow sign: ¶ */
@@ -446,7 +479,7 @@ hr::after {
     display: block;
     position: absolute;
     width: calc(100% + 1ch);
-    border-top: 1px solid #999;
+    border-top: 1px solid var(--GW-comment-section-top-border-color);
     top: 0;
     left: 0;
 }
@@ -468,7 +501,7 @@ a, h1, h2, h3, h4, h5, h6 { /* Skip old-style figures in elements with underlini
 /*********/
 article > :not(#TOC) a:hover,
 #footer a:hover {
-    color: #888;
+    color: var(--GW-link-hover-color);
 }
 
 /*=-----------------------------------------=*/
@@ -560,7 +593,7 @@ blockquote + p { margin-top: 0.6em; }
 /* NOTE: should be able to simplify list markers ~2026 using ::marker, see https://web.dev/css-marker-pseudo-element/ https://www.caniuse.com/css-marker-pseudo */
 #markdownBody ul > li::before,
 #popupdiv ul > li::before {
-    color: #808080;
+    color: var(--GW-bulleted-list-marker-color);
     font-size: 0.875em;
     top: 0.125em;
     left: -1.375em;
@@ -657,7 +690,7 @@ figure video {
     height: auto;
     width: auto;
     margin: 0 auto;
-    outline: 1px solid #888;
+    outline: 1px solid var(--GW-figure-outline-color);
 }
 /* WARNING: work around Chrome layout bug */
 figure audio {
@@ -676,7 +709,7 @@ figcaption {
 }
 .caption-wrapper {
     display: block;
-    outline: 1px solid #888;
+    outline: 1px solid var(--GW-figure-caption-outline-color);
     margin: 1px 0 0 0;
 }
 @supports (width: -moz-fit-content) {
@@ -736,41 +769,6 @@ figure.full-width {
 /* avoid problems with floating */
 blockquote {
     clear: both;
-}
-
-article > :not(#TOC) blockquote a:link,
-article > :not(#TOC) blockquote blockquote blockquote a:link,
-article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
-    text-shadow:
-         0.03em 0       var(--GW-blockquote-background-color),
-        -0.03em 0       var(--GW-blockquote-background-color),
-         0      0.03em  var(--GW-blockquote-background-color),
-         0     -0.03em  var(--GW-blockquote-background-color),
-         0.06em 0       var(--GW-blockquote-background-color),
-        -0.06em 0       var(--GW-blockquote-background-color),
-         0.09em 0       var(--GW-blockquote-background-color),
-        -0.09em 0       var(--GW-blockquote-background-color),
-         0.12em 0       var(--GW-blockquote-background-color),
-        -0.12em 0       var(--GW-blockquote-background-color),
-         0.15em 0       var(--GW-blockquote-background-color),
-        -0.15em 0       var(--GW-blockquote-background-color);
-}
-article > :not(#TOC) blockquote blockquote a:link,
-article > :not(#TOC) blockquote blockquote blockquote blockquote a:link,
-article > :not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
-    text-shadow:
-         0.03em 0       #e6e6e6,
-        -0.03em 0       #e6e6e6,
-         0      0.03em  #e6e6e6,
-         0     -0.03em  #e6e6e6,
-         0.06em 0       #e6e6e6,
-        -0.06em 0       #e6e6e6,
-         0.09em 0       #e6e6e6,
-        -0.09em 0       #e6e6e6,
-         0.12em 0       #e6e6e6,
-        -0.12em 0       #e6e6e6,
-         0.15em 0       #e6e6e6,
-        -0.15em 0       #e6e6e6;
 }
 
 blockquote blockquote {
