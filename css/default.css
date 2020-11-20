@@ -28,14 +28,71 @@
 	--GW-H2-bottom-border-color: #888;
 	--GW-heading-self-link-hover-color: #485555;
 
+	/*	Comments.
+		*/
 	--GW-comment-section-top-border-color: #999;
 
+	/*	Links.
+		*/
 	--GW-link-hover-color: #888;
 
+	/*	Lists.
+		*/
 	--GW-bulleted-list-marker-color: #808080;
 
+	/*	Figures.
+		*/
 	--GW-figure-outline-color: #888;
 	--GW-figure-caption-outline-color: #888;
+
+	/*	Footnotes.
+		*/
+	--GW-footnote-backlink-border-color: #000;
+	--GW-footnote-backlink-border-hover-color: #999;
+	--GW-footnote-backlink-after-bordered-block-background-color: #fff;
+
+	/*	Footnote references.
+		*/
+	--GW-footnote-ref-highlight-box-shadow-color: #aaa;
+	--GW-footnote-ref-highlight-box-shadow-interstitial-color: #fff;
+	--GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
+
+	/*	Footnote popups.
+		*/
+	--GW-footnote-popup-box-shadow-color: #fff;
+	--GW-footnote-popup-background-color: #fff;
+	--GW-footnote-popup-border-color: #aaa;
+	--GW-footnote-popup-scrollbar-thumb-color: #ccc;
+	--GW-footnote-popup-scrollbar-track-color: #fff;
+	--GW-footnote-popup-scrollbar-thumb-hover-color: #999;
+
+	/*	Sidenotes.
+		*/
+	--GW-sidenote-highlight-background-color: #fff;
+	--GW-sidenote-highlight-box-shadow-color: #aaa;
+	--GW-sidenote-border-color: #aaa;
+	--GW-sidenote-scrollbar-track-color: #fff;
+	--GW-sidenote-self-link-border-color: #aaa;
+
+	/*	Tables.
+		*/
+	--GW-table-border-color: #000;
+	--GW-table-full-width-background-color: #fff;
+	--GW-table-caption-border-color: #000;
+	--GW-table-row-horizontal-border-color: #000;
+	--GW-table-cell-vertical-border-color: #fff;
+	--GW-table-scrollbar-track-color: #fff;
+	--GW-table-scrollbar-border-color: #000;
+	--GW-table-column-heading-hover-background-color: #e2f0f2;
+}
+
+/*  Special styles for special browsers.
+    */
+@supports (-moz-user-focus: normal) {
+    @media only screen and (max-width: 176ch) {
+    	:root {
+    		--GW-footnote-ref-highlight-background-color: #fff;
+    	}
 }
 
 /*********************/
@@ -848,6 +905,7 @@ blockquote table {
     position: relative;
     z-index: 1;
     overflow: visible;
+	--GW-text-background-color: var(--GW-body-background-color);
 }
 .epigraph p  {
     font-style: italic;
@@ -889,22 +947,6 @@ blockquote table {
     content: "\201D";
     right: -0.975em;
     bottom: -1em;
-}
-
-article > :not(#TOC) .epigraph blockquote a:link{
-    text-shadow:
-         0.03em 0       #fff,
-        -0.03em 0       #fff,
-         0      0.03em  #fff,
-         0     -0.03em  #fff,
-         0.06em 0       #fff,
-        -0.06em 0       #fff,
-         0.09em 0       #fff,
-        -0.09em 0       #fff,
-         0.12em 0       #fff,
-        -0.12em 0       #fff,
-         0.15em 0       #fff,
-        -0.15em 0       #fff;
 }
 
 @media only screen and (max-width: 64.9ch) {
@@ -997,7 +1039,7 @@ a.footnote-ref {
     position: relative;
     font-weight: bold;
     line-height: 1;
-    border: 1px dotted #000;
+    border: 1px dotted var(--GW-footnote-backlink-border-color);
     display: inline-block;
     padding: 2px 3px 0 3px;
     text-indent: 0;
@@ -1008,7 +1050,7 @@ a.footnote-ref {
     background-image: none;
 }
 #markdownBody .footnotes a.footnote-back:hover {
-    border-color: #999;
+    border-color: var(--GW-footnote-backlink-border-hover-color);
 }
 
 .footnotes li {
@@ -1021,7 +1063,7 @@ a.footnote-ref {
     right: 0.5em;
     top: unset;
     bottom: -0.5em;
-    background-color: #fff;
+    background-color: var(--GW-footnote-backlink-after-bordered-block-background-color);
 }
 
 /*=--------------------------=*/
@@ -1032,7 +1074,7 @@ a.footnote-ref {
 #footnotediv {
     z-index: 10001;
     font-size: 0.9em;
-    box-shadow: 0 0 0 2px #fff;
+    box-shadow: 0 0 0 2px var(--GW-footnote-popup-box-shadow-color);
     position: absolute;
     opacity: 1.0;
     transition: none;
@@ -1044,11 +1086,11 @@ a.footnote-ref {
 }
 
 #footnotediv > div {
-    background-color: #fff;
+    background-color: var(--GW-footnote-popup-background-color);
     padding: 12px 16px 14px 16px;
     max-width: 800px;
     max-height: calc(100vh - 32px);
-    border: 3px double #aaa;
+    border: 3px double var(--GW-footnote-popup-border-color);
     line-height: 1.45;
     overflow: auto;
     overscroll-behavior: none;
@@ -1060,12 +1102,12 @@ a.footnote-ref {
     width: 14px;
 }
 #footnotediv > div::-webkit-scrollbar-thumb {
-    background-color: #ccc;
+    background-color: var(--GW-footnote-popup-scrollbar-thumb-color);
     box-shadow:
-        0 0 0 3px #fff inset;
+        0 0 0 3px var(--GW-footnote-popup-scrollbar-track-color) inset;
 }
 #footnotediv > div::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
+    background-color: var(--GW-footnote-popup-scrollbar-thumb-hover-color);
 }
 
 #footnotediv a.footnote-back {
@@ -1156,12 +1198,12 @@ a.footnote-ref {
 .sidenote:hover,
 .sidenote:target,
 .sidenote.targeted {
-    background-color: #fff;
+    background-color: var(--GW-sidenote-highlight-background-color);
     box-shadow:
-        0 0 0 10px #fff,
-        0 0 0 11px #aaa,
-        0 0 0 12px #fff,
-        0 0 0 13px #aaa;
+        0 0 0 10px var(--GW-sidenote-highlight-background-color),
+        0 0 0 11px var(--GW-sidenote-highlight-box-shadow-color),
+        0 0 0 12px var(--GW-sidenote-highlight-background-color),
+        0 0 0 13px var(--GW-sidenote-highlight-box-shadow-color);
     opacity: 1.0;
 }
 .sidenote:target {
@@ -1195,7 +1237,7 @@ a.footnote-ref {
     position: relative;
     z-index: 1;
     border-style: dotted;
-    border-color: #aaa;
+    border-color: var(--GW-sidenote-border-color);
     border-width: 1px 0;
 }
 .sidenote.cut-off .sidenote-outer-wrapper {
@@ -1213,7 +1255,7 @@ a.footnote-ref {
 .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
     box-shadow:
-        0 0 0 2px #fafafa inset;
+        0 0 0 2px var(--GW-sidenote-scrollbar-track-color) inset;
     background-size: 2px;
 }
 .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
@@ -1269,11 +1311,11 @@ a.footnote-ref {
 .footnote-ref.highlighted::before,
 .footnote-ref:target::before,
 .footnote-ref.targeted::before {
-    background-color: rgba(255,255,255,0.75);
+    background-color: var(--GW-footnote-ref-highlight-background-color);
     box-shadow:
-        0 0 0 1px #aaa,
-        0 0 0 2px #fff,
-        0 0 0 3px #aaa;
+        0 0 0 1px var(--GW-footnote-ref-highlight-box-shadow-color),
+        0 0 0 2px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
+        0 0 0 3px var(--GW-footnote-ref-highlight-box-shadow-color);
 }
 @media only screen and (max-width: 176ch) {
     .footnote-ref:target::before {
@@ -1287,12 +1329,11 @@ a.footnote-ref {
 @supports (-moz-user-focus: normal) {
     @media only screen and (max-width: 176ch) {
         .footnote-ref:target {
-            background-color: #fff;
             box-shadow:
-                0 0.2em 0 6px #fff,
-                0 0.2em 0 7px #aaa,
-                0 0.2em 0 8px #fff,
-                0 0.2em 0 9px #aaa;
+                0 0.2em 0 6px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
+                0 0.2em 0 7px var(--GW-footnote-ref-highlight-box-shadow-color),
+                0 0.2em 0 8px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
+                0 0.2em 0 9px var(--GW-footnote-ref-highlight-box-shadow-color);
         }
     }
 }
@@ -1306,7 +1347,7 @@ a.footnote-ref {
     position: absolute;
     top: 3px;
     border-style: dotted;
-    border-color: #aaa;
+    border-color: var(--GW-sidenote-self-link-border-color);
     border-width: 1px 1px 0px 1px;
     width: 2em;
     height: 2em;
@@ -1414,7 +1455,7 @@ table {
     width: 100%;
     font-size: 0.75em;
     border-style: solid;
-    border-color: #000;
+    border-color: var(--GW-table-border-color);
     border-width: 2px 0;
 }
 
@@ -1423,7 +1464,7 @@ table {
 /*=-------------------=*/
 
 .tableWrapper.full-width {
-    background-color: #fff;
+    background-color: var(--GW-table-full-width-background-color);
     z-index: 1;
     position: relative;
 }
@@ -1436,7 +1477,7 @@ table caption {
     padding: 0.25em 0.75em;
     font-style: italic;
     font-size: 1.25em;
-    border-top: 2px solid #000;
+    border-top: 2px solid var(--GW-table-caption-border-color);
 }
 
 table th,
@@ -1446,7 +1487,7 @@ table td {
 }
 table th {
     font-weight: bold;
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid var(--GW-table-row-horizontal-border-color);
     text-align: left;
 }
 table td {
@@ -1454,7 +1495,7 @@ table td {
 }
 table th + th,
 table td + td {
-    border-left: 1px solid #fff;
+    border-left: 1px solid var(--GW-table-cell-vertical-border-color);
 }
 
 /*=--------------------------------------------------=*/
@@ -1468,9 +1509,9 @@ table td + td {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMXd3d////ywAAAAABAAEAAACBgQShqgJBQA7');
     background-size: 2px;
     box-shadow:
-        0 2px 0 0   #fafafa inset,
-        0 0   0 1px #000 inset,
-        0 2px 0 1px #000 inset;
+        0 2px 0 0   var(--GW-table-scrollbar-track-color) inset,
+        0 0   0 1px var(--GW-table-scrollbar-border-color) inset,
+        0 2px 0 1px var(--GW-table-scrollbar-border-color) inset;
 }
 .tableWrapper::-webkit-scrollbar-thumb:hover {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
@@ -1489,7 +1530,7 @@ th.tablesorter-header {
     padding-left: 20px;
 }
 th.header:hover {
-    background-color: #e2f0f2;
+    background-color: var(--GW-table-column-heading-hover-background-color);
 }
 th.tablesorter-headerAsc {
     background-image: url('/static/img/small_asc.gif');
