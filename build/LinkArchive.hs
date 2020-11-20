@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-11-08 19:48:29 gwern"
+When:  Time-stamp: "2020-11-20 16:43:34 gwern"
 License: CC-0
 -}
 
@@ -607,7 +607,7 @@ whiteList url
       , "abandonedfootnotes.blogspot.com" -- stable
       , "jacurutu.com" -- stable
       , "fanfiction.net" -- stable
-      , "patreon.com/gwern" -- service
+      , "patreon.com/" -- service
       , "practicaltypography.com" -- stable
       , "oglaf.com" -- stable
       , "catb.org" -- stable
