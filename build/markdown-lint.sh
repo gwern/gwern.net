@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-11-17 16:25:31 gwern"
+# When:  Time-stamp: "2020-11-20 11:54:26 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -45,7 +45,7 @@ do
                  -e 'dlcs.io/' -e 'centerforcollegeaffordability.org' -e 'quora.com' -e 'times-news.com' -e 'www.cebp.nl' \
                  -e '#filmtv' -e 'nybooks.com' -e '<div id="columns">' -e 'http://slatestarcodex.com' -e 'annualreviews.org' \
                  -e 'dspace.mit.edu' -e 'shirky.com' -e '](http://www.nzherald.co.nz)' -e 'https://www.arxiv.org' -e 'http://arxiv.org' \
-                 -e 'http://www.arxiv.org' -- "$PAGE";
+                 -e 'http://www.arxiv.org' -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id=' -e 'http://myanimelist.net' -- "$PAGE";
            egp -e 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- "$PAGE";}
         wrap λ "find bad URLS, unacceptable/unreliable/risky domains, malformed syntax, unmatched apostrophes"
 
