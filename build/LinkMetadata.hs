@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-11 12:31:31 gwern"
+When:  Time-stamp: "2020-11-15 11:31:50 gwern"
 License: CC-0
 -}
 
@@ -13,7 +13,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata where
 
-import Control.Monad(when)
+import Control.Monad (when)
 import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- (encode, decode) -- TODO: why doesn't using U.toString fix the Unicode problems?
@@ -30,13 +30,13 @@ import qualified Data.Text as T (head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import Data.List.Utils (replace, split, uniq)
-import Text.HTML.TagSoup -- (parseTags, isTagOpenName, renderTags, Tag(TagClose, TagOpen))
+import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 
-import Typography
+import Typography (typographyTransform, invertImage)
 
 type Metadata = M.Map Path MetadataItem -- (Title, Author, Date, DOI, Abstract)
 type MetadataItem = (String, String, String, String, String)
@@ -68,7 +68,7 @@ readLinkMetadata = do
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
                    case file of
-                     Left e -> error $ show e
+                     Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
                      Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> MetadataList
@@ -117,7 +117,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
                                          ("popup-author",     htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
                                          ("popup-date",       T.pack date),
                                          ("popup-doi",        T.pack doi),
-                                         ("popup-abstract",   htmlToBetterHTML $ T.pack abstract')
+                                         ("popup-abstract",   finalAbstract)
                                          ])++pairs) in
     if T.head target /= '?' then Link annotationAttributes text (target, newTooltip) else
       -- Special in-place annotation definition: `<span data-metadata="Full HTML version" title="ASCII version fallback">original text anchor</span>`
@@ -126,6 +126,9 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      abstract', abstractText, possibleTooltip :: String
     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
      abstract' = if (take 3 abstract) == "<p>" then abstract else "<p>" ++ abstract ++ "</p>"
+     tabstract' = htmlToBetterHTML $ T.pack abstract'
+     -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore the float-right if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation, and it's a lot simpler...):
+     finalAbstract = if ("float-right" `isInfixOf` abstract') then T.pack $ replace "<figure>" "<figure class=\"float-right\">" $ T.unpack tabstract' else tabstract'
      -- Tooltip rewriting
      -- Progressive enhancement: we create a crude, shortened, ASCII version of the full annotation to use as a regular tooltip, for non-JS users (and possibly bots)
      -- This happens if the existing tooltip is empty; but we *also* override short tooltips (defined as one where the annotation-tooltip is >30% longer than the original tooltip).
@@ -133,7 +136,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      abstractText = htmlToASCII abstract'
      possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++", " ++ date ++
                         (if doi /= "" then " (DOI:"++doi++")" else "")
-                        ++ "; abstract: \""++(if (length abstractText)>300 then (take 300 abstractText) ++ "…" else abstractText)++"\""
+                        ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ "…" else abstractText))++"\""
      newTooltip :: T.Text
      newTooltip = if (fromIntegral (length possibleTooltip)::Float) > ((fromIntegral $ T.length originalTooltip)*1.3::Float)
                    then T.pack possibleTooltip else originalTooltip
@@ -193,6 +196,9 @@ htmlToASCII input = let cleaned = runPure $ do
                  Right output -> trim output
 
 -- clean up abstracts & titles with functions from Typography module: smallcaps & hyphenation (hyphenation is particularly important in popups because of the highly restricted horizontal width).
+-- WARNING: Pandoc is not lossless when reading HTML; eg classes set on unsupported elements like `<figure>` will be erased:
+-- $ echo '<figure class="float-right"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" /></figure>' | pandoc -f html -w html
+-- → '<figure> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" alt="" /> </figure>'
 htmlToBetterHTML :: T.Text -> T.Text
 htmlToBetterHTML html = let cleaned = runPure $ do
                                     pandoc <- readHtml def{ readerExtensions = pandocExtensions } html
@@ -294,11 +300,12 @@ wikipedia p
                                                                                Nothing -> return ""
                                                                                Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
                                                                                                         color <- invertImage $ T.unpack href
-                                                                                                        let imgClass = if color then "class=\"float-right invertible-auto\"" else "class=\"float-right\""
-                                                                                                        return ("<p><figure><img " ++ imgClass ++ " src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\"/></figure></p>")
+                                                                                                        let imgClass = if color then "class=\"invertible-auto\" " else ""
+                                                                                                        return ("<p><figure class=\"float-right\"><img " ++ imgClass ++ "src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure></p> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
-                                                                                                          cleanAbstractsHTML wpAbstract ++ wpThumbnail))
+                                                                                                          let wpAbstract' = cleanAbstractsHTML wpAbstract in
+                                                                                                          wpThumbnail ++ wpAbstract'))
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
@@ -383,6 +390,10 @@ cleanAbstractsHTML t = trim $
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
     , ("<abstract abstract-type=\"summary\"><br/>", "")
+    , ("<p> ", "<p>")
+    , (" <p>", "<p>")
+    , ("</p> ", "</p>")
+    , (" </p>", "</p>")
     , ("</p><br/>", "</p>")
     , ("</p> <br/>", "</p>")
     , ("<p><br/>", "<p>")
@@ -417,6 +428,7 @@ cleanAbstractsHTML t = trim $
     , ("<abstract>", "")
     , ("<abstract>\n  ", "")
     , ("\n</abstract>", "")
+    , ("<p><strong>Abstract</strong>: ", "<p>")
     , ("\nHighlights: ", "\n<strong>Highlights</strong>: ")
     , ("\nBackground: ", "\n<strong>Background</strong>: ")
     , ("\nAbstract: ", "\n<strong>Abstract</strong>: ")
@@ -494,7 +506,9 @@ cleanAbstractsHTML t = trim $
     , ("10(-)(9)", "10<sup>−9</sup>")
     , ("10(-)(10)", "10<sup>−10</sup>")
     , ("R (2) ", "R<sup>2</sup> ")
+    , ("CO(2)", "CO<sub>2</sub>")
     , (" = .",    " = 0.")
+    , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("h(2)",    "<em>h</em><sup>2</sup>")
@@ -508,6 +522,7 @@ cleanAbstractsHTML t = trim $
     , ("\40n = ",   "\40<em>n</em> = ")
     , ("\40n=",     "\40<em>n</em> = ")
     , ("\40N=",     "\40<em>N</em> = ")
+    , (" N ~ ",     " <em>n</em> ~ ")
     , ("<em>p</em> = .", "<em>p</em> = 0.")
     , ("<em>p</em> < .", "<em>p</em> < 0.")
     , (" N=",     " <em>N</em> = ")
@@ -531,6 +546,7 @@ cleanAbstractsHTML t = trim $
     , ("p-value", "<em>p</em>-value")
     , (" ", " ")
     , ("∼", "~")
+    , ("GxE", "G×E")
       ]
 
 trim :: String -> String

@@ -86,7 +86,9 @@
     $endif$
     <!-- Hint at necessary third-party domains -->
     <link rel="preconnect" href="https://www.google-analytics.com">
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://upload.wikimedia.org">
+    <link rel="dns-prefetch" href="https://en.wikipedia.org">
 
     <meta name="title" content="$title$">
     <meta name="citation_title" content="$title$">
@@ -148,7 +150,7 @@
         </div>
       </div>
 
-      <header>
+      <header id="top">
         <h1>$title$</h1>
       </header>
 
@@ -177,7 +179,7 @@
         $body$
 
         <div id="navigation">
-          <a id="navigation-previous" rel="prev" href="$previous$" title="Link to previous page by topic, '$previous$'. (Keyboard shortcut: keypress up twice at the top of the page to automatically go to the previous page.)">​</a> <a id="navigation-center" title="Return to top of current page." href="#sidebar">​</a> <a id="navigation-next" rel="next" href="$next$" title="Link to next page by topic, '$next$'. (Keyboard shortcut: keypress down twice at the bottom of the page to automatically go to the next page.)">​</a> <!-- WARNING: We need empty (with a ZERO WIDTH SPACE inside them) links like <a>​</a> instead of self-closing <a/> links (which are valid) because otherwise mathjax-nodepage's mjpage function goes crazy & duplicates them. -->
+          <a id="navigation-previous" rel="prev" href="$previous$" title="Link to previous page by topic, '$previous$'. (Keyboard shortcut: keypress up twice at the top of the page to automatically go to the previous page.)">​</a> <a id="navigation-center" title="Return to top of current page." href="#top">​</a> <a id="navigation-next" rel="next" href="$next$" title="Link to next page by topic, '$next$'. (Keyboard shortcut: keypress down twice at the bottom of the page to automatically go to the next page.)">​</a> <!-- WARNING: We need empty (with a ZERO WIDTH SPACE inside them) links like <a>​</a> instead of self-closing <a/> links (which are valid) because otherwise mathjax-nodepage's mjpage function goes crazy & duplicates them. -->
         </div>
 
         <div id="footer">

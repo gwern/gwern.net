@@ -3,16 +3,18 @@
 -- Module for typographic enhancements of text: adding smallcaps to capitalized phrases, adding line-break tags (`<wbr>`) to slashes so web browsers break at slashes in text, and adding soft hyphens to enable hyphenation on broken web browsers like Google Chrome.
 module Typography where
 
+import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.List (intercalate, isPrefixOf)
-import qualified Data.Text as T
-import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
+import System.Directory(removeFile)
 import System.Exit (ExitCode(ExitFailure))
+import System.Posix.Temp (mkstemp)
+import qualified Data.Text as T (any, append, pack, unpack, replace, Text)
+import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
+
 import Data.FileStore.Utils (runShellCommand)
 import qualified Text.Hyphenation as H (hyphenate, hyphenatorLeftMin, english_US)
-import Data.ByteString.Lazy.Char8 as B8 (unpack)
-import System.Posix.Temp
 
-import Text.Pandoc
+import Text.Pandoc (Inline(..), Block(..), Pandoc)
 import Text.Pandoc.Walk (walk)
 
 typographyTransform :: Pandoc -> Pandoc
@@ -122,6 +124,12 @@ hyphenateInline x@(Str s) = if T.any (=='\173') s then x else -- U+00AD SOFT HYP
                               Str $ T.replace "-\173" "-" $ -- odd edge-case exposed on Safari: because hyphenator breaks on hyphens (why?), interspersing the soft hyphen results in *two* hyphens being displayed should the line break there! since the regular hyphen already ensures a linebreak opportunity
                                                             -- the soft hyphen is unnecessary, so just delete it.
                                                             -- https://github.com/ekmett/hyphenation/issues/16
+                              -- preserve font ligatures at vshabanov's suggestion: "f"++"filjt" (SSfP supports these)
+                              T.replace "f\173f" "ff" $
+                              T.replace "f\173i" "fi" $
+                              T.replace "f\173l" "fl" $
+                              T.replace "f\173j" "fj" $
+                              T.replace "f\173t" "ft" $
                               T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=3}) $ words $ T.unpack s
 hyphenateInline x = x
 
@@ -139,9 +147,11 @@ invertImage :: FilePath -> IO Bool
 invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
                                            (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
                                            case status of
-                                             ExitFailure _ -> print ("Download failed (unable to check image invertibility): " ++ f) >>
-                                                              return False
+                                             ExitFailure _ -> do print ("Download failed (unable to check image invertibility): " ++ f)
+                                                                 removeFile temp
+                                                                 return False
                                              _ -> do c <- imageMagickColor temp
+                                                     removeFile temp
                                                      return $ c < threshold
               | otherwise = do c <- imageMagickColor f
                                return $ c < threshold

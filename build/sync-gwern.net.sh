@@ -297,10 +297,10 @@ then
     λ() {  find ./ -type f -name "*.jpg" | parallel --max-args=100 "identify -format '%Q %F\n'" {} | sort --numeric-sort | egrep -e '^[7-9][0-9] ' -e '^6[6-9]'; }
     wrap λ "Compress JPGs to <=65% quality"
 
-    ## Find JPGS which are too wide (1500px is an entire screen width on even widee monitors, which is too large for a figure/illustration):
-    λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | fgrep --invert-match -e 'images/ai/gpt/2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' | sort); do
+    ## Find JPGS which are too wide (1600px is an entire screen width on even widee monitors, which is too large for a figure/illustration):
+    λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | fgrep --invert-match -e 'images/ai/gpt/2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e 'images/gan/2020-05-22-caji9-deviantart-stylegan-ahegao.png' | sort); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
-              if (( $SIZE_W > 1500  )); then echo "Too wide image: $IMAGE $SIZE_W"; fi;
+              if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W"; fi;
           done; }
     wrap λ "Too-wide JPGs (downscale)"
 
