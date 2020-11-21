@@ -1,8 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- Module for typographic enhancements of text: adding smallcaps to capitalized phrases, adding line-break tags (`<wbr>`) to slashes so web browsers break at slashes in text, and adding soft hyphens to enable hyphenation on broken web browsers like Google Chrome.
+-- Module for typographic enhancements of text:
+-- 1. adding smallcaps to capitalized phrases
+-- 2. adding line-break tags (`<wbr>`) to slashes so web browsers break at slashes in text
+-- 3. adding soft hyphens to enable hyphenation on broken web browsers like Google Chrome
+-- 4. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a cycling pattern, like `class="ruler-1"`/`class="ruler-2"`/`class="ruler-3"`/`class="ruler-1"`..., like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal rulers and other block elements within each section, it is not possible to do the usual trick like with blockquotes/lists).
 module Typography where
 
+import Control.Monad.State.Lazy (evalState, get, put, State)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.List (intercalate, isPrefixOf)
 import System.Directory(removeFile)
@@ -15,10 +20,10 @@ import Data.FileStore.Utils (runShellCommand)
 import qualified Text.Hyphenation as H (hyphenate, hyphenatorLeftMin, english_US)
 
 import Text.Pandoc (Inline(..), Block(..), Pandoc)
-import Text.Pandoc.Walk (walk)
+import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk hyphenate . walk smallcapsfy . walk breakSlashes
+typographyTransform = walk hyphenate . walk smallcapsfy . walk breakSlashes . rulersCycle 3
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
 -- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
@@ -163,3 +168,19 @@ imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" 
                           ExitFailure err -> error $ f ++ ": ImageMagick color read error: " ++ show err
                           _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
                                   return color
+
+-- Annotate body horizontal rulers with a class based on global count: '<div class="ruler-nth-0"> / <hr /> / </div>' / '<div class="ruler-nth-1"> / <hr /> / </div>' / '<div class="ruler-nth-2"> / <hr /> / </div>' etc (cycling). Allows CSS decoration of "every second ruler" or "every fourth ruler" etc. I use it for cycling rulers in 3 levels, similar to the rest of gwern.net's visual design.
+--
+-- (NOTE: As a rewrite pass, this does not affect the horizontal ruler in the endnotes section, nor any horizontal rulers in the outer HTML document.)
+--
+-- No reason this couldn't be generalized to arbitrary Block/Inline elements (well, maybe—might require complex typing, and so be easier to just case-match on the existing Block/Inline types which shouldn't change anytime soon). But do I need it for anything else?
+rulersCycle :: Int -> Pandoc -> Pandoc
+rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
+ where addHrNth :: Block -> State Int Block
+       addHrNth HorizontalRule = do
+         count <- get
+         put (count + 1)
+         let nth = count `mod` modulus
+         let nthClass = T.pack $ "horizontalRule" ++ "-nth-" ++ show nth
+         return $ Div ("", [nthClass], []) [HorizontalRule]
+       addHrNth x = return x
