@@ -850,52 +850,6 @@ blockquote blockquote {
     margin: 1em 1px;
 }
 
-/* Manual override of link's text-shadows per blockquote level: if we don't do this, the text-shadows with their 'white' background clash with the increasingly dark gray background of deeper blockquotes, giving them a hazy white outline which looks terrible. */
-article>:not(#TOC) blockquote blockquote a:link,
-article>:not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
-  text-shadow:0.05em 0 var(--GW-blockquote-background-color-level-two),
-    -0.05em 0 var(--GW-blockquote-background-color-level-two),
-    0 0.05em var(--GW-blockquote-background-color-level-two),
-    0 -0.05em var(--GW-blockquote-background-color-level-two),
-    0.08em 0 var(--GW-blockquote-background-color-level-two),
-    -0.08em 0 var(--GW-blockquote-background-color-level-two),
-    0.11em 0 var(--GW-blockquote-background-color-level-two),
-    -0.11em 0 var(--GW-blockquote-background-color-level-two),
-    0.14em 0 var(--GW-blockquote-background-color-level-two),
-    -0.14em 0 var(--GW-blockquote-background-color-level-two),
-    0.17em 0 var(--GW-blockquote-background-color-level-two),
-    -0.17em 0 var(--GW-blockquote-background-color-level-two);
-}
-article>:not(#TOC) blockquote blockquote blockquote blockquote a:link {
-  text-shadow:0.05em 0 var(--GW-blockquote-background-color-level-one),
-    -0.05em 0 var(--GW-blockquote-background-color-level-one),
-    0 0.05em var(--GW-blockquote-background-color-level-one),
-    0 -0.05em var(--GW-blockquote-background-color-level-one),
-    0.08em 0 var(--GW-blockquote-background-color-level-one),
-    -0.08em 0 var(--GW-blockquote-background-color-level-one),
-    0.11em 0 var(--GW-blockquote-background-color-level-one),
-    -0.11em 0 var(--GW-blockquote-background-color-level-one),
-    0.14em 0 var(--GW-blockquote-background-color-level-one),
-    -0.14em 0 var(--GW-blockquote-background-color-level-one),
-    0.17em 0 var(--GW-blockquote-background-color-level-one),
-    -0.17em 0 var(--GW-blockquote-background-color-level-one);
-}
-article>:not(#TOC) blockquote blockquote blockquote a:link,
-article>:not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
-  text-shadow:0.05em 0 var(--GW-blockquote-background-color-level-three),
-    -0.05em 0 var(--GW-blockquote-background-color-level-three),
-    0 0.05em var(--GW-blockquote-background-color-level-three),
-    0 -0.05em var(--GW-blockquote-background-color-level-three),
-    0.08em 0 var(--GW-blockquote-background-color-level-three),
-    -0.08em 0 var(--GW-blockquote-background-color-level-three),
-    0.11em 0 var(--GW-blockquote-background-color-level-three),
-    -0.11em 0 var(--GW-blockquote-background-color-level-three),
-    0.14em 0 var(--GW-blockquote-background-color-level-three),
-    -0.14em 0 var(--GW-blockquote-background-color-level-three),
-    0.17em 0 var(--GW-blockquote-background-color-level-three),
-    -0.17em 0 var(--GW-blockquote-background-color-level-three);
-}
-
 /*=--------------------=*/
 /*= Various edge cases =*/
 /*=--------------------=*/
