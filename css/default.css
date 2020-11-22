@@ -1572,7 +1572,7 @@ th.tablesorter-headerDesc:hover {
 :not(.small-table) > table tr:nth-child(odd) td {
     background-color: #f6f6f6;
 }
-#markdownBody table tr:hover {
+#markdownBody table tbody tr:hover {
     outline: 1px dotted #000;
 }
 
