@@ -9,81 +9,81 @@
 /**********/
 
 :root {
-	/*	Collapse blocks.
-		*/
-	--GW-collapse-block-disclosure-button-color: #999;
-	--GW-table-collapse-block-disclosure-button-color: #ccc;
-	--GW-collapse-block-disclosure-button-hover-color: #666;
-	--GW-table-collapse-block-disclosure-button-hover-color: #eee;
-	--GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
-	--GW-collapse-block-click-to-expand-text-color: #777;
-	--GW-collapse-block-click-to-expand-text-shadow-color: #fff;
-	--GW-collapse-block-click-to-expand-text-hover-color: #444;
-	--GW-collapse-block-hover-border-color: #777;
+    /*  Collapse blocks.
+        */
+    --GW-collapse-block-disclosure-button-color: #999;
+    --GW-table-collapse-block-disclosure-button-color: #ccc;
+    --GW-collapse-block-disclosure-button-hover-color: #666;
+    --GW-table-collapse-block-disclosure-button-hover-color: #eee;
+    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
+    --GW-collapse-block-click-to-expand-text-color: #777;
+    --GW-collapse-block-click-to-expand-text-shadow-color: #fff;
+    --GW-collapse-block-click-to-expand-text-hover-color: #444;
+    --GW-collapse-block-hover-border-color: #777;
 
-	/*	Headings.
-		*/
-	--GW-H1-box-shadow-background-color: #fff;
-	--GW-H1-box-shadow-line-color: #888;
-	--GW-H2-bottom-border-color: #888;
-	--GW-heading-self-link-hover-color: #485555;
+    /*  Headings.
+        */
+    --GW-H1-box-shadow-background-color: #fff;
+    --GW-H1-box-shadow-line-color: #888;
+    --GW-H2-bottom-border-color: #888;
+    --GW-heading-self-link-hover-color: #485555;
 
-	/*	Comments.
-		*/
-	--GW-comment-section-top-border-color: #999;
+    /*  Comments.
+        */
+    --GW-comment-section-top-border-color: #999;
 
-	/*	Links.
-		*/
-	--GW-link-hover-color: #888;
+    /*  Links.
+        */
+    --GW-link-hover-color: #888;
 
-	/*	Lists.
-		*/
-	--GW-bulleted-list-marker-color: #808080;
+    /*  Lists.
+        */
+    --GW-bulleted-list-marker-color: #808080;
 
-	/*	Figures.
-		*/
-	--GW-figure-outline-color: #888;
-	--GW-figure-caption-outline-color: #888;
+    /*  Figures.
+        */
+    --GW-figure-outline-color: #888;
+    --GW-figure-caption-outline-color: #888;
 
-	/*	Footnotes.
-		*/
-	--GW-footnote-backlink-border-color: #000;
-	--GW-footnote-backlink-border-hover-color: #999;
-	--GW-footnote-backlink-after-bordered-block-background-color: #fff;
+    /*  Footnotes.
+        */
+    --GW-footnote-backlink-border-color: #000;
+    --GW-footnote-backlink-border-hover-color: #999;
+    --GW-footnote-backlink-after-bordered-block-background-color: #fff;
 
-	/*	Footnote references.
-		*/
-	--GW-footnote-ref-highlight-box-shadow-color: #aaa;
-	--GW-footnote-ref-highlight-box-shadow-interstitial-color: #fff;
-	--GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
+    /*  Footnote references.
+        */
+    --GW-footnote-ref-highlight-box-shadow-color: #aaa;
+    --GW-footnote-ref-highlight-box-shadow-interstitial-color: #fff;
+    --GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
 
-	/*	Footnote popups.
-		*/
-	--GW-footnote-popup-box-shadow-color: #fff;
-	--GW-footnote-popup-background-color: #fff;
-	--GW-footnote-popup-border-color: #aaa;
-	--GW-footnote-popup-scrollbar-thumb-color: #ccc;
-	--GW-footnote-popup-scrollbar-track-color: #fff;
-	--GW-footnote-popup-scrollbar-thumb-hover-color: #999;
+    /*  Footnote popups.
+        */
+    --GW-footnote-popup-box-shadow-color: #fff;
+    --GW-footnote-popup-background-color: #fff;
+    --GW-footnote-popup-border-color: #aaa;
+    --GW-footnote-popup-scrollbar-thumb-color: #ccc;
+    --GW-footnote-popup-scrollbar-track-color: #fff;
+    --GW-footnote-popup-scrollbar-thumb-hover-color: #999;
 
-	/*	Sidenotes.
-		*/
-	--GW-sidenote-highlight-background-color: #fff;
-	--GW-sidenote-highlight-box-shadow-color: #aaa;
-	--GW-sidenote-border-color: #aaa;
-	--GW-sidenote-scrollbar-track-color: #fff;
-	--GW-sidenote-self-link-border-color: #aaa;
+    /*  Sidenotes.
+        */
+    --GW-sidenote-highlight-background-color: #fff;
+    --GW-sidenote-highlight-box-shadow-color: #aaa;
+    --GW-sidenote-border-color: #aaa;
+    --GW-sidenote-scrollbar-track-color: #fff;
+    --GW-sidenote-self-link-border-color: #aaa;
 
-	/*	Tables.
-		*/
-	--GW-table-border-color: #000;
-	--GW-table-full-width-background-color: #fff;
-	--GW-table-caption-border-color: #000;
-	--GW-table-row-horizontal-border-color: #000;
-	--GW-table-cell-vertical-border-color: #fff;
-	--GW-table-scrollbar-track-color: #fff;
-	--GW-table-scrollbar-border-color: #000;
-	--GW-table-column-heading-hover-background-color: #e2f0f2;
+    /*  Tables.
+        */
+    --GW-table-border-color: #000;
+    --GW-table-full-width-background-color: #fff;
+    --GW-table-caption-border-color: #000;
+    --GW-table-row-horizontal-border-color: #000;
+    --GW-table-cell-vertical-border-color: #fff;
+    --GW-table-scrollbar-track-color: #fff;
+    --GW-table-scrollbar-border-color: #000;
+    --GW-table-column-heading-hover-background-color: #e2f0f2;
 }
 
 /*  Special styles for special browsers.
@@ -512,12 +512,29 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /* SECTION SEPARATOR */
 /*********************/
 hr {
-  border: 0;
-  margin: 1.1em 0 1.1em 0; }
-hr::after {
+    border: 0;
+    margin: 1.1em 0 0.9em 0; }
+/* These classes are created by the 'rulersCycle' Pandoc rewrite pass in Typography.hs at compile-time; they assign each use of <hr> in the body a class 0-2. This lets us create an astronomical theme cyle: the first, fourth, seventh etc rulers are the triple-white star; the second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc are a sun. */
+.horizontalRule-nth-0 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     text-align: center;
-    display:block;
+    display: block;
+}
+.horizontalRule-nth-1 hr { margin: 1.05em 0 0.85em 0; }
+.horizontalRule-nth-1 hr::after {
+    /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
+    content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' xmlns:v='https://vecta.io/nano'%3E%3Cpath d='M3.028 3.725c-4.147 4.512-4.034 11.533.34 15.907 4.49 4.49 11.773 4.49 16.264 0s4.49-11.773 0-16.264C15.257-1.007 8.237-1.12 3.725 3.028c3.762-3.4 9.57-3.286 13.197.34 3.743 3.743 3.743 9.81 0 13.553s-9.81 3.743-13.553 0c-3.626-3.626-3.74-9.434-.34-13.197z'/%3E%3Ccircle transform='matrix(.707107 -.707107 .707107 .707107 1663.446 -524.914)' cx='-1547.404' cy='-798.145' r='2.156'/%3E%3C/svg%3E");
+    text-align: center;
+    display: block;
+    opacity: 0.65;
+}
+.horizontalRule-nth-2 hr { margin: 1.05em 0 0.80em 0; }
+.horizontalRule-nth-2 hr::after {
+    /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
+    content: url('/static/img/icons/sun-verginasun-black.svg');
+    text-align: center;
+    display: block;
+    opacity: 0.60;
 }
 
 /**********/
@@ -833,6 +850,52 @@ blockquote blockquote {
     margin: 1em 1px;
 }
 
+/* Manual override of link's text-shadows per blockquote level: if we don't do this, the text-shadows with their 'white' background clash with the increasingly dark gray background of deeper blockquotes, giving them a hazy white outline which looks terrible. */
+article>:not(#TOC) blockquote blockquote a:link,
+article>:not(#TOC) blockquote blockquote blockquote blockquote blockquote a:link {
+  text-shadow:0.05em 0 var(--GW-blockquote-background-color-level-two),
+    -0.05em 0 var(--GW-blockquote-background-color-level-two),
+    0 0.05em var(--GW-blockquote-background-color-level-two),
+    0 -0.05em var(--GW-blockquote-background-color-level-two),
+    0.08em 0 var(--GW-blockquote-background-color-level-two),
+    -0.08em 0 var(--GW-blockquote-background-color-level-two),
+    0.11em 0 var(--GW-blockquote-background-color-level-two),
+    -0.11em 0 var(--GW-blockquote-background-color-level-two),
+    0.14em 0 var(--GW-blockquote-background-color-level-two),
+    -0.14em 0 var(--GW-blockquote-background-color-level-two),
+    0.17em 0 var(--GW-blockquote-background-color-level-two),
+    -0.17em 0 var(--GW-blockquote-background-color-level-two);
+}
+article>:not(#TOC) blockquote blockquote blockquote blockquote a:link {
+  text-shadow:0.05em 0 var(--GW-blockquote-background-color-level-one),
+    -0.05em 0 var(--GW-blockquote-background-color-level-one),
+    0 0.05em var(--GW-blockquote-background-color-level-one),
+    0 -0.05em var(--GW-blockquote-background-color-level-one),
+    0.08em 0 var(--GW-blockquote-background-color-level-one),
+    -0.08em 0 var(--GW-blockquote-background-color-level-one),
+    0.11em 0 var(--GW-blockquote-background-color-level-one),
+    -0.11em 0 var(--GW-blockquote-background-color-level-one),
+    0.14em 0 var(--GW-blockquote-background-color-level-one),
+    -0.14em 0 var(--GW-blockquote-background-color-level-one),
+    0.17em 0 var(--GW-blockquote-background-color-level-one),
+    -0.17em 0 var(--GW-blockquote-background-color-level-one);
+}
+article>:not(#TOC) blockquote blockquote blockquote a:link,
+article>:not(#TOC) blockquote blockquote blockquote blockquote blockquote blockquote a:link {
+  text-shadow:0.05em 0 var(--GW-blockquote-background-color-level-three),
+    -0.05em 0 var(--GW-blockquote-background-color-level-three),
+    0 0.05em var(--GW-blockquote-background-color-level-three),
+    0 -0.05em var(--GW-blockquote-background-color-level-three),
+    0.08em 0 var(--GW-blockquote-background-color-level-three),
+    -0.08em 0 var(--GW-blockquote-background-color-level-three),
+    0.11em 0 var(--GW-blockquote-background-color-level-three),
+    -0.11em 0 var(--GW-blockquote-background-color-level-three),
+    0.14em 0 var(--GW-blockquote-background-color-level-three),
+    -0.14em 0 var(--GW-blockquote-background-color-level-three),
+    0.17em 0 var(--GW-blockquote-background-color-level-three),
+    -0.17em 0 var(--GW-blockquote-background-color-level-three);
+}
+
 /*=--------------------=*/
 /*= Various edge cases =*/
 /*=--------------------=*/
@@ -906,7 +969,7 @@ blockquote table {
     position: relative;
     z-index: 1;
     overflow: visible;
-	--GW-text-background-color: var(--GW-body-background-color);
+    --GW-text-background-color: var(--GW-body-background-color);
 }
 .epigraph p  {
     font-style: italic;

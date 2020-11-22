@@ -876,7 +876,7 @@ blockquote blockquote blockquote blockquote blockquote {
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
 	background-color: var(--GW-blockquote-background-color-level-three);
-	--GW-text-background-color: var(--GW-blockquote-background-color-level-two);
+	--GW-text-background-color: var(--GW-blockquote-background-color-level-three);
 }
 
 /********/
