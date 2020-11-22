@@ -1,7 +1,7 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2020-10-11 17:36:04 gwern"
+// When:  Time-stamp: "2020-11-22 18:02:50 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
@@ -129,6 +129,10 @@ GW.modeStyles = `
     #mode-selector:hover {
         background-color: #fff;
     }
+   /* Make sun/moon icon intensity in dark mode match the asterism (which remains at opacity 1 because it's much thinner) */
+   .horizontalRule-nth-1 hr::after, .horizontalRule-nth-2 hr::after {
+      opacity: 0.95;
+   }
 `;
 
 /****************/
