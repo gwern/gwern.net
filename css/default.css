@@ -84,6 +84,11 @@
     --GW-table-scrollbar-track-color: #fff;
     --GW-table-scrollbar-border-color: #000;
     --GW-table-column-heading-hover-background-color: #e2f0f2;
+    --GW-table-sorted-column-heading-background-color: #8bd0ed;
+    --GW-table-sorted-column-heading-text-color: #fff;
+    --GW-table-sorted-column-heading-text-shadow-color: #000;
+    --GW-table-zebra-stripe-alternate-row-background-color: #f6f6f6;
+    --GW-table-row-hover-outline-color: #000;
 }
 
 /*  Special styles for special browsers.
@@ -1560,20 +1565,20 @@ th.tablesorter-headerAsc,
 th.tablesorter-headerDesc,
 th.tablesorter-headerAsc:hover,
 th.tablesorter-headerDesc:hover {
-    background-color: #8bd0ed;
-    color: #fff;
+    background-color: var(--GW-table-sorted-column-heading-background-color);
+    color: var(--GW-table-sorted-column-heading-text-color);
     text-shadow:
-       0.5px 0.5px 0 #000,
-       0 0 1px #000;
+       0.5px 0.5px 0 var(--GW-table-sorted-column-heading-text-shadow-color),
+       0 0 1px var(--GW-table-sorted-column-heading-text-shadow-color);
 }
 
 /*  zebra-stripe tables (CSS3); from Twitter's bootstrap package
     */
 :not(.small-table) > table tr:nth-child(odd) td {
-    background-color: #f6f6f6;
+    background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
 }
 #markdownBody table tbody tr:hover {
-    outline: 1px dotted #000;
+    outline: 1px dotted var(--GW-table-row-hover-outline-color);
 }
 
 /*  Tables in blockquotes.
