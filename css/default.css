@@ -2154,7 +2154,6 @@ body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::
 /* the /index needs more space in the lists for mobile users */
 @media only screen and (max-width:64.9ch) { body.index #markdownBody li { line-height: 1.65; } }
 
-
 /*  Less fancy headings.
     */
 body.index section:not(.collapse) > h1:first-child {
@@ -2205,6 +2204,11 @@ body.tags article::before{
     opacity: 0.5;
 }
 
+/* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
+@media only screen and (min-width:65ch) {
+    body.index .horizontalRule-nth-0 hr::after, body.index .horizontalRule-nth-1 hr::after, body.index .horizontalRule-nth-2 hr::after {
+        display: none;
+    }
 
 /*=---------------=*/
 /*= /Book-reviews =*/
