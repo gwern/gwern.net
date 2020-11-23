@@ -2214,6 +2214,7 @@ body.tags article::before{
     body.index [class^='horizontalRule'] hr::after {
         display: none;
     }
+}
 
 /*=---------------=*/
 /*= /Book-reviews =*/
