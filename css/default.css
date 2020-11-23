@@ -2210,8 +2210,8 @@ body.tags article::before{
 }
 
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
-@media only screen and (min-width:65ch) {
-    body.index .horizontalRule-nth-0 hr::after, body.index .horizontalRule-nth-1 hr::after, body.index .horizontalRule-nth-2 hr::after {
+@media only screen and (min-width: 65ch) {
+    body.index [class^='horizontalRule'] hr::after {
         display: none;
     }
 
