@@ -89,6 +89,13 @@
     --GW-table-sorted-column-heading-text-shadow-color: #000;
     --GW-table-zebra-stripe-alternate-row-background-color: #f6f6f6;
     --GW-table-row-hover-outline-color: #000;
+
+	/*	Code blocks.
+		*/
+	--GW-code-element-border-color: #c8c8c8;
+	--GW-code-element-background-color: #fafafa;
+	--GW-pre-element-border-color: #c8c8c8;
+	--GW-pre-element-background-color: #fafafa;
 }
 
 /*  Special styles for special browsers.
@@ -929,6 +936,8 @@ blockquote table {
     overflow: hidden;
 }
 .epigraph blockquote {
+    --GW-blockquote-background-color: var(--GW-body-background-color);
+
     padding: 0;
     border: none;
     background-color: inherit;
@@ -937,7 +946,6 @@ blockquote table {
     position: relative;
     z-index: 1;
     overflow: visible;
-    --GW-text-background-color: var(--GW-body-background-color);
 }
 .epigraph p  {
     font-style: italic;
@@ -1656,18 +1664,24 @@ code {
 
 code {
     padding: 0 4px;
-    /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+
+    /*	Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+    /*	Added IBM Plex Mono webfont for styling consistency across platforms. */
     font-family: "IBM Plex Mono", "Liberation Mono", Consolas, Courier, monospace;
+
+    /*	OpenType stylistic sets to enable single-story 'g' and slashed zero in
+    	IBM Plex Mono. */
     font-feature-settings: 'ss02', 'ss03';
+
     font-size: 0.9em;
-    border: 1px solid #c8c8c8;
-    background-color: #fafafa;
+    border: 1px solid var(--GW-code-element-border-color);
+    background-color: var(--GW-code-element-background-color);
 }
 pre {
     overflow: auto;
     margin: 1.75em auto;
-    border: 1px solid #c8c8c8;
-    background-color: #fafafa;
+    border: 1px solid var(--GW-pre-element-border-color);
+    background-color: var(--GW-pre-element-background-color);
     cursor: text;
     max-height: calc(100vh - 8em);
 }
