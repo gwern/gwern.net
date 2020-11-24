@@ -661,11 +661,15 @@ article > :not(#TOC) a:hover,
 #popupdiv ol ul:last-child {
     margin-bottom: 0;
 }
-#markdownBody p + ul, #markdownBody p + ol { margin-top: 0.5em; }
-#popupdiv p + ul, #popupdiv p + ol { margin-top: 0.2em; margin-bottom: 0.2em; }
-blockquote { margin-top: 0.2em; margin-bottom: 0em; }
-p + blockquote { margin-top: 0.6em; }
-blockquote + p { margin-top: 0.6em; }
+#markdownBody p + ul
+#markdownBody p + ol {
+	margin-top: 0.5em;
+}
+#popupdiv p + ul
+#popupdiv p + ol {
+	margin-top: 0.2em;
+	margin-bottom: 0.2em;
+}
 
 /*=-----------------------=*/
 /*= Bulleted list markers =*/
@@ -1712,11 +1716,6 @@ pre.numberSource a.sourceLine::before {
     width: 4em;
     background-color: #fff;
     color: #a0a0a0;
-}
-pre.numberSource {
-    margin-left: 3em;
-    border-left: 1px solid #a0a0a0;
-    padding-left: 4px;
 }
 div.sourceCode {
     color: #1f1c1b;
