@@ -1647,8 +1647,9 @@ code {
 
 code {
     padding: 0 4px;
-    /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
+    /* Based on Tufte CSS's monospace/sans suggestions, borrowing from Github. Primary font: https://en.wikipedia.org/wiki/IBM_Plex This was chosen for its dotted/slashed zero (a sine qua non of coding fonts where O/0 ambiguity is fatal), and for rendering well on Macs. */
     font-family: "IBM Plex Mono", "Liberation Mono", Consolas, Courier, monospace;
+    font-feature-settings: 'ss02', 'ss03'; /* Enable slashed-zero, and 'g' variant */
     font-size: 0.9em;
     border: 1px solid #c8c8c8;
     background-color: #fafafa;

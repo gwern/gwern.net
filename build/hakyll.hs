@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-11-23 20:07:48 gwern"
+When: Time-stamp: "2020-11-24 10:13:20 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -117,6 +117,7 @@ main = hakyll $ do
                                      "**.svg",
                                      "**.png",
                                      "**.jpg",
+                                     -- skip "static/build/**" because of the temporary files
                                      "static/css/**",
                                      "static/font/**",
                                      "static/img/**",
