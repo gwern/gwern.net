@@ -1576,6 +1576,7 @@ th.tablesorter-headerDesc:hover {
     */
 :not(.small-table) > table tr:nth-child(odd) td {
     background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
+    --GW-link-underline-background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
 }
 #markdownBody table tbody tr:hover {
     outline: 1px dotted var(--GW-table-row-hover-outline-color);
@@ -1583,8 +1584,8 @@ th.tablesorter-headerDesc:hover {
 
 /*  Tables in blockquotes.
     */
-blockquote :not(.small-table) > table tr:nth-child(odd) td {
-    background-color: #fff;
+blockquote :not(.small-table) > table {
+    --GW-table-zebra-stripe-alternate-row-background-color: var(--GW-body-background-color);
 }
 blockquote table th + th,
 blockquote table td + td {
