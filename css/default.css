@@ -564,9 +564,9 @@ hr::after, .horizontalRule-nth-0 hr::after {
     left: 0;
 }
 
-/*********/
-/* Numbers */
-/*********/
+/***********/
+/* NUMBERS */
+/***********/
 /*  'tabular figures' to make numbers line up in tables or other monospace/code like contexts:
         https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
         https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
@@ -590,21 +590,10 @@ article > :not(#TOC) a:hover,
 
 /* Now handled in /static/css/links.css */
 
+
 /*********/
 /* LISTS */
 /*********/
-
-@media only screen and (min-width: 65ch) {
-    blockquote {
-        overflow: hidden;
-    }
-}
-@media only screen and (max-width: 64.9ch) {
-    /* even less horizontal is available on mobile! */
-    blockquote {
-        margin: 1.25em 0 1.5em 0;
-    }
-}
 
 #markdownBody ul,
 #markdownBody ol,
@@ -661,11 +650,11 @@ article > :not(#TOC) a:hover,
 #popupdiv ol ul:last-child {
     margin-bottom: 0;
 }
-#markdownBody p + ul
+#markdownBody p + ul,
 #markdownBody p + ol {
 	margin-top: 0.5em;
 }
-#popupdiv p + ul
+#popupdiv p + ul,
 #popupdiv p + ol {
 	margin-top: 0.2em;
 	margin-bottom: 0.2em;
@@ -862,6 +851,22 @@ blockquote blockquote {
 /*=--------------------=*/
 /*= Various edge cases =*/
 /*=--------------------=*/
+
+@media only screen and (min-width: 65ch) {
+    blockquote {
+        overflow: hidden;
+    }
+}
+@media only screen and (max-width: 64.9ch) {
+    /* even less horizontal is available on mobile! */
+    blockquote {
+        margin: 1.25em 0 1.5em 0;
+    }
+}
+
+p + blockquote {
+	margin-top: 1em;
+}
 
 #markdownBody blockquote blockquote:first-child {
     margin: 0.25em 1px 1em 1px;
