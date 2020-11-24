@@ -1649,6 +1649,7 @@ code {
     padding: 0 4px;
     /* Tufte CSS's monospace/sans suggestions, borrowing from Github: */
     font-family: "IBM Plex Mono", "Liberation Mono", Consolas, Courier, monospace;
+    font-feature-settings: 'ss02', 'ss03';
     font-size: 0.9em;
     border: 1px solid #c8c8c8;
     background-color: #fafafa;
