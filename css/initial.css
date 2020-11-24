@@ -27,7 +27,10 @@
 
 	/*	Blockquotes.
 		*/
-	--GW-blockquote-border-color: #ccc;
+	--GW-blockquote-border-color-level-one: #ccc;
+	--GW-blockquote-border-color-level-two: #c4c4c4;
+	--GW-blockquote-border-color-level-three: #b3b3b3;
+	--GW-blockquote-border-color-level-four: #a6a6a6;
 	--GW-blockquote-background-color-level-one: #f8f8f8;
 	--GW-blockquote-background-color-level-two: #e6e6e6;
 	--GW-blockquote-background-color-level-three: #d8d8d8;
@@ -850,29 +853,39 @@ p + p {
 /* additional blockquote styling done in default.css */
 
 blockquote {
+	--GW-link-underline-background-color: var(--GW-blockquote-background-color);
+
 	margin: 1.625em 0 1.75em 0;
 	border: 1px solid var(--GW-blockquote-border-color);
+	background-color: var(--GW-blockquote-background-color);
 	font-size: 0.95em;
 	padding: 1em 1.25em;
+	z-index: -2;
 }
 
 /*	Three-level of blockquote emphasis (darkening).
 	*/
 blockquote,
 blockquote blockquote blockquote blockquote {
-	z-index: -2;
-	background-color: var(--GW-blockquote-background-color-level-one);
-	--GW-link-underline-background-color: var(--GW-blockquote-background-color-level-one);
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-one);
 }
+blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-one);
+}
+blockquote blockquote blockquote blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-four);
+}
+
 blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote {
-	background-color: var(--GW-blockquote-background-color-level-two);
-	--GW-link-underline-background-color: var(--GW-blockquote-background-color-level-two);
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-two);
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-two);
 }
+
 blockquote blockquote blockquote,
 blockquote blockquote blockquote blockquote blockquote blockquote {
-	background-color: var(--GW-blockquote-background-color-level-three);
-	--GW-link-underline-background-color: var(--GW-blockquote-background-color-level-three);
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-three);
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-three);
 }
 
 /********/

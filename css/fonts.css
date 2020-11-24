@@ -212,6 +212,43 @@
     font-display: swap;
 }
 
+/*****************/
+/* IBM PLEX MONO */
+/*****************/
+/* Used in code blocks */
+
+@font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: normal;
+    font-style: normal;
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf') format('opentype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: normal;
+    font-style: italic;
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-RegularItalic.otf') format('opentype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: bold;
+    font-style: normal;
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-Bold.otf') format('opentype');
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'IBM Plex Mono';
+    font-weight: bold;
+    font-style: italic;
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-BoldItalic.otf') format('opentype');
+    font-display: swap;
+}
+
 /*************************/
 /* Drop Caps Support     */
 /* each font is subsetted into A-Z, so only *one* letter needs to be loaded (at a cost of 8-16KB), rather than 200-700KB or worse */
