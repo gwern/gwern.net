@@ -96,6 +96,41 @@
     --GW-code-element-background-color: #fafafa;
     --GW-pre-element-border-color: #c8c8c8;
     --GW-pre-element-background-color: #fafafa;
+
+	/*	Syntax highlight theme.
+		*/
+	--GW-syntax-highlight-color-normal: #1f1c1b;
+	--GW-syntax-highlight-color-attribute: #002561;
+	--GW-syntax-highlight-color-region-marker: #002561;
+	--GW-syntax-highlight-background-color-region-marker: #e0e9f8;
+	--GW-syntax-highlight-color-data-type: inherit;
+	--GW-syntax-highlight-color-variable: #666666;
+	--GW-syntax-highlight-color-other: inherit;
+	--GW-syntax-highlight-color-preprocessor: inherit;
+	--GW-syntax-highlight-color-comment-var: #888888;
+	--GW-syntax-highlight-color-extension: #888888;
+	--GW-syntax-highlight-color-comment: #888888;
+	--GW-syntax-highlight-color-control-flow: #003900;
+	--GW-syntax-highlight-color-keyword: #002561;
+	--GW-syntax-highlight-color-operator: #002561;
+	--GW-syntax-highlight-color-special-char: #607880;
+	--GW-syntax-highlight-color-documentation: #607880;
+	--GW-syntax-highlight-color-built-in: #002561;
+	--GW-syntax-highlight-color-function: #002561;
+	--GW-syntax-highlight-color-constant: inherit;
+	--GW-syntax-highlight-color-base-n: inherit;
+	--GW-syntax-highlight-color-dec-val: inherit;
+	--GW-syntax-highlight-color-float: inherit;
+	--GW-syntax-highlight-color-information: inherit;
+	--GW-syntax-highlight-color-char: inherit;
+	--GW-syntax-highlight-color-string: inherit;
+	--GW-syntax-highlight-color-verbatim-string: inherit;
+	--GW-syntax-highlight-color-alert: #bf0303;
+	--GW-syntax-highlight-color-error: #ff0000;
+	--GW-syntax-highlight-color-warning: #ff0000;
+	--GW-syntax-highlight-color-annotation: #888888;
+	--GW-syntax-highlight-color-import: #777777;
+	--GW-syntax-highlight-color-special-string: #666666;
 }
 
 /*  Special styles for special browsers.
@@ -1699,37 +1734,37 @@ pre code {
 
 /* Monochrome-ish code highlighting theme, loosely based on Pygments's algol_nu (CSS: https://github.com/lukelbd/proplot/blob/master/docs/_static/pygments/algol_nu.css demo: https://xyproto.github.io/splash/docs/longer/algol_nu.html ; Python: https://github.com/pycom/EricShort/blob/master/ThirdParty/Pygments/pygments/styles/algol.py ). */
 /* This skips the underlining and overuse of graying, and uses a bit of blue as an alternative, and retains red for warnings/errors. */
-code span    { color: #1f1c1b; } /* Normal */
-code span.at { color: #002561; } /* Attribute */
-code span.re { color: #002561; background-color: #e0e9f8; } /* RegionMarker */
-code span.dt { font-weight: bold; font-style: italic  } /* DataType */
-code span.va { color: #666666; font-weight: bold; font-style: italic } /* Variable */
-code span.ot { font-weight: bold; font-style: italic } /* Other */
-code span.pp { font-weight: bold; font-style: italic } /* Preprocessor */
-code span.cv { color: #888888; font-style: italic } /* CommentVar */
-code span.ex { color: #888888; font-style: italic } /* Extension */
-code span.co { color: #888888; } /* Comment */
-code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
-code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
-code span.op { color: #1f1c1b; } /* Operator */
-code span.sc { color: #607880; } /* SpecialChar */
-code span.do { color: #607880; } /* Documentation */
-code span.bu { color: #002561; font-weight: bold; } /* BuiltIn */
-code span.fu { color: #002561; } /* Function */
-code span.cn { font-weight: bold; } /* Constant */
-code span.bn { font-weight: bold; font-feature-settings: 'ss04'; } /* BaseN */
-code span.dv { font-weight: bold; } /* DecVal */
-code span.fl { font-weight: bold; font-feature-settings: 'ss01'; } /* Float */
-code span.in { font-weight: bold; } /* Information */
-code span.ch { font-style: italic; } /* Char */
-code span.st { font-style: italic; } /* String */
-code span.vs { font-style: italic; } /* VerbatimString */
-code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
-code span.er { border: 1px solid #FF0000 } /* Error */
-code span.wa { color: #FF0000; } /* Warning */
-code span.an { color: #888888; font-style: italic } /* Annotation */
-code span.im { color: #777777; font-weight: bold; font-style: italic } /* Import */
-code span.ss { color: #666666; font-weight: bold; font-style: italic } /* SpecialString */
+code span    { color: var(--GW-syntax-highlight-color-normal); } /* Normal */
+code span.at { color: var(--GW-syntax-highlight-color-attribute); } /* Attribute */
+code span.re { color: var(--GW-syntax-highlight-color-region-marker); background-color: var(--GW-syntax-highlight-background-color-region-marker); } /* RegionMarker */
+code span.dt { color: var(--GW-syntax-highlight-color-data-type); font-weight: bold; font-style: italic  } /* DataType */
+code span.va { color: var(--GW-syntax-highlight-color-variable); font-weight: bold; font-style: italic } /* Variable */
+code span.ot { color: var(--GW-syntax-highlight-color-other); font-weight: bold; font-style: italic } /* Other */
+code span.pp { color: var(--GW-syntax-highlight-color-preprocessor); font-weight: bold; font-style: italic } /* Preprocessor */
+code span.cv { color: var(--GW-syntax-highlight-color-comment-var); font-style: italic } /* CommentVar */
+code span.ex { color: var(--GW-syntax-highlight-color-extension); font-style: italic } /* Extension */
+code span.co { color: var(--GW-syntax-highlight-color-comment); } /* Comment */
+code span.cf { color: var(--GW-syntax-highlight-color-control-flow); font-weight: bold; } /* ControlFlow */
+code span.kw { color: var(--GW-syntax-highlight-color-keyword); font-weight: bold; } /* Keyword */
+code span.op { color: var(--GW-syntax-highlight-color-operator); } /* Operator */
+code span.sc { color: var(--GW-syntax-highlight-color-special-char); } /* SpecialChar */
+code span.do { color: var(--GW-syntax-highlight-color-documentation); } /* Documentation */
+code span.bu { color: var(--GW-syntax-highlight-color-built-in); font-weight: bold; } /* BuiltIn */
+code span.fu { color: var(--GW-syntax-highlight-color-function); } /* Function */
+code span.cn { color: var(--GW-syntax-highlight-color-constant); font-weight: bold; } /* Constant */
+code span.bn { color: var(--GW-syntax-highlight-color-base-n); font-weight: bold; } /* BaseN */
+code span.dv { color: var(--GW-syntax-highlight-color-dec-val); font-weight: bold; } /* DecVal */
+code span.fl { color: var(--GW-syntax-highlight-color-float); font-weight: bold; font-feature-settings: 'ss01'; } /* Float */
+code span.in { color: var(--GW-syntax-highlight-color-information); font-weight: bold; } /* Information */
+code span.ch { color: var(--GW-syntax-highlight-color-char); font-style: italic; } /* Char */
+code span.st { color: var(--GW-syntax-highlight-color-string); font-style: italic; } /* String */
+code span.vs { color: var(--GW-syntax-highlight-color-verbatim-string); font-style: italic; } /* VerbatimString */
+code span.al { color: var(--GW-syntax-highlight-color-alert); text-decoration: double underline; font-weight: bold; } /* Alert */
+code span.er { color: var(--GW-syntax-highlight-color-error); } /* Error */
+code span.wa { color: var(--GW-syntax-highlight-color-warning); } /* Warning */
+code span.an { color: var(--GW-syntax-highlight-color-annotation); font-style: italic } /* Annotation */
+code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold; font-style: italic } /* Import */
+code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weight: bold; font-style: italic } /* SpecialString */
 
 /********/
 /* MATH */
