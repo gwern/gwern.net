@@ -1717,7 +1717,7 @@ code span.do { color: #607880; } /* Documentation */
 code span.bu { color: #002561; font-weight: bold; } /* BuiltIn */
 code span.fu { color: #002561; } /* Function */
 code span.cn { font-weight: bold; } /* Constant */
-code span.bn { font-weight: bold; } /* BaseN */
+code span.bn { font-weight: bold; font-feature-settings: 'ss04'; } /* BaseN */
 code span.dv { font-weight: bold; } /* DecVal */
 code span.fl { font-weight: bold; font-feature-settings: 'ss01'; } /* Float */
 code span.in { font-weight: bold; } /* Information */
