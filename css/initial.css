@@ -791,6 +791,12 @@ article > :not(#TOC) a:link {
 		  0% 90%,
 		100% 90%,
 		  0% 90%;
+
+	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
+	font-variant-numeric: lining-nums;
+}
+article > :not(#TOC) a:link,
+article > :not(#TOC) a:link * {
 	text-shadow:
 		 0.05em 0	   var(--GW-link-underline-background-color),
 		-0.05em 0	   var(--GW-link-underline-background-color),
@@ -804,9 +810,6 @@ article > :not(#TOC) a:link {
 		-0.14em 0	   var(--GW-link-underline-background-color),
 		 0.17em 0	   var(--GW-link-underline-background-color),
 		-0.17em 0	   var(--GW-link-underline-background-color);
-
-	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
-	font-variant-numeric: lining-nums;
 }
 article > :not(#TOC) a:hover {
 	background-image:
@@ -860,6 +863,7 @@ blockquote {
 	background-color: var(--GW-blockquote-background-color);
 	font-size: 0.95em;
 	padding: 1em 1.25em;
+	position: relative;
 	z-index: -2;
 }
 

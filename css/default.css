@@ -1658,11 +1658,11 @@ pre::-webkit-scrollbar-thumb:hover {
 /***************/
 
 code {
-    word-break: break-all;
-    hyphens: none;
-}
+	--GW-link-underline-background-color: var(--GW-code-element-background-color);
 
-code {
+    border: 1px solid var(--GW-code-element-border-color);
+    background-color: var(--GW-code-element-background-color);
+
     padding: 0 4px;
 
     /*  Tufte CSS's monospace/sans suggestions, borrowing from Github: */
@@ -1674,8 +1674,8 @@ code {
     font-feature-settings: 'ss02', 'ss03';
 
     font-size: 0.9em;
-    border: 1px solid var(--GW-code-element-border-color);
-    background-color: var(--GW-code-element-background-color);
+    word-break: break-all;
+    hyphens: none;
 }
 pre {
     overflow: auto;
