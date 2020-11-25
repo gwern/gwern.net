@@ -110,9 +110,9 @@
 	--GW-syntax-highlight-color-comment-var: #888888;
 	--GW-syntax-highlight-color-extension: #888888;
 	--GW-syntax-highlight-color-comment: #888888;
-	--GW-syntax-highlight-color-control-flow: #1f1c1b;
-	--GW-syntax-highlight-color-keyword: #1f1c1b;
-	--GW-syntax-highlight-color-operator: #1f1c1b;
+	--GW-syntax-highlight-color-control-flow: #003900;
+	--GW-syntax-highlight-color-keyword: #002561;
+	--GW-syntax-highlight-color-operator: #002561;
 	--GW-syntax-highlight-color-special-char: #607880;
 	--GW-syntax-highlight-color-documentation: #607880;
 	--GW-syntax-highlight-color-built-in: #002561;
