@@ -12,14 +12,18 @@
     /*  Collapse blocks.
         */
     --GW-collapse-block-disclosure-button-color: #999;
-    --GW-table-collapse-block-disclosure-button-color: #ccc;
     --GW-collapse-block-disclosure-button-hover-color: #666;
+    --GW-table-collapse-block-disclosure-button-color: #ccc;
     --GW-table-collapse-block-disclosure-button-hover-color: #eee;
     --GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
+    --GW-collapse-block-disclosure-button-hover-background-color: rgba(0,0,0,0.1);
     --GW-collapse-block-click-to-expand-text-color: #777;
     --GW-collapse-block-click-to-expand-text-shadow-color: #fff;
     --GW-collapse-block-click-to-expand-text-hover-color: #444;
     --GW-collapse-block-hover-border-color: #777;
+    --GW-collapse-block-fade-gradient-color-one: rgba(255,255,255,0);
+    --GW-collapse-block-fade-gradient-color-two: rgba(255,255,255,0.7);
+    --GW-collapse-block-hover-background-color: rgba(255,255,255,0.3);
 
     /*  Headings.
         */
@@ -313,16 +317,16 @@ section.collapse > .disclosure-button:checked {
     height: 3em;
 }
 .collapse > .disclosure-button:checked:hover {
-    background-color: rgba(0,0,0,0.1);
+    background-color: var(--GW-collapse-block-disclosure-button-hover-background-color);
 }
 section.collapse:target > .disclosure-button {
     pointer-events: none;
 }
 .collapse:not(:target) > .disclosure-button:not(:checked) {
-    background-image: linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0.7));
+    background-image: linear-gradient(var(--GW-collapse-block-fade-gradient-color-one), var(--GW-collapse-block-fade-gradient-color-two));
 }
 .collapse:not(:target) > .disclosure-button:not(:checked):hover {
-    background-color: rgba(255,255,255,0.3);
+    background-color: var(--GW-collapse-block-hover-background-color);
 }
 
 /*  Triangle/chevron/angle symbol. (Copied from WikiMedia's default 'Vector' skin where it's used on mobile to, by default, collapse sections; this means everyone in the world is familiar with it as a symbol of 'collapse'/'uncollapse'.)
