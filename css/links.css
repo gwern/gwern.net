@@ -609,8 +609,7 @@ a[href*="poniesatdawn.bandcamp.com"]::after {
     content: "P@D"; }
 
 a[href*="yunnansourcing.com"]::after {
-    content: "ʸₛ";
-    font-size: 110%; }
+    content: "ys"; }
 
 /* Avoid the unfortunate connotations of 'SS' */
 a[href*="scholars-stage.blogspot.com"]::after {
