@@ -204,7 +204,9 @@
 }
 
 /*  Collapsible section elements. */
-#markdownBody .collapse + p { margin-top: 1em; }
+#markdownBody .collapse + p {
+	margin-top: 1em;
+}
 section.collapse {
     overflow: hidden;
     margin: 1.5em 0 0 -1em;
@@ -599,14 +601,17 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /*********************/
 hr {
     border: 0;
-    margin: 1.1em 0 0.9em 0; }
+    margin: 1.1em 0 0.9em 0;
+}
 /* These classes are created by the 'rulersCycle' Pandoc rewrite pass in Typography.hs at compile-time; they assign each use of <hr> in the body a class 0-2. This lets us create an astronomical theme cyle: the first, fourth, seventh etc rulers are the triple-white star; the second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc are a sun. */
 hr::after, .horizontalRule-nth-0 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     text-align: center;
     display: block;
 }
-.horizontalRule-nth-1 hr { margin: 1.05em 0 0.85em 0; }
+.horizontalRule-nth-1 hr {
+	margin: 1.05em 0 0.85em 0;
+}
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' xmlns:v='https://vecta.io/nano'%3E%3Cpath d='M3.028 3.725c-4.147 4.512-4.034 11.533.34 15.907 4.49 4.49 11.773 4.49 16.264 0s4.49-11.773 0-16.264C15.257-1.007 8.237-1.12 3.725 3.028c3.762-3.4 9.57-3.286 13.197.34 3.743 3.743 3.743 9.81 0 13.553s-9.81 3.743-13.553 0c-3.626-3.626-3.74-9.434-.34-13.197z'/%3E%3Ccircle transform='matrix(.707107 -.707107 .707107 .707107 1663.446 -524.914)' cx='-1547.404' cy='-798.145' r='2.156'/%3E%3C/svg%3E");
@@ -614,7 +619,9 @@ hr::after, .horizontalRule-nth-0 hr::after {
     display: block;
     opacity: 0.65;
 }
-.horizontalRule-nth-2 hr { margin: 1.05em 0 0.80em 0; }
+.horizontalRule-nth-2 hr {
+	margin: 1.05em 0 0.80em 0;
+}
 .horizontalRule-nth-2 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
     content: url('/static/img/icons/sun-verginasun-black.svg');
@@ -652,14 +659,14 @@ hr::after, .horizontalRule-nth-0 hr::after {
         https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
         https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
 */
-table, code, pre,
-a, h1, h2, h3, h4, h5, h6 { /* Skip old-style figures in elements with underlining, to reduce the need to cross the underline with skip-ink */
+table, code, pre, a, h1, h2, h3, h4, h5, h6 { /* Skip old-style figures in elements with underlining, to reduce the need to cross the underline with skip-ink */
     font-variant-numeric: tabular-nums;
 }
 
 /*********/
 /* LINKS */
 /*********/
+
 article > :not(#TOC) a:hover,
 #footer a:hover {
     color: var(--GW-link-hover-color);
@@ -670,7 +677,6 @@ article > :not(#TOC) a:hover,
 /*=-----------------------------------------=*/
 
 /* Now handled in /static/css/links.css */
-
 
 /*********/
 /* LISTS */
@@ -910,8 +916,10 @@ figure.full-width {
 }
 
 /* try to get edge-to-edge images on mobile to maximize horizontal space usage */
-@media only screen and (max-width:64.9ch) {
-    #markdownBody figure { max-width: unset; }
+@media only screen and (max-width: 64.9ch) {
+    #markdownBody figure {
+    	max-width: unset;
+    }
 }
 
 /***************/
@@ -1541,7 +1549,9 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     box-shadow: none;
 }
 /* make links in margin notes (somewhat unusual but should be supported simply because that's what one would expect) clickable/hover-able */
-.sidenote.marginnote::after { z-index: -1; }
+.sidenote.marginnote::after {
+	z-index: -1;
+}
 
 /**********/
 /* TABLES */
@@ -1840,6 +1850,23 @@ code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weig
 /********/
 /* MISC */
 /********/
+
+/* LaTeX: Format the LaTeX symbol correctly (a higher up, e lower) (borrowed from https://latex.now.sh/ ) */
+.latex span:nth-child(1) {
+	text-transform: uppercase;
+	font-size: 0.76em;
+	vertical-align: 0.25em;
+	margin-left: -0.30em;
+	margin-right: -0.08em;
+	line-height: 1ex;
+}
+.latex span:nth-child(2) {
+	text-transform: uppercase;
+	vertical-align: -0.5ex;
+	margin-left: -0.160em;
+	margin-right: -0.120em;
+	line-height: 1ex;
+}
 
 /*************/
 /* DROP CAPS */
@@ -2158,7 +2185,6 @@ code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weig
     font-size: 2em;
     color: var(--GW-admonition-warning-icon-color);
     margin-top: -1px;
-
 }
 .admonition.error::before {
     content: "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
@@ -2168,7 +2194,7 @@ code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weig
 }
 
 .admonition p:last-child {
-    margin-bottom: 0
+    margin-bottom: 0;
 }
 
 .admonition code {
@@ -2203,7 +2229,11 @@ body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::
 }
 
 /* the /index needs more space in the lists for mobile users */
-@media only screen and (max-width:64.9ch) { body.index #markdownBody li { line-height: 1.65; } }
+@media only screen and (max-width: 64.9ch) {
+	body.index #markdownBody li {
+		line-height: 1.65;
+	}
+}
 
 /*  Less fancy headings.
     */
@@ -2364,10 +2394,6 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     width: 20%;
 }
 
-/***************/
-/* IMAGE FOCUS */
-/***************/
-
 /*************************/
 /* UI ELEMENTS CONTAINER */
 /*************************/
@@ -2384,6 +2410,10 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 #ui-elements-container > * {
     pointer-events: auto;
 }
+
+/***************/
+/* IMAGE FOCUS */
+/***************/
 
 /*=--------------=*/
 /*= Hover styles =*/
@@ -2734,25 +2764,14 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     opacity: 1.0;
 }
 
-/* LaTeX: Format the LaTeX symbol correctly (a higher up, e lower) (borrowed from https://latex.now.sh/ ) */
-.latex span:nth-child(1) {
- text-transform:uppercase;
- font-size:.76em;
- vertical-align:.25em;
- margin-left:-.30em;
- margin-right:-.08em;
- line-height:1ex
-}
-.latex span:nth-child(2) {
- text-transform:uppercase;
- vertical-align:-.5ex;
- margin-left:-.160em;
- margin-right:-.120em;
- line-height:1ex
-}
-
+/*********************/
+/* SEQUENTIAL NAV UI */
+/*********************/
 /* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg ) */
-#navigation { text-align: center; }
+
+#navigation {
+	text-align: center;
+}
 #navigation #navigation-previous {
     content: url('/static/img/icons/divider-filetarabesque-half.svg');
     display: inline-block;
@@ -2772,9 +2791,13 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     width: 39%;
 }
 /* Index's special appearance requires some top padding */
-body.index #navigation { margin-top: 2em; }
+body.index #navigation {
+	margin-top: 2em;
+}
 /* override underlining: */
 #navigation #navigation-previous, #navigation #navigation-next,
-#navigation #navigation-center { text-shadow: none;
-                                 background:#fff;
-                                 color:#333; }
+#navigation #navigation-center {
+	text-shadow: none;
+	background: #fff;
+	color: #333;
+}
