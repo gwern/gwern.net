@@ -169,6 +169,10 @@
 	--GW-admonition-error-title-background-color: #2d2d2d;
 	--GW-admonition-error-icon-color: #fff;
 
+	/*	Sequential nav UI.
+		*/
+	--GW-sequential-nav-link-background-color: #fff;
+
 	/*	Page-specific styles.
 		*/
 	--GW-index-page-bottom-ornament-line-color: #000;
@@ -2829,6 +2833,5 @@ body.index #navigation {
 #navigation #navigation-next,
 #navigation #navigation-center {
 	text-shadow: none;
-	background: #fff;
-	color: #333;
+	background: var(--GW-sequential-nav-link-background-color);
 }
