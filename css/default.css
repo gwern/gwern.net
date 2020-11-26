@@ -173,6 +173,10 @@
 		*/
 	--GW-sequential-nav-link-background-color: #fff;
 
+	/*	Links.
+		*/
+	--GW-definition-annotation-text-color: #444;
+
 	/*	Page-specific styles.
 		*/
 	--GW-index-page-bottom-ornament-line-color: #000;
