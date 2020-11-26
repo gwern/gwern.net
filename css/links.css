@@ -1,3 +1,7 @@
+:root {
+	--GW-definition-annotation-text-color: #444;
+}
+
 /*=--------------------------------------------=*/
 /*= Icons for certain link types: by file type =*/
 /*=--------------------------------------------=*/
@@ -360,7 +364,7 @@ a::after { text-indent: 0; }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
 span.defnMetadata {
   cursor: help;
-  color: #444;
+  color: var(--GW-definition-annotation-text-color);
   border-bottom: 1px dotted currentColor;
 }
 
