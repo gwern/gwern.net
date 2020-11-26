@@ -64,7 +64,7 @@ typographyTransform = walk hyphenate . walk smallcapsfy . walk breakSlashes . ru
 -- We exclude headers because on gwern.net, headers are uppercased, which makes auto-smallcaps look odd. So we skip header Block elements before doing the replacement on all other Block elements
 smallcapsfy :: Block -> Block
 smallcapsfy h@Header{} = h
-smallcapsfy x                = walk smallcapsfyInline x
+smallcapsfy x          = walk smallcapsfyInline x
 smallcapsfyInline :: Inline -> Inline
 smallcapsfyInline x@(Str s) = let rewrite = go s in if s /= rewrite then RawInline "html" rewrite else x
   where
