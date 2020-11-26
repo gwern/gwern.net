@@ -2419,12 +2419,38 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 /* IMAGE FOCUS */
 /***************/
 
+/*=--------=*/
+/*= Colors =*/
+/*=--------=*/
+
+:root {
+	--SA-image-focus-image-hover-drop-shadow-color: #777;
+	--SA-image-focus-overlay-background-color: #000;
+	--SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
+	--SA-image-focus-overlay-image-caption-text-color: #fff;
+	--SA-image-focus-overlay-image-caption-link-color: #ccc;
+	--SA-image-focus-overlay-image-caption-link-hover-color: #aaa;
+	--SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
+	--SA-image-focus-overlay-help-box-text-color: #fff;
+	--SA-image-focus-overlay-info-icon-color: #000;
+	--SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
+	--SA-image-focus-overlay-image-number-text-shadow-color: #fff;
+	--SA-image-focus-overlay-slideshow-button-color: #ddd;
+	--SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
+	--SA-image-focus-overlay-slideshow-button-hover-color: #777;
+	--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #fff;
+	--SA-image-focus-overlay-slideshow-button-active-color: #888;
+	--SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
+	--SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
+	--SA-image-focus-image-hover-tooltip-text-color: #fff;
+}
+
 /*=--------------=*/
 /*= Hover styles =*/
 /*=--------------=*/
 
 #markdownBody img:hover {
-    filter: drop-shadow(0 0 3px #777);
+    filter: drop-shadow(0 0 3px var(--SA-image-focus-image-hover-drop-shadow-color));
     cursor: zoom-in;
 }
 #markdownBody img:active {
@@ -2453,7 +2479,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: #000;
+    background-color: var(--SA-image-focus-overlay-background-color);
     opacity: 0.9;
     z-index: -1;
 }
@@ -2487,7 +2513,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 #image-focus-overlay .caption {
     position: absolute;
     bottom: 0.75em;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: var(--SA-image-focus-overlay-image-caption-background-color);
     left: 4.5em;
     right: 4.5em;
     margin: auto;
@@ -2517,7 +2543,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 
 #image-focus-overlay .caption p {
     margin: 1em 1.25em;
-    color: #fff;
+    color: var(--SA-image-focus-overlay-image-caption-text-color);
 }
 #image-focus-overlay .caption code {
     background-color: inherit;
@@ -2525,10 +2551,10 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     font-size: 1em;
 }
 #image-focus-overlay .caption a {
-    color: #ccc;
+    color: var(--SA-image-focus-overlay-image-caption-link-color);
 }
 #image-focus-overlay .caption a:hover {
-    color: #aaa;
+    color: var(--SA-image-focus-overlay-image-caption-link-hover-color);
 }
 
 #image-focus-overlay .caption:not(:empty)::before {
@@ -2570,8 +2596,8 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 #image-focus-overlay .help-overlay:hover {
     max-width: 24em;
     max-height: 14em;
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #fff;
+    background-color: var(--SA-image-focus-overlay-help-box-background-color);
+    color: var(--SA-image-focus-overlay-help-box-text-color);
     visibility: visible;
     transition:
         visibility 0.2s ease 0.3s,
@@ -2587,8 +2613,8 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     right: 0;
     bottom: 0;
     padding: 10px;
-    color: #000;
-    filter: drop-shadow(0 0 6px #fff);
+    color: var(--SA-image-focus-overlay-info-icon-color);
+    filter: drop-shadow(0 0 6px var(--SA-image-focus-overlay-info-icon-drop-shadow-color));
     visibility: visible;
     opacity: 0.85;
     transition:
@@ -2627,10 +2653,10 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     top: 1em;
     font-weight: 600;
     text-shadow:
-        0 0 3px #fff,
-        0 0 5px #fff,
-        0 0 8px #fff,
-        0 0 13px #fff;
+        0 0  3px var(--SA-image-focus-overlay-image-number-text-shadow-color),
+        0 0  5px var(--SA-image-focus-overlay-image-number-text-shadow-color),
+        0 0  8px var(--SA-image-focus-overlay-image-number-text-shadow-color),
+        0 0 13px var(--SA-image-focus-overlay-image-number-text-shadow-color);
     width: 1.5em;
     text-align: right;
     white-space: nowrap;
@@ -2669,7 +2695,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 }
 #image-focus-overlay .slideshow-buttons button {
     font-size: 3rem;
-    color: #ddd;
+    color: var(--SA-image-focus-overlay-slideshow-button-color);
     border: none;
     background-color: transparent;
     position: relative;
@@ -2698,23 +2724,23 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 }
 @media only screen and (hover: hover) {
     #image-focus-overlay .slideshow-buttons button:hover {
-        background-color: rgba(0, 0, 0, 0.1);
-        color: #777;
+        background-color: var(--SA-image-focus-overlay-slideshow-button-hover-background-color);
+        color: var(--SA-image-focus-overlay-slideshow-button-hover-color);
     }
     #image-focus-overlay .slideshow-buttons button:not(:disabled):hover svg {
         filter:
-            drop-shadow(0 0 1px #fff)
-            drop-shadow(0 0 3px #fff);
+            drop-shadow(0 0 1px var(--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color))
+            drop-shadow(0 0 3px var(--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color));
     }
 }
 #image-focus-overlay .slideshow-buttons button:active {
     transform: none;
-    color: #888;
+    color: var(--SA-image-focus-overlay-slideshow-button-active-color);
 }
 #image-focus-overlay .slideshow-buttons button:disabled {
     text-shadow: none;
     background-color: transparent;
-    color: #ddd;
+    color: var(--SA-image-focus-overlay-slideshow-button-disabled-color);
     cursor: default;
     opacity: 0.4;
 }
@@ -2745,8 +2771,8 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     padding: 6px 15px 7px 15px;
     font-size: 1rem;
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    background-color: rgba(0, 0, 0, 0.75);
-    color: #fff;
+    background-color: var(--SA-image-focus-image-hover-tooltip-background-color);
+    color: var(--SA-image-focus-image-hover-tooltip-text-color);
     border-radius: 5px;
     opacity: 0.0;
     transition: opacity 0.15s ease;
@@ -2783,7 +2809,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 }
 #navigation #navigation-center {
     content: url('/static/img/icons/divider-filetarabesque-center.svg');
-    display:inline-block;
+    display: inline-block;
     margin-left: 0.5em;
     margin-right: 0.5em;
     width: 13%;
@@ -2799,7 +2825,8 @@ body.index #navigation {
 	margin-top: 2em;
 }
 /* override underlining: */
-#navigation #navigation-previous, #navigation #navigation-next,
+#navigation #navigation-previous,
+#navigation #navigation-next,
 #navigation #navigation-center {
 	text-shadow: none;
 	background: #fff;
