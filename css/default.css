@@ -164,6 +164,12 @@
 	--GW-admonition-error-text-color: #fff;
 	--GW-admonition-error-title-background-color: #2d2d2d;
 	--GW-admonition-error-icon-color: #fff;
+
+	/*	Page-specific styles.
+		*/
+	--GW-index-page-bottom-ornament-line-color: #000;
+	--GW-page-mead-image-box-shadow-inner-color: #fff;
+	--GW-page-mead-image-box-shadow-outer-color: #ccc;
 }
 
 /*  Special styles for special browsers.
@@ -2219,9 +2225,9 @@ body.tags article {
     padding-bottom: 4em;
 }
 body.index article::after,
-body.tags article::after{
+body.tags article::after {
     content: "";
-    background-color: #fff;
+    background-color: var(--GW-body-background-color);
     background-image: url('/static/img/logo/logo-smooth.svg');
     display: block;
     position: absolute;
@@ -2238,13 +2244,13 @@ body.tags article::after{
     z-index: 1;
 }
 body.index article::before,
-body.tags article::before{
+body.tags article::before {
     content: "";
     display: block;
     position: absolute;
     bottom: calc(0.75em + 15px);
     height: 1px;
-    border-bottom: 1px dotted #000;
+    border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
     width: 100%;
     opacity: 0.5;
 }
@@ -2308,8 +2314,8 @@ body.mead p > img {
     z-index: 1;
     margin: 1em 1em 1em 2em;
     box-shadow:
-        0 0 0 15px #fff,
-        0 0 0 16px #ccc,
+        0 0 0 15px var(--GW-page-mead-image-box-shadow-inner-color),
+        0 0 0 16px var(--GW-page-mead-image-box-shadow-outer-color),
         0 0 0 17px transparent;
 }
 
