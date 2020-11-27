@@ -616,10 +616,13 @@ hr {
     margin: 1.1em 0 0.9em 0;
 }
 /* These classes are created by the 'rulersCycle' Pandoc rewrite pass in Typography.hs at compile-time; they assign each use of <hr> in the body a class 0-2. This lets us create an astronomical theme cyle: the first, fourth, seventh etc rulers are the triple-white star; the second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc are a sun. */
-hr::after, .horizontalRule-nth-0 hr::after {
+hr::after,
+.horizontalRule-nth-0 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     text-align: center;
     display: block;
+	width: 30px;
+	margin: auto;
 }
 .horizontalRule-nth-1 hr {
 	margin: 1.05em 0 0.85em 0;
