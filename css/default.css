@@ -622,6 +622,7 @@ hr::after {
     display: block;
 	margin: auto;
 }
+hr::after,
 .horizontalRule-nth-0 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
 	width: 30px;
