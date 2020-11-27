@@ -685,7 +685,8 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 { /* Skip old-style figures in eleme
 /*********/
 
 article > :not(#TOC) a:hover,
-#footer a:hover {
+#footer a:hover,
+#sidebar a:hover {
     color: var(--GW-link-hover-color);
 }
 
