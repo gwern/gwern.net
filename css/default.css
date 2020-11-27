@@ -635,7 +635,7 @@ hr::after {
 .horizontalRule-nth-2 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
     content: url('/static/img/icons/sun-verginasun-black.svg');
-    opacity: 0.60;
+    opacity: 0.65;
     width: 40px;
 }
 
