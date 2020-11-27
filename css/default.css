@@ -2815,21 +2815,21 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 #navigation {
 	text-align: center;
 }
-#navigation #navigation-previous {
-    content: url('/static/img/icons/divider-filetarabesque-half.svg');
+#navigation a {
     display: inline-block;
+}
+#navigation a svg {
+	width: 100%;
+    height: 32px;
+}
+#navigation #navigation-previous {
     width: 40%;
 }
 #navigation #navigation-center {
-    content: url('/static/img/icons/divider-filetarabesque-center.svg');
-    display: inline-block;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
+	margin: 0 0.5em;
     width: 13%;
 }
 #navigation #navigation-next {
-    content: url('/static/img/icons/divider-filetarabesque-half.svg');
-    display: inline-block;
     transform: scale(-1, 1);
     width: 39%;
 }
