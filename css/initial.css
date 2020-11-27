@@ -868,8 +868,6 @@ blockquote {
 	background-color: var(--GW-blockquote-background-color);
 	font-size: 0.95em;
 	padding: 1em 1.25em;
-	position: relative;
-	z-index: -2;
 }
 
 /*	Three-level of blockquote emphasis (darkening).
