@@ -621,15 +621,17 @@ hr::after,
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     text-align: center;
     display: block;
-	width: 30px;
 	margin: auto;
+}
+.horizontalRule-nth-0 hr::after {
+	width: 30px;
 }
 .horizontalRule-nth-1 hr {
 	margin: 1.05em 0 0.85em 0;
 }
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
-    content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='23' height='23' xmlns:v='https://vecta.io/nano'%3E%3Cpath d='M3.028 3.725c-4.147 4.512-4.034 11.533.34 15.907 4.49 4.49 11.773 4.49 16.264 0s4.49-11.773 0-16.264C15.257-1.007 8.237-1.12 3.725 3.028c3.762-3.4 9.57-3.286 13.197.34 3.743 3.743 3.743 9.81 0 13.553s-9.81 3.743-13.553 0c-3.626-3.626-3.74-9.434-.34-13.197z'/%3E%3Ccircle transform='matrix(.707107 -.707107 .707107 .707107 1663.446 -524.914)' cx='-1547.404' cy='-798.145' r='2.156'/%3E%3C/svg%3E");
+    content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
     text-align: center;
     display: block;
     opacity: 0.65;
