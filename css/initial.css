@@ -152,6 +152,10 @@ body {
 	}
 }
 
+svg {
+	fill: currentColor;
+}
+
 /***********/
 /* SIDEBAR */
 /***********/
@@ -169,7 +173,7 @@ body {
 	#sidebar a#logo {
 		margin: 1em 0 2em 0;
 	}
-	#sidebar a#logo img {
+	#sidebar a#logo svg {
 		width: 64px;
 	}
 	#sidebar a.patreon {
@@ -238,7 +242,7 @@ body {
 	#sidebar #logo {
 		margin: calc(0.5em + 1px) 1px 1px 0;
 	}
-	#sidebar #logo img {
+	#sidebar #logo svg {
 		width: 2.5rem;
 	}
 }
@@ -324,9 +328,9 @@ header h1 {
   margin-left: 0.8125em;
 }
 
-/*********************/
-/* /index */
-/*********************/
+/*=--------=*/
+/*= /index =*/
+/*=--------=*/
 
 /* on the index page, we hide article-related formatting, begging, comments, to make it more compact & classy */
 body.index #sidebar a.patreon,
@@ -748,6 +752,7 @@ h1 {
 /*********/
 /* LINKS */
 /*********/
+
 #markdownBody a {
 	/* force the occasional inline URL or other long word to break at max-width */
 	word-wrap: break-word;

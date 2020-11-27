@@ -902,8 +902,8 @@ figcaption {
 
 /* enable the various `![caption](/images/foo.jpg){.full-width}` uses; analogous to full-width tables */
 figure.full-width {
-  position: relative;
-  max-width: unset;
+	position: relative;
+	max-width: unset;
 }
 
 /* Floating figures. (Mostly for amusing asides/memes.) */
