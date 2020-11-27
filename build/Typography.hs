@@ -97,7 +97,7 @@ smallcapsfyRegex = R.makeRegex
    "[[:digit:]]+ ?ADE?|" ++ "[[:digit:]]+ ?BCE?"::String)
 
 -- add '<wbr>' (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://www.gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking & hyphenation is incompetent, sadly).
--- NOTE: this will affect link texts like '[AC/DC](!Wikipedia)', so do the rewrite after the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for possible HTML and bails out to avoid damaging it
+-- WARNING: this will affect link texts like '[AC/DC](!Wikipedia)', so make sure you do the rewrite after the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for possible HTML and bails out to avoid damaging it
 breakSlashes :: Block -> Block
 -- skip CodeBlock/RawBlock/Header/Table: enabling line-breaking on slashes there is a bad idea or not possible:
 breakSlashes x@CodeBlock{} = x
@@ -107,8 +107,9 @@ breakSlashes x@Table{}     = x
 breakSlashes x = walk breakSlashesInline x
 breakSlashesInline :: Inline -> Inline
 breakSlashesInline x@(SmallCaps _) = x
-breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>')) s then -- things get tricky if we mess around with raw HTML
-                                 RawInline "html" (T.replace "/" "/<wbr>" s) else x
+breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>')) s then -- things get tricky if we mess around with raw HTML, so we bail out for anything that even *looks* like it might be HTML tags & has '<>'
+                                 RawInline "html" (T.replace " /<wbr> " " / " $ T.replace " /<wbr>" " /" $ T.replace "/<wbr> " "/ " $ -- fix redundant <wbr>s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
+                                                   T.replace "/" "/<wbr>" s) else x
 breakSlashesInline x = x
 
 -- Why try to support fully-justified text when desktop Chrome makes it so hard, the soft hyphen hack does come with costs (bloated HTML source, copy-paste issues, bots misbehaving, unfixable edge-cases like X.org middle-click-to-copy), and few will notice? Isn't fully-justified (rather than the usual left-justified ragged-right) rather fussy and excessive? Sure, designers and the like *claim* it looks better, but why believe them? Do we really like it for any reason other than typography tradition and it being associated with professionally-typeset books? Perhaps we'd find the hyphens and split-up words to be confusing clutter if not for inertia and historical reasons. Should we do it because it's hard and to show off?
