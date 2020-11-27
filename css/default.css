@@ -613,38 +613,30 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /*********************/
 hr {
     border: 0;
-    margin: 1.1em 0 0.9em 0;
+    margin: 1.25em 0 0.75em 0;
+    height: 40px;
+    line-height: 1;
 }
 /* These classes are created by the 'rulersCycle' Pandoc rewrite pass in Typography.hs at compile-time; they assign each use of <hr> in the body a class 0-2. This lets us create an astronomical theme cyle: the first, fourth, seventh etc rulers are the triple-white star; the second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc are a sun. */
-hr::after,
-.horizontalRule-nth-0 hr::after {
-    content: url('/static/img/icons/asterism-triplewhitestar.svg');
-    text-align: center;
+hr::after {
     display: block;
 	margin: auto;
 }
 .horizontalRule-nth-0 hr::after {
+    content: url('/static/img/icons/asterism-triplewhitestar.svg');
 	width: 30px;
-}
-.horizontalRule-nth-1 hr {
-	margin: 1.05em 0 0.85em 0;
 }
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
-    text-align: center;
-    display: block;
     opacity: 0.65;
-}
-.horizontalRule-nth-2 hr {
-	margin: 1.05em 0 0.80em 0;
+	width: 24px;
 }
 .horizontalRule-nth-2 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
     content: url('/static/img/icons/sun-verginasun-black.svg');
-    text-align: center;
-    display: block;
     opacity: 0.60;
+    width: 40px;
 }
 
 /**********/
