@@ -104,84 +104,84 @@
     --GW-pre-element-scrollbar-thumb-color: #ccc;
     --GW-pre-element-scrollbar-thumb-hover-color: #999;
 
-	/*	Syntax highlight theme.
-		*/
-	--GW-syntax-highlight-color-normal: #1f1c1b;
-	--GW-syntax-highlight-color-attribute: #002561;
-	--GW-syntax-highlight-color-region-marker: #002561;
-	--GW-syntax-highlight-background-color-region-marker: #e0e9f8;
-	--GW-syntax-highlight-color-data-type: inherit;
-	--GW-syntax-highlight-color-variable: #666666;
-	--GW-syntax-highlight-color-other: inherit;
-	--GW-syntax-highlight-color-preprocessor: inherit;
-	--GW-syntax-highlight-color-comment-var: #888888;
-	--GW-syntax-highlight-color-extension: #888888;
-	--GW-syntax-highlight-color-comment: #888888;
-	--GW-syntax-highlight-color-control-flow: #003900;
-	--GW-syntax-highlight-color-keyword: #002561;
-	--GW-syntax-highlight-color-operator: #002561;
-	--GW-syntax-highlight-color-special-char: #607880;
-	--GW-syntax-highlight-color-documentation: #607880;
-	--GW-syntax-highlight-color-built-in: #002561;
-	--GW-syntax-highlight-color-function: #002561;
-	--GW-syntax-highlight-color-constant: inherit;
-	--GW-syntax-highlight-color-base-n: inherit;
-	--GW-syntax-highlight-color-dec-val: inherit;
-	--GW-syntax-highlight-color-float: inherit;
-	--GW-syntax-highlight-color-information: inherit;
-	--GW-syntax-highlight-color-char: inherit;
-	--GW-syntax-highlight-color-string: inherit;
-	--GW-syntax-highlight-color-verbatim-string: inherit;
-	--GW-syntax-highlight-color-alert: #bf0303;
-	--GW-syntax-highlight-color-error: #ff0000;
-	--GW-syntax-highlight-color-warning: #ff0000;
-	--GW-syntax-highlight-color-annotation: #888888;
-	--GW-syntax-highlight-color-import: #777777;
-	--GW-syntax-highlight-color-special-string: #666666;
+    /*  Syntax highlight theme.
+        */
+    --GW-syntax-highlight-color-normal: #1f1c1b;
+    --GW-syntax-highlight-color-attribute: #002561;
+    --GW-syntax-highlight-color-region-marker: #002561;
+    --GW-syntax-highlight-background-color-region-marker: #e0e9f8;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #666666;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-comment-var: #888888;
+    --GW-syntax-highlight-color-extension: #888888;
+    --GW-syntax-highlight-color-comment: #888888;
+    --GW-syntax-highlight-color-control-flow: #003900;
+    --GW-syntax-highlight-color-keyword: #002561;
+    --GW-syntax-highlight-color-operator: #002561;
+    --GW-syntax-highlight-color-special-char: #607880;
+    --GW-syntax-highlight-color-documentation: #607880;
+    --GW-syntax-highlight-color-built-in: #002561;
+    --GW-syntax-highlight-color-function: #002561;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #bf0303;
+    --GW-syntax-highlight-color-error: #ff0000;
+    --GW-syntax-highlight-color-warning: #ff0000;
+    --GW-syntax-highlight-color-annotation: #888888;
+    --GW-syntax-highlight-color-import: #777777;
+    --GW-syntax-highlight-color-special-string: #666666;
 
-	/*	Math.
-		*/
-	--GW-math-block-scrollbar-border-color: #ccc;
-	--GW-math-block-scrollbar-track-color: #fff;
-	--GW-math-block-scrollbar-thumb-color: #ccc;
-	--GW-math-block-scrollbar-track-hover-color: #999;
+    /*  Math.
+        */
+    --GW-math-block-scrollbar-border-color: #ccc;
+    --GW-math-block-scrollbar-track-color: #fff;
+    --GW-math-block-scrollbar-thumb-color: #ccc;
+    --GW-math-block-scrollbar-track-hover-color: #999;
 
-	/*	Drop caps.
-		*/
-	--GW-drop-caps-yinit-text-shadow-color: #777;
-	--GW-drop-caps-de-zs-text-shadow-color: #fff;
-	--GW-drop-caps-de-zs-color: #191919;
+    /*  Drop caps.
+        */
+    --GW-drop-caps-yinit-text-shadow-color: #777;
+    --GW-drop-caps-de-zs-text-shadow-color: #fff;
+    --GW-drop-caps-de-zs-color: #191919;
 
-	/*	Admonitions.
-		*/
-	--GW-admonition-default-left-border-color: #747373;
-	--GW-admonition-default-background-color: #d8d8d8;
-	--GW-admonition-tip-left-border-color: #d8d8d8;
-	--GW-admonition-tip-background-color: #fafafa;
-	--GW-admonition-warning-left-border-color: #5a5a5a;
-	--GW-admonition-warning-background-color: #969696;
-	--GW-admonition-warning-text-color: #fff;
-	--GW-admonition-warning-title-background-color: #5a5a5a;
-	--GW-admonition-warning-icon-color: #fff;
-	--GW-admonition-error-left-border-color: #2d2d2d;
-	--GW-admonition-error-background-color: #5a5a5a;
-	--GW-admonition-error-text-color: #fff;
-	--GW-admonition-error-title-background-color: #2d2d2d;
-	--GW-admonition-error-icon-color: #fff;
+    /*  Admonitions.
+        */
+    --GW-admonition-default-left-border-color: #747373;
+    --GW-admonition-default-background-color: #d8d8d8;
+    --GW-admonition-tip-left-border-color: #d8d8d8;
+    --GW-admonition-tip-background-color: #fafafa;
+    --GW-admonition-warning-left-border-color: #5a5a5a;
+    --GW-admonition-warning-background-color: #969696;
+    --GW-admonition-warning-text-color: #fff;
+    --GW-admonition-warning-title-background-color: #5a5a5a;
+    --GW-admonition-warning-icon-color: #fff;
+    --GW-admonition-error-left-border-color: #2d2d2d;
+    --GW-admonition-error-background-color: #5a5a5a;
+    --GW-admonition-error-text-color: #fff;
+    --GW-admonition-error-title-background-color: #2d2d2d;
+    --GW-admonition-error-icon-color: #fff;
 
-	/*	Sequential nav UI.
-		*/
-	--GW-sequential-nav-link-background-color: #fff;
+    /*  Sequential nav UI.
+        */
+    --GW-sequential-nav-link-background-color: #fff;
 
-	/*	Links.
-		*/
-	--GW-definition-annotation-text-color: #444;
+    /*  Links.
+        */
+    --GW-definition-annotation-text-color: #444;
 
-	/*	Page-specific styles.
-		*/
-	--GW-index-page-bottom-ornament-line-color: #000;
-	--GW-page-mead-image-box-shadow-inner-color: #fff;
-	--GW-page-mead-image-box-shadow-outer-color: #ccc;
+    /*  Page-specific styles.
+        */
+    --GW-index-page-bottom-ornament-line-color: #000;
+    --GW-page-mead-image-box-shadow-inner-color: #fff;
+    --GW-page-mead-image-box-shadow-outer-color: #ccc;
 }
 
 /*  Special styles for special browsers.
@@ -217,7 +217,7 @@
 
 /*  Collapsible section elements. */
 #markdownBody .collapse + p {
-	margin-top: 1em;
+    margin-top: 1em;
 }
 section.collapse {
     overflow: hidden;
@@ -620,18 +620,18 @@ hr {
 /* These classes are created by the 'rulersCycle' Pandoc rewrite pass in Typography.hs at compile-time; they assign each use of <hr> in the body a class 0-2. This lets us create an astronomical theme cyle: the first, fourth, seventh etc rulers are the triple-white star; the second, fifth, eighth etc are a dotted moon; the third, sixth, ninth etc are a sun. */
 hr::after {
     display: block;
-	margin: auto;
+    margin: auto;
 }
 hr::after,
 .horizontalRule-nth-0 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
-	width: 30px;
+    width: 30px;
 }
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
     opacity: 0.65;
-	width: 24px;
+    width: 24px;
 }
 .horizontalRule-nth-2 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
@@ -901,8 +901,8 @@ figcaption {
 
 /* enable the various `![caption](/images/foo.jpg){.full-width}` uses; analogous to full-width tables */
 figure.full-width {
-	position: relative;
-	max-width: unset;
+    position: relative;
+    max-width: unset;
 }
 
 /* Floating figures. (Mostly for amusing asides/memes.) */
@@ -929,7 +929,7 @@ figure.full-width {
 /* try to get edge-to-edge images on mobile to maximize horizontal space usage */
 @media only screen and (max-width: 64.9ch) {
     #markdownBody figure {
-    	max-width: unset;
+        max-width: unset;
     }
 }
 
@@ -1016,8 +1016,8 @@ blockquote p > a:first-child code:first-child {
     */
 blockquote table {
     font-size: 0.7em;
-	position: relative;
-	z-index: 1;
+    position: relative;
+    z-index: 1;
 }
 
 /*************/
@@ -1563,7 +1563,7 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 }
 /* make links in margin notes (somewhat unusual but should be supported simply because that's what one would expect) clickable/hover-able */
 .sidenote.marginnote::after {
-	z-index: -1;
+    z-index: -1;
 }
 
 /**********/
@@ -1756,7 +1756,7 @@ pre::-webkit-scrollbar-thumb:hover {
 /***************/
 
 code {
-	--GW-link-underline-background-color: var(--GW-code-element-background-color);
+    --GW-link-underline-background-color: var(--GW-code-element-background-color);
 
     border: 1px solid var(--GW-code-element-border-color);
     background-color: var(--GW-code-element-background-color);
@@ -1792,43 +1792,38 @@ pre code {
 }
 
 /*=------------------------------------------------------------------------------------------=*/
-/*= Source code highlighting for pandoc/skylighting-generated syntax classes (not Pygments)  =*/
+/*= Source code highlighting for Pandoc/Skylighting-generated syntax classes (not Pygments)  =*/
 /*=------------------------------------------------------------------------------------------=*/
 
 /* Monochrome-ish code highlighting theme, loosely based on Pygments's algol_nu (CSS: https://github.com/lukelbd/proplot/blob/master/docs/_static/pygments/algol_nu.css demo: https://xyproto.github.io/splash/docs/longer/algol_nu.html ; Python: https://github.com/pycom/EricShort/blob/master/ThirdParty/Pygments/pygments/styles/algol.py ). */
 /* This skips the underlining and overuse of graying, and uses a bit of blue as an alternative, and retains red for warnings/errors. */
-/* TODO: create a natural code sample that exercises all the classes; remove the dead code classes which appear to be text-editor-only (like 'RegionMarker'); check readability of the faded comments in dark mode */
+/* TODO: create a natural code sample that exercises all the classes; check readability of the faded comments in dark mode */
 code span    { color: var(--GW-syntax-highlight-color-normal); } /* Normal */
 code span.at { color: var(--GW-syntax-highlight-color-attribute); } /* Attribute */
-code span.re { color: var(--GW-syntax-highlight-color-region-marker); background-color: var(--GW-syntax-highlight-background-color-region-marker); } /* RegionMarker */
 code span.dt { color: var(--GW-syntax-highlight-color-data-type); font-weight: bold; font-style: italic  } /* DataType */
 code span.va { color: var(--GW-syntax-highlight-color-variable); font-weight: bold; font-style: italic } /* Variable */
 code span.ot { color: var(--GW-syntax-highlight-color-other); font-weight: bold; font-style: italic } /* Other */
 code span.pp { color: var(--GW-syntax-highlight-color-preprocessor); font-weight: bold; font-style: italic } /* Preprocessor */
-code span.cv { color: var(--GW-syntax-highlight-color-comment-var); font-style: italic } /* CommentVar */
 code span.ex { color: var(--GW-syntax-highlight-color-extension); font-style: italic } /* Extension */
 code span.co { color: var(--GW-syntax-highlight-color-comment); } /* Comment */
 code span.cf { color: var(--GW-syntax-highlight-color-control-flow); font-weight: bold; } /* ControlFlow */
 code span.kw { color: var(--GW-syntax-highlight-color-keyword); font-weight: bold; } /* Keyword */
 code span.op { color: var(--GW-syntax-highlight-color-operator); } /* Operator */
 code span.sc { color: var(--GW-syntax-highlight-color-special-char); } /* SpecialChar */
-code span.do { color: var(--GW-syntax-highlight-color-documentation); } /* Documentation */
 code span.bu { color: var(--GW-syntax-highlight-color-built-in); font-weight: bold; } /* BuiltIn */
 code span.fu { color: var(--GW-syntax-highlight-color-function); } /* Function */
 code span.cn { color: var(--GW-syntax-highlight-color-constant); font-weight: bold; } /* Constant */
-code span.bn { color: var(--GW-syntax-highlight-color-base-n); font-weight: bold; } /* BaseN */
+code span.bn { color: var(--GW-syntax-highlight-color-base-n); font-weight: bold; } /* BaseN: "dsBaseN, values with a base other than 10." */
 code span.dv { color: var(--GW-syntax-highlight-color-dec-val); font-weight: bold; } /* DecVal */
 code span.fl { color: var(--GW-syntax-highlight-color-float); font-weight: bold; font-feature-settings: 'ss01'; } /* Float */
 code span.in { color: var(--GW-syntax-highlight-color-information); font-weight: bold; } /* Information */
 code span.ch { color: var(--GW-syntax-highlight-color-char); font-style: italic; } /* Char */
 code span.st { color: var(--GW-syntax-highlight-color-string); font-style: italic; } /* String */
-code span.vs { color: var(--GW-syntax-highlight-color-verbatim-string); font-style: italic; } /* VerbatimString */
+code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weight: bold; font-style: italic } /* SpecialString: "dsSpecialString, SQL, regexes, HERE docs, LaTeX math mode, ..."x1 */
+code span.vs { color: var(--GW-syntax-highlight-color-verbatim-string); font-style: italic; } /* VerbatimString: "dsVerbatimString, verbatim or raw strings like 'raw \backlash' in Perl, CoffeeScript, and shells, as well as r'\raw' in Python." */
 code span.al { color: var(--GW-syntax-highlight-color-alert); text-decoration: double underline; font-weight: bold; } /* Alert */
 code span.er { color: var(--GW-syntax-highlight-color-error); } /* Error */
-code span.wa { color: var(--GW-syntax-highlight-color-warning); } /* Warning */
-code span.an { color: var(--GW-syntax-highlight-color-annotation); font-style: italic } /* Annotation */
 code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold; font-style: italic } /* Import */
-code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weight: bold; font-style: italic } /* SpecialString */
 
 /********/
 /* MATH */
@@ -1868,19 +1863,19 @@ code span.ss { color: var(--GW-syntax-highlight-color-special-string); font-weig
 
 /* LaTeX: Format the LaTeX symbol correctly (a higher up, e lower) (borrowed from https://latex.now.sh/ ) */
 .latex span:nth-child(1) {
-	text-transform: uppercase;
-	font-size: 0.76em;
-	vertical-align: 0.25em;
-	margin-left: -0.30em;
-	margin-right: -0.08em;
-	line-height: 1ex;
+    text-transform: uppercase;
+    font-size: 0.76em;
+    vertical-align: 0.25em;
+    margin-left: -0.30em;
+    margin-right: -0.08em;
+    line-height: 1ex;
 }
 .latex span:nth-child(2) {
-	text-transform: uppercase;
-	vertical-align: -0.5ex;
-	margin-left: -0.160em;
-	margin-right: -0.120em;
-	line-height: 1ex;
+    text-transform: uppercase;
+    vertical-align: -0.5ex;
+    margin-left: -0.160em;
+    margin-right: -0.120em;
+    line-height: 1ex;
 }
 
 /*************/
@@ -2245,9 +2240,9 @@ body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::
 
 /* the /index needs more space in the lists for mobile users */
 @media only screen and (max-width: 64.9ch) {
-	body.index #markdownBody li {
-		line-height: 1.65;
-	}
+    body.index #markdownBody li {
+        line-height: 1.65;
+    }
 }
 
 /*  Less fancy headings.
@@ -2435,25 +2430,25 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 /*=--------=*/
 
 :root {
-	--SA-image-focus-image-hover-drop-shadow-color: #777;
-	--SA-image-focus-overlay-background-color: #000;
-	--SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
-	--SA-image-focus-overlay-image-caption-text-color: #fff;
-	--SA-image-focus-overlay-image-caption-link-color: #ccc;
-	--SA-image-focus-overlay-image-caption-link-hover-color: #aaa;
-	--SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
-	--SA-image-focus-overlay-help-box-text-color: #fff;
-	--SA-image-focus-overlay-info-icon-color: #000;
-	--SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
-	--SA-image-focus-overlay-image-number-text-shadow-color: #fff;
-	--SA-image-focus-overlay-slideshow-button-color: #ddd;
-	--SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
-	--SA-image-focus-overlay-slideshow-button-hover-color: #777;
-	--SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #fff;
-	--SA-image-focus-overlay-slideshow-button-active-color: #888;
-	--SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
-	--SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
-	--SA-image-focus-image-hover-tooltip-text-color: #fff;
+    --SA-image-focus-image-hover-drop-shadow-color: #777;
+    --SA-image-focus-overlay-background-color: #000;
+    --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
+    --SA-image-focus-overlay-image-caption-text-color: #fff;
+    --SA-image-focus-overlay-image-caption-link-color: #ccc;
+    --SA-image-focus-overlay-image-caption-link-hover-color: #aaa;
+    --SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
+    --SA-image-focus-overlay-help-box-text-color: #fff;
+    --SA-image-focus-overlay-info-icon-color: #000;
+    --SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
+    --SA-image-focus-overlay-image-number-text-shadow-color: #fff;
+    --SA-image-focus-overlay-slideshow-button-color: #ddd;
+    --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
+    --SA-image-focus-overlay-slideshow-button-hover-color: #777;
+    --SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #fff;
+    --SA-image-focus-overlay-slideshow-button-active-color: #888;
+    --SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
+    --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
+    --SA-image-focus-image-hover-tooltip-text-color: #fff;
 }
 
 /*=--------------=*/
@@ -2811,20 +2806,20 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 /* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg ) */
 
 #navigation {
-	text-align: center;
+    text-align: center;
 }
 #navigation a {
     display: inline-block;
 }
 #navigation a svg {
-	width: 100%;
+    width: 100%;
     height: 32px;
 }
 #navigation #navigation-previous {
     width: 40%;
 }
 #navigation #navigation-center {
-	margin: 0 0.5em;
+    margin: 0 0.5em;
     width: 13%;
 }
 #navigation #navigation-next {
@@ -2833,12 +2828,12 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 }
 /* Index's special appearance requires some top padding */
 body.index #navigation {
-	margin-top: 2em;
+    margin-top: 2em;
 }
 /* override underlining: */
 #navigation #navigation-previous,
 #navigation #navigation-next,
 #navigation #navigation-center {
-	text-shadow: none;
-	background: var(--GW-sequential-nav-link-background-color);
+    text-shadow: none;
+    background: var(--GW-sequential-nav-link-background-color);
 }
