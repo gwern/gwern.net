@@ -172,9 +172,9 @@ imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" 
 
 -- Annotate body horizontal rulers with a class based on global count: '<div class="ruler-nth-0"> / <hr /> / </div>' / '<div class="ruler-nth-1"> / <hr /> / </div>' / '<div class="ruler-nth-2"> / <hr /> / </div>' etc (cycling). Allows CSS decoration of "every second ruler" or "every fourth ruler" etc. I use it for cycling rulers in 3 levels, similar to the rest of gwern.net's visual design.
 --
+-- Generalized versions for arbitrary Inline/Block types using generic programming: https://groups.google.com/g/pandoc-discuss/c/x1IXyfC2tfU/m/sXnHU7DIAgAJ (not currently necessary, but worth noting should I need to number anything in the future).
+---
 -- (NOTE: As a rewrite pass, this does not affect the horizontal ruler in the endnotes section, nor any horizontal rulers in the outer HTML document.)
---
--- No reason this couldn't be generalized to arbitrary Block/Inline elements (well, maybe—might require complex typing, and so be easier to just case-match on the existing Block/Inline types which shouldn't change anytime soon). But do I need it for anything else?
 rulersCycle :: Int -> Pandoc -> Pandoc
 rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
  where addHrNth :: Block -> State Int Block
