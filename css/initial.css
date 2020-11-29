@@ -50,9 +50,11 @@
 		*/
 	--GW-TOC-border-color: #ccc;
 	--GW-TOC-background-color: #f9f9f9;
-	--GW-TOC-link-hover-background-color: rgba(0, 0, 0, 0.05);
+	--GW-TOC-link-hover-background-color: #ececec;
 	--GW-TOC-link-hover-color: #000;
 	--GW-TOC-link-hover-indicator-bar-color: #ccc;
+	--GW-TOC-number-color: #909090;
+	--GW-TOC-number-hover-color: #313131;
 }
 
 /***********/
@@ -644,11 +646,11 @@ body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 	width: 12ch;
 	text-align: right;
 	font-weight: normal;
-	opacity: 0.5;
 	pointer-events: none;
+	color: var(--GW-TOC-number-color);
 }
 #TOC ul li:hover::before {
-	opacity: 0.8;
+	color: var(--GW-TOC-number-hover-color);
 }
 
 /****************/
