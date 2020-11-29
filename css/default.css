@@ -2805,6 +2805,21 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     opacity: 1.0;
 }
 
+/****************/
+/* INTERACTIONS */
+/****************/
+
+/*  Image focus vs. popups.
+    */
+#markdownBody #popupdiv img {
+    filter: none;
+    cursor: initial;
+    transform: none;
+}
+#markdownBody #popupdiv .popup-screenshot a img {
+    cursor: pointer;
+}
+
 /*********************/
 /* SEQUENTIAL NAV UI */
 /*********************/
