@@ -14,27 +14,43 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 Extracts = {
+	/**********/
+	/*	Config.
+		*/
     popupStylesID: "popups-styles",
     popupContainerID: "popup-container",
     popupContainerParentSelector: "html",
+    popupContainerZIndex: "1000",
+    
+    injectDefaultStyles: false,
+
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
+    excludedElementsSelector: ".footnote-ref",
     minPopupWidth: 360,
     maxPopupWidth: 640,
-    popupBorderWidth: 3.0,
+    popupBorderWidth: 3,
+
+    popupBreathingRoomX: 24.0,
+    popupBreathingRoomY: 16.0,
+
     videoPopupWidth: 495,
     videoPopupHeight: 310,
+
     popupTriggerDelay: 200,
     popupFadeoutDelay: 50,
     popupFadeoutDuration: 250,
+
+    isMobileMediaQuery: matchMedia("not screen and (hover:hover) and (pointer:fine)"),
+
+	/******************/
+	/*	Implementation.
+		*/
     popupFadeTimer: false,
     popupDespawnTimer: false,
     popupSpawnTimer: false,
-    popupBreathingRoomX: 24.0,
-    popupBreathingRoomY: 16.0,
     popup: null,
-    encoder: new TextEncoder(),
-    isMobileMediaQuery: matchMedia("not screen and (hover:hover) and (pointer:fine)"),
+
     extractForTarget: (target) => {
         var doi = "";
         var archive = "";
@@ -45,7 +61,12 @@ Extracts = {
                        `alt="Original URL for this archived link; may be broken.">URL</a>` +
                        `]</code></span>`); }
         else {
-            if ( !target.href.startsWith("https://www.gwern.net") && !target.href.startsWith("https://en.wikipedia.org") && !target.href.startsWith("https://archive.org") && !target.href.startsWith("https://www.biorxiv.org") && !target.href.startsWith("https://arxiv.org") ) {
+            if (   !target.href.startsWith("https://www.gwern.net") 
+            	&& !target.href.startsWith("https://en.wikipedia.org") 
+            	&& !target.href.startsWith("https://archive.org") 
+            	&& !target.href.startsWith("https://www.biorxiv.org") 
+            	&& !target.href.startsWith("https://arxiv.org") 
+            	) {
                 archive = (`<span class="iaMirror">` +
                            `<a title="Search Internet Archive via Memento for mirrors of URL: '${target.href}' (for '${target.dataset.popupTitle}')" ` +
                            `href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
@@ -75,13 +96,16 @@ Extracts = {
                   `links</a>`;
         }
         var icon = "";
-        if ( !target.href.startsWith("https://www.gwern.net") && !target.href.startsWith("/") && !target.href.startsWith(".") ) {
+        if (   !target.href.startsWith("https://www.gwern.net") 
+        	&& !target.href.startsWith("/") 
+        	&& !target.href.startsWith(".") 
+        	) {
             icon = `<a
-                            class='icon'
-                            target='_new'
-                            href='${target.href}'
-                            title='Open this reference in a new window'
-                             ></a>`; }
+                        class='icon'
+                        target='_new'
+                        href='${target.href}'
+                        title='Open this reference in a new window'
+                    ></a>`; }
         return `<div class='popup-extract' onclick='parentNode.remove()'>` +
                     `<p class='data-field title'>` +
                          archive +
@@ -130,13 +154,14 @@ Extracts = {
     },
     sectionEmbedForTarget: (target) => {
         let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
-        if(targetSectionHTML.length < 2) { // not a section but a random <div> target
+        if (targetSectionHTML.length < 2) { // not a section but a random <div> target
             return Extracts.citationContextForTarget(target);
         } else {
-            return Extracts.citationContextForTarget(target); }
+            return Extracts.citationContextForTarget(target);
+        }
         // NOTE: experiment for supporting link ID popups; testing the length breaks link popups because they're too short
         // but if we present *everything* as a citation-with-context, the '.closest' selector including '<section>' seems to work acceptably?
-            // return `<div class='popup-section-embed'>${targetSectionHTML}</div>`; }
+            // return `<div class='popup-section-embed'>${targetSectionHTML}</div>`;
     },
     citationContextForTarget: (target) => {
         let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul").innerHTML;
@@ -163,13 +188,14 @@ Extracts = {
         Extracts.unbind();
 
         //  Remove popups container and injected styles.
-        document.querySelectorAll(`#${Extracts.popupStylesID}, #${Extracts.popupContainerID}`).forEach(element => element.remove());
+        document.querySelectorAll(`#${Extracts.popupStylesID}, #${Extracts.popupStylesID}-default, #${Extracts.popupContainerID}`).forEach(element => element.remove());
     },
     setup: () => {
         //  Run cleanup.
         Extracts.cleanup();
 
-        if (('ontouchstart' in document.documentElement) && Extracts.isMobileMediaQuery.matches) {
+        if (   ('ontouchstart' in document.documentElement) 
+        	&& Extracts.isMobileMediaQuery.matches) {
             console.log("Mobile client detected. Exiting.");
             return;
         } else {
@@ -178,10 +204,17 @@ Extracts = {
 
         //  Inject styles.
         document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.popupStylesHTML);
+        if (Extracts.injectDefaultStyles) {
+	        document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.popupDefaultStylesHTML);
+        }
 
         //  Inject popups container.
-        var popupContainerParent = document.querySelector(Extracts.popupContainerParentSelector);
-        document.querySelector(Extracts.popupContainerParentSelector).insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}'></div>`);
+        let popupContainerParent = document.querySelector(Extracts.popupContainerParentSelector);
+        if (!popupContainerParent) {
+            console.log("Popup container parent element not found. Exiting.");
+            return;
+        }
+        popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}' style='z-index: ${Extracts.popupContainerZIndex};'></div>`);
         requestAnimationFrame(() => {
             Extracts.popupContainer = document.querySelector(`#${Extracts.popupContainerID}`);
             Extracts.popupContainer.addEventListener("mouseup", Extracts.popupContainerClicked);
@@ -202,7 +235,7 @@ Extracts = {
     targetover: (event) => {
         //  Get the target.
         let target = event.target.closest(Extracts.targetElementsSelector);
-        if (target.classList.contains("footnote-ref"))
+        if (target.closest(Extracts.excludedElementsSelector) == target)
             return;
 
         event.preventDefault();
@@ -211,8 +244,6 @@ Extracts = {
         clearTimeout(Extracts.popupFadeTimer);
         clearTimeout(Extracts.popupDespawnTimer);
         clearTimeout(Extracts.popupSpawnTimer);
-
-//  document.querySelector("html").style.transform = "translateX(0)";
 
         Extracts.popupSpawnTimer = setTimeout(() => {
             target.onclick = () => {};
@@ -239,22 +270,18 @@ Extracts = {
                 Extracts.popup.className = target.className;
             }
 
-            var isVideo = false;
-            let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-
             //  Inject the contents of the popup into the popup div.
             Extracts.popup.removeAttribute("style");
-            if ([ 'H1', 'H2', 'H3', 'H4', 'H5', 'H6' ].contains(target.parentElement.tagName)) {} else {
+            if ([ 'H1', 'H2', 'H3', 'H4', 'H5', 'H6' ].contains(target.parentElement.tagName)) {
+            	// Nothing.
+            } else {
+	            let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
                 if (videoId) {
                     Extracts.popup.innerHTML = Extracts.videoForTarget(target, videoId);
-                    isVideo = true;
                 } else if (target.classList.contains("footnote-back")) {
                     Extracts.popup.innerHTML = Extracts.citationContextForTarget(target);
                 } else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
                     Extracts.popup.innerHTML = Extracts.sectionEmbedForTarget(target);
-                    Extracts.popup.style.width = Extracts.maxPopupWidth + "px";
-                    Extracts.popup.style.maxHeight = (Extracts.maxPopupWidth * 0.75) + "px";
-    //          } else if (target.href.startsWith("https://www.gwern.net/images/") && target.href.endsWith(".svg")) {
                 } else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
                     Extracts.popup.innerHTML = Extracts.localImageForTarget(target);
                 } else if (target.classList.contains("docMetadata")) {
@@ -262,6 +289,19 @@ Extracts = {
                 } else if (target.classList.contains("defnMetadata")) {
                     Extracts.popup.innerHTML = Extracts.definitionForTarget(target);
                 }
+            }
+            if (Extracts.popup.firstElementChild.tagName == 'DIV') {
+            	let innerDiv = Extracts.popup.firstElementChild;
+
+            	innerDiv.style.minWidth = `${Extracts.minPopupWidth}px`;
+            	innerDiv.style.maxWidth = `${Extracts.maxPopupWidth}px`;
+
+            	if (target.tagName == "A" && target.getAttribute("href").startsWith("#") && target.closest("#TOC") == null) {
+            		// Section embed elsewhere but the TOC.
+                    innerDiv.style.maxHeight = `calc(${Extracts.maxPopupWidth}px * 0.75)`;
+                } else {
+	            	innerDiv.style.maxHeight = `calc(100vh - 2 * ${Extracts.popupBorderWidth}px - 26px)`;
+            	}
             }
 
             //  Inject the popup into the page.
@@ -292,64 +332,66 @@ Extracts = {
                 var popupIntrinsicWidth = Extracts.popup.clientWidth;
                 var popupIntrinsicHeight = Extracts.popup.clientHeight;
 
-                var tocLink = target.closest("#TOC");
-                var offToTheSide = false;
-
                 var provisionalPopupXPosition;
                 var provisionalPopupYPosition;
 
-                /*  Can the popup fit above the target? If so, put it there.
-                    Failing that, can it fit below the target? If so, put it there.
-                    */
-                var popupSpawnYOriginForSpawnAbove = Math.min(mouseOverEventPositionInPopupContainer.y - popupBreathingRoom.y,
-                                                              targetOriginInPopupContainer.y + targetViewportRect.height - (popupBreathingRoom.y * 2.0));
-                var popupSpawnYOriginForSpawnBelow = Math.max(mouseOverEventPositionInPopupContainer.y + popupBreathingRoom.y,
-                                                              targetOriginInPopupContainer.y + (popupBreathingRoom.y * 2.0));
+                var tocLink = target.closest("#TOC");
                 if (tocLink) {
                     provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
                     provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
-                } else if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
-                    //  Above.
-                    provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
-                } else if (  popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight <= (popupContainerViewportRect.y * -1) + window.innerHeight) {
-                    //  Below.
-                    provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
                 } else {
-                    /*  The popup does not fit above or below! We will have to
-                        put it off to the left or right.
-                        */
-                    offToTheSide = true;
-                }
+	                var offToTheSide = false;
 
-                if (offToTheSide) {
-                    popupBreathingRoom.x *= 2.0;
-                    provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
-                    if (provisionalPopupYPosition - popupContainerViewportRect.y < 0)
-                        provisionalPopupYPosition = 0.0;
+					/*  Can the popup fit above the target? If so, put it there.
+						Failing that, can it fit below the target? If so, put it there.
+						*/
+					var popupSpawnYOriginForSpawnAbove = Math.min(mouseOverEventPositionInPopupContainer.y - popupBreathingRoom.y,
+																  targetOriginInPopupContainer.y + targetViewportRect.height - (popupBreathingRoom.y * 2.0));
+					var popupSpawnYOriginForSpawnBelow = Math.max(mouseOverEventPositionInPopupContainer.y + popupBreathingRoom.y,
+																  targetOriginInPopupContainer.y + (popupBreathingRoom.y * 2.0));
+					if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
+						//  Above.
+						provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
+					} else if (popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight <= (popupContainerViewportRect.y * -1) + window.innerHeight) {
+						//  Below.
+						provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
+					} else {
+						/*  The popup does not fit above or below! We will have to
+							put it off to the left or right.
+							*/
+						offToTheSide = true;
+					}
 
-                    //  Determine whether to put the popup off to the right, or left.
-                    if (  mouseOverEventPositionInPopupContainer.x
-                        + popupBreathingRoom.x
-                        + popupIntrinsicWidth
-                          <=
-                          popupContainerViewportRect.x * -1
-                        + window.innerWidth) {
-                        //  Off to the right.
-                        provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x + popupBreathingRoom.x;
-                    } else if (  mouseOverEventPositionInPopupContainer.x
-                               - popupBreathingRoom.x
-                               - popupIntrinsicWidth
-                                 >=
-                                 popupContainerViewportRect.x * -1) {
-                        //  Off to the left.
-                        provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
-                    }
-                } else if (!tocLink) {
-                    /*  Place popup off to the right (and either above or below),
-                        as per the previous block of code.
-                        */
-                    provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x + popupBreathingRoom.x;
-                }
+					if (offToTheSide) {
+						popupBreathingRoom.x *= 2.0;
+						provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
+						if (provisionalPopupYPosition - popupContainerViewportRect.y < 0)
+							provisionalPopupYPosition = 0.0;
+
+						//  Determine whether to put the popup off to the right, or left.
+						if (  mouseOverEventPositionInPopupContainer.x
+							+ popupBreathingRoom.x
+							+ popupIntrinsicWidth
+							  <=
+							  popupContainerViewportRect.x * -1
+							+ window.innerWidth) {
+							//  Off to the right.
+							provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x + popupBreathingRoom.x;
+						} else if (  mouseOverEventPositionInPopupContainer.x
+								   - popupBreathingRoom.x
+								   - popupIntrinsicWidth
+									 >=
+									 popupContainerViewportRect.x * -1) {
+							//  Off to the left.
+							provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
+						}
+					} else {
+						/*  Place popup off to the right (and either above or below),
+							as per the previous block of code.
+							*/
+						provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x + popupBreathingRoom.x;
+					}
+				}
 
                 /*  Does the popup extend past the right edge of the container?
                     If so, move it left, until its right edge is flush with
@@ -367,8 +409,8 @@ Extracts = {
                     provisionalPopupXPosition = 0;
                 }
 
-                Extracts.popup.style.left = provisionalPopupXPosition + "px";
-                Extracts.popup.style.top = provisionalPopupYPosition + "px";
+                Extracts.popup.style.left = `${provisionalPopupXPosition}px`;
+                Extracts.popup.style.top = `${provisionalPopupYPosition}px`;
 
                 Extracts.popupContainer.classList.add("popup-visible");
                 Extracts.popup.style.visibility = "";
@@ -410,73 +452,41 @@ Extracts = {
     }
 };
 
-Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
-#${Extracts.popupContainerID} {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1000;
+/*******************/
+/*	Cosmetic styles.
+	NOTE: These are currently unused on gwern.net (see the injectDefaultStyles
+	config variable).
+	*/
+Extracts.popupDefaultStylesHTML = `<style id='${Extracts.popupStylesID}-default'>
+:root {
+	--GW-popups-body-background-color: #fff;
+	--GW-popups-popup-background-color: #fff;
+	--GW-popups-popup-border-color: #aaa;
+	--GW-popups-popup-link-hover-color: #888;
+	--GW-popups-popup-scrollbar-thumb-color: #ccc;
+	--GW-popups-popup-scrollbar-track-color: #fff;
+	--GW-popups-popup-scrollbar-thumb-hover-color: #999;
 }
-#${Extracts.popupContainerID} > * {
-    pointer-events: auto;
-}
-@media not screen and (hover:hover) and (pointer:fine) {
-    #${Extracts.popupContainerID}.popup-visible::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        pointer-events: auto;
-        background-color: #000;
-        opacity: 0.4;
-    }
-}
-
-#popupdiv .iaMirror { padding-right: 0.3em; }
 
 #popupdiv {
-    z-index: 10001;
     font-size: 0.8em;
-    box-shadow: 0 0 0 2px #fff;
-    position: absolute;
-    opacity: 1.0;
-    transition: none;
-}
-#popupdiv.fading {
-    opacity: 0.0;
-    transition:
-        opacity 0.75s ease-in 0.1s;
+    box-shadow: 0 0 0 3px var(--GW-popups-body-background-color);
 }
 #popupdiv > div {
-    background-color: #fff;
-    padding: 12px 16px 14px 16px;
-    border: 3px double #aaa;
+    padding: 0.75em 1em 0.875em 1em;
+    border: 3px double var(--GW-popups-popup-border-color);
+    background-color: var(--GW-popups-popup-background-color);
     line-height: 1.45;
-    overflow: auto;
-    overscroll-behavior: none;
-    min-width: ${Extracts.minPopupWidth}px;
-    max-width: ${Extracts.maxPopupWidth}px;
-    max-height: calc(100vh - 2 * ${Extracts.popupBorderWidth}px - 26px);
 }
-#popupdiv img { width: 100%; }
+
 /* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
-#popupdiv a { text-decoration: underline; }
-#popupdiv a:hover { color: #888; }
-#popupdiv > div .data-field {
-    text-align: left;
-    text-indent: 0;
+#popupdiv a {
+	text-decoration: underline;
 }
-#popupdiv > div .data-field + .data-field {
-    margin-top: 0.25em;
+#popupdiv a:hover {
+	color: var(--GW-popups-popup-link-hover-color);
 }
-#popupdiv > div .data-field:empty {
-    display: none;
-}
+
 #popupdiv > div .data-field.title {
     font-weight: bold;
     font-size: 1.125em;
@@ -484,47 +494,17 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv > div .data-field.author {
     font-style: italic;
 }
-#popupdiv > div .data-field.abstract > p {
-    text-align: justify;
-    text-indent: 1em;
-    hyphens: auto;
-}
-#popupdiv > div.popup-screenshot {
-    padding: 0;
-    max-width: unset;
-}
-#popupdiv > div.popup-screenshot img {
-    display: block;
-}
-#popupdiv > div.popup-screenshot a::after {
-    content: none;
-}
 
 #popupdiv > div.popup-section-embed,
 #popupdiv > div.popup-citation-context {
-    height: 100%;
-    padding: 12px 24px 14px 24px;
-    overflow-x: hidden;
+    padding: 0.75em 1.5em 0.875em 1.5em;
 }
-.popup-citation-context h1 { margin: 0 0 0 0; }
-.popup-citation-context:first-child::before,
-.popup-citation-context:last-child::after { content: "…"; }
 
-#popupdiv > div.popup-section-embed > h1:first-child,
-#popupdiv > div.popup-section-embed > h2:first-child,
-#popupdiv > div.popup-section-embed > h3:first-child,
-#popupdiv > div.popup-section-embed > h4:first-child  {
-    margin-top: 0;
-}
-#popupdiv > div.popup-section-embed > :last-child {
-    margin-bottom: 12px;
-}
 #popupdiv > div .icon {
-    background-image: none !important;
-    position: relative;
     top: 0.15em;
     font-size: 1.125em;
 }
+
 /* TODO: the 4-letter block link icons defined in 'links.css' interact badly with the popup links, so we have to manually filter them out pending a rewrite: */
 #popupdiv > div .icon:not([href*='sagepub.com']):not([href*='pnas.org']):not([href*='xkcd.com']):not([href*='rand.org']):not([href*='www.cell.com']):not([href*='publicdomainreview.org']):not([href*='mlp.fandom.com']):not([href*='www.nber.org'])::after {
     margin: 0 0.175em 0 0;
@@ -543,40 +523,111 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 /*  Scroll bar styles (Webkit/Blink only).
     */
 #popupdiv > div::-webkit-scrollbar {
-    width: 14px;
+    width: 0.875em;
 }
 #popupdiv > div::-webkit-scrollbar-thumb {
-    background-color: #ccc;
+    background-color: var(--GW-popups-popup-scrollbar-thumb-color);
     box-shadow:
-        0 0 0 3px #fff inset;
+        0 0 0 3px var(--GW-popups-popup-scrollbar-track-color) inset;
 }
 #popupdiv > div::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
-}
-
-/*  Popups on mobile.
-    */
-@media only screen and (max-width: 64.9ch), not screen and (hover:hover) and (pointer:fine) {
-    #popupdiv > div {
-        max-width: 100%;
-    }
-}
-
-/*  Image focus interaction.
-    */
-#markdownBody #popupdiv img {
-    filter: none;
-    cursor: initial;
-    transform: none;
-}
-#markdownBody #popupdiv .popup-screenshot a img {
-    cursor: pointer;
+    background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
 }
 
 #popupdiv .originalURL {
-  font-size: 75%;
+  font-size: 0.75em;
 }
 
+#popupdiv .iaMirror {
+	padding-right: 0.3em;
+}
+
+#popupdiv > div .data-field.abstract > p,
+#popupdiv > div.popup-section-embed p,
+#popupdiv > div.popup-citation-context p {
+    text-align: justify;
+    text-indent: 1em;
+    hyphens: auto;
+}
+</style>`;
+
+/********************/
+/*	Essential styles.
+	*/
+Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
+#${Extracts.popupContainerID} {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    pointer-events: none;
+}
+#${Extracts.popupContainerID} > * {
+    pointer-events: auto;
+}
+
+#popupdiv {
+    position: absolute;
+    opacity: 1.0;
+    transition: none;
+}
+#popupdiv.fading {
+    opacity: 0.0;
+    transition:
+        opacity 0.75s ease-in 0.1s;
+}
+#popupdiv > div {
+    overflow: auto;
+    overscroll-behavior: none;
+}
+#popupdiv img {
+	width: 100%;
+}
+#popupdiv > div .data-field {
+    text-align: left;
+    text-indent: 0;
+}
+#popupdiv > div .data-field + .data-field {
+    margin-top: 0.25em;
+}
+#popupdiv > div .data-field:empty {
+    display: none;
+}
+#popupdiv > div.popup-screenshot {
+    padding: 0;
+    max-width: unset;
+}
+#popupdiv > div.popup-screenshot img {
+    display: block;
+}
+#popupdiv > div.popup-screenshot a::after {
+    content: none;
+}
+
+#popupdiv > div.popup-section-embed,
+#popupdiv > div.popup-citation-context {
+    height: 100%;
+    overflow-x: hidden;
+}
+.popup-citation-context:first-child::before,
+.popup-citation-context:last-child::after {
+	content: "…";
+}
+
+#popupdiv > div.popup-section-embed > h1:first-child,
+#popupdiv > div.popup-section-embed > h2:first-child,
+#popupdiv > div.popup-section-embed > h3:first-child,
+#popupdiv > div.popup-section-embed > h4:first-child,
+#popupdiv > div.popup-citation-context > h1:first-child,
+#popupdiv > div.popup-citation-context > h2:first-child,
+#popupdiv > div.popup-citation-context > h3:first-child,
+#popupdiv > div.popup-citation-context > h4:first-child {
+    margin-top: 0;
+}
+#popupdiv > div .icon {
+    background-image: none !important;
+    position: relative;
+}
 </style>`;
 
 if (document.readyState == "complete") {

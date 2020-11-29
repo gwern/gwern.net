@@ -218,6 +218,13 @@
 	--GW-index-page-bottom-ornament-line-color: #fff;
 	--GW-page-mead-image-box-shadow-inner-color: #000;
 	--GW-page-mead-image-box-shadow-outer-color: #2c2c2c;
+
+	/*	Popups.
+		*/
+	--GW-popups-popup-border-color: #484848;
+	--GW-popups-popup-scrollbar-thumb-color: #2c2c2c;
+	--GW-popups-popup-scrollbar-track-color: #000;
+	--GW-popups-popup-scrollbar-thumb-hover-color: #575757;
 }
 
 /*  Special styles for special browsers.
