@@ -108,7 +108,6 @@
         */
     --GW-syntax-highlight-color-normal: #1f1c1b;
     --GW-syntax-highlight-color-attribute: #002561;
-    --GW-syntax-highlight-background-color-region-marker: #e0e9f8;
     --GW-syntax-highlight-color-data-type: inherit;
     --GW-syntax-highlight-color-variable: #666666;
     --GW-syntax-highlight-color-other: inherit;
@@ -177,6 +176,16 @@
     --GW-index-page-bottom-ornament-line-color: #000;
     --GW-page-mead-image-box-shadow-inner-color: #fff;
     --GW-page-mead-image-box-shadow-outer-color: #ccc;
+
+    /*  Popups.
+        */
+    --GW-popups-body-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-border-color: #aaa;
+    --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
+    --GW-popups-popup-scrollbar-thumb-color: #ccc;
+    --GW-popups-popup-scrollbar-track-color: #fff;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #999;
 }
 
 /*  Special styles for special browsers.
@@ -1500,28 +1509,28 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 
 /* /\* Sidenotes return links: align to the sidenote box like the sidenote numbering *\/ */
 /* #sidenote-column-left .footnote-back { */
-/*     position: absolute; */
-/*     bottom: -8px; */
-/*     border-color: #aaa; */
-/*     border-width: 1px 1px 0px 1px; */
-/*     width: 1.6em; */
-/*     height: 2em; */
-/*     display: flex; */
-/*     align-items: center; */
-/*     justify-content: center; */
-/*     right: 0px; */
+/*   position: absolute; */
+/*   bottom: -8px; */
+/*   border-color: #aaa; */
+/*   border-width: 1px 1px 0px 1px; */
+/*   width: 1.6em; */
+/*   height: 2em; */
+/*   display: flex; */
+/*   align-items: center; */
+/*   justify-content: center; */
+/*   right: 0px; */
 /* } */
 /* #sidenote-column-right .footnote-back { */
-/*     position: absolute; */
-/*     bottom: -6px; */
-/*     border-color: #aaa; */
-/*     border-width: 1px 1px 0px 1px; */
-/*     width: 1.6em; */
-/*     height: 2em; */
-/*     display: flex; */
-/*     align-items: center; */
-/*     justify-content: center; */
-/*     right: 0px; */
+/*   position: absolute; */
+/*   bottom: -6px; */
+/*   border-color: #aaa; */
+/*   border-width: 1px 1px 0px 1px; */
+/*   width: 1.6em; */
+/*   height: 2em; */
+/*   display: flex; */
+/*   align-items: center; */
+/*   justify-content: center; */
+/*   right: 0px; */
 /* } */
 /* /\* special-case: move the return link into blockquotes to avoid messy partial overlap *\/ */
 /* #sidenote-column-left blockquote + .footnote-back { margin-bottom: 9px; } */
@@ -1787,7 +1796,7 @@ pre code {
 }
 
 /*=------------------------------------------------------------------------------------------=*/
-/*= Source code highlighting for Pandoc/Skylighting-generated syntax classes (not Pygments)  =*/
+/*= Source code highlighting for pandoc/skylighting-generated syntax classes (not Pygments)  =*/
 /*=------------------------------------------------------------------------------------------=*/
 
 /* Monochrome-ish code highlighting theme, loosely based on Pygments's algol_nu (CSS: https://github.com/lukelbd/proplot/blob/master/docs/_static/pygments/algol_nu.css demo: https://xyproto.github.io/splash/docs/longer/algol_nu.html ; Python: https://github.com/pycom/EricShort/blob/master/ThirdParty/Pygments/pygments/styles/algol.py ). */
@@ -2812,10 +2821,10 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 
 /* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
 #popupdiv a {
-	text-decoration: underline;
+    text-decoration: underline;
 }
 #popupdiv a:hover {
-	color: var(--GW-popups-popup-link-hover-color);
+    color: var(--GW-popups-popup-link-hover-color);
 }
 
 #popupdiv > div .data-field.title {
@@ -2870,7 +2879,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 }
 
 #popupdiv .iaMirror {
-	padding-right: 0.3em;
+    padding-right: 0.3em;
 }
 
 #popupdiv > div .data-field.abstract > p,
