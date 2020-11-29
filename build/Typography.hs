@@ -96,6 +96,8 @@ smallcapsfyRegex = R.makeRegex
    "^AD.?$|"  ++ "^BC.?$|"  ++
    "[[:digit:]]+ ?ADE?|" ++ "[[:digit:]]+ ?BCE?"::String)
 
+-------------------------------------------
+
 -- add '<wbr>' (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://www.gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking & hyphenation is incompetent, sadly).
 -- WARNING: this will affect link texts like '[AC/DC](!Wikipedia)', so make sure you do the rewrite after the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for possible HTML and bails out to avoid damaging it
 breakSlashes :: Block -> Block
@@ -111,6 +113,8 @@ breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>'))
                                  RawInline "html" (T.replace " /<wbr> " " / " $ T.replace " /<wbr>" " /" $ T.replace "/<wbr> " "/ " $ -- fix redundant <wbr>s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
                                                    T.replace "/" "/<wbr>" s) else x
 breakSlashesInline x = x
+
+-------------------------------------------
 
 -- Why try to support fully-justified text when desktop Chrome makes it so hard, the soft hyphen hack does come with costs (bloated HTML source, copy-paste issues, bots misbehaving, unfixable edge-cases like X.org middle-click-to-copy), and few will notice? Isn't fully-justified (rather than the usual left-justified ragged-right) rather fussy and excessive? Sure, designers and the like *claim* it looks better, but why believe them? Do we really like it for any reason other than typography tradition and it being associated with professionally-typeset books? Perhaps we'd find the hyphens and split-up words to be confusing clutter if not for inertia and historical reasons. Should we do it because it's hard and to show off?
 --
@@ -144,28 +148,30 @@ hyphenateInline x@(Str s) = if T.any (=='\173') s then x else -- U+00AD SOFT HYP
                               T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=3}) $ words $ T.unpack s
 hyphenateInline x = x
 
+-------------------------------------------
 
 -- Look at mean color of image, 0-1: if it's close to 0, then it's a monochrome-ish white-heavy image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check every image for color, and set an 'invertible-auto' HTML class on the ones which are low. We can manually specify a 'invertible' class on images which don't pass the heuristic but should.
 invertImageInline :: Inline -> IO Inline
 invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
                                        let p' = T.unpack p
                                        let p'' = if head p' == '/' then tail p' else p'
-                                       color <- invertImage p''
+                                       (color,_,_) <- invertImage p''
                                        if not color then return x else
                                          return (Image (htmlid, "invertible-auto":classes, kvs) xs (p,t))
 invertImageInline x = return x
-invertImage :: FilePath -> IO Bool
+invertImage :: FilePath -> IO (Bool, String, String) -- invertable / height / width
 invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
                                            (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
                                            case status of
                                              ExitFailure _ -> do print ("Download failed (unable to check image invertibility): " ++ f)
                                                                  removeFile temp
-                                                                 return False
+                                                                 return (False, "320", "320") -- NOTE: most WP thumbnails are 320/320px squares, so to be safe we'll use that as a default value
                                              _ -> do c <- imageMagickColor temp
+                                                     (h,w) <- imageMagickDimensions temp
                                                      removeFile temp
-                                                     return $ c < threshold
+                                                     return $ (c < threshold, h, w)
               | otherwise = do c <- imageMagickColor f
-                               return $ c < threshold
+                               return $ (c < threshold, "320", "320")
               where threshold = 0.09
 
 imageMagickColor :: FilePath -> IO Float
@@ -174,6 +180,18 @@ imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" 
                           ExitFailure err -> error $ f ++ ": ImageMagick color read error: " ++ show err
                           _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
                                   return color
+
+-- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions
+-- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
+-- most cases will all be the same, so we take the first line of whatever dimensions 'identify' returns.
+imageMagickDimensions :: FilePath -> IO (String,String)
+imageMagickDimensions f = do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f]
+                             case status of
+                               ExitFailure _ -> error f
+                               _ -> do let [height, width] = words $ head $ lines $ (B8.unpack bs)
+                                       return (height, width)
+
+-------------------------------------------
 
 -- Annotate body horizontal rulers with a class based on global count: '<div class="ruler-nth-0"> / <hr /> / </div>' / '<div class="ruler-nth-1"> / <hr /> / </div>' / '<div class="ruler-nth-2"> / <hr /> / </div>' etc (cycling). Allows CSS decoration of "every second ruler" or "every fourth ruler" etc. I use it for cycling rulers in 3 levels, similar to the rest of gwern.net's visual design.
 --

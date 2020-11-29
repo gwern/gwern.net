@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-11-24 10:13:20 gwern"
+When: Time-stamp: "2020-11-29 16:04:03 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -310,16 +310,6 @@ staticImg (TagOpen "img" xs) |
                                    ("height", height'), ("width", width')]++xs)))
   where uniq = nub . sort
 staticImg x = return x
-
--- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions
--- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
--- most cases will all be the same, so we take the first line of whatever dimensions 'identify' returns.
-imageMagickDimensions :: FilePath -> IO (String,String)
-imageMagickDimensions f = do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f]
-                             case status of
-                               ExitFailure _ -> error f
-                               _ -> do let [height, width] = words $ head $ lines $ (B8.unpack bs)
-                                       return (height, width)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>

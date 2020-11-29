@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-15 11:31:50 gwern"
+When:  Time-stamp: "2020-11-29 16:53:14 gwern"
 License: CC-0
 -}
 
@@ -299,9 +299,9 @@ wikipedia p
                                                      Just thumbnailObject -> case (HM.lookup "source" thumbnailObject) of
                                                                                Nothing -> return ""
                                                                                Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
-                                                                                                        color <- invertImage $ T.unpack href
+                                                                                                        (color,h,w) <- invertImage $ T.unpack href
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
-                                                                                                        return ("<p><figure class=\"float-right\"><img " ++ imgClass ++ "src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure></p> ")
+                                                                                                        return ("<p><figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure></p> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract' = cleanAbstractsHTML wpAbstract in
