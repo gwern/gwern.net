@@ -22,7 +22,7 @@ Extracts = {
     popupContainerParentSelector: "html",
     popupContainerZIndex: "1000",
     
-    injectDefaultStyles: true,
+    injectDefaultStyles: false,
 
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
@@ -454,6 +454,8 @@ Extracts = {
 
 /*******************/
 /*	Cosmetic styles.
+	NOTE: These are currently unused on gwern.net (see the injectDefaultStyles
+	config variable).
 	*/
 Extracts.popupDefaultStylesHTML = `<style id='${Extracts.popupStylesID}-default'>
 :root {
