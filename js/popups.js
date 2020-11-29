@@ -452,6 +452,9 @@ Extracts = {
     }
 };
 
+/*******************/
+/*	Cosmetic styles.
+	*/
 Extracts.popupDefaultStylesHTML = `<style id='${Extracts.popupStylesID}-default'>
 :root {
 	--GW-popups-body-background-color: #fff;
@@ -537,13 +540,18 @@ Extracts.popupDefaultStylesHTML = `<style id='${Extracts.popupStylesID}-default'
 	padding-right: 0.3em;
 }
 
-#popupdiv > div .data-field.abstract > p {
+#popupdiv > div .data-field.abstract > p,
+#popupdiv > div.popup-section-embed p,
+#popupdiv > div.popup-citation-context p {
     text-align: justify;
     text-indent: 1em;
     hyphens: auto;
 }
 </style>`;
 
+/********************/
+/*	Essential styles.
+	*/
 Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #${Extracts.popupContainerID} {
     position: absolute;
@@ -598,9 +606,6 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv > div.popup-citation-context {
     height: 100%;
     overflow-x: hidden;
-}
-.popup-citation-context h1 {
-	margin: 0;
 }
 .popup-citation-context:first-child::before,
 .popup-citation-context:last-child::after {
