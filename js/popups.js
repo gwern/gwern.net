@@ -583,6 +583,10 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv img {
 	width: 100%;
 }
+#popupdiv a {
+    position: relative;
+    z-index: 0;
+}
 #popupdiv > div .data-field {
     text-align: left;
     text-indent: 0;
