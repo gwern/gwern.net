@@ -108,20 +108,17 @@
         */
     --GW-syntax-highlight-color-normal: #1f1c1b;
     --GW-syntax-highlight-color-attribute: #002561;
-    --GW-syntax-highlight-color-region-marker: #002561;
     --GW-syntax-highlight-background-color-region-marker: #e0e9f8;
     --GW-syntax-highlight-color-data-type: inherit;
     --GW-syntax-highlight-color-variable: #666666;
     --GW-syntax-highlight-color-other: inherit;
     --GW-syntax-highlight-color-preprocessor: inherit;
-    --GW-syntax-highlight-color-comment-var: #888888;
     --GW-syntax-highlight-color-extension: #888888;
     --GW-syntax-highlight-color-comment: #888888;
     --GW-syntax-highlight-color-control-flow: #003900;
     --GW-syntax-highlight-color-keyword: #002561;
     --GW-syntax-highlight-color-operator: #002561;
     --GW-syntax-highlight-color-special-char: #607880;
-    --GW-syntax-highlight-color-documentation: #607880;
     --GW-syntax-highlight-color-built-in: #002561;
     --GW-syntax-highlight-color-function: #002561;
     --GW-syntax-highlight-color-constant: inherit;
@@ -134,8 +131,6 @@
     --GW-syntax-highlight-color-verbatim-string: inherit;
     --GW-syntax-highlight-color-alert: #bf0303;
     --GW-syntax-highlight-color-error: #ff0000;
-    --GW-syntax-highlight-color-warning: #ff0000;
-    --GW-syntax-highlight-color-annotation: #888888;
     --GW-syntax-highlight-color-import: #777777;
     --GW-syntax-highlight-color-special-string: #666666;
 
