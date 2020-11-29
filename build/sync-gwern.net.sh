@@ -98,7 +98,7 @@ then
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=5000 "fgrep --with-filename -- '————–'"; }
     wrap λ "Broken table"
 
-    λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=5000 "fgrep --with-filename -- '<span class=\"er\">'"; }
+    λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=5000 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class=\"er\">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code"
 
     λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -- ./metadata/custom.yaml; }
@@ -114,7 +114,9 @@ then
         for PAGE in $PAGES; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
-                       fgrep --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' )
+                       fgrep --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
+                             -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
+                             -e 'Warning: <svg> proprietary attribute "alt"' )
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$HTML.page\e[0m:\n$TIDY"; fi
         done;
         set -e; }
