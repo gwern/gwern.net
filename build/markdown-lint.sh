@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-11-25 18:29:47 gwern"
+# When:  Time-stamp: "2020-11-28 18:54:14 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -67,7 +67,7 @@ do
 
         λ() { egp -e '<div id="abstract"' -e '<div id="collapseSummary"' -e '^</div$' -e '^\[\!Margin: ' -e ' n=[[:digit:]]' -e ' n = [[:digit:]]' \
                   -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' \
-                  -e 'cssExtension: [a-c,e-z]' -- "$PAGE";
+                  -e 'cssExtension: [a-c,e-z]' -e '^R> ' -- "$PAGE";
               fgp -e '(www' -e ')www' -e '![](' -e ']()' -e ' )' -e '](//' -e '](/wiki/' -e '](wiki/' -e '——–' -e '——' -e '————–' -e ' --- ' \
                   -e ' percent ' -e "    Pearson'" -e '~~~{.sh}' -e 'library("' -e ' +-' -e ' -+' -e '"collapse Summary"' -e '"CollapseSummary"' -e 'collapseSumary' -e '<!_-' -e ' bu ' \
                   -e ']{.dropcaps}' -e '{,smallcaps}' -e '[.smallcaps}' -e '[PMC]{.smallcaps}' -e 'nsheppard' -e '<div class-' \

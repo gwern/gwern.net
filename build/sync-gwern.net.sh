@@ -98,7 +98,7 @@ then
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=5000 "fgrep --with-filename -- '————–'"; }
     wrap λ "Broken table"
 
-    λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel fgrep --with-filename --color=always '<span class="er">'; }
+    λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=5000 "fgrep --with-filename -- '<span class=\"er\">'"; }
     wrap λ "Broken code"
 
     λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -- ./metadata/custom.yaml; }
