@@ -22,8 +22,7 @@
     --GW-collapse-block-click-to-expand-text-hover-color: #444;
     --GW-collapse-block-hover-border-color: #777;
     --GW-collapse-block-fade-gradient-color-one: rgba(255,255,255,0);
-    --GW-collapse-block-fade-gradient-color-two: rgba(255,255,255,0.7);
-    --GW-collapse-block-hover-background-color: rgba(255,255,255,0.3);
+    --GW-collapse-block-fade-gradient-color-two: rgba(255,255,255,1);
 
     /*  Headings.
         */
@@ -188,16 +187,6 @@
     --GW-popups-popup-scrollbar-thumb-hover-color: #999;
 }
 
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
-        :root {
-            --GW-footnote-ref-highlight-background-color: #fff;
-        }
-    }
-}
-
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -336,9 +325,6 @@ section.collapse:target > .disclosure-button {
 }
 .collapse:not(:target) > .disclosure-button:not(:checked) {
     background-image: linear-gradient(var(--GW-collapse-block-fade-gradient-color-one), var(--GW-collapse-block-fade-gradient-color-two));
-}
-.collapse:not(:target) > .disclosure-button:not(:checked):hover {
-    background-color: var(--GW-collapse-block-hover-background-color);
 }
 
 /*  Triangle/chevron/angle symbol. (Copied from WikiMedia's default 'Vector' skin where it's used on mobile to, by default, collapse sections; this means everyone in the world is familiar with it as a symbol of 'collapse'/'uncollapse'.)
@@ -1457,25 +1443,15 @@ a.footnote-ref {
         0 0 0 2px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
         0 0 0 3px var(--GW-footnote-ref-highlight-box-shadow-color);
 }
-@media only screen and (max-width: 176ch) {
-    .footnote-ref:target::before {
-        background-color: inherit;
-        box-shadow: none;
-    }
-}
-
-/*  Special styles for special browsers.
+/*  (Not very) special styles for (everyone except) special browsers.
     */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
-        .footnote-ref:target {
-            box-shadow:
-                0 0.2em 0 6px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
-                0 0.2em 0 7px var(--GW-footnote-ref-highlight-box-shadow-color),
-                0 0.2em 0 8px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
-                0 0.2em 0 9px var(--GW-footnote-ref-highlight-box-shadow-color);
-        }
-    }
+@supports not (-moz-user-focus: normal) {
+	@media only screen and (max-width: 176ch) {
+		.footnote-ref:target::before {
+			background-color: inherit;
+			box-shadow: none;
+		}
+	}
 }
 
 /*=-------------------------------=*/
