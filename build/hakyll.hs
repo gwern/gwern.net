@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-11-29 16:04:03 gwern"
+When: Time-stamp: "2020-11-29 20:11:41 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -147,6 +147,7 @@ main = hakyll $ do
                                      "index"]
              match "static/templates/*.html" $ compile templateCompiler
              match "static/css/initial.css" $ compile cssTemplateCompiler -- to substitute in 'initial.css' while maintaining an easily-edited separate file
+             match "static/css/colors.css" $ compile cssTemplateCompiler
 
 -- https://kyle.marek-spartz.org/posts/2014-12-09-hakyll-css-template-compiler.html
 cssTemplateCompiler :: Compiler (Item Template)

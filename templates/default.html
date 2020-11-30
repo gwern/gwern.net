@@ -6,6 +6,8 @@
     <!-- fetch the title & body fonts & logo immediately to avoid re-rendering -->
     <link rel="preload" href="/static/img/logo/logo-smooth.svg#logo" as="image" type="image/svg+xml">
     <!-- CSS inline for speed -->
+    <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/colors.css" /> -->
+    <style id="inlined-styles-colors">$partial("static/css/colors.css")$</style>
     <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/initial.css" /> -->
     <style id="inlined-styles">$partial("static/css/initial.css")$</style>
 
@@ -253,10 +255,10 @@
                if (!(target === null)) { intersectionObserver.observe(target); }
            }
            else { f(); }
-      }
+       }
 
-       var disqus_shortname = ''; // declare variable globally as a way to make sure insertDisqus runs once and only once
-       var insertDisqus = function() {
+        var disqus_shortname = ''; // declare variable globally as a way to make sure insertDisqus runs once and only once
+        var insertDisqus = function() {
         if (disqus_shortname == '') {
            disqus_shortname = 'gwern';
            (function() {
