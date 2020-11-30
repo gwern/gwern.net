@@ -996,7 +996,7 @@ a[href*='www.plos']::after {
 
 /* Upton Tea */
 a[href*='uptontea.com']::after {
-              background-image: url("/static/img/icons/uptontea.svg");
+   background-image: url("/static/img/icons/uptontea.svg");
 }
 a[href*='uptontea.com']:hover::after {
     opacity: 0.3;
@@ -1072,7 +1072,7 @@ a[href*='nytimes.com']::after {
 /* NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg) */
 a[href*='nlm.nih.gov']::after { /* primary user: ncbi.nlm.nih.gov */
     background-image: url("/static/img/icons/nlm-ncbi.svg");
-    }
+}
 a[href*='nlm.nih.gov']:hover::after {
     opacity: 0.45;
 }
