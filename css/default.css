@@ -1737,7 +1737,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     #markdownBody .drop-cap-de-zs::first-letter,
     #markdownBody .drop-cap-de-zs > p::first-letter {
         font-family: "Deutsche Zierschrift";
-        font-size: 6.5em;
+        font-size: 6.625em;
         line-height: 1.1;
         margin: 0.01em 0.03em -0.25em 0;
         color: var(--GW-drop-caps-de-zs-color);
@@ -1787,7 +1787,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-de-zs::first-letter,
         #markdownBody .drop-cap-de-zs > p::first-letter {
-            font-size: 6.375em;
+            font-size: 6.5em;
         }
         body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
         body.drop-caps-cheshire .abstract + p::first-letter,
@@ -1824,7 +1824,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         body.drop-caps-de-zs #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-de-zs::first-letter,
         #markdownBody .drop-cap-de-zs > p::first-letter {
-            font-size: 6.125em;
+            font-size: 6.25em;
         }
         body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
         body.drop-caps-cheshire .abstract + p::first-letter,
