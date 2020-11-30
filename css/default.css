@@ -593,6 +593,7 @@ article > :not(#TOC) a:hover,
 #popupdiv ul ul ul ul > li::before {
     content: "\2727"; /* '✧' WHITE FOUR POINTED STAR (U+2727) */
     transform: none;
+    font-weight: normal;
 }
 #markdownBody ul ul > li::before,
 #markdownBody ul ul ul ul ul > li::before,
@@ -600,13 +601,15 @@ article > :not(#TOC) a:hover,
 #popupdiv ul ul ul ul ul > li::before {
     content: "\2726"; /* '✦' BLACK FOUR POINTED STAR *U+2726) */
     transform: none;
+    font-weight: normal;
 }
 #markdownBody ul ul ul > li::before,
 #markdownBody ul ul ul ul ul ul > li::before,
 #popupdiv ul ul ul > li::before,
 #popupdiv ul ul ul ul ul ul > li::before {
     content: "\2727"; /* '✧' WHITE FOUR POINTED STAR (U+2727) */
-    transform: rotate(45deg); /* this rotates itno more of a 'lozenge' square for variety's sake */
+    transform: rotate(45deg) scale(1.2); /* this rotates itno more of a 'lozenge' square for variety's sake */
+    font-weight: bold;
 }
 
 /*=-----------------------=*/
