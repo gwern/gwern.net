@@ -33,6 +33,7 @@ $debug_enabled = false;
 $stylesheet = file_get_contents($argv[1]);
 $mode = @$argv[2] ?: 1;
 $working_color_space = @$argv[3] ?: "Lab";
+$gamma = @$argv[4] ?: 0.5;
 
 ## Process and print.
 $stylesheet = preg_replace_callback("/(#[0-9abcdef]+)([,; ])/i", 'ProcessColorValue', $stylesheet);
@@ -95,7 +96,7 @@ function debug_log($string) {
 
 ## CVT = "Color Value Transform"
 function CVT($value, $color_space) {
-	global $mode;
+	global $mode, $gamma;
 	## The mode is a bit field; set binary flags indicate specific transformations.
 	## Flags are checked, and applied, in order from lowest bit position to highest.
 	##
@@ -117,12 +118,12 @@ function CVT($value, $color_space) {
 			case "Lab":
 				$value[0] = 100 - $value[0];
 				// Cut-rate gamma correction.
-				$value[0] = 100.0 * pow($value[0] / 100.0, 0.5);
+				$value[0] = 100.0 * pow($value[0] / 100.0, $gamma);
 				break;
 			case "YCC":
 				$value[0] = 255 - $value[0];
 				// Cut-rate gamma correction.
-				$value[0] = 255.0 * pow($value[0] / 255.0, 0.5);
+				$value[0] = 255.0 * pow($value[0] / 255.0, $gamma);
 				break;
 			default:
 				break;
