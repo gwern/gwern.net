@@ -98,7 +98,7 @@ then
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=5000 "fgrep --with-filename -- '————–'"; }
     wrap λ "Broken table"
 
-    λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=5000 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class=\"er\">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
+    λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=5000 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code"
 
     λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -- ./metadata/custom.yaml; }
@@ -152,6 +152,11 @@ then
             --header "Content-Type: application/json" \
             --data "{\"files\":[\"$URL\"]}" | jq '.success'
     done
+
+    # test a random page modified in the past month for W3 validation errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
+    CHECK_RANDOM=$(find . -type f -mtime -31 -name "*.page" | sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' \
+                       | shuf | head -1 | xargs urlencode)
+    $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"
 
     # Testing post-sync:
     c() { curl --compressed --silent --output /dev/null --head "$@"; }
