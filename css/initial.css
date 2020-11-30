@@ -6,56 +6,7 @@
 /**********/
 /* COLORS */
 /**********/
-
-:root {
-	/*	General.
-		*/
-	--GW-body-background-color: #fff;
-	--GW-body-text-color: #000;
-	--GW-body-link-color: #272727;
-
-	/*	Selection.
-		*/
-	--GW-text-selection-background-color: #333;
-	--GW-text-selection-color: #fff;
-	
-	/*	Link underlining.
-		*/
-	--GW-link-underline-background-color: var(--GW-body-background-color);
-	--GW-link-underline-gradient-line-color: #333;
-	--GW-link-underline-gradient-line-color-hover: #999;
-
-	/*	Blockquotes.
-		*/
-	--GW-blockquote-border-color-level-one: #ccc;
-	--GW-blockquote-border-color-level-two: #c4c4c4;
-	--GW-blockquote-border-color-level-three: #b3b3b3;
-	--GW-blockquote-border-color-level-four: #a6a6a6;
-	--GW-blockquote-background-color-level-one: #f8f8f8;
-	--GW-blockquote-background-color-level-two: #e6e6e6;
-	--GW-blockquote-background-color-level-three: #d8d8d8;
-	
-	/*	Abstracts.
-		*/
-	--GW-abstract-border-color: #bbb;
-	
-	/*	Sidebar.
-		*/
-	--GW-sidebar-bullet-color: #888;
-	--GW-sidebar-horizontal-rule-color: #aaa;
-	--GW-sidebar-bullet-text-shadow-color: #000;
-	--GW-sidebar-mobile-link-border-color: #000;
-	
-	/*	Table of contents.
-		*/
-	--GW-TOC-border-color: #ccc;
-	--GW-TOC-background-color: #f9f9f9;
-	--GW-TOC-link-hover-background-color: #ececec;
-	--GW-TOC-link-hover-color: #000;
-	--GW-TOC-link-hover-indicator-bar-color: #ccc;
-	--GW-TOC-number-color: #909090;
-	--GW-TOC-number-hover-color: #313131;
-}
+/* colors are now in /static/css/colors.css or colors-dark.css */
 
 /***********/
 /* GENERAL */
