@@ -1927,7 +1927,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     position: relative;
     margin: 2em 0 1.5em 0;
     padding: 0.75em 1.25em 0.875em 1.125em;
-    border-left: 2.5rem solid var(--GW-admonition-default-left-border-color);
+    border-left: 2.875em solid var(--GW-admonition-default-left-border-color);
     background-color: var(--GW-admonition-default-background-color);
 }
 .admonition-title {
@@ -1961,41 +1961,30 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .admonition.warn::before,
 .admonition.warning::before,
 .admonition.error::before {
-    width: 2.5rem;
+    width: 2.875em;
     height: 100%;
     position: absolute;
     top: 0;
     right: 100%;
-    text-align: center;
+    padding: 0.625em;
+    box-sizing: border-box;
 }
 
-.admonition.note::before {
-    content: url('/static/img/icons/arrow-up.svg');
-    transform: rotate(90deg);
-    filter: invert(100%);
-    height: 1.1em;
-    width: 1.3em;
-    margin: 0px 7px;
-    margin-top: 11px;
-}
 .admonition.tip::before {
-    content: "\24d8"; /* Circled Latin Small Letter 'ⓘ' (U+24D8) */
-    font-size: 1.7em;
-    top: 3px;
-    left: -2.5rem;
+    content: url('/static/img/icons/info-circle.svg');
+}
+.admonition.note::before {
+    content: url('/static/img/icons/arrow-right-white.svg');
+    padding: 0.75em;
 }
 .admonition.warn::before,
 .admonition.warning::before {
-    content: "\26A0"; /* Warning Sign '⚠' triangle (U+26A0) */
-    font-size: 2em;
-    color: var(--GW-admonition-warning-icon-color);
-    margin-top: -1px;
+    content: url('/static/img/icons/exclamation-triangle-white.svg');
+    padding-top: 0.75em;
 }
 .admonition.error::before {
-    content: "\2620"; /* Skull and Crossbones. '☠' (U+2620) */
-    font-size: 2.20em;
-    top: -2px;
-    color: var(--GW-admonition-error-icon-color);
+    content: url('/static/img/icons/skull-crossbones-white.svg');
+    padding: 0.75em;
 }
 
 .admonition p:last-child {

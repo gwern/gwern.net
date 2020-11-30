@@ -20,3 +20,11 @@ body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
 #markdownBody .drop-cap-goudy > p::first-letter {
 	opacity: 0.95;
 }
+
+.admonition.tip::before,
+.admonition.note::before,
+.admonition.warn::before,
+.admonition.warning::before,
+.admonition.error::before {
+	filter: invert(1);
+}
