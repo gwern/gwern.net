@@ -116,9 +116,13 @@ function CVT($value, $color_space) {
 		switch ($color_space) {
 			case "Lab":
 				$value[0] = 100 - $value[0];
+				// Cut-rate gamma correction.
+				$value[0] = 100.0 * pow($value[0] / 100.0, 0.5);
 				break;
 			case "YCC":
 				$value[0] = 255 - $value[0];
+				// Cut-rate gamma correction.
+				$value[0] = 255.0 * pow($value[0] / 255.0, 0.5);
 				break;
 			default:
 				break;
@@ -233,22 +237,22 @@ function YCCFromRGB($rgb_components) {
 	$G = $rgb_components[1];
 	$B = $rgb_components[2];
 
-	$Y  =   0 + 0.299 * $R + 0.587 * $G + 0.114 * $B;
-	$Cb = 128 - 0.169 * $R - 0.331 * $G + 0.500 * $B;
-	$Cr = 128 + 0.500 * $R - 0.419 * $G - 0.081 * $B;
+	$Y  = ( 0.25 * $R) + ( 0.50 * $G) + ( 0.25 * $B);
+	$Co = ( 0.50 * $R) + ( 0.00 * $G) + (-0.50 * $B);
+	$Cg = (-0.25 * $R) + ( 0.50 * $G) + (-0.25 * $B);
 
-	debug_log("  →  YCC ".PCC([ $Y, $Cb, $Cr ]));
-	return [ $Y, $Cb, $Cr ];
+	debug_log("  →  YCC ".PCC([ $Y, $Co, $Cg ]));
+	return [ $Y, $Co, $Cg ];
 }
 
 function RGBFromYCC($ycc_components) {
 	$Y =  $ycc_components[0];
-	$Cb = $ycc_components[1] - 128.0;
-	$Cr = $ycc_components[2] - 128.0;
+	$Co = $ycc_components[1];
+	$Cg = $ycc_components[2];
 
-	$R = 1.000 * $Y + 0.000 * $Cb + 1.400 * $Cr;
-	$G = 1.000 * $Y - 0.343 * $Cb - 0.711 * $Cr;
-	$B = 1.000 * $Y + 1.765 * $Cb + 0.000 * $Cr;
+	$R = ( 1 * $Y) + ( 1 * $Co) + (-1 * $Cg);
+	$G = ( 1 * $Y) + ( 0 * $Co) + ( 1 * $Cg);
+	$B = ( 1 * $Y) + (-1 * $Co) + (-1 * $Cg);
 	
 	$R = min($R, 255.0);
 	$G = min($G, 255.0);
