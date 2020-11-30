@@ -7,196 +7,7 @@
 /**********/
 /* COLORS */
 /**********/
-
-:root {
-    /*  Collapse blocks.
-        */
-    --GW-collapse-block-disclosure-button-color: #999;
-    --GW-collapse-block-disclosure-button-hover-color: #666;
-    --GW-table-collapse-block-disclosure-button-color: #ccc;
-    --GW-table-collapse-block-disclosure-button-hover-color: #eee;
-    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
-    --GW-collapse-block-disclosure-button-hover-background-color: rgba(0,0,0,0.1);
-    --GW-collapse-block-click-to-expand-text-color: #777;
-    --GW-collapse-block-click-to-expand-text-shadow-color: #fff;
-    --GW-collapse-block-click-to-expand-text-hover-color: #444;
-    --GW-collapse-block-hover-border-color: #777;
-    --GW-collapse-block-fade-gradient-color-one: rgba(255,255,255,0);
-    --GW-collapse-block-fade-gradient-color-two: rgba(255,255,255,0.7);
-    --GW-collapse-block-hover-background-color: rgba(255,255,255,0.3);
-
-    /*  Headings.
-        */
-    --GW-H1-box-shadow-background-color: #fff;
-    --GW-H1-box-shadow-line-color: #888;
-    --GW-H2-bottom-border-color: #888;
-    --GW-heading-self-link-hover-color: #485555;
-
-    /*  Comments.
-        */
-    --GW-comment-section-top-border-color: #999;
-
-    /*  Links.
-        */
-    --GW-link-hover-color: #888;
-
-    /*  Lists.
-        */
-    --GW-bulleted-list-marker-color: #808080;
-
-    /*  Figures.
-        */
-    --GW-figure-outline-color: #888;
-    --GW-figure-caption-outline-color: #888;
-
-    /*  Footnotes.
-        */
-    --GW-footnote-backlink-border-color: #000;
-    --GW-footnote-backlink-border-hover-color: #999;
-    --GW-footnote-backlink-after-bordered-block-background-color: #fff;
-
-    /*  Footnote references.
-        */
-    --GW-footnote-ref-highlight-box-shadow-color: #aaa;
-    --GW-footnote-ref-highlight-box-shadow-interstitial-color: #fff;
-    --GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
-
-    /*  Footnote popups.
-        */
-    --GW-footnote-popup-box-shadow-color: #fff;
-    --GW-footnote-popup-background-color: #fff;
-    --GW-footnote-popup-border-color: #aaa;
-    --GW-footnote-popup-scrollbar-thumb-color: #ccc;
-    --GW-footnote-popup-scrollbar-track-color: #fff;
-    --GW-footnote-popup-scrollbar-thumb-hover-color: #999;
-
-    /*  Sidenotes.
-        */
-    --GW-sidenote-highlight-background-color: #fff;
-    --GW-sidenote-highlight-box-shadow-color: #aaa;
-    --GW-sidenote-border-color: #aaa;
-    --GW-sidenote-scrollbar-track-color: #fff;
-    --GW-sidenote-self-link-border-color: #aaa;
-
-    /*  Tables.
-        */
-    --GW-table-border-color: #000;
-    --GW-table-full-width-background-color: #fff;
-    --GW-table-caption-border-color: #000;
-    --GW-table-row-horizontal-border-color: #000;
-    --GW-table-cell-vertical-border-color: #fff;
-    --GW-table-scrollbar-track-color: #fff;
-    --GW-table-scrollbar-border-color: #000;
-    --GW-table-column-heading-hover-background-color: #e2f0f2;
-    --GW-table-sorted-column-heading-background-color: #8bd0ed;
-    --GW-table-sorted-column-heading-text-color: #fff;
-    --GW-table-sorted-column-heading-text-shadow-color: #000;
-    --GW-table-zebra-stripe-alternate-row-background-color: #f6f6f6;
-    --GW-table-row-hover-outline-color: #000;
-
-    /*  Code blocks.
-        */
-    --GW-code-element-border-color: #c8c8c8;
-    --GW-code-element-background-color: #fafafa;
-    --GW-pre-element-border-color: #c8c8c8;
-    --GW-pre-element-background-color: #fafafa;
-    --GW-pre-element-scrollbar-track-color: #fafafa;
-    --GW-pre-element-scrollbar-thumb-color: #ccc;
-    --GW-pre-element-scrollbar-thumb-hover-color: #999;
-
-    /*  Syntax highlight theme.
-        */
-    --GW-syntax-highlight-color-normal: #1f1c1b;
-    --GW-syntax-highlight-color-attribute: #002561;
-    --GW-syntax-highlight-color-data-type: inherit;
-    --GW-syntax-highlight-color-variable: #666666;
-    --GW-syntax-highlight-color-other: inherit;
-    --GW-syntax-highlight-color-preprocessor: inherit;
-    --GW-syntax-highlight-color-extension: #888888;
-    --GW-syntax-highlight-color-comment: #888888;
-    --GW-syntax-highlight-color-control-flow: #003900;
-    --GW-syntax-highlight-color-keyword: #002561;
-    --GW-syntax-highlight-color-operator: #002561;
-    --GW-syntax-highlight-color-special-char: #607880;
-    --GW-syntax-highlight-color-built-in: #002561;
-    --GW-syntax-highlight-color-function: #002561;
-    --GW-syntax-highlight-color-constant: inherit;
-    --GW-syntax-highlight-color-base-n: inherit;
-    --GW-syntax-highlight-color-dec-val: inherit;
-    --GW-syntax-highlight-color-float: inherit;
-    --GW-syntax-highlight-color-information: inherit;
-    --GW-syntax-highlight-color-char: inherit;
-    --GW-syntax-highlight-color-string: inherit;
-    --GW-syntax-highlight-color-verbatim-string: inherit;
-    --GW-syntax-highlight-color-alert: #bf0303;
-    --GW-syntax-highlight-color-error: #ff0000;
-    --GW-syntax-highlight-color-import: #777777;
-    --GW-syntax-highlight-color-special-string: #666666;
-
-    /*  Math.
-        */
-    --GW-math-block-scrollbar-border-color: #ccc;
-    --GW-math-block-scrollbar-track-color: #fff;
-    --GW-math-block-scrollbar-thumb-color: #ccc;
-    --GW-math-block-scrollbar-track-hover-color: #999;
-
-    /*  Drop caps.
-        */
-    --GW-drop-caps-yinit-text-shadow-color: #777;
-    --GW-drop-caps-de-zs-text-shadow-color: #fff;
-    --GW-drop-caps-de-zs-color: #191919;
-
-    /*  Admonitions.
-        */
-    --GW-admonition-default-left-border-color: #747373;
-    --GW-admonition-default-background-color: #d8d8d8;
-    --GW-admonition-tip-left-border-color: #d8d8d8;
-    --GW-admonition-tip-background-color: #fafafa;
-    --GW-admonition-warning-left-border-color: #5a5a5a;
-    --GW-admonition-warning-background-color: #969696;
-    --GW-admonition-warning-text-color: #fff;
-    --GW-admonition-warning-title-background-color: #5a5a5a;
-    --GW-admonition-warning-icon-color: #fff;
-    --GW-admonition-error-left-border-color: #2d2d2d;
-    --GW-admonition-error-background-color: #5a5a5a;
-    --GW-admonition-error-text-color: #fff;
-    --GW-admonition-error-title-background-color: #2d2d2d;
-    --GW-admonition-error-icon-color: #fff;
-
-    /*  Sequential nav UI.
-        */
-    --GW-sequential-nav-link-background-color: #fff;
-
-    /*  Links.
-        */
-    --GW-definition-annotation-text-color: #444;
-
-    /*  Page-specific styles.
-        */
-    --GW-index-page-bottom-ornament-line-color: #000;
-    --GW-page-mead-image-box-shadow-inner-color: #fff;
-    --GW-page-mead-image-box-shadow-outer-color: #ccc;
-
-    /*  Popups.
-        */
-    --GW-popups-body-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-border-color: #aaa;
-    --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
-    --GW-popups-popup-scrollbar-thumb-color: #ccc;
-    --GW-popups-popup-scrollbar-track-color: #fff;
-    --GW-popups-popup-scrollbar-thumb-hover-color: #999;
-}
-
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
-        :root {
-            --GW-footnote-ref-highlight-background-color: #fff;
-        }
-    }
-}
+/* colors are now in /static/css/colors.css or colors-dark.css */
 
 /*********************/
 /* ARTICLE CONTAINER */
@@ -337,9 +148,6 @@ section.collapse:target > .disclosure-button {
 .collapse:not(:target) > .disclosure-button:not(:checked) {
     background-image: linear-gradient(var(--GW-collapse-block-fade-gradient-color-one), var(--GW-collapse-block-fade-gradient-color-two));
 }
-.collapse:not(:target) > .disclosure-button:not(:checked):hover {
-    background-color: var(--GW-collapse-block-hover-background-color);
-}
 
 /*  Triangle/chevron/angle symbol. (Copied from WikiMedia's default 'Vector' skin where it's used on mobile to, by default, collapse sections; this means everyone in the world is familiar with it as a symbol of 'collapse'/'uncollapse'.)
     */
@@ -374,7 +182,7 @@ section.collapse:target > .disclosure-button {
     color: var(--GW-collapse-block-disclosure-button-hover-color);
 }
 section.collapse:target > .disclosure-button::before {
-    opacity: 0.4;
+    color: var(--GW-collapse-block-disclosure-button-targeted-color);
 }
 .tableCollapse > .disclosure-button:hover::before {
     color: var(--GW-table-collapse-block-disclosure-button-hover-color);
@@ -498,7 +306,6 @@ section:not(.collapse) > h1:first-child {
             0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
     }
     #markdownBody section:not(.collapse) > h1:first-child a::after {
-        opacity: 0.4;
         left: -0.375em;
     }
 }
@@ -594,9 +401,14 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 #markdownBody section > :first-child a[href^='#']:hover::after,
 #markdownBody section > :first-child a[href^='#']:active::after,
 #markdownBody section > :first-child a[href^='#']:focus::after,
-#markdownBody section:target > :first-child a[href^='#']::after,
-#markdownBody section.highlighted > :first-child a[href^='#']::after {
+#markdownBody section.highlighted > :first-child a[href^='#']::after,
+#markdownBody section:target > :first-child a[href^='#']::after {
     visibility: visible;
+}
+#markdownBody section > :first-child a[href^='#']:hover::after,
+#markdownBody section > :first-child a[href^='#']:active::after,
+#markdownBody section > :first-child a[href^='#']:focus::after,
+#markdownBody section.highlighted > :first-child a[href^='#']::after {
     opacity: 0.8;
 }
 #markdownBody section:target > :first-child a[href^='#']::after {
@@ -1053,16 +865,9 @@ blockquote table {
 }
 /*  Reverse back to normal when italics are used inside an epigraph, or final block.
     */
-.epigraph p:nth-child(1) em, .epigraph p:last-child {
+.epigraph p:first-child em,
+.epigraph p:last-child {
     font-style: normal;
-}
-.epigraph blockquote > p:nth-last-child(2) > span.quote-mark:first-child,
-.epigraph blockquote > p:nth-last-child(2) > span.quote-mark:last-child {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    margin: 0;
-    opacity: 0;
 }
 #markdownBody .epigraph p:last-child {
     margin: 0.5em 0 0 0;
@@ -1076,7 +881,7 @@ blockquote table {
     display: block;
     position: absolute;
     font-size: 2.5em;
-    opacity: 0.5;
+    color: var(--GW-epigraph-quotation-mark-color);
 }
 .epigraph blockquote::before {
     content: "\201C";
@@ -1457,25 +1262,15 @@ a.footnote-ref {
         0 0 0 2px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
         0 0 0 3px var(--GW-footnote-ref-highlight-box-shadow-color);
 }
-@media only screen and (max-width: 176ch) {
-    .footnote-ref:target::before {
-        background-color: inherit;
-        box-shadow: none;
-    }
-}
-
-/*  Special styles for special browsers.
+/*  (Not very) special styles for (everyone except) special browsers.
     */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
-        .footnote-ref:target {
-            box-shadow:
-                0 0.2em 0 6px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
-                0 0.2em 0 7px var(--GW-footnote-ref-highlight-box-shadow-color),
-                0 0.2em 0 8px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
-                0 0.2em 0 9px var(--GW-footnote-ref-highlight-box-shadow-color);
-        }
-    }
+@supports not (-moz-user-focus: normal) {
+	@media only screen and (max-width: 176ch) {
+		.footnote-ref:target::before {
+			background-color: inherit;
+			box-shadow: none;
+		}
+	}
 }
 
 /*=-------------------------------=*/
@@ -1934,7 +1729,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         line-height: 1.35;
         margin: 0.015em 0.04em -0.5em 0.01em;
         text-shadow: 0 0 0 var(--GW-drop-caps-yinit-text-shadow-color);
-        opacity: 0.95;
+        color: var(--GW-drop-caps-yinit-color);
     }
     body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
     body.drop-caps-de-zs .abstract + p::first-letter,
@@ -1950,7 +1745,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
             -4px   4px 0 var(--GW-drop-caps-de-zs-text-shadow-color),
              4px   4px 0 var(--GW-drop-caps-de-zs-text-shadow-color);
         color: var(--GW-drop-caps-de-zs-color);
-        opacity: 0.99;
     }
     body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
     body.drop-caps-cheshire .abstract + p::first-letter,
@@ -1961,7 +1755,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-size: 6.75em;
         line-height: 1;
         margin: 0.02em 0.04em -0.25em 0;
-        opacity: 0.9;
+        color: var(--GW-drop-caps-cheshire-color);
     }
     body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
     body.drop-caps-kanzlei .abstract + p::first-letter,
@@ -1972,7 +1766,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-size: 7em;
         line-height: 1;
         margin: 0 0.01em -0.25em -0.03em;
-        opacity: 0.9;
+        color: var(--GW-drop-caps-kanzlei-color);
     }
 
     /*  Compensating for responsive line-height reduction.
@@ -2297,7 +2091,6 @@ body.tags article::before {
     height: 1px;
     border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
     width: 100%;
-    opacity: 0.5;
 }
 
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
@@ -2433,28 +2226,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 /*=--------=*/
 /*= Colors =*/
 /*=--------=*/
-
-:root {
-    --SA-image-focus-image-hover-drop-shadow-color: #777;
-    --SA-image-focus-overlay-background-color: #000;
-    --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
-    --SA-image-focus-overlay-image-caption-text-color: #fff;
-    --SA-image-focus-overlay-image-caption-link-color: #ccc;
-    --SA-image-focus-overlay-image-caption-link-hover-color: #aaa;
-    --SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
-    --SA-image-focus-overlay-help-box-text-color: #fff;
-    --SA-image-focus-overlay-info-icon-color: #000;
-    --SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
-    --SA-image-focus-overlay-image-number-text-shadow-color: #fff;
-    --SA-image-focus-overlay-slideshow-button-color: #ddd;
-    --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
-    --SA-image-focus-overlay-slideshow-button-hover-color: #777;
-    --SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #fff;
-    --SA-image-focus-overlay-slideshow-button-active-color: #888;
-    --SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
-    --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
-    --SA-image-focus-image-hover-tooltip-text-color: #fff;
-}
+/* colors are now in /static/css/colors.css or colors-dark.css */
 
 /*=--------------=*/
 /*= Hover styles =*/

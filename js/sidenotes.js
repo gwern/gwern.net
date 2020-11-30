@@ -180,7 +180,7 @@ function ridiculousWorkaroundsForBrowsersFromBizarroWorld() {
                     }
                 }
                 @media only screen and (max-width: ${viewportWidthBreakpointInPixels}px) {
-                    .footnote-ref:target {
+                    .footnote-ref:target::before {
                         background-color: inherit;
                         box-shadow: none;
                     }
