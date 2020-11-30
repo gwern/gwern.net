@@ -29,6 +29,11 @@ body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
 	filter: invert(1);
 }
 
+#markdownBody ul > li::before,
+#popupdiv ul > li::before {
+	filter: invert(1);	
+}
+
 a[href$='.pdf' i]::after,
 a[href$='/pdf' i]::after,
 a[href$='type=pdf' i]::after,
