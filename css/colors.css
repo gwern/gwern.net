@@ -187,7 +187,6 @@
     --GW-drop-caps-yinit-color: #0d0d0d;
     --GW-drop-caps-yinit-text-shadow-color: #777;
     --GW-drop-caps-de-zs-color: #1b1b1b;
-    --GW-drop-caps-de-zs-text-shadow-color: #fff;
     --GW-drop-caps-cheshire-color: #191919;
     --GW-drop-caps-kanzlei-color: #191919;
 
@@ -253,4 +252,8 @@
     --SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
     --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
     --SA-image-focus-image-hover-tooltip-text-color: #fff;
+}
+
+hr::after {
+	filter: none;
 }

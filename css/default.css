@@ -1717,7 +1717,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-family: "Goudy Initialen";
         font-size: 7em;
         line-height: 1;
-        margin: 0 0.02em -0.25em 0;
+        margin: 0.025em 0.02em -0.25em 0;
     }
     body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
     body.drop-caps-yinit .abstract + p::first-letter,
@@ -1727,7 +1727,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-family: Yinit;
         font-size: 5.625em;
         line-height: 1.35;
-        margin: 0.015em 0.04em -0.5em 0.01em;
+        margin: 0.07em 0.08em -0.5em 0;
         text-shadow: 0 0 0 var(--GW-drop-caps-yinit-text-shadow-color);
         color: var(--GW-drop-caps-yinit-color);
     }
@@ -1740,10 +1740,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-size: 6.5em;
         line-height: 1.1;
         margin: 0.01em 0.03em -0.25em 0;
-        text-shadow:
-             0px 2.5px 0 var(--GW-drop-caps-de-zs-text-shadow-color),
-            -4px   4px 0 var(--GW-drop-caps-de-zs-text-shadow-color),
-             4px   4px 0 var(--GW-drop-caps-de-zs-text-shadow-color);
         color: var(--GW-drop-caps-de-zs-color);
     }
     body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
@@ -1754,7 +1750,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-family: "Cheshire Initials";
         font-size: 6.75em;
         line-height: 1;
-        margin: 0.02em 0.04em -0.25em 0;
+        margin: 0.045em 0.05em -0.25em 0;
         color: var(--GW-drop-caps-cheshire-color);
     }
     body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
@@ -1765,7 +1761,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-family: "Kanzlei Initialen";
         font-size: 7em;
         line-height: 1;
-        margin: 0 0.01em -0.25em -0.03em;
+        margin: 0.025em 0.025em -0.25em -0.03em;
         color: var(--GW-drop-caps-kanzlei-color);
     }
 
@@ -1854,14 +1850,14 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-goudy::first-letter,
         #markdownBody .drop-cap-goudy > p::first-letter {
-            margin: 0.045em 0.02em 0 0;
+            margin: 0.05em 0.02em 0 0;
         }
         body.drop-caps-yinit #markdownBody > p:first-child::first-letter,
         body.drop-caps-yinit .abstract + p::first-letter,
         body.drop-caps-yinit #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-yinit::first-letter,
         #markdownBody .drop-cap-yinit > p::first-letter {
-            margin: 0.065em 0.04em 0 0.01em;
+            margin: 0.06em 0.06em 0 0;
         }
         body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
         body.drop-caps-de-zs .abstract + p::first-letter,
@@ -1875,14 +1871,14 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         body.drop-caps-cheshire #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-cheshire::first-letter,
         #markdownBody .drop-cap-cheshire > p::first-letter {
-            margin: 0.06em 0.04em 0 0.01em;
+            margin: 0.06em 0.04em 0 0;
         }
         body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
         body.drop-caps-kanzlei .abstract + p::first-letter,
         body.drop-caps-kanzlei #markdownBody > .epigraph:first-child + p::first-letter,
         #markdownBody .drop-cap-kanzlei::first-letter,
         #markdownBody .drop-cap-kanzlei > p::first-letter {
-            margin: 0.05em 0.02em 0 -0.04em;
+            margin: 0.05em 0.02em 0 -0.03em;
         }
     }
 }

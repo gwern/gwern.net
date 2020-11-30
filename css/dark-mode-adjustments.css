@@ -1,0 +1,22 @@
+
+hr::after,
+.horizontalRule-nth-0 hr::after {
+    opacity: 1;
+    filter: invert(1) drop-shadow(0 0 0 currentColor);
+}
+.horizontalRule-nth-1 hr::after {
+    opacity: 0.75;
+	filter: invert(1);
+}
+.horizontalRule-nth-2 hr::after {
+    opacity: 0.85;
+	filter: invert(1);
+}
+
+body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+body.drop-caps-goudy .abstract + p::first-letter,
+body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+#markdownBody .drop-cap-goudy::first-letter,
+#markdownBody .drop-cap-goudy > p::first-letter {
+	opacity: 0.95;
+}
