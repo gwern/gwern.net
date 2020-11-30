@@ -32,6 +32,7 @@ $debug_enabled = false;
 ## Get command line arguments.
 $stylesheet = file_get_contents($argv[1]);
 $mode = @$argv[2] ?: 1;
+$working_color_space = @$argv[3] ?: "Lab";
 
 ## Process and print.
 $stylesheet = preg_replace_callback("/(#[0-9abcdef]+)([,; ])/i", 'ProcessColorValue', $stylesheet);
@@ -43,14 +44,33 @@ echo $stylesheet;
 /******************/
 
 function ProcessColorValue($m) {
+	global $working_color_space;
 	debug_log($m[1]);
-	$m[1] = HexFromRGB(RGBFromXYZ(XYZFromLab(CVT(LabFromXYZ(XYZFromRGB(RGBFromHex($m[1]))),"Lab"))));
+	switch ($working_color_space) {
+		case "YCC":
+			$m[1] = HexFromRGB(RGBFromYCC(CVT(YCCFromRGB(RGBFromHex($m[1])), "YCC")));
+			break;
+		case "Lab":
+		default:
+			$m[1] = HexFromRGB(RGBFromXYZ(XYZFromLab(CVT(LabFromXYZ(XYZFromRGB(RGBFromHex($m[1]))), "Lab"))));
+			break;
+	}
 
 	return implode(array_slice($m,1));
 }
 function ProcessColorValue_RGBA($m) {
+	global $working_color_space;
 	debug_log(PCC(array_slice($m, 1, 3)));
-	$rgba = RGBFromXYZ(XYZFromLab(CVT(LabFromXYZ(XYZFromRGB(array_slice($m, 1, 3))),"Lab")));
+	$rgba = [ ];
+	switch ($working_color_space) {
+		case "YCC":
+			$rgba = RGBFromYCC(CVT(YCCFromRGB(array_slice($m, 1, 3)), "YCC"));
+			break;
+		case "Lab":
+		default:
+			$rgba = RGBFromXYZ(XYZFromLab(CVT(LabFromXYZ(XYZFromRGB(array_slice($m, 1, 3))), "Lab")));
+			break;
+	}
 	foreach ($rgba as $k => $v) {
 		$rgba[$k] = round($v);
 	}
@@ -79,8 +99,8 @@ function CVT($value, $color_space) {
 	## The mode is a bit field; set binary flags indicate specific transformations.
 	## Flags are checked, and applied, in order from lowest bit position to highest.
 	##
-	## 0x0001: lightness inversion (in Lab).
-	## 0x0002: hue inversion (in Lab).
+	## 0x0001: lightness inversion (in Lab or YCC).
+	## 0x0002: hue inversion (in Lab or YCC).
 	##
 	## The following six flags are mutually exclusive:
 	##
@@ -90,36 +110,78 @@ function CVT($value, $color_space) {
 	## 0x0020: maps whites to teal/turquoise (in HSV; keeps V constant, sets H to 180°, S to maximum)
 	## 0x0040: maps whites to blue (in HSV; keeps V constant, sets H to 240°, S to maximum)
 	## 0x0080: maps whites to magenta (in HSV; keeps V constant, sets H to 300°, S to maximum)
-	
+
+	// Lightness inversion.
 	if ($mode & 0x0001) {
-		$value[0] = 100 - $value[0];
-	}
-	if ($mode & 0x0002) {
-			$value[1] *= -1;
-			$value[2] *= -1;
+		switch ($color_space) {
+			case "Lab":
+				$value[0] = 100 - $value[0];
+				break;
+			case "YCC":
+				$value[0] = 255 - $value[0];
+				break;
+			default:
+				break;
+		}
 	}
 
-	$hsv_value = HSVFromRGB(RGBFromXYZ(XYZFromLab($value)));
-	if ($mode & 0x0004) {
-		$hsv_value[0] = 0.0 / 360.0;
-		$hsv_value[1] = 1.0;
-	} else if ($mode & 0x0008) {
-		$hsv_value[0] = 60.0 / 360.0;
-		$hsv_value[1] = 1.0;
-	} else if ($mode & 0x0010) {
-		$hsv_value[0] = 120.0 / 360.0;
-		$hsv_value[1] = 1.0;
-	} else if ($mode & 0x0020) {
-		$hsv_value[0] = 180.0 / 360.0;
-		$hsv_value[1] = 1.0;
-	} else if ($mode & 0x0040) {
-		$hsv_value[0] = 240.0 / 360.0;
-		$hsv_value[1] = 1.0;
-	} else if ($mode & 0x0080) {
-		$hsv_value[0] = 300.0 / 360.0;
-		$hsv_value[1] = 1.0;	
+	// Hue inversion.
+	if ($mode & 0x0002) {
+		switch ($color_space) {
+			case "Lab":
+				$value[1] *= -1;
+				$value[2] *= -1;
+				break;
+			case "YCC":
+				break;
+			default:
+				break;
+		}
 	}
-	$value = LabFromXYZ(XYZFromRGB(RGBFromHSV($hsv_value)));
+
+	if ($mode & 0x00FC) {
+		$hsv_value = [ ];
+		switch ($color_space) {
+			case "Lab":
+				$hsv_value = HSVFromRGB(RGBFromXYZ(XYZFromLab($value)));
+				break;
+			case "YCC":
+				$hsv_value = HSVFromRGB(RGBFromYCC($value));
+				break;
+			default:
+				break;
+		}
+		if ($mode & 0x0004) {
+			$hsv_value[0] = 0.0 / 360.0;
+			$hsv_value[1] = 1.0;
+		} else if ($mode & 0x0008) {
+			$hsv_value[0] = 60.0 / 360.0;
+			$hsv_value[1] = 1.0;
+		} else if ($mode & 0x0010) {
+			$hsv_value[0] = 120.0 / 360.0;
+			$hsv_value[1] = 1.0;
+		} else if ($mode & 0x0020) {
+			$hsv_value[0] = 180.0 / 360.0;
+			$hsv_value[1] = 1.0;
+		} else if ($mode & 0x0040) {
+			$hsv_value[0] = 240.0 / 360.0;
+			$hsv_value[1] = 1.0;
+		} else if ($mode & 0x0080) {
+			$hsv_value[0] = 300.0 / 360.0;
+			$hsv_value[1] = 1.0;	
+		}
+		switch ($color_space) {
+			case "Lab":
+				$value = LabFromXYZ(XYZFromRGB(RGBFromHSV($hsv_value)));
+				break;
+			case "YCC":
+				$value = YCCFromRGB(RGBFromHSV($hsv_value));
+				break;
+			default:
+				break;
+		}
+	}
+
 	debug_log("  →  {$color_space} ".PCC($value));
 
 	return $value;
@@ -165,6 +227,36 @@ function PCC($components) {
 /**************************/
 /* COLOR SPACE CONVERSION */
 /**************************/
+
+function YCCFromRGB($rgb_components) {
+	$R = $rgb_components[0];
+	$G = $rgb_components[1];
+	$B = $rgb_components[2];
+
+	$Y  =   0 + 0.299 * $R + 0.587 * $G + 0.114 * $B;
+	$Cb = 128 - 0.169 * $R - 0.331 * $G + 0.500 * $B;
+	$Cr = 128 + 0.500 * $R - 0.419 * $G - 0.081 * $B;
+
+	debug_log("  →  YCC ".PCC([ $Y, $Cb, $Cr ]));
+	return [ $Y, $Cb, $Cr ];
+}
+
+function RGBFromYCC($ycc_components) {
+	$Y =  $ycc_components[0];
+	$Cb = $ycc_components[1] - 128.0;
+	$Cr = $ycc_components[2] - 128.0;
+
+	$R = 1.000 * $Y + 0.000 * $Cb + 1.400 * $Cr;
+	$G = 1.000 * $Y - 0.343 * $Cb - 0.711 * $Cr;
+	$B = 1.000 * $Y + 1.765 * $Cb + 0.000 * $Cr;
+	
+	$R = min($R, 255.0);
+	$G = min($G, 255.0);
+	$B = min($B, 255.0);
+
+	debug_log("  →  RGB ".PCC([ $R, $G, $B ]));
+	return [ $R, $G, $B ];
+}
 
 function HSVFromRGB($rgb_components) {
 	$var_R = $rgb_components[0] / 255.0;
