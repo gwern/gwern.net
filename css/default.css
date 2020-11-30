@@ -13,6 +13,7 @@
         */
     --GW-collapse-block-disclosure-button-color: #999;
     --GW-collapse-block-disclosure-button-hover-color: #666;
+    --GW-collapse-block-disclosure-button-targeted-color: #d6d6d6;
     --GW-table-collapse-block-disclosure-button-color: #ccc;
     --GW-table-collapse-block-disclosure-button-hover-color: #eee;
     --GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
@@ -47,6 +48,10 @@
         */
     --GW-figure-outline-color: #888;
     --GW-figure-caption-outline-color: #888;
+
+	/*	Epigraphs.
+		*/
+	--GW-epigraph-quotation-mark-color: #808080;
 
     /*  Footnotes.
         */
@@ -141,9 +146,12 @@
 
     /*  Drop caps.
         */
+    --GW-drop-caps-yinit-color: #0d0d0d;
     --GW-drop-caps-yinit-text-shadow-color: #777;
+    --GW-drop-caps-de-zs-color: #1b1b1b;
     --GW-drop-caps-de-zs-text-shadow-color: #fff;
-    --GW-drop-caps-de-zs-color: #191919;
+    --GW-drop-caps-cheshire-color: #191919;
+    --GW-drop-caps-kanzlei-color: #191919;
 
     /*  Admonitions.
         */
@@ -172,7 +180,7 @@
 
     /*  Page-specific styles.
         */
-    --GW-index-page-bottom-ornament-line-color: #000;
+    --GW-index-page-bottom-ornament-line-color: #808080;
     --GW-page-mead-image-box-shadow-inner-color: #fff;
     --GW-page-mead-image-box-shadow-outer-color: #ccc;
 
@@ -360,7 +368,7 @@ section.collapse:target > .disclosure-button {
     color: var(--GW-collapse-block-disclosure-button-hover-color);
 }
 section.collapse:target > .disclosure-button::before {
-    opacity: 0.4;
+    color: var(--GW-collapse-block-disclosure-button-targeted-color);
 }
 .tableCollapse > .disclosure-button:hover::before {
     color: var(--GW-table-collapse-block-disclosure-button-hover-color);
@@ -484,7 +492,6 @@ section:not(.collapse) > h1:first-child {
             0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
     }
     #markdownBody section:not(.collapse) > h1:first-child a::after {
-        opacity: 0.4;
         left: -0.375em;
     }
 }
@@ -580,9 +587,14 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 #markdownBody section > :first-child a[href^='#']:hover::after,
 #markdownBody section > :first-child a[href^='#']:active::after,
 #markdownBody section > :first-child a[href^='#']:focus::after,
-#markdownBody section:target > :first-child a[href^='#']::after,
-#markdownBody section.highlighted > :first-child a[href^='#']::after {
+#markdownBody section.highlighted > :first-child a[href^='#']::after,
+#markdownBody section:target > :first-child a[href^='#']::after {
     visibility: visible;
+}
+#markdownBody section > :first-child a[href^='#']:hover::after,
+#markdownBody section > :first-child a[href^='#']:active::after,
+#markdownBody section > :first-child a[href^='#']:focus::after,
+#markdownBody section.highlighted > :first-child a[href^='#']::after {
     opacity: 0.8;
 }
 #markdownBody section:target > :first-child a[href^='#']::after {
@@ -1039,16 +1051,9 @@ blockquote table {
 }
 /*  Reverse back to normal when italics are used inside an epigraph, or final block.
     */
-.epigraph p:nth-child(1) em, .epigraph p:last-child {
+.epigraph p:first-child em,
+.epigraph p:last-child {
     font-style: normal;
-}
-.epigraph blockquote > p:nth-last-child(2) > span.quote-mark:first-child,
-.epigraph blockquote > p:nth-last-child(2) > span.quote-mark:last-child {
-    display: inline-block;
-    width: 0;
-    height: 0;
-    margin: 0;
-    opacity: 0;
 }
 #markdownBody .epigraph p:last-child {
     margin: 0.5em 0 0 0;
@@ -1062,7 +1067,7 @@ blockquote table {
     display: block;
     position: absolute;
     font-size: 2.5em;
-    opacity: 0.5;
+    color: var(--GW-epigraph-quotation-mark-color);
 }
 .epigraph blockquote::before {
     content: "\201C";
@@ -1910,7 +1915,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         line-height: 1.35;
         margin: 0.015em 0.04em -0.5em 0.01em;
         text-shadow: 0 0 0 var(--GW-drop-caps-yinit-text-shadow-color);
-        opacity: 0.95;
+        color: var(--GW-drop-caps-yinit-color);
     }
     body.drop-caps-de-zs #markdownBody > p:first-child::first-letter,
     body.drop-caps-de-zs .abstract + p::first-letter,
@@ -1926,7 +1931,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
             -4px   4px 0 var(--GW-drop-caps-de-zs-text-shadow-color),
              4px   4px 0 var(--GW-drop-caps-de-zs-text-shadow-color);
         color: var(--GW-drop-caps-de-zs-color);
-        opacity: 0.99;
     }
     body.drop-caps-cheshire #markdownBody > p:first-child::first-letter,
     body.drop-caps-cheshire .abstract + p::first-letter,
@@ -1937,7 +1941,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-size: 6.75em;
         line-height: 1;
         margin: 0.02em 0.04em -0.25em 0;
-        opacity: 0.9;
+        color: var(--GW-drop-caps-cheshire-color);
     }
     body.drop-caps-kanzlei #markdownBody > p:first-child::first-letter,
     body.drop-caps-kanzlei .abstract + p::first-letter,
@@ -1948,7 +1952,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         font-size: 7em;
         line-height: 1;
         margin: 0 0.01em -0.25em -0.03em;
-        opacity: 0.9;
+        color: var(--GW-drop-caps-kanzlei-color);
     }
 
     /*  Compensating for responsive line-height reduction.
@@ -2273,7 +2277,6 @@ body.tags article::before {
     height: 1px;
     border-bottom: 1px dotted var(--GW-index-page-bottom-ornament-line-color);
     width: 100%;
-    opacity: 0.5;
 }
 
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
