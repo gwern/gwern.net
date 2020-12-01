@@ -179,9 +179,9 @@ a[href$='.epub' i]::after,
 a[href*='pdfs.semanticscholar.org' i]::after,
 a[href*='citeseerx.ist.psu.edu' i]::after,
 a[href*='eprint.iacr.org' i]::after {
-    opacity: 0.50;
     /* PDFs are linked on every page, so make another exception */
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMTgxLjkgMjU2LjFjLTUtMTYtNC45LTQ2LjktMi00Ni45IDguNCAwIDcuNiAzNi45IDIgNDYuOXptLTEuNyA0Ny4yYy03LjcgMjAuMi0xNy4zIDQzLjMtMjguNCA2Mi43IDE4LjMtNyAzOS0xNy4yIDYyLjktMjEuOS0xMi43LTkuNi0yNC45LTIzLjQtMzQuNS00MC44ek04Ni4xIDQyOC4xYzAgLjggMTMuMi01LjQgMzQuOS00MC4yLTYuNyA2LjMtMjkuMSAyNC41LTM0LjkgNDAuMnpNMjQ4IDE2MGgxMzZ2MzI4YzAgMTMuMy0xMC43IDI0LTI0IDI0SDI0Yy0xMy4zIDAtMjQtMTAuNy0yNC0yNFYyNEMwIDEwLjcgMTAuNyAwIDI0IDBoMjAwdjEzNmMwIDEzLjIgMTAuOCAyNCAyNCAyNHptLTggMTcxLjhjLTIwLTEyLjItMzMuMy0yOS00Mi43LTUzLjggNC41LTE4LjUgMTEuNi00Ni42IDYuMi02NC4yLTQuNy0yOS40LTQyLjQtMjYuNS00Ny44LTYuOC01IDE4LjMtLjQgNDQuMSA4LjEgNzctMTEuNiAyNy42LTI4LjcgNjQuNi00MC44IDg1LjgtLjEgMC0uMS4xLS4yLjEtMjcuMSAxMy45LTczLjYgNDQuNS01NC41IDY4IDUuNiA2LjkgMTYgMTAgMjEuNSAxMCAxNy45IDAgMzUuNy0xOCA2MS4xLTYxLjggMjUuOC04LjUgNTQuMS0xOS4xIDc5LTIzLjIgMjEuNyAxMS44IDQ3LjEgMTkuNSA2NCAxOS41IDI5LjIgMCAzMS4yLTMyIDE5LjctNDMuNC0xMy45LTEzLjYtNTQuMy05LjctNzMuNi03LjJ6TTM3NyAxMDVMMjc5IDdjLTQuNS00LjUtMTAuNi03LTE3LTdoLTZ2MTI4aDEyOHYtNi4xYzAtNi4zLTIuNS0xMi40LTctMTYuOXptLTc0LjEgMjU1LjNjNC4xLTIuNy0yLjUtMTEuOS00Mi44LTkgMzcuMSAxNS44IDQyLjggOSA0Mi44IDl6Ii8+PC9zdmc+');
+    opacity: 0.50;
 }
 
 /*  Textfiles.
@@ -292,7 +292,7 @@ a[href$='.ttf' i]::after {
  */
 section > :not(:first-child) a[href^='#']::after,
 p a[href^='#']::after {
-    content: "\00B6"; /* '¶' Pilcrow Sign U+00B6 */
+    content: "\00B6"; /* (¶) Pilcrow Sign */
     margin: 0 1px 0 3px;
     font-size: 0.75em;
     vertical-align: baseline;
@@ -340,7 +340,7 @@ body:not(.index) #markdownBody a[href^="/"]:not([href*="/docs/"]):not([href*="/i
 body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #popupdiv a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #popupdiv a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after {
-    content: "\1D50A"; /* '𝔊' Gothic G / MATHEMATICAL FRAKTUR CAPITAL G (U+1D50A) */
+    content: "\1D50A"; /* (𝔊) Gothic G / MATHEMATICAL FRAKTUR CAPITAL G */
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
@@ -349,7 +349,9 @@ body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/do
 }
 
 /* workaround for 'PNAS' square block: a text indention somewhere is being applied downstream to links as well, breaking the text link icons, so reset them back to their default. */
-a::after { text-indent: 0; }
+a::after {
+    text-indent: 0;
+}
 
 /* If a link has an automatic or custom link annotation (eg a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
 /* so users don't get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */
@@ -359,21 +361,21 @@ a::after { text-indent: 0; }
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
     body:not(.index) a.docMetadata::before,
     body:not(.index) .defnMetadata::before {
-        content: "\25E4"; /* '◤' U+25E4 Black Upper Left Triangle */
+        content: "\25E4"; /* (◤) BLACK UPPER LEFT TRIANGLE */
         margin: 0 0 0 3px;
         vertical-align: baseline;
         position: relative;
         bottom: 0.35em;
         opacity: 0.67;
-        font-size: 65%;
+        font-size: 0.65em;
         right: 0.17em;
     }
 }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
 span.defnMetadata {
-  cursor: help;
-  color: var(--GW-definition-annotation-text-color);
-  border-bottom: 1px dotted currentColor;
+    cursor: help;
+    color: var(--GW-definition-annotation-text-color);
+    border-bottom: 1px dotted currentColor;
 }
 
 /* TEXTUAL PER-DOMAIN LINK ICONS: */
@@ -476,13 +478,15 @@ a[href*="neweva.blog103.fc2.com"]::after {
 }
 /* MR: cheaper to abuse Unicode */
 a[href*="marginalrevolution.com"]::after {
-    content: "M𝐑";
-    opacity: 0.74; }
+    content: "M" "\1D411"; /* (𝐑) MATHEMATICAL BOLD CAPITAL R */
+    opacity: 0.74;
+}
 
 /* likewise */
 a[href*="medium.com"]::after {
-    content: "𝐌";
-    opacity: 0.70; }
+    content: "\1D40C"; /* (𝐌) MATHEMATICAL BOLD CAPITAL M */
+    opacity: 0.70;
+}
 
 /* Facebook: skip enclosing box */
 a[href*="#facebook"]::after,
@@ -493,12 +497,14 @@ a[href*="facebook.com"]::after {
     background-image: none;
     /* a single lower-case letter is too small to easily see if left at defaults */
     font-size: 0.9em;
-    opacity: 0.96; }
+    opacity: 0.96;
+}
 
 /* Kevin Kelly */
 a[href*="kk.org"]::after {
+    content: "KK";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "KK"; }
+}
 
 /* Google searches, other tools; note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just 'www' */
 a[href*="www.google.com"]::after,
@@ -509,162 +515,187 @@ a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv sele
 a[href*="#org=google"][href*="arxiv.org"]::after,
 a[href*='docs/.*/*.pdf#.*google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
+    content: "\1D406"; /* (𝐆) MATHEMATICAL BOLD CAPITAL G */
     opacity: 0.73;
-    content: "𝐆";
-    background-image: none; }
+    background-image: none; 
+}
 
 /* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
 a[href*="wiley.com"]::after { /* primary user: onlinelibrary.wiley.com */
+    content: "W";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "W"; }
+}
 
 /* PNAS: they don't have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (as white text on black background per our monochrome theme): */
 a[href*="pnas.org"]::after {
- content:"PNAS";
- font-size:.5em;
- width:1.5em;
- display:inline-block;
- overflow-wrap:break-word;
- font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times","Source Serif Pro", serif;
- line-height:.75;
- text-align:center;
- position:relative;
- bottom:.3em;
- left:.1em;
+    content: "PNAS";
+    font-size: 0.5em;
+    width: 1.5em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times","Source Serif Pro", serif;
+    line-height: 0.75;
+    text-align: center;
+    position: relative;
+    bottom: 0.3em;
+    left: 0.1em;
 }
 
 a[href*="www.nber.org"]:not([href$=".pdf"])::after {
-  content: "NBER";
-  font-size: 0.6em;
-  width: 1.35em;
-  display: inline-block;
-  overflow-wrap: break-word;
-  font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-  font-style: italic;
-  line-height: 0.9;
-  text-align: center;
-  position: relative;
-  bottom: 0.2em;
-  left: 0.1em;
-  opacity: 0.90; }
+    content: "NBER";
+    font-size: 0.6em;
+    width: 1.35em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-style: italic;
+    line-height: 0.9;
+    text-align: center;
+    position: relative;
+    bottom: 0.2em;
+    left: 0.1em;
+    opacity: 0.90;
+}
 
 a[href*="mlp.fandom.com"]::after {
-  content: "MLPW";
-  font-size: 0.5em;
-  width: 1.35em;
-  display: inline-block;
-  overflow-wrap: break-word;
-  font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-  font-style: italic;
-  line-height: 0.7;
-  text-align: center;
-  position: relative;
-  bottom: 0.3em;
-  left: 0.1em; }
+    content: "MLPW";
+    font-size: 0.5em;
+    width: 1.35em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-style: italic;
+    line-height: 0.7;
+    text-align: center;
+    position: relative;
+    bottom: 0.3em;
+    left: 0.1em;
+}
 
 a[href*="publicdomainreview.org"]::after {
-  content: "TPDR";
-  font-size: 0.5em;
-  width: 1.6em;
-  display: inline-block;
-  overflow-wrap: break-word;
-  font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times","Source Serif Pro", serif;
-  line-height: 0.8em;
-  text-align: center;
-  position: relative;
-  bottom: 0.3em;
-  left: 0.1em; }
+    content: "TPDR";
+    font-size: 0.5em;
+    width: 1.6em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times","Source Serif Pro", serif;
+    line-height: 0.8em;
+    text-align: center;
+    position: relative;
+    bottom: 0.3em;
+    left: 0.1em;
+}
 
 /* Kevin Simler's Melting Asphalt blog */
 a[href*="meltingasphalt.com"]::after {
-    content: "▲";
-    font-size: 60%;
+    content: "\25B2"; /* (▲) BLACK UP-POINTING TRIANGLE */
+    font-size: 0.6em;
     bottom: 0.5em;
-    letter-spacing: -0.1em; }
+    letter-spacing: -0.1em;
+}
 
 /* Bitcoin Talk: close enough! */
 a[href*="bitcointalk.org"]::after,
 a[href*="bitcoin.it"]::after { /* primary user: en.bitcoin.it */
-    content: "₿"; }
+    content: "\20BF"; /* (₿) BITCOIN SIGN */
+}
 
 a[href*="salon.com"]::after {
-    content: "s"; }
+    content: "s";
+}
 
 a[href*="www.vox.com"]::after {
+    content: "Vox";
     font-style: italic;
-    content: "Vox"; }
+}
 
 a[href*="www.vanityfair.com"]::after {
-    content: "VF"; }
+    content: "VF";
+}
 
 a[href*="www.motherjones.com"]::after {
+    content: "MJ";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "MJ"; }
+}
 
 a[href*="www.edge.org"]::after {
+    content: "E";
     font-style: italic;
-    content: "E"; }
+}
 
 /* The Harney & Sons logo is too fancy to scale down reasonably */
 a[href*="harney.com"]::after {
-    content: "H"; }
+    content: "H";
+}
 
 /* The FF.net logo is pretty crazy, and I don't think anyone would recognize it in monochrome */
 a[href*="www.fanfiction.net"]::after {
-    content: "FF"; }
+    content: "FF";
+}
 
 a[href*="poniesatdawn.bandcamp.com"]::after {
-    content: "P@D"; }
+    content: "P@D";
+}
 
 a[href*="yunnansourcing.com"]::after {
-    content: "ys"; }
+    content: "ys";
+}
 
 /* Avoid the unfortunate connotations of 'SS' */
 a[href*="scholars-stage.blogspot.com"]::after {
-    content: "Ss"; }
+    content: "Ss";
+}
 
 /* Ars is an orange box, not usable */
 a[href*="arstechnica.com"]::after {
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "ars"; }
+    content: "ars";
+}
 
 /* British Medical Journal or just 'bmj' */
 a[href*="bmj.com"]::after {
+    content: "bmj";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "bmj"; }
+}
 
 /* Science is just typeset in red */
 a[href*="sciencemag.org"]::after {
-    content: "S"; }
+    content: "S";
+}
 
 /* SSC logo too bad to use */
 a[href*="yvain"]::after,
 a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
-    content: "SSC"; }
+    content: "SSC";
+}
 /* SSC's book */
 a[href*="unsongbook.com"]::after {
-    content: "א"; }
+    content: "א";
+}
 
 /* OB logo too bad to use */
 a[href*="overcomingbias.com"]::after {
-    content: "OB"; }
+    content: "OB";
+}
 
 /* LW logo is just a colored 'LW', so no point in converting */
 a[href*="greaterwrong.com"]::after,
 a[href*="lesswrong.com"]::after { /* other user: wiki.lesswrong.com */
-    content: "LW"; }
+    content: "LW";
+}
 
 /* PB logo is confusing. A purple question mark...? */
 a[href*="predictionbook.com"]::after {
+    /* Use Unicode question mark to distinguish it visually from regular punctuation. */
+    content: "\FE56"; /* (﹖) SMALL QUESTION MARK */
     margin: 0 0 0 0px;
     left: -0.1em;
-    /* Use Unicode question mark to distinguish it visually from regular punctuation. */
-    content: "\FE56"; /* '﹖' Small Question Mark (U+FE56) */
 }
 
 /* GoodReads: logo doesn't make sense as a grayscale */
 a[href*="goodreads.com"]::after {
-    content: "GR"; }
+    content: "GR";
+}
 
 /* Long Now Foundation projects: */
 a[href*="longbets.org"]::after,
@@ -672,21 +703,24 @@ a[href*="longnow.org"]::after,
 a[href*="rosettaproject.org"]::after,
 a[href*="theinterval.org"]::after {
     content: "X";
-    text-decoration: overline; }
+    text-decoration: overline;
+}
 
 /* ArXiv: Chi (their logo is too bizarre & off-putting to use, in addition to not working in monochrome) */
 a[href*="arxiv.org"]::after,
 a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after {
-    content: "\1D6D8"; /* Mathematical Bold Small Chi '𝛘' (U+1D6D8); bold makes it show up better when tiny */
+    content: "\1D6D8"; /* (𝛘) MATHEMATICAL BOLD SMALL CHI; bold makes it show up better when tiny */
     opacity: 0.77;
     bottom: 0.4em;
-    background-image: none; }
+    background-image: none;
+}
 
 a[href*="psyarxiv.com"]::after {
-    content: "ψ"; /* GREEK SMALL LETTER PSI 'ψ' (0x03C8; codepoint 968, #o1710, #x3c8) */
+    content: "\03C8"; /* (ψ) GREEK SMALL LETTER PSI */
     opacity: 0.77;
     bottom: 0.4em;
-    background-image: none; }
+    background-image: none;
+}
 
 /* Technology Review (their logo has a little slash in it which you probably can't see at low-res) but is otherwise just a 'T' so meh */
 a[href*="technologyreview.com"]::after {
@@ -696,7 +730,8 @@ a[href*="technologyreview.com"]::after {
 /* Economist: logo is just 'Economist'... */
 a[href*="economist.com"]::after {
     content: "E";
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif; }
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+}
 
 /* Elsevier/Sciencedirect.com: also an 'E' */
 a[href*="sciencedirect.com"]::after {
@@ -706,22 +741,25 @@ a[href*="sciencedirect.com"]::after {
 /* Favicon is a little normal distribution/histogram */
 a[href*="andrewgelman.com"]::after,
 a[href*="statmodeling.stat.columbia.edu"]::after {
-    content: "▅▇▃";
+    content: "\2585\2587\2583"; /* (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK */
     opacity: 0.70;
     font-size: 0.5em;
     right: 0.25em;
-    margin: 0 0 0 4px; }
+    margin: 0 0 0 4px;
+}
 
 /* Bloomberg: no usable logo, just an inset-B */
 a[href*="bloomberg.com"]::after {
+    content: "\1D401"; /* (𝐁) MATHEMATICAL BOLD CAPITAL B */
     opacity: 0.77;
-    content: "𝐁"; }
+}
 
 /* BBC: no usable logo */
 a[href*="bbc.com"]::after,
 a[href*="bbc.co.uk"]::after {
+    content: "BBC";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "BBC"; }
+}
 
 /* R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... */
 a[href*="r-project.org"]::after, /* primary user: cran.r-project.org */
@@ -731,105 +769,120 @@ a[href*="rstudio.com"]::after {
 
 /* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
 a[href*="haskell.org"]::after { /* primary user: hackage.haskell.org */
-    content: "𝛌"; }
+    content: "\1D6CC"; /* (𝛌) MATHEMATICAL BOLD SMALL LAMDA */
+}
 
 /* MAL: the blue of their logo doesn't work, so just text */
 a[href*="myanimelist.net"]::after {
+    content: "MAL";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "MAL"; }
+}
 
 /* Gene Wolfe mailing list; no logo */
 a[href*="urth.net"]::after { /* primary user: lists.urth.net */
-    content: "U"; }
+    content: "U";
+}
 
 /* TinyLetter's icon, without color, isn't memorable enough; throw in the other email services */
 a[href*="tinyletter.com"]::after,
 a[href*="groups.google.com"]::after,
 a[href*="groups.yahoo.com"]::after,
 a[href*="www.mail-archive.com"]::after {
-    content: "✉";
-    opacity: 0.91; }
+    content: "\2709"; /* (✉) ENVELOPE */
+    opacity: 0.91;
+}
 
 /* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
 a[href*="tumblr.com"]::after,
 a[href*="t.umblr.com"]::after {
-    content: "ʈ";
-    bottom: 0.4em; }
+    content: "\0288"; /* (ʈ) LATIN SMALL LETTER T WITH RETROFLEX HOOK */
+    bottom: 0.4em;
+}
 
 /* The Atlantic: replicate sloping by italics */
 a[href*="theatlantic.com"]::after {
-    font-style: italic;
     content: "A";
-    font-size: 0.85em; }
+    font-style: italic;
+    font-size: 0.85em;
+}
 
 /* Filfre.net/The Digital Antiquarian has no logo or usable substitue... */
 a[href*="filfre.net"]::after {
-    content: "F"; }
+    content: "F";
+}
 
 /* ANN */
 a[href*="animenewsnetwork.com"]::after {
+    content: "ANN";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "ANN"; }
+}
 
 /* TV Tropes: their lampshade icon is unrecognizable & hard to see small */
 a[href*="tvtropes.org"]::after {
-    content: "TV"; }
+    content: "TV";
+}
 
 a[href*="www.cdc.gov"]::after {
-    content: "CDC"; }
+    content: "CDC";
+}
 
 /* US federal Department of Justice */
 a[href*="justice.gov"]::after {
-    content: "DoJ"; }
+    content: "DoJ";
+}
 
 /* FDA/Food & Drug Agency */
 a[href*="fda.gov"]::after {
+    content: "FDA";
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    content: "FDA"; }
+}
 
 /* The Paris Review: not even going to try to make their weird bird logo work */
 a[href*="theparisreview.org"]::after {
-    content: "PR"; }
+    content: "PR";
+}
 
 /* The Wall Street Journal */
 a[href*="www.wsj.com"]::after,
 a[href*="online.wsj.com"]::after {
-    content: "WSJ"; }
+    content: "WSJ";
+}
 
 /* Slate */
 a[href*="slate.com"]::after {
-    content: "S"; }
+    content: "S";
+}
 
 a[href*="xkcd.com"]::after {
- content:"XKCD";
- font-size:.55em;
- width:1.5em;
- display:inline-block;
- overflow-wrap:break-word;
- font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
- line-height:.75;
- text-align:center;
- position:relative;
- bottom:.3em;
- left:.1em;
- opacity: 0.85;
- font-weight: bold;
- }
+    content: "XKCD";
+    font-size: 0.55em;
+    width: 1.5em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    line-height: 0.75;
+    text-align: center;
+    position: relative;
+    bottom: 0.3em;
+    left: 0.1em;
+    opacity: 0.85;
+    font-weight: bold;
+}
 
 a[href*="rand.org"]::after {
- content:"RAND";
- font-size:.55em;
- width:1.5em;
- display:inline-block;
- overflow-wrap:break-word;
- font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
- line-height:.75;
- text-align:center;
- position:relative;
- bottom:.3em;
- left:.1em;
- opacity: 0.90;
- font-weight: bold;
+    content: "RAND";
+    font-size: 0.55em;
+    width: 1.5em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    line-height: 0.75;
+    text-align: center;
+    position: relative;
+    bottom: 0.3em;
+    left: 1em;
+    opacity: 0.90;
+    font-weight: bold;
 }
 
 /* Nature */
@@ -839,58 +892,62 @@ a[href*="nature.com"]::after {
 }
 
 a[href*="link.springer.com"]::after {
-    content: "♘"; /* WHITE CHESS KNIGHT '♘' (U+2658) */
-    font-size: 130%; }
+    content: "\2658"; /* (♘) WHITE CHESS KNIGHT */
+    font-size: 1.3em;
+}
 
 /* Cell: their logo is unrecognizable (and dumb) */
 a[href*="www.cell.com"]::after {
- content:"CELL";
- font-size:.5em;
- width:1.5em;
- display:inline-block;
- overflow-wrap:break-word;
- font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
- line-height:.75;
- text-align:center;
- position:relative;
- bottom:.3em;
- left:.1em;
- opacity: 0.90;
- font-weight: bold;
+    content: "CELL";
+    font-size: 0.5em;
+    width: 1.5em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    line-height: 0.75;
+    text-align: center;
+    position: relative;
+    bottom: 0.3em;
+    left: 0.1em;
+    opacity: 0.90;
+    font-weight: bold;
 }
 
 /* Sage Journals's logo is a circled S... but would anyone recognize it? */
 a[href*="sagepub.com"]::after { /* primary user: journals.sagepub.com */
- content:"SAGE";
- font-size:.6em;
- width:1.5em;
- display:inline-block;
- overflow-wrap:break-word;
- font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
- line-height:.75;
- text-align:center;
- position:relative;
- bottom:.3em;
- left:.1em;
- opacity: 0.98;
+    content: "SAGE";
+    font-size: 0.6em;
+    width: 1.5em;
+    display: inline-block;
+    overflow-wrap: break-word;
+    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    line-height: 0.75;
+    text-align: center;
+    position: relative;
+    bottom: 0.3em;
+    left: 0.1em;
+    opacity: 0.98;
 }
 
 /* Oxford Academic Journals / OUP */
 a[href*="academic.oup.com"]::after {
+    content: "OUP";
     opacity: 0.90;
-    content: "OUP"; }
+}
 
 /* Evangelion: we'll split this into EGF-related and other NGE sites */
 a[href*="evageeks.org"]::after, /* primary user: forum.evageeks.org wiki.evageeks.org */
 a[href*="evamonkey.com"]::after {
-    content: "EG"; }
+    content: "EG";
+}
 a[href*="onegeek.org"]::after, /* Primary user: eva.onegeek.org */
 a[href*="evaotaku.com"]::after,
 a[href*="khara.co.jp"]::after,
 a[href*="gainax.co.jp"]::after,
 a[href*="17th-angel.tumblr.com"]::after,
 a[href*="neweva.blog103.fc2.com"]::after {
-    content: "NGE"; }
+    content: "NGE";
+}
 
 /* IMAGE-BASED PER-DOMAIN LINK ICONS: */
 /* BioRxiv (custom icon: italic Chi with DNA cross-strands) */
@@ -1008,7 +1065,7 @@ a[href*='www.plos']::after {
 
 /* Upton Tea */
 a[href*='uptontea.com']::after {
-   background-image: url("/static/img/icons/uptontea.svg");
+    background-image: url("/static/img/icons/uptontea.svg");
 }
 a[href*='uptontea.com']:hover::after {
     opacity: 0.3;
@@ -1065,7 +1122,8 @@ a[href*='washingtonpost.com']::after {
 
 /* The New York Times: reduction of full SVG logo to just the 'T' they use as an icon */
 a[href*='nytimes.com']::after {
-    background-image: url("/static/img/icons/newyorktimes.svg");}
+    background-image: url("/static/img/icons/newyorktimes.svg");
+}
 a[href*='nytimes.com']:hover::after {
     opacity: 0.40;
 }
@@ -1181,7 +1239,7 @@ a[href*='ycombinator.com']::after {
     background-position: bottom center;
     height: 0.75em;
     width: 0.75em;
-    margin:0 2px 0 2px;
+    margin: 0 2px 0 2px;
     opacity: 0.44;
 }
 
@@ -1222,7 +1280,7 @@ a[href*='docs/.*/*.pdf#deepmind']::after {
     background-position: bottom center;
     height: 1.1em;
     width: 1.1em;
-    font-size:0.8em;
+    font-size: 0.8em;
     margin: 0 0 1px 4px;
     opacity: 0.76;
 }
