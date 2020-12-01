@@ -406,7 +406,7 @@ a[href*="neweva.blog103.fc2.com"]::after {
 }
 /* MR: cheaper to abuse Unicode */
 a[href*="marginalrevolution.com"]::after {
-    content: "M" "\1D411"; /* (𝐑) MATHEMATICAL BOLD CAPITAL R */
+    content: "M\1D411"; /* (𝐑) MATHEMATICAL BOLD CAPITAL R */
     opacity: 0.74;
 }
 
