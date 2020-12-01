@@ -34,6 +34,10 @@ body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
     filter: invert(1);
 }
 
+section > :not(:first-child) a[href^='#'].identifier-link-up::after,
+p a[href^='#'].identifier-link-up::after,
+section > :not(:first-child) a[href^='#'].identifier-link-down::after,
+p a[href^='#'].identifier-link-down::after,
 a[href$='.pdf' i]::after,
 a[href$='/pdf' i]::after,
 a[href$='type=pdf' i]::after,
