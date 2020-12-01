@@ -403,8 +403,6 @@ a[href*="www.vox.com"]::after,
 a[href*="www.vanityfair.com"]::after,
 a[href*="www.motherjones.com"]::after,
 a[href*="www.edge.org"]::after,
-a[href*="bitcointalk.org"]::after,
-a[href*="bitcoin.it"]::after,
 a[href*="bloomberg.com"]::after,
 a[href*="bmj.com"]::after,
 a[href*="economist.com"]::after,
@@ -458,16 +456,12 @@ a[href*="theparisreview.org"]::after,
 a[href*="tinyletter.com"]::after,
 a[href*="www.mail-archive.com"]::after,
 a[href*="groups.google.com"]::after,
-a[href*="tumblr.com"]::after,
 a[href*="tvtropes.org"]::after,
 a[href*="urth.net"]::after,
 a[href*="www.nber.org"]::after,
 a[href*="mlp.fandom.com"]::after,
 a[href*="www.wsj.com"]::after,
 a[href*="online.wsj.com"]::after,
-a[href*="www.google.com"]::after,
-a[href*="#google"]::after,
-a[href*="#org=google"]::after,
 a[href*="wiley.com"]::after,
 a[href*="yunnansourcing.com"]::after,
 a[href*="yvain"]::after,
@@ -475,15 +469,13 @@ a[href*="unsongbook.com"]::after,
 a[href*="groups.yahoo.com"]::after,
 a[href*="publicdomainreview.org"]::after,
 a[href*="meltingasphalt.com"]::after,
-a[href*="#facebook"]::after,
-a[href*="facebook.com"]::after,
 a[href*="neweva.blog103.fc2.com"]::after {
-    font-size: 0.8em;
+    font-size: 0.75em;
     font-weight: 600;
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
-    bottom: 0.2em;
+    bottom: 0.25em;
     opacity: 0.83;
 }
 
@@ -524,35 +516,9 @@ a[href*="medium.com"]::after {
     opacity: 0.7;
 }
 
-/* Facebook: skip enclosing box */
-a[href*="#facebook"]::after,
-a[href*="#facebook"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
-a[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
-a[href*="facebook.com"]::after {
-    content: "f";
-    background-image: none;
-    /* a single lower-case letter is too small to easily see if left at defaults */
-    font-size: 0.9em;
-    opacity: 0.95;
-}
-
 /* Kevin Kelly */
 a[href*="kk.org"]::after {
     content: "KK";
-}
-
-/* Google searches, other tools; note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just 'www' */
-a[href*="www.google.com"]::after,
-/* Google Brain doesn't have any consistent or recognizable logo, don't bother trying to replicate one of the dots (no one will recognize it); use 'GB' would not be a bad idea, but I suspect that would also confuse people. So, like using 'F' for Facebook/FAIR research, reusing the 'G' is the least bad option. */
-a[href*="#google"]::after,
-a[href*="#org=google"]::after,
-a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
-a[href*="#org=google"][href*="arxiv.org"]::after,
-a[href*='docs/.*/*.pdf#.*google']::after,
-a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
-    content: "\1D406"; /* (𝐆) MATHEMATICAL BOLD CAPITAL G */
-    opacity: 0.75;
-    background-image: none; 
 }
 
 /* Wiley & Sons's 'W' unfortunately overlaps with the WP 'W' but if we sans it, maybe that'll help */
@@ -565,14 +531,9 @@ a[href*="meltingasphalt.com"]::after {
     content: "\25B2"; /* (▲) BLACK UP-POINTING TRIANGLE */
 }
 
-/* Bitcoin Talk: close enough! */
-a[href*="bitcointalk.org"]::after,
-a[href*="bitcoin.it"]::after { /* primary user: en.bitcoin.it */
-    content: "\20BF"; /* (₿) BITCOIN SIGN */
-}
-
 a[href*="salon.com"]::after {
     content: "s";
+    font-size: 1em;
 }
 
 a[href*="www.vox.com"]::after {
@@ -639,6 +600,8 @@ a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
 /* SSC's book */
 a[href*="unsongbook.com"]::after {
     content: "\05D0"; /* (א) HEBREW LETTER ALEF */
+    font-weight: normal;
+    font-size: 1em;
 }
 
 /* OB logo too bad to use */
@@ -755,13 +718,6 @@ a[href*="www.mail-archive.com"]::after {
     opacity: 0.9;
 }
 
-/* Tumblr: turns out there's a Unicode equivalent to their curly-T which can be used instead */
-a[href*="tumblr.com"]::after,
-a[href*="t.umblr.com"]::after {
-    content: "\0288"; /* (ʈ) LATIN SMALL LETTER T WITH RETROFLEX HOOK */
-    bottom: 0.4em;
-}
-
 /* The Atlantic: replicate sloping by italics */
 a[href*="theatlantic.com"]::after {
     content: "A";
@@ -823,6 +779,8 @@ a[href*="nature.com"]::after {
 a[href*="link.springer.com"]::after {
     content: "\2658"; /* (♘) WHITE CHESS KNIGHT */
     font-size: 1.3em;
+    font-weight: normal;
+    bottom: 0.15em;
 }
 
 /* Oxford Academic Journals / OUP */
@@ -872,7 +830,7 @@ a[href*="pnas.org"]::after,
 a[href*="publicdomainreview.org"]::after,
 a[href*="www.nber.org"]:not([href$=".pdf"])::after {
 	font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times", "Source Serif Pro", serif;
-    line-height: 0.8;
+    line-height: 0.85;
 }
 
 /* PNAS: they don't have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (as white text on black background per our monochrome theme): */
@@ -902,7 +860,7 @@ a[href*="xkcd.com"]::after,
 a[href*="rand.org"]::after,
 a[href*="www.cell.com"]::after {
     font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    line-height: 0.75;
+    line-height: 0.8;
 }
 
 a[href*="mlp.fandom.com"]::after {
@@ -942,6 +900,7 @@ a[href*="www.cell.com"]::after {
     font-weight: bold;
     opacity: 0.9;
 }
+
 /*=---------------------------------=*/
 /*= Graphical per-domain link icons =*/
 /*=---------------------------------=*/
@@ -960,40 +919,76 @@ a[href*='patreon.com']::after,
 a[href*='uptontea.com']::after,
 a[href*='wired.com']::after,
 a[href*='washingtonpost.com']::after,
-a[href*='nytimes.com']::after,
+a[href*='nlm.nih.gov']::after,
+a[href*='newyorker.com']::after,
 a[href*='theguardian.com']::after,
 a[href*='www.guardian.co.uk']::after,
 a[href*='reddit.com']::after,
+a[href*='paulgraham.com']::after,
+a[href*='ycombinator.com']::after,
 a[href*='intelligence.org']::after,
+a[href*='deepmind']::after,
+a[href*='docs/.*/*.pdf#deepmind']::after,
+a[href*='openai']::after,
+a[href$='.pdf#openai']::after,
 a[href*='distill.pub']::after,
 a[href*='twitter.com']::after,
 a[href*='nitter.net']::after,
 a[href*='erowid.org']::after,
+a[href*='wikipedia.org']::after,
+a[href*='wikimedia.org']::after,
+a[href*='wiktionary.org']::after,
+a[href*='wikimediafoundation.org']::after,
+a[href*='wikisource.org']::after,
+a[href*='youtube.com']::after,
+a[href*='youtu.be']::after,
+a[href*='soundcloud.com']::after,
+a[href*='bandcamp.com']::after,
 a[href*='overflow.net']::after,
 a[href*='overflow.com']::after,
 a[href*='stackexchange.com']::after,
+a[href*='amazon.com']::after,
+a[href*='amazon.co.']::after,
+a[href*='amzn.com'  ]::after,
 a[href*='github.com']::after,
 a[href*='dropbox.com']::after,
 a[href*='dropboxusercontent.com']::after,
 a[href*='mega.nz']::after,
 a[href*='webcitation.org'   ]::after,
 a[href*='mementoweb.org'    ]::after,
-a[href*='archive.org'       ]::after, /* primary user: web.archive.org */
+a[href*='archive.org'       ]::after,
 a[href*='archive-it.org'    ]::after,
 a[href*='archiveteam.org'   ]::after,
-a[href*='waybackmachine.org']::after {
+a[href*='waybackmachine.org']:hover::after,
+a[href*="tumblr.com"]::after,
+a[href*="t.umblr.com"]::after,
+a[href*="#facebook"]::after,
+a[href*="#facebook"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*facebook']::after,
+a[href*="facebook.com"]::after,
+a[href*="bitcointalk.org"]::after,
+a[href*="bitcoin.it"]::after,
+a[href*="www.google.com"]::after,
+a[href*="#google"]::after,
+a[href*="#org=google"]::after,
+a[href*="#google"][href*="arxiv.org"]::after,
+a[href*="#org=google"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*google']::after,
+a[href*='docs/.*/*.pdf#org=google']::after {
     content: "";
     display: inline-block;
     position: static;
     background-repeat: no-repeat;
     background-position: bottom center;
     margin: 0 0 0 2px;
+    font-size: 1em;
 }
 /*  Hover styles.
     */
 a[href*='biorxiv.org']:hover::after,
 a[href*='medrxiv.org']:hover::after,
 a[href*='substack.com']:hover::after,
+a[href*='scholar.google.com']:hover::after,
 a[href*='plosone.org']:hover::after,
 a[href*='plosmedicine.org']:hover::after,
 a[href*='plos.org']:hover::after,
@@ -1002,47 +997,43 @@ a[href*='patreon.com']:hover::after,
 a[href*='uptontea.com']:hover::after,
 a[href*='wired.com']:hover::after,
 a[href*='washingtonpost.com']:hover::after,
-a[href*='nlm.nih.gov']:hover::after,
-a[href*='newyorker.com']:hover::after,
+a[href*='nytimes.com']:hover::after,
 a[href*='theguardian.com']:hover::after,
 a[href*='www.guardian.co.uk']:hover::after,
 a[href*='reddit.com']:hover::after,
-a[href*='paulgraham.com']:hover::after,
-a[href*='ycombinator.com']:hover::after,
 a[href*='intelligence.org']:hover::after,
-a[href*='deepmind']:hover::after, /* primary user: deepmind.com */
-a[href*='docs/.*/*.pdf#deepmind']:hover::after,
-a[href*='openai']:hover::after, /* primary user: openai.com */
-a[href$='.pdf#openai']:hover::after,
 a[href*='distill.pub']:hover::after,
 a[href*='twitter.com']:hover::after,
 a[href*='nitter.net']:hover::after,
 a[href*='erowid.org']:hover::after,
-a[href*='wikipedia.org']:hover::after, /* primary user: en.wikipedia.org */
-a[href*='wikimedia.org']:hover::after, /* secondary user: meta.wikimedia.org */
-a[href*='wiktionary.org']:hover::after, /* primary user: en.wiktionary.org */
-a[href*='wikimediafoundation.org']:hover::after,
-a[href*='wikisource.org']:hover::after,
-a[href*='youtube.com']:hover::after,
-a[href*='youtu.be']:hover::after,
-a[href*='soundcloud.com']:hover::after,
-a[href*='bandcamp.com']:hover::after,
 a[href*='overflow.net']:hover::after,
 a[href*='overflow.com']:hover::after,
 a[href*='stackexchange.com']:hover::after,
-a[href*='amazon.com']:hover::after,
-a[href*='amazon.co.']:hover::after,
-a[href*='amzn.com'  ]:hover::after,
 a[href*='github.com']:hover::after,
 a[href*='dropbox.com']:hover::after,
 a[href*='dropboxusercontent.com']:hover::after,
 a[href*='mega.nz']:hover::after,
 a[href*='webcitation.org'   ]:hover::after,
 a[href*='mementoweb.org'    ]:hover::after,
-a[href*='archive.org'       ]:hover::after, /* primary user: web.archive.org */
+a[href*='archive.org'       ]:hover::after,
 a[href*='archive-it.org'    ]:hover::after,
 a[href*='archiveteam.org'   ]:hover::after,
-a[href*='waybackmachine.org']:hover::after {
+a[href*='waybackmachine.org']:hover::after,
+a[href*="tumblr.com"]:hover::after,
+a[href*="t.umblr.com"]:hover::after,
+a[href*="#facebook"]:hover::after,
+a[href*="#facebook"][href*="arxiv.org"]:hover::after,
+a[href*='docs/.*/*.pdf#.*facebook']:hover::after,
+a[href*="facebook.com"]:hover::after,
+a[href*="bitcointalk.org"]:hover::after,
+a[href*="bitcoin.it"]:hover::after,
+a[href*="www.google.com"]:hover::after,
+a[href*="#google"]:hover::after,
+a[href*="#org=google"]:hover::after,
+a[href*="#google"][href*="arxiv.org"]:hover::after,
+a[href*="#org=google"][href*="arxiv.org"]:hover::after,
+a[href*='docs/.*/*.pdf#.*google']:hover::after,
+a[href*='docs/.*/*.pdf#org=google']:hover::after {
     opacity: 0.3;
 }
 
@@ -1060,8 +1051,9 @@ a[href*='medrxiv.org']::after {
     */
 a[href*='substack.com']::after { /* primary user: gwern.substack.com */
     background-image: url('/static/img/icons/substack.svg');
-    height: 1em;
-    width: 1em;
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 3px;
     opacity: 0.6;
 }
 
@@ -1087,7 +1079,7 @@ a[href*='www.plos']::after {
     height: 1.1em;
     width: 1em;
     margin: 0 0 1px 3px;
-    opacity: 0.66;
+    opacity: 0.65;
 }
 
 /*  Patreon.
@@ -1104,8 +1096,9 @@ a[href*='patreon.com']::after {
     */
 a[href*='uptontea.com']::after {
     background-image: url('/static/img/icons/uptontea.svg');
-    height: 1.1em;
+    height: 1em;
     width: 1em;
+    margin: 0 0 2px 2px;
     opacity: 0.55;
 }
 
@@ -1231,9 +1224,10 @@ a[href*='docs/.*/*.pdf#deepmind']:hover::after{
 a[href*='openai']::after, /* primary user: openai.com */
 a[href$='.pdf#openai']::after {
     background-image: url('/static/img/icons/openai.svg');
-    height: 1.3em;
-    width: 1.3em;
-    opacity: 0.7;
+    height: 1em;
+    width: 1em;
+    margin: 0 0 1px 2px;
+    opacity: 0.75;
 }
 a[href*='openai']:hover::after,
 a[href$='.pdf#openai']:hover::after {
@@ -1293,21 +1287,31 @@ a[href*='wikisource.org'         ]:hover::after {
     opacity: 0.5;
 }
 
-/*  YouTube/Bandcamp/SoundCloud links.
+/*  YouTube links.
     */
 a[href*='youtube.com'   ]::after,
-a[href*='youtu.be'      ]::after,
+a[href*='youtu.be'      ]::after {
+    background-image: url('/static/img/icons/youtube.svg');
+    height: 0.875em;
+    width: 0.875em;
+    margin: 0 0 0 3px;
+    opacity: 0.5;
+}
+a[href*='youtube.com'   ]:hover::after,
+a[href*='youtu.be'      ]:hover::after {
+    opacity: 0.2;
+}
+
+/*  Bandcamp/SoundCloud links.
+    */
 a[href*='soundcloud.com']::after,
 a[href*='bandcamp.com'  ]::after {
     background-image: url('/static/img/icons/video.svg');
     height: 0.75em;
     width: 0.75em;
-    font-size: 1em;
     margin: 0 0 0 3px;
     opacity: 0.55;
 }
-a[href*='youtube.com'   ]:hover::after,
-a[href*='youtu.be'      ]:hover::after,
 a[href*='soundcloud.com']:hover::after,
 a[href*='bandcamp.com'  ]:hover::after {
     opacity: 0.2;
@@ -1384,4 +1388,58 @@ a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.
     width: 0.75em;
     margin: 0 0 2px 3px;
     opacity: 0.6;
+}
+
+/*	Tumblr.
+	*/
+a[href*="tumblr.com"]::after,
+a[href*="t.umblr.com"]::after {
+    background-image: url('/static/img/icons/tumblr.svg');
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 2px;
+    opacity: 0.55;
+}
+
+/*	Facebook.
+	*/
+a[href*="#facebook"]::after,
+a[href*="#facebook"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
+a[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
+a[href*="facebook.com"]::after {
+    background-image: url('/static/img/icons/facebook.svg');
+    height: 0.875em;
+    width: 0.875em;
+    margin: 0 -1px 2px 1px;
+    opacity: 0.5;
+}
+
+/*	Bitcoin.
+	*/
+a[href*="bitcointalk.org"]::after,
+a[href*="bitcoin.it"]::after { /* primary user: en.bitcoin.it */
+    background-image: url('/static/img/icons/bitcoin.svg');
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 2px;
+    opacity: 0.65;
+}
+
+/*	Google searches, other tools.
+	Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just 'www'.
+	*/
+a[href*="www.google.com"]::after,
+/*	Google Brain doesn't have any consistent or recognizable logo, don't bother trying to replicate one of the dots (no one will recognize it); use 'GB' would not be a bad idea, but I suspect that would also confuse people. So, like using 'F' for Facebook/FAIR research, reusing the 'G' is the least bad option.
+	*/
+a[href*="#google"]::after,
+a[href*="#org=google"]::after,
+a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
+a[href*="#org=google"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*google']::after,
+a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
+    background-image: url('/static/img/icons/google.svg');
+    height: 0.75em;
+    width: 0.75em;
+    margin: 0 0 2px 2px;
+    opacity: 0.65;
 }
