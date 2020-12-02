@@ -2744,6 +2744,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 
 #navigation {
     text-align: center;
+    margin: 2em 0 0 0;
 }
 #navigation a {
     display: inline-block;
