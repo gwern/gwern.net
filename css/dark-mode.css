@@ -1,0 +1,433 @@
+:root {
+	/*	General.
+		*/
+	--GW-body-background-color: #000;
+	--GW-body-text-color: #fff;
+	--GW-body-link-color: #e5e5e5;
+
+	/*	Selection.
+		*/
+	--GW-text-selection-background-color: #dcdcdc;
+	--GW-text-selection-color: #000;
+	
+	/*	Link underlining.
+		*/
+	--GW-link-underline-background-color: var(--GW-body-background-color);
+	--GW-link-underline-gradient-line-color: #dcdcdc;
+	--GW-link-underline-gradient-line-color-hover: #8b8b8b;
+
+	/*	Blockquotes.
+		*/
+	--GW-blockquote-border-color-level-one: #5c5c5c;
+	--GW-blockquote-border-color-level-two: #646464;
+	--GW-blockquote-border-color-level-three: #747474;
+	--GW-blockquote-border-color-level-four: #7f7f7f;
+	--GW-blockquote-background-color-level-one: #212121;
+	--GW-blockquote-background-color-level-two: #3e3e3e;
+	--GW-blockquote-background-color-level-three: #4f4f4f;
+	
+	/*	Abstracts.
+		*/
+	--GW-abstract-border-color: #6c6c6c;
+	
+	/*	Sidebar.
+		*/
+	--GW-sidebar-bullet-color: #999;
+	--GW-sidebar-horizontal-rule-color: #7c7c7c;
+	--GW-sidebar-bullet-text-shadow-color: #fff;
+	--GW-sidebar-mobile-link-border-color: #fff;
+	
+	/*	Table of contents.
+		*/
+	--GW-TOC-border-color: #5c5c5c;
+	--GW-TOC-background-color: #1f1f1f;
+	--GW-TOC-link-hover-background-color: #363636;
+	--GW-TOC-link-hover-color: #fff;
+	--GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
+	--GW-TOC-number-color: #929292;
+	--GW-TOC-number-hover-color: #ddd;
+
+    /*  Collapse blocks.
+        */
+    --GW-collapse-block-disclosure-button-color: #8b8b8b;
+    --GW-collapse-block-disclosure-button-hover-color: #b4b4b4;
+    --GW-collapse-block-disclosure-button-targeted-color: #515151;
+    --GW-table-collapse-block-disclosure-button-color: #5c5c5c;
+    --GW-table-collapse-block-disclosure-button-hover-color: #333;
+    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #ff5936;
+    --GW-collapse-block-disclosure-button-hover-background-color: rgba(255, 255, 255, 0.1);
+    --GW-collapse-block-click-to-expand-text-color: #a6a6a6;
+    --GW-collapse-block-click-to-expand-text-shadow-color: #000;
+    --GW-collapse-block-click-to-expand-text-hover-color: #cecece;
+    --GW-collapse-block-hover-border-color: #a6a6a6;
+    --GW-collapse-block-fade-gradient-color-one: rgba(0, 0, 0, 0);
+    --GW-collapse-block-fade-gradient-color-two: rgba(0, 0, 0, 1);
+
+    /*  Headings.
+        */
+    --GW-H1-box-shadow-background-color: #000;
+    --GW-H1-box-shadow-line-color: #999;
+    --GW-H2-bottom-border-color: #999;
+    --GW-heading-self-link-hover-color: #b7c6c6;
+
+    /*  Comments.
+        */
+    --GW-comment-section-top-border-color: #8b8b8b;
+
+    /*  Links.
+        */
+    --GW-link-hover-color: #999;
+
+    /*  Lists.
+        */
+    --GW-bulleted-list-marker-color: #9f9f9f;
+
+    /*  Figures.
+        */
+    --GW-figure-outline-color: #999;
+    --GW-figure-caption-outline-color: #999;
+
+	/*	Epigraphs.
+		*/
+	--GW-epigraph-quotation-mark-color: #9f9f9f;
+
+    /*  Footnotes.
+        */
+    --GW-footnote-backlink-border-color: #fff;
+    --GW-footnote-backlink-border-hover-color: #8b8b8b;
+    --GW-footnote-backlink-after-bordered-block-background-color: #000;
+
+    /*  Footnote references.
+        */
+    --GW-footnote-ref-highlight-box-shadow-color: #7c7c7c;
+    --GW-footnote-ref-highlight-box-shadow-interstitial-color: #000;
+    --GW-footnote-ref-highlight-background-color: rgba(0, 0, 0, 0.75);
+
+    /*  Footnote popups.
+        */
+    --GW-footnote-popup-box-shadow-color: #000;
+    --GW-footnote-popup-background-color: #000;
+    --GW-footnote-popup-border-color: #7c7c7c;
+    --GW-footnote-popup-scrollbar-thumb-color: #5c5c5c;
+    --GW-footnote-popup-scrollbar-track-color: #000;
+    --GW-footnote-popup-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Sidenotes.
+        */
+    --GW-sidenote-highlight-background-color: #000;
+    --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
+    --GW-sidenote-border-color: #7c7c7c;
+    --GW-sidenote-scrollbar-track-color: #000;
+    --GW-sidenote-self-link-border-color: #7c7c7c;
+
+    /*  Tables.
+        */
+    --GW-table-border-color: #fff;
+    --GW-table-full-width-background-color: #000;
+    --GW-table-caption-border-color: #fff;
+    --GW-table-row-horizontal-border-color: #fff;
+    --GW-table-cell-vertical-border-color: #000;
+    --GW-table-scrollbar-track-color: #000;
+    --GW-table-scrollbar-border-color: #fff;
+    --GW-table-column-heading-hover-background-color: #2b3637;
+    --GW-table-sorted-column-heading-background-color: #166983;
+    --GW-table-sorted-column-heading-text-color: #000;
+    --GW-table-sorted-column-heading-text-shadow-color: #fff;
+    --GW-table-zebra-stripe-alternate-row-background-color: #252525;
+    --GW-table-row-hover-outline-color: #fff;
+
+    /*  Code blocks.
+        */
+    --GW-code-element-border-color: #606060;
+    --GW-code-element-background-color: #1d1d1d;
+    --GW-pre-element-border-color: #606060;
+    --GW-pre-element-background-color: #1d1d1d;
+    --GW-pre-element-scrollbar-track-color: #1d1d1d;
+    --GW-pre-element-scrollbar-thumb-color: #5c5c5c;
+    --GW-pre-element-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Syntax highlight theme.
+        */
+    --GW-syntax-highlight-color-normal: #f1edec;
+    --GW-syntax-highlight-color-attribute: #d8deff;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #b4b4b4;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-extension: #999;
+    --GW-syntax-highlight-color-comment: #999;
+    --GW-syntax-highlight-color-control-flow: #b6edaa;
+    --GW-syntax-highlight-color-keyword: #d8deff;
+    --GW-syntax-highlight-color-operator: #d8deff;
+    --GW-syntax-highlight-color-special-char: #94adb6;
+    --GW-syntax-highlight-color-built-in: #d8deff;
+    --GW-syntax-highlight-color-function: #d8deff;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #ff815c;
+    --GW-syntax-highlight-color-error: #ff4727;
+    --GW-syntax-highlight-color-import: #a6a6a6;
+    --GW-syntax-highlight-color-special-string: #b4b4b4;
+
+    /*  Math.
+        */
+    --GW-math-block-scrollbar-border-color: #5c5c5c;
+    --GW-math-block-scrollbar-track-color: #000;
+    --GW-math-block-scrollbar-thumb-color: #5c5c5c;
+    --GW-math-block-scrollbar-track-hover-color: #8b8b8b;
+
+    /*  Drop caps.
+        */
+    --GW-drop-caps-yinit-color: #f9f9f9;
+    --GW-drop-caps-yinit-text-shadow-color: #a6a6a6;
+    --GW-drop-caps-de-zs-color: #efefef;
+    --GW-drop-caps-cheshire-color: #f1f1f1;
+    --GW-drop-caps-kanzlei-color: #f1f1f1;
+
+    /*  Admonitions.
+        */
+    --GW-admonition-default-left-border-color: #aaa9a9;
+    --GW-admonition-default-background-color: #4f4f4f;
+    --GW-admonition-tip-left-border-color: #4f4f4f;
+    --GW-admonition-tip-background-color: #1d1d1d;
+    --GW-admonition-warning-left-border-color: #bdbdbd;
+    --GW-admonition-warning-background-color: #8d8d8d;
+    --GW-admonition-warning-text-color: #000;
+    --GW-admonition-warning-title-background-color: #bdbdbd;
+    --GW-admonition-warning-icon-color: #000;
+    --GW-admonition-error-left-border-color: #e1e1e1;
+    --GW-admonition-error-background-color: #bdbdbd;
+    --GW-admonition-error-text-color: #000;
+    --GW-admonition-error-title-background-color: #e1e1e1;
+    --GW-admonition-error-icon-color: #000;
+
+    /*  Sequential nav UI.
+        */
+    --GW-sequential-nav-link-background-color: #000;
+
+    /*  Links.
+        */
+    --GW-definition-annotation-text-color: #cecece;
+
+    /*  Page-specific styles.
+        */
+    --GW-index-page-bottom-ornament-line-color: #9f9f9f;
+    --GW-page-mead-image-box-shadow-inner-color: #000;
+    --GW-page-mead-image-box-shadow-outer-color: #5c5c5c;
+
+    /*  Popups.
+        */
+    --GW-popups-body-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-border-color: #7c7c7c;
+    --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
+    --GW-popups-popup-scrollbar-thumb-color: #5c5c5c;
+    --GW-popups-popup-scrollbar-track-color: #000;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #8b8b8b;
+
+	/*	Image focus.
+		*/
+    --SA-image-focus-image-hover-drop-shadow-color: #a6a6a6;
+    --SA-image-focus-overlay-background-color: #fff;
+    --SA-image-focus-overlay-image-caption-background-color: rgba(255, 255, 255, 0.7);
+    --SA-image-focus-overlay-image-caption-text-color: #000;
+    --SA-image-focus-overlay-image-caption-link-color: #5c5c5c;
+    --SA-image-focus-overlay-image-caption-link-hover-color: #7c7c7c;
+    --SA-image-focus-overlay-help-box-background-color: rgba(255, 255, 255, 0.85);
+    --SA-image-focus-overlay-help-box-text-color: #000;
+    --SA-image-focus-overlay-info-icon-color: #fff;
+    --SA-image-focus-overlay-info-icon-drop-shadow-color: #000;
+    --SA-image-focus-overlay-image-number-text-shadow-color: #000;
+    --SA-image-focus-overlay-slideshow-button-color: #494949;
+    --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(255, 255, 255, 0.1);
+    --SA-image-focus-overlay-slideshow-button-hover-color: #a6a6a6;
+    --SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #000;
+    --SA-image-focus-overlay-slideshow-button-active-color: #999;
+    --SA-image-focus-overlay-slideshow-button-disabled-color: #494949;
+    --SA-image-focus-image-hover-tooltip-background-color: rgba(255, 255, 255, 0.75);
+    --SA-image-focus-image-hover-tooltip-text-color: #000;
+}
+
+hr::after,
+.horizontalRule-nth-0 hr::after {
+    opacity: 1;
+    filter: invert(1) drop-shadow(0 0 0 currentColor);
+}
+.horizontalRule-nth-1 hr::after {
+    opacity: 0.75;
+    filter: invert(1);
+}
+.horizontalRule-nth-2 hr::after {
+    opacity: 0.85;
+    filter: invert(1);
+}
+
+body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+body.drop-caps-goudy .abstract + p::first-letter,
+body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+#markdownBody .drop-cap-goudy::first-letter,
+#markdownBody .drop-cap-goudy > p::first-letter {
+    opacity: 0.95;
+}
+
+.admonition.tip::before,
+.admonition.note::before,
+.admonition.warn::before,
+.admonition.warning::before,
+.admonition.error::before {
+    filter: invert(1);
+}
+
+#markdownBody ul > li::before,
+#popupdiv ul > li::before {
+    filter: invert(1);
+}
+
+th.tablesorter-header {
+    background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
+}
+th.tablesorter-headerAsc {
+    background-image: url('/static/img/tablesorter/tablesorter-asc-dark.gif');
+}
+th.tablesorter-headerDesc {
+    background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
+}
+
+section > :not(:first-child) a[href^='#'].identifier-link-up::after,
+p a[href^='#'].identifier-link-up::after,
+section > :not(:first-child) a[href^='#'].identifier-link-down::after,
+p a[href^='#'].identifier-link-down::after,
+a[href$='.pdf' i]::after,
+a[href$='/pdf' i]::after,
+a[href$='type=pdf' i]::after,
+a[href*='.pdf#' i]::after,
+a[href*='pdfs.semanticscholar.org' i]::after,
+a[href$='.epub' i]::after,
+a[href*='citeseerx.ist.psu.edu' i]::after,
+a[href*='eprint.iacr.org' i]::after,
+a[href$='.opml' i]::after,
+a[href$='.txt' i]::after,
+a[href$='.xml' i]::after,
+a[href$='.css' i]::after,
+a[href$='.hs' i]::after,
+a[href$='.js' i]::after,
+a[href$='.json' i]::after,
+a[href$='.jsonl' i]::after,
+a[href^="."][href$='.php' i]::after,
+a[href$='.sh' i]::after,
+a[href$='.R' i]::after,
+a[href$='.patch' i]::after,
+a[href$='.diff' i]::after,
+a[href$='.doc' i]::after,
+a[href$='.docx' i]::after,
+a[href*='docs.google.com' i]::after,
+a[href$='.xls' i]::after,
+a[href$='.xlsx' i]::after,
+a[href$='.ods' i]::after,
+a[href$='.csv' i]::after,
+a[href$='.gif' i]::after,
+a[href$='.bmp' i]::after,
+a[href$='.ico' i]::after,
+a[href$='.jpg' i]::after,
+a[href$='.jpeg' i]::after,
+a[href$='.png' i]::after,
+a[href$='.svg' i]::after,
+a[href$='.xcf' i]::after,
+a[href*='imgur.com']::after,
+a[href$='.mp3' i]::after,
+a[href$='.wav' i]::after,
+a[href$='.flac' i]::after,
+a[href$='.ogg' i]::after,
+a[href$='.rm' i]::after,
+a[href$='.swf' i]::after,
+a[href$='.avi' i]::after,
+a[href$='.mp4' i]::after,
+a[href$='.webm' i]::after,
+a[href$='.tar' i]::after,
+a[href$='.zip' i]::after,
+a[href$='.xz'  i]::after,
+a[href$='.img' i]::after,
+a[href$='.bin' i]::after,
+a[href$='.pkl' i]::after,
+a[href$='.onnx' i]::after,
+a[href$='.pt' i]::after,
+a[href$='.ebt' i]::after,
+a[href$='.mdb' i]::after,
+a[href$='.mht' i]::after,
+a[href$='.ttf' i]::after,
+a[href*='biorxiv.org']::after,
+a[href*='medrxiv.org']::after,
+a[href*='substack.com']::after,
+a[href*='scholar.google.com']::after,
+a[href*='plosone.org']::after,
+a[href*='plosmedicine.org']::after,
+a[href*='plos.org']::after,
+a[href*='www.plos']::after,
+a[href*='patreon.com']::after,
+a[href*='uptontea.com']::after,
+a[href*='wired.com']::after,
+a[href*='washingtonpost.com']::after,
+a[href*='nlm.nih.gov']::after,
+a[href*='newyorker.com']::after,
+a[href*='theguardian.com']::after,
+a[href*='www.guardian.co.uk']::after,
+a[href*='reddit.com']::after,
+a[href*='paulgraham.com']::after,
+a[href*='ycombinator.com']::after,
+a[href*='intelligence.org']::after,
+a[href*='deepmind']::after,
+a[href*='docs/.*/*.pdf#deepmind']::after,
+a[href*='openai']::after,
+a[href$='.pdf#openai']::after,
+a[href*='distill.pub']::after,
+a[href*='twitter.com']::after,
+a[href*='nitter.net']::after,
+a[href*='erowid.org']::after,
+a[href*='wikipedia.org']::after,
+a[href*='wikimedia.org']::after,
+a[href*='wiktionary.org']::after,
+a[href*='wikimediafoundation.org']::after,
+a[href*='wikisource.org']::after,
+a[href*='youtube.com']::after,
+a[href*='youtu.be']::after,
+a[href*='soundcloud.com']::after,
+a[href*='bandcamp.com']::after,
+a[href*='overflow.net']::after,
+a[href*='overflow.com']::after,
+a[href*='stackexchange.com']::after,
+a[href*='amazon.com']::after,
+a[href*='amazon.co.']::after,
+a[href*='amzn.com'  ]::after,
+a[href*='github.com']::after,
+a[href*='dropbox.com']::after,
+a[href*='dropboxusercontent.com']::after,
+a[href*='mega.nz']::after,
+a[href*='webcitation.org'   ]::after,
+a[href*='mementoweb.org'    ]::after,
+a[href*='archive.org'       ]::after,
+a[href*='archive-it.org'    ]::after,
+a[href*='archiveteam.org'   ]::after,
+a[href*='waybackmachine.org']:hover::after,
+a[href*="tumblr.com"]::after,
+a[href*="t.umblr.com"]::after,
+a[href*="#facebook"]::after,
+a[href*="#facebook"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*facebook']::after,
+a[href*="facebook.com"]::after,
+a[href*="bitcointalk.org"]::after,
+a[href*="bitcoin.it"]::after,
+a[href*="www.google.com"]::after,
+a[href*="#google"]::after,
+a[href*="#org=google"]::after,
+a[href*="#google"][href*="arxiv.org"]::after,
+a[href*="#org=google"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*google']::after,
+a[href*='docs/.*/*.pdf#org=google']::after {
+    filter: invert(1);
+}
