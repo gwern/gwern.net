@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en-us">
   <head>
-
     <meta charset="utf-8">
-    <!-- fetch the title & body fonts & logo immediately to avoid re-rendering -->
-    <link rel="preload" href="/static/img/logo/logo-smooth.svg#logo" as="image" type="image/svg+xml">
+
     <!-- CSS inline for speed -->
     <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/colors.css" /> -->
     <style id="inlined-styles-colors">$partial("static/css/colors.css")$</style>
@@ -54,10 +52,11 @@
     setMode(currentMode);
     </script>
 
+    <!-- fetch the title & body fonts immediately to avoid re-rendering -->
     <link rel="preload" as="style"      href="/static/css/default.css" />
-    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Regular.ttf"         as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf"   as="font" type="font/ttf" crossorigin="anonymous">
-    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Regular.ttf"          as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf"    as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf"         as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf"           as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf"       as="font" type="font/ttf" crossorigin="anonymous">

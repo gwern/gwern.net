@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-02 11:14:56 gwern"
+When: Time-stamp: "2020-12-02 14:23:58 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -144,13 +144,15 @@ main = hakyll $ do
                                      "metadata/**",
                                      "atom.xml", -- copy stub of deprecated RSS feed
                                      "index"]
+
              match "static/templates/*.html" $ compile templateCompiler
-             match "static/css/initial.css" $ compile cssTemplateCompiler -- to substitute in 'initial.css' while maintaining an easily-edited separate file
+
+             match "static/css/initial.css"   $ compile cssTemplateCompiler -- to substitute in 'initial.css' while maintaining an easily-edited separate file
              -- The dark mode setup:
              -- 1. `colors.css` and `dark-mode-adjustments.css` are the files we actually edit.
              -- 2. `colors-dark.css` is generated from `colors.css` via `color-scheme-convert.php`.
              -- 3. Then `colors-dark.css` is concatenated with `dark-mode-adjustments.css` to generate `dark-mode.css` (remember to escape '$'!)
-             match "static/css/colors.css" $ compile cssTemplateCompiler
+             match "static/css/colors.css"    $ compile cssTemplateCompiler
              match "static/css/dark-mode.css" $ compile cssTemplateCompiler
 
 -- https://kyle.marek-spartz.org/posts/2014-12-09-hakyll-css-template-compiler.html
