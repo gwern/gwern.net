@@ -234,22 +234,4 @@
 	/*	Image focus.
 		*/
     --SA-image-focus-image-hover-drop-shadow-color: #a6a6a6;
-    --SA-image-focus-overlay-background-color: #fff;
-    --SA-image-focus-overlay-image-caption-background-color: rgba(255, 255, 255, 0.7);
-    --SA-image-focus-overlay-image-caption-text-color: #000;
-    --SA-image-focus-overlay-image-caption-link-color: #5c5c5c;
-    --SA-image-focus-overlay-image-caption-link-hover-color: #7c7c7c;
-    --SA-image-focus-overlay-help-box-background-color: rgba(255, 255, 255, 0.85);
-    --SA-image-focus-overlay-help-box-text-color: #000;
-    --SA-image-focus-overlay-info-icon-color: #fff;
-    --SA-image-focus-overlay-info-icon-drop-shadow-color: #000;
-    --SA-image-focus-overlay-image-number-text-shadow-color: #000;
-    --SA-image-focus-overlay-slideshow-button-color: #494949;
-    --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(255, 255, 255, 0.1);
-    --SA-image-focus-overlay-slideshow-button-hover-color: #a6a6a6;
-    --SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #000;
-    --SA-image-focus-overlay-slideshow-button-active-color: #999;
-    --SA-image-focus-overlay-slideshow-button-disabled-color: #494949;
-    --SA-image-focus-image-hover-tooltip-background-color: rgba(255, 255, 255, 0.75);
-    --SA-image-focus-image-hover-tooltip-text-color: #000;
 }
