@@ -22,6 +22,9 @@ span.defnMetadata {
     color: var(--GW-definition-annotation-text-color);
     border-bottom: 1px dotted currentColor;
 }
+span.defnMetadata:hover {
+	color: var(--GW-link-hover-color);
+}
 
 /******************************************************************************/
 /* The philosophy of link icons is that the hyperlink text & surrounding context often leaves much out, which would be impossible to express inline conveniently (such as filetypes like PDF: a link being PDF is no longer a big deal for desktop readers, whose browser will open them quickly, natively, and render accurately, but due to the unfortunate state of mobile PDF viewing, mobile readers still care and may prefer not to open a PDF).
@@ -370,6 +373,12 @@ section > :not(:first-child) a[href^='#'].identifier-link-down::after,
 p a[href^='#'].identifier-link-down::after {
     background-image: url('/static/img/icons/arrow-up.svg');
     transform: rotate(180deg);
+}
+section > :not(:first-child) a[href^='#'].identifier-link-up:hover::after,
+p a[href^='#'].identifier-link-up:hover::after,
+section > :not(:first-child) a[href^='#'].identifier-link-down:hover::after,
+p a[href^='#'].identifier-link-down:hover::after {
+	opacity: 0.3;
 }
 
 /*=------------------------------=*/
