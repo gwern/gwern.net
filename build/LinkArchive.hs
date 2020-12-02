@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-11-27 19:01:39 gwern"
+When:  Time-stamp: "2020-12-01 20:26:26 gwern"
 License: CC-0
 -}
 
@@ -755,5 +755,6 @@ whiteList url
       , "yalelawjournal.org" -- low-quality archiving (sidenotes don't work)
       , "www.theindiaforum.in" -- low-quality archiving (sidenotes don't work)
       , "knightcolumbia.org" -- low-quality archiving (sidenotes don't work)
+      , "thefirstaibook.com" -- low-quality archiving
       ] = True
     | otherwise = False
