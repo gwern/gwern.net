@@ -118,6 +118,8 @@
     --GW-sidenote-highlight-box-shadow-color: #aaa;
     --GW-sidenote-border-color: #aaa;
     --GW-sidenote-scrollbar-track-color: #fff;
+    --GW-sidenote-scrollbar-thumb-color: #aaa;
+    --GW-sidenote-scrollbar-thumb-hover-color: #999;
     --GW-sidenote-self-link-border-color: #aaa;
 
     /*  Tables.
@@ -128,6 +130,8 @@
     --GW-table-row-horizontal-border-color: #000;
     --GW-table-cell-vertical-border-color: #fff;
     --GW-table-scrollbar-track-color: #fff;
+    --GW-table-scrollbar-thumb-color: #aaa;
+    --GW-table-scrollbar-thumb-hover-color: #999;
     --GW-table-scrollbar-border-color: #000;
     --GW-table-column-heading-hover-background-color: #e2f0f2;
     --GW-table-sorted-column-heading-background-color: #8bd0ed;
@@ -180,7 +184,7 @@
     --GW-math-block-scrollbar-border-color: #ccc;
     --GW-math-block-scrollbar-track-color: #fff;
     --GW-math-block-scrollbar-thumb-color: #ccc;
-    --GW-math-block-scrollbar-track-hover-color: #999;
+    --GW-math-block-scrollbar-thumb-hover-color: #999;
 
     /*  Drop caps.
         */

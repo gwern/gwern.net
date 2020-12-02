@@ -1038,7 +1038,7 @@ a.footnote-ref {
     overscroll-behavior: none;
 }
 
-/*  Scroll bar styles (Webkit/Blink only).
+/*  Scroll bar styles (for WebKit/Chromium).
     */
 #footnotediv > div::-webkit-scrollbar {
     width: 14px;
@@ -1050,6 +1050,15 @@ a.footnote-ref {
 }
 #footnotediv > div::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-footnote-popup-scrollbar-thumb-hover-color);
+}
+
+/*	Scroll bar styles (for Firefox).
+	*/
+#footnotediv > div {
+    scrollbar-color: var(--GW-footnote-popup-scrollbar-thumb-color) var(--GW-footnote-popup-scrollbar-track-color);
+}
+#footnotediv > div:hover {
+    scrollbar-color: var(--GW-footnote-popup-scrollbar-thumb-hover-color) var(--GW-footnote-popup-scrollbar-track-color);
 }
 
 #footnotediv a.footnote-back {
@@ -1189,7 +1198,7 @@ a.footnote-ref {
     padding: 0 1px 0 0;
 }
 
-/*  Scroll bars.
+/*  Scroll bar styles (for WebKit/Chromium).
     */
 .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar {
     width: 12px;
@@ -1202,6 +1211,15 @@ a.footnote-ref {
 }
 .sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
+}
+
+/*	Scroll bar styles (for Firefox).
+	*/
+.sidenote.cut-off .sidenote-outer-wrapper {
+    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-color) var(--GW-sidenote-scrollbar-track-color);
+}
+.sidenote.cut-off .sidenote-outer-wrapper:hover {
+    scrollbar-color: var(--GW-sidenote-scrollbar-thumb-hover-color) var(--GW-sidenote-scrollbar-track-color);
 }
 
 /*  Inner wrapper (does not scroll; stretches to height of content).
@@ -1432,10 +1450,8 @@ table td + td {
     border-left: 1px solid var(--GW-table-cell-vertical-border-color);
 }
 
-/*=--------------------------------------------------=*/
-/*= Horizontal scrollbar styling (Webkit/Blink only) =*/
-/*=--------------------------------------------------=*/
-
+/*	Horizontal scroll bar styles (for WebKit/Chromium).
+	*/
 .tableWrapper::-webkit-scrollbar {
     height: 16px;
 }
@@ -1449,6 +1465,15 @@ table td + td {
 }
 .tableWrapper::-webkit-scrollbar-thumb:hover {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
+}
+
+/*	Horizontal scroll bar styles (for Firefox).
+	*/
+.tableWrapper {
+    scrollbar-color: var(--GW-table-scrollbar-thumb-color) var(--GW-table-scrollbar-track-color);
+}
+.tableWrapper:hover {
+    scrollbar-color: var(--GW-table-scrollbar-thumb-hover-color) var(--GW-table-scrollbar-track-color);
 }
 
 /*  Add little icons to tables handled by tablesorter.js
@@ -1534,10 +1559,8 @@ blockquote table td + td {
     content: "$";
 }
 
-/*=--------------------------------------------------=*/
-/*= Horizontal scrollbar styling (Webkit/Blink only) =*/
-/*=--------------------------------------------------=*/
-
+/*	Horizontal scroll bar styles (for WebKit/Blink).
+	*/
 pre::-webkit-scrollbar {
     height: 16px;
     background-color: var(--GW-pre-element-scrollbar-track-color);
@@ -1549,6 +1572,15 @@ pre::-webkit-scrollbar-thumb {
 }
 pre::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-pre-element-scrollbar-thumb-hover-color);
+}
+
+/*	Horizontal scroll bar styles (for Firefox).
+	*/
+pre {
+    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
+}
+pre:hover {
+    scrollbar-color: var(--GW-pre-element-scrollbar-thumb-hover-color) var(--GW-pre-element-scrollbar-track-color);
 }
 
 /***************/
@@ -1639,6 +1671,9 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     margin: 0;
     padding: 0.25em 0;
 }
+
+/*	Horizontal scroll bar styles (for WebKit/Chromium).
+	*/
 .mjpage__block::-webkit-scrollbar {
     height: 14px;
     border: 1px solid var(--GW-math-block-scrollbar-border-color);
@@ -1654,7 +1689,16 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .mjpage__block:hover::-webkit-scrollbar-thumb:hover {
     box-shadow:
         0 0 0 2px var(--GW-math-block-scrollbar-track-color) inset,
-        0 0 0 8px var(--GW-math-block-scrollbar-track-hover-color) inset;
+        0 0 0 8px var(--GW-math-block-scrollbar-thumb-hover-color) inset;
+}
+
+/*	Horizontal scroll bar styles (for Firefox).
+	*/
+.mjpage__block {
+    scrollbar-color: var(--GW-math-block-scrollbar-thumb-color) var(--GW-math-block-scrollbar-track-color);
+}
+.mjpage__block:hover {
+    scrollbar-color: var(--GW-math-block-scrollbar-thumb-hover-color) var(--GW-math-block-scrollbar-track-color);
 }
 
 /********/
@@ -2639,7 +2683,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     content: none;
 }
 
-/*  Scroll bar styles (Webkit/Blink only).
+/*  Scroll bar styles (for WebKit/Blink).
     */
 #popupdiv > div::-webkit-scrollbar {
     width: 0.875em;
@@ -2651,6 +2695,15 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 }
 #popupdiv > div::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
+}
+
+/*	Scroll bar styles (for Firefox).
+	*/
+#popupdiv > div {
+    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--GW-popups-popup-scrollbar-track-color);
+}
+#popupdiv > div:hover {
+    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
 }
 
 #popupdiv .originalURL {
