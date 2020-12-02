@@ -7,7 +7,7 @@
 /**********/
 /* COLORS */
 /**********/
-/* colors are now in /static/css/colors.css or colors-dark.css */
+/* colors are now in /static/css/colors.css or dark-mode.css */
 
 /*********************/
 /* ARTICLE CONTAINER */
@@ -1262,12 +1262,12 @@ a.footnote-ref {
 /*  (Not very) special styles for (everyone except) special browsers.
     */
 @supports not (-moz-user-focus: normal) {
-	@media only screen and (max-width: 176ch) {
-		.footnote-ref:target::before {
-			background-color: inherit;
-			box-shadow: none;
-		}
-	}
+    @media only screen and (max-width: 176ch) {
+        .footnote-ref:target::before {
+            background-color: inherit;
+            box-shadow: none;
+        }
+    }
 }
 
 /*=-------------------------------=*/
@@ -2211,7 +2211,28 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 /*=--------=*/
 /*= Colors =*/
 /*=--------=*/
-/* colors are now in /static/css/colors.css or colors-dark.css */
+
+:root {
+    --SA-image-focus-image-hover-drop-shadow-color: var(--GW-image-focus-image-hover-drop-shadow-color);
+    --SA-image-focus-overlay-background-color: #000;
+    --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
+    --SA-image-focus-overlay-image-caption-text-color: #fff;
+    --SA-image-focus-overlay-image-caption-link-color: #ccc;
+    --SA-image-focus-overlay-image-caption-link-hover-color: #aaa;
+    --SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
+    --SA-image-focus-overlay-help-box-text-color: #fff;
+    --SA-image-focus-overlay-info-icon-color: #000;
+    --SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
+    --SA-image-focus-overlay-image-number-text-shadow-color: #fff;
+    --SA-image-focus-overlay-slideshow-button-color: #ddd;
+    --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
+    --SA-image-focus-overlay-slideshow-button-hover-color: #777;
+    --SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #fff;
+    --SA-image-focus-overlay-slideshow-button-active-color: #888;
+    --SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
+    --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
+    --SA-image-focus-image-hover-tooltip-text-color: #fff;
+}
 
 /*=--------------=*/
 /*= Hover styles =*/

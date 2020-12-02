@@ -44,6 +44,20 @@ th.tablesorter-headerDesc {
     background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
 }
 
+img.invertible,
+img.invertible-auto {
+	filter: invert(100%) brightness(95%) hue-rotate(180deg);
+}
+
+img.invertible:hover,
+img.invertible-auto:hover {
+	filter: none;
+}
+
+#mode-selector {
+	opacity: 0.6;
+}
+
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
 p a[href^='#'].identifier-link-up::after,
 section > :not(:first-child) a[href^='#'].identifier-link-down::after,

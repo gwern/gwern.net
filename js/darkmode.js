@@ -29,20 +29,16 @@
         returns the created element.
         */
 function addUIElement(element_html) {
-        var ui_elements_container = document.querySelector("#ui-elements-container");
-        if (!ui_elements_container) {
-                ui_elements_container = document.createElement("div");
-                ui_elements_container.id = "ui-elements-container";
-                document.querySelector("body").appendChild(ui_elements_container);
-        }
+	var ui_elements_container = document.querySelector("#ui-elements-container");
+	if (!ui_elements_container) {
+		ui_elements_container = document.createElement("div");
+		ui_elements_container.id = "ui-elements-container";
+		document.querySelector("body").appendChild(ui_elements_container);
+	}
 
-        ui_elements_container.insertAdjacentHTML("beforeend", element_html);
-        return ui_elements_container.lastElementChild;
+	ui_elements_container.insertAdjacentHTML("beforeend", element_html);
+	return ui_elements_container.lastElementChild;
 }
-
-if (typeof window.GW == "undefined")
-        window.GW = { };
-GW.temp = { };
 
 if (GW.mediaQueries == null)
     GW.mediaQueries = { };
@@ -54,92 +50,6 @@ GW.modeOptions = [
     [ 'light', 'Light', 'Light mode at all times (black-on-white)' ],
     [ 'dark', 'Dark', 'Dark mode at all times (inverted: white-on-black)' ]
 ];
-GW.modeStyles = `
-    :root {
-        --GW-blockquote-background-color: #ddd
-    }
-    body::before,
-    div#popup-container,
-    body > * {
-        filter: invert(100%) brightness(97%) hue-rotate(180deg);
-    }
-    body::before {
-        content: '';
-        width: 100vw;
-        height: 100%;
-        position: fixed;
-        left: 0;
-        top: 0;
-        background-color: #fff;
-        z-index: -1
-    }
-    img:not(.invertible-auto):not(.invertible),
-    #image-focus-overlay,
-    #markdownBody figure img:hover,
-    video {
-        filter: brightness(95%) invert(100%) hue-rotate(180deg);
-    }
-
-    :not(pre) > code { background-color: #d8d8fd; }
-
-    #markdownBody, #mode-selector button {
-        text-shadow: 0 0 0 #000
-    }
-    article > :not(#TOC) a:link {
-        text-shadow:
-                 0      0 #777,
-             .03em      0 #fff,
-            -.03em      0 #fff,
-                 0  .03em #fff,
-                 0 -.03em #fff,
-             .06em      0 #fff,
-            -.06em      0 #fff,
-             .09em      0 #fff,
-            -.09em      0 #fff,
-             .12em      0 #fff,
-            -.12em      0 #fff,
-             .15em      0 #fff,
-            -.15em      0 #fff
-    }
-    article > :not(#TOC) blockquote a:link {
-        text-shadow:
-                 0      0 #777,
-             .03em      0 var(--GW-blockquote-background-color),
-            -.03em      0 var(--GW-blockquote-background-color),
-                 0  .03em var(--GW-blockquote-background-color),
-                 0 -.03em var(--GW-blockquote-background-color),
-             .06em      0 var(--GW-blockquote-background-color),
-            -.06em      0 var(--GW-blockquote-background-color),
-             .09em      0 var(--GW-blockquote-background-color),
-            -.09em      0 var(--GW-blockquote-background-color),
-             .12em      0 var(--GW-blockquote-background-color),
-            -.12em      0 var(--GW-blockquote-background-color),
-             .15em      0 var(--GW-blockquote-background-color),
-            -.15em      0 var(--GW-blockquote-background-color)
-    }
-    #logo img {
-        filter: none;
-    }
-    #mode-selector {
-        opacity: 0.7;
-    }
-    #mode-selector:hover {
-        background-color: #fff;
-    }
-   /* Make sun/moon icon intensity in dark mode match the asterism (which remains at opacity 1 because it's much thinner) */
-   .horizontalRule-nth-1 hr::after, .horizontalRule-nth-2 hr::after {
-      opacity: 0.95;
-   }
-`;
-
-/****************/
-/* DEBUG OUTPUT */
-/****************/
-
-function GWLog (string) {
-    if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
-        console.log(string);
-}
 
 /***********/
 /* HELPERS */
@@ -248,9 +158,6 @@ function cancelDoWhenMatchMedia(name) {
 function injectModeSelector() {
     GWLog("injectModeSelector");
 
-    // Get saved mode setting (or default).
-    let currentMode = localStorage.getItem("selected-mode") || 'auto';
-
     // Inject the mode selector widget and activate buttons.
     let modeSelector = addUIElement(
         "<div id='mode-selector'>" +
@@ -278,70 +185,68 @@ function injectModeSelector() {
     });
 
     document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='mode-selector-styles'>
-    #mode-selector {
-        position: absolute;
-        right: 3px;
-        display: flex;
-        background-color: #fff;
-        padding: 0.125em 0.25em;
-        border: 3px solid transparent;
-        opacity: 0.3;
-        transition:
-            opacity 2s ease;
-    }
-    #mode-selector.hidden {
-        opacity: 0;
-    }
-    #mode-selector:hover {
-        transition: none;
-        opacity: 1.0;
-        border: 3px double #aaa;
-    }
-    #mode-selector button {
-        -moz-appearance: none;
-        appearance: none;
-        border: none;
-        background-color: transparent;
-        padding: 0.5em;
-        margin: 0;
-        line-height: 1;
-        font-family: Lucida Sans Unicode, Source Sans Pro, Helvetica, Trebuchet MS, sans-serif;
-        font-size: 0.75rem;
-        text-align: center;
-        color: #777;
-        position: relative;
-    }
-    #mode-selector button:hover,
-    #mode-selector button.selected {
-        box-shadow:
-            0 2px 0 6px #fff inset,
-            0 1px 0 6px currentColor inset;
-    }
-    #mode-selector button:not(:disabled):hover {
-        color: #000;
-        cursor: pointer;
-    }
-    #mode-selector button:not(:disabled):active {
-        transform: translateY(2px);
-        box-shadow:
-            0 0px 0 6px #fff inset,
-            0 -1px 0 6px currentColor inset;
-    }
-    #mode-selector button.active:not(:hover)::after {
-        content: "";
-        position: absolute;
-        bottom: 0.25em;
-        left: 0;
-        right: 0;
-        border-bottom: 1px dotted currentColor;
-        width: calc(100% - 12px);
-        margin: auto;
-    }
+	#mode-selector {
+		position: absolute;
+		right: 3px;
+		display: flex;
+		background-color: var(--GW-mode-selector-background-color);
+		padding: 0.125em 0.25em;
+		border: 3px solid transparent;
+		opacity: 0.3;
+		transition:
+			opacity 2s ease;
+	}
+	#mode-selector.hidden {
+		opacity: 0;
+	}
+	#mode-selector:hover {
+		transition: none;
+		opacity: 1.0;
+		border: 3px double var(--GW-mode-selector-border-hover-color);
+	}
+	#mode-selector button {
+		-moz-appearance: none;
+		appearance: none;
+		border: none;
+		background-color: transparent;
+		padding: 0.5em;
+		margin: 0;
+		line-height: 1;
+		font-family: Lucida Sans Unicode, Source Sans Pro, Helvetica, Trebuchet MS, sans-serif;
+		font-size: 0.75rem;
+		text-align: center;
+		color: var(--GW-mode-selector-button-text-color);
+		position: relative;
+	}
+	#mode-selector button:hover,
+	#mode-selector button.selected {
+		box-shadow:
+			0 2px 0 6px var(--GW-mode-selector-background-color) inset,
+			0 1px 0 6px currentColor inset;
+	}
+	#mode-selector button:not(:disabled):hover {
+		color: var(--GW-mode-selector-button-hover-text-color);
+		cursor: pointer;
+	}
+	#mode-selector button:not(:disabled):active {
+		transform: translateY(2px);
+		box-shadow:
+			0 0px 0 6px var(--GW-mode-selector-background-color) inset,
+			0 -1px 0 6px currentColor inset;
+	}
+	#mode-selector button.active:not(:hover)::after {
+		content: "";
+		position: absolute;
+		bottom: 0.25em;
+		left: 0;
+		right: 0;
+		border-bottom: 1px dotted currentColor;
+		width: calc(100% - 12px);
+		margin: auto;
+	}
     </style>`);
 
     document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='mode-styles'></style>`);
-
-    setMode(currentMode);
 
     // We pre-query the relevant elements, so we don’t have to run queryAll on
     // every firing of the scroll listener.
@@ -407,8 +312,11 @@ function updateModeSelectorState() {
     // Get saved mode setting (or default).
     let currentMode = localStorage.getItem("selected-mode") || 'auto';
 
-    // Clear current buttons state.
+	// Find the mode selector widget.
     let modeSelector = document.querySelector("#mode-selector");
+    if (modeSelector == null) return;
+
+    // Clear current buttons state.
     modeSelector.childNodes.forEach(button => {
         button.classList.remove("active", "selected");
         button.disabled = false;
@@ -428,25 +336,6 @@ function updateModeSelectorState() {
         else
             modeSelector.querySelector(".select-mode-light").classList.add("active");
     }
-}
-
-/*  Set specified color mode (auto, light, dark).
-    */
-function setMode(modeOption) {
-    GWLog("setMode");
-
-    // Inject the appropriate styles.
-    let modeStyles = document.querySelector("#mode-styles");
-    if (modeOption == 'auto') {
-        modeStyles.innerHTML = `@media (prefers-color-scheme:dark) {${GW.modeStyles}}`;
-    } else if (modeOption == 'dark') {
-        modeStyles.innerHTML = GW.modeStyles;
-    } else {
-        modeStyles.innerHTML = "";
-    }
-
-    // Update selector state.
-    updateModeSelectorState();
 }
 
 /******************/

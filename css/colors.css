@@ -1,51 +1,51 @@
 :root {
-	/*	General.
-		*/
-	--GW-body-background-color: #fff;
-	--GW-body-text-color: #000;
-	--GW-body-link-color: #272727;
+    /*  General.
+        */
+    --GW-body-background-color: #fff;
+    --GW-body-text-color: #000;
+    --GW-body-link-color: #272727;
 
-	/*	Selection.
-		*/
-	--GW-text-selection-background-color: #333;
-	--GW-text-selection-color: #fff;
-	
-	/*	Link underlining.
-		*/
-	--GW-link-underline-background-color: var(--GW-body-background-color);
-	--GW-link-underline-gradient-line-color: #333;
-	--GW-link-underline-gradient-line-color-hover: #999;
+    /*  Selection.
+        */
+    --GW-text-selection-background-color: #333;
+    --GW-text-selection-color: #fff;
 
-	/*	Blockquotes.
-		*/
-	--GW-blockquote-border-color-level-one: #ccc;
-	--GW-blockquote-border-color-level-two: #c4c4c4;
-	--GW-blockquote-border-color-level-three: #b3b3b3;
-	--GW-blockquote-border-color-level-four: #a6a6a6;
-	--GW-blockquote-background-color-level-one: #f8f8f8;
-	--GW-blockquote-background-color-level-two: #e6e6e6;
-	--GW-blockquote-background-color-level-three: #d8d8d8;
-	
-	/*	Abstracts.
-		*/
-	--GW-abstract-border-color: #bbb;
-	
-	/*	Sidebar.
-		*/
-	--GW-sidebar-bullet-color: #888;
-	--GW-sidebar-horizontal-rule-color: #aaa;
-	--GW-sidebar-bullet-text-shadow-color: #000;
-	--GW-sidebar-mobile-link-border-color: #000;
-	
-	/*	Table of contents.
-		*/
-	--GW-TOC-border-color: #ccc;
-	--GW-TOC-background-color: #f9f9f9;
-	--GW-TOC-link-hover-background-color: #ececec;
-	--GW-TOC-link-hover-color: #000;
-	--GW-TOC-link-hover-indicator-bar-color: #ccc;
-	--GW-TOC-number-color: #909090;
-	--GW-TOC-number-hover-color: #313131;
+    /*  Link underlining.
+        */
+    --GW-link-underline-background-color: var(--GW-body-background-color);
+    --GW-link-underline-gradient-line-color: #333;
+    --GW-link-underline-gradient-line-color-hover: #999;
+
+    /*  Blockquotes.
+        */
+    --GW-blockquote-border-color-level-one: #ccc;
+    --GW-blockquote-border-color-level-two: #c4c4c4;
+    --GW-blockquote-border-color-level-three: #b3b3b3;
+    --GW-blockquote-border-color-level-four: #a6a6a6;
+    --GW-blockquote-background-color-level-one: #f8f8f8;
+    --GW-blockquote-background-color-level-two: #e6e6e6;
+    --GW-blockquote-background-color-level-three: #d8d8d8;
+
+    /*  Abstracts.
+        */
+    --GW-abstract-border-color: #bbb;
+
+    /*  Sidebar.
+        */
+    --GW-sidebar-bullet-color: #888;
+    --GW-sidebar-horizontal-rule-color: #aaa;
+    --GW-sidebar-bullet-text-shadow-color: #000;
+    --GW-sidebar-mobile-link-border-color: #000;
+
+    /*  Table of contents.
+        */
+    --GW-TOC-border-color: #ccc;
+    --GW-TOC-background-color: #f9f9f9;
+    --GW-TOC-link-hover-background-color: #ececec;
+    --GW-TOC-link-hover-color: #000;
+    --GW-TOC-link-hover-indicator-bar-color: #ccc;
+    --GW-TOC-number-color: #909090;
+    --GW-TOC-number-hover-color: #313131;
 
     /*  Collapse blocks.
         */
@@ -87,9 +87,9 @@
     --GW-figure-outline-color: #888;
     --GW-figure-caption-outline-color: #888;
 
-	/*	Epigraphs.
-		*/
-	--GW-epigraph-quotation-mark-color: #808080;
+    /*  Epigraphs.
+        */
+    --GW-epigraph-quotation-mark-color: #808080;
 
     /*  Footnotes.
         */
@@ -231,29 +231,18 @@
     --GW-popups-popup-scrollbar-track-color: #fff;
     --GW-popups-popup-scrollbar-thumb-hover-color: #999;
 
-	/*	Image focus.
-		*/
-    --SA-image-focus-image-hover-drop-shadow-color: #777;
-    --SA-image-focus-overlay-background-color: #000;
-    --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
-    --SA-image-focus-overlay-image-caption-text-color: #fff;
-    --SA-image-focus-overlay-image-caption-link-color: #ccc;
-    --SA-image-focus-overlay-image-caption-link-hover-color: #aaa;
-    --SA-image-focus-overlay-help-box-background-color: rgba(0, 0, 0, 0.85);
-    --SA-image-focus-overlay-help-box-text-color: #fff;
-    --SA-image-focus-overlay-info-icon-color: #000;
-    --SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
-    --SA-image-focus-overlay-image-number-text-shadow-color: #fff;
-    --SA-image-focus-overlay-slideshow-button-color: #ddd;
-    --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
-    --SA-image-focus-overlay-slideshow-button-hover-color: #777;
-    --SA-image-focus-overlay-slideshow-button-hover-drop-shadow-color: #fff;
-    --SA-image-focus-overlay-slideshow-button-active-color: #888;
-    --SA-image-focus-overlay-slideshow-button-disabled-color: #ddd;
-    --SA-image-focus-image-hover-tooltip-background-color: rgba(0, 0, 0, 0.75);
-    --SA-image-focus-image-hover-tooltip-text-color: #fff;
+    /*  Image focus.
+        */
+    --GW-image-focus-image-hover-drop-shadow-color: #777;
+
+    /*  Mode selector (light/dark mode).
+        */
+    --GW-mode-selector-background-color: #fff;
+    --GW-mode-selector-border-hover-color: #aaa;
+    --GW-mode-selector-button-text-color: #777;
+    --GW-mode-selector-button-hover-text-color: #000;
 }
 
 hr::after {
-	filter: none;
+    filter: none;
 }

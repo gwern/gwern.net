@@ -1,51 +1,51 @@
 :root {
-	/*	General.
-		*/
-	--GW-body-background-color: #000;
-	--GW-body-text-color: #fff;
-	--GW-body-link-color: #e5e5e5;
+    /*  General.
+        */
+    --GW-body-background-color: #000;
+    --GW-body-text-color: #fff;
+    --GW-body-link-color: #e5e5e5;
 
-	/*	Selection.
-		*/
-	--GW-text-selection-background-color: #dcdcdc;
-	--GW-text-selection-color: #000;
-	
-	/*	Link underlining.
-		*/
-	--GW-link-underline-background-color: var(--GW-body-background-color);
-	--GW-link-underline-gradient-line-color: #dcdcdc;
-	--GW-link-underline-gradient-line-color-hover: #8b8b8b;
+    /*  Selection.
+        */
+    --GW-text-selection-background-color: #dcdcdc;
+    --GW-text-selection-color: #000;
 
-	/*	Blockquotes.
-		*/
-	--GW-blockquote-border-color-level-one: #5c5c5c;
-	--GW-blockquote-border-color-level-two: #646464;
-	--GW-blockquote-border-color-level-three: #747474;
-	--GW-blockquote-border-color-level-four: #7f7f7f;
-	--GW-blockquote-background-color-level-one: #212121;
-	--GW-blockquote-background-color-level-two: #3e3e3e;
-	--GW-blockquote-background-color-level-three: #4f4f4f;
-	
-	/*	Abstracts.
-		*/
-	--GW-abstract-border-color: #6c6c6c;
-	
-	/*	Sidebar.
-		*/
-	--GW-sidebar-bullet-color: #999;
-	--GW-sidebar-horizontal-rule-color: #7c7c7c;
-	--GW-sidebar-bullet-text-shadow-color: #fff;
-	--GW-sidebar-mobile-link-border-color: #fff;
-	
-	/*	Table of contents.
-		*/
-	--GW-TOC-border-color: #5c5c5c;
-	--GW-TOC-background-color: #1f1f1f;
-	--GW-TOC-link-hover-background-color: #363636;
-	--GW-TOC-link-hover-color: #fff;
-	--GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
-	--GW-TOC-number-color: #929292;
-	--GW-TOC-number-hover-color: #ddd;
+    /*  Link underlining.
+        */
+    --GW-link-underline-background-color: var(--GW-body-background-color);
+    --GW-link-underline-gradient-line-color: #dcdcdc;
+    --GW-link-underline-gradient-line-color-hover: #8b8b8b;
+
+    /*  Blockquotes.
+        */
+    --GW-blockquote-border-color-level-one: #5c5c5c;
+    --GW-blockquote-border-color-level-two: #646464;
+    --GW-blockquote-border-color-level-three: #747474;
+    --GW-blockquote-border-color-level-four: #7f7f7f;
+    --GW-blockquote-background-color-level-one: #212121;
+    --GW-blockquote-background-color-level-two: #3e3e3e;
+    --GW-blockquote-background-color-level-three: #4f4f4f;
+
+    /*  Abstracts.
+        */
+    --GW-abstract-border-color: #6c6c6c;
+
+    /*  Sidebar.
+        */
+    --GW-sidebar-bullet-color: #999;
+    --GW-sidebar-horizontal-rule-color: #7c7c7c;
+    --GW-sidebar-bullet-text-shadow-color: #fff;
+    --GW-sidebar-mobile-link-border-color: #fff;
+
+    /*  Table of contents.
+        */
+    --GW-TOC-border-color: #5c5c5c;
+    --GW-TOC-background-color: #1f1f1f;
+    --GW-TOC-link-hover-background-color: #363636;
+    --GW-TOC-link-hover-color: #fff;
+    --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
+    --GW-TOC-number-color: #929292;
+    --GW-TOC-number-hover-color: #ddd;
 
     /*  Collapse blocks.
         */
@@ -87,9 +87,9 @@
     --GW-figure-outline-color: #999;
     --GW-figure-caption-outline-color: #999;
 
-	/*	Epigraphs.
-		*/
-	--GW-epigraph-quotation-mark-color: #9f9f9f;
+    /*  Epigraphs.
+        */
+    --GW-epigraph-quotation-mark-color: #9f9f9f;
 
     /*  Footnotes.
         */
@@ -231,7 +231,14 @@
     --GW-popups-popup-scrollbar-track-color: #000;
     --GW-popups-popup-scrollbar-thumb-hover-color: #8b8b8b;
 
-	/*	Image focus.
-		*/
-    --SA-image-focus-image-hover-drop-shadow-color: #a6a6a6;
+    /*  Image focus.
+        */
+    --GW-image-focus-image-hover-drop-shadow-color: #a6a6a6;
+
+    /*  Mode selector (light/dark mode).
+        */
+    --GW-mode-selector-background-color: #000;
+    --GW-mode-selector-border-hover-color: #7c7c7c;
+    --GW-mode-selector-button-text-color: #a6a6a6;
+    --GW-mode-selector-button-hover-text-color: #fff;
 }
