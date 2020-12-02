@@ -1463,8 +1463,11 @@ th.tablesorter-header {
     background-position: center left;
     padding-left: 20px;
 }
-th.header:hover {
+th.tablesorter-header:hover {
     background-color: var(--GW-table-column-heading-hover-background-color);
+}
+th.tablesorter-header:focus {
+    outline: none;
 }
 th.tablesorter-headerAsc {
     background-image: url('/static/img/tablesorter/tablesorter-asc.gif');
