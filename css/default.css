@@ -1467,10 +1467,10 @@ th.header:hover {
     background-color: var(--GW-table-column-heading-hover-background-color);
 }
 th.tablesorter-headerAsc {
-    background-image: url('/static/img/tablesorter/tablesorter-small_asc.gif');
+    background-image: url('/static/img/tablesorter/tablesorter-asc.gif');
 }
 th.tablesorter-headerDesc {
-    background-image: url('/static/img/tablesorter/tablesorter-small_desc.gif');
+    background-image: url('/static/img/tablesorter/tablesorter-desc.gif');
 }
 th.tablesorter-headerAsc,
 th.tablesorter-headerDesc,
