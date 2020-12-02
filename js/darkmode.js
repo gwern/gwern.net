@@ -47,9 +47,6 @@ GW.temp = { };
 if (GW.mediaQueries == null)
     GW.mediaQueries = { };
 GW.mediaQueries.mobileNarrow = matchMedia("(max-width: 520px)");
-GW.mediaQueries.mobileWide = matchMedia("(max-width: 900px)");
-GW.mediaQueries.mobileMax = matchMedia("(max-width: 960px)");
-GW.mediaQueries.hover = matchMedia("only screen and (hover: hover) and (pointer: fine)");
 GW.mediaQueries.systemDarkModeActive = matchMedia("(prefers-color-scheme: dark)");
 
 GW.modeOptions = [
