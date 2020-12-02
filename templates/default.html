@@ -12,7 +12,7 @@
     <style id="inlined-styles">$partial("static/css/initial.css")$</style>
     <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/dark-mode.css" /> -->
     <style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">$partial("static/css/dark-mode.css")$</style>
-    <!-- Dark mode: before anything else loads, snoop user cookies & browser variables for dark mode preference and immediately toggle sets of CSS color variables/classes to avoid any 'flash of white' or delayed loading. -->
+    <!-- Dark mode: before anything else loads, snoop user cookies & browser variables for dark mode preference and immediately toggle sets of CSS color variables/classes to avoid any 'flash of white' or delayed loading. Note: CSS falls back to the media-query browser/OS variable preference, so still works if JS is blocked! (The JS is only necessary for the theme switcher widget allowing 'force light'/'force dark' options. If users block JS, set the dark mode preference, and are unhappy when they get dark mode, well, they made their bed and must lie in it.)  -->
     <script>
     /*  Create global 'GW' object, if need be.
         */
