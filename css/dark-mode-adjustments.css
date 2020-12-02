@@ -34,6 +34,17 @@ body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
     filter: invert(1);
 }
 
+th.tablesorter-header {
+    background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
+}
+th.tablesorter-headerAsc {
+    background-image: url('/static/img/tablesorter/tablesorter-asc-dark.gif');
+}
+th.tablesorter-headerDesc {
+    background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
+}
+
+
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
 p a[href^='#'].identifier-link-up::after,
 section > :not(:first-child) a[href^='#'].identifier-link-down::after,
@@ -166,3 +177,4 @@ a[href*='docs/.*/*.pdf#.*google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after {
     filter: invert(1);
 }
+
