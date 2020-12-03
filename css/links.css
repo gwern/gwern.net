@@ -23,7 +23,7 @@ span.defnMetadata {
     border-bottom: 1px dotted currentColor;
 }
 span.defnMetadata:hover {
-	color: var(--GW-link-hover-color);
+    color: var(--GW-link-hover-color);
 }
 
 /******************************************************************************/
@@ -378,7 +378,7 @@ section > :not(:first-child) a[href^='#'].identifier-link-up:hover::after,
 p a[href^='#'].identifier-link-up:hover::after,
 section > :not(:first-child) a[href^='#'].identifier-link-down:hover::after,
 p a[href^='#'].identifier-link-down:hover::after {
-	opacity: 0.3;
+    opacity: 0.3;
 }
 
 /*=------------------------------=*/
@@ -462,6 +462,7 @@ a[href*="sciencedirect.com"]::after,
 a[href*="scholars-stage.blogspot.com"]::after,
 a[href*="slate.com"]::after,
 a[href*="slatestarcodex"]::after,
+a[href*="slatestarscratchpad.tumblr.com/"]::after,
 a[href*="statmodeling.stat.columbia.edu"]::after,
 a[href*="t.umblr.com"]::after,
 a[href*="technologyreview.com"]::after,
@@ -609,6 +610,8 @@ a[href*="sciencemag.org"]::after {
 
 /* SSC logo too bad to use */
 a[href*="yvain"]::after,
+a[href*="slatestarcodex.com"]:not(href*=".pdf")::after,
+a[href*="slatestarscratchpad.tumblr.com/"]::after,
 a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
     content: "SSC";
 }
@@ -880,7 +883,7 @@ a[href*="www.cell.com"]::after {
 
 a[href*="mlp.fandom.com"]::after {
     content: "MLPW";
-    width: 1.5em;    
+    width: 1.5em;
     font-weight: normal;
     font-style: italic;
     font-weight: bold;
