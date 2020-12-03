@@ -60,21 +60,21 @@ th.tablesorter-headerDesc {
 
 img.invertible,
 img.invertible-auto {
-	filter: grayscale(30%) invert(100%) brightness(95%) hue-rotate(180deg);
+    filter: grayscale(30%) invert(100%) brightness(95%) hue-rotate(180deg);
 }
 
 img:not(.invertible):not(.invertible-auto) {
-	filter: grayscale(30%);
+    filter: grayscale(30%);
 }
 
 img:hover,
 img.invertible:hover,
 img.invertible-auto:hover {
-	filter: none;
+    filter: none;
 }
 
 #mode-selector {
-	opacity: 0.6;
+    opacity: 0.6;
 }
 
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
