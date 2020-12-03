@@ -2272,6 +2272,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     --SA-image-focus-overlay-help-box-text-color: #fff;
     --SA-image-focus-overlay-info-icon-color: #000;
     --SA-image-focus-overlay-info-icon-drop-shadow-color: #fff;
+    --SA-image-focus-overlay-image-number-text-color: #000;
     --SA-image-focus-overlay-image-number-text-shadow-color: #fff;
     --SA-image-focus-overlay-slideshow-button-color: #ddd;
     --SA-image-focus-overlay-slideshow-button-hover-background-color: rgba(0, 0, 0, 0.1);
@@ -2490,6 +2491,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     left: 1em;
     top: 1em;
     font-weight: 600;
+    color: var(--SA-image-focus-overlay-image-number-text-color);
     text-shadow:
         0 0  3px var(--SA-image-focus-overlay-image-number-text-shadow-color),
         0 0  5px var(--SA-image-focus-overlay-image-number-text-shadow-color),
