@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-11-29 16:53:14 gwern"
+When:  Time-stamp: "2020-12-03 18:01:38 gwern"
 License: CC-0
 -}
 
@@ -390,6 +390,7 @@ cleanAbstractsHTML t = trim $
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
     , ("<abstract abstract-type=\"summary\"><br/>", "")
+    , ("Alzheimer9", "Alzheimer'")
     , ("<p> ", "<p>")
     , (" <p>", "<p>")
     , ("</p> ", "</p>")
