@@ -429,7 +429,7 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /*********************/
 hr {
     border: 0;
-    margin: 1.25em 0 0.75em 0;
+    margin: 1.125em 0 .875em;
     height: 40px;
     line-height: 1;
     display: flex;
