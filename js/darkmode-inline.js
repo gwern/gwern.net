@@ -21,7 +21,7 @@ function setMode(modeOption) {
     GWLog("setMode");
 
     // Inject the appropriate styles.
-    let darkModeStyles = document.querySelector("#inlined-dark-mode-styles");
+    let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");
     if (darkModeStyles == null) return;
     if (modeOption == 'auto') {
         darkModeStyles.media = "all and (prefers-color-scheme: dark)";
