@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-11-28 18:54:14 gwern"
+# When:  Time-stamp: "2020-12-03 13:52:32 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -78,6 +78,9 @@ do
 
         λ() { grep --perl-regexp --null-data --only-matching '(?s)\n\<\/div\>\n\n\^\[\!Margin: .....' -- "$PAGE"; }
         wrap λ "Margin note possibly breaks drop caps by being first item on the first line after an abstract."
+
+        λ() { grep -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]'  -- "$PAGE"; }
+        wrap λ "Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide."
 
         λ(){ fgrep '~~~{.' -- "$PAGE" | tr -d '{}~' | tr ' ' '\n' | \
                  fgrep -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.Javascript' -e '.numberLines' \

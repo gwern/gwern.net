@@ -617,7 +617,7 @@ a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
 }
 /* SSC's book */
 a[href*="unsongbook.com"]::after {
-    content: "\2135"; /* (ℵ) ALEF SYMBOL */
+    content: "\2135"; /* (ℵ) ALEF SYMBOL (we use the math symbol instead of the Hebrew deliberately to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.) */
     font-weight: normal;
     font-size: 1em;
     margin: 0 2px 0 2px;
