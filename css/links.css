@@ -614,9 +614,10 @@ a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
 }
 /* SSC's book */
 a[href*="unsongbook.com"]::after {
-    content: "\05D0"; /* (א) HEBREW LETTER ALEF */
+    content: "\2135"; /* (ℵ) ALEF SYMBOL */
     font-weight: normal;
     font-size: 1em;
+    margin: 0 2px 0 2px;
 }
 
 /* OB logo too bad to use */
