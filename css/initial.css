@@ -129,22 +129,25 @@ svg {
 	#sidebar a#logo svg {
 		width: 64px;
 	}
+	#sidebar a.new,
 	#sidebar a.patreon {
 		border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
 	}
-	#sidebar a.patreon {
-		font-size: 0.9em;
-		margin-top: 0.7em;
-		padding-top: 0.5em;
-		white-space: nowrap;
+	#sidebar a.new {
+		padding-top: 0.4em;
+		margin-top: 0.5em;
 	}
-	/* add a little bit of separation between the indented list & top half */
-	#sidebar a.mail { margin-top: 0.15em; }
+	#sidebar a.patreon {
+		padding-top: 0.6em;
+		margin-top: 0.55em;
+		font-size: 0.9em;
+		white-space: nowrap;
+		line-height: 1.35;
+	}
 	#sidebar a.mail,
 	#sidebar a.r_gwern {
-		line-height: 1.1;
-		padding-left: 0.25em;
-		font-size: 1.05em;
+		padding-left: 0.125em;
+		margin-top: 0.05em;
 	}
 	#sidebar a.mail::before,
 	#sidebar a.r_gwern::before {
