@@ -617,6 +617,9 @@ article > :not(#TOC) a:hover,
 #popupdiv ol ol ol ol > li {
     list-style-type: decimal;
 }
+ol li::marker {
+    font-feature-settings: 'onum';
+}
 #markdownBody ol ol > li,
 #markdownBody ol ol ol ol ol > li,
 #popupdiv ol ol > li,
