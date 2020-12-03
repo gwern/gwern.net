@@ -308,7 +308,7 @@ img.invertible-auto {
 }
 
 img:not(.invertible):not(.invertible-auto) {
-	filter: grayscale(30%);
+    filter: grayscale(30%);
 }
 
 img:hover,
