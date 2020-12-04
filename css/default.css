@@ -1057,8 +1057,8 @@ a.footnote-ref {
     background-color: var(--GW-footnote-popup-scrollbar-thumb-hover-color);
 }
 
-/*	Scroll bar styles (for Firefox).
-	*/
+/*  Scroll bar styles (for Firefox).
+    */
 #footnotediv > div {
     scrollbar-color: var(--GW-footnote-popup-scrollbar-thumb-color) var(--GW-footnote-popup-scrollbar-track-color);
 }
@@ -1218,8 +1218,8 @@ a.footnote-ref {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
 }
 
-/*	Scroll bar styles (for Firefox).
-	*/
+/*  Scroll bar styles (for Firefox).
+    */
 .sidenote.cut-off .sidenote-outer-wrapper {
     scrollbar-color: var(--GW-sidenote-scrollbar-thumb-color) var(--GW-sidenote-scrollbar-track-color);
 }
@@ -1455,8 +1455,8 @@ table td + td {
     border-left: 1px solid var(--GW-table-cell-vertical-border-color);
 }
 
-/*	Horizontal scroll bar styles (for WebKit/Chromium).
-	*/
+/*  Horizontal scroll bar styles (for WebKit/Chromium).
+    */
 .tableWrapper::-webkit-scrollbar {
     height: 16px;
 }
@@ -1472,8 +1472,8 @@ table td + td {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAP///ywAAAAABAAEAAACBgQShqgJBQA7');
 }
 
-/*	Horizontal scroll bar styles (for Firefox).
-	*/
+/*  Horizontal scroll bar styles (for Firefox).
+    */
 .tableWrapper {
     scrollbar-color: var(--GW-table-scrollbar-thumb-color) var(--GW-table-scrollbar-track-color);
 }
@@ -1564,8 +1564,8 @@ blockquote table td + td {
     content: "$";
 }
 
-/*	Horizontal scroll bar styles (for WebKit/Blink).
-	*/
+/*  Horizontal scroll bar styles (for WebKit/Blink).
+    */
 pre::-webkit-scrollbar {
     height: 16px;
     background-color: var(--GW-pre-element-scrollbar-track-color);
@@ -1579,8 +1579,8 @@ pre::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-pre-element-scrollbar-thumb-hover-color);
 }
 
-/*	Horizontal scroll bar styles (for Firefox).
-	*/
+/*  Horizontal scroll bar styles (for Firefox).
+    */
 pre {
     scrollbar-color: var(--GW-pre-element-scrollbar-thumb-color) var(--GW-pre-element-scrollbar-track-color);
 }
@@ -1677,8 +1677,8 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     padding: 0.25em 0;
 }
 
-/*	Horizontal scroll bar styles (for WebKit/Chromium).
-	*/
+/*  Horizontal scroll bar styles (for WebKit/Chromium).
+    */
 .mjpage__block::-webkit-scrollbar {
     height: 14px;
     border: 1px solid var(--GW-math-block-scrollbar-border-color);
@@ -1697,8 +1697,8 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         0 0 0 8px var(--GW-math-block-scrollbar-thumb-hover-color) inset;
 }
 
-/*	Horizontal scroll bar styles (for Firefox).
-	*/
+/*  Horizontal scroll bar styles (for Firefox).
+    */
 .mjpage__block {
     scrollbar-color: var(--GW-math-block-scrollbar-thumb-color) var(--GW-math-block-scrollbar-track-color);
 }
@@ -2704,8 +2704,8 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
 }
 
-/*	Scroll bar styles (for Firefox).
-	*/
+/*  Scroll bar styles (for Firefox).
+    */
 #popupdiv > div {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--GW-popups-popup-scrollbar-track-color);
 }
@@ -2721,7 +2721,7 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     padding-right: 0.3em;
 }
 
-#popupdiv > div .data-field.abstract > p,
+#popupdiv > div .data-field.popupAbstract > p,
 #popupdiv > div.popup-section-embed p,
 #popupdiv > div.popup-citation-context p {
     text-align: justify;

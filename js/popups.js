@@ -21,7 +21,7 @@ Extracts = {
     popupContainerID: "popup-container",
     popupContainerParentSelector: "html",
     popupContainerZIndex: "1000",
-    
+
     injectDefaultStyles: false,
 
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
@@ -61,11 +61,11 @@ Extracts = {
                        `alt="Original URL for this archived link; may be broken.">URL</a>` +
                        `]</code></span>`); }
         else {
-            if (   !target.href.startsWith("https://www.gwern.net") 
-            	&& !target.href.startsWith("https://en.wikipedia.org") 
-            	&& !target.href.startsWith("https://archive.org") 
-            	&& !target.href.startsWith("https://www.biorxiv.org") 
-            	&& !target.href.startsWith("https://arxiv.org") 
+            if (   !target.href.startsWith("https://www.gwern.net")
+            	&& !target.href.startsWith("https://en.wikipedia.org")
+            	&& !target.href.startsWith("https://archive.org")
+            	&& !target.href.startsWith("https://www.biorxiv.org")
+            	&& !target.href.startsWith("https://arxiv.org")
             	) {
                 archive = (`<span class="iaMirror">` +
                            `<a title="Search Internet Archive via Memento for mirrors of URL: '${target.href}' (for '${target.dataset.popupTitle}')" ` +
@@ -96,9 +96,9 @@ Extracts = {
                   `links</a>`;
         }
         var icon = "";
-        if (   !target.href.startsWith("https://www.gwern.net") 
-        	&& !target.href.startsWith("/") 
-        	&& !target.href.startsWith(".") 
+        if (   !target.href.startsWith("https://www.gwern.net")
+        	&& !target.href.startsWith("/")
+        	&& !target.href.startsWith(".")
         	) {
             icon = `<a
                         class='icon'
@@ -120,7 +120,7 @@ Extracts = {
                     `<p class='data-field author-plus-date'>` +
                         `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}` +
                     `</p>` +
-                    `<div class='data-field abstract' onclick='parentNode.remove()'>` +
+                    `<div class='data-field popupAbstract' onclick='parentNode.remove()'>` +
                         `${target.dataset.popupAbstract || ""}` +
                     `</div>` +
                 `</div>`;
@@ -133,7 +133,7 @@ Extracts = {
                     `<p class='data-field author-plus-date'>` +
                         `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}` +
                     `</p>` +
-                    `<div class='data-field abstract' onclick='parentNode.remove()'>` +
+                    `<div class='data-field popupAbstract' onclick='parentNode.remove()'>` +
                         `${target.dataset.popupAbstract || ""}` +
                     `</div>` +
                 `</div>`;
@@ -194,7 +194,7 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
-        if (   ('ontouchstart' in document.documentElement) 
+        if (   ('ontouchstart' in document.documentElement)
         	&& Extracts.isMobileMediaQuery.matches) {
             console.log("Mobile client detected. Exiting.");
             return;
