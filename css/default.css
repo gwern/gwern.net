@@ -1365,15 +1365,13 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     content: " ";
 }
 .marginnote.sidenote {
-    float: right;
-    position: absolute;
     left: calc(100% + 3em);
     text-align: left;
     -webkit-hyphens: none;
     -moz-hyphens: none;
     hyphens: none;
     text-indent: 0;
-    width: calc((100vw - 112ch) / 2 - 5em);
+    width: calc((100vw - 112ch) / 2 - 7.5em);
     font-size: 0.85em;
     opacity: 0.85;
     z-index: 1;
