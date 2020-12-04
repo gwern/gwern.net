@@ -272,7 +272,7 @@ Extracts = {
 
             //  Inject the contents of the popup into the popup div.
             Extracts.popup.removeAttribute("style");
-            if ([ 'H1', 'H2', 'H3', 'H4', 'H5', 'H6' ].contains(target.parentElement.tagName)) {
+            if ([ 'H1', 'H2', 'H3', 'H4', 'H5', 'H6' ].includes(target.parentElement.tagName)) {
             	// Nothing.
             } else {
 	            let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
