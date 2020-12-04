@@ -1365,15 +1365,13 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     content: " ";
 }
 .marginnote.sidenote {
-    float: right;
-    position: absolute;
     left: calc(100% + 3em);
     text-align: left;
     -webkit-hyphens: none;
     -moz-hyphens: none;
     hyphens: none;
     text-indent: 0;
-    width: calc((100vw - 112ch) / 2 - 5em);
+    width: calc((100vw - 112ch) / 2 - 7.5em);
     font-size: 0.85em;
     opacity: 0.85;
     z-index: 1;
@@ -2065,17 +2063,27 @@ article > :not(#TOC) .admonition a:hover {
 /*= Index page & Tags pages =*/
 /*=-------------------------=*/
 
+/*  Header self-links on home page need not be full-width. */
+article #markdownBody section:not(.collapse) > h1:first-child a {
+	display: inline;
+}
+
 /*  Internal links on the home page need no decoration. */
 body.index #markdownBody a[href^="."]:not([href*="/docs/"]):not([href*="/images/"])::after,
 body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::after {
     content: none;
 }
 
-/* the /index needs more space in the lists for mobile users */
+/*  The /index needs more space in the lists for mobile users */
 @media only screen and (max-width: 64.9ch) {
     body.index #markdownBody li {
         line-height: 1.65;
     }
+}
+
+/*  Index's special appearance requires some more v-space for the nav UI */
+body.index #navigation {
+    margin: 2.5em 0 0.5em 0;
 }
 
 /*  Less fancy headings.
@@ -2088,6 +2096,11 @@ body.index section:not(.collapse) > h1:first-child {
     font-weight: bold;
     margin-left: 0;
     padding: 0;
+}
+/*  No pilcrows.
+    */
+body.index #markdownBody section > h1:first-child a::after {
+	display: none;
 }
 
 /*  Nice-looking bottom decoration.
@@ -2129,7 +2142,12 @@ body.tags article::before {
 
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
 @media only screen and (min-width: 65ch) {
-    body.index [class^='horizontalRule'] hr::after {
+ /*  Horizontal ruler on the home page.
+	*/
+	body.index hr {
+		margin: 1.5em 0 0;
+	}
+    body.index [class^='horizontalRule'] {
         display: none;
     }
 }
@@ -2770,10 +2788,6 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
 #navigation #navigation-next {
     transform: scale(-1, 1);
     width: 39%;
-}
-/* Index's special appearance requires some top padding */
-body.index #navigation {
-    margin-top: 2em;
 }
 /* override underlining: */
 #navigation #navigation-previous,

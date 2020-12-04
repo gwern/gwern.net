@@ -337,11 +337,17 @@ body.index #markdownBody {
 	padding-top: 1.5ch;
 }
 
+/*  Headings on the home page.
+	*/
+body.index #markdownBody h1 {
+	margin: 1.125em 0 0 0;
+}
+
 /*  Lists on the home page.
 	*/
 body.index #markdownBody ul,
 body.tags #markdownBody ul {
-	margin: 1.25em 3em 0 0;
+	margin: 1em 3em 0 0;
 	padding: 0 0 0 1.375em;
 }
 body.index #markdownBody li > ul,
@@ -352,6 +358,10 @@ body.index #markdownBody li,
 body.tags #markdownBody li {
 	margin-top: 0;
 }
+body.index #markdownBody ul > li:nth-of-type(n+2) {
+	margin: 0;
+}
+
 
 @media only screen and (max-width: 64.9ch) {
 	body.index #sidebar #logo {
@@ -377,8 +387,6 @@ body.tags #markdownBody li {
 		top: 0.25em;
 	}
 }
-
-body.index #markdownBody ul > li:nth-of-type(n+2) { margin: 0; }
 
 /*********************/
 /* TABLE OF CONTENTS */
