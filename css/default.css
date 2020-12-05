@@ -2064,7 +2064,7 @@ article > :not(#TOC) .admonition a:hover {
 /*=-------------------------=*/
 
 /*  Header self-links on home page need not be full-width. */
-article #markdownBody section:not(.collapse) > h1:first-child a {
+body.index article #markdownBody section:not(.collapse) > h1:first-child a {
 	display: inline;
 }
 
