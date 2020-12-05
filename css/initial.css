@@ -144,8 +144,8 @@ svg {
 		border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
 	}
 	#sidebar a.new {
-		padding-top: 0.4em;
-		margin-top: 0.5em;
+		padding-top: 0.45em;
+		margin-top: 0.55em;
 	}
 	#sidebar a.patreon {
 		padding-top: 0.6em;
