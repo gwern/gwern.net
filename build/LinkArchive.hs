@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-12-03 22:56:54 gwern"
+When:  Time-stamp: "2020-12-04 20:02:57 gwern"
 License: CC-0
 -}
 
@@ -758,5 +758,6 @@ whiteList url
       , "thefirstaibook.com" -- low-quality archiving
       , "qntm.org" -- stable
       , "tl.net/blogs/" -- low-quality archiving (screenshots/images break)
+      , "metaculus.com" -- updated/service/stable
       ] = True
     | otherwise = False
