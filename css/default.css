@@ -429,7 +429,7 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /*********************/
 hr {
     border: 0;
-    margin: 1.125em 0 .875em;
+    margin: 1.125em;
     height: 40px;
     line-height: 1;
     display: flex;
@@ -700,15 +700,17 @@ figcaption {
 .caption-wrapper {
     display: block;
     outline: 1px solid var(--GW-figure-caption-outline-color);
-    margin: 1px 0 0 0;
+    margin: 1px auto 0 auto;
 }
 @supports (width: -moz-fit-content) {
-    figcaption {
+    figcaption,
+    .caption-wrapper {
         width: -moz-fit-content;
     }
 }
 @supports (width: fit-content) {
-    figcaption {
+    figcaption,
+    .caption-wrapper {
         width: fit-content;
     }
 }
@@ -770,22 +772,6 @@ blockquote blockquote {
 /*=--------------------=*/
 /*= Various edge cases =*/
 /*=--------------------=*/
-
-@media only screen and (min-width: 65ch) {
-    blockquote {
-        overflow: hidden;
-    }
-}
-@media only screen and (max-width: 64.9ch) {
-    /* even less horizontal is available on mobile! */
-    blockquote {
-        margin: 1.25em 0 1.5em 0;
-    }
-}
-
-p + blockquote {
-    margin-top: 1em;
-}
 
 #markdownBody blockquote blockquote:first-child {
     margin: 0.25em 1px 1em 1px;
@@ -1118,26 +1104,6 @@ a.footnote-ref {
     left: calc(100% + 7.5ch);
 }
 
-/*  Hide sidenote columns on narrow viewports.
-    */
-@media only screen and (max-width: 176ch) {
-    #sidenote-column-left,
-    #sidenote-column-right {
-        display: none;
-    }
-}
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
-        #sidenote-column-left,
-        #sidenote-column-right,
-        .marginnote {
-            display: initial;
-        }
-    }
-}
-
 /*=-----------------=*/
 /*= Sidenote blocks =*/
 /*=-----------------=*/
@@ -1365,14 +1331,26 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     content: " ";
 }
 .marginnote.sidenote {
-    left: calc(100% + 3em);
+	display: initial;
+
+	/*  We use `3 * var(--GW-body-text-font-size)` instead of `3em`, because we 
+	    want the font size of the parent (i.e., main text column), not the 
+	    margin note itself. */
+    left: calc(100% + (3 * var(--GW-body-text-font-size)));
+
+	/*  We inherit left and right padding from .sidenote class. */
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+
+	/*  The `0.85` in these two lines must be the same value. */
+    font-size: calc(var(--GW-body-text-font-size) * 0.85);
+    width: calc((100vw - (112ch / 0.85)) / 2 - 1ch);
+
     text-align: left;
+    text-indent: 0;
     -webkit-hyphens: none;
     -moz-hyphens: none;
     hyphens: none;
-    text-indent: 0;
-    width: calc((100vw - 112ch) / 2 - 7.5em);
-    font-size: 0.85em;
     opacity: 0.85;
     z-index: 1;
 }
@@ -2064,7 +2042,7 @@ article > :not(#TOC) .admonition a:hover {
 /*=-------------------------=*/
 
 /*  Header self-links on home page need not be full-width. */
-article #markdownBody section:not(.collapse) > h1:first-child a {
+body.index article #markdownBody section:not(.collapse) > h1:first-child a {
 	display: inline;
 }
 
@@ -2252,6 +2230,14 @@ body.dnmarrests .tableWrapper#data-table td:nth-of-type(13) {
 }
 body.dnmarrests .tableWrapper#data-table td:last-of-type {
     width: 20%;
+}
+
+/*=--------=*/
+/*= /Lorem =*/
+/*=--------=*/
+
+body.lorem div[class^='drop-cap'] {
+    margin: 1em 0 0 0;
 }
 
 /*************************/

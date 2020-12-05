@@ -27,8 +27,6 @@ function doWhenPageLoaded(f) {
     "full-width" to span the viewport (minus a specified margin on both sides).
     */
 function expandFullWidthBlocks() {
-    let mobileViewportWidth = matchMedia("(max-width: 768px)").matches;
-
     document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
         fullWidthImage.closest("figure").classList.add("full-width");
     });
@@ -38,23 +36,34 @@ function expandFullWidthBlocks() {
 
     /*  Find all full-width blocks; set their position and size.
         */
-    document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
+	let allFullWidthBlocks = document.querySelectorAll(".tableWrapper.full-width, figure.full-width");
+
+	allFullWidthBlocks.forEach(fullWidthBlock => {
         fullWidthBlock.removeAttribute("style");
-        if (mobileViewportWidth) return;
-        fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+	});
+
+	if (matchMedia("(max-width: 768px)").matches) return;
+
+    allFullWidthBlocks.forEach(fullWidthBlock => {
         fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
     });
 
-    /*  If sidenotes exist, update sidenote positions.
-        */
     requestAnimationFrame(() => {
-        if (typeof window.GW == "undefined" ||
-            typeof GW.sidenotes == "undefined" ||
-            GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-            GW.sidenotes.sidenoteDivs.length == 0)
-            return;
+		allFullWidthBlocks.forEach(fullWidthBlock => {
+			fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+		});
 
-            updateSidenotePositions();
+		/*  If sidenotes exist, update sidenote positions.
+			*/
+		requestAnimationFrame(() => {
+			if (typeof window.GW == "undefined" ||
+				typeof GW.sidenotes == "undefined" ||
+				GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+				GW.sidenotes.sidenoteDivs.length == 0)
+				return;
+
+				updateSidenotePositions();
+		});
     });
 }
 
@@ -280,21 +289,23 @@ document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):n
     identifierLink.classList.add((identifierLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 });
 
-/* HYPHENS */
-// Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
+/*	HYPHENS
+	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
+	*/
 function getSelectionHTML() {
     var container = document.createElement("div");
     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
     return container.innerHTML;
 }
 window.addEventListener("copy", GW.textCopied = (event) => {
-    if(event.target.matches("input, textarea")) return;
+    if (event.target.matches("input, textarea")) return;
     event.preventDefault();
     const selectedHTML = getSelectionHTML();
     const selectedText = getSelection().toString();
     event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
     event.clipboardData.setData("text/html",  selectedHTML.replace(/\u00AD|\u200b/g, ""));
 });
+
 // For X11 Linux, middle-click somehow manages to bypass the copy-paste listener
 // function getTextNodes(node) {
 //  var allTextNodes = [ ];
