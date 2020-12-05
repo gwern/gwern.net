@@ -27,8 +27,6 @@ function doWhenPageLoaded(f) {
     "full-width" to span the viewport (minus a specified margin on both sides).
     */
 function expandFullWidthBlocks() {
-    let mobileViewportWidth = matchMedia("(max-width: 768px)").matches;
-
     document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
         fullWidthImage.closest("figure").classList.add("full-width");
     });
@@ -38,23 +36,34 @@ function expandFullWidthBlocks() {
 
     /*  Find all full-width blocks; set their position and size.
         */
-    document.querySelectorAll(".tableWrapper.full-width, figure.full-width").forEach(fullWidthBlock => {
+	let allFullWidthBlocks = document.querySelectorAll(".tableWrapper.full-width, figure.full-width");
+
+	allFullWidthBlocks.forEach(fullWidthBlock => {
         fullWidthBlock.removeAttribute("style");
-        if (mobileViewportWidth) return;
-        fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+	});
+
+	if (matchMedia("(max-width: 768px)").matches) return;
+
+    allFullWidthBlocks.forEach(fullWidthBlock => {
         fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
     });
 
-    /*  If sidenotes exist, update sidenote positions.
-        */
     requestAnimationFrame(() => {
-        if (typeof window.GW == "undefined" ||
-            typeof GW.sidenotes == "undefined" ||
-            GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-            GW.sidenotes.sidenoteDivs.length == 0)
-            return;
+		allFullWidthBlocks.forEach(fullWidthBlock => {
+			fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
+		});
 
-            updateSidenotePositions();
+		/*  If sidenotes exist, update sidenote positions.
+			*/
+		requestAnimationFrame(() => {
+			if (typeof window.GW == "undefined" ||
+				typeof GW.sidenotes == "undefined" ||
+				GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+				GW.sidenotes.sidenoteDivs.length == 0)
+				return;
+
+				updateSidenotePositions();
+		});
     });
 }
 

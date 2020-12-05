@@ -700,15 +700,17 @@ figcaption {
 .caption-wrapper {
     display: block;
     outline: 1px solid var(--GW-figure-caption-outline-color);
-    margin: 1px 0 0 0;
+    margin: 1px auto 0 auto;
 }
 @supports (width: -moz-fit-content) {
-    figcaption {
+    figcaption,
+    .caption-wrapper {
         width: -moz-fit-content;
     }
 }
 @supports (width: fit-content) {
-    figcaption {
+    figcaption,
+    .caption-wrapper {
         width: fit-content;
     }
 }
