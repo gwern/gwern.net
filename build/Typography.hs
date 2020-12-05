@@ -8,9 +8,11 @@
 module Typography where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
+import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
 import Data.List (intercalate, isPrefixOf)
-import System.Directory(removeFile)
+import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
+import System.Directory (getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
 import qualified Data.Text as T (any, append, pack, unpack, replace, Text)
@@ -159,8 +161,9 @@ invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
                                        if not color then return x else
                                          return (Image (htmlid, "invertible-auto":classes, kvs) xs (p,t))
 invertImageInline x = return x
-invertImage :: FilePath -> IO (Bool, String, String) -- invertable / height / width
+invertImage :: FilePath -> IO (Bool, String, String) -- invertible / height / width
 invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
+                                           -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
                                            (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", f, "--output", temp]
                                            case status of
                                              ExitFailure _ -> do print ("Download failed (unable to check image invertibility): " ++ f)
@@ -168,11 +171,25 @@ invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-inver
                                                                  return (False, "320", "320") -- NOTE: most WP thumbnails are 320/320px squares, so to be safe we'll use that as a default value
                                              _ -> do c <- imageMagickColor temp
                                                      (h,w) <- imageMagickDimensions temp
+                                                     let invertp = c < threshold
+                                                     when invertp $ invertImagePreview temp
                                                      removeFile temp
-                                                     return $ (c < threshold, h, w)
+                                                     return (invertp, h, w)
               | otherwise = do c <- imageMagickColor f
-                               return $ (c < threshold, "320", "320")
+                               let invertp = c < threshold
+                               return (invertp, "320", "320")
               where threshold = 0.09
+
+-- Manually check the inverted version of new images which trigger the inversion heuristic. I don't want to store a database of image inversion status, so I'll use the cheaper heuristic of just opening up every image modified <1 day ago (which should catch all of the WP thumbnails + any images added).
+invertImagePreview :: FilePath -> IO ()
+invertImagePreview f = do utcFile <- getModificationTime f
+                          utcNow  <- getCurrentTime
+                          let age  = utcNow `diffUTCTime` utcFile
+                          when (age < nominalDay) $ do
+                            let f' = f++"-inverted.png"
+                            void $ runShellCommand "./" Nothing "convert" ["-negate", f, f']
+                            void $ runShellCommand "./" Nothing "firefox" [f']
+                          return ()
 
 imageMagickColor :: FilePath -> IO Float
 imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f, "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
