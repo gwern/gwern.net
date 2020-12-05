@@ -914,6 +914,26 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-three);
 }
 
+/*=--------------------=*/
+/*= Various edge cases =*/
+/*=--------------------=*/
+
+@media only screen and (min-width: 65ch) {
+    blockquote {
+        overflow: hidden;
+    }
+}
+@media only screen and (max-width: 64.9ch) {
+    /* even less horizontal is available on mobile! */
+    blockquote {
+        margin: 1.25em 0 1.5em 0;
+    }
+}
+
+p + blockquote {
+    margin-top: 1em;
+}
+
 /********/
 /* MISC */
 /********/
