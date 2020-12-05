@@ -312,22 +312,23 @@ window.addEventListener("copy", GW.textCopied = (event) => {
 // }
 
 /* Use the previous/next navigation links defined at the bottom of the page to support "auto-scrolling" functionality to navigate to the logical next/previous page by scrolling to the top/bottom of the page and pressing a navigation button twice within 500ms; this lets the reader scroll through gwern.net as if it were an extremely long book. */
-let navLinkNextHref = document.querySelector("#navigation-next").href;
-let navLinkPrevHref = document.querySelector("#navigation-previous").href;
-var lastScroll = 0;
-document.addEventListener("keydown", (event) => {
-	// Space/Up-arrow/Down-arrow/Home/End/PgDn/PgUp
-	if ([32, 38, 40, 36, 35, 33, 34].includes(event.keyCode)) {
-		now = Date.now();
-		if ((now - lastScroll) > 500) {
-			lastScroll = now;
-		} else {
-			// we are at top:
-			if (window.pageYOffset == 0.0) {
-				window.location.href = navLinkPrevHref;
-			} else if (((window.innerHeight + window.scrollY) + 1.0) >= document.body.offsetHeight) {
-				window.location.href = navLinkNextHref;
-			}
-		}
-	}
-});
+/* Disabled for now. Too much accidental triggering makes this feature annoying in practice. */
+// let navLinkNextHref = document.querySelector("#navigation-next").href;
+// let navLinkPrevHref = document.querySelector("#navigation-previous").href;
+// var lastScroll = 0;
+// document.addEventListener("keydown", (event) => {
+// 	// Space/Up-arrow/Down-arrow/Home/End/PgDn/PgUp
+// 	if ([32, 38, 40, 36, 35, 33, 34].includes(event.keyCode)) {
+// 		now = Date.now();
+// 		if ((now - lastScroll) > 500) {
+// 			lastScroll = now;
+// 		} else {
+// 			// we are at top:
+// 			if (window.pageYOffset == 0.0) {
+// 				window.location.href = navLinkPrevHref;
+// 			} else if (((window.innerHeight + window.scrollY) + 1.0) >= document.body.offsetHeight) {
+// 				window.location.href = navLinkNextHref;
+// 			}
+// 		}
+// 	}
+// });
