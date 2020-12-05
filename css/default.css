@@ -2230,6 +2230,14 @@ body.dnmarrests .tableWrapper#data-table td:last-of-type {
     width: 20%;
 }
 
+/*=--------=*/
+/*= /Lorem =*/
+/*=--------=*/
+
+body.lorem div[class^='drop-cap'] {
+    margin: 1em 0 0 0;
+}
+
 /*************************/
 /* UI ELEMENTS CONTAINER */
 /*************************/
