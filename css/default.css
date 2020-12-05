@@ -1365,14 +1365,24 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     content: " ";
 }
 .marginnote.sidenote {
-    left: calc(100% + 3em);
+	/*  We use `3 * var(--GW-body-text-font-size)` instead of `3em`, because we 
+	    want the font size of the parent (i.e., main text column), not the 
+	    margin note itself. */
+    left: calc(100% + (3 * var(--GW-body-text-font-size)));
+
+	/*  We inherit left and right padding from .sidenote class. */
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+
+	/*  The `0.85` in these two lines must be the same value. */
+    font-size: calc(var(--GW-body-text-font-size) * 0.85);
+    width: calc((100vw - (112ch / 0.85)) / 2 - 1ch);
+
     text-align: left;
+    text-indent: 0;
     -webkit-hyphens: none;
     -moz-hyphens: none;
     hyphens: none;
-    text-indent: 0;
-    width: calc((100vw - 112ch) / 2 - 7.5em);
-    font-size: 0.85em;
     opacity: 0.85;
     z-index: 1;
 }

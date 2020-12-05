@@ -8,6 +8,14 @@
 /**********/
 /* colors are now in /static/css/colors.css or dark-mode.css */
 
+/*************/
+/* VARIABLES */
+/*************/
+
+:root {
+    --GW-body-text-font-size: 1rem;
+}
+
 /***********/
 /* GENERAL */
 /***********/
@@ -23,6 +31,8 @@ html {
 
 body {
 	max-width: 112ch;
+
+    font-size: var(--GW-body-text-font-size);
 }
 
 @media only screen and (max-width: 64.9ch) {
