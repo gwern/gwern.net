@@ -419,46 +419,46 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 /*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
 	*/
-@media only screen and (max-width:128ch) {
+@media only screen and (max-width: 128ch) {
 	#TOC {
 		font-size: 0.95rem;
 	}
 }
 
-@media only screen and (max-width:120ch) {
+@media only screen and (max-width: 120ch) {
 	#TOC {
 		font-size: 0.90rem;
 	}
 }
 
-@media only screen and (max-width:112ch) {
+@media only screen and (max-width: 112ch) {
 	#TOC {
 		font-size: 0.85rem;
 		margin: 0 1.5rem 1.25rem 0;
 	}
 }
 
-@media only screen and (max-width:104ch) {
+@media only screen and (max-width: 104ch) {
 	#TOC {
 		font-size: 0.80rem;
 		margin: 0 1.25rem 1rem 0;
 	}
 }
 
-@media only screen and (max-width:96ch) {
+@media only screen and (max-width: 96ch) {
 	#TOC {
 		margin: 0 1rem 1rem 0;
 	}
 }
 
-@media only screen and (min-width:90ch) {
+@media only screen and (min-width: 90ch) {
 	#TOC {
 		float: left;
 		max-width: 30ch;
 	}
 }
 
-@media only screen and (max-width:90ch) {
+@media only screen and (max-width: 90ch) {
 	#TOC {
 		float: none;
 		margin: 2em auto;
@@ -469,7 +469,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 	}
 }
 
-@media only screen and (max-width:64.9ch) {
+@media only screen and (max-width: 64.9ch) {
 	#TOC a {
 		display: inline-block;
 	}
@@ -638,13 +638,13 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 /*  Breakpoint for sidenotes.
 	*/
-@media only screen and (min-width:176.1ch) {
+@media only screen and (min-width: 176.1ch) {
 	#markdownBody {
 		position: relative;
 	}
 }
 
-@media only screen and (min-width:65ch) {
+@media only screen and (min-width: 65ch) {
 	@media only screen and (max-width: 100ch) {
 	/*  Replaces A/B-test-set average value; the wider the screen, the more
 		line-height is necessary, and no one size suits all, so set 3 brackets
@@ -654,12 +654,12 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 			line-height: 1.45;
 		}
 	}
-	@media only screen and (min-width:100.1ch) and (max-width:120ch) {
+	@media only screen and (min-width: 100.1ch) and (max-width: 120ch) {
 		#markdownBody {
 			line-height: 1.5;
 		}
 	}
-	@media only screen and (min-width:120.1ch) {
+	@media only screen and (min-width: 120.1ch) {
 		#markdownBody {
 			line-height: 1.55;
 		}
@@ -707,7 +707,7 @@ html {
 	position: relative;
 }
 
-@media only screen and (max-width:65ch) {
+@media only screen and (max-width: 65ch) {
 	h1 {
 		margin: 1.25em 0 0.5em 0;
 	}
@@ -721,6 +721,51 @@ h1 {
 	font-size: 1.75em;
 	line-height: 1.25;
 	letter-spacing: -0.75px;
+}
+
+/*************/
+/* SIDENOTES */
+/*************/
+
+/*  Hide sidenote columns on narrow viewports.
+    */
+@media only screen and (max-width: 176ch) {
+    #sidenote-column-left,
+    #sidenote-column-right {
+        display: none;
+    }
+}
+/*  Special styles for special browsers.
+    */
+@supports (-moz-user-focus: normal) {
+    @media only screen and (max-width: 176ch) {
+        #sidenote-column-left,
+        #sidenote-column-right {
+            display: initial;
+        }
+    }
+}
+
+/*=--------------=*/
+/*= Margin notes =*/
+/*=--------------=*/
+
+/*  On wide viewports, hide margin note until it is styled as a sidenote (i.e,
+    until it gets the `.sidenote` class applied to it).
+    */
+@media only screen and (min-width: 176.1ch) {
+	.marginnote {
+		display: none;
+	}
+}
+/*  Special styles for special browsers.
+    */
+@supports (-moz-user-focus: normal) {
+    @media only screen and (min-width: 176.1ch) {
+        .marginnote {
+            display: initial;
+        }
+    }
 }
 
 /*********/

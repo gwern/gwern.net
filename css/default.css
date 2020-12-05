@@ -1118,26 +1118,6 @@ a.footnote-ref {
     left: calc(100% + 7.5ch);
 }
 
-/*  Hide sidenote columns on narrow viewports.
-    */
-@media only screen and (max-width: 176ch) {
-    #sidenote-column-left,
-    #sidenote-column-right {
-        display: none;
-    }
-}
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
-        #sidenote-column-left,
-        #sidenote-column-right,
-        .marginnote {
-            display: initial;
-        }
-    }
-}
-
 /*=-----------------=*/
 /*= Sidenote blocks =*/
 /*=-----------------=*/
@@ -1365,6 +1345,8 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     content: " ";
 }
 .marginnote.sidenote {
+	display: initial;
+
 	/*  We use `3 * var(--GW-body-text-font-size)` instead of `3em`, because we 
 	    want the font size of the parent (i.e., main text column), not the 
 	    margin note itself. */
