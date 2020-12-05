@@ -280,21 +280,23 @@ document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):n
     identifierLink.classList.add((identifierLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 });
 
-/* HYPHENS */
-// Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
+/*	HYPHENS
+	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
+	*/
 function getSelectionHTML() {
     var container = document.createElement("div");
     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
     return container.innerHTML;
 }
 window.addEventListener("copy", GW.textCopied = (event) => {
-    if(event.target.matches("input, textarea")) return;
+    if (event.target.matches("input, textarea")) return;
     event.preventDefault();
     const selectedHTML = getSelectionHTML();
     const selectedText = getSelection().toString();
     event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
     event.clipboardData.setData("text/html",  selectedHTML.replace(/\u00AD|\u200b/g, ""));
 });
+
 // For X11 Linux, middle-click somehow manages to bypass the copy-paste listener
 // function getTextNodes(node) {
 //  var allTextNodes = [ ];
@@ -310,21 +312,22 @@ window.addEventListener("copy", GW.textCopied = (event) => {
 // }
 
 /* Use the previous/next navigation links defined at the bottom of the page to support "auto-scrolling" functionality to navigate to the logical next/previous page by scrolling to the top/bottom of the page and pressing a navigation button twice within 500ms; this lets the reader scroll through gwern.net as if it were an extremely long book. */
-next = document.querySelector("#navigation-next").href;
-previous = document.querySelector("#navigation-previous").href;
-lastScroll = 0;
-document.addEventListener("keydown", event => {
-                              // Space/Up-arrow/Down-arrow/Home/End/PgDn/PgUp
-                              if ([32, 38, 40, 36, 35, 33, 34].includes(event.keyCode)) {
-    now = Date.now();
-    if ((now - lastScroll) > 500) {
-           lastScroll = now; } else {
-           // we are at top:
-           if (window.pageYOffset==0) {
-                  window.location.href = previous; } else
-              { if (((window.innerHeight + window.scrollY)+1) >= document.body.offsetHeight) {
-                       window.location.href = next;  }
-              }
-       }
-      }
-})
+let navLinkNextHref = document.querySelector("#navigation-next").href;
+let navLinkPrevHref = document.querySelector("#navigation-previous").href;
+var lastScroll = 0;
+document.addEventListener("keydown", (event) => {
+	// Space/Up-arrow/Down-arrow/Home/End/PgDn/PgUp
+	if ([32, 38, 40, 36, 35, 33, 34].includes(event.keyCode)) {
+		now = Date.now();
+		if ((now - lastScroll) > 500) {
+			lastScroll = now;
+		} else {
+			// we are at top:
+			if (window.pageYOffset == 0.0) {
+				window.location.href = navLinkPrevHref;
+			} else if (((window.innerHeight + window.scrollY) + 1.0) >= document.body.offsetHeight) {
+				window.location.href = navLinkNextHref;
+			}
+		}
+	}
+});
