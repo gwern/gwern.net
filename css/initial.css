@@ -953,4 +953,4 @@ span.smallcaps-auto {
 /*************/
 /* DARK MODE */
 /*************/
-/* see /static/js/darkmode.js which now provides the CSS, and allows the user to toggle at runtime */
+/* see /static/js/darkmode.js and /static/css/dark-mode.css; this allows the user to toggle at runtime */
