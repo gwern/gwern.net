@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-12-03 13:52:32 gwern"
+# When:  Time-stamp: "2020-12-05 16:38:52 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -71,7 +71,7 @@ do
               fgp -e '(www' -e ')www' -e '![](' -e ']()' -e ' )' -e '](//' -e '](/wiki/' -e '](wiki/' -e '——–' -e '——' -e '————–' -e ' --- ' \
                   -e ' percent ' -e "    Pearson'" -e '~~~{.sh}' -e 'library("' -e ' +-' -e ' -+' -e '"collapse Summary"' -e '"CollapseSummary"' -e 'collapseSumary' -e '<!_-' -e ' bu ' \
                   -e ']{.dropcaps}' -e '{,smallcaps}' -e '[.smallcaps}' -e '[PMC]{.smallcaps}' -e 'nsheppard' -e '<div class-' \
-                  -e '^ > [a-Z]' -e '^  > [a-Z]' -e '^   > [a-Z]' -e '^  - [a-Z]' -e '^   - [a-Z]' -e '<div class="abstract">' \
+                  -e '^ > [a-Z]' -e '^  > [a-Z]' -e '^   > [a-Z]' -e '^  - [a-Z]' -e '^   - [a-Z]' \
                   -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/docs/genetic/' \
                   -e '" ](' -e '!Marin:' -e '](images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -- "$PAGE"; }
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a long-term div ID)"
