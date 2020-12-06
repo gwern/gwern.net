@@ -934,6 +934,35 @@ p + blockquote {
     margin-top: 1em;
 }
 
+/***************/
+/* CODE BLOCKS */
+/***************/
+
+pre {
+    overflow: auto;
+}
+
+/********/
+/* MATH */
+/********/
+
+.mjpage__block {
+    display: block;
+    overflow: auto;
+}
+
+/**********/
+/* TABLES */
+/**********/
+
+/*=-------------------=*/
+/*= Full-width tables =*/
+/*=-------------------=*/
+
+.tableWrapper.full-width {
+    position: relative;
+}
+
 /********/
 /* MISC */
 /********/

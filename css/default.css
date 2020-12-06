@@ -1403,7 +1403,6 @@ table {
 .tableWrapper.full-width {
     background-color: var(--GW-table-full-width-background-color);
     z-index: 1;
-    position: relative;
 }
 
 /*=-------------=*/
@@ -1593,7 +1592,6 @@ code {
     hyphens: none;
 }
 pre {
-    overflow: auto;
     margin: 1.75em auto;
     border: 1px solid var(--GW-pre-element-border-color);
     background-color: var(--GW-pre-element-background-color);
@@ -1647,8 +1645,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /********/
 
 .mjpage__block {
-    display: block;
-    overflow: auto;
     overflow-y: hidden;
     margin: 1.25em auto;
 }
