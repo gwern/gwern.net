@@ -2299,8 +2299,9 @@ body.lorem div[class^='drop-cap'] {
 /*=--------------=*/
 
 #markdownBody img:hover {
-    filter: drop-shadow(0 0 3px var(--SA-image-focus-image-hover-drop-shadow-color));
+/*     filter: drop-shadow(0 0 3px var(--SA-image-focus-image-hover-drop-shadow-color)); */
     cursor: zoom-in;
+    box-shadow: 0 0 10px 0 var(--SA-image-focus-image-hover-drop-shadow-color);
 }
 #markdownBody img:active {
     transform: scale(0.975);
