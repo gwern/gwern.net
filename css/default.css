@@ -682,6 +682,7 @@ figure + figure {
 figure img,
 figure video {
     display: block;
+    max-height: calc(100vh - 5em);
     max-width: 100%;
     height: auto;
     width: auto;
@@ -692,9 +693,6 @@ figure video {
 figure audio {
     display: block;
     margin: 0 auto;
-}
-figure img {
-    max-height: calc(100vh - 8em);
 }
 figcaption {
     font-size: 0.9375em;
