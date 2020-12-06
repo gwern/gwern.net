@@ -31,40 +31,48 @@ function expandFullWidthBlocks() {
         fullWidthImage.closest("figure").classList.add("full-width");
     });
 
-    let fullWidthBlockMargin = "2.5ch";
+    let fullWidthBlockMargin = 25;
     let pageWidth = document.querySelector("html").clientWidth;
+	let targetWidth = pageWidth - (2 * fullWidthBlockMargin);
 
-    /*  Find all full-width blocks; set their position and size.
+    /*  Find all full-width blocks.
         */
 	let allFullWidthBlocks = document.querySelectorAll(".tableWrapper.full-width, figure.full-width");
 
+	/*	Clear existing styles.
+		*/
 	allFullWidthBlocks.forEach(fullWidthBlock => {
         fullWidthBlock.removeAttribute("style");
 	});
 
+	/*	On narrow (“mobile”) viewports, do no layout (figures on mobile are
+		already as “full-width” as they’re going to get).
+		*/
 	if (matchMedia("(max-width: 768px)").matches) return;
 
+	/*	Set new margins of full-width blocks.
+		*/
     allFullWidthBlocks.forEach(fullWidthBlock => {
-        fullWidthBlock.style.width = `calc(${pageWidth + "px"} - (2 * ${fullWidthBlockMargin}))`;
+		let fullWidthBlockRect = fullWidthBlock.getBoundingClientRect();
+		let currentWidth = fullWidthBlockRect.width;
+		let leftMargin = (fullWidthBlockRect.left * -1) + fullWidthBlockMargin;
+		let rightMargin = currentWidth - leftMargin - targetWidth;
+
+        fullWidthBlock.style.marginLeft = `${leftMargin + "px"}`;
+        fullWidthBlock.style.marginRight = `${rightMargin + "px"}`;
     });
 
-    requestAnimationFrame(() => {
-		allFullWidthBlocks.forEach(fullWidthBlock => {
-			fullWidthBlock.style.left = `calc(${(fullWidthBlock.getBoundingClientRect().left * -1) + "px"} + ${fullWidthBlockMargin})`;
-		});
+	/*  If sidenotes exist, update sidenote positions.
+		*/
+	requestAnimationFrame(() => {
+		if (typeof window.GW == "undefined" ||
+			typeof GW.sidenotes == "undefined" ||
+			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+			GW.sidenotes.sidenoteDivs.length == 0)
+			return;
 
-		/*  If sidenotes exist, update sidenote positions.
-			*/
-		requestAnimationFrame(() => {
-			if (typeof window.GW == "undefined" ||
-				typeof GW.sidenotes == "undefined" ||
-				GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-				GW.sidenotes.sidenoteDivs.length == 0)
-				return;
-
-				updateSidenotePositions();
-		});
-    });
+			updateSidenotePositions();
+	});
 }
 
 /*=-----------------=*/
