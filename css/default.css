@@ -656,16 +656,6 @@ figure {
     margin: 2em auto 1.75em auto;
     max-width: calc(100% - 5em);
 }
-@supports (width: -moz-fit-content) {
-    figure {
-        width: -moz-fit-content;
-    }
-}
-@supports (width: fit-content) {
-    figure {
-        width: fit-content;
-    }
-}
 @media only screen and (max-width: 64.9ch) {
     figure {
         max-width: calc(100% - 2em);
