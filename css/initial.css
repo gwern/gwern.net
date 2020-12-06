@@ -963,6 +963,20 @@ pre {
     position: relative;
 }
 
+/***********/
+/* FIGURES */
+/***********/
+
+figure img,
+figure video {
+    display: block;
+    max-height: calc(100vh - 5em);
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    margin: 0 auto;
+}
+
 /********/
 /* MISC */
 /********/
