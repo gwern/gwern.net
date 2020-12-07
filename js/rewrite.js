@@ -2,9 +2,6 @@
 /* author: Said Achmiz */
 /* license: MIT (derivative of footnotes.js, which is PD) */
 
-if (typeof window.GW == "undefined")
-    window.GW = { };
-
 /***********/
 /* HELPERS */
 /***********/
@@ -66,8 +63,7 @@ function expandFullWidthBlocks() {
 	/*  If sidenotes exist, update sidenote positions.
 		*/
 	requestAnimationFrame(() => {
-		if (typeof window.GW == "undefined" ||
-			typeof GW.sidenotes == "undefined" ||
+		if (typeof GW.sidenotes == "undefined" ||
 			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
 			GW.sidenotes.sidenoteDivs.length == 0)
 			return;
@@ -249,12 +245,11 @@ function updateMarginNoteStyle() {
     });
 }
 doWhenPageLoaded (() => {
-    if (typeof window.GW == "undefined" ||
-        typeof GW.sidenotes == "undefined" ||
+    if (typeof GW.sidenotes == "undefined" ||
         GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
         GW.sidenotes.sidenoteDivs.length == 0) {
-        return; }
-    else {
+        return;
+    } else {
         updateMarginNoteStyle();
         GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(updateMarginNoteStyle);
     }

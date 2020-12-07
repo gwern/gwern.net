@@ -266,7 +266,7 @@ function injectModeSelector() {
     Called by the ‘updateModeSelectorVisibilityScrollListener’ scroll listener.
     */
 function updateModeSelectorVisibility(event) {
-    GWLog("updateModeSelectorVisibility");
+//     GWLog("updateModeSelectorVisibility");
 
     let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop) ?
@@ -295,7 +295,7 @@ function updateModeSelectorVisibility(event) {
 }
 
 function hideModeSelector() {
-    GWLog("hideModeSelector");
+//     GWLog("hideModeSelector");
 
     GW.scrollState.modeSelector[0].classList.add("hidden");
 }
