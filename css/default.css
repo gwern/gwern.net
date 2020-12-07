@@ -420,7 +420,7 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /**********/
 
 #footer {
-    padding-top: 3ch;
+    padding-top: 30px;
     text-align: center;
 }
 
@@ -481,7 +481,7 @@ hr::after,
     content: "";
     display: block;
     position: absolute;
-    width: calc(100% + 1ch);
+    width: calc(100% + 10px);
     border-top: 1px solid var(--GW-comment-section-top-border-color);
     top: 0;
     left: 0;
@@ -1075,21 +1075,20 @@ a.footnote-ref {
 #sidenote-column-left,
 #sidenote-column-right {
     position: absolute;
-    max-width: 64ch;
-    padding: 1ch;
+    max-width: 550px;
     font-size: 0.85em;
 }
 #sidenote-column-left {
     height: calc(100% - 20em);
-    width: calc(50vw - (50% + 11ch));
+    width: calc(50vw - (50% + 96px));
     top: 20em;
-    right: calc(100% + 6ch);
+    right: calc(100% + 68px);
 }
 #sidenote-column-right {
     height: 100%;
-    width: calc(50vw - (50% + 13ch));
+    width: calc(50vw - (50% + 110px));
     top: 0;
-    left: calc(100% + 7.5ch);
+    left: calc(100% + 62px);
 }
 
 /*=-----------------=*/
@@ -1099,7 +1098,7 @@ a.footnote-ref {
 .sidenote {
     position: absolute;
     left: 0;
-    width: calc(100% - 2ch);
+    width: 100%;
     opacity: 0.85;
     line-height: 1.5;
     padding: 2.26em 3px 0 2px;
@@ -1320,20 +1319,14 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 }
 .marginnote.sidenote {
 	display: initial;
-
-	/*  We use `3 * var(--GW-body-text-font-size)` instead of `3em`, because we 
-	    want the font size of the parent (i.e., main text column), not the 
-	    margin note itself. */
-    left: calc(100% + (3 * var(--GW-body-text-font-size)));
+    width: calc(50vw - (50% + 110px));
+    left: calc(100% + 60px);
 
 	/*  We inherit left and right padding from .sidenote class. */
     padding-top: 0.5em;
     padding-bottom: 0.5em;
 
-	/*  The `0.85` in these two lines must be the same value. */
     font-size: calc(var(--GW-body-text-font-size) * 0.85);
-    width: calc((100vw - (112ch / 0.85)) / 2 - 1ch);
-
     text-align: left;
     text-indent: 0;
     -webkit-hyphens: none;
