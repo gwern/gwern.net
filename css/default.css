@@ -819,7 +819,7 @@ blockquote table {
 /* loosely inspired by https://edwardtufte.github.io/tufte-css/#epigraphs */
 
 .epigraph {
-    margin: 2em 0 2em 0;
+    margin: 2em auto;
     padding: 0.5em 2.5em 0.375em 2.5em;
     overflow: hidden;
 }
@@ -834,6 +834,18 @@ blockquote table {
     position: relative;
     z-index: 1;
     overflow: visible;
+}
+@supports (width: fit-content) {
+	.epigraph,
+	.epigraph blockquote {
+		width: fit-content;
+	}
+}
+@supports (width: -moz-fit-content) {
+	.epigraph,
+	.epigraph blockquote {
+		width: -moz-fit-content;
+	}
 }
 .epigraph p  {
     font-style: italic;
