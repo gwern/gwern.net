@@ -252,7 +252,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
     position: relative;
 }
-@media only screen and (max-width: 65ch) {
+@media only screen and (max-width: 650px) {
     h1, h2, h3, h4, h5, h6 {
         margin: 1.25em 0 0.5em 0;
     }
@@ -295,7 +295,7 @@ section:not(.collapse) > h1:first-child {
     position: absolute;
     top: 0.15em;
 }
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
     section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
@@ -345,7 +345,7 @@ h2::after {
 #markdownBody section.collapse > h2:first-child a::after {
     top: -0.2em;
 }
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
     section:not(.collapse) > h2:first-child {
         overflow: hidden;
     }
@@ -420,7 +420,7 @@ article #markdownBody section:not(.collapse) > h2:first-child a {
 /**********/
 
 #footer {
-    padding-top: 3ch;
+    padding-top: 30px;
     text-align: center;
 }
 
@@ -481,7 +481,7 @@ hr::after,
     content: "";
     display: block;
     position: absolute;
-    width: calc(100% + 1ch);
+    width: calc(100% + 10px);
     border-top: 1px solid var(--GW-comment-section-top-border-color);
     top: 0;
     left: 0;
@@ -556,7 +556,7 @@ article > :not(#TOC) a:hover,
     z-index: 1;
 }
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     #markdownBody ul,
     #markdownBody ol {
         padding: 0 0 0 1.75em;
@@ -656,7 +656,7 @@ figure {
     margin: 2em auto 1.75em auto;
     max-width: calc(100% - 5em);
 }
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     figure {
         max-width: calc(100% - 2em);
     }
@@ -664,7 +664,7 @@ figure {
 figure + figure {
     margin-top: 2.75em;
 }
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     figure + figure {
         margin-top: 2em;
     }
@@ -702,7 +702,7 @@ figcaption {
         width: fit-content;
     }
 }
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     figcaption {
         font-size: 0.875em;
     }
@@ -715,7 +715,7 @@ figure.full-width {
 }
 
 /* Floating figures. (Mostly for amusing asides/memes.) */
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
     figure.float-right {
         float: right;
         max-width: calc(50% - 1.5em);
@@ -736,7 +736,7 @@ figure.full-width {
 }
 
 /* try to get edge-to-edge images on mobile to maximize horizontal space usage */
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     #markdownBody figure {
         max-width: unset;
     }
@@ -870,7 +870,7 @@ blockquote table {
     bottom: -1em;
 }
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     .epigraph {
         margin: 2.125em 1em;
         padding: 0;
@@ -894,7 +894,7 @@ blockquote table {
 /*= Edge cases =*/
 /*=------------=*/
 
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
     h1 + .epigraph,
     h3 + .epigraph,
     h5 + .epigraph {
@@ -1062,7 +1062,7 @@ a.footnote-ref {
     margin-top: 1em;
 }
 
-@media only screen and (max-width: 64.9ch), not screen and (hover:hover) and (pointer:fine) {
+@media only screen and (max-width: 649px), not screen and (hover:hover) and (pointer:fine) {
     #footnotediv {
         display: none;
     }
@@ -1075,21 +1075,20 @@ a.footnote-ref {
 #sidenote-column-left,
 #sidenote-column-right {
     position: absolute;
-    max-width: 64ch;
-    padding: 1ch;
+    max-width: 550px;
     font-size: 0.85em;
 }
 #sidenote-column-left {
     height: calc(100% - 20em);
-    width: calc(50vw - (50% + 11ch));
+    width: calc(50vw - (50% + 96px));
     top: 20em;
-    right: calc(100% + 6ch);
+    right: calc(100% + 68px);
 }
 #sidenote-column-right {
     height: 100%;
-    width: calc(50vw - (50% + 13ch));
+    width: calc(50vw - (50% + 110px));
     top: 0;
-    left: calc(100% + 7.5ch);
+    left: calc(100% + 62px);
 }
 
 /*=-----------------=*/
@@ -1099,7 +1098,7 @@ a.footnote-ref {
 .sidenote {
     position: absolute;
     left: 0;
-    width: calc(100% - 2ch);
+    width: 100%;
     opacity: 0.85;
     line-height: 1.5;
     padding: 2.26em 3px 0 2px;
@@ -1239,7 +1238,7 @@ a.footnote-ref {
 /*  (Not very) special styles for (everyone except) special browsers.
     */
 @supports not (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
+    @media only screen and (max-width: 1760px) {
         .footnote-ref:target::before {
             background-color: inherit;
             box-shadow: none;
@@ -1320,20 +1319,14 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 }
 .marginnote.sidenote {
 	display: initial;
-
-	/*  We use `3 * var(--GW-body-text-font-size)` instead of `3em`, because we 
-	    want the font size of the parent (i.e., main text column), not the 
-	    margin note itself. */
-    left: calc(100% + (3 * var(--GW-body-text-font-size)));
+    width: calc(50vw - (50% + 110px));
+    left: calc(100% + 60px);
 
 	/*  We inherit left and right padding from .sidenote class. */
     padding-top: 0.5em;
     padding-bottom: 0.5em;
 
-	/*  The `0.85` in these two lines must be the same value. */
     font-size: calc(var(--GW-body-text-font-size) * 0.85);
-    width: calc((100vw - (112ch / 0.85)) / 2 - 1ch);
-
     text-align: left;
     text-indent: 0;
     -webkit-hyphens: none;
@@ -1705,7 +1698,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     literary/historical/humanities pages, yinit is for technical/scientific
     pages, and De-Zs is for everything else.
     */
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
     body[class*='drop-caps-'] #markdownBody > p:first-child::first-letter,
     body[class*='drop-caps-'] .abstract + p::first-letter,
     body[class*='drop-caps-'] #markdownBody > .epigraph:first-child + p::first-letter,
@@ -1776,7 +1769,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 
     /*  Compensating for responsive line-height reduction.
         */
-    @media only screen and (max-width: 120ch) {
+    @media only screen and (max-width: 1200px) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy .abstract + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
@@ -1813,7 +1806,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
             font-size: 6.875em;
         }
     }
-    @media only screen and (max-width: 100ch) {
+    @media only screen and (max-width: 1000px) {
         body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
         body.drop-caps-goudy .abstract + p::first-letter,
         body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
@@ -1901,8 +1894,8 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /* Currently limited to lists due to issues with hidden:overflow in FF and sidenotes.js in Chrome. */
 .columns > ul,
 .columns > ol {
-    column-width: 30ch;
-    column-gap: 6ch;
+    column-width: 300px;
+    column-gap: 60px;
     margin-bottom: 2em;
 }
 .columns > ul li,
@@ -2037,7 +2030,7 @@ body.index #markdownBody a[href^="https://www.gwern.net/"]:not([href$=".pdf"])::
 }
 
 /*  The /index needs more space in the lists for mobile users */
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     body.index #markdownBody li {
         line-height: 1.65;
     }
@@ -2103,7 +2096,7 @@ body.tags article::before {
 }
 
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
  /*  Horizontal ruler on the home page.
 	*/
 	body.index hr {
