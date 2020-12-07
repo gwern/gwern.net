@@ -3,32 +3,7 @@
 /* License: GPL (derivative work of https://www.pmwiki.org/wiki/Cookbook/ImgFocus ) */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
-if (typeof window.GW == "undefined")
-	window.GW = { };
-GW.temp = { };
-
 GW.isMobile = ('ontouchstart' in document.documentElement);
-
-/********************/
-/* DEBUGGING OUTPUT */
-/********************/
-
-function GWLog (string) {
-	if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
-		console.log(string);
-}
-GW.enableLogging = (permanently = false) => {
-	if (permanently)
-		localStorage.setItem("logging-enabled", "true");
-	else
-		GW.loggingEnabled = true;
-};
-GW.disableLogging = (permanently = false) => {
-	if (permanently)
-		localStorage.removeItem("logging-enabled");
-	else
-		GW.loggingEnabled = false;
-};
 
 /****************/
 /* MISC HELPERS */

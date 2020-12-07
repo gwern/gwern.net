@@ -9,31 +9,6 @@ Author: Said Achmiz
 license: MIT (derivative of footnotes.js, which is PD)
 */
 
-
-if (typeof window.GW == "undefined")
-    window.GW = { };
-
-/********************/
-/* DEBUGGING OUTPUT */
-/********************/
-
-function GWLog (string) {
-    if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
-        console.log(string);
-}
-GW.enableLogging = (permanently = false) => {
-    if (permanently)
-        localStorage.setItem("logging-enabled", "true");
-    else
-        GW.loggingEnabled = true;
-};
-GW.disableLogging = (permanently = false) => {
-    if (permanently)
-        localStorage.removeItem("logging-enabled");
-    else
-        GW.loggingEnabled = false;
-};
-
 /***********/
 /* HELPERS */
 /***********/
@@ -117,6 +92,16 @@ function setHashWithoutScrolling(newHash) {
     */
 String.prototype.hasPrefix = function (prefix) {
     return (this.lastIndexOf(prefix, 0) === 0);
+}
+
+/*  Run the given function immediately if the page is already loaded, or add
+    a listener to run it as soon as the page loads.
+    */
+function doWhenPageLoaded(f) {
+    if (document.readyState == "complete")
+        f();
+    else
+        window.addEventListener("load", f);
 }
 
 /*******************/
@@ -279,6 +264,9 @@ function updateFootnoteReferenceLinks() {
 function updateFootnoteEventListeners() {
     GWLog("updateFootnoteEventListeners");
 
+    //  Unbind sidenote mouse events.
+	unbindSidenoteMouseEvents();
+
     /*  Determine whether we are in sidenote mode or footnote mode.
         */
     var sidenotesMode = (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false);
@@ -290,36 +278,11 @@ function updateFootnoteEventListeners() {
         }
 
         //  Bind sidenote mouse events.
-        for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
-            let fnref = GW.sidenotes.footnoteRefs[i];
-            let sidenote = GW.sidenotes.sidenoteDivs[i];
+		bindSidenoteMouseEvents();
 
-            fnref.addEventListener("mouseover", GW.sidenotes.footnoteover = () => {
-                sidenote.classList.toggle("highlighted", true);
-            });
-            fnref.addEventListener("mouseout", GW.sidenotes.footnoteout = () => {
-                sidenote.classList.remove("highlighted");
-            });
-            sidenote.addEventListener("mouseover", GW.sidenotes.sidenoteover = () => {
-                fnref.classList.toggle("highlighted", true);
-            });
-            sidenote.addEventListener("mouseout", GW.sidenotes.sidenoteout = () => {
-                fnref.classList.remove("highlighted");
-            });
-        }
+		//	Clear any extant footnote popups.
         clearFootnotePopups();
     } else {
-        //  Unbind sidenote mouse events.
-        for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
-            let fnref = GW.sidenotes.footnoteRefs[i];
-            let sidenote = GW.sidenotes.sidenoteDivs[i];
-
-            fnref.removeEventListener("mouseover", GW.sidenotes.footnoteover);
-            fnref.removeEventListener("mouseout", GW.sidenotes.footnoteout);
-            sidenote.removeEventListener("mouseover", GW.sidenotes.sidenoteover);
-            sidenote.removeEventListener("mouseout", GW.sidenotes.sidenoteout);
-        }
-
         if (window.Footnotes &&
             GW.sidenotes.mediaQueries.mobileViewportWidthBreakpoint.matches == false &&
             GW.sidenotes.mediaQueries.hover == true) {
@@ -327,6 +290,46 @@ function updateFootnoteEventListeners() {
             Footnotes.setup();
         }
     }
+}
+
+/*	Bind event listeners for mousing over citations and sidenotes.
+	*/
+function bindSidenoteMouseEvents() {
+    GWLog("bindSidenoteMouseEvents");
+
+	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
+		let fnref = GW.sidenotes.footnoteRefs[i];
+		let sidenote = GW.sidenotes.sidenoteDivs[i];
+
+		fnref.addEventListener("mouseover", GW.sidenotes.footnoteover = () => {
+			sidenote.classList.toggle("highlighted", true);
+		});
+		fnref.addEventListener("mouseout", GW.sidenotes.footnoteout = () => {
+			sidenote.classList.remove("highlighted");
+		});
+		sidenote.addEventListener("mouseover", GW.sidenotes.sidenoteover = () => {
+			fnref.classList.toggle("highlighted", true);
+		});
+		sidenote.addEventListener("mouseout", GW.sidenotes.sidenoteout = () => {
+			fnref.classList.remove("highlighted");
+		});
+	}
+}
+
+/*	Unbind event listeners for mousing over citations and sidenotes.
+	*/
+function unbindSidenoteMouseEvents() {
+    GWLog("unbindSidenoteMouseEvents");
+
+	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
+		let fnref = GW.sidenotes.footnoteRefs[i];
+		let sidenote = GW.sidenotes.sidenoteDivs[i];
+
+		fnref.removeEventListener("mouseover", GW.sidenotes.footnoteover);
+		fnref.removeEventListener("mouseout", GW.sidenotes.footnoteout);
+		sidenote.removeEventListener("mouseover", GW.sidenotes.sidenoteover);
+		sidenote.removeEventListener("mouseout", GW.sidenotes.sidenoteout);
+	}
 }
 
 /*  In some rare cases, we might switch to sidenote mode while a footnote popup
@@ -706,8 +709,7 @@ function constructSidenotes() {
     2.  The interactions between sidenotes and collapse blocks
     3.  Linking to footnotes/sidenotes
     4.  Loading a URL that links to a footnote/sidenote
-    5.  Disclosing too-long sidenotes (and otherwise interacting with sidenotes)
-    6.  Changes in the viewport width dynamically altering all of the above
+    5.  Changes in the viewport width dynamically altering all of the above
 
     … and, of course, correct layout of the sidenotes, even in tricky cases
     where the citations are densely packed and the sidenotes are long.
@@ -720,7 +722,7 @@ function sidenotesSetup() {
         considered to be overlapping.
         */
     GW.sidenotes = {
-        sidenoteSpacing:    60
+        sidenoteSpacing: 60
     };
 
     /*  Create media query objects (for checking and attaching listeners).
@@ -761,6 +763,7 @@ function sidenotesSetup() {
         updateSidenotePositions();
     });
     /*  Lay out the sidenotes as soon as the document is loaded.
+    	TODO: should this just be doWhenPageLoaded?
         */
     if (document.readyState == "complete") {
         updateSidenotePositions();
@@ -777,25 +780,25 @@ function sidenotesSetup() {
         rewrite the citation (footnote reference) links to point to footnotes
         or to sidenotes, as appropriate.
         */
-    if (document.readyState == "complete") {
+    doWhenPageLoaded(() => {
         updateFootnoteEventListeners();
         updateFootnoteReferenceLinks();
-    } else {
-        window.addEventListener("load", () => {
-            updateFootnoteEventListeners();
-            updateFootnoteReferenceLinks();
-        });
-    }
+    });
     /*  In case footnotes.js loads later, make sure event listeners are set in
         order afterwards.
         */
-    GW.sidenotes.footnotesObserver = new MutationObserver((mutationsList, observer) => {
-        if (document.querySelector("#footnotediv")) {
-            updateFootnoteEventListeners();
-            GW.sidenotes.footnotesObserver.disconnect();
-        }
-    });
-    GW.sidenotes.footnotesObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
+//     GW.sidenotes.footnotesObserver = new MutationObserver((mutationsList, observer) => {
+//     	let footnotesScriptElement = document.querySelector("[src*='footnotes.js']");
+//         if (footnotesScriptElement) {
+//         	footnotesScriptElement.addEventListener("load", () => {
+// 				GWLog("Sidenotes.js has detected that footnotes.js has loaded.");
+// 
+// 				updateFootnoteEventListeners();
+//         	});
+// 			GW.sidenotes.footnotesObserver.disconnect();
+//         }
+//     });
+//     GW.sidenotes.footnotesObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
 
     /*  If the page was loaded with a hash that points to a footnote, but
         sidenotes are enabled (or vice-versa), rewrite the hash in accordance
@@ -851,12 +854,15 @@ function sidenotesSetup() {
     GW.sidenotes.hashBeforeSidenoteWasFocused = (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref")) ?
                                                 "" : location.hash;
     /*  Add event listener to un-focus a sidenote (by resetting the hash) when
-        then document is clicked anywhere but a sidenote or a link.
+        the document is clicked anywhere but a sidenote or a link.
         */
     document.body.addEventListener("click", GW.sidenotes.bodyClicked = (event) => {
         GWLog("GW.sidenotes.bodyClicked");
 
-        if (!(event.target.tagName == "A" || event.target.closest(".sidenote")) &&
+		GWLog(event.target);
+		GWLog(location.hash);
+
+        if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
             (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref"))) {
             setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
         }

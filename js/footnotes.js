@@ -7,9 +7,9 @@ License: public domain ("And some people have asked me about a license for this 
 Footnotes = {
 	contentContainerSelector: "#markdownBody",
 	minFootnoteWidth: 520,
-	footnotefadetimeout: false,
-	footnotekilltimeout: false,
-	footnotepopuptimeout: false,
+	footnoteFadeTimeout: false,
+	footnoteKillTimeout: false,
+	footnotePopupTimeout: false,
 	footnotePopup: null,
 	unbind: function() {
 		document.querySelectorAll(".footnote-ref").forEach(fnref => {
@@ -30,11 +30,11 @@ Footnotes = {
 	//	The mouseover event.
 	footnoteover: (event) => {
 		//	Stop the countdown to un-pop the popup.
-		clearTimeout(Footnotes.footnotefadetimeout);
-		clearTimeout(Footnotes.footnotekilltimeout);
-		clearTimeout(Footnotes.footnotepopuptimeout);
+		clearTimeout(Footnotes.footnoteFadeTimeout);
+		clearTimeout(Footnotes.footnoteKillTimeout);
+		clearTimeout(Footnotes.footnotePopupTimeout);
 
-		Footnotes.footnotepopuptimeout = setTimeout(() => {
+		Footnotes.footnotePopupTimeout = setTimeout(() => {
 			//	Get the citation and its target footnote ID.
 			var citationAbsoluteRect = event.target.getBoundingClientRect();
 			let bodyAbsoluteRect = document.body.getBoundingClientRect();
@@ -119,15 +119,15 @@ Footnotes = {
 	},
 	//	The mouseout event.
 	footnoteoout: (event) => {
-		clearTimeout(Footnotes.footnotefadetimeout);
-		clearTimeout(Footnotes.footnotekilltimeout);
-		clearTimeout(Footnotes.footnotepopuptimeout);
+		clearTimeout(Footnotes.footnoteFadeTimeout);
+		clearTimeout(Footnotes.footnoteKillTimeout);
+		clearTimeout(Footnotes.footnotePopupTimeout);
 
 		if (!Footnotes.footnotePopup) return;
 
-		Footnotes.footnotefadetimeout = setTimeout(() => {
+		Footnotes.footnoteFadeTimeout = setTimeout(() => {
 			Footnotes.footnotePopup.classList.add("fading");
-			Footnotes.footnotekilltimeout = setTimeout(() => {
+			Footnotes.footnoteKillTimeout = setTimeout(() => {
 				Footnotes.footnotePopup.classList.remove("fading");
 				Footnotes.footnotePopup.remove();
 			}, 750);
@@ -135,9 +135,9 @@ Footnotes = {
 	},
 	//	The "user moved mouse back into popup" mouseover event.
 	divover: (event) => {
-		clearTimeout(Footnotes.footnotefadetimeout);
-		clearTimeout(Footnotes.footnotekilltimeout);
-		clearTimeout(Footnotes.footnotepopuptimeout);
+		clearTimeout(Footnotes.footnoteFadeTimeout);
+		clearTimeout(Footnotes.footnoteKillTimeout);
+		clearTimeout(Footnotes.footnotePopupTimeout);
 		Footnotes.footnotePopup.classList.remove("fading");
 	}
 }
