@@ -1080,15 +1080,15 @@ a.footnote-ref {
 }
 #sidenote-column-left {
     height: calc(100% - 20em);
-    width: calc(50vw - (50% + 96px));
+    width: calc(50vw - (50% + 92px));
     top: 20em;
-    right: calc(100% + 68px);
+    right: calc(100% + 64px);
 }
 #sidenote-column-right {
     height: 100%;
-    width: calc(50vw - (50% + 110px));
+    width: calc(50vw - (50% + 104px));
     top: 0;
-    left: calc(100% + 62px);
+    left: calc(100% + 60px);
 }
 
 /*=-----------------=*/
@@ -1101,7 +1101,7 @@ a.footnote-ref {
     width: 100%;
     opacity: 0.85;
     line-height: 1.5;
-    padding: 2.26em 3px 0 2px;
+    padding: 2em 0 0 0;
 }
 .sidenote.highlighted,
 .sidenote:hover,
@@ -1253,7 +1253,7 @@ a.footnote-ref {
 .sidenote > .sidenote-self-link {
     font-weight: 600;
     position: absolute;
-    top: 3px;
+    top: 0;
     border-style: dotted;
     border-color: var(--GW-sidenote-self-link-border-color);
     border-width: 1px 1px 0px 1px;
@@ -1270,10 +1270,10 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     background-image: none;
 }
 #sidenote-column-left .sidenote > .sidenote-self-link {
-    right: 3px;
+    right: 0;
 }
 #sidenote-column-right .sidenote > .sidenote-self-link {
-    left: 3px;
+    left: 0;
 }
 
 /* /\* Sidenotes return links: align to the sidenote box like the sidenote numbering *\/ */
@@ -1319,7 +1319,7 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 }
 .marginnote.sidenote {
 	display: initial;
-    width: calc(50vw - (50% + 110px));
+    width: calc(50vw - (50% + 104px));
     left: calc(100% + 60px);
 
 	/*  We inherit left and right padding from .sidenote class. */
