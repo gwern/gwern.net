@@ -118,6 +118,8 @@
     --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
     --GW-sidenote-border-color: #7c7c7c;
     --GW-sidenote-scrollbar-track-color: #000;
+    --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
+    --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-sidenote-self-link-border-color: #7c7c7c;
 
     /*  Tables.
@@ -128,6 +130,8 @@
     --GW-table-row-horizontal-border-color: #fff;
     --GW-table-cell-vertical-border-color: #000;
     --GW-table-scrollbar-track-color: #000;
+    --GW-table-scrollbar-thumb-color: #7c7c7c;
+    --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
     --GW-table-scrollbar-border-color: #fff;
     --GW-table-column-heading-hover-background-color: #2b3637;
     --GW-table-sorted-column-heading-background-color: #166983;
@@ -156,7 +160,7 @@
     --GW-syntax-highlight-color-preprocessor: inherit;
     --GW-syntax-highlight-color-extension: #999;
     --GW-syntax-highlight-color-comment: #999;
-    --GW-syntax-highlight-color-control-flow: #cce1c8;
+    --GW-syntax-highlight-color-control-flow: #b6edaa;
     --GW-syntax-highlight-color-keyword: #d8deff;
     --GW-syntax-highlight-color-operator: #d8deff;
     --GW-syntax-highlight-color-special-char: #94adb6;
@@ -192,12 +196,12 @@
 
     /*  Admonitions.
         */
-    --GW-admonition-default-left-border-color: #aaa9a9;
+    --GW-admonition-default-left-border-color: #929292;
     --GW-admonition-default-background-color: #4f4f4f;
     --GW-admonition-tip-left-border-color: #4f4f4f;
-    --GW-admonition-tip-background-color: #1d1d1d;
+    --GW-admonition-tip-background-color: #303030;
     --GW-admonition-warning-left-border-color: #bdbdbd;
-    --GW-admonition-warning-background-color: #8d8d8d;
+    --GW-admonition-warning-background-color: #8a8a8a;
     --GW-admonition-warning-text-color: #000;
     --GW-admonition-warning-title-background-color: #bdbdbd;
     --GW-admonition-warning-icon-color: #000;
@@ -241,4 +245,8 @@
     --GW-mode-selector-border-hover-color: #7c7c7c;
     --GW-mode-selector-button-text-color: #a6a6a6;
     --GW-mode-selector-button-hover-text-color: #fff;
+}
+
+hr::after {
+    filter: none;
 }
