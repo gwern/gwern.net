@@ -64,15 +64,6 @@ body {
 			right: 40px;
 		}
 	}
-	/*  Special styles for special browsers.
-		*/
-	@supports (-moz-user-focus:normal) {
-		@media only screen and (min-width: 1761px) {
-			main {
-				right: 0;
-			}
-		}
-	}
 	article {
 		flex: 1 1 auto;
 	}
@@ -735,16 +726,6 @@ h1 {
         display: none;
     }
 }
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 1760px) {
-        #sidenote-column-left,
-        #sidenote-column-right {
-            display: initial;
-        }
-    }
-}
 
 /*=--------------=*/
 /*= Margin notes =*/
@@ -757,15 +738,6 @@ h1 {
 	.marginnote {
 		display: none;
 	}
-}
-/*  Special styles for special browsers.
-    */
-@supports (-moz-user-focus: normal) {
-    @media only screen and (min-width: 1761px) {
-        .marginnote {
-            display: initial;
-        }
-    }
 }
 
 /*********/
