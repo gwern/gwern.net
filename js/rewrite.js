@@ -19,12 +19,13 @@ function doWhenPageLoaded(f) {
         window.addEventListener("load", f);
 }
 
-/*=------------------=*/
-/*= Tables & Figures =*/
-/*=------------------=*/
+/*=-----------------------=*/
+/*= Tables, Figures, etc. =*/
+/*=-----------------------=*/
 
-/*  Expands all tables & figures whose wrapper block is marked with class
-    "full-width" to span the viewport (minus a specified margin on both sides).
+/*  Expands all tables (& other blocks) whose wrapper block is marked with class
+    "full-width", and all figures marked with class "full-width", to span the 
+    viewport (minus a specified margin on both sides).
     */
 function expandFullWidthBlocks() {
     document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
@@ -37,7 +38,7 @@ function expandFullWidthBlocks() {
 
     /*  Find all full-width blocks.
         */
-	let allFullWidthBlocks = document.querySelectorAll(".tableWrapper.full-width, figure.full-width");
+	let allFullWidthBlocks = document.querySelectorAll("div.full-width, figure.full-width");
 
 	/*	Clear existing styles.
 		*/
@@ -127,7 +128,7 @@ document.querySelectorAll("table").forEach(table => {
         table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
 });
 
-/*  Expand full-width tables, and add a listener to recompute their size and
+/*  Expand full-width blocks, and add a listener to recompute their size and
     position upon window resize.
     */
 doWhenPageLoaded(expandFullWidthBlocks);
