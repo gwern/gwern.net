@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-02 14:23:58 gwern"
+When: Time-stamp: "2020-12-07 14:58:33 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -146,6 +146,9 @@ main = hakyll $ do
                                      "index"]
 
              match "static/templates/*.html" $ compile templateCompiler
+
+             match "static/js/gw-inline.js"       $ compile $ fmap readTemplate <$> getResourceString
+             match "static/js/darkmode-inline.js" $ compile $ fmap readTemplate <$> getResourceString
 
              match "static/css/initial.css"   $ compile cssTemplateCompiler -- to substitute in 'initial.css' while maintaining an easily-edited separate file
              -- The dark mode setup:

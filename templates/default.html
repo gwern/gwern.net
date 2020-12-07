@@ -10,47 +10,12 @@
     <style id="inlined-styles">$partial("static/css/initial.css")$</style>
     <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/dark-mode.css" /> -->
     <style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">$partial("static/css/dark-mode.css")$</style>
+    <!-- Helper scripts; necessary for dark mode etc -->
+    <script id="gw-inline">
+      $partial("static/js/gw-inline.js")$</script>
     <!-- Dark mode: before anything else loads, snoop user cookies & browser variables for dark mode preference and immediately toggle sets of CSS color variables/classes to avoid any 'flash of white' or delayed loading. Note: CSS falls back to the media-query browser/OS variable preference, so still works if JS is blocked! (The JS is only necessary for the theme switcher widget allowing 'force light'/'force dark' options. If users block JS, set the dark mode preference, and are unhappy when they get dark mode, well, they made their bed and must lie in it.)  -->
-    <script>
-    /*  Create global 'GW' object, if need be.
-        */
-    if (typeof window.GW == "undefined")
-            window.GW = { };
-    GW.temp = { };
-
-    /*  Debug output.
-        */
-    function GWLog (string) {
-        if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
-            console.log(string);
-    }
-
-    /*  Set specified color mode (auto, light, dark).
-        */
-    function setMode(modeOption) {
-        GWLog("setMode");
-
-        // Inject the appropriate styles.
-        let darkModeStyles = document.querySelector("#inlined-dark-mode-styles");
-        if (modeOption == 'auto') {
-            darkModeStyles.media = "all and (prefers-color-scheme: dark)";
-        } else if (modeOption == 'dark') {
-            darkModeStyles.media = "all";
-        } else {
-            darkModeStyles.media = "not all";
-        }
-
-        // Update selector state.
-        if (window.updateModeSelectorState)
-            updateModeSelectorState();
-    }
-
-    // Get saved mode setting (or default).
-    let currentMode = localStorage.getItem("selected-mode") || 'auto';
-
-    // Activate saved mode.
-    setMode(currentMode);
-    </script>
+    <script id="darkmode-inline">
+      $partial("static/js/darkmode-inline.js")$</script>
 
     <!-- fetch the title & body fonts immediately to avoid re-rendering -->
     <link rel="preload" as="style"      href="/static/css/default.css" />
