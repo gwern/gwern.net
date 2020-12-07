@@ -30,25 +30,25 @@ html {
 }
 
 body {
-	max-width: 112ch;
+	max-width: 1120px;
 
     font-size: var(--GW-body-text-font-size);
 }
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	html {
 		font-size: 18px;
 	}
 }
 
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
 	body {
-		padding: 0 1.5ch 0 0.5ch;
+		padding: 0 15px 0 5px;
 		margin: 0 auto;
 	}
-	@media only screen and (min-width: 118.5ch) {
+	@media only screen and (min-width: 1185px) {
 		body {
-			padding: 0 6ch 0 0.5ch;
+			padding: 0 60px 0 5px;
 		}
 	}
 	main {
@@ -58,16 +58,16 @@ body {
 	}
 	/*  Breakpoint for sidenotes.
 		*/
-	@media only screen and (min-width: 176.1ch) {
+	@media only screen and (min-width: 1761px) {
 		main {
 			position: relative;
-			right: 4ch;
+			right: 40px;
 		}
 	}
 	/*  Special styles for special browsers.
 		*/
 	@supports (-moz-user-focus:normal) {
-		@media only screen and (min-width: 176.1ch) {
+		@media only screen and (min-width: 1761px) {
 			main {
 				right: 0;
 			}
@@ -81,37 +81,37 @@ body {
 	}
 	header,
 	article {
-		margin-left: 15.5ch;
+		margin-left: 155px;
 	}
-	@media only screen and (max-width: 120ch) {
+	@media only screen and (max-width: 1200px) {
 		header,
 		article {
-			margin-left: 14.5ch;
+			margin-left: 145px;
 		}
 	}
-	@media only screen and (max-width: 112ch) {
+	@media only screen and (max-width: 1120px) {
 		header,
 		article {
-			margin-left: 14ch;
+			margin-left: 140px;
 		}
 	}
-	@media only screen and (max-width: 104ch) {
+	@media only screen and (max-width: 1040px) {
 		header,
 		article {
-			margin-left: 13.5ch;
+			margin-left: 135px;
 		}
 	}
-	@media only screen and (max-width: 96ch) {
+	@media only screen and (max-width: 960px) {
 		header,
 		article {
-			margin-left: 13ch;
+			margin-left: 130px;
 		}
 	}
 }
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	body {
-		margin: 0 2ch;
+		margin: 0 20px;
 	}
 }
 
@@ -127,11 +127,11 @@ svg {
 	display: block;
 }
 
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
 	#sidebar {
 		font-variant: small-caps;
-		padding: 0 4ch 0 1ch;
-		width: 10ch;
+		padding: 0 40px 0 10px;
+		width: 100px;
 	}
 	#sidebar a#logo {
 		margin: 1em 0 2em 0;
@@ -170,7 +170,7 @@ svg {
 	}
 }
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	#sidebar {
 		justify-content: center;
 		margin: 1.4em 0 0.5em 0;
@@ -232,7 +232,7 @@ header h1 {
 	letter-spacing: -1px;
 }
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	header h1 {
 		font-size: 2em;
 	}
@@ -242,7 +242,7 @@ header h1 {
 /* PAGE METADATA BLOCK */
 /***********************/
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	#page-metadata {
 		text-align: center;
 	}
@@ -329,22 +329,22 @@ body.index .abstract {
 	box-shadow: none;
 }
 
-@media only screen and (min-width: 120ch) {
+@media only screen and (min-width: 1200px) {
 	/*  Leave enough horizontal room to show multiple sections simultaneously, table-like */
 	body.index #markdownBody {
-		width: 135ch;
-		max-width: calc(50vw + 42ch);
+		width: 1350px;
+		max-width: calc(50vw + 420px);
 	}
 	body.index p,
 	body.index hr {
-		max-width: 97ch;
+		max-width: 970px;
 	}
 }
 
 /*  Add some vertical padding for the introduction.
 	*/
 body.index #markdownBody {
-	padding-top: 1.5ch;
+	padding-top: 15px;
 }
 
 /*  Headings on the home page.
@@ -373,7 +373,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 }
 
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	body.index #sidebar #logo {
 		border: 1px dotted transparent;
 		align-self: flex-start;
@@ -419,46 +419,46 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 /*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
 	*/
-@media only screen and (max-width: 128ch) {
+@media only screen and (max-width: 1280px) {
 	#TOC {
 		font-size: 0.95rem;
 	}
 }
 
-@media only screen and (max-width: 120ch) {
+@media only screen and (max-width: 1200px) {
 	#TOC {
 		font-size: 0.90rem;
 	}
 }
 
-@media only screen and (max-width: 112ch) {
+@media only screen and (max-width: 1120px) {
 	#TOC {
 		font-size: 0.85rem;
 		margin: 0 1.5rem 1.25rem 0;
 	}
 }
 
-@media only screen and (max-width: 104ch) {
+@media only screen and (max-width: 1040px) {
 	#TOC {
 		font-size: 0.80rem;
 		margin: 0 1.25rem 1rem 0;
 	}
 }
 
-@media only screen and (max-width: 96ch) {
+@media only screen and (max-width: 960px) {
 	#TOC {
 		margin: 0 1rem 1rem 0;
 	}
 }
 
-@media only screen and (min-width: 90ch) {
+@media only screen and (min-width: 900px) {
 	#TOC {
 		float: left;
-		max-width: 30ch;
+		max-width: 285px;
 	}
 }
 
-@media only screen and (max-width: 90ch) {
+@media only screen and (max-width: 900px) {
 	#TOC {
 		float: none;
 		margin: 2em auto;
@@ -469,7 +469,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 	}
 }
 
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	#TOC a {
 		display: inline-block;
 	}
@@ -615,7 +615,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 #TOC ul li::before {
 	position: absolute;
 	right: calc(100% - 1em);
-	width: 12ch;
+	width: 111px;
 	text-align: right;
 	font-weight: normal;
 	pointer-events: none;
@@ -638,14 +638,14 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 /*  Breakpoint for sidenotes.
 	*/
-@media only screen and (min-width: 176.1ch) {
+@media only screen and (min-width: 1761px) {
 	#markdownBody {
 		position: relative;
 	}
 }
 
-@media only screen and (min-width: 65ch) {
-	@media only screen and (max-width: 100ch) {
+@media only screen and (min-width: 650px) {
+	@media only screen and (max-width: 1000px) {
 	/*  Replaces A/B-test-set average value; the wider the screen, the more
 		line-height is necessary, and no one size suits all, so set 3 brackets
 		of increasing height.
@@ -654,12 +654,12 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 			line-height: 1.45;
 		}
 	}
-	@media only screen and (min-width: 100.1ch) and (max-width: 120ch) {
+	@media only screen and (min-width: 1001px) and (max-width: 1200px) {
 		#markdownBody {
 			line-height: 1.5;
 		}
 	}
-	@media only screen and (min-width: 120.1ch) {
+	@media only screen and (min-width: 1201px) {
 		#markdownBody {
 			line-height: 1.55;
 		}
@@ -707,7 +707,7 @@ html {
 	position: relative;
 }
 
-@media only screen and (max-width: 65ch) {
+@media only screen and (max-width: 650px) {
 	h1 {
 		margin: 1.25em 0 0.5em 0;
 	}
@@ -729,7 +729,7 @@ h1 {
 
 /*  Hide sidenote columns on narrow viewports.
     */
-@media only screen and (max-width: 176ch) {
+@media only screen and (max-width: 1760px) {
     #sidenote-column-left,
     #sidenote-column-right {
         display: none;
@@ -738,7 +738,7 @@ h1 {
 /*  Special styles for special browsers.
     */
 @supports (-moz-user-focus: normal) {
-    @media only screen and (max-width: 176ch) {
+    @media only screen and (max-width: 1760px) {
         #sidenote-column-left,
         #sidenote-column-right {
             display: initial;
@@ -753,7 +753,7 @@ h1 {
 /*  On wide viewports, hide margin note until it is styled as a sidenote (i.e,
     until it gets the `.sidenote` class applied to it).
     */
-@media only screen and (min-width: 176.1ch) {
+@media only screen and (min-width: 1761px) {
 	.marginnote {
 		display: none;
 	}
@@ -761,7 +761,7 @@ h1 {
 /*  Special styles for special browsers.
     */
 @supports (-moz-user-focus: normal) {
-    @media only screen and (min-width: 176.1ch) {
+    @media only screen and (min-width: 1761px) {
         .marginnote {
             display: initial;
         }
@@ -868,7 +868,7 @@ p {
 p + p {
 	text-indent: 2.5em;
 }
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
 	p + p {
 		text-indent: 1em;
 	}
@@ -918,12 +918,12 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 /*= Various edge cases =*/
 /*=--------------------=*/
 
-@media only screen and (min-width: 65ch) {
+@media only screen and (min-width: 650px) {
     blockquote {
         overflow: hidden;
     }
 }
-@media only screen and (max-width: 64.9ch) {
+@media only screen and (max-width: 649px) {
     /* even less horizontal is available on mobile! */
     blockquote {
         margin: 1.25em 0 1.5em 0;
