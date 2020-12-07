@@ -124,8 +124,15 @@ function rectifyCodeBlockHeight(codeBlock) {
 document.querySelectorAll("table").forEach(table => {
     if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
         table.parentElement.classList.toggle("tableWrapper", true);
+});
+
+/*  Wrap each pre.full-width in a div.full-width (for layout purposes).
+    */
+document.querySelectorAll("pre.full-width").forEach(fullWidthPre => {
+    if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
+        fullWidthPre.parentElement.classList.toggle("full-width", true);
     else
-        table.outerHTML = "<div class='tableWrapper'>" + table.outerHTML + "</div>";
+        fullWidthPre.outerHTML = "<div class='full-width'>" + fullWidthPre.outerHTML + "</div>";
 });
 
 /*  Expand full-width blocks, and add a listener to recompute their size and
