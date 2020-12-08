@@ -301,16 +301,16 @@ function bindSidenoteMouseEvents() {
 		let fnref = GW.sidenotes.footnoteRefs[i];
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
 
-		fnref.addEventListener("mouseover", GW.sidenotes.footnoteover = () => {
+		fnref.addEventListener("mouseover", fnref.footnoteover = (event) => {
 			sidenote.classList.toggle("highlighted", true);
 		});
-		fnref.addEventListener("mouseout", GW.sidenotes.footnoteout = () => {
+		fnref.addEventListener("mouseout", fnref.footnoteout = (event) => {
 			sidenote.classList.remove("highlighted");
 		});
-		sidenote.addEventListener("mouseover", GW.sidenotes.sidenoteover = () => {
+		sidenote.addEventListener("mouseover", sidenote.sidenoteover = (event) => {
 			fnref.classList.toggle("highlighted", true);
 		});
-		sidenote.addEventListener("mouseout", GW.sidenotes.sidenoteout = () => {
+		sidenote.addEventListener("mouseout", sidenote.sidenoteout = (event) => {
 			fnref.classList.remove("highlighted");
 		});
 	}
@@ -325,10 +325,10 @@ function unbindSidenoteMouseEvents() {
 		let fnref = GW.sidenotes.footnoteRefs[i];
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
 
-		fnref.removeEventListener("mouseover", GW.sidenotes.footnoteover);
-		fnref.removeEventListener("mouseout", GW.sidenotes.footnoteout);
-		sidenote.removeEventListener("mouseover", GW.sidenotes.sidenoteover);
-		sidenote.removeEventListener("mouseout", GW.sidenotes.sidenoteout);
+		fnref.removeEventListener("mouseover", fnref.footnoteover);
+		fnref.removeEventListener("mouseout", fnref.footnoteout);
+		sidenote.removeEventListener("mouseover", sidenote.sidenoteover);
+		sidenote.removeEventListener("mouseout", sidenote.sidenoteout);
 	}
 }
 
@@ -787,18 +787,13 @@ function sidenotesSetup() {
     /*  In case footnotes.js loads later, make sure event listeners are set in
         order afterwards.
         */
-//     GW.sidenotes.footnotesObserver = new MutationObserver((mutationsList, observer) => {
-//     	let footnotesScriptElement = document.querySelector("[src*='footnotes.js']");
-//         if (footnotesScriptElement) {
-//         	footnotesScriptElement.addEventListener("load", () => {
-// 				GWLog("Sidenotes.js has detected that footnotes.js has loaded.");
-// 
-// 				updateFootnoteEventListeners();
-//         	});
-// 			GW.sidenotes.footnotesObserver.disconnect();
-//         }
-//     });
-//     GW.sidenotes.footnotesObserver.observe(document.body, { attributes: true, childList: true, subtree: true });
+    GW.notificationCenter.addHandlerForEvent("Footnotes.setupComplete", {
+    	f: () => {
+			GWLog("Sidenotes.js has detected that footnotes.js has loaded.");
+			updateFootnoteEventListeners();
+    	},
+    	once: true
+    });
 
     /*  If the page was loaded with a hash that points to a footnote, but
         sidenotes are enabled (or vice-versa), rewrite the hash in accordance
