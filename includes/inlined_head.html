@@ -1,0 +1,1605 @@
+<style id="inlined-styles-colors">
+:root {
+    /*  General.
+        */
+    --GW-body-background-color: #fff;
+    --GW-body-text-color: #000;
+    --GW-body-link-color: #272727;
+
+    /*  Selection.
+        */
+    --GW-text-selection-background-color: #333;
+    --GW-text-selection-color: #fff;
+
+    /*  Link underlining.
+        */
+    --GW-link-underline-background-color: var(--GW-body-background-color);
+    --GW-link-underline-gradient-line-color: #333;
+    --GW-link-underline-gradient-line-color-hover: #999;
+
+    /*  Blockquotes.
+        */
+    --GW-blockquote-border-color-level-one: #ccc;
+    --GW-blockquote-border-color-level-two: #c4c4c4;
+    --GW-blockquote-border-color-level-three: #b3b3b3;
+    --GW-blockquote-border-color-level-four: #a6a6a6;
+    --GW-blockquote-background-color-level-one: #f8f8f8;
+    --GW-blockquote-background-color-level-two: #e6e6e6;
+    --GW-blockquote-background-color-level-three: #d8d8d8;
+
+    /*  Abstracts.
+        */
+    --GW-abstract-border-color: #bbb;
+
+    /*  Sidebar.
+        */
+    --GW-sidebar-bullet-color: #888;
+    --GW-sidebar-horizontal-rule-color: #aaa;
+    --GW-sidebar-bullet-text-shadow-color: #000;
+    --GW-sidebar-mobile-link-border-color: #000;
+
+    /*  Table of contents.
+        */
+    --GW-TOC-border-color: #ccc;
+    --GW-TOC-background-color: #f9f9f9;
+    --GW-TOC-link-hover-background-color: #ececec;
+    --GW-TOC-link-hover-color: #000;
+    --GW-TOC-link-hover-indicator-bar-color: #ccc;
+    --GW-TOC-number-color: #909090;
+    --GW-TOC-number-hover-color: #313131;
+
+    /*  Collapse blocks.
+        */
+    --GW-collapse-block-disclosure-button-color: #999;
+    --GW-collapse-block-disclosure-button-hover-color: #666;
+    --GW-collapse-block-disclosure-button-targeted-color: #d6d6d6;
+    --GW-table-collapse-block-disclosure-button-color: #ccc;
+    --GW-table-collapse-block-disclosure-button-hover-color: #eee;
+    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
+    --GW-collapse-block-disclosure-button-hover-background-color: rgba(0,0,0,0.1);
+    --GW-collapse-block-click-to-expand-text-color: #777;
+    --GW-collapse-block-click-to-expand-text-shadow-color: #fff;
+    --GW-collapse-block-click-to-expand-text-hover-color: #444;
+    --GW-collapse-block-hover-border-color: #777;
+    --GW-collapse-block-fade-gradient-color-one: rgba(255,255,255,0);
+    --GW-collapse-block-fade-gradient-color-two: rgba(255,255,255,1);
+
+    /*  Headings.
+        */
+    --GW-H1-box-shadow-background-color: #fff;
+    --GW-H1-box-shadow-line-color: #888;
+    --GW-H2-bottom-border-color: #888;
+    --GW-heading-self-link-hover-color: #485555;
+
+    /*  Comments.
+        */
+    --GW-comment-section-top-border-color: #999;
+
+    /*  Links.
+        */
+    --GW-link-hover-color: #888;
+
+    /*  Lists.
+        */
+    --GW-bulleted-list-marker-color: #808080;
+
+    /*  Figures.
+        */
+    --GW-figure-outline-color: #888;
+    --GW-figure-caption-outline-color: #888;
+
+    /*  Epigraphs.
+        */
+    --GW-epigraph-quotation-mark-color: #808080;
+
+    /*  Footnotes.
+        */
+    --GW-footnote-backlink-border-color: #000;
+    --GW-footnote-backlink-border-hover-color: #999;
+    --GW-footnote-backlink-after-bordered-block-background-color: #fff;
+
+    /*  Footnote references.
+        */
+    --GW-footnote-ref-highlight-box-shadow-color: #aaa;
+    --GW-footnote-ref-highlight-box-shadow-interstitial-color: #fff;
+    --GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
+
+    /*  Footnote popups.
+        */
+    --GW-footnote-popup-box-shadow-color: #fff;
+    --GW-footnote-popup-background-color: #fff;
+    --GW-footnote-popup-border-color: #aaa;
+    --GW-footnote-popup-scrollbar-thumb-color: #ccc;
+    --GW-footnote-popup-scrollbar-track-color: #fff;
+    --GW-footnote-popup-scrollbar-thumb-hover-color: #999;
+
+    /*  Sidenotes.
+        */
+    --GW-sidenote-highlight-background-color: #fff;
+    --GW-sidenote-highlight-box-shadow-color: #aaa;
+    --GW-sidenote-border-color: #aaa;
+    --GW-sidenote-scrollbar-track-color: #fff;
+    --GW-sidenote-scrollbar-thumb-color: #aaa;
+    --GW-sidenote-scrollbar-thumb-hover-color: #999;
+    --GW-sidenote-self-link-border-color: #aaa;
+
+    /*  Tables.
+        */
+    --GW-table-border-color: #000;
+    --GW-table-full-width-background-color: #fff;
+    --GW-table-caption-border-color: #000;
+    --GW-table-row-horizontal-border-color: #000;
+    --GW-table-cell-vertical-border-color: #fff;
+    --GW-table-scrollbar-track-color: #fff;
+    --GW-table-scrollbar-thumb-color: #aaa;
+    --GW-table-scrollbar-thumb-hover-color: #999;
+    --GW-table-scrollbar-border-color: #000;
+    --GW-table-column-heading-hover-background-color: #e2f0f2;
+    --GW-table-sorted-column-heading-background-color: #8bd0ed;
+    --GW-table-sorted-column-heading-text-color: #fff;
+    --GW-table-sorted-column-heading-text-shadow-color: #000;
+    --GW-table-zebra-stripe-alternate-row-background-color: #f6f6f6;
+    --GW-table-row-hover-outline-color: #000;
+
+    /*  Code blocks.
+        */
+    --GW-code-element-border-color: #c8c8c8;
+    --GW-code-element-background-color: #fafafa;
+    --GW-pre-element-border-color: #c8c8c8;
+    --GW-pre-element-background-color: #fafafa;
+    --GW-pre-element-scrollbar-track-color: #fafafa;
+    --GW-pre-element-scrollbar-thumb-color: #ccc;
+    --GW-pre-element-scrollbar-thumb-hover-color: #999;
+
+    /*  Syntax highlight theme.
+        */
+    --GW-syntax-highlight-color-normal: #1f1c1b;
+    --GW-syntax-highlight-color-attribute: #002561;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #666666;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-extension: #888888;
+    --GW-syntax-highlight-color-comment: #888888;
+    --GW-syntax-highlight-color-control-flow: #003900;
+    --GW-syntax-highlight-color-keyword: #002561;
+    --GW-syntax-highlight-color-operator: #002561;
+    --GW-syntax-highlight-color-special-char: #607880;
+    --GW-syntax-highlight-color-built-in: #002561;
+    --GW-syntax-highlight-color-function: #002561;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #bf0303;
+    --GW-syntax-highlight-color-error: #ff0000;
+    --GW-syntax-highlight-color-import: #777777;
+    --GW-syntax-highlight-color-special-string: #666666;
+
+    /*  Math.
+        */
+    --GW-math-block-scrollbar-border-color: #ccc;
+    --GW-math-block-scrollbar-track-color: #fff;
+    --GW-math-block-scrollbar-thumb-color: #ccc;
+    --GW-math-block-scrollbar-thumb-hover-color: #999;
+
+    /*  Drop caps.
+        */
+    --GW-drop-caps-yinit-color: #0d0d0d;
+    --GW-drop-caps-yinit-text-shadow-color: #777;
+    --GW-drop-caps-de-zs-color: #1b1b1b;
+    --GW-drop-caps-cheshire-color: #191919;
+    --GW-drop-caps-kanzlei-color: #191919;
+
+    /*  Admonitions.
+        */
+    --GW-admonition-default-left-border-color: #909090;
+    --GW-admonition-default-background-color: #d8d8d8;
+    --GW-admonition-tip-left-border-color: #d8d8d8;
+    --GW-admonition-tip-background-color: #f0f0f0;
+    --GW-admonition-warning-left-border-color: #5a5a5a;
+    --GW-admonition-warning-background-color: #9a9a9a;
+    --GW-admonition-warning-text-color: #fff;
+    --GW-admonition-warning-title-background-color: #5a5a5a;
+    --GW-admonition-warning-icon-color: #fff;
+    --GW-admonition-error-left-border-color: #2d2d2d;
+    --GW-admonition-error-background-color: #5a5a5a;
+    --GW-admonition-error-text-color: #fff;
+    --GW-admonition-error-title-background-color: #2d2d2d;
+    --GW-admonition-error-icon-color: #fff;
+
+    /*  Sequential nav UI.
+        */
+    --GW-sequential-nav-link-background-color: #fff;
+
+    /*  Links.
+        */
+    --GW-definition-annotation-text-color: #444;
+
+    /*  Page-specific styles.
+        */
+    --GW-index-page-bottom-ornament-line-color: #808080;
+    --GW-page-mead-image-box-shadow-inner-color: #fff;
+    --GW-page-mead-image-box-shadow-outer-color: #ccc;
+
+    /*  Popups.
+        */
+    --GW-popups-body-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-border-color: #aaa;
+    --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
+    --GW-popups-popup-scrollbar-thumb-color: #ccc;
+    --GW-popups-popup-scrollbar-track-color: #fff;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #999;
+
+    /*  Image focus.
+        */
+    --GW-image-focus-image-hover-drop-shadow-color: #777;
+
+    /*  Mode selector (light/dark mode).
+        */
+    --GW-mode-selector-background-color: #fff;
+    --GW-mode-selector-border-hover-color: #aaa;
+    --GW-mode-selector-button-text-color: #777;
+    --GW-mode-selector-button-hover-text-color: #000;
+}
+
+hr::after {
+    filter: none;
+}
+</style>
+<style id="inlined-styles">
+/*********/
+/* FONTS */
+/*********/
+/* fonts are now loaded from /static/css/fonts.css */
+
+/**********/
+/* COLORS */
+/**********/
+/* colors are now in /static/css/colors.css or dark-mode.css */
+
+/*************/
+/* VARIABLES */
+/*************/
+
+:root {
+    --GW-body-text-font-size: 1rem;
+}
+
+/***********/
+/* GENERAL */
+/***********/
+
+html {
+	padding: 0;
+	margin: 0;
+	background-color: var(--GW-body-background-color);
+	color: var(--GW-body-text-color);
+	font-weight: 400;
+	font-family: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Times New Roman", "Droid Serif", "Times", serif;
+}
+
+body {
+	max-width: 1120px;
+
+    font-size: var(--GW-body-text-font-size);
+}
+
+@media only screen and (max-width: 649px) {
+	html {
+		font-size: 18px;
+	}
+}
+
+@media only screen and (min-width: 650px) {
+	body {
+		padding: 0 15px 0 5px;
+		margin: 0 auto;
+	}
+	@media only screen and (min-width: 1185px) {
+		body {
+			padding: 0 60px 0 5px;
+		}
+	}
+	main {
+		min-height: 100vh;
+		display: flex;
+		flex-flow: column;
+	}
+	/*  Breakpoint for sidenotes.
+		*/
+	@media only screen and (min-width: 1761px) {
+		main {
+			position: relative;
+			right: 40px;
+		}
+	}
+	article {
+		flex: 1 1 auto;
+	}
+	#sidebar {
+		position: absolute;
+	}
+	header,
+	article {
+		margin-left: 155px;
+	}
+	@media only screen and (max-width: 1200px) {
+		header,
+		article {
+			margin-left: 145px;
+		}
+	}
+	@media only screen and (max-width: 1120px) {
+		header,
+		article {
+			margin-left: 140px;
+		}
+	}
+	@media only screen and (max-width: 1040px) {
+		header,
+		article {
+			margin-left: 135px;
+		}
+	}
+	@media only screen and (max-width: 960px) {
+		header,
+		article {
+			margin-left: 130px;
+		}
+	}
+}
+
+@media only screen and (max-width: 649px) {
+	body {
+		margin: 0 20px;
+	}
+}
+
+svg {
+	fill: currentColor;
+}
+
+/***********/
+/* SIDEBAR */
+/***********/
+
+#sidebar a {
+	display: block;
+}
+
+@media only screen and (min-width: 650px) {
+	#sidebar {
+		font-variant: small-caps;
+		padding: 0 40px 0 10px;
+		width: 100px;
+	}
+	#sidebar a#logo {
+		margin: 1em 0 2em 0;
+	}
+	#sidebar a#logo svg {
+		width: 64px;
+	}
+	#sidebar a.new,
+	#sidebar a.patreon {
+		border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
+	}
+	#sidebar a.new {
+		padding-top: 0.45em;
+		margin-top: 0.55em;
+	}
+	#sidebar a.patreon {
+		padding-top: 0.6em;
+		margin-top: 0.55em;
+		font-size: 0.9em;
+		white-space: nowrap;
+		line-height: 1.35;
+	}
+	#sidebar a.mail,
+	#sidebar a.r_gwern {
+		padding-left: 0.125em;
+		margin-top: 0.05em;
+	}
+	#sidebar a.mail::before,
+	#sidebar a.r_gwern::before {
+		content: "\2727\2007";
+		text-shadow: 0 0 0 var(--GW-sidebar-bullet-text-shadow-color);
+		bottom: 0.2em;
+		position: relative;
+		font-size: 0.6em;
+		color: var(--GW-sidebar-bullet-color);
+	}
+}
+
+@media only screen and (max-width: 649px) {
+	#sidebar {
+		justify-content: center;
+		margin: 1.4em 0 0.5em 0;
+	}
+	#sidebar a {
+		border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
+		padding: 3px 10px;
+		text-align: center;
+		margin: 1px;
+	}
+	#sidebar a#logo {
+		padding: 8px 5px 3px 5px;
+	}
+	#sidebar,
+	#sidebar-links {
+		display: flex;
+	}
+	#sidebar-links {
+		flex-flow: row wrap;
+		margin: 0.5em 0 0 0;
+	}
+	#sidebar a.site,
+	#sidebar a.links {
+		flex: 1 1 40%;
+	}
+	#sidebar a.new,
+	#sidebar a.mail,
+	#sidebar a.r_gwern {
+		padding: 3px 10px;
+		flex: 1 1 auto;
+	}
+	#sidebar a.patreon {
+		display: none;
+	}
+	#sidebar #logo {
+		margin: calc(0.5em + 1px) 1px 1px 0;
+	}
+	#sidebar #logo svg {
+		width: 2.5rem;
+	}
+}
+
+/***************/
+/* PAGE HEADER */
+/***************/
+
+header {
+	overflow: auto;
+}
+
+header h1 {
+	margin: 0.75em 0;
+	text-align: center;
+	text-transform: none;
+	font-variant: small-caps;
+	font-size: 2.5em;
+	line-height: 1.15;
+	font-weight: 600;
+	letter-spacing: -1px;
+}
+
+@media only screen and (max-width: 649px) {
+	header h1 {
+		font-size: 2em;
+	}
+}
+
+/***********************/
+/* PAGE METADATA BLOCK */
+/***********************/
+
+@media only screen and (max-width: 649px) {
+	#page-metadata {
+		text-align: center;
+	}
+}
+
+#page-metadata hr {
+	display: none;
+}
+
+#page-metadata {
+	margin: 0 0 2rem 0;
+	overflow: auto;
+	font-size: 0.95em;
+	line-height: 1.5;
+}
+
+/* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
+#page-metadata #page-description {
+	display: block;
+	margin: 0 auto 0.75em auto;
+	font-style: italic;
+}
+#page-metadata #page-description em {
+	font-style: normal;
+}
+
+#page-metadata #page-description ~ * {
+	font-size: 0.9em;
+}
+
+#page-metadata #page-description + br {
+	display: none;
+}
+
+#page-metadata-block span:nth-of-type(n+3) {
+	white-space: nowrap;
+}
+
+/* interpunct separators for the metadata fields; looks nicer than semicolons or slashes */
+#page-metadata-block > span:not(:last-child)::after {
+  content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+  display: inline-block;
+  margin:0 0.2em 0 0.6em;
+}
+#page-metadata-block > span:nth-child(1)::after {
+  margin-left: 0.875em;
+}
+#page-metadata-block > span:nth-child(2)::after {
+  margin-left: 0.8125em;
+}
+
+/*=--------=*/
+/*= /index =*/
+/*=--------=*/
+
+/* on the index page, we hide article-related formatting, begging, comments, to make it more compact & classy */
+body.index #sidebar a.patreon,
+body.tags #sidebar a.patreon,
+body.index #TOC,
+body.index #page-metadata,
+body.index #comments,
+body.index #disqus_thread,
+body.index header {
+	display: none;
+}
+
+/*  No index self-link. */
+body.index #sidebar a#logo {
+	pointer-events: none;
+}
+
+/*  Make the sections reflow; better than fixed-width tables. */
+body.index article section {
+	display: inline-block;
+	vertical-align: top;
+}
+
+/*  Abstract is not a real abstract, just an introduction, no need for the abstract formatting.
+	*/
+body.index .abstract {
+	padding: 0;
+	border: none;
+	margin: 0;
+	box-shadow: none;
+}
+
+@media only screen and (min-width: 1200px) {
+	/*  Leave enough horizontal room to show multiple sections simultaneously, table-like */
+	body.index #markdownBody {
+		width: 1350px;
+		max-width: calc(50vw + 420px);
+	}
+	body.index p,
+	body.index hr {
+		max-width: 970px;
+	}
+}
+
+/*  Add some vertical padding for the introduction.
+	*/
+body.index #markdownBody {
+	padding-top: 15px;
+}
+
+/*  Headings on the home page.
+	*/
+body.index #markdownBody h1 {
+	margin: 1.125em 0 0 0;
+}
+
+/*  Lists on the home page.
+	*/
+body.index #markdownBody ul,
+body.tags #markdownBody ul {
+	margin: 1em 3em 0 0;
+	padding: 0 0 0 1.375em;
+}
+body.index #markdownBody li > ul,
+body.tags #markdownBody li > ul {
+	margin: 0.25em 0 0.25em 0;
+}
+body.index #markdownBody li,
+body.tags #markdownBody li {
+	margin-top: 0;
+}
+body.index #markdownBody ul > li:nth-of-type(n+2) {
+	margin: 0;
+}
+
+
+@media only screen and (max-width: 649px) {
+	body.index #sidebar #logo {
+		border: 1px dotted transparent;
+		align-self: flex-start;
+		padding: 7px 5px 6px 5px;
+	}
+	body.index #markdownBody section {
+		max-width: 100%;
+	}
+	body.index #markdownBody ul,
+	body.tags #markdownBody ul {
+		overflow-wrap: break-word;
+		margin-right: 0;
+	}
+	body.index #markdownBody li,
+	body.tags #markdownBody li {
+		padding: 1px 0;
+		margin: 2px 0 0 0;
+	}
+	body.index #markdownBody ul > li::before,
+	body.tags #markdownBody ul > li::before {
+		top: 0.25em;
+	}
+}
+
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+#TOC {
+	border: 1px solid var(--GW-TOC-border-color);
+	background-color: var(--GW-TOC-background-color);
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	margin: 0 2rem 1.5rem 0;
+	line-height: 1.25;
+	padding: 10px 10px 2px 14px;
+	position: relative;
+	z-index: 11;
+}
+
+#TOC:empty {
+	display: none;
+}
+
+/*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
+	*/
+@media only screen and (max-width: 1280px) {
+	#TOC {
+		font-size: 0.95rem;
+	}
+}
+
+@media only screen and (max-width: 1200px) {
+	#TOC {
+		font-size: 0.90rem;
+	}
+}
+
+@media only screen and (max-width: 1120px) {
+	#TOC {
+		font-size: 0.85rem;
+		margin: 0 1.5rem 1.25rem 0;
+	}
+}
+
+@media only screen and (max-width: 1040px) {
+	#TOC {
+		font-size: 0.80rem;
+		margin: 0 1.25rem 1rem 0;
+	}
+}
+
+@media only screen and (max-width: 960px) {
+	#TOC {
+		margin: 0 1rem 1rem 0;
+	}
+}
+
+@media only screen and (min-width: 900px) {
+	#TOC {
+		float: left;
+		max-width: 285px;
+	}
+}
+
+@media only screen and (max-width: 900px) {
+	#TOC {
+		float: none;
+		margin: 2em auto;
+		font-size: 1rem;
+	}
+	#TOC > ul > li > ul {
+		column-count: 2;
+	}
+}
+
+@media only screen and (max-width: 649px) {
+	#TOC a {
+		display: inline-block;
+	}
+	#TOC > ul > li > ul {
+		column-count: 1;
+	}
+	#TOC li li a {
+		padding: 0 0 1px 0;
+	}
+	#TOC li li li a {
+		padding: 0 0 2px 0;
+	}
+	#TOC li li li li a {
+		padding: 0 0 3px 0;
+	}
+	#TOC li li li li a {
+		padding: 0 0 4px 0;
+	}
+}
+
+/*=-----------------=*/
+/*= TOC list layout =*/
+/*=-----------------=*/
+
+#TOC ul {
+	list-style-type: none;
+	padding-left: 0em;
+	margin-bottom: 0;
+	margin-top: 4px;
+	padding-left: 1.4em;
+	text-indent: 0;
+	padding: 0;
+}
+
+#TOC ul ul {
+	list-style-type: none;
+	padding-left: 0.7em;
+	margin-top: 2px;
+}
+
+#TOC li {
+	font-weight: bold;
+	margin: 5px 0 10px 0;
+	padding-left: 1.125em;
+	position: relative;
+	overflow-wrap: break-word;
+}
+
+#TOC li li {
+	margin-bottom: 0;
+	font-weight: normal;
+	font-size: 0.9em;
+}
+
+#TOC p {
+	margin-top: 9px;
+	margin-bottom: 3px;
+}
+
+/*=------------------=*/
+/*= TOC link styling =*/
+/*=------------------=*/
+
+#TOC a {
+	border: 0;
+	display: block;
+	position: relative;
+}
+
+#TOC a:hover {
+	background-color: var(--GW-TOC-link-hover-background-color);
+	color: var(--GW-TOC-link-hover-color);
+}
+#TOC a:hover::after {
+	content: "";
+	display: inline-block;
+	position: absolute;
+	left: 100%;
+	top: 0;
+	background-color: var(--GW-TOC-link-hover-indicator-bar-color);
+	width: 0.25em;
+	height: 100%;
+}
+
+/*=--------------------------=*/
+/*= Inline code in TOC links =*/
+/*=--------------------------=*/
+
+#TOC code {
+	font-family: inherit;
+	font-size: inherit;
+	border: none;
+	padding: 0;
+	background-color: inherit;
+}
+
+/*=-------------------------------=*/
+/*= Wikipedia-style TOC numbering =*/
+/*=-------------------------------=*/
+
+#TOC > ul {
+	counter-reset: htoc_1;
+}
+#TOC > ul > li::before {
+	counter-increment: htoc_1;
+	content: counter(htoc_1) "\2006  ";
+}
+#TOC > ul ul {
+	counter-reset: htoc_2;
+}
+#TOC > ul ul li::before {
+	counter-increment: htoc_2;
+	content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
+}
+#TOC > ul ul ul {
+	counter-reset: htoc_3;
+}
+#TOC > ul ul ul li::before {
+	counter-increment: htoc_3;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
+}
+#TOC > ul ul ul ul {
+	counter-reset: htoc_4;
+}
+#TOC > ul ul ul ul li::before {
+	counter-increment: htoc_4;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
+}
+#TOC > ul ul ul ul ul {
+	counter-reset: htoc_5;
+}
+#TOC > ul ul ul ul ul li::before {
+	counter-increment: htoc_5;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
+}
+#TOC > ul ul ul ul ul ul {
+	counter-reset: htoc_6;
+}
+#TOC > ul ul ul ul ul ul li::before {
+	counter-increment: htoc_6;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
+}
+#TOC ul li::before {
+	position: absolute;
+	right: calc(100% - 1em);
+	width: 111px;
+	text-align: right;
+	font-weight: normal;
+	pointer-events: none;
+	color: var(--GW-TOC-number-color);
+}
+#TOC ul li:hover::before {
+	color: var(--GW-TOC-number-hover-color);
+}
+
+/****************/
+/* MAIN CONTENT */
+/****************/
+
+#markdownBody {
+	/*  Try to avoid scrollbars on paragraphs: prevents long unbroken
+		un-hyphenatable lines from causing H-scrolling
+		*/
+	overflow-wrap: break-word;
+}
+
+/*  Breakpoint for sidenotes.
+	*/
+@media only screen and (min-width: 1761px) {
+	#markdownBody {
+		position: relative;
+	}
+}
+
+@media only screen and (min-width: 650px) {
+	@media only screen and (max-width: 1000px) {
+	/*  Replaces A/B-test-set average value; the wider the screen, the more
+		line-height is necessary, and no one size suits all, so set 3 brackets
+		of increasing height.
+		*/
+		#markdownBody {
+			line-height: 1.45;
+		}
+	}
+	@media only screen and (min-width: 1001px) and (max-width: 1200px) {
+		#markdownBody {
+			line-height: 1.5;
+		}
+	}
+	@media only screen and (min-width: 1201px) {
+		#markdownBody {
+			line-height: 1.55;
+		}
+	}
+}
+
+/*  Use justified text (words get broken/hyphenated as necessary to avoid a
+	'ragged margin'), undoing the default of 'flush left, ragged' right (see
+	https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
+
+	WARNING: 'auto' hyphenation does not work in Chrome desktop due to long-standing inability/refusal:
+	https://bugs.chromium.org/p/chromium/issues/detail?id=47083 https://bugs.chromium.org/p/chromium/issues/detail?id=605840 https://bugs.chromium.org/p/chromium/issues/detail?id=652964
+	/images/design/2019-02-19-meme-distractedboyfriend-chromehyphenation.jpg
+
+	To work around Chrome failure, we use Edward Kmett's Haskell-ification of the TeX algorithm & dictionaries ( https://hackage.haskell.org/package/hyphenation ) to run a Hakyll compilation pass to insert soft hyphens. There is one bad side-effect: soft hyphens are often preserved in copy-paste, cluttering text, so a copy-paste JS listener in rewrite.js deletes all fancy hyphens from copy-pastes.
+	*/
+#markdownBody p,
+#markdownBody li {
+	text-align: justify;
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+}
+
+/*  Cute 'old-style' numerals, look a little nicer inline in text, and available natively in the SS fonts:
+	https://practicaltypography.com/alternate-figures.html#oldstyle-figures
+	*/
+html {
+	font-variant-numeric: oldstyle-nums;
+}
+
+.abstract > blockquote {
+	margin: 0 0 1.5em 0;
+	border-color: var(--GW-abstract-border-color);
+	padding: 0.9rem 1.25rem 0.95rem 1.25rem;
+	clear: none;
+}
+
+/* auto-smallcaps the first line of the introduction (= the first `<p>` after `<div class="abstract"></div>`); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
+.abstract + p::first-line, #markdownBody > p:first-child::first-line { font-feature-settings: 'smcp'; }
+
+#markdownBody h1 {
+	margin: 0.6em 0 0.5em -0.75rem;
+	font-weight: bold;
+	position: relative;
+}
+
+@media only screen and (max-width: 650px) {
+	h1 {
+		margin: 1.25em 0 0.5em 0;
+	}
+}
+
+/*=----------------=*/
+/*= Heading levels =*/
+/*=----------------=*/
+h1 {
+	font-feature-settings: 'smcp';
+	font-size: 1.75em;
+	line-height: 1.25;
+	letter-spacing: -0.75px;
+}
+
+/*************/
+/* SIDENOTES */
+/*************/
+
+/*  Hide sidenote columns on narrow viewports.
+    */
+@media only screen and (max-width: 1760px) {
+    #sidenote-column-left,
+    #sidenote-column-right {
+        display: none;
+    }
+}
+
+/*=--------------=*/
+/*= Margin notes =*/
+/*=--------------=*/
+
+/*  On wide viewports, hide margin note until it is styled as a sidenote (i.e,
+    until it gets the `.sidenote` class applied to it).
+    */
+@media only screen and (min-width: 1761px) {
+	.marginnote {
+		display: none;
+	}
+}
+
+/*********/
+/* LINKS */
+/*********/
+
+#markdownBody a {
+	/* force the occasional inline URL or other long word to break at max-width */
+	word-wrap: break-word;
+}
+
+a {
+	color: var(--GW-body-link-color); /* off-black */
+	text-decoration: none;
+}
+
+/*=------------------------=*/
+/*= Fancy link underlining =*/
+/*=------------------------=*/
+
+/*  Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
+	The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
+	is the 'skip-ink': when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
+	by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined. (The downside is that the overlapping text-shadows can also slightly damage the rendering of slashes & parentheses, which come too close and get partially erased.)
+
+	Unfortunately, we don't want to add underlines to links in the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
+	I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead.
+
+May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
+*/
+
+article > :not(#TOC) a:link {
+	text-decoration: none;
+	background-image:
+		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
+		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
+		linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+	background-size:
+		0.05em 1px,
+		0.05em 1px,
+		   1px 1px;
+	background-repeat:
+		no-repeat,
+		no-repeat,
+		repeat-x;
+	background-position:
+		  0% 90%,
+		100% 90%,
+		  0% 90%;
+
+	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
+	font-variant-numeric: lining-nums;
+}
+article > :not(#TOC) a:link,
+article > :not(#TOC) a:link * {
+	text-shadow:
+		 0.05em 0	   var(--GW-link-underline-background-color),
+		-0.05em 0	   var(--GW-link-underline-background-color),
+		 0	  0.05em   var(--GW-link-underline-background-color),
+		 0	 -0.05em   var(--GW-link-underline-background-color),
+		 0.08em 0	   var(--GW-link-underline-background-color),
+		-0.08em 0	   var(--GW-link-underline-background-color),
+		 0.11em 0	   var(--GW-link-underline-background-color),
+		-0.11em 0	   var(--GW-link-underline-background-color),
+		 0.14em 0	   var(--GW-link-underline-background-color),
+		-0.14em 0	   var(--GW-link-underline-background-color),
+		 0.17em 0	   var(--GW-link-underline-background-color),
+		-0.17em 0	   var(--GW-link-underline-background-color);
+}
+article > :not(#TOC) a:hover {
+	background-image:
+		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
+		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
+		linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
+}
+
+/* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
+::selection {
+	text-shadow: none;
+	background: var(--GW-text-selection-background-color);
+	color: var(--GW-text-selection-color);
+}
+
+/*  Prevent code block background color and border from obscuring link
+	underlining, for inline <code> elements in links.
+	*/
+a code {
+	z-index: -1;
+	position: relative;
+	border-bottom-width: 0;
+}
+
+/**************/
+/* PARAGRAPHS */
+/**************/
+
+p {
+	margin: 0;
+}
+p + p {
+	text-indent: 2.5em;
+}
+@media only screen and (max-width: 649px) {
+	p + p {
+		text-indent: 1em;
+	}
+}
+
+/***************/
+/* BLOCKQUOTES */
+/***************/
+/* additional blockquote styling done in default.css */
+
+blockquote {
+	--GW-link-underline-background-color: var(--GW-blockquote-background-color);
+
+	margin: 1.625em 0 1.75em 0;
+	border: 1px solid var(--GW-blockquote-border-color);
+	background-color: var(--GW-blockquote-background-color);
+	font-size: 0.95em;
+	padding: 1em 1.25em;
+}
+
+/*	Three-level of blockquote emphasis (darkening).
+	*/
+blockquote,
+blockquote blockquote blockquote blockquote {
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-one);
+}
+blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-one);
+}
+blockquote blockquote blockquote blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-four);
+}
+
+blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-two);
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-two);
+}
+
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-three);
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-three);
+}
+
+/*=--------------------=*/
+/*= Various edge cases =*/
+/*=--------------------=*/
+
+@media only screen and (min-width: 650px) {
+    blockquote {
+        overflow: hidden;
+    }
+}
+@media only screen and (max-width: 649px) {
+    /* even less horizontal is available on mobile! */
+    blockquote {
+        margin: 1.25em 0 1.5em 0;
+    }
+}
+
+p + blockquote {
+    margin-top: 1em;
+}
+
+/***************/
+/* CODE BLOCKS */
+/***************/
+
+pre {
+    overflow: auto;
+}
+
+/********/
+/* MATH */
+/********/
+
+.mjpage__block {
+    display: block;
+    overflow: auto;
+}
+
+/**********/
+/* TABLES */
+/**********/
+
+/*=-------------------=*/
+/*= Full-width tables =*/
+/*=-------------------=*/
+
+.tableWrapper.full-width {
+    position: relative;
+}
+
+/***********/
+/* FIGURES */
+/***********/
+
+figure img,
+figure video {
+    display: block;
+    max-height: calc(100vh - 8em);
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    margin: 0 auto;
+}
+
+/********/
+/* MISC */
+/********/
+
+/*  enable standard Pandoc attribute-based syntax for small-caps like '[foo]{.smallcaps}'; see https://pandoc.org/MANUAL.html#small-caps
+	*/
+span.smallcaps {
+	font-feature-settings: 'smcp';
+}
+
+/* Enable SSfP smallcaps for auto-annotated abbreviations/acronyms */
+span.smallcaps-auto {
+	font-feature-settings: 'smcp', 'c2sc';
+	font-variant-numeric: tabular-nums;
+}
+
+/*************/
+/* DARK MODE */
+/*************/
+/* see /static/js/darkmode.js and /static/css/dark-mode.css; this allows the user to toggle at runtime */
+</style>
+<style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)>
+:root {
+    /*  General.
+        */
+    --GW-body-background-color: #000;
+    --GW-body-text-color: #fff;
+    --GW-body-link-color: #e5e5e5;
+
+    /*  Selection.
+        */
+    --GW-text-selection-background-color: #dcdcdc;
+    --GW-text-selection-color: #000;
+
+    /*  Link underlining.
+        */
+    --GW-link-underline-background-color: var(--GW-body-background-color);
+    --GW-link-underline-gradient-line-color: #dcdcdc;
+    --GW-link-underline-gradient-line-color-hover: #8b8b8b;
+
+    /*  Blockquotes.
+        */
+    --GW-blockquote-border-color-level-one: #5c5c5c;
+    --GW-blockquote-border-color-level-two: #646464;
+    --GW-blockquote-border-color-level-three: #747474;
+    --GW-blockquote-border-color-level-four: #7f7f7f;
+    --GW-blockquote-background-color-level-one: #212121;
+    --GW-blockquote-background-color-level-two: #3e3e3e;
+    --GW-blockquote-background-color-level-three: #4f4f4f;
+
+    /*  Abstracts.
+        */
+    --GW-abstract-border-color: #6c6c6c;
+
+    /*  Sidebar.
+        */
+    --GW-sidebar-bullet-color: #999;
+    --GW-sidebar-horizontal-rule-color: #7c7c7c;
+    --GW-sidebar-bullet-text-shadow-color: #fff;
+    --GW-sidebar-mobile-link-border-color: #fff;
+
+    /*  Table of contents.
+        */
+    --GW-TOC-border-color: #5c5c5c;
+    --GW-TOC-background-color: #1f1f1f;
+    --GW-TOC-link-hover-background-color: #363636;
+    --GW-TOC-link-hover-color: #fff;
+    --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
+    --GW-TOC-number-color: #929292;
+    --GW-TOC-number-hover-color: #ddd;
+
+    /*  Collapse blocks.
+        */
+    --GW-collapse-block-disclosure-button-color: #8b8b8b;
+    --GW-collapse-block-disclosure-button-hover-color: #b4b4b4;
+    --GW-collapse-block-disclosure-button-targeted-color: #515151;
+    --GW-table-collapse-block-disclosure-button-color: #5c5c5c;
+    --GW-table-collapse-block-disclosure-button-hover-color: #333;
+    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #ff5936;
+    --GW-collapse-block-disclosure-button-hover-background-color: rgba(255, 255, 255, 0.1);
+    --GW-collapse-block-click-to-expand-text-color: #a6a6a6;
+    --GW-collapse-block-click-to-expand-text-shadow-color: #000;
+    --GW-collapse-block-click-to-expand-text-hover-color: #cecece;
+    --GW-collapse-block-hover-border-color: #a6a6a6;
+    --GW-collapse-block-fade-gradient-color-one: rgba(0, 0, 0, 0);
+    --GW-collapse-block-fade-gradient-color-two: rgba(0, 0, 0, 1);
+
+    /*  Headings.
+        */
+    --GW-H1-box-shadow-background-color: #000;
+    --GW-H1-box-shadow-line-color: #999;
+    --GW-H2-bottom-border-color: #999;
+    --GW-heading-self-link-hover-color: #b7c6c6;
+
+    /*  Comments.
+        */
+    --GW-comment-section-top-border-color: #8b8b8b;
+
+    /*  Links.
+        */
+    --GW-link-hover-color: #999;
+
+    /*  Lists.
+        */
+    --GW-bulleted-list-marker-color: #9f9f9f;
+
+    /*  Figures.
+        */
+    --GW-figure-outline-color: #999;
+    --GW-figure-caption-outline-color: #999;
+
+    /*  Epigraphs.
+        */
+    --GW-epigraph-quotation-mark-color: #9f9f9f;
+
+    /*  Footnotes.
+        */
+    --GW-footnote-backlink-border-color: #fff;
+    --GW-footnote-backlink-border-hover-color: #8b8b8b;
+    --GW-footnote-backlink-after-bordered-block-background-color: #000;
+
+    /*  Footnote references.
+        */
+    --GW-footnote-ref-highlight-box-shadow-color: #7c7c7c;
+    --GW-footnote-ref-highlight-box-shadow-interstitial-color: #000;
+    --GW-footnote-ref-highlight-background-color: rgba(0, 0, 0, 0.75);
+
+    /*  Footnote popups.
+        */
+    --GW-footnote-popup-box-shadow-color: #000;
+    --GW-footnote-popup-background-color: #000;
+    --GW-footnote-popup-border-color: #7c7c7c;
+    --GW-footnote-popup-scrollbar-thumb-color: #5c5c5c;
+    --GW-footnote-popup-scrollbar-track-color: #000;
+    --GW-footnote-popup-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Sidenotes.
+        */
+    --GW-sidenote-highlight-background-color: #000;
+    --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
+    --GW-sidenote-border-color: #7c7c7c;
+    --GW-sidenote-scrollbar-track-color: #000;
+    --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
+    --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-sidenote-self-link-border-color: #7c7c7c;
+
+    /*  Tables.
+        */
+    --GW-table-border-color: #fff;
+    --GW-table-full-width-background-color: #000;
+    --GW-table-caption-border-color: #fff;
+    --GW-table-row-horizontal-border-color: #fff;
+    --GW-table-cell-vertical-border-color: #000;
+    --GW-table-scrollbar-track-color: #000;
+    --GW-table-scrollbar-thumb-color: #7c7c7c;
+    --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-table-scrollbar-border-color: #fff;
+    --GW-table-column-heading-hover-background-color: #2b3637;
+    --GW-table-sorted-column-heading-background-color: #166983;
+    --GW-table-sorted-column-heading-text-color: #000;
+    --GW-table-sorted-column-heading-text-shadow-color: #fff;
+    --GW-table-zebra-stripe-alternate-row-background-color: #252525;
+    --GW-table-row-hover-outline-color: #fff;
+
+    /*  Code blocks.
+        */
+    --GW-code-element-border-color: #606060;
+    --GW-code-element-background-color: #1d1d1d;
+    --GW-pre-element-border-color: #606060;
+    --GW-pre-element-background-color: #1d1d1d;
+    --GW-pre-element-scrollbar-track-color: #1d1d1d;
+    --GW-pre-element-scrollbar-thumb-color: #5c5c5c;
+    --GW-pre-element-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Syntax highlight theme.
+        */
+    --GW-syntax-highlight-color-normal: #f1edec;
+    --GW-syntax-highlight-color-attribute: #d8deff;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #b4b4b4;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-extension: #999;
+    --GW-syntax-highlight-color-comment: #999;
+    --GW-syntax-highlight-color-control-flow: #b6edaa;
+    --GW-syntax-highlight-color-keyword: #d8deff;
+    --GW-syntax-highlight-color-operator: #d8deff;
+    --GW-syntax-highlight-color-special-char: #94adb6;
+    --GW-syntax-highlight-color-built-in: #d8deff;
+    --GW-syntax-highlight-color-function: #d8deff;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #ff815c;
+    --GW-syntax-highlight-color-error: #ff4727;
+    --GW-syntax-highlight-color-import: #a6a6a6;
+    --GW-syntax-highlight-color-special-string: #b4b4b4;
+
+    /*  Math.
+        */
+    --GW-math-block-scrollbar-border-color: #5c5c5c;
+    --GW-math-block-scrollbar-track-color: #000;
+    --GW-math-block-scrollbar-thumb-color: #5c5c5c;
+    --GW-math-block-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Drop caps.
+        */
+    --GW-drop-caps-yinit-color: #f9f9f9;
+    --GW-drop-caps-yinit-text-shadow-color: #a6a6a6;
+    --GW-drop-caps-de-zs-color: #efefef;
+    --GW-drop-caps-cheshire-color: #f1f1f1;
+    --GW-drop-caps-kanzlei-color: #f1f1f1;
+
+    /*  Admonitions.
+        */
+    --GW-admonition-default-left-border-color: #929292;
+    --GW-admonition-default-background-color: #4f4f4f;
+    --GW-admonition-tip-left-border-color: #4f4f4f;
+    --GW-admonition-tip-background-color: #303030;
+    --GW-admonition-warning-left-border-color: #bdbdbd;
+    --GW-admonition-warning-background-color: #8a8a8a;
+    --GW-admonition-warning-text-color: #000;
+    --GW-admonition-warning-title-background-color: #bdbdbd;
+    --GW-admonition-warning-icon-color: #000;
+    --GW-admonition-error-left-border-color: #e1e1e1;
+    --GW-admonition-error-background-color: #bdbdbd;
+    --GW-admonition-error-text-color: #000;
+    --GW-admonition-error-title-background-color: #e1e1e1;
+    --GW-admonition-error-icon-color: #000;
+
+    /*  Sequential nav UI.
+        */
+    --GW-sequential-nav-link-background-color: #000;
+
+    /*  Links.
+        */
+    --GW-definition-annotation-text-color: #cecece;
+
+    /*  Page-specific styles.
+        */
+    --GW-index-page-bottom-ornament-line-color: #9f9f9f;
+    --GW-page-mead-image-box-shadow-inner-color: #000;
+    --GW-page-mead-image-box-shadow-outer-color: #5c5c5c;
+
+    /*  Popups.
+        */
+    --GW-popups-body-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-border-color: #7c7c7c;
+    --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
+    --GW-popups-popup-scrollbar-thumb-color: #5c5c5c;
+    --GW-popups-popup-scrollbar-track-color: #000;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Image focus.
+        */
+    --GW-image-focus-image-hover-drop-shadow-color: #a6a6a6;
+
+    /*  Mode selector (light/dark mode).
+        */
+    --GW-mode-selector-background-color: #000;
+    --GW-mode-selector-border-hover-color: #7c7c7c;
+    --GW-mode-selector-button-text-color: #a6a6a6;
+    --GW-mode-selector-button-hover-text-color: #fff;
+}
+
+hr::after {
+    filter: none;
+}
+</style>
+<script >
+/*  Create global 'GW' object, if need be.
+	*/
+if (typeof window.GW == "undefined")
+	window.GW = { };
+
+/********************/
+/* DEBUGGING OUTPUT */
+/********************/
+
+function GWLog (string) {
+    if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
+        console.log(string);
+}
+GW.enableLogging = (permanently = false) => {
+    if (permanently)
+        localStorage.setItem("logging-enabled", "true");
+
+	GW.loggingEnabled = true;
+};
+GW.disableLogging = (permanently = false) => {
+    if (permanently)
+        localStorage.removeItem("logging-enabled");
+
+	GW.loggingEnabled = false;
+};
+
+/***********/
+/* HELPERS */
+/***********/
+
+Array.prototype.remove = function (item) {
+	var index = this.indexOf(item);
+	if (index !== -1)
+		this.splice(index, 1);
+};
+
+Array.prototype.removeIf = function (test) {
+	var index = this.findIndex(text);
+	if (index !== -1)
+		this.splice(index, 1);
+};
+
+/*  Run the given function immediately if the page is already loaded, or add
+    a listener to run it as soon as the page loads.
+    */
+function doWhenPageLoaded(f) {
+    if (document.readyState == "complete")
+        f();
+    else
+        window.addEventListener("load", f);
+}
+
+/*****************/
+/* NOTIFICATIONS */
+/*****************/
+/*	Options object may have members:
+
+		`once` (boolean; does the handler get removed after being called?)
+	*/
+GW.notificationCenter = { };
+GW.notificationCenter.addHandlerForEvent = function (eventName, f, options = { }) {
+	if (GW.notificationCenter[eventName] == null)
+		GW.notificationCenter[eventName] = [ ];
+
+	if (GW.notificationCenter[eventName].findIndex(handler => handler.f == f) !== -1)
+		return;
+
+	GW.notificationCenter[eventName].push({ f: f, options: options });
+};
+GW.notificationCenter.cancelHandlerForEvent = function (eventName, f, options = { }) {
+	if (GW.notificationCenter[eventName] == null)
+		return;
+
+	GW.notificationCenter[eventName].removeIf(handler => handler.f == f);
+}
+GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
+	GW.notificationCenter[eventName] = null;
+}
+GW.notificationCenter.fireEvent = function (eventName) {
+	GWLog(`Event “${eventName}” fired.`);
+
+	if (GW.notificationCenter[eventName] == null)
+		return;
+
+	GW.notificationCenter[eventName].forEach(handler => {
+		handler.f();
+		if (handler.options.once)
+			GW.notificationCenter.cancelHandlerForEvent(eventName, handler.f);
+	});
+}
+</script>
+<script >
+/*	This code is part of darkmode.js by Said Achmiz.
+	See the file `darkmode.js` for license and more information.
+	*/
+
+/*  Set specified color mode (auto, light, dark).
+    */
+function setMode(modeOption) {
+    GWLog("setMode");
+
+    // Inject the appropriate styles.
+    let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");
+    if (darkModeStyles == null) return;
+    if (modeOption == 'auto') {
+        darkModeStyles.media = "all and (prefers-color-scheme: dark)";
+    } else if (modeOption == 'dark') {
+        darkModeStyles.media = "all";
+    } else {
+        darkModeStyles.media = "not all";
+    }
+
+    // Update selector state.
+    if (window.updateModeSelectorState)
+	    updateModeSelectorState();
+}
+
+// Get saved mode setting (or default).
+let currentMode = localStorage.getItem("selected-mode") || 'auto';
+
+// Activate saved mode.
+setMode(currentMode);
+</script>
