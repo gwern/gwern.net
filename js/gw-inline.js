@@ -59,10 +59,10 @@ GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName) {
+	GWLog(`Event “${eventName}” fired.`);
+
 	if (GW.notificationCenter[eventName] == null)
 		return;
-
-	GWLog(`Event “${eventName}” fired.`);
 
 	GW.notificationCenter[eventName].forEach(handler => {
 		handler.f();
