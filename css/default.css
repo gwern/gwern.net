@@ -1239,6 +1239,7 @@ a.footnote-ref {
 /*=-----------=*/
 
 .footnote-ref.highlighted::before,
+.footnote-ref:hover::before,
 .footnote-ref:target::before,
 .footnote-ref.targeted::before {
     background-color: var(--GW-footnote-ref-highlight-background-color);

@@ -55,16 +55,6 @@ GW.modeOptions = [
 /* HELPERS */
 /***********/
 
-/*  Run the given function immediately if the page is already loaded, or add
-    a listener to run it as soon as the page loads.
-    */
-function doWhenPageLoaded(f) {
-    if (document.readyState == "complete")
-        f();
-    else
-        window.addEventListener("load", f);
-}
-
 /*  Adds an event listener to a button (or other clickable element), attaching
     it to both "click" and "keyup" events (for use with keyboard navigation).
     Optionally also attaches the listener to the 'mousedown' event, making the

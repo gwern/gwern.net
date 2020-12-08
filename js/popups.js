@@ -22,8 +22,6 @@ Extracts = {
     popupContainerParentSelector: "html",
     popupContainerZIndex: "1000",
 
-//     injectDefaultStyles: false,
-
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
     excludedElementsSelector: ".footnote-ref",
@@ -174,7 +172,11 @@ Extracts = {
     },
     unbind: () => {
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
-            //  Unbind existing mouseover/mouseout events, if any.
+ 			if (   target.closest(Extracts.excludedElementsSelector) == target
+				|| target.closest(Extracts.excludedContainerElementsSelector) != null)
+				return;
+ 
+ 			//  Unbind existing mouseover/mouseout events, if any.
             target.removeEventListener("mouseover", Extracts.targetover);
             target.removeEventListener("mouseout", Extracts.targetout);
             target.onclick = () => {};
@@ -205,9 +207,6 @@ Extracts = {
 
         //  Inject styles.
         document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.popupStylesHTML);
-//         if (Extracts.injectDefaultStyles) {
-// 	        document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.popupDefaultStylesHTML);
-//         }
 
         //  Inject popups container.
         let popupContainerParent = document.querySelector(Extracts.popupContainerParentSelector);
@@ -223,6 +222,10 @@ Extracts = {
 
         //  Get all targets.
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
+			if (   target.closest(Extracts.excludedElementsSelector) == target
+				|| target.closest(Extracts.excludedContainerElementsSelector) != null)
+				return;
+
             //  Bind mousemover/mouseout events.
             target.addEventListener("mouseover", Extracts.targetover);
             target.addEventListener("mouseout", Extracts.targetout);
@@ -236,9 +239,6 @@ Extracts = {
     targetover: (event) => {
         //  Get the target.
         let target = event.target.closest(Extracts.targetElementsSelector);
-        if (   target.closest(Extracts.excludedElementsSelector) == target
-        	|| target.closest(Extracts.excludedContainerElementsSelector) != null)
-            return;
 
         event.preventDefault();
 

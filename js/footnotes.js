@@ -17,6 +17,8 @@ Footnotes = {
 			fnref.removeEventListener("mouseover", Footnotes.footnoteover);
 			fnref.removeEventListener("mouseout", Footnotes.footnoteoout);
 		});
+
+		GW.notificationCenter.fireEvent("Footnotes.eventsUnbound");
 	},
 	setup: function() {
 		Footnotes.unbind();
@@ -26,6 +28,8 @@ Footnotes = {
 			fnref.addEventListener("mouseover", Footnotes.footnoteover);
 			fnref.addEventListener("mouseout", Footnotes.footnoteoout);
 		});
+
+		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
 	},
 	//	The mouseover event.
 	footnoteover: (event) => {
@@ -142,8 +146,8 @@ Footnotes = {
 	}
 }
 
-if (document.readyState == "complete") {
+doWhenPageLoaded(() => {
+	GW.notificationCenter.fireEvent("Footnotes.loaded");
+
 	Footnotes.setup();
-} else {
-	window.addEventListener("load", Footnotes.setup);
-}
+});
