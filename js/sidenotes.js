@@ -326,9 +326,16 @@ function unbindSidenoteMouseEvents() {
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
 
 		fnref.removeEventListener("mouseover", fnref.footnoteover);
+		fnref.footnoteover = null;
+
 		fnref.removeEventListener("mouseout", fnref.footnoteout);
+		fnref.footnoteout = null;
+
 		sidenote.removeEventListener("mouseover", sidenote.sidenoteover);
+		sidenote.sidenoteover = null;
+
 		sidenote.removeEventListener("mouseout", sidenote.sidenoteout);
+		sidenote.sidenoteout = null;
 	}
 }
 
