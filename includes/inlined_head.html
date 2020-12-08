@@ -1513,7 +1513,7 @@ Array.prototype.remove = function (item) {
 };
 
 Array.prototype.removeIf = function (test) {
-	var index = this.findIndex(text);
+	var index = this.findIndex(test);
 	if (index !== -1)
 		this.splice(index, 1);
 };
