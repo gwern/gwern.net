@@ -6,16 +6,6 @@
 /* HELPERS */
 /***********/
 
-/*  Run the given function immediately if the page is already loaded, or add
-    a listener to run it as soon as the page loads.
-    */
-function doWhenPageLoaded(f) {
-    if (document.readyState == "complete")
-        f();
-    else
-        window.addEventListener("load", f);
-}
-
 /*=-----------------------=*/
 /*= Tables, Figures, etc. =*/
 /*=-----------------------=*/

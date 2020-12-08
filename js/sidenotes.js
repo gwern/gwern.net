@@ -94,16 +94,6 @@ String.prototype.hasPrefix = function (prefix) {
     return (this.lastIndexOf(prefix, 0) === 0);
 }
 
-/*  Run the given function immediately if the page is already loaded, or add
-    a listener to run it as soon as the page loads.
-    */
-function doWhenPageLoaded(f) {
-    if (document.readyState == "complete")
-        f();
-    else
-        window.addEventListener("load", f);
-}
-
 /*******************/
 /* COLLAPSE BLOCKS */
 /*******************/
@@ -794,10 +784,14 @@ function sidenotesSetup() {
     /*  In case footnotes.js loads later, make sure event listeners are set in
         order afterwards.
         */
-    GW.notificationCenter.addHandlerForEvent("Footnotes.setupComplete", {
+    GW.notificationCenter.addHandlerForEvent("Footnotes.loaded", {
     	f: () => {
 			GWLog("Sidenotes.js has detected that footnotes.js has loaded.");
-			updateFootnoteEventListeners();
+
+			GW.notificationCenter.addHandlerForEvent("Footnotes.setupComplete", {
+				f: updateFootnoteEventListeners,
+				once: true
+			});
     	},
     	once: true
     });

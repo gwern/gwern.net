@@ -146,8 +146,8 @@ Footnotes = {
 	}
 }
 
-if (document.readyState == "complete") {
+doWhenPageLoaded(() => {
+	GW.notificationCenter.fireEvent("Footnotes.loaded");
+
 	Footnotes.setup();
-} else {
-	window.addEventListener("load", Footnotes.setup);
-}
+});
