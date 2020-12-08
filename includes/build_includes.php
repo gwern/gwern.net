@@ -23,7 +23,7 @@
 $includes = [
 	[ 'colors.css', 'id="inlined-styles-colors"' ],
 	[ 'initial.css', 'id="inlined-styles"' ],
-	[ 'colors-dark.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)' ],
+	[ 'colors-dark.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)"' ],
 	[ 'gw-inline.js' ],
 	[ 'darkmode-inline.js' ],
 ];
@@ -52,7 +52,7 @@ foreach ($includes as $include) {
 			break;
 	}
 	
-	echo "<{$type} {$attributes}>\n";
+	echo "<{$type}" . ($attributes ? " {$attributes}" : "") . ">\n";
 	echo file_get_contents($dir_prefix . $file_name);
 	echo "</{$type}>\n";
 }

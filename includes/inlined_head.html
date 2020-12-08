@@ -1225,7 +1225,7 @@ span.smallcaps-auto {
 /*************/
 /* see /static/js/darkmode.js and /static/css/dark-mode.css; this allows the user to toggle at runtime */
 </style>
-<style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)>
+<style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
 :root {
     /*  General.
         */
@@ -1479,7 +1479,7 @@ hr::after {
     filter: none;
 }
 </style>
-<script >
+<script>
 /*  Create global 'GW' object, if need be.
 	*/
 if (typeof window.GW == "undefined")
@@ -1489,21 +1489,17 @@ if (typeof window.GW == "undefined")
 /* DEBUGGING OUTPUT */
 /********************/
 
-function GWLog (string) {
-    if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
+GW.logLevel = localStorage.getItem("gw-log-level");
+
+function GWLog (string, level = 1) {
+    if (GW.logLevel >= level)
         console.log(string);
 }
-GW.enableLogging = (permanently = false) => {
-    if (permanently)
-        localStorage.setItem("logging-enabled", "true");
+GW.setLogLevel = (level, permanently = false) => {
+	if (permanently)
+		localStorage.setItem("gw-log-level", level);
 
-	GW.loggingEnabled = true;
-};
-GW.disableLogging = (permanently = false) => {
-    if (permanently)
-        localStorage.removeItem("logging-enabled");
-
-	GW.loggingEnabled = false;
+	GW.logLevel = level;
 };
 
 /***********/
@@ -1571,7 +1567,7 @@ GW.notificationCenter.fireEvent = function (eventName) {
 	});
 }
 </script>
-<script >
+<script>
 /*	This code is part of darkmode.js by Said Achmiz.
 	See the file `darkmode.js` for license and more information.
 	*/
