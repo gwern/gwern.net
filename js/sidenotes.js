@@ -740,7 +740,6 @@ function sidenotesSetup() {
         GWLog("GW.sidenotes.viewportWidthBreakpointChanged");
 
         updateFootnoteEventListeners();
-        GW.sidenotes.footnotesObserver.disconnect();
         updateFootnoteReferenceLinks();
     });
 
