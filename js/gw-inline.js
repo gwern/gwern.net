@@ -7,21 +7,17 @@ if (typeof window.GW == "undefined")
 /* DEBUGGING OUTPUT */
 /********************/
 
-function GWLog (string) {
-    if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
+GW.logLevel = localStorage.getItem("gw-log-level");
+
+function GWLog (string, level = 1) {
+    if (GW.logLevel >= level)
         console.log(string);
 }
-GW.enableLogging = (permanently = false) => {
-    if (permanently)
-        localStorage.setItem("logging-enabled", "true");
+GW.setLogLevel = (level, permanently = false) => {
+	if (permanently)
+		localStorage.setItem("gw-log-level", level);
 
-	GW.loggingEnabled = true;
-};
-GW.disableLogging = (permanently = false) => {
-    if (permanently)
-        localStorage.removeItem("logging-enabled");
-
-	GW.loggingEnabled = false;
+	GW.logLevel = level;
 };
 
 /***********/
