@@ -62,6 +62,8 @@ GW.notificationCenter.fireEvent = function (eventName) {
 	if (GW.notificationCenter[eventName] == null)
 		return;
 
+	GWLog(`Event “${eventName}” fired.`);
+
 	GW.notificationCenter[eventName].forEach(handler => {
 		handler.f();
 		if (handler.once)
