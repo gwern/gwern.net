@@ -104,7 +104,7 @@ then
     λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -- ./metadata/custom.yaml; }
     wrap λ "Check possible typo in custom.yaml"
 
-    λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/custom.yaml; }
+    λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/custom.yaml | fgrep -v 'wikimedia.org'; }
     wrap λ "Check image hotlinking & non-absolute relative image paths in custom.yaml"
 
     λ() {
