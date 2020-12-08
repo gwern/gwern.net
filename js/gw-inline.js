@@ -62,7 +62,7 @@ GW.notificationCenter.addHandlerForEvent = function (eventName, f, options = { }
 	if (GW.notificationCenter[eventName] == null)
 		GW.notificationCenter[eventName] = [ ];
 
-	if (GW.notificationCenter[eventName].findIndex(handler => handler.f == f) === -1)
+	if (GW.notificationCenter[eventName].findIndex(handler => handler.f == f) !== -1)
 		return;
 
 	GW.notificationCenter[eventName].push({ f: f, options: options });
