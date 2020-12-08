@@ -784,17 +784,11 @@ function sidenotesSetup() {
     /*  In case footnotes.js loads later, make sure event listeners are set in
         order afterwards.
         */
-    GW.notificationCenter.addHandlerForEvent("Footnotes.loaded", {
-    	f: () => {
-			GWLog("Sidenotes.js has detected that footnotes.js has loaded.");
+    GW.notificationCenter.addHandlerForEvent("Footnotes.loaded", () => {
+		GWLog("Sidenotes.js has detected that footnotes.js has loaded.");
 
-			GW.notificationCenter.addHandlerForEvent("Footnotes.setupComplete", {
-				f: updateFootnoteEventListeners,
-				once: true
-			});
-    	},
-    	once: true
-    });
+		GW.notificationCenter.addHandlerForEvent("Footnotes.setupComplete", updateFootnoteEventListeners, { once: true });
+	}, { once: true });
 
     /*  If the page was loaded with a hash that points to a footnote, but
         sidenotes are enabled (or vice-versa), rewrite the hash in accordance
