@@ -40,8 +40,7 @@ Array.prototype.remove = function (item) {
 /*	Handler object should have members `f` (a function) and `once` (a boolean).
 	*/
 GW.notificationCenter = { };
-
-function addHandlerForEvent (eventName, handler) {
+GW.notificationCenter.addHandlerForEvent = function (eventName, handler) {
 	if (GW.notificationCenter[eventName] == null)
 		GW.notificationCenter[eventName] = [ ];
 
@@ -49,23 +48,23 @@ function addHandlerForEvent (eventName, handler) {
 		return;
 
 	GW.notificationCenter[eventName].push(handler);
-}
-function cancelHandlerForEvent (eventName, handler) {
+};
+GW.notificationCenter.cancelHandlerForEvent = function (eventName, handler) {
 	if (GW.notificationCenter[eventName] == null)
 		return;
 
 	GW.notificationCenter[eventName].remove(handler);
 }
-function cancelAllHandlersForEvent (eventName) {
+GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
-function fireEvent (eventName) {
+GW.notificationCenter.fireEvent = function (eventName) {
 	if (GW.notificationCenter[eventName] == null)
 		return;
 
 	GW.notificationCenter[eventName].forEach(handler => {
 		handler.f();
 		if (handler.once)
-			cancelDoWhen(eventName, handler);
+			GW.notificationCenter.cancelHandlerForEvent(eventName, handler);
 	});
 }
