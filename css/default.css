@@ -1693,6 +1693,11 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     line-height: 1ex;
 }
 
+/*  Prevent text-shadow of italics in links from creating visual glitches. */
+#markdownBody em {
+    margin-right: 0.1em;
+}
+
 /*************/
 /* DROP CAPS */
 /*************/
@@ -1911,10 +1916,8 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     column-gap: 60px;
     margin-bottom: 2em;
 }
-.columns > ul li,
-.columns > ol li,
-.columns > ul li p,
-.columns > ol li p {
+#markdownBody .columns li,
+#markdownBody .columns li p {
     text-align: left;
     break-inside: avoid;
 }
