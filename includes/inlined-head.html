@@ -1026,22 +1026,10 @@ May be able at some point to simplify this using regular link underlining, since
 
 article > :not(#TOC) a:link {
 	text-decoration: none;
-	background-image:
-		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-		linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
-	background-size:
-		0.05em 1px,
-		0.05em 1px,
-		   1px 1px;
-	background-repeat:
-		no-repeat,
-		no-repeat,
-		repeat-x;
-	background-position:
-		  0% 90%,
-		100% 90%,
-		  0% 90%;
+	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+	background-size: 1px 1px;
+	background-repeat: repeat-x;
+	background-position: 0% 90%;
 
 	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
 	font-variant-numeric: lining-nums;
@@ -1063,10 +1051,7 @@ article > :not(#TOC) a:link * {
 		-0.17em 0	   var(--GW-link-underline-background-color);
 }
 article > :not(#TOC) a:hover {
-	background-image:
-		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-		linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-		linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
+	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
 }
 
 /* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
@@ -1557,68 +1542,76 @@ img.invertible-auto:hover {
     opacity: 0.6;
 }
 
+#mode-selector button::before {
+	filter: invert(1);
+	opacity: 0.45;
+}
+#mode-selector button.select-mode-light::before {
+	opacity: 0.55;
+}
+
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
 p a[href^='#'].identifier-link-up::after,
 section > :not(:first-child) a[href^='#'].identifier-link-down::after,
 p a[href^='#'].identifier-link-down::after,
-a[href$$='.pdf' i]::after,
-a[href$$='/pdf' i]::after,
-a[href$$='type=pdf' i]::after,
+a[href$='.pdf' i]::after,
+a[href$='/pdf' i]::after,
+a[href$='type=pdf' i]::after,
 a[href*='.pdf#' i]::after,
 a[href*='pdfs.semanticscholar.org' i]::after,
-a[href$$='.epub' i]::after,
+a[href$='.epub' i]::after,
 a[href*='citeseerx.ist.psu.edu' i]::after,
 a[href*='eprint.iacr.org' i]::after,
-a[href$$='.opml' i]::after,
-a[href$$='.txt' i]::after,
-a[href$$='.xml' i]::after,
-a[href$$='.css' i]::after,
-a[href$$='.hs' i]::after,
-a[href$$='.js' i]::after,
-a[href$$='.json' i]::after,
-a[href$$='.jsonl' i]::after,
-a[href^="."][href$$='.php' i]::after,
-a[href$$='.sh' i]::after,
-a[href$$='.R' i]::after,
-a[href$$='.patch' i]::after,
-a[href$$='.diff' i]::after,
-a[href$$='.doc' i]::after,
-a[href$$='.docx' i]::after,
+a[href$='.opml' i]::after,
+a[href$='.txt' i]::after,
+a[href$='.xml' i]::after,
+a[href$='.css' i]::after,
+a[href$='.hs' i]::after,
+a[href$='.js' i]::after,
+a[href$='.json' i]::after,
+a[href$='.jsonl' i]::after,
+a[href^="."][href$='.php' i]::after,
+a[href$='.sh' i]::after,
+a[href$='.R' i]::after,
+a[href$='.patch' i]::after,
+a[href$='.diff' i]::after,
+a[href$='.doc' i]::after,
+a[href$='.docx' i]::after,
 a[href*='docs.google.com' i]::after,
-a[href$$='.xls' i]::after,
-a[href$$='.xlsx' i]::after,
-a[href$$='.ods' i]::after,
-a[href$$='.csv' i]::after,
-a[href$$='.gif' i]::after,
-a[href$$='.bmp' i]::after,
-a[href$$='.ico' i]::after,
-a[href$$='.jpg' i]::after,
-a[href$$='.jpeg' i]::after,
-a[href$$='.png' i]::after,
-a[href$$='.svg' i]::after,
-a[href$$='.xcf' i]::after,
+a[href$='.xls' i]::after,
+a[href$='.xlsx' i]::after,
+a[href$='.ods' i]::after,
+a[href$='.csv' i]::after,
+a[href$='.gif' i]::after,
+a[href$='.bmp' i]::after,
+a[href$='.ico' i]::after,
+a[href$='.jpg' i]::after,
+a[href$='.jpeg' i]::after,
+a[href$='.png' i]::after,
+a[href$='.svg' i]::after,
+a[href$='.xcf' i]::after,
 a[href*='imgur.com']::after,
-a[href$$='.mp3' i]::after,
-a[href$$='.wav' i]::after,
-a[href$$='.flac' i]::after,
-a[href$$='.ogg' i]::after,
-a[href$$='.rm' i]::after,
-a[href$$='.swf' i]::after,
-a[href$$='.avi' i]::after,
-a[href$$='.mp4' i]::after,
-a[href$$='.webm' i]::after,
-a[href$$='.tar' i]::after,
-a[href$$='.zip' i]::after,
-a[href$$='.xz'  i]::after,
-a[href$$='.img' i]::after,
-a[href$$='.bin' i]::after,
-a[href$$='.pkl' i]::after,
-a[href$$='.onnx' i]::after,
-a[href$$='.pt' i]::after,
-a[href$$='.ebt' i]::after,
-a[href$$='.mdb' i]::after,
-a[href$$='.mht' i]::after,
-a[href$$='.ttf' i]::after,
+a[href$='.mp3' i]::after,
+a[href$='.wav' i]::after,
+a[href$='.flac' i]::after,
+a[href$='.ogg' i]::after,
+a[href$='.rm' i]::after,
+a[href$='.swf' i]::after,
+a[href$='.avi' i]::after,
+a[href$='.mp4' i]::after,
+a[href$='.webm' i]::after,
+a[href$='.tar' i]::after,
+a[href$='.zip' i]::after,
+a[href$='.xz'  i]::after,
+a[href$='.img' i]::after,
+a[href$='.bin' i]::after,
+a[href$='.pkl' i]::after,
+a[href$='.onnx' i]::after,
+a[href$='.pt' i]::after,
+a[href$='.ebt' i]::after,
+a[href$='.mdb' i]::after,
+a[href$='.mht' i]::after,
+a[href$='.ttf' i]::after,
 a[href*='biorxiv.org']::after,
 a[href*='medrxiv.org']::after,
 a[href*='substack.com']::after,
@@ -1643,7 +1636,7 @@ a[href*='intelligence.org']::after,
 a[href*='deepmind']::after,
 a[href*='docs/.*/*.pdf#deepmind']::after,
 a[href*='openai']::after,
-a[href$$='.pdf#openai']::after,
+a[href$='.pdf#openai']::after,
 a[href*='distill.pub']::after,
 a[href*='twitter.com']::after,
 a[href*='nitter.net']::after,
@@ -1786,6 +1779,16 @@ GW.notificationCenter.fireEvent = function (eventName) {
 <script>
 /*	This code is part of darkmode.js by Said Achmiz.
 	See the file `darkmode.js` for license and more information.
+	*/
+
+/*	Dark mode: before anything else loads, check browser localStorage for dark 
+	mode preference and immediately toggle sets of CSS color variables/classes 
+	to avoid any 'flash of white' or delayed loading. Note: CSS falls back to 
+	the media-query browser/OS variable preference, so still works if JS is 
+	blocked! (The JS is only necessary for the theme switcher widget allowing 
+	'force light'/'force dark' options. If users block JS, set the dark mode 
+	preference, and are unhappy when they get dark mode, well, they made their 
+	bed and must lie in it.)
 	*/
 
 /*  Set specified color mode (auto, light, dark).

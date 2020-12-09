@@ -20,8 +20,6 @@
  (Configuration for non-Apache servers left as exercise for reader.)
  */
 
-$escape_dollars = @$argv[1] ?: 0;
-
 $includes = [
 	[ 'colors.css', 'id="inlined-styles-colors"' ],
 	[ 'initial.css', 'id="inlined-styles"' ],
@@ -61,9 +59,10 @@ foreach ($includes as $include) {
 	$outfile .= "</{$type}>\n";
 }
 
-if ($escape_dollars)
-	$outfile = str_replace('$', '$$', $outfile);
+file_put_contents("../includes/inlined-head.html", $outfile);
 
-echo $outfile;
+$outfile = str_replace('$', '$$', $outfile);
+
+file_put_contents("../includes/inlined-head-escaped.html", $outfile);
 
 ?>
