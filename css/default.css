@@ -742,6 +742,13 @@ figure.full-width {
     }
 }
 
+/*  Figures in sidenotes should take up the full width of the sidenote.
+    */
+.sidenote figure {
+    margin: 1.5em auto;
+    max-width: calc(100% - 2px);
+}
+
 /***************/
 /* BLOCKQUOTES */
 /***************/
