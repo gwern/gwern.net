@@ -3,19 +3,8 @@
   <head>
     <meta charset="utf-8">
 
-    <!-- CSS inline for speed -->
-    <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/colors.css" /> -->
-    <style id="inlined-styles-colors">$partial("static/css/colors.css")$</style>
-    <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/initial.css" /> -->
-    <style id="inlined-styles">$partial("static/css/initial.css")$</style>
-    <!-- Original: <link rel="stylesheet" type="text/css" href="/static/css/dark-mode.css" /> -->
-    <style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">$partial("static/css/dark-mode.css")$</style>
-    <!-- Helper scripts; necessary for dark mode etc -->
-    <script id="gw-inline">
-      $partial("static/js/gw-inline.js")$</script>
-    <!-- Dark mode: before anything else loads, snoop user cookies & browser variables for dark mode preference and immediately toggle sets of CSS color variables/classes to avoid any 'flash of white' or delayed loading. Note: CSS falls back to the media-query browser/OS variable preference, so still works if JS is blocked! (The JS is only necessary for the theme switcher widget allowing 'force light'/'force dark' options. If users block JS, set the dark mode preference, and are unhappy when they get dark mode, well, they made their bed and must lie in it.)  -->
-    <script id="darkmode-inline">
-      $partial("static/js/darkmode-inline.js")$</script>
+    <!-- CSS+JS inline for speed -->
+    $partial("static/includes/inlined-head-escaped.html")$
 
     <!-- fetch the title & body fonts immediately to avoid re-rendering -->
     <link rel="preload" as="style"      href="/static/css/default.css" />
