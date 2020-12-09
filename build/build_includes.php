@@ -20,6 +20,8 @@
  (Configuration for non-Apache servers left as exercise for reader.)
  */
 
+$escape_dollars = @$argv[1] ?: 0;
+
 $includes = [
 	[ 'colors.css', 'id="inlined-styles-colors"' ],
 	[ 'initial.css', 'id="inlined-styles"' ],
@@ -27,6 +29,8 @@ $includes = [
 	[ 'gw-inline.js' ],
 	[ 'darkmode-inline.js' ],
 ];
+
+$outfile = "";
 
 foreach ($includes as $include) {
 	$file_name = $include[0];
@@ -52,9 +56,14 @@ foreach ($includes as $include) {
 			break;
 	}
 	
-	echo "<{$type}" . ($attributes ? " {$attributes}" : "") . ">\n";
-	echo file_get_contents($dir_prefix . $file_name);
-	echo "</{$type}>\n";
+	$outfile .= "<{$type}" . ($attributes ? " {$attributes}" : "") . ">\n";
+	$outfile .= file_get_contents($dir_prefix . $file_name);
+	$outfile .= "</{$type}>\n";
 }
+
+if ($escape_dollars)
+	$outfile = str_replace('$', '$$', $outfile);
+
+echo $outfile;
 
 ?>
