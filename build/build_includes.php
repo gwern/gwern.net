@@ -3,11 +3,11 @@
 /*
  Instructions:
  
- 	php build_includes.php > inlined_head.html
+ 	php build_includes.php
  
- In <head> of template:
+ In <head> of template or page:
  
- 	<!--#include virtual="/static/includes/inlined_head.html"-->
+ 	<!--#include virtual="/static/includes/inlined-head.html"-->
 
  (Pages must be .shtml (not .html) for this to work.)
  
