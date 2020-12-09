@@ -1478,6 +1478,222 @@ span.smallcaps-auto {
 hr::after {
     filter: none;
 }
+
+hr::after,
+.horizontalRule-nth-0 hr::after {
+    opacity: 1;
+    filter: invert(1) drop-shadow(0 0 0 currentColor);
+}
+.horizontalRule-nth-1 hr::after {
+    opacity: 0.75;
+    filter: invert(1);
+}
+.horizontalRule-nth-2 hr::after {
+    opacity: 0.85;
+    filter: invert(1);
+}
+
+body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+body.drop-caps-goudy .abstract + p::first-letter,
+body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+#markdownBody .drop-cap-goudy::first-letter,
+#markdownBody .drop-cap-goudy > p::first-letter {
+    opacity: 0.95;
+}
+
+.admonition.tip::before,
+.admonition.note::before,
+.admonition.warn::before,
+.admonition.warning::before,
+.admonition.error::before {
+    filter: invert(1);
+}
+
+#markdownBody ul > li::before,
+#popupdiv ul > li::before {
+    filter: invert(1);
+}
+
+th.tablesorter-header {
+    background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
+}
+th.tablesorter-headerAsc {
+    background-image: url('/static/img/tablesorter/tablesorter-asc-dark.gif');
+}
+th.tablesorter-headerDesc {
+    background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
+}
+
+.tableWrapper::-webkit-scrollbar-thumb {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
+}
+.tableWrapper::-webkit-scrollbar-thumb:hover {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
+}
+
+.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
+}
+.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
+}
+
+img.invertible,
+img.invertible-auto {
+    filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
+}
+
+img:not(.invertible):not(.invertible-auto) {
+    filter: grayscale(50%);
+}
+
+img:hover,
+img.invertible:hover,
+img.invertible-auto:hover {
+    filter: none;
+}
+
+#mode-selector {
+    opacity: 0.6;
+}
+
+section > :not(:first-child) a[href^='#'].identifier-link-up::after,
+p a[href^='#'].identifier-link-up::after,
+section > :not(:first-child) a[href^='#'].identifier-link-down::after,
+p a[href^='#'].identifier-link-down::after,
+a[href$$='.pdf' i]::after,
+a[href$$='/pdf' i]::after,
+a[href$$='type=pdf' i]::after,
+a[href*='.pdf#' i]::after,
+a[href*='pdfs.semanticscholar.org' i]::after,
+a[href$$='.epub' i]::after,
+a[href*='citeseerx.ist.psu.edu' i]::after,
+a[href*='eprint.iacr.org' i]::after,
+a[href$$='.opml' i]::after,
+a[href$$='.txt' i]::after,
+a[href$$='.xml' i]::after,
+a[href$$='.css' i]::after,
+a[href$$='.hs' i]::after,
+a[href$$='.js' i]::after,
+a[href$$='.json' i]::after,
+a[href$$='.jsonl' i]::after,
+a[href^="."][href$$='.php' i]::after,
+a[href$$='.sh' i]::after,
+a[href$$='.R' i]::after,
+a[href$$='.patch' i]::after,
+a[href$$='.diff' i]::after,
+a[href$$='.doc' i]::after,
+a[href$$='.docx' i]::after,
+a[href*='docs.google.com' i]::after,
+a[href$$='.xls' i]::after,
+a[href$$='.xlsx' i]::after,
+a[href$$='.ods' i]::after,
+a[href$$='.csv' i]::after,
+a[href$$='.gif' i]::after,
+a[href$$='.bmp' i]::after,
+a[href$$='.ico' i]::after,
+a[href$$='.jpg' i]::after,
+a[href$$='.jpeg' i]::after,
+a[href$$='.png' i]::after,
+a[href$$='.svg' i]::after,
+a[href$$='.xcf' i]::after,
+a[href*='imgur.com']::after,
+a[href$$='.mp3' i]::after,
+a[href$$='.wav' i]::after,
+a[href$$='.flac' i]::after,
+a[href$$='.ogg' i]::after,
+a[href$$='.rm' i]::after,
+a[href$$='.swf' i]::after,
+a[href$$='.avi' i]::after,
+a[href$$='.mp4' i]::after,
+a[href$$='.webm' i]::after,
+a[href$$='.tar' i]::after,
+a[href$$='.zip' i]::after,
+a[href$$='.xz'  i]::after,
+a[href$$='.img' i]::after,
+a[href$$='.bin' i]::after,
+a[href$$='.pkl' i]::after,
+a[href$$='.onnx' i]::after,
+a[href$$='.pt' i]::after,
+a[href$$='.ebt' i]::after,
+a[href$$='.mdb' i]::after,
+a[href$$='.mht' i]::after,
+a[href$$='.ttf' i]::after,
+a[href*='biorxiv.org']::after,
+a[href*='medrxiv.org']::after,
+a[href*='substack.com']::after,
+a[href*='scholar.google.com']::after,
+a[href*='plosone.org']::after,
+a[href*='plosmedicine.org']::after,
+a[href*='plos.org']::after,
+a[href*='www.plos']::after,
+a[href*='patreon.com']::after,
+a[href*='uptontea.com']::after,
+a[href*='wired.com']::after,
+a[href*='washingtonpost.com']::after,
+a[href*='nytimes.com']::after,
+a[href*='nlm.nih.gov']::after,
+a[href*='newyorker.com']::after,
+a[href*='theguardian.com']::after,
+a[href*='www.guardian.co.uk']::after,
+a[href*='reddit.com']::after,
+a[href*='paulgraham.com']::after,
+a[href*='ycombinator.com']::after,
+a[href*='intelligence.org']::after,
+a[href*='deepmind']::after,
+a[href*='docs/.*/*.pdf#deepmind']::after,
+a[href*='openai']::after,
+a[href$$='.pdf#openai']::after,
+a[href*='distill.pub']::after,
+a[href*='twitter.com']::after,
+a[href*='nitter.net']::after,
+a[href*='erowid.org']::after,
+a[href*='wikipedia.org']::after,
+a[href*='wikimedia.org']::after,
+a[href*='wiktionary.org']::after,
+a[href*='wikimediafoundation.org']::after,
+a[href*='wikisource.org']::after,
+a[href*='youtube.com']::after,
+a[href*='youtu.be']::after,
+a[href*='soundcloud.com']::after,
+a[href*='bandcamp.com']::after,
+a[href*='overflow.net']::after,
+a[href*='overflow.com']::after,
+a[href*='stackexchange.com']::after,
+a[href*='amazon.com']::after,
+a[href*='amazon.co.']::after,
+a[href*='amzn.com'  ]::after,
+a[href*='github.com']::after,
+a[href*='dropbox.com']::after,
+a[href*='dropboxusercontent.com']::after,
+a[href*='mega.nz']::after,
+a[href*='webcitation.org'   ]::after,
+a[href*='mementoweb.org'    ]::after,
+a[href*='archive.org'       ]::after,
+a[href*='archive-it.org'    ]::after,
+a[href*='archiveteam.org'   ]::after,
+a[href*='waybackmachine.org']:hover::after,
+a[href*="tumblr.com"]::after,
+a[href*="t.umblr.com"]::after,
+a[href*="#facebook"]::after,
+a[href*="#facebook"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*facebook']::after,
+a[href*="facebook.com"]::after,
+a[href*="bitcointalk.org"]::after,
+a[href*="bitcoin.it"]::after,
+a[href*="www.google.com"]::after,
+a[href*="#google"]::after,
+a[href*="#org=google"]::after,
+a[href*="#google"][href*="arxiv.org"]::after,
+a[href*="#org=google"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*google']::after,
+a[href*='docs/.*/*.pdf#org=google']::after {
+    filter: invert(1);
+}
+
+:root {
+    --GW-syntax-highlight-color-control-flow: #cce1c8;
+}
 </style>
 <script>
 /*  Create global 'GW' object, if need be.
