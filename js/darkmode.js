@@ -320,7 +320,7 @@ function hideModeSelector() {
 }
 
 function showModeSelector() {
-    GWLog("showModeSelector");
+    GWLog("showModeSelector", 3);
 
     GW.scrollState.modeSelector[0].classList.remove("hidden");
 }
