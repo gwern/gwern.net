@@ -687,6 +687,8 @@ function constructSidenotes() {
             });
         });
     });
+
+	GW.notificationCenter.fireEvent("Sidenotes.sidenotesConstructed");
 }
 
 /******************/
@@ -847,7 +849,11 @@ function sidenotesSetup() {
             setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
         }
     });
+
+	GW.notificationCenter.fireEvent("Sidenotes.setupComplete");
 }
+
+GW.notificationCenter.fireEvent("Sidenotes.loaded");
 
 //  LET... THERE... BE... SIDENOTES!!!
 sidenotesSetup();
