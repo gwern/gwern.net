@@ -1798,7 +1798,7 @@ GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName) {
-	GWLog(`Event “$${eventName}” fired.`);
+	GWLog(`[notification]    Event “$${eventName}” fired.`);
 
 	if (GW.notificationCenter[eventName] == null)
 		return;
@@ -1814,15 +1814,15 @@ GW.notificationCenter.fireEvent = function (eventName) {
 /* BROWSER EVENTS */
 /******************/
 
-GWLog("document.readyState." + document.readyState, 1);
+GWLog("[browser event]   document.readyState." + document.readyState, 1);
 window.addEventListener("DOMContentLoaded", () => {
-	GWLog("window.DOMContentLoaded", 1);
+	GWLog("[browser event]   window.DOMContentLoaded", 1);
 });
 window.addEventListener("load", () => {
-	GWLog("window.load", 1);
+	GWLog("[browser event]   window.load", 1);
 });
 document.addEventListener("readystatechange", () => {
-	GWLog("document.readyState." + document.readyState, 1);
+	GWLog("[browser event]   document.readyState." + document.readyState, 1);
 });
 </script>
 <script>
@@ -1843,7 +1843,7 @@ document.addEventListener("readystatechange", () => {
 /*  Set specified color mode (auto, light, dark).
     */
 function setMode(modeOption) {
-    GWLog("[darkmode.js]  setMode");
+    GWLog("[darkmode.js]     setMode");
 
     // Inject the appropriate styles.
     let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");
