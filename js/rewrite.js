@@ -148,7 +148,7 @@ document.querySelectorAll(".collapse").forEach(collapseBlock => {
     if (collapseBlock.tagName == "SECTION") {
         //  Inject the disclosure button.
         collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
-    } else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].contains(collapseBlock.tagName)) {
+    } else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
         // Remove the `collapse` class and do nothing else.
         collapseBlock.classList.remove("collapse");
     } else {
