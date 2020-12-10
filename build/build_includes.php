@@ -45,10 +45,10 @@ foreach ($includes as $include) {
 	$dir_prefix;
 	switch ($type) {
 		case "script":
-			$dir_prefix = "../js/";
+			$dir_prefix = __DIR__ . "/../js/";
 			break;
 		case "style":
-			$dir_prefix = "../css/";
+			$dir_prefix = __DIR__ . "/../css/";
 			break;
 		default:
 			break;
@@ -59,10 +59,10 @@ foreach ($includes as $include) {
 	$outfile .= "</{$type}>\n";
 }
 
-file_put_contents("../includes/inlined-head.html", $outfile);
+file_put_contents(__DIR__ . "/../includes/inlined-head.html", $outfile);
 
 $outfile = str_replace('$', '$$', $outfile);
 
-file_put_contents("../includes/inlined-head-escaped.html", $outfile);
+file_put_contents(__DIR__ . "/../includes/inlined-head-escaped.html", $outfile);
 
 ?>
