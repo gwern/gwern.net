@@ -120,7 +120,7 @@ function cancelDoWhenMatchMedia(name) {
 /******************/
 
 function injectModeSelector() {
-    GWLog("[darkmode.js]     injectModeSelector");
+    GWLog("injectModeSelector", "darkmode.js");
 
     // Inject the mode selector widget and activate buttons.
     let modeSelector = addUIElement(
@@ -134,7 +134,7 @@ function injectModeSelector() {
 
     modeSelector.querySelectorAll("button").forEach(button => {
         button.addActivateEvent(GW.modeSelectButtonClicked = (event) => {
-            GWLog("[darkmode.js]     GW.modeSelectButtonClicked");
+            GWLog("GW.modeSelectButtonClicked", "darkmode.js");
 
             // Determine which setting was chosen (i.e., which button was clicked).
             let selectedMode = event.target.dataset.name;
@@ -259,7 +259,7 @@ function injectModeSelector() {
     Called by the ‘updateModeSelectorVisibilityScrollListener’ scroll listener.
     */
 function updateModeSelectorVisibility(event) {
-    GWLog("[darkmode.js]     updateModeSelectorVisibility", 3);
+    GWLog("updateModeSelectorVisibility", "darkmode.js", 3);
 
     let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop) ?
@@ -288,13 +288,13 @@ function updateModeSelectorVisibility(event) {
 }
 
 function hideModeSelector() {
-    GWLog("[darkmode.js]     hideModeSelector", 3);
+    GWLog("hideModeSelector", "darkmode.js", 3);
 
     GW.scrollState.modeSelector[0].classList.add("hidden");
 }
 
 function showModeSelector() {
-    GWLog("[darkmode.js]     showModeSelector", 3);
+    GWLog("showModeSelector", "darkmode.js", 3);
 
     GW.scrollState.modeSelector[0].classList.remove("hidden");
 }

@@ -183,7 +183,7 @@ Extracts = {
             Extracts.popupContainer.removeEventListener("mouseup", Extracts.popupContainerClicked);
     },
     cleanup: () => {
-        GWLog("[popups.js]       Cleaning up...", 1);
+        GWLog("Cleaning up...", "popups.js", 1);
 
         //  Unbind event listeners.
         Extracts.unbind();
@@ -202,10 +202,10 @@ Extracts = {
         if (   (   ('ontouchstart' in document.documentElement)
         		&& GW.mediaQueries.mobileWidth.matches)
         	|| !GW.mediaQueries.hoverAvailable.matches) {
-            GWLog("[popups.js]       Mobile client detected. Exiting.", 1);
+            GWLog("Mobile client detected. Exiting.", "popups.js", 1);
             return;
         } else {
-            GWLog("[popups.js]       Setting up...", 1);
+            GWLog("Setting up...", "popups.js", 1);
         }
 
         //  Inject styles.
@@ -214,7 +214,7 @@ Extracts = {
         //  Inject popups container.
         let popupContainerParent = document.querySelector(Extracts.popupContainerParentSelector);
         if (!popupContainerParent) {
-            GWLog("[popups.js]       Popup container parent element not found. Exiting.", 1);
+            GWLog("Popup container parent element not found. Exiting.", "popups.js", 1);
             return;
         }
         popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}' style='z-index: ${Extracts.popupContainerZIndex};'></div>`);

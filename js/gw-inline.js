@@ -17,13 +17,19 @@ GW.mediaQueries = {
 /* DEBUGGING OUTPUT */
 /********************/
 
-GW.logLevel = localStorage.getItem("gw-log-level");
+GW.logLevel = localStorage.getItem("gw-log-level") || 0;
+GW.logSourcePadLength = 18;
 GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
 
-function GWLog (string, level = 1) {
+function GWLog (string, source = "", level = 1) {
+	if (GW.logLevel < level) return;
+
 	let time = Date.now();
-    if (GW.logLevel >= level)
-        console.log("[" + GW.dateTimeFormat.format(time) + "." + `${(time % 1000)}`.padStart(3,'0') + "]  " + string);
+	let ms = `${(time % 1000)}`.padStart(3,'0');
+	let timestamp = `[${GW.dateTimeFormat.format(time)}.${ms}]  `;
+	let source = (source > "" ? `[${source}]` : `[ ]`).padEnd(GW.logSourcePadLength, ' ');
+
+	console.log(timestamp + source + string);
 }
 GW.setLogLevel = (level, permanently = false) => {
 	if (permanently)
@@ -107,7 +113,7 @@ GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName) {
-	GWLog(`[notification]    Event “${eventName}” fired.`);
+	GWLog(`Event “${eventName}” fired.`, "notification");
 
 	if (GW.notificationCenter[eventName] == null)
 		return;
@@ -123,13 +129,13 @@ GW.notificationCenter.fireEvent = function (eventName) {
 /* BROWSER EVENTS */
 /******************/
 
-GWLog("[browser event]   document.readyState." + document.readyState, 1);
+GWLog("document.readyState." + document.readyState, "browser event");
 window.addEventListener("DOMContentLoaded", () => {
-	GWLog("[browser event]   window.DOMContentLoaded", 1);
+	GWLog("window.DOMContentLoaded", "browser event");
 });
 window.addEventListener("load", () => {
-	GWLog("[browser event]   window.load", 1);
+	GWLog("window.load", "browser event");
 });
 document.addEventListener("readystatechange", () => {
-	GWLog("[browser event]   document.readyState." + document.readyState, 1);
+	GWLog("document.readyState." + document.readyState, "browser event");
 });
