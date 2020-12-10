@@ -23,7 +23,7 @@ GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric"
 function GWLog (string, level = 1) {
 	let time = Date.now();
     if (GW.logLevel >= level)
-        console.log("[" + GW.dateTimeFormat.format(time) + "." + (time % 1000) + "]  " + string);
+        console.log("[" + GW.dateTimeFormat.format(time) + "." + `${(time % 1000)}`.padStart(3,'0') + "]  " + string);
 }
 GW.setLogLevel = (level, permanently = false) => {
 	if (permanently)
@@ -107,7 +107,7 @@ GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName) {
-	GWLog("Event “" + eventName + "” fired.");
+	GWLog(`Event “${eventName}” fired.`);
 
 	if (GW.notificationCenter[eventName] == null)
 		return;
@@ -118,3 +118,18 @@ GW.notificationCenter.fireEvent = function (eventName) {
 			GW.notificationCenter.cancelHandlerForEvent(eventName, handler.f);
 	});
 }
+
+/******************/
+/* BROWSER EVENTS */
+/******************/
+
+GWLog("document.readyState." + document.readyState, 1);
+window.addEventListener("DOMContentLoaded", () => {
+	GWLog("window.DOMContentLoaded", 1);
+});
+window.addEventListener("load", () => {
+	GWLog("window.load", 1);
+});
+document.addEventListener("readystatechange", () => {
+	GWLog("document.readyState." + document.readyState, 1);
+});
