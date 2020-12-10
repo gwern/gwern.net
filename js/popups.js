@@ -40,8 +40,6 @@ Extracts = {
     popupFadeoutDelay: 50,
     popupFadeoutDuration: 250,
 
-    isMobileMediaQuery: matchMedia("not screen and (hover:hover) and (pointer:fine)"),
-
 	/******************/
 	/*	Implementation.
 		*/
@@ -197,8 +195,13 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
-        if (   ('ontouchstart' in document.documentElement)
-        	&& Extracts.isMobileMediaQuery.matches) {
+		/*  We consider a client to be mobile if one of two conditions obtain:
+		    1. JavaScript detects touch capability, AND viewport is narrow; or,
+		    2. CSS does NOT detect hover capability.
+		    */
+        if (   (   ('ontouchstart' in document.documentElement)
+        		&& GW.mediaQueries.mobileWidth.matches)
+        	|| !GW.mediaQueries.hoverAvailable.matches) {
             console.log("Mobile client detected. Exiting.");
             return;
         } else {

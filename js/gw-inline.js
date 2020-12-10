@@ -3,6 +3,16 @@
 if (typeof window.GW == "undefined")
 	window.GW = { };
 
+/*****************/
+/* MEDIA QUERIES */
+/*****************/
+
+GW.mediaQueries = {
+	mobileWidth:           matchMedia("(max-width: 650px)"),
+	systemDarkModeActive:  matchMedia("(prefers-color-scheme: dark)"),
+	hoverAvailable:        matchMedia("only screen and (hover:hover) and (pointer:fine)")
+};
+
 /********************/
 /* DEBUGGING OUTPUT */
 /********************/
