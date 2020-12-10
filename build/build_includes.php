@@ -59,10 +59,12 @@ foreach ($includes as $include) {
 	$outfile .= "</{$type}>\n";
 }
 
-file_put_contents(__DIR__ . "/../includes/inlined-head.html", $outfile);
+$includes_dir = __DIR__ . "/../includes";
+
+file_put_contents("{$includes_dir}/inlined-head.html", $outfile);
 
 $outfile = str_replace('$', '$$', $outfile);
 
-file_put_contents(__DIR__ . "/../includes/inlined-head-escaped.html", $outfile);
+file_put_contents("{$includes_dir}/inlined-head-escaped.html", $outfile);
 
 ?>

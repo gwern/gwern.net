@@ -1,6 +1,8 @@
 <?php
 
-`php color-scheme-convert.php ../css/colors.css 1 "Lab" 0.55 > ../css/colors-dark.css`;
-`cat ../css/colors-dark.css ../css/dark-mode-adjustments.css > ../css/dark-mode.css`;
+$css_dir = __DIR__ . "/../css";
+
+`php color-scheme-convert.php {$css_dir}/colors.css 1 "Lab" 0.55 > {$css_dir}/colors-dark.css`;
+`cat {$css_dir}/colors-dark.css {$css_dir}/dark-mode-adjustments.css > {$css_dir}/dark-mode.css`;
 
 ?>
