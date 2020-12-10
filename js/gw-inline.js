@@ -107,7 +107,7 @@ GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName) {
-	GWLog(`Event “${eventName}” fired.`);
+	GWLog(`[notification]    Event “${eventName}” fired.`);
 
 	if (GW.notificationCenter[eventName] == null)
 		return;
@@ -123,13 +123,13 @@ GW.notificationCenter.fireEvent = function (eventName) {
 /* BROWSER EVENTS */
 /******************/
 
-GWLog("document.readyState." + document.readyState, 1);
+GWLog("[browser event]   document.readyState." + document.readyState, 1);
 window.addEventListener("DOMContentLoaded", () => {
-	GWLog("window.DOMContentLoaded", 1);
+	GWLog("[browser event]   window.DOMContentLoaded", 1);
 });
 window.addEventListener("load", () => {
-	GWLog("window.load", 1);
+	GWLog("[browser event]   window.load", 1);
 });
 document.addEventListener("readystatechange", () => {
-	GWLog("document.readyState." + document.readyState, 1);
+	GWLog("[browser event]   document.readyState." + document.readyState, 1);
 });

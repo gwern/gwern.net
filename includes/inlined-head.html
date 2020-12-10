@@ -1211,258 +1211,7 @@ span.smallcaps-auto {
 /* see /static/js/darkmode.js and /static/css/dark-mode.css; this allows the user to toggle at runtime */
 </style>
 <style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
-:root {
-    /*  General.
-        */
-    --GW-body-background-color: #000;
-    --GW-body-text-color: #fff;
-    --GW-body-link-color: #e5e5e5;
-
-    /*  Selection.
-        */
-    --GW-text-selection-background-color: #dcdcdc;
-    --GW-text-selection-color: #000;
-
-    /*  Link underlining.
-        */
-    --GW-link-underline-background-color: var(--GW-body-background-color);
-    --GW-link-underline-gradient-line-color: #dcdcdc;
-    --GW-link-underline-gradient-line-color-hover: #8b8b8b;
-
-    /*  Blockquotes.
-        */
-    --GW-blockquote-border-color-level-one: #5c5c5c;
-    --GW-blockquote-border-color-level-two: #646464;
-    --GW-blockquote-border-color-level-three: #747474;
-    --GW-blockquote-border-color-level-four: #7f7f7f;
-    --GW-blockquote-background-color-level-one: #212121;
-    --GW-blockquote-background-color-level-two: #3e3e3e;
-    --GW-blockquote-background-color-level-three: #4f4f4f;
-
-    /*  Abstracts.
-        */
-    --GW-abstract-border-color: #6c6c6c;
-
-    /*  Sidebar.
-        */
-    --GW-sidebar-bullet-color: #999;
-    --GW-sidebar-horizontal-rule-color: #7c7c7c;
-    --GW-sidebar-bullet-text-shadow-color: #fff;
-    --GW-sidebar-mobile-link-border-color: #fff;
-
-    /*  Table of contents.
-        */
-    --GW-TOC-border-color: #5c5c5c;
-    --GW-TOC-background-color: #1f1f1f;
-    --GW-TOC-link-hover-background-color: #363636;
-    --GW-TOC-link-hover-color: #fff;
-    --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
-    --GW-TOC-number-color: #929292;
-    --GW-TOC-number-hover-color: #ddd;
-
-    /*  Collapse blocks.
-        */
-    --GW-collapse-block-disclosure-button-color: #8b8b8b;
-    --GW-collapse-block-disclosure-button-hover-color: #b4b4b4;
-    --GW-collapse-block-disclosure-button-targeted-color: #515151;
-    --GW-table-collapse-block-disclosure-button-color: #5c5c5c;
-    --GW-table-collapse-block-disclosure-button-hover-color: #333;
-    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #ff5936;
-    --GW-collapse-block-disclosure-button-hover-background-color: rgba(255, 255, 255, 0.1);
-    --GW-collapse-block-click-to-expand-text-color: #a6a6a6;
-    --GW-collapse-block-click-to-expand-text-shadow-color: #000;
-    --GW-collapse-block-click-to-expand-text-hover-color: #cecece;
-    --GW-collapse-block-hover-border-color: #a6a6a6;
-    --GW-collapse-block-fade-gradient-color-one: rgba(0, 0, 0, 0);
-    --GW-collapse-block-fade-gradient-color-two: rgba(0, 0, 0, 1);
-
-    /*  Headings.
-        */
-    --GW-H1-box-shadow-background-color: #000;
-    --GW-H1-box-shadow-line-color: #999;
-    --GW-H2-bottom-border-color: #999;
-    --GW-heading-self-link-hover-color: #b7c6c6;
-
-    /*  Comments.
-        */
-    --GW-comment-section-top-border-color: #8b8b8b;
-
-    /*  Links.
-        */
-    --GW-link-hover-color: #999;
-
-    /*  Lists.
-        */
-    --GW-bulleted-list-marker-color: #9f9f9f;
-
-    /*  Figures.
-        */
-    --GW-figure-outline-color: #999;
-    --GW-figure-caption-outline-color: #999;
-
-    /*  Epigraphs.
-        */
-    --GW-epigraph-quotation-mark-color: #9f9f9f;
-
-    /*  Footnotes.
-        */
-    --GW-footnote-backlink-border-color: #fff;
-    --GW-footnote-backlink-border-hover-color: #8b8b8b;
-    --GW-footnote-backlink-after-bordered-block-background-color: #000;
-
-    /*  Footnote references.
-        */
-    --GW-footnote-ref-highlight-box-shadow-color: #7c7c7c;
-    --GW-footnote-ref-highlight-box-shadow-interstitial-color: #000;
-    --GW-footnote-ref-highlight-background-color: rgba(0, 0, 0, 0.75);
-
-    /*  Footnote popups.
-        */
-    --GW-footnote-popup-box-shadow-color: #000;
-    --GW-footnote-popup-background-color: #000;
-    --GW-footnote-popup-border-color: #7c7c7c;
-    --GW-footnote-popup-scrollbar-thumb-color: #5c5c5c;
-    --GW-footnote-popup-scrollbar-track-color: #000;
-    --GW-footnote-popup-scrollbar-thumb-hover-color: #8b8b8b;
-
-    /*  Sidenotes.
-        */
-    --GW-sidenote-highlight-background-color: #000;
-    --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
-    --GW-sidenote-border-color: #7c7c7c;
-    --GW-sidenote-scrollbar-track-color: #000;
-    --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
-    --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
-    --GW-sidenote-self-link-border-color: #7c7c7c;
-
-    /*  Tables.
-        */
-    --GW-table-border-color: #fff;
-    --GW-table-full-width-background-color: #000;
-    --GW-table-caption-border-color: #fff;
-    --GW-table-row-horizontal-border-color: #fff;
-    --GW-table-cell-vertical-border-color: #000;
-    --GW-table-scrollbar-track-color: #000;
-    --GW-table-scrollbar-thumb-color: #7c7c7c;
-    --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
-    --GW-table-scrollbar-border-color: #fff;
-    --GW-table-column-heading-hover-background-color: #2b3637;
-    --GW-table-sorted-column-heading-background-color: #166983;
-    --GW-table-sorted-column-heading-text-color: #000;
-    --GW-table-sorted-column-heading-text-shadow-color: #fff;
-    --GW-table-zebra-stripe-alternate-row-background-color: #252525;
-    --GW-table-row-hover-outline-color: #fff;
-
-    /*  Code blocks.
-        */
-    --GW-code-element-border-color: #606060;
-    --GW-code-element-background-color: #1d1d1d;
-    --GW-pre-element-border-color: #606060;
-    --GW-pre-element-background-color: #1d1d1d;
-    --GW-pre-element-scrollbar-track-color: #1d1d1d;
-    --GW-pre-element-scrollbar-thumb-color: #5c5c5c;
-    --GW-pre-element-scrollbar-thumb-hover-color: #8b8b8b;
-
-    /*  Syntax highlight theme.
-        */
-    --GW-syntax-highlight-color-normal: #f1edec;
-    --GW-syntax-highlight-color-attribute: #d8deff;
-    --GW-syntax-highlight-color-data-type: inherit;
-    --GW-syntax-highlight-color-variable: #b4b4b4;
-    --GW-syntax-highlight-color-other: inherit;
-    --GW-syntax-highlight-color-preprocessor: inherit;
-    --GW-syntax-highlight-color-extension: #999;
-    --GW-syntax-highlight-color-comment: #999;
-    --GW-syntax-highlight-color-control-flow: #b6edaa;
-    --GW-syntax-highlight-color-keyword: #d8deff;
-    --GW-syntax-highlight-color-operator: #d8deff;
-    --GW-syntax-highlight-color-special-char: #94adb6;
-    --GW-syntax-highlight-color-built-in: #d8deff;
-    --GW-syntax-highlight-color-function: #d8deff;
-    --GW-syntax-highlight-color-constant: inherit;
-    --GW-syntax-highlight-color-base-n: inherit;
-    --GW-syntax-highlight-color-dec-val: inherit;
-    --GW-syntax-highlight-color-float: inherit;
-    --GW-syntax-highlight-color-information: inherit;
-    --GW-syntax-highlight-color-char: inherit;
-    --GW-syntax-highlight-color-string: inherit;
-    --GW-syntax-highlight-color-verbatim-string: inherit;
-    --GW-syntax-highlight-color-alert: #ff815c;
-    --GW-syntax-highlight-color-error: #ff4727;
-    --GW-syntax-highlight-color-import: #a6a6a6;
-    --GW-syntax-highlight-color-special-string: #b4b4b4;
-
-    /*  Math.
-        */
-    --GW-math-block-scrollbar-border-color: #5c5c5c;
-    --GW-math-block-scrollbar-track-color: #000;
-    --GW-math-block-scrollbar-thumb-color: #5c5c5c;
-    --GW-math-block-scrollbar-thumb-hover-color: #8b8b8b;
-
-    /*  Drop caps.
-        */
-    --GW-drop-caps-yinit-color: #f9f9f9;
-    --GW-drop-caps-yinit-text-shadow-color: #a6a6a6;
-    --GW-drop-caps-de-zs-color: #efefef;
-    --GW-drop-caps-cheshire-color: #f1f1f1;
-    --GW-drop-caps-kanzlei-color: #f1f1f1;
-
-    /*  Admonitions.
-        */
-    --GW-admonition-default-left-border-color: #929292;
-    --GW-admonition-default-background-color: #4f4f4f;
-    --GW-admonition-tip-left-border-color: #4f4f4f;
-    --GW-admonition-tip-background-color: #303030;
-    --GW-admonition-warning-left-border-color: #bdbdbd;
-    --GW-admonition-warning-background-color: #8a8a8a;
-    --GW-admonition-warning-text-color: #000;
-    --GW-admonition-warning-title-background-color: #bdbdbd;
-    --GW-admonition-warning-icon-color: #000;
-    --GW-admonition-error-left-border-color: #e1e1e1;
-    --GW-admonition-error-background-color: #bdbdbd;
-    --GW-admonition-error-text-color: #000;
-    --GW-admonition-error-title-background-color: #e1e1e1;
-    --GW-admonition-error-icon-color: #000;
-
-    /*  Sequential nav UI.
-        */
-    --GW-sequential-nav-link-background-color: #000;
-
-    /*  Links.
-        */
-    --GW-definition-annotation-text-color: #cecece;
-
-    /*  Page-specific styles.
-        */
-    --GW-index-page-bottom-ornament-line-color: #9f9f9f;
-    --GW-page-mead-image-box-shadow-inner-color: #000;
-    --GW-page-mead-image-box-shadow-outer-color: #5c5c5c;
-
-    /*  Popups.
-        */
-    --GW-popups-body-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-border-color: #7c7c7c;
-    --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
-    --GW-popups-popup-scrollbar-thumb-color: #5c5c5c;
-    --GW-popups-popup-scrollbar-track-color: #000;
-    --GW-popups-popup-scrollbar-thumb-hover-color: #8b8b8b;
-
-    /*  Image focus.
-        */
-    --GW-image-focus-image-hover-drop-shadow-color: #a6a6a6;
-
-    /*  Mode selector (light/dark mode).
-        */
-    --GW-mode-selector-background-color: #000;
-    --GW-mode-selector-border-hover-color: #7c7c7c;
-    --GW-mode-selector-button-text-color: #a6a6a6;
-    --GW-mode-selector-button-hover-text-color: #fff;
-}
-
-hr::after {
-    filter: none;
-}
+Could not open input file: color-scheme-convert.php
 
 hr::after,
 .horizontalRule-nth-0 hr::after {
@@ -1532,10 +1281,17 @@ img:not(.invertible):not(.invertible-auto) {
     filter: grayscale(50%);
 }
 
+img,
+img.invertible,
+img.invertible-auto {
+    transition: filter 0.25s ease;
+}
+
 img:hover,
 img.invertible:hover,
 img.invertible-auto:hover {
     filter: none;
+    transition: filter 0s ease 0.25s;
 }
 
 #mode-selector {
@@ -1798,7 +1554,7 @@ GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName) {
-	GWLog(`Event “${eventName}” fired.`);
+	GWLog(`[notification]    Event “${eventName}” fired.`);
 
 	if (GW.notificationCenter[eventName] == null)
 		return;
@@ -1814,15 +1570,15 @@ GW.notificationCenter.fireEvent = function (eventName) {
 /* BROWSER EVENTS */
 /******************/
 
-GWLog("document.readyState." + document.readyState, 1);
+GWLog("[browser event]   document.readyState." + document.readyState, 1);
 window.addEventListener("DOMContentLoaded", () => {
-	GWLog("window.DOMContentLoaded", 1);
+	GWLog("[browser event]   window.DOMContentLoaded", 1);
 });
 window.addEventListener("load", () => {
-	GWLog("window.load", 1);
+	GWLog("[browser event]   window.load", 1);
 });
 document.addEventListener("readystatechange", () => {
-	GWLog("document.readyState." + document.readyState, 1);
+	GWLog("[browser event]   document.readyState." + document.readyState, 1);
 });
 </script>
 <script>
@@ -1843,7 +1599,7 @@ document.addEventListener("readystatechange", () => {
 /*  Set specified color mode (auto, light, dark).
     */
 function setMode(modeOption) {
-    GWLog("[darkmode.js]  setMode");
+    GWLog("[darkmode.js]     setMode");
 
     // Inject the appropriate styles.
     let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");

@@ -67,10 +67,17 @@ img:not(.invertible):not(.invertible-auto) {
     filter: grayscale(50%);
 }
 
+img,
+img.invertible,
+img.invertible-auto {
+    transition: filter 0.25s ease;
+}
+
 img:hover,
 img.invertible:hover,
 img.invertible-auto:hover {
     filter: none;
+    transition: filter 0s ease 0.25s;
 }
 
 #mode-selector {

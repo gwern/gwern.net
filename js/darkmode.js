@@ -83,14 +83,14 @@ function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = n
 
     let mediaQueryResponder = (event, canceling = false) => {
         if (canceling) {
-            GWLog(`[darkmode.js]  Canceling media query “${name}”`);
+            GWLog(`[darkmode.js]     Canceling media query “${name}”`);
 
             if (whenCanceledDo != null)
                 whenCanceledDo(mediaQuery);
         } else {
             let matches = (typeof event == "undefined") ? mediaQuery.matches : event.matches;
 
-            GWLog(`[darkmode.js]  Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`);
+            GWLog(`[darkmode.js]     Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`);
 
             if (otherwiseDo == null || matches) ifMatchesOrAlwaysDo(mediaQuery);
             else otherwiseDo(mediaQuery);
@@ -120,7 +120,7 @@ function cancelDoWhenMatchMedia(name) {
 /******************/
 
 function injectModeSelector() {
-    GWLog("[darkmode.js]  injectModeSelector");
+    GWLog("[darkmode.js]     injectModeSelector");
 
     // Inject the mode selector widget and activate buttons.
     let modeSelector = addUIElement(
@@ -134,7 +134,7 @@ function injectModeSelector() {
 
     modeSelector.querySelectorAll("button").forEach(button => {
         button.addActivateEvent(GW.modeSelectButtonClicked = (event) => {
-            GWLog("[darkmode.js]  GW.modeSelectButtonClicked");
+            GWLog("[darkmode.js]     GW.modeSelectButtonClicked");
 
             // Determine which setting was chosen (i.e., which button was clicked).
             let selectedMode = event.target.dataset.name;
@@ -259,7 +259,7 @@ function injectModeSelector() {
     Called by the ‘updateModeSelectorVisibilityScrollListener’ scroll listener.
     */
 function updateModeSelectorVisibility(event) {
-    GWLog("[darkmode.js]  updateModeSelectorVisibility", 3);
+    GWLog("[darkmode.js]     updateModeSelectorVisibility", 3);
 
     let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop) ?
@@ -288,13 +288,13 @@ function updateModeSelectorVisibility(event) {
 }
 
 function hideModeSelector() {
-    GWLog("[darkmode.js]  hideModeSelector", 3);
+    GWLog("[darkmode.js]     hideModeSelector", 3);
 
     GW.scrollState.modeSelector[0].classList.add("hidden");
 }
 
 function showModeSelector() {
-    GWLog("[darkmode.js]  showModeSelector", 3);
+    GWLog("[darkmode.js]     showModeSelector", 3);
 
     GW.scrollState.modeSelector[0].classList.remove("hidden");
 }
