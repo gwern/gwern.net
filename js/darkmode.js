@@ -15,14 +15,9 @@
 
 /* Because many users do not have access to a browser/OS which explicitly supports dark mode, cannot modify the browser/OS setting without undesired side-effects, wish to opt in only for specific websites, or simply forget that they turned on dark mode & dislike it, we make dark mode controllable by providing a widget at the top of the page. */
 
-/****************/
-/* MISC HELPERS */
-/****************/
-
-if (GW.mediaQueries == null)
-    GW.mediaQueries = { };
-GW.mediaQueries.mobileNarrow = matchMedia("(max-width: 520px)");
-GW.mediaQueries.systemDarkModeActive = matchMedia("(prefers-color-scheme: dark)");
+/***********/
+/* OPTIONS */
+/***********/
 
 GW.modeOptions = [
     [ 'auto', 'Auto', 'Set light or dark mode automatically, according to system-wide setting (Win: Start→Personalization→Colors; Mac: Apple→System-Preferences→General→Appearance; iOS: Settings→Display-and-Brightness; Android: Settings→Display)' ],
@@ -283,7 +278,7 @@ function updateModeSelectorVisibility(event) {
     // On desktop, show mode selector when scrolling to top of page,
     // or a full page up.
     // On mobile, show mode selector on ANY scroll up.
-    if (GW.mediaQueries.mobileNarrow.matches) {
+    if (GW.mediaQueries.mobileWidth.matches) {
         if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)
             showModeSelector();
     } else if (   GW.scrollState.unbrokenUpScrollDistance > window.innerHeight
