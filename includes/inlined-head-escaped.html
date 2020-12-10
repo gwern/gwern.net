@@ -1709,10 +1709,12 @@ GW.mediaQueries = {
 /********************/
 
 GW.logLevel = localStorage.getItem("gw-log-level");
+GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
 
 function GWLog (string, level = 1) {
+	let time = Date.now();
     if (GW.logLevel >= level)
-        console.log(Date.now() + ": " + string);
+        console.log("[" + GW.dateTimeFormat.format(time) + "." + (time % 1000) + "]  " + string);
 }
 GW.setLogLevel = (level, permanently = false) => {
 	if (permanently)
