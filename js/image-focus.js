@@ -156,7 +156,7 @@ function focusImage(imageToFocus) {
 
 	// Add listener to zoom image with scroll wheel.
 	window.addEventListener("wheel", GW.imageFocus.scrollEvent = (event) => {
-		GWLog("GW.imageFocus.scrollEvent");
+		GWLog("GW.imageFocus.scrollEvent", 3);
 		event.preventDefault();
 
 		let image = document.querySelector("#image-focus-overlay img.focused");
@@ -237,7 +237,7 @@ function focusImage(imageToFocus) {
 		setFocusedImageCursor();
 	}, { passive: false });
 	window.addEventListener("MozMousePixelScroll", GW.imageFocus.oldFirefoxCompatibilityScrollEvent = (event) => {
-		GWLog("GW.imageFocus.oldFirefoxCompatibilityScrollEvent");
+		GWLog("GW.imageFocus.oldFirefoxCompatibilityScrollEvent", 3);
 		event.preventDefault();
 	});
 
@@ -363,7 +363,7 @@ function focusImage(imageToFocus) {
 
 	// Moving mouse unhides image focus UI.
 	window.addEventListener("mousemove", GW.imageFocus.mouseMoved = (event) => {
-		GWLog("GW.imageFocus.mouseMoved");
+		GWLog("GW.imageFocus.mouseMoved", 3);
 		let currentDateTime = new Date();
 		if (!(event.target.tagName == "IMG" || event.target.id == "image-focus-overlay")) {
 			cancelImageFocusHideUITimer();
