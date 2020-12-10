@@ -665,7 +665,7 @@ function constructSidenotes() {
         sidenote.addEventListener("click", GW.sidenotes.sidenoteClicked = (event) => {
             GWLog("GW.sidenotes.sidenoteClicked");
 
-            if (decodeURIComponent(location.hash) == sidenote.id || event.target.tagName == "A") return;
+            if (decodeURIComponent(location.hash) == sidenote.id || event.target.tagName == "A" || event.target.tagName == "IMG") return;
 
             //  Preserve hash before changing it.
             if (!(location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref")))
