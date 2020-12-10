@@ -246,7 +246,3 @@
     --GW-mode-selector-button-text-color: #777;
     --GW-mode-selector-button-hover-text-color: #000;
 }
-
-hr::after {
-    filter: none;
-}
