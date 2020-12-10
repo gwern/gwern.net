@@ -842,9 +842,6 @@ function sidenotesSetup() {
     document.body.addEventListener("click", GW.sidenotes.bodyClicked = (event) => {
         GWLog("GW.sidenotes.bodyClicked");
 
-		GWLog(event.target);
-		GWLog(location.hash);
-
         if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
             (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref"))) {
             setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
