@@ -469,7 +469,7 @@ function updateSidenotePositions() {
                 nextProscribedRangeAfterSidenote = indexCountingDown;
             }
         }
-        GWLog(`[sidenotes.js]    Sidenote ${i + 1}’s room is: (${room.ceiling}, ${room.floor}).`, 2);
+        GWLog(`Sidenote ${i + 1}’s room is: (${room.ceiling}, ${room.floor}).`, "sidenotes.js", 2);
 
         //  Is this sidenote capable of fitting within the room it now occupies?
         if (sidenoteFootprint.bottom - sidenoteFootprint.top > room.floor - room.ceiling) {
@@ -502,7 +502,7 @@ function updateSidenotePositions() {
             */
         var overlapWithCeiling = room.ceiling - sidenoteFootprint.top;
         if (overlapWithCeiling > 0) {
-            GWLog(`[sidenotes.js]    Sidenote ${sidenote.id.substr(2)} overlaps its ceiling!`, 2);
+            GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its ceiling!`, "sidenotes.js", 2);
 
             sidenote.style.top = (parseInt(sidenote.style.top) + overlapWithCeiling) + "px";
             sidenoteFootprint.top += overlapWithCeiling;
@@ -512,7 +512,7 @@ function updateSidenotePositions() {
         //  Does this sidenote overlap its room’s floor?
         var overlapWithFloor = sidenoteFootprint.bottom - room.floor;
         if (overlapWithFloor > 0)
-            GWLog(`[sidenotes.js]    Sidenote ${sidenote.id.substr(2)} overlaps its floor!`, 2);
+            GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its floor!`, "sidenotes.js", 2);
 
         /*  Is there a next sidenote, and if so, is there any overlap between
             it and this one?
@@ -521,7 +521,7 @@ function updateSidenotePositions() {
                                       (sidenoteFootprint.bottom - nextSidenote.offsetTop) :
                                       -1;
         if (overlapWithNextSidenote > 0)
-            GWLog(`[sidenotes.js]    Sidenote ${sidenote.id.substr(2)} overlaps sidenote ${nextSidenote.id.substr(2)}!`, 2);
+            GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps sidenote ${nextSidenote.id.substr(2)}!`, "sidenotes.js", 2);
 
         /*  If the sidenote overlaps the next sidenote AND its room’s floor,
             we want to know what it overlaps more.
@@ -542,16 +542,16 @@ function updateSidenotePositions() {
         let headroom = previousSidenote ?
                        Math.min(maxHeadroom, (sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.clientHeight))) :
                        maxHeadroom;
-        GWLog(`[sidenotes.js]    We have ${headroom}px of headroom.`, 2);
+        GWLog(`We have ${headroom}px of headroom.`, "sidenotes.js", 2);
 
         //  If we have enough headroom, simply move the sidenote up.
         if (headroom >= overlapBelow) {
-            GWLog(`[sidenotes.js]    There is enough headroom. Moving sidenote ${sidenote.id.substr(2)} up.`, 2);
+            GWLog(`There is enough headroom. Moving sidenote ${sidenote.id.substr(2)} up.`, "sidenotes.js", 2);
             sidenote.style.top = (parseInt(sidenote.style.top) - overlapBelow) + "px";
             continue;
         } else {
             //  We don’t have enough headroom!
-            GWLog(`[sidenotes.js]    There is not enough headroom to move sidenote ${sidenote.id.substr(2)} all the way up!`, 2);
+            GWLog(`There is not enough headroom to move sidenote ${sidenote.id.substr(2)} all the way up!`, "sidenotes.js", 2);
 
             /*  If there’s overlap with the room’s floor, and the headroom is
                 insufficient to clear that overlap, then we will have to move
@@ -577,14 +577,14 @@ function updateSidenotePositions() {
                 continue;
 
             //  Move the sidenote up as much as we can...
-            GWLog(`[sidenotes.js]    Moving sidenote ${sidenote.id.substr(2)} up by ${headroom} pixels...`, 2);
+            GWLog(`Moving sidenote ${sidenote.id.substr(2)} up by ${headroom} pixels...`, "sidenotes.js", 2);
             sidenote.style.top = (parseInt(sidenote.style.top) - headroom) + "px";
             //  Recompute overlap...
             overlapWithNextSidenote -= headroom;
             /*  And move the next sidenote down - possibly causing overlap.
                 (But this will be handled when we process the next sidenote.)
                 */
-            GWLog(`[sidenotes.js]    ... and moving sidenote ${nextSidenote.id.substr(2)} down by ${overlapWithNextSidenote} pixels.`, 2);
+            GWLog(`... and moving sidenote ${nextSidenote.id.substr(2)} down by ${overlapWithNextSidenote} pixels.`, "sidenotes.js", 2);
             nextSidenote.style.top = (parseInt(nextSidenote.style.top) + overlapWithNextSidenote) + "px";
         }
     }

@@ -83,14 +83,14 @@ function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = n
 
     let mediaQueryResponder = (event, canceling = false) => {
         if (canceling) {
-            GWLog(`[darkmode.js]     Canceling media query “${name}”`);
+            GWLog(`Canceling media query “${name}”`, "darkmode.js");
 
             if (whenCanceledDo != null)
                 whenCanceledDo(mediaQuery);
         } else {
             let matches = (typeof event == "undefined") ? mediaQuery.matches : event.matches;
 
-            GWLog(`[darkmode.js]     Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`);
+            GWLog(`Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`, "darkmode.js");
 
             if (otherwiseDo == null || matches) ifMatchesOrAlwaysDo(mediaQuery);
             else otherwiseDo(mediaQuery);
