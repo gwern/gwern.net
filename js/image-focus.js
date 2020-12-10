@@ -31,7 +31,7 @@ function togglePageScrolling(enable) {
 	if (!enable) {
 		window.addEventListener('keydown', GW.imageFocus.keyDown = (event) => {
 			let forbiddenKeys = [ " ", "Spacebar", "ArrowUp", "ArrowDown", "Up", "Down" ];
-			if (forbiddenKeys.contains(event.key) &&
+			if (forbiddenKeys.includes(event.key) &&
 				event.target == document.body) {
 				event.preventDefault();
 			}
@@ -39,12 +39,6 @@ function togglePageScrolling(enable) {
 	} else {
 		window.removeEventListener('keydown', GW.imageFocus.keyDown);
 	}
-}
-
-/*	Returns true if the array contains the given element.
-	*/
-Array.prototype.contains = function (element) {
-	return (this.indexOf(element) !== -1);
 }
 
 /*	Returns true if the string begins with the given prefix.
@@ -335,7 +329,7 @@ function focusImage(imageToFocus) {
 	document.addEventListener("keyup", GW.imageFocus.keyUp = (event) => {
 		GWLog("GW.imageFocus.keyUp");
 		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Up", "Down", "Left", "Right" ];
-		if (!allowedKeys.contains(event.key) ||
+		if (!allowedKeys.includes(event.key) ||
 			getComputedStyle(document.querySelector("#image-focus-overlay")).display == "none") return;
 
 		event.preventDefault();
