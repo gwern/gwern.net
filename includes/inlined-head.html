@@ -1712,7 +1712,7 @@ GW.logLevel = localStorage.getItem("gw-log-level");
 
 function GWLog (string, level = 1) {
     if (GW.logLevel >= level)
-        console.log(string);
+        console.log(Date.now() + ": " + string);
 }
 GW.setLogLevel = (level, permanently = false) => {
 	if (permanently)
