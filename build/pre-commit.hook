@@ -2,12 +2,14 @@
 
 set -e
 
-if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- css/colors.css css/dark-mode-adjustments.css ; then
-	php build/build_css.php
+DIR=$(cd $(dirname "$0"); pwd)
+
+if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- $DIR/../css/colors.css $DIR/../css/dark-mode-adjustments.css ; then
+	php $DIR/build_css.php
 	git add .
 fi
 
-if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- css/colors.css css/initial.css css/dark-mode.css js/gw-inline.js js/darkmode-inline.js ; then
-	php build/build_includes.php
+if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- $DIR/../css/colors.css $DIR/../css/initial.css $DIR/../css/dark-mode.css $DIR/../js/gw-inline.js $DIR/../js/darkmode-inline.js ; then
+	php $DIR/build_includes.php
 	git add .
 fi
