@@ -15,30 +15,9 @@
 
 /* Because many users do not have access to a browser/OS which explicitly supports dark mode, cannot modify the browser/OS setting without undesired side-effects, wish to opt in only for specific websites, or simply forget that they turned on dark mode & dislike it, we make dark mode controllable by providing a widget at the top of the page. */
 
-/* For gwern.net, the default white-black scheme is 'light', and it can be flipped to a 'dark' scheme fairly easily by inverting it; the main visual problem is */
-/* that blockquotes appear to become much harder to see & image-focus.js doesn't work well without additional tweaks. */
-
-/* Known bugs: 'flash of white' on initial load until darkmode.js runs & reads user settings; browser implementations of invert filters are very slow, leading to 'janky' slow rendering on scrolling */
-
 /****************/
 /* MISC HELPERS */
 /****************/
-
-/*      Given an HTML string, creates an element from that HTML, adds it to
-        #ui-elements-container (creating the latter if it does not exist), and
-        returns the created element.
-        */
-function addUIElement(element_html) {
-	var ui_elements_container = document.querySelector("#ui-elements-container");
-	if (!ui_elements_container) {
-		ui_elements_container = document.createElement("div");
-		ui_elements_container.id = "ui-elements-container";
-		document.querySelector("body").appendChild(ui_elements_container);
-	}
-
-	ui_elements_container.insertAdjacentHTML("beforeend", element_html);
-	return ui_elements_container.lastElementChild;
-}
 
 if (GW.mediaQueries == null)
     GW.mediaQueries = { };

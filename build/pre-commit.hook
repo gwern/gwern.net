@@ -3,11 +3,11 @@
 set -e
 
 if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- css/colors.css css/dark-mode-adjustments.css ; then
-	php build_css.php
+	php build/build_css.php
 	git add .
 fi
 
 if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- css/colors.css css/initial.css css/dark-mode.css js/gw-inline.js js/darkmode-inline.js ; then
-	php build_includes.php
+	php build/build_includes.php
 	git add .
 fi
