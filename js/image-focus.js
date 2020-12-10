@@ -25,12 +25,6 @@ function togglePageScrolling(enable) {
 	}
 }
 
-/*	Returns true if the string begins with the given prefix.
-	*/
-String.prototype.hasPrefix = function (prefix) {
-	return (this.lastIndexOf(prefix, 0) === 0);
-}
-
 /***************/
 /* IMAGE FOCUS */
 /***************/

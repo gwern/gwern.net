@@ -88,12 +88,6 @@ function setHashWithoutScrolling(newHash) {
         window.getSelection().addRange(selectedRange);
 }
 
-/*  Returns true if the string begins with the given prefix.
-    */
-String.prototype.hasPrefix = function (prefix) {
-    return (this.lastIndexOf(prefix, 0) === 0);
-}
-
 /*******************/
 /* COLLAPSE BLOCKS */
 /*******************/
