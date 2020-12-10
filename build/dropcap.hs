@@ -5,7 +5,7 @@
 module Main where
 
 import Text.Pandoc (def, extensionsFromList, queryWith, readerExtensions, readMarkdown, runIOorExplode, unMeta,
-                    Extension(Ext_footnotes, Ext_yaml_metadata_block), Inline(Str), Pandoc(Pandoc), Block(Para), MetaValue(MetaInlines))
+                    pandocExtensions, Inline(Str), Pandoc(Pandoc), Block(Para), MetaValue(MetaInlines))
 import qualified Data.Text as T (pack, take, intercalate, unpack, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
@@ -28,7 +28,7 @@ printDropcap file = do
 dropcap :: T.Text -> IO [T.Text]
 dropcap txt = runIOorExplode $
   -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
-  do (Pandoc m bs) <- readMarkdown def{readerExtensions = extensionsFromList [Ext_footnotes, Ext_yaml_metadata_block]} txt
+  do (Pandoc m bs) <- readMarkdown def{readerExtensions = pandocExtensions} txt
      let dropCapType = M.lookup "cssExtension" $ unMeta m
      case dropCapType of
        Nothing -> let contents = extractParagraphs [bs !! 2] in

@@ -13,11 +13,11 @@ main = do (file:_) <- getArgs
           let results = processLint file f
           TIO.putStr results
 
--- 'drop 3' to avoid the near-infinite loop when files start with Hakyll metadata
 processLint :: FilePath -> T.Text -> T.Text
-processLint f x = do let parsed = runPure $ readMarkdown def{readerExtensions = pandocExtensions } (T.drop 3 x)
+processLint f x = do let parsed = runPure $ readMarkdown def{readerExtensions = pandocExtensions } x
                      case parsed of
-                      Right x' -> let matches = lineCheck x' in if length matches > 0 then T.pack $ unlines $ map (\b -> f++": " ++ show b) matches else T.empty
+                      Right x' -> let matches = lineCheck x' in
+                        if length matches > 0 then T.pack $ unlines $ map (\b -> f++": " ++ show b) matches else T.empty
                       Left err -> "Could not parse: " `T.append` (T.pack f) `T.append` (T.pack $ show err)
 
 lineCheck :: Pandoc -> [Block]

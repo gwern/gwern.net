@@ -8,7 +8,7 @@
 module Main where
 
 import Text.Pandoc (def, extensionsFromList, queryWith, readerExtensions, readMarkdown, runIOorExplode,
-                     Extension(Ext_footnotes), Inline(Link), Pandoc)
+                     pandocExtensions, Inline(Link), Pandoc)
 import Data.Text as T (append, drop, pack, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStr)
 import System.Environment (getArgs)
@@ -24,7 +24,7 @@ main = do
 -- | Read 1 file and print out its URLs
 printURLs :: Bool -> FilePath -> IO ()
 printURLs printfilename file = do
-  input <- fmap (T.drop 100) $ TIO.readFile file -- we drop the first 100 characters to skip the YAML metadata
+  input <- TIO.readFile file
   converted <- extractLinks input
   if printfilename then TIO.putStr $ T.unlines $ Prelude.map (\url -> (T.pack file) `T.append` ":" `T.append` url) converted else
      TIO.putStr $ T.unlines $ converted
@@ -33,7 +33,7 @@ printURLs printfilename file = do
 extractLinks :: Text -> IO [T.Text]
 extractLinks txt = runIOorExplode $
   -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
-  do parsed <- readMarkdown def{readerExtensions = extensionsFromList [Ext_footnotes]} txt
+  do parsed <- readMarkdown def{readerExtensions = pandocExtensions } txt
      let links = extractURLs parsed
      return links
 
