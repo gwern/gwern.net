@@ -1682,7 +1682,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /* MISC */
 /********/
 
-/* LaTeX: Format the LaTeX symbol correctly (a higher up, e lower) (borrowed from https://latex.now.sh/ ) */
+/* LaTeX/TeX: Format the logotypes correctly (a higher up, e lower) (borrowed from https://latex.now.sh/ ) */
 .latex span:nth-child(1) {
     text-transform: uppercase;
     font-size: 0.76em;
@@ -1698,8 +1698,15 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     margin-right: -0.120em;
     line-height: 1ex;
 }
+.tex-logotype sub {
+ text-transform: uppercase;
+ vertical-align: -0.50ex;
+ margin-left: -0.1em;
+ margin-right: -0.1em;
+ font-size: 1em;
+}
 
-/*  Prevent text-shadow of italics in links from creating visual glitches. */
+/*  Prevent text-shadow of italics in links from creating visual glitches (also fixes occasional link icon overlaps, eg a WP link to 'MGS:V' where the right-tilted 'V' would touch the WP 'W' link icon). */
 #markdownBody em {
     margin-right: 0.1em;
 }
