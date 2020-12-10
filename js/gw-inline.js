@@ -27,9 +27,9 @@ function GWLog (string, source = "", level = 1) {
 	let time = Date.now();
 	let ms = `${(time % 1000)}`.padStart(3,'0');
 	let timestamp = `[${GW.dateTimeFormat.format(time)}.${ms}]  `;
-	let source = (source > "" ? `[${source}]` : `[ ]`).padEnd(GW.logSourcePadLength, ' ');
+	let sourcestamp = (source > "" ? `[${source}]` : `[ ]`).padEnd(GW.logSourcePadLength, ' ');
 
-	console.log(timestamp + source + string);
+	console.log(timestamp + sourcestamp + string);
 }
 GW.setLogLevel = (level, permanently = false) => {
 	if (permanently)
