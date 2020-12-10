@@ -1714,7 +1714,7 @@ GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric"
 function GWLog (string, level = 1) {
 	let time = Date.now();
     if (GW.logLevel >= level)
-        console.log("[" + GW.dateTimeFormat.format(time) + "." + (time % 1000) + "]  " + string);
+        console.log("[" + GW.dateTimeFormat.format(time) + "." + `${(time % 1000)}`.padStart(3,'0') + "]  " + string);
 }
 GW.setLogLevel = (level, permanently = false) => {
 	if (permanently)
