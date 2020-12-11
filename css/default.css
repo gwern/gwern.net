@@ -2743,8 +2743,16 @@ body.lorem div[class^='drop-cap'] {
     hyphens: auto;
 }
 
+/*  Images such as the ones in Wikipedia popups.
+    */
 #popupdiv figure.float-right:first-of-type {
     margin-top: -3em;
+}
+
+/*  Popups for videos.
+    */
+#popupdiv iframe {
+	display: block;
 }
 
 /****************/
