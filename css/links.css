@@ -13,16 +13,31 @@
     body:not(.index) a.docMetadata,
     body:not(.index) .defnMetadata {
         margin: 0 0.05em;
+        padding: 0 0 0 0.3em;
+        position: relative;
     }
     body:not(.index) a.docMetadata::before,
     body:not(.index) .defnMetadata::before {
-        content: "\300C"; /* (「) LEFT CORNER BRACKET */
-        margin: 0 0 0 -0.7em;
-        position: relative;
-        bottom: 0.05em;
-        right: -0.1em;
+        content: "0";
+        width: 0.5em;
+        height: 0.75em;
+        color: transparent;
+		background-image:
+			linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
+			linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+		background-size: 1px 1px;
+		background-repeat: repeat-x, repeat-y;
+        background-position: 100% 0, 0 100%;
         text-shadow: none;
-        font-style: normal;
+        position: absolute;
+        top: 1px;
+        left: 1px;
+    }
+    body:not(.index) a.docMetadata:hover::before,
+    body:not(.index) .defnMetadata:hover::before {
+		background-image:
+			linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
+			linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
     }
 }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
