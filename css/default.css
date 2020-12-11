@@ -450,6 +450,9 @@ hr::after,
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     width: 30px;
 }
+.horizontalRule-nth-0 hr::after {
+	filter: drop-shadow(0 0 0 currentColor);
+}
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');

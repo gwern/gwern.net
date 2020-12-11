@@ -21,7 +21,7 @@ license: MIT (derivative of footnotes.js, which is PD)
     "targeted" class to the target counterpart.
     */
 function updateTargetCounterpart() {
-    GWLog("[sidenotes.js]    updateTargetCounterpart");
+    GWLog("updateTargetCounterpart", "sidenotes.js");
 
     /*  Clear existing targeting.
         */
@@ -58,13 +58,13 @@ function isOnScreen(element) {
     pseudo-class.
     */
 function realignHashIfNeeded() {
-    GWLog("[sidenotes.js]    realignHashIfNeeded");
+    GWLog("realignHashIfNeeded", "sidenotes.js");
 
     if (location.hash.match(/#sn[0-9]/) || location.hash.match(/#fnref[0-9]/))
         realignHash();
 }
 function realignHash() {
-    GWLog("[sidenotes.js]    realignHash");
+    GWLog("realignHash", "sidenotes.js");
 
     var hash = location.hash;
     history.replaceState(null, null, "#");
@@ -129,7 +129,7 @@ function isWithinCollapsedBlock(element) {
     if any such expansion occurred.
     */
 function expandCollapseBlocksToReveal(element) {
-    GWLog("[sidenotes.js]    expandCollapseBlocksToReveal");
+    GWLog("expandCollapseBlocksToReveal", "sidenotes.js");
 
     /*  If the given element is not within any collapse block, there is nothing
         to do.
@@ -160,7 +160,7 @@ function expandCollapseBlocksToReveal(element) {
     scrolls the targeted element into view.
     */
 function revealTarget() {
-    GWLog("[sidenotes.js]    revealTarget");
+    GWLog("revealTarget", "sidenotes.js");
 
     if (!location.hash) return;
 
@@ -186,7 +186,7 @@ function revealTarget() {
     storage container to the appropriate sidenote column.
     */
 function updateSidenotesInCollapseBlocks() {
-    GWLog("[sidenotes.js]    updateSidenotesInCollapseBlocks");
+    GWLog("updateSidenotesInCollapseBlocks", "sidenotes.js");
 
     for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
         let fnref = GW.sidenotes.footnoteRefs[i];
@@ -230,7 +230,7 @@ function updateSidenotesInCollapseBlocks() {
     current mode (based on viewport width).
     */
 function updateFootnoteReferenceLinks() {
-    GWLog("[sidenotes.js]    updateFootnoteReferenceLinks");
+    GWLog("updateFootnoteReferenceLinks", "sidenotes.js");
 
     for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
         let fnref = GW.sidenotes.footnoteRefs[i];
@@ -246,7 +246,7 @@ function updateFootnoteReferenceLinks() {
     appropriate for the current viewport width; unbind the others.
     */
 function updateFootnoteEventListeners() {
-    GWLog("[sidenotes.js]    updateFootnoteEventListeners");
+    GWLog("updateFootnoteEventListeners", "sidenotes.js");
 
     //  Unbind sidenote mouse events.
 	unbindSidenoteMouseEvents();
@@ -279,7 +279,7 @@ function updateFootnoteEventListeners() {
 /*	Bind event listeners for mousing over citations and sidenotes.
 	*/
 function bindSidenoteMouseEvents() {
-    GWLog("[sidenotes.js]    bindSidenoteMouseEvents");
+    GWLog("bindSidenoteMouseEvents", "sidenotes.js");
 
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let fnref = GW.sidenotes.footnoteRefs[i];
@@ -303,7 +303,7 @@ function bindSidenoteMouseEvents() {
 /*	Unbind event listeners for mousing over citations and sidenotes.
 	*/
 function unbindSidenoteMouseEvents() {
-    GWLog("[sidenotes.js]    unbindSidenoteMouseEvents");
+    GWLog("unbindSidenoteMouseEvents", "sidenotes.js");
 
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let fnref = GW.sidenotes.footnoteRefs[i];
@@ -328,7 +328,7 @@ function unbindSidenoteMouseEvents() {
     switch, that popup will remain there forever... unless we clean it up.
     */
 function clearFootnotePopups() {
-    GWLog("[sidenotes.js]    clearFootnotePopups");
+    GWLog("clearFootnotePopups", "sidenotes.js");
 
     document.querySelectorAll("#footnotediv").forEach(footnotePopup => { footnotePopup.remove(); });
 }
@@ -340,7 +340,7 @@ function clearFootnotePopups() {
 /*  This function actually calculates and sets the positions of all sidenotes.
     */
 function updateSidenotePositions() {
-    GWLog("[sidenotes.js]    updateSidenotePositions");
+    GWLog("updateSidenotePositions", "sidenotes.js");
 
     /*  If we're in footnotes mode (i.e., the viewport is too narrow), then
         don't do anything.
@@ -469,7 +469,7 @@ function updateSidenotePositions() {
                 nextProscribedRangeAfterSidenote = indexCountingDown;
             }
         }
-        GWLog(`[sidenotes.js]    Sidenote ${i + 1}’s room is: (${room.ceiling}, ${room.floor}).`, 2);
+        GWLog(`Sidenote ${i + 1}’s room is: (${room.ceiling}, ${room.floor}).`, "sidenotes.js", 2);
 
         //  Is this sidenote capable of fitting within the room it now occupies?
         if (sidenoteFootprint.bottom - sidenoteFootprint.top > room.floor - room.ceiling) {
@@ -480,7 +480,7 @@ function updateSidenotePositions() {
                 In that case, just give up.
                 */
             if (nextProscribedRangeAfterSidenote == -1) {
-                GWLog("[sidenotes.js]    TOO MUCH SIDENOTES. GIVING UP. :(");
+                GWLog("TOO MUCH SIDENOTES. GIVING UP. :(", "sidenotes.js");
                 return;
             }
 
@@ -502,7 +502,7 @@ function updateSidenotePositions() {
             */
         var overlapWithCeiling = room.ceiling - sidenoteFootprint.top;
         if (overlapWithCeiling > 0) {
-            GWLog(`[sidenotes.js]    Sidenote ${sidenote.id.substr(2)} overlaps its ceiling!`, 2);
+            GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its ceiling!`, "sidenotes.js", 2);
 
             sidenote.style.top = (parseInt(sidenote.style.top) + overlapWithCeiling) + "px";
             sidenoteFootprint.top += overlapWithCeiling;
@@ -512,7 +512,7 @@ function updateSidenotePositions() {
         //  Does this sidenote overlap its room’s floor?
         var overlapWithFloor = sidenoteFootprint.bottom - room.floor;
         if (overlapWithFloor > 0)
-            GWLog(`[sidenotes.js]    Sidenote ${sidenote.id.substr(2)} overlaps its floor!`, 2);
+            GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its floor!`, "sidenotes.js", 2);
 
         /*  Is there a next sidenote, and if so, is there any overlap between
             it and this one?
@@ -521,7 +521,7 @@ function updateSidenotePositions() {
                                       (sidenoteFootprint.bottom - nextSidenote.offsetTop) :
                                       -1;
         if (overlapWithNextSidenote > 0)
-            GWLog(`[sidenotes.js]    Sidenote ${sidenote.id.substr(2)} overlaps sidenote ${nextSidenote.id.substr(2)}!`, 2);
+            GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps sidenote ${nextSidenote.id.substr(2)}!`, "sidenotes.js", 2);
 
         /*  If the sidenote overlaps the next sidenote AND its room’s floor,
             we want to know what it overlaps more.
@@ -542,16 +542,16 @@ function updateSidenotePositions() {
         let headroom = previousSidenote ?
                        Math.min(maxHeadroom, (sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.clientHeight))) :
                        maxHeadroom;
-        GWLog(`[sidenotes.js]    We have ${headroom}px of headroom.`, 2);
+        GWLog(`We have ${headroom}px of headroom.`, "sidenotes.js", 2);
 
         //  If we have enough headroom, simply move the sidenote up.
         if (headroom >= overlapBelow) {
-            GWLog(`[sidenotes.js]    There is enough headroom. Moving sidenote ${sidenote.id.substr(2)} up.`, 2);
+            GWLog(`There is enough headroom. Moving sidenote ${sidenote.id.substr(2)} up.`, "sidenotes.js", 2);
             sidenote.style.top = (parseInt(sidenote.style.top) - overlapBelow) + "px";
             continue;
         } else {
             //  We don’t have enough headroom!
-            GWLog(`[sidenotes.js]    There is not enough headroom to move sidenote ${sidenote.id.substr(2)} all the way up!`, 2);
+            GWLog(`There is not enough headroom to move sidenote ${sidenote.id.substr(2)} all the way up!`, "sidenotes.js", 2);
 
             /*  If there’s overlap with the room’s floor, and the headroom is
                 insufficient to clear that overlap, then we will have to move
@@ -577,14 +577,14 @@ function updateSidenotePositions() {
                 continue;
 
             //  Move the sidenote up as much as we can...
-            GWLog(`[sidenotes.js]    Moving sidenote ${sidenote.id.substr(2)} up by ${headroom} pixels...`, 2);
+            GWLog(`Moving sidenote ${sidenote.id.substr(2)} up by ${headroom} pixels...`, "sidenotes.js", 2);
             sidenote.style.top = (parseInt(sidenote.style.top) - headroom) + "px";
             //  Recompute overlap...
             overlapWithNextSidenote -= headroom;
             /*  And move the next sidenote down - possibly causing overlap.
                 (But this will be handled when we process the next sidenote.)
                 */
-            GWLog(`[sidenotes.js]    ... and moving sidenote ${nextSidenote.id.substr(2)} down by ${overlapWithNextSidenote} pixels.`, 2);
+            GWLog(`... and moving sidenote ${nextSidenote.id.substr(2)} down by ${overlapWithNextSidenote} pixels.`, "sidenotes.js", 2);
             nextSidenote.style.top = (parseInt(nextSidenote.style.top) + overlapWithNextSidenote) + "px";
         }
     }
@@ -598,7 +598,7 @@ function updateSidenotePositions() {
     of the sidenotes.
     */
 function constructSidenotes() {
-    GWLog("[sidenotes.js]    constructSidenotes");
+    GWLog("constructSidenotes", "sidenotes.js");
 
     /*  Do nothing if sidenotes.js somehow gets run extremely early in the page
         load process.
@@ -663,7 +663,7 @@ function constructSidenotes() {
     for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
         let sidenote = GW.sidenotes.sidenoteDivs[i];
         sidenote.addEventListener("click", GW.sidenotes.sidenoteClicked = (event) => {
-            GWLog("[sidenotes.js]    GW.sidenotes.sidenoteClicked");
+            GWLog("GW.sidenotes.sidenoteClicked", "sidenotes.js");
 
             if (decodeURIComponent(location.hash) == sidenote.id || event.target.tagName == "A" || event.target.tagName == "IMG") return;
 
@@ -708,7 +708,7 @@ function constructSidenotes() {
     where the citations are densely packed and the sidenotes are long.
     */
 function sidenotesSetup() {
-    GWLog("[sidenotes.js]    sidenotesSetup");
+    GWLog("sidenotesSetup", "sidenotes.js");
 
     /*  The `sidenoteSpacing` constant defines the minimum vertical space that
         is permitted between adjacent sidenotes; any less, and they are
@@ -733,7 +733,7 @@ function sidenotesSetup() {
         (This listener may also be fired if the dev tools pane is opened, etc.)
         */
         GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
-        GWLog("[sidenotes.js]    GW.sidenotes.viewportWidthBreakpointChanged");
+        GWLog("GW.sidenotes.viewportWidthBreakpointChanged", "sidenotes.js");
 
         updateFootnoteEventListeners();
         updateFootnoteReferenceLinks();
@@ -750,7 +750,7 @@ function sidenotesSetup() {
         the window is resized.
         */
     window.addEventListener('resize', GW.sidenotes.windowResized = (event) => {
-        GWLog("[sidenotes.js]    GW.sidenotes.windowResized");
+        GWLog("GW.sidenotes.windowResized", "sidenotes.js");
 
         updateSidenotePositions();
     });
@@ -780,7 +780,7 @@ function sidenotesSetup() {
         order afterwards.
         */
     GW.notificationCenter.addHandlerForEvent("Footnotes.loaded", () => {
-		GWLog("[sidenotes.js]    Sidenotes.js has detected that footnotes.js has loaded.");
+		GWLog("Sidenotes.js has detected that footnotes.js has loaded.", "sidenotes.js");
 
 		GW.notificationCenter.addHandlerForEvent("Footnotes.setupComplete", updateFootnoteEventListeners, { once: true });
 	}, { once: true });
@@ -811,7 +811,7 @@ function sidenotesSetup() {
         collapse block, expand it and all collapse blocks enclosing it.
         */
     window.addEventListener("hashchange", GW.sidenotes.hashChanged = () => {
-        GWLog("[sidenotes.js]    GW.sidenotes.hashChanged");
+        GWLog("GW.sidenotes.hashChanged", "sidenotes.js");
 
         revealTarget();
         updateTargetCounterpart();
@@ -826,7 +826,7 @@ function sidenotesSetup() {
         */
     document.querySelectorAll(".disclosure-button").forEach(collapseCheckbox => {
         collapseCheckbox.addEventListener("change", GW.sidenotes.disclosureButtonValueChanged = (event) => {
-            GWLog("[sidenotes.js]    GW.sidenotes.disclosureButtonValueChanged");
+            GWLog("GW.sidenotes.disclosureButtonValueChanged", "sidenotes.js");
 
             setTimeout(updateSidenotePositions);
         });
@@ -842,7 +842,7 @@ function sidenotesSetup() {
         the document is clicked anywhere but a sidenote or a link.
         */
     document.body.addEventListener("click", GW.sidenotes.bodyClicked = (event) => {
-        GWLog("[sidenotes.js]    GW.sidenotes.bodyClicked");
+        GWLog("GW.sidenotes.bodyClicked", "sidenotes.js");
 
         if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
             (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref"))) {

@@ -7,13 +7,20 @@
     body:not(.index) a.docMetadata::before,
     body:not(.index) .defnMetadata::before {
         content: "\25E4"; /* (◤) BLACK UPPER LEFT TRIANGLE */
-        margin: 0 0 0 3px;
+        margin: 0 0 0 -0.5em;
         vertical-align: baseline;
         position: relative;
-        bottom: 0.35em;
-        opacity: 0.67;
+        bottom: 0.5em;
         font-size: 0.65em;
-        right: 0.17em;
+        right: -0.55em;
+        color: transparent;
+        text-shadow:
+            1px 1px 0 var(--GW-body-background-color),
+            8px -1px 0 var(--GW-body-background-color),
+            0 0 0 var(--GW-body-text-color),
+            0 0 0 var(--GW-body-text-color),
+            0 0 0 var(--GW-body-text-color);
+        z-index: -1;
     }
 }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
