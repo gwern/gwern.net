@@ -616,6 +616,9 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 	color: var(--GW-TOC-number-hover-color);
 }
 
+/* The table of contents is a *table*, so align */
+#TOC { font-variant-numeric: tabular-nums; }
+
 /****************/
 /* MAIN CONTENT */
 /****************/
