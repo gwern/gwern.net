@@ -6,10 +6,10 @@ DIR=$(cd $(dirname "$0"); pwd)
 
 if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- $DIR/../css/colors.css $DIR/../css/dark-mode-adjustments.css ; then
 	php $DIR/build_css.php
-	git add .
+	git add $DIR/../.
 fi
 
 if [[ "$1" = "--force" ]] || ! git diff-index --quiet --cached HEAD -- $DIR/../css/colors.css $DIR/../css/initial.css $DIR/../css/dark-mode.css $DIR/../js/gw-inline.js $DIR/../js/darkmode-inline.js ; then
 	php $DIR/build_includes.php
-	git add .
+	git add $DIR/../.
 fi
