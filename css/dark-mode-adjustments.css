@@ -92,6 +92,15 @@ img.invertible-auto:hover {
 	opacity: 0.55;
 }
 
+article > :not(#TOC) a[href*='wikipedia.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wikimedia.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wiktionary.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wikisource.org'].docMetadata:hover,
+span.defnMetadata:hover {
+    background-image: var(--GW-dotted-underline-hover-background-dark-image);
+}
+
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
 p a[href^='#'].identifier-link-up::after,
 section > :not(:first-child) a[href^='#'].identifier-link-down::after,
