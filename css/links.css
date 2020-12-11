@@ -16,6 +16,7 @@
         bottom: 0.05em;
         right: -0.1em;
         text-shadow: none;
+        font-style: normal;
     }
 }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
