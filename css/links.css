@@ -7,10 +7,11 @@
     body:not(.index) a.docMetadata::before,
     body:not(.index) .defnMetadata::before {
         content: "\300C"; /* (「) LEFT CORNER BRACKET */
-        margin: 0 0 0 -0.65em;
+        margin: 0 0 0 -0.7em;
         position: relative;
-        bottom: 0.1em;
-        right: -0.05em;
+        bottom: 0.05em;
+        right: -0.1em;
+        text-shadow: none;
     }
 }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
