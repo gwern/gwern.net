@@ -398,7 +398,8 @@ body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/do
     vertical-align: baseline;
     position: relative;
     bottom: 0.15em;
-    opacity: 0.80;
+    opacity: 0.75;
+    font-size: 0.9em;
 }
 
 /*=-------------------------------=*/
@@ -718,6 +719,8 @@ a[href*="rstudio.com"]::after {
 /* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
 a[href*="haskell.org"]::after { /* primary user: hackage.haskell.org */
     content: "\1D6CC"; /* (𝛌) MATHEMATICAL BOLD SMALL LAMDA */
+    font-size: 1em;
+    opacity: 0.6;
 }
 
 /* MAL: the blue of their logo doesn't work, so just text */
@@ -794,12 +797,15 @@ a[href*="slate.com"]::after {
 /* Nature */
 a[href*="nature.com"]::after {
     content: "n";
-    bottom: 0.55em;
+    font-size: 1em;
+    bottom: 0.2em;
+    opacity: 0.65;
 }
 
 a[href*="link.springer.com"]::after {
     content: "\2658"; /* (♘) WHITE CHESS KNIGHT */
-    font-size: 1.3em;
+    font-size: 1.2em;
+    line-height: 1;
     font-weight: normal;
     bottom: 0.15em;
 }
@@ -1064,9 +1070,14 @@ a[href*='docs/.*/*.pdf#org=google']:hover::after {
 a[href*='biorxiv.org']::after,
 a[href*='medrxiv.org']::after {
     background-image: url('/static/img/icons/chi-dna.svg');
-    height: 1em;
     width: 0.9em;
-    opacity: 0.65;
+    height: 0.9em;
+    margin: 0 0 2px 0;
+    opacity: 0.75;
+}
+a[href*='biorxiv.org']:hover::after,
+a[href*='medrxiv.org']:hover::after {
+    opacity: 0.6;
 }
 
 /*  Substack.
@@ -1406,9 +1417,9 @@ a[href*='archive-it.org'    ]::after,
 a[href*='archiveteam.org'   ]::after,
 a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.org */
     background-image: url('/static/img/icons/internetarchive.svg');
-    height: 0.75em;
-    width: 0.75em;
-    margin: 0 0 2px 3px;
+    height: 0.66em;
+    width: 0.66em;
+    margin: 0 0 2px 2px;
     opacity: 0.6;
 }
 
@@ -1430,10 +1441,10 @@ a[href*="#facebook"][href*="arxiv.org"]::after, /* override the default Arxiv se
 a[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
 a[href*="facebook.com"]::after {
     background-image: url('/static/img/icons/facebook.svg');
-    height: 0.875em;
-    width: 0.875em;
-    margin: 0 -1px 2px 1px;
-    opacity: 0.5;
+    height: 0.8em;
+    width: 0.8em;
+    margin: 0 -1px 3px 0;
+    opacity: 0.45;
 }
 
 /*  Bitcoin.
