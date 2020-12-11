@@ -1471,8 +1471,8 @@ a[href*="#org=google"][href*="arxiv.org"]::after,
 a[href*='docs/.*/*.pdf#.*google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
     background-image: url('/static/img/icons/google.svg');
-    height: 0.7em;
-    width: 0.7em;
+    height: 0.65em;
+    width: 0.65em;
     margin: 0 0 3px 3px;
-    opacity: 0.5;
+    opacity: 0.45;
 }
