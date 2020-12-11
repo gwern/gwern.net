@@ -4,6 +4,10 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
+    body:not(.index) a.docMetadata,
+    body:not(.index) .defnMetadata {
+        margin: 0 0.05em;
+    }
     body:not(.index) a.docMetadata::before,
     body:not(.index) .defnMetadata::before {
         content: "\300C"; /* (「) LEFT CORNER BRACKET */
