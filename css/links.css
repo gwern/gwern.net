@@ -30,8 +30,6 @@ span.defnMetadata {
     color: var(--GW-definition-annotation-text-color);
     background-image: var(--GW-dotted-underline-background-image);
     background-size: 2px 1px;
-	background-repeat: repeat-x;
-	background-position: 0% 90%;
 }
 span.defnMetadata:hover {
     color: var(--GW-link-hover-color);
