@@ -1,6 +1,7 @@
 :root {
 	--GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAP///ywAAAAABAACAAACBAQShgUAOw==');
 	--GW-dotted-underline-hover-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMYiIiP///ywAAAAABAACAAACBAQShgUAOw==');
+	--GW-dotted-underline-hover-dark-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAJ6eniwAAAAABAACAAACBAQShgUAOw==');
 }
 
 /* If a link has an automatic or custom link annotation (eg a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
