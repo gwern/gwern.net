@@ -1,4 +1,4 @@
-#!/usr/local/bin/php
+#!/usr/bin/env php
 <?php
 
 $force = @$argv[1] == "--force";
