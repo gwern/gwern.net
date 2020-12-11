@@ -2743,6 +2743,10 @@ body.lorem div[class^='drop-cap'] {
     hyphens: auto;
 }
 
+#popupdiv figure.float-right:first-of-type {
+    margin-top: -3em;
+}
+
 /****************/
 /* INTERACTIONS */
 /****************/
