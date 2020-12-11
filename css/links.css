@@ -1,3 +1,8 @@
+:root {
+	--GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAP///ywAAAAABAACAAACBAQShgUAOw==');
+	--GW-dotted-underline-hover-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMYiIiP///ywAAAAABAACAAACBAQShgUAOw==');
+}
+
 /* If a link has an automatic or custom link annotation (eg a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
 /* so users don't get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */
 /* At some point, if enough links get annotated & annotation is the default, we might flip this to be a warning for non-annotated links. */
@@ -23,10 +28,14 @@
 span.defnMetadata {
     cursor: help;
     color: var(--GW-definition-annotation-text-color);
-    border-bottom: 1px dotted currentColor;
+    background-image: var(--GW-dotted-underline-background-image);
+    background-size: 2px 1px;
+	background-repeat: repeat-x;
+	background-position: 0% 90%;
 }
 span.defnMetadata:hover {
     color: var(--GW-link-hover-color);
+    background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
 /******************************************************************************/
@@ -1302,6 +1311,28 @@ a[href*='erowid.org']::after {
 /*  Wikipedia.
     (WP is used on almost every page, so make an exception and inline it)
     */
+article > :not(#TOC) a[href*='wikipedia.org'].docMetadata,
+article > :not(#TOC) a[href*='wikimedia.org'].docMetadata,
+article > :not(#TOC) a[href*='wiktionary.org'].docMetadata,
+article > :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata,
+article > :not(#TOC) a[href*='wikisource.org'].docMetadata {
+    background-image: var(--GW-dotted-underline-background-image);
+    background-size: 2px 1px;
+}
+article > :not(#TOC) a[href*='wikipedia.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wikimedia.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wiktionary.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata:hover,
+article > :not(#TOC) a[href*='wikisource.org'].docMetadata:hover {
+    background-image: var(--GW-dotted-underline-hover-background-image);
+}
+a[href*='wikipedia.org'].docMetadata::after,
+a[href*='wikimedia.org'].docMetadata::after,
+a[href*='wiktionary.org'].docMetadata::after,
+a[href*='wikimediafoundation.org'].docMetadata::after,
+a[href*='wikisource.org'].docMetadata::after {
+	content: none;
+}
 a[href*='wikipedia.org']::after, /* primary user: en.wikipedia.org */
 a[href*='wikimedia.org']::after, /* secondary user: meta.wikimedia.org */
 a[href*='wiktionary.org']::after, /* primary user: en.wiktionary.org */
