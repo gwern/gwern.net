@@ -1,5 +1,4 @@
 #!/usr/local/bin/php
-
 <?php
 
 $force = @$argv[1] == "--force";
