@@ -98,7 +98,7 @@ article > div:not(#TOC) a[href*='wiktionary.org'].docMetadata:hover,
 article > div:not(#TOC) a[href*='wikimediafoundation.org'].docMetadata:hover,
 article > div:not(#TOC) a[href*='wikisource.org'].docMetadata:hover,
 #markdownBody span.defnMetadata:hover {
-    background-image: var(--GW-dotted-underline-hover-background-dark-image);
+    background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
