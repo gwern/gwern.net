@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2020-11-10 18:21:21 gwern"
+# When:  Time-stamp: "2020-12-11 20:44:40 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -46,7 +46,9 @@ if (grepl("plos",args)) {
 
     # look up in PLOS:
     library(fulltext)
-    fulltext <- ft_get(doi, from="plos")
+    # NOTE: a PLOS DOI might not have fulltext, even if it's a valid DOI: PLOS assigns individual DOIs to *parts of articles* like figures or tables or supplements. See `ft_get-warnings` documentation.
+    fulltext <-  tryCatch(ft_get(doi, from="plos"), warning=function(w) { print(w); cat(doi); cat(args[1]); quit(status=1) })
+
 
     library(pubchunks)
     y <- (fulltext %>% ft_collect("author", "title") %>% pub_chunks())$plos[[1]]
