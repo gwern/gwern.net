@@ -49,6 +49,8 @@ Extracts = {
     popup: null,
 
     extractForTarget: (target) => {
+		GWLog("Extracts.extractForTarget", "popups.js", 2);
+
         var doi = "";
         var archive = "";
         if (target.dataset.urlOriginal != undefined && target.dataset.urlOriginal != target.href) {
@@ -103,7 +105,7 @@ Extracts = {
                         href='${target.href}'
                         title='Open this reference in a new window'
                     ></a>`; }
-        return `<div class='popup-extract' onclick='parentNode.remove()'>` +
+        return `<div class='popup-extract'>` +
                     `<p class='data-field title'>` +
                          archive +
                          `<a
@@ -117,20 +119,22 @@ Extracts = {
                     `<p class='data-field author-plus-date'>` +
                         `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}` +
                     `</p>` +
-                    `<div class='data-field popupAbstract' onclick='parentNode.remove()'>` +
+                    `<div class='data-field popupAbstract'>` +
                         `${target.dataset.popupAbstract || ""}` +
                     `</div>` +
                 `</div>`;
     },
     definitionForTarget: (target) => {
-        return `<div class='popup-extract' onclick='parentNode.remove()'>` +
+		GWLog("Extracts.definitionForTarget", "popups.js", 2);
+
+        return `<div class='popup-extract'>` +
                     `<p class='data-field title'>` +
                         `${target.dataset.popupTitleHtml || ""}` +
                     `</p>` +
                     `<p class='data-field author-plus-date'>` +
                         `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}` +
                     `</p>` +
-                    `<div class='data-field popupAbstract' onclick='parentNode.remove()'>` +
+                    `<div class='data-field popupAbstract'>` +
                         `${target.dataset.popupAbstract || ""}` +
                     `</div>` +
                 `</div>`;
@@ -144,12 +148,16 @@ Extracts = {
         }
     },
     videoForTarget: (target, videoId) => {
-        return `<div class='popup-screenshot' onclick="parentNode.remove()">` +
+		GWLog("Extracts.videoForTarget", "popups.js", 2);
+
+        return `<div class='popup-screenshot'>` +
             `<iframe width="${Extracts.videoPopupWidth}px" height="${Extracts.videoPopupHeight}px"` +
             `src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen>` +
             `</iframe></div>`;
     },
     sectionEmbedForTarget: (target) => {
+		GWLog("Extracts.sectionEmbedForTarget", "popups.js", 2);
+
         let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
         if (targetSectionHTML.length < 2) { // not a section but a random <div> target
             return Extracts.citationContextForTarget(target);
@@ -161,29 +169,35 @@ Extracts = {
             // return `<div class='popup-section-embed'>${targetSectionHTML}</div>`;
     },
     citationContextForTarget: (target) => {
+		GWLog("Extracts.citationContextForTarget", "popups.js", 2);
+
         let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul").innerHTML;
         return `<div class='popup-citation-context'>${citationContextHTML}</div>`; // ellipses added via CSS
     },
     localImageForTarget: (target) => {
+		GWLog("Extracts.localImageForTarget", "popups.js", 2);
+
         // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
         return `<div class='popup-local-image'><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
     unbind: () => {
+		GWLog("Extracts.unbind", "popups.js", 1);
+
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
  			if (   target.closest(Extracts.excludedElementsSelector) == target
 				|| target.closest(Extracts.excludedContainerElementsSelector) != null)
 				return;
  
- 			//  Unbind existing mouseover/mouseout events, if any.
-            target.removeEventListener("mouseover", Extracts.targetover);
-            target.removeEventListener("mouseout", Extracts.targetout);
+ 			//  Unbind existing mouseenter/mouseleave events, if any.
+            target.removeEventListener("mouseenter", Extracts.targetMouseenter);
+            target.removeEventListener("mouseleave", Extracts.targetMouseleave);
             target.onclick = () => {};
         });
         if (Extracts.popupContainer)
             Extracts.popupContainer.removeEventListener("mouseup", Extracts.popupContainerClicked);
     },
     cleanup: () => {
-        GWLog("Cleaning up...", "popups.js", 1);
+		GWLog("Extracts.cleanup", "popups.js", 1);
 
         //  Unbind event listeners.
         Extracts.unbind();
@@ -192,6 +206,8 @@ Extracts = {
         document.querySelectorAll(`#${Extracts.popupStylesID}, #${Extracts.popupStylesID}-default, #${Extracts.popupContainerID}`).forEach(element => element.remove());
     },
     setup: () => {
+		GWLog("Extracts.setup", "popups.js", 1);
+
         //  Run cleanup.
         Extracts.cleanup();
 
@@ -205,7 +221,7 @@ Extracts = {
             GWLog("Mobile client detected. Exiting.", "popups.js", 1);
             return;
         } else {
-            GWLog("Setting up...", "popups.js", 1);
+            GWLog("Non-mobile client detected. Setting up.", "popups.js", 1);
         }
 
         //  Inject styles.
@@ -229,28 +245,30 @@ Extracts = {
 				|| target.closest(Extracts.excludedContainerElementsSelector) != null)
 				return;
 
-            //  Bind mousemover/mouseout events.
-            target.addEventListener("mouseover", Extracts.targetover);
-            target.addEventListener("mouseout", Extracts.targetout);
+            //  Bind mouseenter/mouseleave events.
+            target.addEventListener("mouseenter", Extracts.targetMouseenter);
+            target.addEventListener("mouseleave", Extracts.targetMouseleave);
 
             //  Remove the title attribute.
             target.removeAttribute("title");
             target.onclick = () => { return false; };
         });
     },
-    //  The mouseover event.
-    targetover: (event) => {
+    //  The mouseenter event.
+    targetMouseenter: (event) => {
+		GWLog("Extracts.targetMouseenter", "popups.js", 2);
+
         //  Get the target.
         let target = event.target.closest(Extracts.targetElementsSelector);
 
         event.preventDefault();
 
         //  Stop the countdown to un-pop the popup.
-        clearTimeout(Extracts.popupFadeTimer);
-        clearTimeout(Extracts.popupDespawnTimer);
-        clearTimeout(Extracts.popupSpawnTimer);
+		Extracts.clearPopupTimers();
 
         Extracts.popupSpawnTimer = setTimeout(() => {
+			GWLog("Extracts.popupSpawnTimer fired", "popups.js", 2);
+
             target.onclick = () => {};
 
             let popupContainerViewportRect = Extracts.popupContainer.getBoundingClientRect();
@@ -259,22 +277,20 @@ Extracts = {
                 x: (targetViewportRect.left - popupContainerViewportRect.left),
                 y: (targetViewportRect.top - popupContainerViewportRect.top)
             };
-            let mouseOverEventPositionInPopupContainer = {
+            let mouseEnterEventPositionInPopupContainer = {
                 x: (event.clientX - popupContainerViewportRect.left),
                 y: (event.clientY - popupContainerViewportRect.top)
             };
 
-            //  Get, or create, the popup.
-            Extracts.popup = document.querySelector("#popupdiv");
-            if (Extracts.popup) {
-                Extracts.popup.classList.remove("fading");
-                Extracts.popup.remove();
-                Extracts.popup.innerHTML = "";
-            } else {
-                Extracts.popup = document.createElement('div');
-                Extracts.popup.id = "popupdiv";
-                Extracts.popup.className = target.className;
-            }
+			//  Remove existing popup, if any.
+            Extracts.popup = Extracts.popupContainer.querySelector("#popupdiv");
+			Extracts.despawnPopup();
+			Extracts.popup = null;
+
+            //  Create the popup.
+			Extracts.popup = document.createElement('div');
+			Extracts.popup.id = "popupdiv";
+			Extracts.popup.className = target.className;
 
             //  Inject the contents of the popup into the popup div.
             Extracts.popup.removeAttribute("style");
@@ -319,8 +335,9 @@ Extracts = {
 
             //  Add event listeners.
             Extracts.popup.addEventListener("mouseup", (event) => { event.stopPropagation(); });
-            Extracts.popup.addEventListener("mouseover", Extracts.divover);
-            Extracts.popup.addEventListener("mouseout", Extracts.targetout);
+            Extracts.popup.addEventListener("mouseenter", Extracts.popupMouseenter);
+            Extracts.popup.addEventListener("mouseleave", Extracts.popupMouseleave);
+            Extracts.popup
 
             //  Wait for the "naive" layout to be completed, and then...
             requestAnimationFrame(() => {
@@ -345,16 +362,16 @@ Extracts = {
                 var tocLink = target.closest("#TOC");
                 if (tocLink) {
                     provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
-                    provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
+                    provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
                 } else {
 	                var offToTheSide = false;
 
 					/*  Can the popup fit above the target? If so, put it there.
 						Failing that, can it fit below the target? If so, put it there.
 						*/
-					var popupSpawnYOriginForSpawnAbove = Math.min(mouseOverEventPositionInPopupContainer.y - popupBreathingRoom.y,
+					var popupSpawnYOriginForSpawnAbove = Math.min(mouseEnterEventPositionInPopupContainer.y - popupBreathingRoom.y,
 																  targetOriginInPopupContainer.y + targetViewportRect.height - (popupBreathingRoom.y * 2.0));
-					var popupSpawnYOriginForSpawnBelow = Math.max(mouseOverEventPositionInPopupContainer.y + popupBreathingRoom.y,
+					var popupSpawnYOriginForSpawnBelow = Math.max(mouseEnterEventPositionInPopupContainer.y + popupBreathingRoom.y,
 																  targetOriginInPopupContainer.y + (popupBreathingRoom.y * 2.0));
 					if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
 						//  Above.
@@ -371,32 +388,32 @@ Extracts = {
 
 					if (offToTheSide) {
 						popupBreathingRoom.x *= 2.0;
-						provisionalPopupYPosition = mouseOverEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
+						provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
 						if (provisionalPopupYPosition - popupContainerViewportRect.y < 0)
 							provisionalPopupYPosition = 0.0;
 
 						//  Determine whether to put the popup off to the right, or left.
-						if (  mouseOverEventPositionInPopupContainer.x
+						if (  mouseEnterEventPositionInPopupContainer.x
 							+ popupBreathingRoom.x
 							+ popupIntrinsicWidth
 							  <=
 							  popupContainerViewportRect.x * -1
 							+ window.innerWidth) {
 							//  Off to the right.
-							provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x + popupBreathingRoom.x;
-						} else if (  mouseOverEventPositionInPopupContainer.x
+							provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x + popupBreathingRoom.x;
+						} else if (  mouseEnterEventPositionInPopupContainer.x
 								   - popupBreathingRoom.x
 								   - popupIntrinsicWidth
 									 >=
 									 popupContainerViewportRect.x * -1) {
 							//  Off to the left.
-							provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
+							provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
 						}
 					} else {
 						/*  Place popup off to the right (and either above or below),
 							as per the previous block of code.
 							*/
-						provisionalPopupXPosition = mouseOverEventPositionInPopupContainer.x + popupBreathingRoom.x;
+						provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x + popupBreathingRoom.x;
 					}
 				}
 
@@ -425,36 +442,66 @@ Extracts = {
             });
         }, Extracts.popupTriggerDelay);
     },
-    //  The mouseout event.
-    targetout: (event) => {
-        clearTimeout(Extracts.popupFadeTimer);
-        clearTimeout(Extracts.popupDespawnTimer);
-        clearTimeout(Extracts.popupSpawnTimer);
+    //  The mouseleave event.
+    targetMouseleave: (event) => {
+		GWLog("Extracts.targetMouseleave", "popups.js", 2);
+
+		Extracts.clearPopupTimers();
 
         if (!Extracts.popup) return;
 
-        Extracts.popupFadeTimer = setTimeout(() => {
-            Extracts.popup.classList.add("fading");
-            Extracts.popupDespawnTimer = setTimeout(() => {
-                Extracts.despawnPopup();
-            }, Extracts.popupFadeoutDuration);
-        }, Extracts.popupFadeoutDelay);
+		Extracts.setPopupFadeTimer();
     },
-    //  The "user moved mouse back into popup" mouseover event.
-    divover: (event) => {
+    //	The “user moved mouse out of popup” mouseleave event.
+    popupMouseleave: (event) => {
+		GWLog("Extracts.popupMouseleave", "popups.js", 2);
+
+		Extracts.clearPopupTimers();
+
+        if (!Extracts.popup) return;
+
+		Extracts.setPopupFadeTimer();
+    },
+    //  The “user moved mouse back into popup” mouseenter event.
+    popupMouseenter: (event) => {
+		GWLog("Extracts.popupMouseenter", "popups.js", 2);
+
+		Extracts.clearPopupTimers();
+
+        Extracts.popup.classList.remove("fading");
+    },
+    clearPopupTimers: () => {
+	    GWLog("Extracts.clearPopupTimers", "popups.js", 2);
+
         clearTimeout(Extracts.popupFadeTimer);
         clearTimeout(Extracts.popupDespawnTimer);
         clearTimeout(Extracts.popupSpawnTimer);
-        Extracts.popup.classList.remove("fading");
+    },
+    setPopupFadeTimer: () => {
+		GWLog("Extracts.setPopupFadeTimer", "popups.js", 2);
+
+        Extracts.popupFadeTimer = setTimeout(() => {
+			GWLog("Extracts.popupFadeTimer fired", "popups.js", 2);
+
+            Extracts.popup.classList.add("fading");
+            Extracts.popupDespawnTimer = setTimeout(Extracts.despawnPopup, Extracts.popupFadeoutDuration);
+        }, Extracts.popupFadeoutDelay);
     },
     popupContainerClicked: (event) => {
+		GWLog("Extracts.popupContainerClicked", "popups.js", 2);
+
         Extracts.despawnPopup();
     },
     despawnPopup: () => {
+		GWLog("Extracts.despawnPopup", "popups.js", 2);
+
+		if (Extracts.popup == null)
+			return;
+
         Extracts.popup.remove();
         document.activeElement.blur();
+        Extracts.popup.innerHTML = "";
         Extracts.popup.classList.remove("fading");
-        document.querySelector("html").style.transform = "";
         Extracts.popupContainer.classList.remove("popup-visible");
     }
 };
@@ -542,8 +589,8 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 }
 </style>`;
 
-if (document.readyState == "complete") {
-    Extracts.setup();
-} else {
-    window.addEventListener("load", Extracts.setup);
-}
+doWhenPageLoaded(() => {
+	GW.notificationCenter.fireEvent("Extracts.loaded");
+
+	Extracts.setup();
+});
