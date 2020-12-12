@@ -334,10 +334,9 @@ Extracts = {
             document.querySelector(`#${Extracts.popupContainerID}`).appendChild(Extracts.popup);
 
             //  Add event listeners.
-            Extracts.popup.addEventListener("mouseup", (event) => { event.stopPropagation(); });
+            Extracts.popup.addEventListener("mouseup", Extracts.popupMouseup);
             Extracts.popup.addEventListener("mouseenter", Extracts.popupMouseenter);
             Extracts.popup.addEventListener("mouseleave", Extracts.popupMouseleave);
-            Extracts.popup
 
             //  Wait for the "naive" layout to be completed, and then...
             requestAnimationFrame(() => {
@@ -457,9 +456,6 @@ Extracts = {
 		GWLog("Extracts.popupMouseleave", "popups.js", 2);
 
 		Extracts.clearPopupTimers();
-
-        if (!Extracts.popup) return;
-
 		Extracts.setPopupFadeTimer();
     },
     //  The “user moved mouse back into popup” mouseenter event.
@@ -467,8 +463,15 @@ Extracts = {
 		GWLog("Extracts.popupMouseenter", "popups.js", 2);
 
 		Extracts.clearPopupTimers();
-
         Extracts.popup.classList.remove("fading");
+    },
+    popupMouseup: (event) => {
+		GWLog("Extracts.popupMouseup", "popups.js", 2);
+
+		event.stopPropagation();
+
+		Extracts.clearPopupTimers();
+		Extracts.despawnPopup();
     },
     clearPopupTimers: () => {
 	    GWLog("Extracts.clearPopupTimers", "popups.js", 2);
@@ -484,8 +487,18 @@ Extracts = {
 			GWLog("Extracts.popupFadeTimer fired", "popups.js", 2);
 
             Extracts.popup.classList.add("fading");
-            Extracts.popupDespawnTimer = setTimeout(Extracts.despawnPopup, Extracts.popupFadeoutDuration);
+			Extracts.setPopupDespawnTimer();
         }, Extracts.popupFadeoutDelay);
+    },
+    setPopupDespawnTimer: () => {
+		GWLog("Extracts.setPopupDespawnTimer", "popups.js", 2);
+
+		Extracts.popupDespawnTimer = setTimeout(() => {
+			GWLog("Extracts.popupDespawnTimer fired", "popups.js", 2);
+
+	        Extracts.popup.classList.remove("fading");
+			Extracts.despawnPopup();
+		}, Extracts.popupFadeoutDuration);
     },
     popupContainerClicked: (event) => {
 		GWLog("Extracts.popupContainerClicked", "popups.js", 2);
@@ -501,7 +514,6 @@ Extracts = {
         Extracts.popup.remove();
         document.activeElement.blur();
         Extracts.popup.innerHTML = "";
-        Extracts.popup.classList.remove("fading");
         Extracts.popupContainer.classList.remove("popup-visible");
     }
 };
@@ -529,7 +541,7 @@ Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
 #popupdiv.fading {
     opacity: 0.0;
     transition:
-        opacity 0.75s ease-in 0.1s;
+        opacity 0.25s ease-in 0.1s;
 }
 #popupdiv > div {
     overflow: auto;
