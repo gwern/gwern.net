@@ -1332,6 +1332,7 @@ article > :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata,
 article > :not(#TOC) a[href*='wikisource.org'].docMetadata {
     background-image: var(--GW-dotted-underline-background-image);
     background-size: 2px 1px;
+    padding: 0 0 0 0; /* reset the padding from the left-bracket being removed */
 }
 article > :not(#TOC) a[href*='wikipedia.org'].docMetadata:hover,
 article > :not(#TOC) a[href*='wikimedia.org'].docMetadata:hover,
