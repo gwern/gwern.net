@@ -158,16 +158,20 @@ invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
                                        let p' = T.unpack p
                                        let p'' = if head p' == '/' then tail p' else p'
                                        (color,_,_) <- invertImage p''
-                                       if not color then return x else
+                                       if not color || notInvertibleP classes then return x else
                                          return (Image (htmlid, "invertible-auto":classes, kvs) xs (p,t))
 invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) = if not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then
                                                           return x else
                                                             do let p' = T.unpack p
                                                                let p'' = if head p' == '/' then tail p' else p'
                                                                (color,_,_) <- invertImage p''
-                                                               if not color then return x else
+                                                               if not color || notInvertibleP classes then return x else
                                                                  return (Link (htmlid, "invertible-auto":classes, kvs) xs (p,t))
 invertImageInline x = return x
+
+notInvertibleP :: [T.Text] -> Bool
+notInvertibleP classes = "invertible-not" `elem` classes
+
 invertImage :: FilePath -> IO (Bool, String, String) -- invertible / height / width
 invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
                                            -- NOTE: while wget preserves it, curl erases the original modification time reported by server in favor of local file creation; this is useful for `invertImagePreview` --- we want to check downloaded images manually before their annotation gets stored permanently.
