@@ -867,9 +867,10 @@ a[href*="sagepub.com"]::after {
     display: inline-block;
     text-align: center;
     position: relative;
-    left: 0.1em;
+    left: 0;
     bottom: 0.3em;
     font-size: 0.55em;
+    margin: 0;
 }
 
 /*  Quad-letter square icons in a serif face.
@@ -879,6 +880,7 @@ a[href*="publicdomainreview.org"]::after,
 a[href*="www.nber.org"]:not([href$=".pdf"])::after {
     font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times", "Source Serif Pro", serif;
     line-height: 0.85;
+    margin: 0 0 0 2px;
 }
 
 /* PNAS: they don't have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (as white text on black background per our monochrome theme): */
