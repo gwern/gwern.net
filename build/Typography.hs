@@ -15,7 +15,7 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, append, pack, unpack, replace, Text)
+import qualified Data.Text as T (any, append, isSuffixOf, pack, unpack, replace, Text)
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 
 import Data.FileStore.Utils (runShellCommand)
@@ -160,6 +160,13 @@ invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
                                        (color,_,_) <- invertImage p''
                                        if not color then return x else
                                          return (Image (htmlid, "invertible-auto":classes, kvs) xs (p,t))
+invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) = if not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then
+                                                          return x else
+                                                            do let p' = T.unpack p
+                                                               let p'' = if head p' == '/' then tail p' else p'
+                                                               (color,_,_) <- invertImage p''
+                                                               if not color then return x else
+                                                                 return (Link (htmlid, "invertible-auto":classes, kvs) xs (p,t))
 invertImageInline x = return x
 invertImage :: FilePath -> IO (Bool, String, String) -- invertible / height / width
 invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-invertible"
@@ -169,13 +176,13 @@ invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-inver
                                              ExitFailure _ -> do print ("Download failed (unable to check image invertibility): " ++ f)
                                                                  removeFile temp
                                                                  return (False, "320", "320") -- NOTE: most WP thumbnails are 320/320px squares, so to be safe we'll use that as a default value
-                                             _ -> do c <- imageMagickColor temp
+                                             _ -> do c <- imageMagickColor f temp
                                                      (h,w) <- imageMagickDimensions temp
                                                      let invertp = c < threshold
                                                      when invertp $ invertImagePreview temp
                                                      removeFile temp
                                                      return (invertp, h, w)
-              | otherwise = do c <- imageMagickColor f
+              | otherwise = do c <- imageMagickColor f f
                                let invertp = c < threshold
                                return (invertp, "320", "320")
               where threshold = 0.09
@@ -191,12 +198,12 @@ invertImagePreview f = do utcFile <- getModificationTime f
                             void $ runShellCommand "./" Nothing "firefox" [f']
                           return ()
 
-imageMagickColor :: FilePath -> IO Float
-imageMagickColor f = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f, "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
-                        case status of
-                          ExitFailure err -> error $ f ++ ": ImageMagick color read error: " ++ show err
-                          _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
-                                  return color
+imageMagickColor :: FilePath -> FilePath -> IO Float
+imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
+                           case status of
+                             ExitFailure err -> (putStrLn $ f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
+                             _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
+                                     return color
 
 -- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions
 -- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
