@@ -269,6 +269,7 @@ Extracts = {
             if (Extracts.popup) {
                 Extracts.popup.classList.remove("fading");
                 Extracts.popup.remove();
+                Extracts.popup.innerHTML = "";
             } else {
                 Extracts.popup = document.createElement('div');
                 Extracts.popup.id = "popupdiv";
@@ -292,6 +293,9 @@ Extracts = {
 			} else if (target.classList.contains("defnMetadata")) {
 				Extracts.popup.innerHTML = Extracts.definitionForTarget(target);
 			}
+
+			if (Extracts.popup.childElementCount == 0)
+				return;
 
             if (Extracts.popup.firstElementChild.tagName == 'DIV') {
             	let innerDiv = Extracts.popup.firstElementChild;
