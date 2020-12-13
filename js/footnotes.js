@@ -8,6 +8,10 @@ Footnotes = {
 	contentContainerSelector: "#markdownBody",
 	minFootnoteWidth: 520,
 
+    popupTriggerDelay: 200,
+    popupFadeoutDelay: 50,
+    popupFadeoutDuration: 250,
+
 	popupFadeTimer: false,
 	popupDespawnTimer: false,
 	popupSpawnTimer: false,
@@ -17,9 +21,9 @@ Footnotes = {
 		GWLog("Footnotes.unbind", "footnotes.js", 1);
 
 		document.querySelectorAll(".footnote-ref").forEach(fnref => {
-			//	Unbind existing mouseover/mouseout events, if any.
-			fnref.removeEventListener("mouseover", Footnotes.footnoteover);
-			fnref.removeEventListener("mouseout", Footnotes.footnoteoout);
+			//	Unbind existing mouseenter/mouseleave events, if any.
+			fnref.removeEventListener("mouseenter", Footnotes.targetMouseenter);
+			fnref.removeEventListener("mouseleave", Footnotes.targetMouseleave);
 		});
 
 		GW.notificationCenter.fireEvent("Footnotes.eventsUnbound");
@@ -30,29 +34,36 @@ Footnotes = {
 		Footnotes.unbind();
 		//	Get all footnote links.
 		document.querySelectorAll(".footnote-ref").forEach(fnref => {
-			//	Bind mousemover/mouseout events.
-			fnref.addEventListener("mouseover", Footnotes.footnoteover);
-			fnref.addEventListener("mouseout", Footnotes.footnoteoout);
+			//	Bind mousemover/mouseleave events.
+			fnref.addEventListener("mouseenter", Footnotes.targetMouseenter);
+			fnref.addEventListener("mouseleave", Footnotes.targetMouseleave);
 		});
 
 		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
 	},
-	//	The mouseover event.
-	footnoteover: (event) => {
+	//	The mouseenter event.
+	targetMouseenter: (event) => {
+		GWLog("Footnotes.targetMouseenter", "footnotes.js", 2);
+
+        //  Get the target.
+        let target = event.target;
+
 		//	Stop the countdown to un-pop the popup.
 		Footnotes.clearPopupTimers();
 
 		Footnotes.popupSpawnTimer = setTimeout(() => {
+			GWLog("Footnotes.popupSpawnTimer fired", "footnotes.js", 2);
+
 			//	Get the citation and its target footnote ID.
-			var citationAbsoluteRect = event.target.getBoundingClientRect();
+			var citationAbsoluteRect = target.getBoundingClientRect();
 			let bodyAbsoluteRect = document.body.getBoundingClientRect();
 			var citationPosition = {
 				left: (citationAbsoluteRect.left - bodyAbsoluteRect.left),
 				top: (citationAbsoluteRect.top - bodyAbsoluteRect.top)
 			};
 
-			if (!event.target.hash) return;
-			var targetFootnoteId = event.target.hash.substr(1);
+			if (!target.hash) return;
+			let targetFootnoteId = target.hash.substr(1);
 
 			//	Get, or create, the footnote popup.
 			Footnotes.footnotePopup = document.querySelector("#footnotediv");
@@ -75,8 +86,8 @@ Footnotes = {
 			document.querySelector(Footnotes.contentContainerSelector).appendChild(Footnotes.footnotePopup);
 
 			//	Add event listeners.
-			Footnotes.footnotePopup.addEventListener("mouseover", Footnotes.divover);
-			Footnotes.footnotePopup.addEventListener("mouseout", Footnotes.footnoteoout);
+			Footnotes.footnotePopup.addEventListener("mouseenter", Footnotes.popupMouseenter);
+			Footnotes.footnotePopup.addEventListener("mouseleave", Footnotes.popupMouseleave);
 
 			/*	How much "breathing room" to give the footnote reference (i.e.,
 				offset of the footnote popup).
@@ -123,24 +134,30 @@ Footnotes = {
 				footnotePopupTop = 0;
 			}
 			Footnotes.footnotePopup.style.top = footnotePopupTop + "px";
-		}, 50);
+		}, Footnotes.popupTriggerDelay);
 	},
-	//	The mouseout event.
-	footnoteoout: (event) => {
+	//	The mouseleave event.
+	targetMouseleave: (event) => {
+		GWLog("Footnotes.targetMouseleave", "footnotes.js", 2);
+
 		Footnotes.clearPopupTimers();
 
 		if (!Footnotes.footnotePopup) return;
 
-		Footnotes.popupFadeTimer = setTimeout(() => {
-			Footnotes.footnotePopup.classList.add("fading");
-			Footnotes.popupDespawnTimer = setTimeout(() => {
-				Footnotes.footnotePopup.classList.remove("fading");
-				Footnotes.footnotePopup.remove();
-			}, 750);
-		}, 100);
+		Footnotes.setPopupFadeTimer();
 	},
-	//	The "user moved mouse back into popup" mouseover event.
-	divover: (event) => {
+    //	The “user moved mouse out of popup” mouseleave event.
+	popupMouseleave: (event) => {
+		GWLog("Footnotes.popupMouseleave", "footnotes.js", 2);
+
+		Footnotes.clearPopupTimers();
+		
+		Footnotes.setPopupFadeTimer();
+	},
+	//	The “user moved mouse back into popup” mouseenter event.
+	popupMouseenter: (event) => {
+		GWLog("Footnotes.popupMouseenter", "footnotes.js", 2);
+
 		Footnotes.clearPopupTimers();
 		Footnotes.footnotePopup.classList.remove("fading");
 	},
@@ -150,6 +167,37 @@ Footnotes = {
         clearTimeout(Footnotes.popupFadeTimer);
         clearTimeout(Footnotes.popupDespawnTimer);
         clearTimeout(Footnotes.popupSpawnTimer);
+    },
+    setPopupFadeTimer: () => {
+		GWLog("Footnotes.setPopupFadeTimer", "footnotes.js", 2);
+
+        Footnotes.popupFadeTimer = setTimeout(() => {
+			GWLog("Footnotes.popupFadeTimer fired", "footnotes.js", 2);
+
+			Footnotes.footnotePopup.classList.add("fading");
+			Footnotes.setPopupDespawnTimer();
+        }, Footnotes.popupFadeoutDelay);
+    },
+    setPopupDespawnTimer: () => {
+		GWLog("Footnotes.setPopupDespawnTimer", "footnotes.js", 2);
+
+		Footnotes.popupDespawnTimer = setTimeout(() => {
+			GWLog("Footnotes.popupDespawnTimer fired", "footnotes.js", 2);
+
+	        Footnotes.footnotePopup.classList.remove("fading");
+			Footnotes.despawnPopup();
+		}, Footnotes.popupFadeoutDuration);
+    },
+    despawnPopup: () => {
+		GWLog("Footnotes.despawnPopup", "footnotes.js", 2);
+
+		if (Footnotes.footnotePopup == null)
+			return;
+
+        Footnotes.footnotePopup.remove();
+        document.activeElement.blur();
+        Footnotes.footnotePopup.innerHTML = "";
+//         Extracts.popupContainer.classList.remove("popup-visible");
     }
 }
 

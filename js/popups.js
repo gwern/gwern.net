@@ -456,6 +456,7 @@ Extracts = {
 		GWLog("Extracts.popupMouseleave", "popups.js", 2);
 
 		Extracts.clearPopupTimers();
+		
 		Extracts.setPopupFadeTimer();
     },
     //  The “user moved mouse back into popup” mouseenter event.
