@@ -196,9 +196,8 @@ Footnotes = {
         Footnotes.popup.remove();
         document.activeElement.blur();
         Footnotes.popup.innerHTML = "";
-//         Extracts.popupContainer.classList.remove("popup-visible");
     }
-}
+};
 
 doWhenPageLoaded(() => {
 	GW.notificationCenter.fireEvent("Footnotes.loaded");

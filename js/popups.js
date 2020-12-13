@@ -193,8 +193,6 @@ Extracts = {
             target.removeEventListener("mouseenter", Extracts.targetMouseenter);
             target.removeEventListener("mouseleave", Extracts.targetMouseleave);
         });
-        if (Extracts.popupContainer)
-            Extracts.popupContainer.removeEventListener("mouseup", Extracts.popupContainerClicked);
     },
     cleanup: () => {
 		GWLog("Extracts.cleanup", "popups.js", 1);
@@ -234,10 +232,6 @@ Extracts = {
             return;
         }
         popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}' style='z-index: ${Extracts.popupContainerZIndex};'></div>`);
-        requestAnimationFrame(() => {
-            Extracts.popupContainer = document.querySelector(`#${Extracts.popupContainerID}`);
-            Extracts.popupContainer.addEventListener("mouseup", Extracts.popupContainerClicked);
-        });
 
         //  Get all targets.
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
@@ -430,7 +424,6 @@ Extracts = {
                 Extracts.popup.style.left = `${provisionalPopupXPosition}px`;
                 Extracts.popup.style.top = `${provisionalPopupYPosition}px`;
 
-                Extracts.popupContainer.classList.add("popup-visible");
                 Extracts.popup.style.visibility = "";
                 document.activeElement.blur();
             });
@@ -496,11 +489,6 @@ Extracts = {
 			Extracts.despawnPopup();
 		}, Extracts.popupFadeoutDuration);
     },
-    popupContainerClicked: (event) => {
-		GWLog("Extracts.popupContainerClicked", "popups.js", 2);
-
-        Extracts.despawnPopup();
-    },
     despawnPopup: () => {
 		GWLog("Extracts.despawnPopup", "popups.js", 2);
 
@@ -510,7 +498,6 @@ Extracts = {
         Extracts.popup.remove();
         document.activeElement.blur();
         Extracts.popup.innerHTML = "";
-        Extracts.popupContainer.classList.remove("popup-visible");
     }
 };
 
