@@ -46,6 +46,7 @@ Extracts = {
     popupFadeTimer: false,
     popupDespawnTimer: false,
     popupSpawnTimer: false,
+    popupContainer: null,
     popup: null,
 
     extractForTarget: (target) => {

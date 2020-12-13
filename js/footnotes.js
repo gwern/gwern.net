@@ -54,47 +54,46 @@ Footnotes = {
 		Footnotes.popupSpawnTimer = setTimeout(() => {
 			GWLog("Footnotes.popupSpawnTimer fired", "footnotes.js", 2);
 
-			//	Get the citation and its target footnote ID.
-			var citationAbsoluteRect = target.getBoundingClientRect();
+            let targetViewportRect = target.getBoundingClientRect();
 			let bodyAbsoluteRect = document.body.getBoundingClientRect();
 			var citationPosition = {
-				left: (citationAbsoluteRect.left - bodyAbsoluteRect.left),
-				top: (citationAbsoluteRect.top - bodyAbsoluteRect.top)
+				left: (targetViewportRect.left - bodyAbsoluteRect.left),
+				top: (targetViewportRect.top - bodyAbsoluteRect.top)
 			};
 
 			if (!target.hash) return;
 			let targetFootnoteId = target.hash.substr(1);
 
 			//	Get, or create, the footnote popup.
-			Footnotes.footnotePopup = document.querySelector("#footnotediv");
-			if (Footnotes.footnotePopup) {
-				Footnotes.footnotePopup.classList.remove("fading");
-				Footnotes.footnotePopup.remove();
+			Footnotes.popup = document.querySelector("#footnotediv");
+			if (Footnotes.popup) {
+				Footnotes.popup.classList.remove("fading");
+				Footnotes.popup.remove();
 			} else {
-				Footnotes.footnotePopup = document.createElement('div');
-				Footnotes.footnotePopup.id = "footnotediv";
+				Footnotes.popup = document.createElement('div');
+				Footnotes.popup.id = "footnotediv";
 			}
 
 			//	Inject the contents of the footnote into the popup, if needed.
-			if (Footnotes.footnotePopup.dataset.footnoteReference != targetFootnoteId) {
+			if (Footnotes.popup.dataset.footnoteReference != targetFootnoteId) {
 				var targetFootnote = document.querySelector("#" + targetFootnoteId);
-				Footnotes.footnotePopup.innerHTML = '<div>' + targetFootnote.innerHTML + '</div>';
-				Footnotes.footnotePopup.dataset.footnoteReference = targetFootnoteId;
+				Footnotes.popup.innerHTML = '<div>' + targetFootnote.innerHTML + '</div>';
+				Footnotes.popup.dataset.footnoteReference = targetFootnoteId;
 			}
 
 			//	Inject the popup into the page.
-			document.querySelector(Footnotes.contentContainerSelector).appendChild(Footnotes.footnotePopup);
+			document.querySelector(Footnotes.contentContainerSelector).appendChild(Footnotes.popup);
 
 			//	Add event listeners.
-			Footnotes.footnotePopup.addEventListener("mouseenter", Footnotes.popupMouseenter);
-			Footnotes.footnotePopup.addEventListener("mouseleave", Footnotes.popupMouseleave);
+			Footnotes.popup.addEventListener("mouseenter", Footnotes.popupMouseenter);
+			Footnotes.popup.addEventListener("mouseleave", Footnotes.popupMouseleave);
 
 			/*	How much "breathing room" to give the footnote reference (i.e.,
 				offset of the footnote popup).
 				*/
 			var footnotePopupBreathingRoom = {
-				x:	(Math.round(citationAbsoluteRect.width) * 1.5),
-				y:	Math.round(citationAbsoluteRect.height) + (Math.round(citationAbsoluteRect.width) * 0.5)
+				x:	(Math.round(targetViewportRect.width) * 1.5),
+				y:	Math.round(targetViewportRect.height) + (Math.round(targetViewportRect.width) * 0.5)
 			};
 
 			/*	Set the horizontal position first; this causes the popup to be laid
@@ -103,17 +102,17 @@ Footnotes = {
 			var footnotePopupLeft = citationPosition.left + footnotePopupBreathingRoom.x;
 			if (footnotePopupLeft + Footnotes.minFootnoteWidth > window.innerWidth)
 				footnotePopupLeft = window.innerWidth - Footnotes.minFootnoteWidth;
-			Footnotes.footnotePopup.style.left = footnotePopupLeft + "px";
+			Footnotes.popup.style.left = footnotePopupLeft + "px";
 			//	Correct for various positioning aberrations.
-			if (Footnotes.footnotePopup.getBoundingClientRect().right > window.innerWidth)
-				Footnotes.footnotePopup.style.maxWidth = (Footnotes.footnotePopup.clientWidth - (Footnotes.footnotePopup.getBoundingClientRect().right - window.innerWidth) - parseInt(getComputedStyle(Footnotes.footnotePopup.firstElementChild).paddingRight)) + "px";
-			else if (citationPosition.left + footnotePopupBreathingRoom.x + Footnotes.footnotePopup.clientWidth < window.innerWidth)
-				Footnotes.footnotePopup.style.left = (citationPosition.left + footnotePopupBreathingRoom.x) + "px";
-			else if (citationPosition.left - (footnotePopupBreathingRoom.x + Footnotes.footnotePopup.clientWidth) > Footnotes.footnotePopup.getBoundingClientRect().left)
-				Footnotes.footnotePopup.style.left = (citationPosition.left - footnotePopupBreathingRoom.x - Footnotes.footnotePopup.clientWidth) + "px";
+			if (Footnotes.popup.getBoundingClientRect().right > window.innerWidth)
+				Footnotes.popup.style.maxWidth = (Footnotes.popup.clientWidth - (Footnotes.popup.getBoundingClientRect().right - window.innerWidth) - parseInt(getComputedStyle(Footnotes.popup.firstElementChild).paddingRight)) + "px";
+			else if (citationPosition.left + footnotePopupBreathingRoom.x + Footnotes.popup.clientWidth < window.innerWidth)
+				Footnotes.popup.style.left = (citationPosition.left + footnotePopupBreathingRoom.x) + "px";
+			else if (citationPosition.left - (footnotePopupBreathingRoom.x + Footnotes.popup.clientWidth) > Footnotes.popup.getBoundingClientRect().left)
+				Footnotes.popup.style.left = (citationPosition.left - footnotePopupBreathingRoom.x - Footnotes.popup.clientWidth) + "px";
 
 			//	Now we know how tall the popup is...
-			var provisionalFootnotePopupHeight = Footnotes.footnotePopup.clientHeight;
+			var provisionalFootnotePopupHeight = Footnotes.popup.clientHeight;
 
 			//	Determining vertical position is full of edge cases.
 			var footnotePopupTop = citationPosition.top + footnotePopupBreathingRoom.y;
@@ -133,7 +132,7 @@ Footnotes = {
 			if (footnotePopupTop < 0) {
 				footnotePopupTop = 0;
 			}
-			Footnotes.footnotePopup.style.top = footnotePopupTop + "px";
+			Footnotes.popup.style.top = footnotePopupTop + "px";
 		}, Footnotes.popupTriggerDelay);
 	},
 	//	The mouseleave event.
@@ -142,7 +141,7 @@ Footnotes = {
 
 		Footnotes.clearPopupTimers();
 
-		if (!Footnotes.footnotePopup) return;
+		if (!Footnotes.popup) return;
 
 		Footnotes.setPopupFadeTimer();
 	},
@@ -159,7 +158,7 @@ Footnotes = {
 		GWLog("Footnotes.popupMouseenter", "footnotes.js", 2);
 
 		Footnotes.clearPopupTimers();
-		Footnotes.footnotePopup.classList.remove("fading");
+		Footnotes.popup.classList.remove("fading");
 	},
     clearPopupTimers: () => {
 	    GWLog("Footnotes.clearPopupTimers", "footnotes.js", 2);
@@ -174,7 +173,7 @@ Footnotes = {
         Footnotes.popupFadeTimer = setTimeout(() => {
 			GWLog("Footnotes.popupFadeTimer fired", "footnotes.js", 2);
 
-			Footnotes.footnotePopup.classList.add("fading");
+			Footnotes.popup.classList.add("fading");
 			Footnotes.setPopupDespawnTimer();
         }, Footnotes.popupFadeoutDelay);
     },
@@ -184,19 +183,19 @@ Footnotes = {
 		Footnotes.popupDespawnTimer = setTimeout(() => {
 			GWLog("Footnotes.popupDespawnTimer fired", "footnotes.js", 2);
 
-	        Footnotes.footnotePopup.classList.remove("fading");
+	        Footnotes.popup.classList.remove("fading");
 			Footnotes.despawnPopup();
 		}, Footnotes.popupFadeoutDuration);
     },
     despawnPopup: () => {
 		GWLog("Footnotes.despawnPopup", "footnotes.js", 2);
 
-		if (Footnotes.footnotePopup == null)
+		if (Footnotes.popup == null)
 			return;
 
-        Footnotes.footnotePopup.remove();
+        Footnotes.popup.remove();
         document.activeElement.blur();
-        Footnotes.footnotePopup.innerHTML = "";
+        Footnotes.popup.innerHTML = "";
 //         Extracts.popupContainer.classList.remove("popup-visible");
     }
 }
