@@ -191,7 +191,6 @@ Extracts = {
  			//  Unbind existing mouseenter/mouseleave events, if any.
             target.removeEventListener("mouseenter", Extracts.targetMouseenter);
             target.removeEventListener("mouseleave", Extracts.targetMouseleave);
-            target.onclick = () => {};
         });
         if (Extracts.popupContainer)
             Extracts.popupContainer.removeEventListener("mouseup", Extracts.popupContainerClicked);
@@ -251,7 +250,6 @@ Extracts = {
 
             //  Remove the title attribute.
             target.removeAttribute("title");
-            target.onclick = () => { return false; };
         });
     },
     //  The mouseenter event.
@@ -266,8 +264,6 @@ Extracts = {
 
         Extracts.popupSpawnTimer = setTimeout(() => {
 			GWLog("Extracts.popupSpawnTimer fired", "popups.js", 2);
-
-            target.onclick = () => {};
 
             let popupContainerViewportRect = Extracts.popupContainer.getBoundingClientRect();
             let targetViewportRect = target.getBoundingClientRect();
