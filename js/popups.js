@@ -261,8 +261,6 @@ Extracts = {
         //  Get the target.
         let target = event.target.closest(Extracts.targetElementsSelector);
 
-        event.preventDefault();
-
         //  Stop the countdown to un-pop the popup.
 		Extracts.clearPopupTimers();
 
