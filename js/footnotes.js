@@ -8,13 +8,15 @@ Popups = {
 	/**********/
 	/*	Config.
 		*/
-	contentContainerSelector: "#markdownBody",
+	popupContainerSelector: "#markdownBody",
 
 	minFootnoteWidth: 520,
 
 	/******************/
 	/*	Implementation.
 		*/
+	popupContainer: null,
+
 	isMobile: () => {
 		/*  We consider a client to be mobile if one of two conditions obtain:
 		    1. JavaScript detects touch capability, AND viewport is narrow; or,
@@ -24,9 +26,12 @@ Popups = {
 					&& GW.mediaQueries.mobileWidth.matches)
 				|| !GW.mediaQueries.hoverAvailable.matches);
 	},
-	newPopup: () => {
+	setup: () => {
+		Popups.popupContainer = document.querySelector(Popups.popupContainerSelector);
+	},
+	newPopup: (id = "popup") => {
 		let popup = document.createElement('div');
-		popup.id = "footnotediv";
+		popup.id = id;
 		return popup;
 	},
 	spawnPopup: (popup, target) => {
@@ -37,12 +42,12 @@ Popups = {
 		Popups.positionPopup(popup, target);
 	},
 	injectPopup: (popup) => {
-		document.querySelector(Popups.contentContainerSelector).appendChild(popup);
+		Popups.popupContainer.appendChild(popup);
 	},
 	positionPopup: (popup, target) => {
 		let targetViewportRect = target.getBoundingClientRect();
 		let bodyAbsoluteRect = document.body.getBoundingClientRect();
-		var citationPosition = {
+		var targetOriginInPopupContainer = {
 			left: (targetViewportRect.left - bodyAbsoluteRect.left),
 			top: (targetViewportRect.top - bodyAbsoluteRect.top)
 		};
@@ -50,7 +55,7 @@ Popups = {
 		/*	How much "breathing room" to give the footnote reference (i.e.,
 			offset of the footnote popup).
 			*/
-		var footnotePopupBreathingRoom = {
+		var popupBreathingRoom = {
 			x:	(Math.round(targetViewportRect.width) * 1.5),
 			y:	Math.round(targetViewportRect.height) + (Math.round(targetViewportRect.width) * 0.5)
 		};
@@ -58,34 +63,34 @@ Popups = {
 		/*	Set the horizontal position first; this causes the popup to be laid
 			out, and the layout engine calculates the height for us.
 			*/
-		var footnotePopupLeft = citationPosition.left + footnotePopupBreathingRoom.x;
+		var footnotePopupLeft = targetOriginInPopupContainer.left + popupBreathingRoom.x;
 		if (footnotePopupLeft + Popups.minFootnoteWidth > window.innerWidth)
 			footnotePopupLeft = window.innerWidth - Popups.minFootnoteWidth;
 		popup.style.left = footnotePopupLeft + "px";
 		//	Correct for various positioning aberrations.
 		if (popup.getBoundingClientRect().right > window.innerWidth)
 			popup.style.maxWidth = (popup.clientWidth - (popup.getBoundingClientRect().right - window.innerWidth) - parseInt(getComputedStyle(popup.firstElementChild).paddingRight)) + "px";
-		else if (citationPosition.left + footnotePopupBreathingRoom.x + popup.clientWidth < window.innerWidth)
-			popup.style.left = (citationPosition.left + footnotePopupBreathingRoom.x) + "px";
-		else if (citationPosition.left - (footnotePopupBreathingRoom.x + popup.clientWidth) > popup.getBoundingClientRect().left)
-			popup.style.left = (citationPosition.left - footnotePopupBreathingRoom.x - popup.clientWidth) + "px";
+		else if (targetOriginInPopupContainer.left + popupBreathingRoom.x + popup.clientWidth < window.innerWidth)
+			popup.style.left = (targetOriginInPopupContainer.left + popupBreathingRoom.x) + "px";
+		else if (targetOriginInPopupContainer.left - (popupBreathingRoom.x + popup.clientWidth) > popup.getBoundingClientRect().left)
+			popup.style.left = (targetOriginInPopupContainer.left - popupBreathingRoom.x - popup.clientWidth) + "px";
 
 		//	Now we know how tall the popup is...
 		var provisionalFootnotePopupHeight = popup.clientHeight;
 
 		//	Determining vertical position is full of edge cases.
-		var footnotePopupTop = citationPosition.top + footnotePopupBreathingRoom.y;
+		var footnotePopupTop = targetOriginInPopupContainer.top + popupBreathingRoom.y;
 		if (footnotePopupTop + provisionalFootnotePopupHeight > window.innerHeight + window.scrollY) {
-			footnotePopupTop -= (provisionalFootnotePopupHeight + footnotePopupBreathingRoom.y);
+			footnotePopupTop -= (provisionalFootnotePopupHeight + popupBreathingRoom.y);
 		}
 		if (top + provisionalFootnotePopupHeight > window.innerHeight + window.scrollY ||
 			provisionalFootnotePopupHeight == window.innerHeight ||
 			footnotePopupTop < window.scrollY) {
 			footnotePopupTop = window.scrollY;
 		}
-		if (footnotePopupTop + provisionalFootnotePopupHeight + 120 < citationPosition.top) {
-			footnotePopupTop = citationPosition.top - provisionalFootnotePopupHeight;
-		} else if (top > citationPosition.top) {
+		if (footnotePopupTop + provisionalFootnotePopupHeight + 120 < targetOriginInPopupContainer.top) {
+			footnotePopupTop = targetOriginInPopupContainer.top - provisionalFootnotePopupHeight;
+		} else if (top > targetOriginInPopupContainer.top) {
 			footnotePopupTop -= 90;
 		}
 		if (footnotePopupTop < 0) {
@@ -105,6 +110,12 @@ Popups = {
     }
 };
 
+doWhenPageLoaded(() => {
+	GW.notificationCenter.fireEvent("Popups.loaded");
+
+	Popups.setup();
+});
+
 Footnotes = {
 	/**********/
 	/*	Config.
@@ -123,15 +134,19 @@ Footnotes = {
 	popupFadeTimer: false,
 	popupDespawnTimer: false,
 	popupSpawnTimer: false,
-	footnotePopup: null,
+	popup: null,
 
 	unbind: () => {
 		GWLog("Footnotes.unbind", "footnotes.js", 1);
 
-		document.querySelectorAll(".footnote-ref").forEach(fnref => {
+		document.querySelectorAll(Footnotes.targetElementsSelector).forEach(target => {
+			if (   target.closest(Footnotes.excludedElementsSelector) == target
+				|| target.closest(Footnotes.excludedContainerElementsSelector) != null)
+				return;
+
 			//	Unbind existing mouseenter/mouseleave events, if any.
-			fnref.removeEventListener("mouseenter", Footnotes.targetMouseenter);
-			fnref.removeEventListener("mouseleave", Footnotes.targetMouseleave);
+			target.removeEventListener("mouseenter", Footnotes.targetMouseenter);
+			target.removeEventListener("mouseleave", Footnotes.targetMouseleave);
 		});
 
 		GW.notificationCenter.fireEvent("Footnotes.eventsUnbound");
@@ -197,7 +212,7 @@ Footnotes = {
 			Popups.despawnPopup(Footnotes.popup);
 
             //  Create the new popup.
-			Footnotes.popup = Popups.newPopup();
+			Footnotes.popup = Popups.newPopup("footnotediv");
 
 			//	Inject the contents of the footnote into the popup.
 			if (Footnotes.fillPopup(Footnotes.popup, target) == false)
