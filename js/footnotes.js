@@ -4,30 +4,17 @@
 Original author:  Lukas Mathis (2010-04-20)
 License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
 	*/
-Footnotes = {
+Popups = {
 	/**********/
 	/*	Config.
 		*/
 	contentContainerSelector: "#markdownBody",
 
-    targetElementsSelector: ".footnote-ref",
-    excludedElementsSelector: null,
-    excludedContainerElementsSelector: null,
-
 	minFootnoteWidth: 520,
-
-    popupTriggerDelay: 200,
-    popupFadeoutDelay: 50,
-    popupFadeoutDuration: 250,
 
 	/******************/
 	/*	Implementation.
 		*/
-	popupFadeTimer: false,
-	popupDespawnTimer: false,
-	popupSpawnTimer: false,
-	footnotePopup: null,
-
 	isMobile: () => {
 		/*  We consider a client to be mobile if one of two conditions obtain:
 		    1. JavaScript detects touch capability, AND viewport is narrow; or,
@@ -37,78 +24,22 @@ Footnotes = {
 					&& GW.mediaQueries.mobileWidth.matches)
 				|| !GW.mediaQueries.hoverAvailable.matches);
 	},
-	unbind: () => {
-		GWLog("Footnotes.unbind", "footnotes.js", 1);
-
-		document.querySelectorAll(".footnote-ref").forEach(fnref => {
-			//	Unbind existing mouseenter/mouseleave events, if any.
-			fnref.removeEventListener("mouseenter", Footnotes.targetMouseenter);
-			fnref.removeEventListener("mouseleave", Footnotes.targetMouseleave);
-		});
-
-		GW.notificationCenter.fireEvent("Footnotes.eventsUnbound");
+	newPopup: () => {
+		let popup = document.createElement('div');
+		popup.id = "footnotediv";
+		return popup;
 	},
-	setup: () => {
-		GWLog("Footnotes.setup", "footnotes.js", 1);
-
-		Footnotes.unbind();
-
-        if (Footnotes.isMobile()) {
-            GWLog("Mobile client detected. Exiting.", "footnotes.js", 1);
-            return;
-        } else {
-            GWLog("Non-mobile client detected. Setting up.", "footnotes.js", 1);
-        }
-
-		//	Get all targets.
-		document.querySelectorAll(Footnotes.targetElementsSelector).forEach(target => {
-			if (   target.closest(Footnotes.excludedElementsSelector) == target
-				|| target.closest(Footnotes.excludedContainerElementsSelector) != null)
-				return;
-
-			//	Bind mouseenter/mouseleave events.
-			target.addEventListener("mouseenter", Footnotes.targetMouseenter);
-			target.addEventListener("mouseleave", Footnotes.targetMouseleave);
-		});
-
-		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
-	},
-	destroyPopup: () => {
-		Footnotes.popup = null;
-	},
-	createPopup: () => {
-		Footnotes.popup = document.createElement('div');
-		Footnotes.popup.id = "footnotediv";
-	},
-	fillPopup: (target) => {
-		if (!target.hash)
-			return false;
-
-		let targetFootnoteId = target.hash.substr(1);
-		let targetFootnote = document.querySelector("#" + targetFootnoteId);
-		if (!targetFootnote)
-			return false;
-
-		Footnotes.popup.innerHTML = '<div>' + targetFootnote.innerHTML + '</div>';
-		Footnotes.popup.dataset.footnoteReference = targetFootnoteId;
-		return true;
-	},
-	spawnPopup: (target) => {
+	spawnPopup: (popup, target) => {
 		//	Inject the popup into the page.
-		Footnotes.injectPopup();
+		Popups.injectPopup(popup);
 
 		//  Position the popup appropriately with respect to the target.
-		Footnotes.positionPopup(target);
+		Popups.positionPopup(popup, target);
 	},
-	injectPopup: () => {
-		document.querySelector(Footnotes.contentContainerSelector).appendChild(Footnotes.popup);
-
-		//	Add event listeners.
-		Footnotes.popup.addEventListener("mouseup", Footnotes.popupMouseup);
-		Footnotes.popup.addEventListener("mouseenter", Footnotes.popupMouseenter);
-		Footnotes.popup.addEventListener("mouseleave", Footnotes.popupMouseleave);
+	injectPopup: (popup) => {
+		document.querySelector(Popups.contentContainerSelector).appendChild(popup);
 	},
-	positionPopup: (target) => {
+	positionPopup: (popup, target) => {
 		let targetViewportRect = target.getBoundingClientRect();
 		let bodyAbsoluteRect = document.body.getBoundingClientRect();
 		var citationPosition = {
@@ -128,19 +59,19 @@ Footnotes = {
 			out, and the layout engine calculates the height for us.
 			*/
 		var footnotePopupLeft = citationPosition.left + footnotePopupBreathingRoom.x;
-		if (footnotePopupLeft + Footnotes.minFootnoteWidth > window.innerWidth)
-			footnotePopupLeft = window.innerWidth - Footnotes.minFootnoteWidth;
-		Footnotes.popup.style.left = footnotePopupLeft + "px";
+		if (footnotePopupLeft + Popups.minFootnoteWidth > window.innerWidth)
+			footnotePopupLeft = window.innerWidth - Popups.minFootnoteWidth;
+		popup.style.left = footnotePopupLeft + "px";
 		//	Correct for various positioning aberrations.
-		if (Footnotes.popup.getBoundingClientRect().right > window.innerWidth)
-			Footnotes.popup.style.maxWidth = (Footnotes.popup.clientWidth - (Footnotes.popup.getBoundingClientRect().right - window.innerWidth) - parseInt(getComputedStyle(Footnotes.popup.firstElementChild).paddingRight)) + "px";
-		else if (citationPosition.left + footnotePopupBreathingRoom.x + Footnotes.popup.clientWidth < window.innerWidth)
-			Footnotes.popup.style.left = (citationPosition.left + footnotePopupBreathingRoom.x) + "px";
-		else if (citationPosition.left - (footnotePopupBreathingRoom.x + Footnotes.popup.clientWidth) > Footnotes.popup.getBoundingClientRect().left)
-			Footnotes.popup.style.left = (citationPosition.left - footnotePopupBreathingRoom.x - Footnotes.popup.clientWidth) + "px";
+		if (popup.getBoundingClientRect().right > window.innerWidth)
+			popup.style.maxWidth = (popup.clientWidth - (popup.getBoundingClientRect().right - window.innerWidth) - parseInt(getComputedStyle(popup.firstElementChild).paddingRight)) + "px";
+		else if (citationPosition.left + footnotePopupBreathingRoom.x + popup.clientWidth < window.innerWidth)
+			popup.style.left = (citationPosition.left + footnotePopupBreathingRoom.x) + "px";
+		else if (citationPosition.left - (footnotePopupBreathingRoom.x + popup.clientWidth) > popup.getBoundingClientRect().left)
+			popup.style.left = (citationPosition.left - footnotePopupBreathingRoom.x - popup.clientWidth) + "px";
 
 		//	Now we know how tall the popup is...
-		var provisionalFootnotePopupHeight = Footnotes.popup.clientHeight;
+		var provisionalFootnotePopupHeight = popup.clientHeight;
 
 		//	Determining vertical position is full of edge cases.
 		var footnotePopupTop = citationPosition.top + footnotePopupBreathingRoom.y;
@@ -160,7 +91,84 @@ Footnotes = {
 		if (footnotePopupTop < 0) {
 			footnotePopupTop = 0;
 		}
-		Footnotes.popup.style.top = footnotePopupTop + "px";
+		popup.style.top = footnotePopupTop + "px";
+	},
+};
+
+Footnotes = {
+	/**********/
+	/*	Config.
+		*/
+    targetElementsSelector: ".footnote-ref",
+    excludedElementsSelector: null,
+    excludedContainerElementsSelector: null,
+
+    popupTriggerDelay: 200,
+    popupFadeoutDelay: 50,
+    popupFadeoutDuration: 250,
+
+	/******************/
+	/*	Implementation.
+		*/
+	popupFadeTimer: false,
+	popupDespawnTimer: false,
+	popupSpawnTimer: false,
+	footnotePopup: null,
+
+	unbind: () => {
+		GWLog("Footnotes.unbind", "footnotes.js", 1);
+
+		document.querySelectorAll(".footnote-ref").forEach(fnref => {
+			//	Unbind existing mouseenter/mouseleave events, if any.
+			fnref.removeEventListener("mouseenter", Footnotes.targetMouseenter);
+			fnref.removeEventListener("mouseleave", Footnotes.targetMouseleave);
+		});
+
+		GW.notificationCenter.fireEvent("Footnotes.eventsUnbound");
+	},
+	setup: () => {
+		GWLog("Footnotes.setup", "footnotes.js", 1);
+
+		Footnotes.unbind();
+
+        if (Popups.isMobile()) {
+            GWLog("Mobile client detected. Exiting.", "footnotes.js", 1);
+            return;
+        } else {
+            GWLog("Non-mobile client detected. Setting up.", "footnotes.js", 1);
+        }
+
+		//	Get all targets.
+		document.querySelectorAll(Footnotes.targetElementsSelector).forEach(target => {
+			if (   target.closest(Footnotes.excludedElementsSelector) == target
+				|| target.closest(Footnotes.excludedContainerElementsSelector) != null)
+				return;
+
+			//	Bind mouseenter/mouseleave events.
+			target.addEventListener("mouseenter", Footnotes.targetMouseenter);
+			target.addEventListener("mouseleave", Footnotes.targetMouseleave);
+		});
+
+		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
+	},
+	fillPopup: (popup, target) => {
+		if (!target.hash)
+			return false;
+
+		let targetFootnoteId = target.hash.substr(1);
+		let targetFootnote = document.querySelector("#" + targetFootnoteId);
+		if (!targetFootnote)
+			return false;
+
+		popup.innerHTML = '<div>' + targetFootnote.innerHTML + '</div>';
+		popup.dataset.footnoteReference = targetFootnoteId;
+		return true;
+	},
+	preparePopup: (popup) => {
+		//	Add event listeners.
+		popup.addEventListener("mouseup", Footnotes.popupMouseup);
+		popup.addEventListener("mouseenter", Footnotes.popupMouseenter);
+		popup.addEventListener("mouseleave", Footnotes.popupMouseleave);
 	},
 	//	The mouseenter event.
 	targetMouseenter: (event) => {
@@ -175,19 +183,21 @@ Footnotes = {
 		Footnotes.popupSpawnTimer = setTimeout(() => {
 			GWLog("Footnotes.popupSpawnTimer fired", "footnotes.js", 2);
 
-			//  Despawn and destroy existing popup, if any.
-			Footnotes.despawnPopup();
-			Footnotes.destroyPopup();
+			//  Despawn existing popup, if any.
+			Footnotes.despawnPopup(Footnotes.popup);
 
             //  Create the new popup.
-			Footnotes.createPopup();
+			Footnotes.popup = Footnotes.newPopup();
 
 			//	Inject the contents of the footnote into the popup.
-			if (Footnotes.fillPopup(target) == false)
+			if (Footnotes.fillPopup(Footnotes.popup, target) == false)
 				return;
 
-			// Spawn the newly created and filled popup.
-			Footnotes.spawnPopup(target);
+			// Prepare the newly created and filled popup for spawning.
+			Footnotes.preparePopup(Footnotes.popup);
+
+			// Spawn the prepared popup.
+			Footnotes.spawnPopup(Footnotes.popup, target);
 		}, Footnotes.popupTriggerDelay);
 	},
 	//	The mouseleave event.
@@ -221,7 +231,7 @@ Footnotes = {
 		event.stopPropagation();
 
 		Footnotes.clearPopupTimers();
-		Footnotes.despawnPopup();
+		Footnotes.despawnPopup(Footnotes.popup);
     },
     clearPopupTimers: () => {
 	    GWLog("Footnotes.clearPopupTimers", "footnotes.js", 2);
@@ -246,17 +256,17 @@ Footnotes = {
 		Footnotes.popupDespawnTimer = setTimeout(() => {
 			GWLog("Footnotes.popupDespawnTimer fired", "footnotes.js", 2);
 
-			Footnotes.despawnPopup();
+			Footnotes.despawnPopup(Footnotes.popup);
 		}, Footnotes.popupFadeoutDuration);
     },
-    despawnPopup: () => {
+    despawnPopup: (popup) => {
 		GWLog("Footnotes.despawnPopup", "footnotes.js", 2);
 
-		if (Footnotes.popup == null)
+		if (popup == null)
 			return;
 
-	    Footnotes.popup.classList.remove("fading");
-        Footnotes.popup.remove();
+	    popup.classList.remove("fading");
+        popup.remove();
         document.activeElement.blur();
     }
 };
