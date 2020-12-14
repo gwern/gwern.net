@@ -158,6 +158,14 @@ Footnotes = {
 		Footnotes.clearPopupTimers();
 		Footnotes.popup.classList.remove("fading");
 	},
+    popupMouseup: (event) => {
+		GWLog("Footnotes.popupMouseup", "footnotes.js", 2);
+
+		event.stopPropagation();
+
+		Footnotes.clearPopupTimers();
+		Footnotes.despawnPopup();
+    },
     clearPopupTimers: () => {
 	    GWLog("Footnotes.clearPopupTimers", "footnotes.js", 2);
 
@@ -171,17 +179,16 @@ Footnotes = {
         Footnotes.popupFadeTimer = setTimeout(() => {
 			GWLog("Footnotes.popupFadeTimer fired", "footnotes.js", 2);
 
-			Footnotes.popup.classList.add("fading");
 			Footnotes.setPopupDespawnTimer();
         }, Footnotes.popupFadeoutDelay);
     },
     setPopupDespawnTimer: () => {
 		GWLog("Footnotes.setPopupDespawnTimer", "footnotes.js", 2);
 
+		Footnotes.popup.classList.add("fading");
 		Footnotes.popupDespawnTimer = setTimeout(() => {
 			GWLog("Footnotes.popupDespawnTimer fired", "footnotes.js", 2);
 
-	        Footnotes.popup.classList.remove("fading");
 			Footnotes.despawnPopup();
 		}, Footnotes.popupFadeoutDuration);
     },
@@ -191,6 +198,7 @@ Footnotes = {
 		if (Footnotes.popup == null)
 			return;
 
+	        Footnotes.popup.classList.remove("fading");
         Footnotes.popup.remove();
         document.activeElement.blur();
     }
