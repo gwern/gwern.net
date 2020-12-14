@@ -3,16 +3,17 @@ module Main where
 
 -- Read a directory like "docs/iodine/" for its files, and look up each file as a link in the link annotation database of `metadata/*.yaml`; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but an automatically-annotated one! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
-import Data.List (isPrefixOf)
+import Data.List (isPrefixOf, sort)
 import Data.Time (getCurrentTime)
-import LinkMetadata (readLinkMetadata, Metadata, MetadataItem)
-import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                     Block(BlockQuote, BulletList, RawBlock, Para), Format(..), Inline(Space, Str, Code, Link), Pandoc(Pandoc))
 import System.Directory (listDirectory)
 import System.Environment (getArgs)
-import qualified Data.Text as T (unpack, pack)
-import qualified Data.Map as M (lookup)
 import System.FilePath (takeFileName)
+import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
+                    Block(BlockQuote, BulletList, RawBlock, Para), Format(..), Inline(Space, Str, Code, Link), Pandoc(Pandoc))
+import qualified Data.Map as M (lookup)
+import qualified Data.Text as T (unpack, pack)
+
+import LinkMetadata (readLinkMetadata, Metadata, MetadataItem)
 
 main :: IO ()
 main = do dir <- fmap head getArgs
@@ -33,7 +34,7 @@ main = do dir <- fmap head getArgs
 
 generateYAMLHeader :: FilePath -> String -> String
 generateYAMLHeader d tdy = "---\n" ++
-                           "title: '<code>" ++ d ++ "</code> Directory Listing'\n" ++
+                           "title: " ++ d ++ " Directory Listing'\n" ++
                            "description: Annotated bibliography of files in the directory " ++ d ++ ".\n" ++
                            "tags: meta\n" ++
                            "created: 2009-01-01\n" ++
@@ -44,11 +45,13 @@ generateYAMLHeader d tdy = "---\n" ++
                            "...\n" ++
                            "\n" ++
                            "List of directory contents (with annotations where available):\n" ++
+                           "\n" ++
+                           " # Files\n" ++
                            "\n"
 
 listFiles :: Metadata -> FilePath -> IO [(FilePath, Maybe LinkMetadata.MetadataItem)]
 listFiles m d = do files <- listDirectory d
-                   let files'          = map (\f -> "/"++d++f) files
+                   let files'          = (sort . filter (=="index.page")) $ map (\f -> "/"++d++f) files
                    let fileAnnotations = map (`M.lookup` m) files'
                    return $ zip files' fileAnnotations
 
@@ -57,7 +60,7 @@ generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (tle,aut,dt,_,abst) -> [Para [Link nullAttr [Str (T.pack $ "“"++tle++"”")] (T.pack f,""),
-                                                                  Str ",", Space, Str (T.pack $ aut++", "), Str (T.pack $ "("++dt++")"), Str ":"],
+                                                                  Str ",", Space, Str (T.pack $ aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
                                                           BlockQuote [RawBlock (Format "html") (T.pack abst)]
                                                     ]
                              where
