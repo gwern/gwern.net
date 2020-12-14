@@ -301,17 +301,17 @@ Popups.stylesHTML = `<style id='${Popups.stylesID}'>
 #${Popups.popupContainerID} > * {
     pointer-events: auto;
 }
-#popupdiv {
+.popupdiv {
     position: absolute;
     opacity: 1.0;
     transition: none;
 }
-#popupdiv.fading {
+.popupdiv.fading {
     opacity: 0.0;
     transition:
         opacity 0.25s ease-in 0.1s;
 }
-#popupdiv > div {
+.popupdiv > div {
     overflow: auto;
     overscroll-behavior: none;
 }
