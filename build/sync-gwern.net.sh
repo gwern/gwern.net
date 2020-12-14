@@ -35,10 +35,11 @@ then
           docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
           docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
           docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/"
-    for DIR in $DIRS; do
-        rm "$DIR/index.page" > /dev/null || true;
-        runhaskell -istatic/build/ static/build/generateDirectory.hs "$DIR" > "$DIR/index.page";
-    done
+    generateDirectory () {
+                rm "$1/index.page" > /dev/null || true;
+                runhaskell -istatic/build/ static/build/generateDirectory.hs "$1" > "$1/index.page"; }
+    export -f generateDirectory
+    echo "$DIRS" | tr --squeeze-repeats ' ' '\n' | parallel generateDirectory
 
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/

@@ -45,8 +45,6 @@ generateYAMLHeader d tdy = "---\n" ++
                            "...\n" ++
                            "\n" ++
                            "List of directory contents (with annotations where available):\n" ++
-                           "\n" ++
-                           " # Files\n" ++
                            "\n"
 
 listFiles :: Metadata -> FilePath -> IO [(FilePath, Maybe LinkMetadata.MetadataItem)]
