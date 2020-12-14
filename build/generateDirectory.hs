@@ -34,14 +34,15 @@ main = do dir <- fmap head getArgs
 
 generateYAMLHeader :: FilePath -> String -> String
 generateYAMLHeader d tdy = "---\n" ++
-                           "title: " ++ d ++ " Directory Listing'\n" ++
-                           "description: Annotated bibliography of files in the directory " ++ d ++ ".\n" ++
+                           "title: /" ++ d ++ " Directory Listing\n" ++
+                           "description: Annotated bibliography of files in the directory /" ++ d ++ ".\n" ++
                            "tags: meta\n" ++
                            "created: 2009-01-01\n" ++
                            "modified: " ++ tdy ++ "\n" ++
                            "status: in progress\n" ++
                            "confidence: log\n" ++
                            "importance: 0\n" ++
+                           "cssExtension: directory-index" ++
                            "...\n" ++
                            "\n" ++
                            "List of directory contents (with annotations where available):\n" ++
