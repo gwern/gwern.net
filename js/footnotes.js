@@ -93,6 +93,16 @@ Popups = {
 		}
 		popup.style.top = footnotePopupTop + "px";
 	},
+    despawnPopup: (popup) => {
+		GWLog("Popups.despawnPopup", "footnotes.js", 2);
+
+		if (popup == null)
+			return;
+
+	    popup.classList.remove("fading");
+        popup.remove();
+        document.activeElement.blur();
+    }
 };
 
 Footnotes = {
@@ -184,10 +194,10 @@ Footnotes = {
 			GWLog("Footnotes.popupSpawnTimer fired", "footnotes.js", 2);
 
 			//  Despawn existing popup, if any.
-			Footnotes.despawnPopup(Footnotes.popup);
+			Popups.despawnPopup(Footnotes.popup);
 
             //  Create the new popup.
-			Footnotes.popup = Footnotes.newPopup();
+			Footnotes.popup = Popups.newPopup();
 
 			//	Inject the contents of the footnote into the popup.
 			if (Footnotes.fillPopup(Footnotes.popup, target) == false)
@@ -197,7 +207,7 @@ Footnotes = {
 			Footnotes.preparePopup(Footnotes.popup);
 
 			// Spawn the prepared popup.
-			Footnotes.spawnPopup(Footnotes.popup, target);
+			Popups.spawnPopup(Footnotes.popup, target);
 		}, Footnotes.popupTriggerDelay);
 	},
 	//	The mouseleave event.
@@ -231,7 +241,7 @@ Footnotes = {
 		event.stopPropagation();
 
 		Footnotes.clearPopupTimers();
-		Footnotes.despawnPopup(Footnotes.popup);
+		Popups.despawnPopup(Footnotes.popup);
     },
     clearPopupTimers: () => {
 	    GWLog("Footnotes.clearPopupTimers", "footnotes.js", 2);
@@ -256,18 +266,8 @@ Footnotes = {
 		Footnotes.popupDespawnTimer = setTimeout(() => {
 			GWLog("Footnotes.popupDespawnTimer fired", "footnotes.js", 2);
 
-			Footnotes.despawnPopup(Footnotes.popup);
+			Popups.despawnPopup(Footnotes.popup);
 		}, Footnotes.popupFadeoutDuration);
-    },
-    despawnPopup: (popup) => {
-		GWLog("Footnotes.despawnPopup", "footnotes.js", 2);
-
-		if (popup == null)
-			return;
-
-	    popup.classList.remove("fading");
-        popup.remove();
-        document.activeElement.blur();
     }
 };
 
