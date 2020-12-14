@@ -51,7 +51,7 @@ generateYAMLHeader d tdy = "---\n" ++
 
 listFiles :: Metadata -> FilePath -> IO [(FilePath, Maybe LinkMetadata.MetadataItem)]
 listFiles m d = do files <- listDirectory d
-                   let files'          = (sort . filter (/="index.page")) $ map (\f -> "/"++d++f) files
+                   let files'          = map (\f -> "/"++d++f) $ (sort . filter (/="index.page")) files
                    let fileAnnotations = map (`M.lookup` m) files'
                    return $ zip files' fileAnnotations
 
@@ -61,8 +61,8 @@ generateListItems (f, ann) = case ann of
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (tle,aut,dt,_,abst) -> [Para [Link nullAttr [Str (T.pack $ "“"++tle++"”")] (T.pack f,""),
                                                                   Str ",", Space, Str (T.pack $ aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
-                                                          BlockQuote [RawBlock (Format "html") (T.pack abst)]
-                                                    ]
+                                                           BlockQuote [RawBlock (Format "html") (T.pack abst)]
+                                                           ]
                              where
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link nullAttr [Code nullAttr (T.pack $ takeFileName f)] (T.pack f, "")]]
