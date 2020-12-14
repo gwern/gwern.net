@@ -26,13 +26,12 @@ Extracts = {
     targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
     excludedElementsSelector: ".footnote-ref",
     excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
+
     minPopupWidth: 360,
     maxPopupWidth: 640,
     popupBorderWidth: 3,
-
     popupBreathingRoomX: 24.0,
     popupBreathingRoomY: 16.0,
-
     videoPopupWidth: 495,
     videoPopupHeight: 310,
 
@@ -181,7 +180,16 @@ Extracts = {
         // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
         return `<div class='popup-local-image'><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
-    unbind: () => {
+ 	isMobile: () => {
+		/*  We consider a client to be mobile if one of two conditions obtain:
+		    1. JavaScript detects touch capability, AND viewport is narrow; or,
+		    2. CSS does NOT detect hover capability.
+		    */
+		return (   (   ('ontouchstart' in document.documentElement)
+					&& GW.mediaQueries.mobileWidth.matches)
+				|| !GW.mediaQueries.hoverAvailable.matches);
+	},
+   unbind: () => {
 		GWLog("Extracts.unbind", "popups.js", 1);
 
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
@@ -209,13 +217,7 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
-		/*  We consider a client to be mobile if one of two conditions obtain:
-		    1. JavaScript detects touch capability, AND viewport is narrow; or,
-		    2. CSS does NOT detect hover capability.
-		    */
-        if (   (   ('ontouchstart' in document.documentElement)
-        		&& GW.mediaQueries.mobileWidth.matches)
-        	|| !GW.mediaQueries.hoverAvailable.matches) {
+        if (Footnotes.isMobile()) {
             GWLog("Mobile client detected. Exiting.", "popups.js", 1);
             return;
         } else {
@@ -286,8 +288,6 @@ Extracts = {
 			Extracts.popup.className = target.className;
 
             //  Inject the contents of the popup into the popup div.
-            Extracts.popup.removeAttribute("style");
-
 			let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
 			if (videoId) {
 				Extracts.popup.innerHTML = Extracts.videoForTarget(target, videoId);

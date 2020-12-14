@@ -6,6 +6,11 @@ License: public domain ("And some people have asked me about a license for this 
 	*/
 Footnotes = {
 	contentContainerSelector: "#markdownBody",
+
+    targetElementsSelector: ".footnote-ref",
+    excludedElementsSelector: null,
+    excludedContainerElementsSelector: null,
+
 	minFootnoteWidth: 520,
 
     popupTriggerDelay: 200,
@@ -17,6 +22,15 @@ Footnotes = {
 	popupSpawnTimer: false,
 	footnotePopup: null,
 
+	isMobile: () => {
+		/*  We consider a client to be mobile if one of two conditions obtain:
+		    1. JavaScript detects touch capability, AND viewport is narrow; or,
+		    2. CSS does NOT detect hover capability.
+		    */
+		return (   (   ('ontouchstart' in document.documentElement)
+					&& GW.mediaQueries.mobileWidth.matches)
+				|| !GW.mediaQueries.hoverAvailable.matches);
+	},
 	unbind: () => {
 		GWLog("Footnotes.unbind", "footnotes.js", 1);
 
@@ -32,11 +46,23 @@ Footnotes = {
 		GWLog("Footnotes.setup", "footnotes.js", 1);
 
 		Footnotes.unbind();
-		//	Get all footnote links.
-		document.querySelectorAll(".footnote-ref").forEach(fnref => {
-			//	Bind mousemover/mouseleave events.
-			fnref.addEventListener("mouseenter", Footnotes.targetMouseenter);
-			fnref.addEventListener("mouseleave", Footnotes.targetMouseleave);
+
+        if (Footnotes.isMobile()) {
+            GWLog("Mobile client detected. Exiting.", "footnotes.js", 1);
+            return;
+        } else {
+            GWLog("Non-mobile client detected. Setting up.", "footnotes.js", 1);
+        }
+
+		//	Get all targets.
+		document.querySelectorAll(Footnotes.targetElementsSelector).forEach(target => {
+			if (   target.closest(Footnotes.excludedElementsSelector) == target
+				|| target.closest(Footnotes.excludedContainerElementsSelector) != null)
+				return;
+
+			//	Bind mouseenter/mouseleave events.
+			target.addEventListener("mouseenter", Footnotes.targetMouseenter);
+			target.addEventListener("mouseleave", Footnotes.targetMouseleave);
 		});
 
 		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
@@ -46,7 +72,7 @@ Footnotes = {
 		GWLog("Footnotes.targetMouseenter", "footnotes.js", 2);
 
         //  Get the target.
-        let target = event.target;
+        let target = event.target.closest(Footnotes.targetElementsSelector);
 
 		//	Stop the countdown to un-pop the popup.
 		Footnotes.clearPopupTimers();
@@ -54,15 +80,15 @@ Footnotes = {
 		Footnotes.popupSpawnTimer = setTimeout(() => {
 			GWLog("Footnotes.popupSpawnTimer fired", "footnotes.js", 2);
 
+			if (!target.hash) return;
+			let targetFootnoteId = target.hash.substr(1);
+
             let targetViewportRect = target.getBoundingClientRect();
 			let bodyAbsoluteRect = document.body.getBoundingClientRect();
 			var citationPosition = {
 				left: (targetViewportRect.left - bodyAbsoluteRect.left),
 				top: (targetViewportRect.top - bodyAbsoluteRect.top)
 			};
-
-			if (!target.hash) return;
-			let targetFootnoteId = target.hash.substr(1);
 
 			//  Remove existing popup, if any.
 			Footnotes.despawnPopup();
@@ -83,6 +109,7 @@ Footnotes = {
 			document.querySelector(Footnotes.contentContainerSelector).appendChild(Footnotes.popup);
 
 			//	Add event listeners.
+            Footnotes.popup.addEventListener("mouseup", Footnotes.popupMouseup);
 			Footnotes.popup.addEventListener("mouseenter", Footnotes.popupMouseenter);
 			Footnotes.popup.addEventListener("mouseleave", Footnotes.popupMouseleave);
 
