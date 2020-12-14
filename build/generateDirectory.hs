@@ -3,13 +3,13 @@ module Main where
 
 -- Read a directory like "docs/iodine/" for its files, and look up each file as a link in the link annotation database of `metadata/*.yaml`; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but an automatically-annotated one! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
-import Data.List (isPrefixOf, sort)
+import Data.List (isPrefixOf, isSuffixOf, sort)
 import Data.Time (getCurrentTime)
 import System.Directory (listDirectory)
 import System.Environment (getArgs)
 import System.FilePath (takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BlockQuote, BulletList, RawBlock, Para), Format(..), Inline(Space, Str, Code, Link), Pandoc(Pandoc))
+                    Block(BlockQuote, BulletList, RawBlock, Para), Format(..), Inline(Space, Str, Code, Link, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup)
 import qualified Data.Text as T (unpack, pack)
 
@@ -51,7 +51,7 @@ generateYAMLHeader d tdy = "---\n" ++
 
 listFiles :: Metadata -> FilePath -> IO [(FilePath, Maybe LinkMetadata.MetadataItem)]
 listFiles m d = do files <- listDirectory d
-                   let files'          = map (\f -> "/"++d++f) $ (sort . filter (/="index.page")) files
+                   let files'          = map (\f -> "/"++d++f) $ (sort . filter (not . isSuffixOf ".tar") .  filter (/="index.page")) files
                    let fileAnnotations = map (`M.lookup` m) files'
                    return $ zip files' fileAnnotations
 
@@ -59,7 +59,7 @@ generateListItems :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
-                              Just (tle,aut,dt,_,abst) -> [Para [Link nullAttr [Str (T.pack $ "“"++tle++"”")] (T.pack f,""),
+                              Just (tle,aut,dt,_,abst) -> [Para [Link nullAttr [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),
                                                                   Str ",", Space, Str (T.pack $ aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
                                                            BlockQuote [RawBlock (Format "html") (T.pack abst)]
                                                            ]
