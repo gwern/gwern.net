@@ -16,10 +16,18 @@ Popups = {
     popupBreathingRoomX: 24.0,
     popupBreathingRoomY: 16.0,
 
+    popupTriggerDelay: 200,
+    popupFadeoutDelay: 50,
+    popupFadeoutDuration: 250,
+
 	/******************/
 	/*	Implementation.
 		*/
+	popupFadeTimer: false,
+	popupDespawnTimer: false,
+	popupSpawnTimer: false,
 	popupContainer: null,
+	popup: null,
 
 	isMobile: () => {
 		/*  We consider a client to be mobile if one of two conditions obtain:
@@ -56,13 +64,17 @@ Popups = {
             Popups.popupContainer = document.querySelector(`#${Popups.popupContainerID}`);
         });
 	},
-	newPopup: (id = "popup") => {
+	newPopup: () => {
+		GWLog("Popups.newPopup", "footnotes.js", 2);
+
 		let popup = document.createElement('div');
-		popup.id = id;
+		popup.id = 'popupdiv';
 		popup.classList.toggle('popupdiv', true);
 		return popup;
 	},
 	spawnPopup: (popup, target, event) => {
+		GWLog("Popups.spawnPopup", "footnotes.js", 2);
+
 		//	Inject the popup into the page.
 		Popups.injectPopup(popup);
 
@@ -70,9 +82,18 @@ Popups = {
 		Popups.positionPopup(popup, target, event);
 	},
 	injectPopup: (popup) => {
+		GWLog("Popups.injectPopup", "footnotes.js", 2);
+
 		Popups.popupContainer.appendChild(popup);
+
+		//	Add event listeners.
+		popup.addEventListener("mouseup", Popups.popupMouseup);
+		popup.addEventListener("mouseenter", Popups.popupMouseenter);
+		popup.addEventListener("mouseleave", Popups.popupMouseleave);
 	},
 	positionPopup: (popup, target, event) => {
+		GWLog("Popups.positionPopup", "footnotes.js", 2);
+
 		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 		let targetViewportRect = target.getBoundingClientRect();
 		let targetOriginInPopupContainer = {
@@ -193,6 +214,76 @@ Popups = {
 	    popup.classList.remove("fading");
         popup.remove();
         document.activeElement.blur();
+    },
+    clearPopupTimers: () => {
+	    GWLog("Popups.clearPopupTimers", "footnotes.js", 2);
+
+		if (Popups.popup)
+			Popups.popup.classList.remove("fading");
+
+        clearTimeout(Popups.popupFadeTimer);
+        clearTimeout(Popups.popupDespawnTimer);
+        clearTimeout(Popups.popupSpawnTimer);
+    },
+	setPopupSpawnTimer: (target, event, prepareFunction) => {
+		GWLog("Popups.setPopupSpawnTimer", "footnotes.js", 2);
+
+		Popups.popupSpawnTimer = setTimeout(() => {
+			GWLog("Popups.popupSpawnTimer fired", "footnotes.js", 2);
+
+			//  Despawn existing popup, if any.
+			Popups.despawnPopup(Popups.popup);
+
+			//  Create the new popup.
+			Popups.popup = Popups.newPopup();
+
+			// Prepare the newly created popup for spawning.
+			if (prepareFunction(Popups.popup, target) == false)
+				return;
+
+			// Spawn the prepared popup.
+			Popups.spawnPopup(Popups.popup, target, event);
+		}, Popups.popupTriggerDelay);
+	},
+    setPopupFadeTimer: () => {
+		GWLog("Popups.setPopupFadeTimer", "footnotes.js", 2);
+
+        Popups.popupFadeTimer = setTimeout(() => {
+			GWLog("Popups.popupFadeTimer fired", "footnotes.js", 2);
+
+			Popups.setPopupDespawnTimer();
+        }, Popups.popupFadeoutDelay);
+    },
+    setPopupDespawnTimer: () => {
+		GWLog("Popups.setPopupDespawnTimer", "footnotes.js", 2);
+
+		Popups.popup.classList.add("fading");
+		Popups.popupDespawnTimer = setTimeout(() => {
+			GWLog("Popups.popupDespawnTimer fired", "footnotes.js", 2);
+
+			Popups.despawnPopup(Popups.popup);
+		}, Popups.popupFadeoutDuration);
+    },
+    //	The “user moved mouse out of popup” mouseleave event.
+	popupMouseleave: (event) => {
+		GWLog("Popups.popupMouseleave", "footnotes.js", 2);
+
+		Popups.clearPopupTimers();
+		Popups.setPopupFadeTimer();
+	},
+	//	The “user moved mouse back into popup” mouseenter event.
+	popupMouseenter: (event) => {
+		GWLog("Popups.popupMouseenter", "footnotes.js", 2);
+
+		Popups.clearPopupTimers();
+	},
+    popupMouseup: (event) => {
+		GWLog("Popups.popupMouseup", "footnotes.js", 2);
+
+		event.stopPropagation();
+		Popups.despawnPopup(Popups.popup);
+
+		Popups.clearPopupTimers();
     }
 };
 
@@ -242,18 +333,9 @@ Footnotes = {
     excludedElementsSelector: null,
     excludedContainerElementsSelector: null,
 
-    popupTriggerDelay: 200,
-    popupFadeoutDelay: 50,
-    popupFadeoutDuration: 250,
-
 	/******************/
 	/*	Implementation.
 		*/
-	popupFadeTimer: false,
-	popupDespawnTimer: false,
-	popupSpawnTimer: false,
-	popup: null,
-
 	unbind: () => {
 		GWLog("Footnotes.unbind", "footnotes.js", 1);
 
@@ -281,7 +363,8 @@ Footnotes = {
 	setup: () => {
 		GWLog("Footnotes.setup", "footnotes.js", 1);
 
-		Footnotes.unbind();
+        //  Run cleanup.
+		Footnotes.cleanup();
 
         if (Popups.isMobile()) {
             GWLog("Mobile client detected. Exiting.", "footnotes.js", 1);
@@ -307,6 +390,8 @@ Footnotes = {
 		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
 	},
 	fillPopup: (popup, target) => {
+		GWLog("Footnotes.fillPopup", "footnotes.js", 2);
+
 		if (!target.hash)
 			return false;
 
@@ -317,103 +402,42 @@ Footnotes = {
 
 		popup.innerHTML = '<div>' + targetFootnote.innerHTML + '</div>';
 		popup.dataset.footnoteReference = targetFootnoteId;
+
 		return true;
 	},
-	preparePopup: (popup) => {
-		//	Add event listeners.
-		popup.addEventListener("mouseup", Footnotes.popupMouseup);
-		popup.addEventListener("mouseenter", Footnotes.popupMouseenter);
-		popup.addEventListener("mouseleave", Footnotes.popupMouseleave);
+	preparePopup: (popup, target) => {
+		GWLog("Footnotes.preparePopup", "footnotes.js", 2);
+
+		popup.id = "footnotediv";
+
+		//	Inject the contents of the footnote into the popup.
+		if (Footnotes.fillPopup(popup, target) == false)
+			return false;
+
+		return true;
 	},
 	//	The mouseenter event.
 	targetMouseenter: (event) => {
 		GWLog("Footnotes.targetMouseenter", "footnotes.js", 2);
 
+		//	Stop the countdown to un-pop the popup.
+		Popups.clearPopupTimers();
+
         //  Get the target.
         let target = event.target.closest(Footnotes.targetElementsSelector);
 
-		//	Stop the countdown to un-pop the popup.
-		Footnotes.clearPopupTimers();
-
-		Footnotes.popupSpawnTimer = setTimeout(() => {
-			GWLog("Footnotes.popupSpawnTimer fired", "footnotes.js", 2);
-
-			//  Despawn existing popup, if any.
-			Popups.despawnPopup(Footnotes.popup);
-
-            //  Create the new popup.
-			Footnotes.popup = Popups.newPopup("footnotediv");
-
-			//	Inject the contents of the footnote into the popup.
-			if (Footnotes.fillPopup(Footnotes.popup, target) == false)
-				return;
-
-			// Prepare the newly created and filled popup for spawning.
-			Footnotes.preparePopup(Footnotes.popup);
-
-			// Spawn the prepared popup.
-			Popups.spawnPopup(Footnotes.popup, target, event);
-		}, Footnotes.popupTriggerDelay);
+		//  Start the countdown to pop up the popup.
+		Popups.setPopupSpawnTimer(target, event, Footnotes.preparePopup);
 	},
 	//	The mouseleave event.
 	targetMouseleave: (event) => {
 		GWLog("Footnotes.targetMouseleave", "footnotes.js", 2);
 
-		Footnotes.clearPopupTimers();
+		Popups.clearPopupTimers();
 
-		if (!Footnotes.popup) return;
-
-		Footnotes.setPopupFadeTimer();
-	},
-    //	The “user moved mouse out of popup” mouseleave event.
-	popupMouseleave: (event) => {
-		GWLog("Footnotes.popupMouseleave", "footnotes.js", 2);
-
-		Footnotes.clearPopupTimers();
-		
-		Footnotes.setPopupFadeTimer();
-	},
-	//	The “user moved mouse back into popup” mouseenter event.
-	popupMouseenter: (event) => {
-		GWLog("Footnotes.popupMouseenter", "footnotes.js", 2);
-
-		Footnotes.clearPopupTimers();
-		Footnotes.popup.classList.remove("fading");
-	},
-    popupMouseup: (event) => {
-		GWLog("Footnotes.popupMouseup", "footnotes.js", 2);
-
-		event.stopPropagation();
-
-		Footnotes.clearPopupTimers();
-		Popups.despawnPopup(Footnotes.popup);
-    },
-    clearPopupTimers: () => {
-	    GWLog("Footnotes.clearPopupTimers", "footnotes.js", 2);
-
-        clearTimeout(Footnotes.popupFadeTimer);
-        clearTimeout(Footnotes.popupDespawnTimer);
-        clearTimeout(Footnotes.popupSpawnTimer);
-    },
-    setPopupFadeTimer: () => {
-		GWLog("Footnotes.setPopupFadeTimer", "footnotes.js", 2);
-
-        Footnotes.popupFadeTimer = setTimeout(() => {
-			GWLog("Footnotes.popupFadeTimer fired", "footnotes.js", 2);
-
-			Footnotes.setPopupDespawnTimer();
-        }, Footnotes.popupFadeoutDelay);
-    },
-    setPopupDespawnTimer: () => {
-		GWLog("Footnotes.setPopupDespawnTimer", "footnotes.js", 2);
-
-		Footnotes.popup.classList.add("fading");
-		Footnotes.popupDespawnTimer = setTimeout(() => {
-			GWLog("Footnotes.popupDespawnTimer fired", "footnotes.js", 2);
-
-			Popups.despawnPopup(Footnotes.popup);
-		}, Footnotes.popupFadeoutDuration);
-    }
+		if (Popups.popup)
+			Popups.setPopupFadeTimer();
+	}
 };
 
 /********************/

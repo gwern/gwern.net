@@ -30,19 +30,9 @@ Extracts = {
     videoPopupWidth: 495,
     videoPopupHeight: 310,
 
-    popupTriggerDelay: 200,
-    popupFadeoutDelay: 50,
-    popupFadeoutDuration: 250,
-
 	/******************/
 	/*	Implementation.
 		*/
-    popupFadeTimer: false,
-    popupDespawnTimer: false,
-    popupSpawnTimer: false,
-    popupContainer: null,
-    popup: null,
-
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "popups.js", 2);
 
@@ -229,8 +219,12 @@ Extracts = {
             //  Remove the title attribute.
             target.removeAttribute("title");
         });
-    },
+ 
+		GW.notificationCenter.fireEvent("Extracts.setupComplete");
+   },
     fillPopup: (popup, target) => {
+		GWLog("Extracts.fillPopup", "footnotes.js", 2);
+
 		//  Inject the contents of the popup into the popup div.
 		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
 		if (videoId) {
@@ -250,13 +244,16 @@ Extracts = {
 		return (popup.childElementCount != 0);
     },
     preparePopup: (popup, target) => {
+		GWLog("Footnotes.preparePopup", "footnotes.js", 2);
+
+		popup.id = "popupdiv";
+
 		//  Import the class(es) of the target.
 		popup.classList.add(...target.classList);
 
-		//  Add event listeners.
-		popup.addEventListener("mouseup", Extracts.popupMouseup);
-		popup.addEventListener("mouseenter", Extracts.popupMouseenter);
-		popup.addEventListener("mouseleave", Extracts.popupMouseleave);
+		//	Inject the extract for the target into the popup.
+		if (Extracts.fillPopup(popup, target) == false)
+			return false;
 
 		if (popup.firstElementChild.tagName == 'DIV') {
 			let innerDiv = popup.firstElementChild;
@@ -271,6 +268,8 @@ Extracts = {
 				innerDiv.style.maxHeight = `calc(100vh - 2 * ${Extracts.popupBorderWidth}px - 26px)`;
 			}
 		}
+
+		return true;
     },
 	//  The mouseenter event.
     targetMouseenter: (event) => {
@@ -280,86 +279,19 @@ Extracts = {
         let target = event.target.closest(Extracts.targetElementsSelector);
 
         //  Stop the countdown to un-pop the popup.
-		Extracts.clearPopupTimers();
+		Popups.clearPopupTimers();
 
-        Extracts.popupSpawnTimer = setTimeout(() => {
-			GWLog("Extracts.popupSpawnTimer fired", "popups.js", 2);
-
-			//  Despawn existing popup, if any.
-			Popups.despawnPopup(Extracts.popup);
-
-            //  Create the popup.
-			Extracts.popup = Popups.newPopup("popupdiv");
-
-			//	Inject the extract for the target into the popup.
-			if (Extracts.fillPopup(Extracts.popup, target) == false)
-				return;
-
-			// Prepare the newly created and filled popup for spawning.
-			Extracts.preparePopup(Extracts.popup, target);
-
-			// Spawn the prepared popup.
-			Popups.spawnPopup(Extracts.popup, target, event);
-        }, Extracts.popupTriggerDelay);
+		//  Start the countdown to pop up the popup.
+		Popups.setPopupSpawnTimer(target, event, Extracts.preparePopup);
     },
     //  The mouseleave event.
     targetMouseleave: (event) => {
 		GWLog("Extracts.targetMouseleave", "popups.js", 2);
 
-		Extracts.clearPopupTimers();
+		Popups.clearPopupTimers();
 
-        if (!Extracts.popup) return;
-
-		Extracts.setPopupFadeTimer();
-    },
-    //	The “user moved mouse out of popup” mouseleave event.
-    popupMouseleave: (event) => {
-		GWLog("Extracts.popupMouseleave", "popups.js", 2);
-
-		Extracts.clearPopupTimers();
-		
-		Extracts.setPopupFadeTimer();
-    },
-    //  The “user moved mouse back into popup” mouseenter event.
-    popupMouseenter: (event) => {
-		GWLog("Extracts.popupMouseenter", "popups.js", 2);
-
-		Extracts.clearPopupTimers();
-        Extracts.popup.classList.remove("fading");
-    },
-    popupMouseup: (event) => {
-		GWLog("Extracts.popupMouseup", "popups.js", 2);
-
-		event.stopPropagation();
-
-		Extracts.clearPopupTimers();
-		Popups.despawnPopup(Extracts.popup);
-    },
-    clearPopupTimers: () => {
-	    GWLog("Extracts.clearPopupTimers", "popups.js", 2);
-
-        clearTimeout(Extracts.popupFadeTimer);
-        clearTimeout(Extracts.popupDespawnTimer);
-        clearTimeout(Extracts.popupSpawnTimer);
-    },
-    setPopupFadeTimer: () => {
-		GWLog("Extracts.setPopupFadeTimer", "popups.js", 2);
-
-        Extracts.popupFadeTimer = setTimeout(() => {
-			GWLog("Extracts.popupFadeTimer fired", "popups.js", 2);
-
-			Extracts.setPopupDespawnTimer();
-        }, Extracts.popupFadeoutDelay);
-    },
-    setPopupDespawnTimer: () => {
-		GWLog("Extracts.setPopupDespawnTimer", "popups.js", 2);
-
-		Extracts.popup.classList.add("fading");
-		Extracts.popupDespawnTimer = setTimeout(() => {
-			GWLog("Extracts.popupDespawnTimer fired", "popups.js", 2);
-
-			Popups.despawnPopup(Extracts.popup);
-		}, Extracts.popupFadeoutDuration);
+        if (Popups.popup)
+			Popups.setPopupFadeTimer();
     }
 };
 
