@@ -232,6 +232,9 @@ Extracts = {
             return;
         }
         popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}' style='z-index: ${Extracts.popupContainerZIndex};'></div>`);
+        requestAnimationFrame(() => {
+            Extracts.popupContainer = document.querySelector(`#${Extracts.popupContainerID}`);
+        });
 
         //  Get all targets.
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
@@ -272,13 +275,14 @@ Extracts = {
             };
 
 			//  Remove existing popup, if any.
-            Extracts.popup = Extracts.popupContainer.querySelector("#popupdiv");
 			Extracts.despawnPopup();
 			Extracts.popup = null;
 
             //  Create the popup.
 			Extracts.popup = document.createElement('div');
 			Extracts.popup.id = "popupdiv";
+
+			//  Import the class(es) of the target.
 			Extracts.popup.className = target.className;
 
             //  Inject the contents of the popup into the popup div.
@@ -475,17 +479,16 @@ Extracts = {
         Extracts.popupFadeTimer = setTimeout(() => {
 			GWLog("Extracts.popupFadeTimer fired", "popups.js", 2);
 
-            Extracts.popup.classList.add("fading");
 			Extracts.setPopupDespawnTimer();
         }, Extracts.popupFadeoutDelay);
     },
     setPopupDespawnTimer: () => {
 		GWLog("Extracts.setPopupDespawnTimer", "popups.js", 2);
 
+		Extracts.popup.classList.add("fading");
 		Extracts.popupDespawnTimer = setTimeout(() => {
 			GWLog("Extracts.popupDespawnTimer fired", "popups.js", 2);
 
-	        Extracts.popup.classList.remove("fading");
 			Extracts.despawnPopup();
 		}, Extracts.popupFadeoutDuration);
     },
@@ -495,9 +498,9 @@ Extracts = {
 		if (Extracts.popup == null)
 			return;
 
+		Extracts.popup.classList.remove("fading");
         Extracts.popup.remove();
         document.activeElement.blur();
-        Extracts.popup.innerHTML = "";
     }
 };
 

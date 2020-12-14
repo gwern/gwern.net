@@ -64,15 +64,13 @@ Footnotes = {
 			if (!target.hash) return;
 			let targetFootnoteId = target.hash.substr(1);
 
-			//	Get, or create, the footnote popup.
-			Footnotes.popup = document.querySelector("#footnotediv");
-			if (Footnotes.popup) {
-				Footnotes.popup.classList.remove("fading");
-				Footnotes.popup.remove();
-			} else {
-				Footnotes.popup = document.createElement('div');
-				Footnotes.popup.id = "footnotediv";
-			}
+			//  Remove existing popup, if any.
+			Footnotes.despawnPopup();
+			Footnotes.popup = null;
+
+            //  Create the popup.
+			Footnotes.popup = document.createElement('div');
+			Footnotes.popup.id = "footnotediv";
 
 			//	Inject the contents of the footnote into the popup, if needed.
 			if (Footnotes.popup.dataset.footnoteReference != targetFootnoteId) {
@@ -195,7 +193,6 @@ Footnotes = {
 
         Footnotes.popup.remove();
         document.activeElement.blur();
-        Footnotes.popup.innerHTML = "";
     }
 };
 
