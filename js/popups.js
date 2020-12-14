@@ -46,6 +46,7 @@ Extracts = {
     popupFadeTimer: false,
     popupDespawnTimer: false,
     popupSpawnTimer: false,
+    popupContainer: null,
     popup: null,
 
     extractForTarget: (target) => {
@@ -191,10 +192,7 @@ Extracts = {
  			//  Unbind existing mouseenter/mouseleave events, if any.
             target.removeEventListener("mouseenter", Extracts.targetMouseenter);
             target.removeEventListener("mouseleave", Extracts.targetMouseleave);
-            target.onclick = () => {};
         });
-        if (Extracts.popupContainer)
-            Extracts.popupContainer.removeEventListener("mouseup", Extracts.popupContainerClicked);
     },
     cleanup: () => {
 		GWLog("Extracts.cleanup", "popups.js", 1);
@@ -236,7 +234,6 @@ Extracts = {
         popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}' style='z-index: ${Extracts.popupContainerZIndex};'></div>`);
         requestAnimationFrame(() => {
             Extracts.popupContainer = document.querySelector(`#${Extracts.popupContainerID}`);
-            Extracts.popupContainer.addEventListener("mouseup", Extracts.popupContainerClicked);
         });
 
         //  Get all targets.
@@ -251,7 +248,6 @@ Extracts = {
 
             //  Remove the title attribute.
             target.removeAttribute("title");
-            target.onclick = () => { return false; };
         });
     },
     //  The mouseenter event.
@@ -261,15 +257,11 @@ Extracts = {
         //  Get the target.
         let target = event.target.closest(Extracts.targetElementsSelector);
 
-        event.preventDefault();
-
         //  Stop the countdown to un-pop the popup.
 		Extracts.clearPopupTimers();
 
         Extracts.popupSpawnTimer = setTimeout(() => {
 			GWLog("Extracts.popupSpawnTimer fired", "popups.js", 2);
-
-            target.onclick = () => {};
 
             let popupContainerViewportRect = Extracts.popupContainer.getBoundingClientRect();
             let targetViewportRect = target.getBoundingClientRect();
@@ -283,13 +275,14 @@ Extracts = {
             };
 
 			//  Remove existing popup, if any.
-            Extracts.popup = Extracts.popupContainer.querySelector("#popupdiv");
 			Extracts.despawnPopup();
 			Extracts.popup = null;
 
             //  Create the popup.
 			Extracts.popup = document.createElement('div');
 			Extracts.popup.id = "popupdiv";
+
+			//  Import the class(es) of the target.
 			Extracts.popup.className = target.className;
 
             //  Inject the contents of the popup into the popup div.
@@ -435,7 +428,6 @@ Extracts = {
                 Extracts.popup.style.left = `${provisionalPopupXPosition}px`;
                 Extracts.popup.style.top = `${provisionalPopupYPosition}px`;
 
-                Extracts.popupContainer.classList.add("popup-visible");
                 Extracts.popup.style.visibility = "";
                 document.activeElement.blur();
             });
@@ -456,6 +448,7 @@ Extracts = {
 		GWLog("Extracts.popupMouseleave", "popups.js", 2);
 
 		Extracts.clearPopupTimers();
+		
 		Extracts.setPopupFadeTimer();
     },
     //  The “user moved mouse back into popup” mouseenter event.
@@ -486,24 +479,18 @@ Extracts = {
         Extracts.popupFadeTimer = setTimeout(() => {
 			GWLog("Extracts.popupFadeTimer fired", "popups.js", 2);
 
-            Extracts.popup.classList.add("fading");
 			Extracts.setPopupDespawnTimer();
         }, Extracts.popupFadeoutDelay);
     },
     setPopupDespawnTimer: () => {
 		GWLog("Extracts.setPopupDespawnTimer", "popups.js", 2);
 
+		Extracts.popup.classList.add("fading");
 		Extracts.popupDespawnTimer = setTimeout(() => {
 			GWLog("Extracts.popupDespawnTimer fired", "popups.js", 2);
 
-	        Extracts.popup.classList.remove("fading");
 			Extracts.despawnPopup();
 		}, Extracts.popupFadeoutDuration);
-    },
-    popupContainerClicked: (event) => {
-		GWLog("Extracts.popupContainerClicked", "popups.js", 2);
-
-        Extracts.despawnPopup();
     },
     despawnPopup: () => {
 		GWLog("Extracts.despawnPopup", "popups.js", 2);
@@ -511,10 +498,9 @@ Extracts = {
 		if (Extracts.popup == null)
 			return;
 
+		Extracts.popup.classList.remove("fading");
         Extracts.popup.remove();
         document.activeElement.blur();
-        Extracts.popup.innerHTML = "";
-        Extracts.popupContainer.classList.remove("popup-visible");
     }
 };
 
