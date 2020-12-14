@@ -565,6 +565,7 @@ GW.notificationCenter.fireEvent("ImageFocus.loaded");
 imageFocusSetup();
 focusImageSpecifiedByURL();
 
-GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesConstructed", () => {
-	imageFocusSetup();
-}, { once: true });
+// TODO: re-enable this once imageFocusSetup() is refactored to be repeatable
+// GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesConstructed", () => {
+// 	imageFocusSetup();
+// }, { once: true });

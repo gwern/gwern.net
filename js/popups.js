@@ -17,10 +17,7 @@ Extracts = {
 	/**********/
 	/*	Config.
 		*/
-    popupStylesID: "popups-styles",
-    popupContainerID: "popup-container",
-    popupContainerParentSelector: "html",
-    popupContainerZIndex: "1000",
+    stylesID: "extracts-styles",
 
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
@@ -30,8 +27,6 @@ Extracts = {
     minPopupWidth: 360,
     maxPopupWidth: 640,
     popupBorderWidth: 3,
-    popupBreathingRoomX: 24.0,
-    popupBreathingRoomY: 16.0,
     videoPopupWidth: 495,
     videoPopupHeight: 310,
 
@@ -193,6 +188,8 @@ Extracts = {
             target.removeEventListener("mouseenter", Extracts.targetMouseenter);
             target.removeEventListener("mouseleave", Extracts.targetMouseleave);
         });
+
+		GW.notificationCenter.fireEvent("Extracts.eventsUnbound");
     },
     cleanup: () => {
 		GWLog("Extracts.cleanup", "popups.js", 1);
@@ -200,8 +197,8 @@ Extracts = {
         //  Unbind event listeners.
         Extracts.unbind();
 
-        //  Remove popups container and injected styles.
-        document.querySelectorAll(`#${Extracts.popupStylesID}, #${Extracts.popupStylesID}-default, #${Extracts.popupContainerID}`).forEach(element => element.remove());
+        //  Remove injected styles.
+        document.querySelectorAll(`#${Extracts.stylesID}`).forEach(element => element.remove());
     },
     setup: () => {
 		GWLog("Extracts.setup", "popups.js", 1);
@@ -217,18 +214,7 @@ Extracts = {
         }
 
         //  Inject styles.
-        document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.popupStylesHTML);
-
-        //  Inject popups container.
-        let popupContainerParent = document.querySelector(Extracts.popupContainerParentSelector);
-        if (!popupContainerParent) {
-            GWLog("Popup container parent element not found. Exiting.", "popups.js", 1);
-            return;
-        }
-        popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Extracts.popupContainerID}' style='z-index: ${Extracts.popupContainerZIndex};'></div>`);
-        requestAnimationFrame(() => {
-            Extracts.popupContainer = document.querySelector(`#${Extracts.popupContainerID}`);
-        });
+        document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.stylesHTML);
 
         //  Get all targets.
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
@@ -265,7 +251,7 @@ Extracts = {
     },
     preparePopup: (popup, target) => {
 		//  Import the class(es) of the target.
-		popup.className = target.className;
+		popup.classList.add(...target.classList);
 
 		//  Add event listeners.
 		popup.addEventListener("mouseup", Extracts.popupMouseup);
@@ -286,128 +272,6 @@ Extracts = {
 			}
 		}
     },
-	spawnPopup: (popup, target, event) => {
-		//	Inject the popup into the page.
-		Extracts.injectPopup(popup);
-
-		//  Position the popup appropriately with respect to the target.
-		Extracts.positionPopup(popup, target, event);
-	},
-	injectPopup: (popup) => {
-		Extracts.popupContainer.appendChild(popup);
-	},
-	positionPopup: (popup, target, event) => {
-		let popupContainerViewportRect = Extracts.popupContainer.getBoundingClientRect();
-		let targetViewportRect = target.getBoundingClientRect();
-		let targetOriginInPopupContainer = {
-			x: (targetViewportRect.left - popupContainerViewportRect.left),
-			y: (targetViewportRect.top - popupContainerViewportRect.top)
-		};
-		let mouseEnterEventPositionInPopupContainer = {
-			x: (event.clientX - popupContainerViewportRect.left),
-			y: (event.clientY - popupContainerViewportRect.top)
-		};
-
-		//  Wait for the "naive" layout to be completed, and then...
-		requestAnimationFrame(() => {
-			/*  How much "breathing room" to give the target (i.e., offset of
-				the popup).
-				*/
-			var popupBreathingRoom = {
-				x: Extracts.popupBreathingRoomX,
-				y: Extracts.popupBreathingRoomY
-			};
-
-			/*  This is the width and height of the popup, as already determined
-				by the layout system, and taking into account the popup's content,
-				and the max-width, min-width, etc., CSS properties.
-				*/
-			var popupIntrinsicWidth = popup.clientWidth;
-			var popupIntrinsicHeight = popup.clientHeight;
-
-			var provisionalPopupXPosition;
-			var provisionalPopupYPosition;
-
-			var tocLink = target.closest("#TOC");
-			if (tocLink) {
-				provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
-				provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
-			} else {
-				var offToTheSide = false;
-
-				/*  Can the popup fit above the target? If so, put it there.
-					Failing that, can it fit below the target? If so, put it there.
-					*/
-				var popupSpawnYOriginForSpawnAbove = Math.min(mouseEnterEventPositionInPopupContainer.y - popupBreathingRoom.y,
-															  targetOriginInPopupContainer.y + targetViewportRect.height - (popupBreathingRoom.y * 2.0));
-				var popupSpawnYOriginForSpawnBelow = Math.max(mouseEnterEventPositionInPopupContainer.y + popupBreathingRoom.y,
-															  targetOriginInPopupContainer.y + (popupBreathingRoom.y * 2.0));
-				if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
-					//  Above.
-					provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
-				} else if (popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight <= (popupContainerViewportRect.y * -1) + window.innerHeight) {
-					//  Below.
-					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
-				} else {
-					/*  The popup does not fit above or below! We will have to
-						put it off to the left or right.
-						*/
-					offToTheSide = true;
-				}
-
-				if (offToTheSide) {
-					popupBreathingRoom.x *= 2.0;
-					provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
-					if (provisionalPopupYPosition - popupContainerViewportRect.y < 0)
-						provisionalPopupYPosition = 0.0;
-
-					//  Determine whether to put the popup off to the right, or left.
-					if (  mouseEnterEventPositionInPopupContainer.x
-						+ popupBreathingRoom.x
-						+ popupIntrinsicWidth
-						  <=
-						  popupContainerViewportRect.x * -1
-						+ window.innerWidth) {
-						//  Off to the right.
-						provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x + popupBreathingRoom.x;
-					} else if (  mouseEnterEventPositionInPopupContainer.x
-							   - popupBreathingRoom.x
-							   - popupIntrinsicWidth
-								 >=
-								 popupContainerViewportRect.x * -1) {
-						//  Off to the left.
-						provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
-					}
-				} else {
-					/*  Place popup off to the right (and either above or below),
-						as per the previous block of code.
-						*/
-					provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x + popupBreathingRoom.x;
-				}
-			}
-
-			/*  Does the popup extend past the right edge of the container?
-				If so, move it left, until its right edge is flush with
-				the container's right edge.
-				*/
-			if (provisionalPopupXPosition + popupIntrinsicWidth > popupContainerViewportRect.width) {
-				provisionalPopupXPosition -= provisionalPopupXPosition + popupIntrinsicWidth - popupContainerViewportRect.width;
-			}
-
-			/*  Now (after having nudged the popup left, if need be),
-				does the popup extend past the *left* edge of the container?
-				Make its left edge flush with the container's left edge.
-				*/
-			if (provisionalPopupXPosition < 0) {
-				provisionalPopupXPosition = 0;
-			}
-
-			popup.style.left = `${provisionalPopupXPosition}px`;
-			popup.style.top = `${provisionalPopupYPosition}px`;
-
-			document.activeElement.blur();
-		});
-	},
 	//  The mouseenter event.
     targetMouseenter: (event) => {
 		GWLog("Extracts.targetMouseenter", "popups.js", 2);
@@ -435,7 +299,7 @@ Extracts = {
 			Extracts.preparePopup(Extracts.popup, target);
 
 			// Spawn the prepared popup.
-			Extracts.spawnPopup(Extracts.popup, target, event);
+			Popups.spawnPopup(Extracts.popup, target, event);
         }, Extracts.popupTriggerDelay);
     },
     //  The mouseleave event.
@@ -502,32 +366,7 @@ Extracts = {
 /********************/
 /*	Essential styles.
 	*/
-Extracts.popupStylesHTML = `<style id='${Extracts.popupStylesID}'>
-#${Extracts.popupContainerID} {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    pointer-events: none;
-}
-#${Extracts.popupContainerID} > * {
-    pointer-events: auto;
-}
-
-#popupdiv {
-    position: absolute;
-    opacity: 1.0;
-    transition: none;
-}
-#popupdiv.fading {
-    opacity: 0.0;
-    transition:
-        opacity 0.25s ease-in 0.1s;
-}
-#popupdiv > div {
-    overflow: auto;
-    overscroll-behavior: none;
-}
+Extracts.stylesHTML = `<style id='${Extracts.stylesID}'>
 #popupdiv img {
 	width: 100%;
 }
