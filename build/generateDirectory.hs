@@ -45,11 +45,13 @@ generateYAMLHeader d tdy = "---\n" ++
                            "...\n" ++
                            "\n" ++
                            "List of directory contents (with annotations where available):\n" ++
+                           "\n" ++
+                           "# Files\n" ++
                            "\n"
 
 listFiles :: Metadata -> FilePath -> IO [(FilePath, Maybe LinkMetadata.MetadataItem)]
 listFiles m d = do files <- listDirectory d
-                   let files'          = (sort . filter (=="index.page")) $ map (\f -> "/"++d++f) files
+                   let files'          = (sort . filter (/="index.page")) $ map (\f -> "/"++d++f) files
                    let fileAnnotations = map (`M.lookup` m) files'
                    return $ zip files' fileAnnotations
 
