@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-13 16:57:17 gwern"
+When: Time-stamp: "2020-12-14 18:04:09 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -43,7 +43,7 @@ import Data.Monoid ((<>))
 import Network.HTTP (urlEncode)
 import qualified Data.Map as M (fromList, lookup, Map)
 import System.Directory (doesFileExist)
-import System.FilePath (takeBaseName, takeExtension)
+import System.FilePath (takeExtension)
 import Data.FileStore.Utils (runShellCommand)
 import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField, compressCss, cached, readTemplate, getResourceString,
                symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, lookupString,
@@ -216,7 +216,7 @@ postCtx tags =
     constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL"
-  where escapedTitleField t = (mapContext (map toLower . filter isLetter . takeBaseName) . pathField) t
+  where escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
         descField d = field d $ \item -> do
                           metadata <- getMetadata (itemIdentifier item)
                           let desc = fromMaybe "N/A" $ lookupString d metadata
