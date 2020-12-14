@@ -217,7 +217,7 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
-        if (Footnotes.isMobile()) {
+        if (Extracts.isMobile()) {
             GWLog("Mobile client detected. Exiting.", "popups.js", 1);
             return;
         } else {
