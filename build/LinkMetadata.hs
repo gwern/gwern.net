@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-03 18:01:38 gwern"
+When:  Time-stamp: "2020-12-14 11:19:46 gwern"
 License: CC-0
 -}
 
@@ -21,7 +21,7 @@ import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
 import qualified Data.HashMap.Strict as HM (lookup)
 import GHC.Generics (Generic)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, (\\))
-import Data.Char (isAlpha, isSpace, toLower, toUpper)
+import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
 import qualified Data.Map.Strict as M (fromList, lookup, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
@@ -29,6 +29,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
 import qualified Data.Text as T (head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
+import System.FilePath (takeBaseName)
 import Data.List.Utils (replace, split, uniq)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
@@ -177,13 +178,15 @@ generateID url author date
                            let authorCount = length authors in
                              if authorCount == 0 then "" else
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
+                                 -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
+                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url in if not (s=="") && isNumber (head s) then "-" ++ s else "") in
                                  map toLower $ if authorCount >= 3 then
-                                                 firstAuthorSurname ++ "-et-al-" ++ year else
+                                                 firstAuthorSurname ++ "-et-al-" ++ year ++ suffix else
                                                    if authorCount == 2 then
                                                      let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ (authors !! 1) in
-                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year
+                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix
                                                    else
-                                                     firstAuthorSurname ++ "-" ++ year
+                                                     firstAuthorSurname ++ "-" ++ year ++ suffix
 
 -- compile HTML strings to Pandoc's plaintext ASCII outputs (since tooltips can't render HTML like we get from Wikipedia or many hand-written annotations)
 htmlToASCII :: String -> String
@@ -389,7 +392,12 @@ cleanAbstractsHTML t = trim $
   -- simple string substitutions:
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
+    , ("</strong><p>", "</strong>: <p>")
+    , ("<strong>Abstract</strong>:        ", "")
     , ("<abstract abstract-type=\"summary\"><br/>", "")
+    , ("<strong>SUMMARY</jats:title>", "")
+    , ("<strong>Abstract</jats:title>", "")
+    , ("<strong>Abstract</strong><br/>", "")
     , ("Alzheimer9", "Alzheimer'")
     , ("<p> ", "<p>")
     , (" <p>", "<p>")
@@ -402,6 +410,9 @@ cleanAbstractsHTML t = trim $
     , ("</li><br/>", "</li>")
     , ("  </sec><br/>  ", "")
     , ("<sec><br/>    ", "")
+    , ("</jats:sec>", "")
+    , ("<jats:sec><br/>", "")
+    , ("</jats:sec><br/>", "")
     , ("  </sec> <br/>", "")
     , ("</strong></p>    <p>", "</strong> ")
     , ("</title>", ":</strong></p>")
@@ -419,9 +430,24 @@ cleanAbstractsHTML t = trim $
     , ("</strong></strong>", "</strong>")
     , ("<b>", "<strong>")
     , ("</b>", "</strong>")
+    , ("<jats:sec><strong>", "<strong>")
     , ("<jats:title>Abstract</jats:title><br/>               ", "")
     , ("</jats:p>", "</p>")
+    , ("<jats:sub>", "<sub>")
+    , ("</jats:sub>", "</sub>")
+    , ("<jats:sup>", "<sup>")
+    , ("</jats:sup>", "</sup>")
+    , ("<jats:title content-type=\"abstract-subheading\">", "<strong>")
+    , ("<jats:title>", "<strong>")
+    , ("</jats:title>", "</strong>")
+    , ("<jats:title>", "<strong>")
+    , ("</jats:title>", "</strong>")
+    , ("<jats:p xml:lang=\"en\">", "<p>")
     , ("<jats:p>", "<p>")
+    , ("<jats:italics>", "<em>")
+    , ("</jats:italics>", "</em>")
+    , ("<jats:italic>", "<em>")
+    , ("</jats:italic>", "</em>")
     , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "")
     , ("<h3>ABSTRACT</h3>", "")
     , ("<h3>Abstract</h3>", "")
