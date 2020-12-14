@@ -19,6 +19,27 @@ if [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && 
 then
     set -e
     cd ~/wiki/ && (git status &)
+
+    ## Update the directory listing pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
+    DIRS="docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ docs/ai/poetry/ docs/algernon/ docs/anime/ docs/aspirin/ \
+          docs/biology/ docs/bitcoin/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
+          docs/creatine/ docs/cs/ docs/culture/ docs/design/ docs/dnb/ docs/economics/ docs/elections/ docs/eva/ docs/fiction/ \
+          docs/genetics/ docs/genetics/correlation/ docs/genetics/editing/ docs/genetics/heritable/ docs/genetics/selection/ \
+          docs/history/ docs/history/medici/ docs/iodine/ docs/iq/ docs/iq/fullerton/ docs/iq/munich/ docs/iq/roe/ docs/iq/smpy/ \
+          docs/japanese/ docs/japanese/zeami/ docs/linkrot/ docs/lithium/ docs/longevity/ docs/longevity/aspirin/ \
+          docs/math/ docs/melatonin/ docs/modafinil/ docs/modafinil/blackmarkets/ \
+          docs/modafinil/survey/ docs/music-distraction/ docs/nature/ docs/nicotine/ docs/nootropics/ docs/philo/ \
+          docs/philo/brethrenofpurity/ docs/predictions/ docs/psychology/ \
+          docs/psychology/okcupid/ docs/psychology/writing/ docs/radiance/ docs/rl/ docs/science/ docs/sociology/ docs/spacedrepetition/ \
+          docs/sr/ docs/statistics/ docs/statistics/bayes/ docs/statistics/bias/ docs/statistics/causality/ \
+          docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
+          docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
+          docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/"
+    for DIR in $DIRS; do
+        rm "$DIR/index.page" > /dev/null || true;
+        runhaskell -istatic/build/ static/build/generateDirectory.hs "$DIR" > "$DIR/index.page";
+    done
+
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/
     # Cleanup pre:
