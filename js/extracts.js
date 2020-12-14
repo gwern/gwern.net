@@ -34,7 +34,7 @@ Extracts = {
 	/*	Implementation.
 		*/
     extractForTarget: (target) => {
-		GWLog("Extracts.extractForTarget", "popups.js", 2);
+		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
         var doi = "";
         var archive = "";
@@ -110,7 +110,7 @@ Extracts = {
                 `</div>`;
     },
     definitionForTarget: (target) => {
-		GWLog("Extracts.definitionForTarget", "popups.js", 2);
+		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
         return `<div class='popup-extract'>` +
                     `<p class='data-field title'>` +
@@ -133,7 +133,7 @@ Extracts = {
         }
     },
     videoForTarget: (target, videoId) => {
-		GWLog("Extracts.videoForTarget", "popups.js", 2);
+		GWLog("Extracts.videoForTarget", "extracts.js", 2);
 
         return `<div class='popup-screenshot'>` +
             `<iframe width="${Extracts.videoPopupWidth}px" height="${Extracts.videoPopupHeight}px"` +
@@ -141,7 +141,7 @@ Extracts = {
             `</iframe></div>`;
     },
     sectionEmbedForTarget: (target) => {
-		GWLog("Extracts.sectionEmbedForTarget", "popups.js", 2);
+		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
         let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
         if (targetSectionHTML.length < 2) { // not a section but a random <div> target
@@ -154,20 +154,20 @@ Extracts = {
             // return `<div class='popup-section-embed'>${targetSectionHTML}</div>`;
     },
     citationContextForTarget: (target) => {
-		GWLog("Extracts.citationContextForTarget", "popups.js", 2);
+		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
 
         let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul").innerHTML;
         return `<div class='popup-citation-context'>${citationContextHTML}</div>`; // ellipses added via CSS
     },
     localImageForTarget: (target) => {
-		GWLog("Extracts.localImageForTarget", "popups.js", 2);
+		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
         // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
         return `<div class='popup-local-image'><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
 
 	unbind: () => {
-		GWLog("Extracts.unbind", "popups.js", 1);
+		GWLog("Extracts.unbind", "extracts.js", 1);
 
         document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
 			if (   target.closest(Extracts.excludedElementsSelector) == target
@@ -182,7 +182,7 @@ Extracts = {
 		GW.notificationCenter.fireEvent("Extracts.eventsUnbound");
     },
     cleanup: () => {
-		GWLog("Extracts.cleanup", "popups.js", 1);
+		GWLog("Extracts.cleanup", "extracts.js", 1);
 
         //  Unbind event listeners.
         Extracts.unbind();
@@ -191,16 +191,16 @@ Extracts = {
         document.querySelectorAll(`#${Extracts.stylesID}`).forEach(element => element.remove());
     },
     setup: () => {
-		GWLog("Extracts.setup", "popups.js", 1);
+		GWLog("Extracts.setup", "extracts.js", 1);
 
         //  Run cleanup.
         Extracts.cleanup();
 
         if (Popups.isMobile()) {
-            GWLog("Mobile client detected. Exiting.", "popups.js", 1);
+            GWLog("Mobile client detected. Exiting.", "extracts.js", 1);
             return;
         } else {
-            GWLog("Non-mobile client detected. Setting up.", "popups.js", 1);
+            GWLog("Non-mobile client detected. Setting up.", "extracts.js", 1);
         }
 
         //  Inject styles.
@@ -223,7 +223,7 @@ Extracts = {
 		GW.notificationCenter.fireEvent("Extracts.setupComplete");
    },
     fillPopup: (popup, target) => {
-		GWLog("Extracts.fillPopup", "footnotes.js", 2);
+		GWLog("Extracts.fillPopup", "extracts.js", 2);
 
 		//  Inject the contents of the popup into the popup div.
 		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
@@ -244,7 +244,7 @@ Extracts = {
 		return (popup.childElementCount != 0);
     },
     preparePopup: (popup, target) => {
-		GWLog("Footnotes.preparePopup", "footnotes.js", 2);
+		GWLog("Extracts.preparePopup", "extracts.js", 2);
 
 		popup.id = "popupdiv";
 
@@ -273,7 +273,7 @@ Extracts = {
     },
 	//  The mouseenter event.
     targetMouseenter: (event) => {
-		GWLog("Extracts.targetMouseenter", "popups.js", 2);
+		GWLog("Extracts.targetMouseenter", "extracts.js", 2);
 
         //  Get the target.
         let target = event.target.closest(Extracts.targetElementsSelector);
@@ -286,7 +286,7 @@ Extracts = {
     },
     //  The mouseleave event.
     targetMouseleave: (event) => {
-		GWLog("Extracts.targetMouseleave", "popups.js", 2);
+		GWLog("Extracts.targetMouseleave", "extracts.js", 2);
 
 		Popups.clearPopupTimers();
 
@@ -356,5 +356,10 @@ Extracts.stylesHTML = `<style id='${Extracts.stylesID}'>
 doWhenPageLoaded(() => {
 	GW.notificationCenter.fireEvent("Extracts.loaded");
 
-	Extracts.setup();
+	if (window.Popups)
+		Extracts.setup();
+	else
+		GW.notificationCenter.addHandlerForEvent("Popups.setupComplete", () => {
+			Extracts.setup();
+		}, { once: true });
 });
