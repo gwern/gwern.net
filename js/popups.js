@@ -20,8 +20,6 @@ Popups = {
     popupFadeoutDelay: 50,
     popupFadeoutDuration: 250,
 
-	stackPopups: true,
-
 	/******************/
 	/*	Implementation.
 		*/
@@ -280,6 +278,13 @@ Popups = {
         document.activeElement.blur();
     },
 
+	getPopupAncestorStack: (popup) => {
+		var popupAndAncestors = [ ];
+		for (popupInStack = popup; popupInStack != null; popupInStack = popupInStack.popupTarget.closest(".popupdiv"))
+			popupAndAncestors.splice(0, 0, popupInStack);
+		return popupAndAncestors;
+	},
+
     clearPopupTimers: (target) => {
 	    GWLog("Popups.clearPopupTimers", "popups.js", 2);
 
@@ -337,21 +342,18 @@ Popups = {
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
 
-		Popups.clearPopupTimers(event.target.popupTarget);
-		Popups.setPopupFadeTimer(event.target.popupTarget);
+		Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
+			Popups.clearPopupTimers(popupInStack.popupTarget);
+			Popups.setPopupFadeTimer(popupInStack.popupTarget);
+		});
 	},
 	//	The “user moved mouse back into popup” mouseenter event.
 	popupMouseenter: (event) => {
 		GWLog("Popups.popupMouseenter", "popups.js", 2);
 
-		Popups.clearPopupTimers(event.target.popupTarget);
-
-		if (!Popups.stackPopups)
-			return;
-
-		let parentPopup = event.target.popupTarget.closest(".popupdiv");
-		if (parentPopup)
-			Popups.clearPopupTimers(parentPopup.popupTarget);
+		Popups.getPopupAncestorStack(event.target).forEach(popupInStack => {
+			Popups.clearPopupTimers(popupInStack.popupTarget);
+		});
 	},
     popupClicked: (event) => {
 		GWLog("Popups.popupClicked", "popups.js", 2);
