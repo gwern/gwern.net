@@ -20,9 +20,11 @@ Extracts = {
     stylesID: "extracts-styles",
 
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
-    targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
-    excludedElementsSelector: ".footnote-ref",
-    excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
+    targets: {
+		targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
+		excludedElementsSelector: ".footnote-ref",
+		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
+    },
 
     minPopupWidth: 360,
     maxPopupWidth: 640,
@@ -169,15 +171,7 @@ Extracts = {
 	unbind: () => {
 		GWLog("Extracts.unbind", "extracts.js", 1);
 
-        document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
-			if (   target.closest(Extracts.excludedElementsSelector) == target
-				|| target.closest(Extracts.excludedContainerElementsSelector) != null)
-				return;
- 
-			//  Unbind existing mouseenter/mouseleave events, if any.
-            target.removeEventListener("mouseenter", Extracts.targetMouseenter);
-            target.removeEventListener("mouseleave", Extracts.targetMouseleave);
-        });
+		Popups.removeTargets(Extracts.targets);
 
 		GW.notificationCenter.fireEvent("Extracts.eventsUnbound");
     },
@@ -206,22 +200,14 @@ Extracts = {
         //  Inject styles.
         document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.stylesHTML);
 
-        //  Get all targets.
-        document.querySelectorAll(Extracts.targetElementsSelector).forEach(target => {
-			if (   target.closest(Extracts.excludedElementsSelector) == target
-				|| target.closest(Extracts.excludedContainerElementsSelector) != null)
-				return;
-
-            //  Bind mouseenter/mouseleave events.
-            target.addEventListener("mouseenter", Extracts.targetMouseenter);
-            target.addEventListener("mouseleave", Extracts.targetMouseleave);
-
+		//  Set up targets.
+		Popups.addTargets(Extracts.targets, Extracts.preparePopup, (target) => {
             //  Remove the title attribute.
             target.removeAttribute("title");
-        });
+		});
  
 		GW.notificationCenter.fireEvent("Extracts.setupComplete");
-   },
+    },
     fillPopup: (popup, target) => {
 		GWLog("Extracts.fillPopup", "extracts.js", 2);
 
@@ -270,28 +256,6 @@ Extracts = {
 		}
 
 		return true;
-    },
-	//  The mouseenter event.
-    targetMouseenter: (event) => {
-		GWLog("Extracts.targetMouseenter", "extracts.js", 2);
-
-        //  Get the target.
-        let target = event.target.closest(Extracts.targetElementsSelector);
-
-        //  Stop the countdown to un-pop the popup.
-		Popups.clearPopupTimers();
-
-		//  Start the countdown to pop up the popup.
-		Popups.setPopupSpawnTimer(target, event, Extracts.preparePopup);
-    },
-    //  The mouseleave event.
-    targetMouseleave: (event) => {
-		GWLog("Extracts.targetMouseleave", "extracts.js", 2);
-
-		Popups.clearPopupTimers();
-
-        if (Popups.popup)
-			Popups.setPopupFadeTimer();
     }
 };
 

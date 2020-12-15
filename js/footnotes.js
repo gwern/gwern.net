@@ -10,9 +10,11 @@ Footnotes = {
 		*/
     stylesID: "footnotes-styles",
 
-    targetElementsSelector: ".footnote-ref",
-    excludedElementsSelector: null,
-    excludedContainerElementsSelector: null,
+	targets: {
+		targetElementsSelector: ".footnote-ref",
+		excludedElementsSelector: null,
+		excludedContainerElementsSelector: null,
+	},
 
 	/******************/
 	/*	Implementation.
@@ -20,15 +22,7 @@ Footnotes = {
 	unbind: () => {
 		GWLog("Footnotes.unbind", "footnotes.js", 1);
 
-		document.querySelectorAll(Footnotes.targetElementsSelector).forEach(target => {
-			if (   target.closest(Footnotes.excludedElementsSelector) == target
-				|| target.closest(Footnotes.excludedContainerElementsSelector) != null)
-				return;
-
-			//	Unbind existing mouseenter/mouseleave events, if any.
-			target.removeEventListener("mouseenter", Footnotes.targetMouseenter);
-			target.removeEventListener("mouseleave", Footnotes.targetMouseleave);
-		});
+		Popups.removeTargets(Footnotes.targets);
 
 		GW.notificationCenter.fireEvent("Footnotes.eventsUnbound");
 	},
@@ -57,16 +51,8 @@ Footnotes = {
         //  Inject styles.
         document.querySelector("head").insertAdjacentHTML("beforeend", Footnotes.stylesHTML);
 
-		//	Get all targets.
-		document.querySelectorAll(Footnotes.targetElementsSelector).forEach(target => {
-			if (   target.closest(Footnotes.excludedElementsSelector) == target
-				|| target.closest(Footnotes.excludedContainerElementsSelector) != null)
-				return;
-
-			//	Bind mouseenter/mouseleave events.
-			target.addEventListener("mouseenter", Footnotes.targetMouseenter);
-			target.addEventListener("mouseleave", Footnotes.targetMouseleave);
-		});
+		//  Set up targets.
+		Popups.addTargets(Footnotes.targets, Footnotes.preparePopup);
 
 		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
 	},
@@ -96,28 +82,6 @@ Footnotes = {
 			return false;
 
 		return true;
-	},
-	//	The mouseenter event.
-	targetMouseenter: (event) => {
-		GWLog("Footnotes.targetMouseenter", "footnotes.js", 2);
-
-		//	Stop the countdown to un-pop the popup.
-		Popups.clearPopupTimers();
-
-        //  Get the target.
-        let target = event.target.closest(Footnotes.targetElementsSelector);
-
-		//  Start the countdown to pop up the popup.
-		Popups.setPopupSpawnTimer(target, event, Footnotes.preparePopup);
-	},
-	//	The mouseleave event.
-	targetMouseleave: (event) => {
-		GWLog("Footnotes.targetMouseleave", "footnotes.js", 2);
-
-		Popups.clearPopupTimers();
-
-		if (Popups.popup)
-			Popups.setPopupFadeTimer();
 	}
 };
 
@@ -133,5 +97,10 @@ Footnotes.stylesHTML = `<style id='${Popups.stylesID}'>
 doWhenPageLoaded(() => {
 	GW.notificationCenter.fireEvent("Footnotes.loaded");
 
-	Footnotes.setup();
+	if (window.Popups)
+		Footnotes.setup();
+	else
+		GW.notificationCenter.addHandlerForEvent("Popups.setupComplete", () => {
+			Footnotes.setup();
+		}, { once: true });
 });

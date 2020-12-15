@@ -38,6 +38,7 @@ Popups = {
 					&& GW.mediaQueries.mobileWidth.matches)
 				|| !GW.mediaQueries.hoverAvailable.matches);
 	},
+
 	cleanup: () => {
 		GWLog("Popups.cleanup", "popups.js", 1);
 
@@ -66,6 +67,44 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.setupComplete");
 	},
+	addTargets: (targetSelectors, prepareFunction, targetPrepareFunction = null) => {
+		GWLog("Popups.addTargets", "popups.js", 1);
+
+		//	Get all targets.
+		document.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
+			if (   target.closest(targetSelectors.excludedElementsSelector) == target
+				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
+				return;
+
+			//	Bind mouseenter/mouseleave events.
+			target.addEventListener("mouseenter", Popups.targetMouseenter);
+			target.addEventListener("mouseleave", Popups.targetMouseleave);
+
+			//  Set prepare function.
+			target.popupPrepareFunction = prepareFunction;
+
+			//  Run any custom processing.
+			if (targetPrepareFunction)
+				targetPrepareFunction(target);
+		});
+	},
+	removeTargets: (targetSelectors) => {
+		GWLog("Popups.removeTargets", "popups.js", 1);
+
+		document.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
+			if (   target.closest(targetSelectors.excludedElementsSelector) == target
+				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
+				return;
+
+			//	Unbind existing mouseenter/mouseleave events, if any.
+			target.removeEventListener("mouseenter", Footnotes.targetMouseenter);
+			target.removeEventListener("mouseleave", Footnotes.targetMouseleave);
+
+			//  Unset popup prepare function.
+			target.popupPrepareFunction = null;
+		});
+	},
+
 	newPopup: () => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
@@ -217,6 +256,7 @@ Popups = {
         popup.remove();
         document.activeElement.blur();
     },
+
     clearPopupTimers: () => {
 	    GWLog("Popups.clearPopupTimers", "popups.js", 2);
 
@@ -266,6 +306,7 @@ Popups = {
 			Popups.despawnPopup(Popups.popup);
 		}, Popups.popupFadeoutDuration);
     },
+
     //	The “user moved mouse out of popup” mouseleave event.
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
@@ -286,7 +327,26 @@ Popups = {
 		Popups.despawnPopup(Popups.popup);
 
 		Popups.clearPopupTimers();
-    }
+    },
+	//	The mouseenter event.
+	targetMouseenter: (event) => {
+		GWLog("Popups.targetMouseenter", "popups.js", 2);
+
+		//	Stop the countdown to un-pop the popup.
+		Popups.clearPopupTimers();
+
+		//  Start the countdown to pop up the popup.
+		Popups.setPopupSpawnTimer(event.target, event, event.target.popupPrepareFunction);
+	},
+	//	The mouseleave event.
+	targetMouseleave: (event) => {
+		GWLog("Popups.targetMouseleave", "popups.js", 2);
+
+		Popups.clearPopupTimers();
+
+		if (Popups.popup)
+			Popups.setPopupFadeTimer();
+	}
 };
 
 /********************/
