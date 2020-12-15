@@ -17,9 +17,10 @@ Extracts = {
 	/**********/
 	/*	Config.
 		*/
+	contentContainersSelector: "#markdownBody, #TOC",
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targets: {
-		targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
+		targetElementsSelector: "a.docMetadata, a[href^='./images/'], a[href^='../images/'], a[href^='/images/'], a[href^='https://www.gwern.net/images/'], a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a.footnote-back, span.defnMetadata",
 		excludedElementsSelector: ".footnote-ref",
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
@@ -163,7 +164,9 @@ Extracts = {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
         //  Unbind event listeners.
-		Popups.removeTargets(Extracts.targets);
+        document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+        	Popups.removeTargetsWithin(container, Extracts.targets);
+        });
 
         //  Remove popups.
         document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
@@ -186,7 +189,9 @@ Extracts = {
             //  Remove the title attribute.
             target.removeAttribute("title");
 		};
-		Popups.addTargets(Extracts.targets, Extracts.preparePopup, prepareTarget);
+		document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+			Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+		});
 
 		//  Recursively set up targets within newly-spawned popups as well.
 		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", (info) => {
