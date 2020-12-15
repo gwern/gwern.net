@@ -389,15 +389,8 @@ Popups.stylesHTML = `<style id='${Popups.stylesID}'>
 }
 .popupdiv {
     position: absolute;
-    opacity: 1.0;
-    transition: none;
     overflow: auto;
     overscroll-behavior: none;
-}
-.popupdiv.fading {
-    opacity: 0.0;
-    transition:
-        opacity 0.25s ease-in 0.1s;
 }
 </style>`;
 

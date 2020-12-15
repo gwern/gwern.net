@@ -2588,11 +2588,20 @@ body.directory-index #disqus_thread {
 
 .popupdiv {
 	box-sizing: border-box;
+	max-width: 100vw;
 	max-height: 100vh;
     background-color: var(--GW-popups-popup-background-color);
     border: 3px double var(--GW-popups-popup-border-color);
     box-shadow: 0 0 0 3px var(--GW-popups-body-background-color);
+    opacity: 1.0;
+    transition: none;
 }
+.popupdiv.fading {
+    opacity: 0.0;
+    transition:
+        opacity 0.25s ease-in 0.1s;
+}
+
 .popupdiv > div {
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
