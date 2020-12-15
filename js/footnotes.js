@@ -54,6 +54,11 @@ Footnotes = {
 		//  Set up targets.
 		Popups.addTargets(Footnotes.targets, Footnotes.preparePopup);
 
+		//  Recursively set up targets within newly-spawned popups as well.
+		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", (info) => {
+			Popups.addTargetsWithin(info.popup, Footnotes.targets, Footnotes.preparePopup);
+		});
+
 		GW.notificationCenter.fireEvent("Footnotes.setupComplete");
 	},
 	fillPopup: (popup, target) => {

@@ -27,7 +27,6 @@ Popups = {
 	popupDespawnTimer: false,
 	popupSpawnTimer: false,
 	popupContainer: null,
-	popup: null,
 
 	isMobile: () => {
 		/*  We consider a client to be mobile if one of two conditions obtain:
@@ -67,11 +66,15 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.setupComplete");
 	},
-	addTargets: (targetSelectors, prepareFunction, targetPrepareFunction = null) => {
-		GWLog("Popups.addTargets", "popups.js", 1);
+	addTargetsWithin: (contentContainer, targetSelectors, prepareFunction, targetPrepareFunction = null) => {
+		if (typeof contentContainer == "string")
+			contentContainer = document.querySelector(contentContainer);
+
+		if (contentContainer == null)
+			return;
 
 		//	Get all targets.
-		document.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
+		contentContainer.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
 			if (   target.closest(targetSelectors.excludedElementsSelector) == target
 				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
 				return;
@@ -88,10 +91,19 @@ Popups = {
 				targetPrepareFunction(target);
 		});
 	},
-	removeTargets: (targetSelectors) => {
-		GWLog("Popups.removeTargets", "popups.js", 1);
+	addTargets: (targetSelectors, prepareFunction, targetPrepareFunction = null) => {
+		GWLog("Popups.addTargets", "popups.js", 1);
 
-		document.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
+		Popups.addTargetsWithin(document, targetSelectors, prepareFunction, targetPrepareFunction);
+	},
+	removeTargetsWithin: (contentContainer, targetSelectors) => {
+		if (typeof contentContainer == "string")
+			contentContainer = document.querySelector(contentContainer);
+
+		if (contentContainer == null)
+			return;
+
+		contentContainer.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
 			if (   target.closest(targetSelectors.excludedElementsSelector) == target
 				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
 				return;
@@ -103,6 +115,11 @@ Popups = {
 			//  Unset popup prepare function.
 			target.popupPrepareFunction = null;
 		});
+	},
+	removeTargets: (targetSelectors) => {
+		GWLog("Popups.removeTargets", "popups.js", 1);
+
+		Popups.removeTargetsWithin(document, targetSelectors);
 	},
 
 	newPopup: () => {
@@ -121,6 +138,12 @@ Popups = {
 
 		//  Position the popup appropriately with respect to the target.
 		Popups.positionPopup(popup, target, event);
+
+		//  Assign the popup and target to each other.
+		target.popup = popup;
+		popup.popupTarget = target;
+
+		GW.notificationCenter.fireEvent("Popups.popupSpawned", { popup: popup });
 	},
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
@@ -254,56 +277,57 @@ Popups = {
 
 	    popup.classList.remove("fading");
         popup.remove();
+        popup.popupTarget.popup = null;
         document.activeElement.blur();
     },
 
-    clearPopupTimers: () => {
+    clearPopupTimers: (target) => {
 	    GWLog("Popups.clearPopupTimers", "popups.js", 2);
 
-		if (Popups.popup)
-			Popups.popup.classList.remove("fading");
+		if (target.popup)
+			target.popup.classList.remove("fading");
 
-        clearTimeout(Popups.popupFadeTimer);
-        clearTimeout(Popups.popupDespawnTimer);
-        clearTimeout(Popups.popupSpawnTimer);
+        clearTimeout(target.popupFadeTimer);
+        clearTimeout(target.popupDespawnTimer);
+        clearTimeout(target.popupSpawnTimer);
     },
 	setPopupSpawnTimer: (target, event, prepareFunction) => {
 		GWLog("Popups.setPopupSpawnTimer", "popups.js", 2);
 
-		Popups.popupSpawnTimer = setTimeout(() => {
+		target.popupSpawnTimer = setTimeout(() => {
 			GWLog("Popups.popupSpawnTimer fired", "popups.js", 2);
 
 			//  Despawn existing popup, if any.
-			Popups.despawnPopup(Popups.popup);
+			Popups.despawnPopup(target.popup);
 
 			//  Create the new popup.
-			Popups.popup = Popups.newPopup();
+			target.popup = Popups.newPopup();
 
 			// Prepare the newly created popup for spawning.
-			if (prepareFunction(Popups.popup, target) == false)
+			if (prepareFunction(target.popup, target) == false)
 				return;
 
 			// Spawn the prepared popup.
-			Popups.spawnPopup(Popups.popup, target, event);
+			Popups.spawnPopup(target.popup, target, event);
 		}, Popups.popupTriggerDelay);
 	},
-    setPopupFadeTimer: () => {
+    setPopupFadeTimer: (target) => {
 		GWLog("Popups.setPopupFadeTimer", "popups.js", 2);
 
-        Popups.popupFadeTimer = setTimeout(() => {
-			GWLog("Popups.popupFadeTimer fired", "popups.js", 2);
+        target.popupFadeTimer = setTimeout(() => {
+			GWLog("popupFadeTimer fired", "popups.js", 2);
 
-			Popups.setPopupDespawnTimer();
+			Popups.setPopupDespawnTimer(target);
         }, Popups.popupFadeoutDelay);
     },
-    setPopupDespawnTimer: () => {
+    setPopupDespawnTimer: (target) => {
 		GWLog("Popups.setPopupDespawnTimer", "popups.js", 2);
 
-		Popups.popup.classList.add("fading");
-		Popups.popupDespawnTimer = setTimeout(() => {
-			GWLog("Popups.popupDespawnTimer fired", "popups.js", 2);
+		target.popup.classList.add("fading");
+		target.popupDespawnTimer = setTimeout(() => {
+			GWLog("popupDespawnTimer fired", "popups.js", 2);
 
-			Popups.despawnPopup(Popups.popup);
+			Popups.despawnPopup(target.popup);
 		}, Popups.popupFadeoutDuration);
     },
 
@@ -311,29 +335,30 @@ Popups = {
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
 
-		Popups.clearPopupTimers();
-		Popups.setPopupFadeTimer();
+		Popups.clearPopupTimers(event.target.popupTarget);
+		Popups.setPopupFadeTimer(event.target.popupTarget);
 	},
 	//	The “user moved mouse back into popup” mouseenter event.
 	popupMouseenter: (event) => {
 		GWLog("Popups.popupMouseenter", "popups.js", 2);
 
-		Popups.clearPopupTimers();
+		Popups.clearPopupTimers(event.target.popupTarget);
 	},
     popupMouseup: (event) => {
 		GWLog("Popups.popupMouseup", "popups.js", 2);
 
-		event.stopPropagation();
-		Popups.despawnPopup(Popups.popup);
+		let popup = event.target.closest(".popupdiv");
 
-		Popups.clearPopupTimers();
+		event.stopPropagation();
+		Popups.clearPopupTimers(popup.popupTarget);
+		Popups.despawnPopup(popup);
     },
 	//	The mouseenter event.
 	targetMouseenter: (event) => {
 		GWLog("Popups.targetMouseenter", "popups.js", 2);
 
 		//	Stop the countdown to un-pop the popup.
-		Popups.clearPopupTimers();
+		Popups.clearPopupTimers(event.target);
 
 		//  Start the countdown to pop up the popup.
 		Popups.setPopupSpawnTimer(event.target, event, event.target.popupPrepareFunction);
@@ -342,10 +367,10 @@ Popups = {
 	targetMouseleave: (event) => {
 		GWLog("Popups.targetMouseleave", "popups.js", 2);
 
-		Popups.clearPopupTimers();
+		Popups.clearPopupTimers(event.target);
 
-		if (Popups.popup)
-			Popups.setPopupFadeTimer();
+		if (event.target.popup)
+			Popups.setPopupFadeTimer(event.target);
 	}
 };
 

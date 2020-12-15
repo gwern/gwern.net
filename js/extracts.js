@@ -200,10 +200,17 @@ Extracts = {
         //  Inject styles.
         document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.stylesHTML);
 
-		//  Set up targets.
-		Popups.addTargets(Extracts.targets, Extracts.preparePopup, (target) => {
+		let prepareTarget = (target) => {
             //  Remove the title attribute.
             target.removeAttribute("title");
+		};
+
+		//  Set up targets.
+		Popups.addTargets(Extracts.targets, Extracts.preparePopup, prepareTarget);
+
+		//  Recursively set up targets within newly-spawned popups as well.
+		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", (info) => {
+			Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
 		});
  
 		GW.notificationCenter.fireEvent("Extracts.setupComplete");
