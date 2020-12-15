@@ -39,7 +39,7 @@ then
                 rm "$1/index.page" > /dev/null || true;
                 runhaskell -istatic/build/ static/build/generateDirectory.hs "$1" > "$1/index.page"; }
     export -f generateDirectory
-    echo "$DIRS" | tr --squeeze-repeats ' ' '\n' | parallel generateDirectory
+    echo "$DIRS" | tr --squeeze-repeats ' ' '\n' | parallel --jobs 16 --progress generateDirectory
 
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/

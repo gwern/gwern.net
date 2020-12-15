@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-14 20:10:35 gwern"
+When:  Time-stamp: "2020-12-15 14:26:30 gwern"
 License: CC-0
 -}
 
@@ -22,10 +22,11 @@ import qualified Data.HashMap.Strict as HM (lookup)
 import GHC.Generics (Generic)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, (\\))
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M (fromList, lookup, union, Map)
+import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
-                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain)
+                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions)
+import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
@@ -36,6 +37,7 @@ import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
+import System.IO.Unsafe (unsafePerformIO)
 
 import Typography (typographyTransform, invertImage)
 
@@ -64,7 +66,10 @@ readLinkMetadata = do
              auto <- readYaml "metadata/auto.yaml"
 
              -- merge the hand-written & auto-generated link annotations, and return:
-             return $ M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
+             let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
+             let secondVersion = metadataRecurse firstVersion
+             return secondVersion
+
 
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
@@ -84,6 +89,19 @@ writeLinkMetadata l i@(t,a,d,di,abst) = do auto <- readYaml "metadata/auto.yaml"
                                              let newYaml = Y.encode [(l,t,a,d,di,abst)]
                                              B.appendFile "metadata/auto.yaml" newYaml
 
+-- An annotation will often have links inside it; these links will often have annotations themselves. We of course don't want to inline those annotations by hand, as they will get out of date. So instead we update the metadata database recursively: take a Metadata, map over each MetadataItem and update it with annotated links, and return a new internally-annotated Metadata for use annotating regular pages. Then you can popup while you popup, dawg.
+metadataRecurse :: Metadata -> Metadata
+metadataRecurse md = M.map annotateItem md
+  where annotateItem :: MetadataItem -> MetadataItem
+        annotateItem x@(t,a,d,di,ab) = let ai = runPure $ do
+                                                    pandoc <- readHtml def{ readerExtensions = pandocExtensions } (T.pack ab)
+                                                    let pandocAnnotated = walk (unsafePerformIO . annotateLink md) pandoc
+                                                    html <- writeHtml5String def{writerExtensions = pandocExtensions} pandocAnnotated
+                                                    return $ T.unpack html
+                                       in case ai of
+                                            Left e -> x -- something went wrong parsing it so return original MetadataItem
+                                            Right ab' -> (t,a,d,di,ab') -- annotation now has any annotations inside it inlined
+
 annotateLink :: Metadata -> Inline -> IO Inline
 -- Relevant Pandoc types: Link = Link Attr [Inline] Target
 --                        Attr = (String, [String], [(String, String)])
@@ -92,6 +110,7 @@ annotateLink md x@(Link _ _ (target, _)) =
   do
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
      -- the leading '/' indicates this is a local gwern.net file
+     when (target=="") $ error (show x)
      let target' = replace "https://www.gwern.net/" "/" (T.unpack target)
      let target'' = if head target' == '.' then drop 1 target' else target'
 
@@ -135,7 +154,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      -- This happens if the existing tooltip is empty; but we *also* override short tooltips (defined as one where the annotation-tooltip is >30% longer than the original tooltip).
      -- Why? Because many tooltips/link-titles are already written in the Markdown sources, like `[foo](/docs/bar.pdf "'On Dancing Angels', Quux 2020")`; these tooltips are important documentation while writing the Markdown page (so you can see at a glance what they are - the *author* can't mouse over them!), but are inferior to the generated tooltips. So if the original tooltip is not particularly long, that suggests it's not a special one (eg a Twitter tweet which has been inlined) and we should override it.
      abstractText = htmlToASCII abstract'
-     possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++", " ++ date ++
+     possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++", " ++ "(" ++ date ++ ")" ++
                         (if doi /= "" then " (DOI:"++doi++")" else "")
                         ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ "…" else abstractText))++"\""
      newTooltip :: T.Text
@@ -192,7 +211,7 @@ generateID url author date
 htmlToASCII :: String -> String
 htmlToASCII input = let cleaned = runPure $ do
                                     html <- readHtml def{ readerExtensions = pandocExtensions } (T.pack input)
-                                    txt <- writePlain def{writerWrapText=WrapNone} html
+                                    txt  <- writePlain def{writerWrapText=WrapNone} html
                                     return $ T.unpack txt
               in case cleaned of
                  Left _ -> ""
