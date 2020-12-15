@@ -20,6 +20,8 @@ Popups = {
     popupFadeoutDelay: 50,
     popupFadeoutDuration: 250,
 
+	stackPopups: true,
+
 	/******************/
 	/*	Implementation.
 		*/
@@ -343,6 +345,13 @@ Popups = {
 		GWLog("Popups.popupMouseenter", "popups.js", 2);
 
 		Popups.clearPopupTimers(event.target.popupTarget);
+
+		if (!Popups.stackPopups)
+			return;
+
+		let parentPopup = event.target.popupTarget.closest(".popupdiv");
+		if (parentPopup)
+			Popups.clearPopupTimers(parentPopup.popupTarget);
 	},
     popupClicked: (event) => {
 		GWLog("Popups.popupClicked", "popups.js", 2);
