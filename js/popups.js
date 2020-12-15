@@ -147,7 +147,7 @@ Popups = {
 		Popups.popupContainer.appendChild(popup);
 
 		//	Add event listeners.
-		popup.addEventListener("mouseup", Popups.popupMouseup);
+		popup.addEventListener("click", Popups.popupClicked);
 		popup.addEventListener("mouseenter", Popups.popupMouseenter);
 		popup.addEventListener("mouseleave", Popups.popupMouseleave);
 	},
@@ -344,8 +344,8 @@ Popups = {
 
 		Popups.clearPopupTimers(event.target.popupTarget);
 	},
-    popupMouseup: (event) => {
-		GWLog("Popups.popupMouseup", "popups.js", 2);
+    popupClicked: (event) => {
+		GWLog("Popups.popupClicked", "popups.js", 2);
 
 		let popup = event.target.closest(".popupdiv");
 
