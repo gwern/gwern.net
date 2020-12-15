@@ -1008,87 +1008,6 @@ a.footnote-ref {
     background-color: var(--GW-footnote-backlink-after-bordered-block-background-color);
 }
 
-/*=--------------------------=*/
-/*= Floating footnote popups =*/
-/*=--------------------------=*/
-
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
-#footnotediv {
-    z-index: 10001;
-    font-size: 0.9em;
-    box-shadow: 0 0 0 2px var(--GW-footnote-popup-box-shadow-color);
-    position: absolute;
-    opacity: 1.0;
-    transition: none;
-}
-#footnotediv.fading {
-    opacity: 0.0;
-    transition:
-        opacity 0.75s ease-in 0.1s;
-}
-
-#footnotediv > div {
-    background-color: var(--GW-footnote-popup-background-color);
-    padding: 12px 16px 14px 16px;
-    max-width: 800px;
-    max-height: calc(100vh - 32px);
-    border: 3px double var(--GW-footnote-popup-border-color);
-    line-height: 1.45;
-    overflow: auto;
-    overscroll-behavior: none;
-}
-
-/*  Scroll bar styles (for WebKit/Chromium).
-    */
-#footnotediv > div::-webkit-scrollbar {
-    width: 14px;
-}
-#footnotediv > div::-webkit-scrollbar-thumb {
-    background-color: var(--GW-footnote-popup-scrollbar-thumb-color);
-    box-shadow:
-        0 0 0 3px var(--GW-footnote-popup-scrollbar-track-color) inset;
-}
-#footnotediv > div::-webkit-scrollbar-thumb:hover {
-    background-color: var(--GW-footnote-popup-scrollbar-thumb-hover-color);
-}
-
-/*  Scroll bar styles (for Firefox).
-    */
-#footnotediv > div {
-    scrollbar-color: var(--GW-footnote-popup-scrollbar-thumb-color) var(--GW-footnote-popup-scrollbar-track-color);
-}
-#footnotediv > div:hover {
-    scrollbar-color: var(--GW-footnote-popup-scrollbar-thumb-hover-color) var(--GW-footnote-popup-scrollbar-track-color);
-}
-
-#footnotediv a.footnote-back {
-    display: none;
-}
-
-#footnotediv blockquote {
-    margin: 1em 0;
-}
-
-/*  The following compensates for the variable edge case where the last
-    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
-    back-to-citation link after it (which is not shown, if present, but makes it
-    uncertain whether the blockquote is the last child of the popup or not. This
-    code makes everything consistent regardless of which case applies.
-    —Obormot (2019-02-17)
-    */
-#footnotediv > div > blockquote:nth-last-child(2) {
-    margin-bottom: 2px;
-}
-#footnotediv > div > blockquote:nth-last-child(2) + p {
-    margin-top: 1em;
-}
-
-@media only screen and (max-width: 649px), not screen and (hover:hover) and (pointer:fine) {
-    #footnotediv {
-        display: none;
-    }
-}
-
 /*************/
 /* SIDENOTES */
 /*************/
@@ -2667,92 +2586,129 @@ body.directory-index #disqus_thread {
 /* POPUPS */
 /**********/
 
-#popupdiv {
-    font-size: 0.85em;
+.popupdiv {
+	box-sizing: border-box;
+	max-height: 100vh;
+    background-color: var(--GW-popups-popup-background-color);
+    border: 3px double var(--GW-popups-popup-border-color);
     box-shadow: 0 0 0 3px var(--GW-popups-body-background-color);
 }
-#popupdiv > div {
-    padding: 0.75em 1em 0.875em 1em;
-    border: 3px double var(--GW-popups-popup-border-color);
-    background-color: var(--GW-popups-popup-background-color);
+.popupdiv > div {
+    font-size: 0.9em;
+    padding: calc(7em/9) 1em calc(8em/9) 1em;
     line-height: 1.45;
-}
-
-/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
-#popupdiv a {
-    text-decoration: underline;
-}
-#popupdiv a:hover {
-    color: var(--GW-popups-popup-link-hover-color);
-}
-
-#popupdiv > div .data-field.title {
-    font-weight: bold;
-    font-size: 1.125em;
-}
-#popupdiv > div .data-field.author {
-    font-style: italic;
-}
-
-#popupdiv > div.popup-section-embed,
-#popupdiv > div.popup-citation-context {
-    padding: 0.75em 1.5em 0.875em 1.5em;
-}
-
-#popupdiv > div .icon {
-    top: 0.15em;
-    font-size: 1.125em;
-}
-
-/* TODO: the 4-letter block link icons defined in 'links.css' interact badly with the popup links, so we have to manually filter them out pending a rewrite: */
-#popupdiv > div .icon:not([href*='sagepub.com']):not([href*='pnas.org']):not([href*='xkcd.com']):not([href*='rand.org']):not([href*='www.cell.com']):not([href*='publicdomainreview.org']):not([href*='mlp.fandom.com']):not([href*='www.nber.org'])::after {
-    margin: 0 0.175em 0 0;
-    width: 1em;
-    height: 1em;
-    font-size: 1em;
-}
-#popupdiv > div .icon:not([href*='.pdf'])::after {
-    background-position: center center;
-    background-size: 100%;
-}
-#popupdiv > div .title-link::after {
-    content: none;
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
     */
-#popupdiv > div::-webkit-scrollbar {
-    width: 0.875em;
+.popupdiv::-webkit-scrollbar {
+    width: 14px;
 }
-#popupdiv > div::-webkit-scrollbar-thumb {
+.popupdiv::-webkit-scrollbar-thumb {
     background-color: var(--GW-popups-popup-scrollbar-thumb-color);
     box-shadow:
         0 0 0 3px var(--GW-popups-popup-scrollbar-track-color) inset;
 }
-#popupdiv > div::-webkit-scrollbar-thumb:hover {
+.popupdiv::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
 }
 
 /*  Scroll bar styles (for Firefox).
     */
-#popupdiv > div {
+.popupdiv {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--GW-popups-popup-scrollbar-track-color);
 }
-#popupdiv > div:hover {
+.popupdiv:hover {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
 }
 
-#popupdiv .originalURL {
+/*=-----------------=*/
+/*= FOOTNOTE POPUPS =*/
+/*=-----------------=*/
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
+
+.popupdiv.footnote-popup {
+	max-width: 640px;
+	max-height: 480px;
+}
+
+.footnote-popup a.footnote-back {
+    display: none;
+}
+
+/*  The following compensates for the variable edge case where the last
+    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
+    back-to-citation link after it (which is not shown, if present, but makes it
+    uncertain whether the blockquote is the last child of the popup or not. This
+    code makes everything consistent regardless of which case applies.
+    —Obormot (2019-02-17)
+    */
+.footnote-popup > div > blockquote:nth-last-child(2) {
+    margin-bottom: 2px;
+}
+.footnote-popup > div > blockquote:nth-last-child(2) + p {
+    margin-top: 1em;
+}
+
+/*=----------=*/
+/*= EXTRACTS =*/
+/*=----------=*/
+
+.popupdiv.extract-popup {
+	min-width: 360px;
+	max-width: 640px;
+}
+.popupdiv.extract-popup:not(.toc-section-popup) {
+	max-height: 480px;
+}
+
+/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
+.extract-popup a {
+    text-decoration: underline;
+}
+.extract-popup a:hover {
+    color: var(--GW-popups-popup-link-hover-color);
+}
+
+.extract-popup > div .data-field.title {
+    font-weight: bold;
+    font-size: 1.125em;
+}
+.extract-popup > div .data-field.author {
+    font-style: italic;
+}
+
+.extract-popup > div .icon {
+    top: 0.15em;
+    font-size: 1.125em;
+}
+
+/* TODO: the 4-letter block link icons defined in 'links.css' interact badly with the popup links, so we have to manually filter them out pending a rewrite: */
+.extract-popup > div .icon:not([href*='sagepub.com']):not([href*='pnas.org']):not([href*='xkcd.com']):not([href*='rand.org']):not([href*='www.cell.com']):not([href*='publicdomainreview.org']):not([href*='mlp.fandom.com']):not([href*='www.nber.org'])::after {
+    margin: 0 0.175em 0 0;
+    width: 1em;
+    height: 1em;
+    font-size: 1em;
+}
+.extract-popup > div .icon:not([href*='.pdf'])::after {
+    background-position: center center;
+    background-size: 100%;
+}
+.extract-popup > div .title-link::after {
+    content: none;
+}
+
+.extract-popup .originalURL {
   font-size: 0.75em;
 }
 
-#popupdiv .iaMirror {
+.extract-popup .iaMirror {
     padding-right: 0.3em;
 }
 
-#popupdiv > div .data-field.popupAbstract > p,
-#popupdiv > div.popup-section-embed p,
-#popupdiv > div.popup-citation-context p {
+.extract-popup > div .data-field.popupAbstract > p,
+.extract-popup > div.popup-section-embed p,
+.extract-popup > div.popup-citation-context p {
     text-align: justify;
     text-indent: 1em;
     hyphens: auto;
@@ -2760,29 +2716,76 @@ body.directory-index #disqus_thread {
 
 /*  Images such as the ones in Wikipedia popups.
     */
-#popupdiv figure.float-right:first-of-type {
+.extract-popup figure.float-right:first-of-type {
     margin-top: -3em;
 }
 
 /*  Popups for videos.
     */
-#popupdiv iframe {
+.extract-popup iframe {
 	display: block;
 }
 
-/****************/
-/* INTERACTIONS */
-/****************/
-
-/*  Image focus vs. popups.
-    */
-#markdownBody #popupdiv img {
-    filter: none;
-    cursor: initial;
-    transform: none;
+.extract-popup img {
+	width: 100%;
 }
-#markdownBody #popupdiv .popup-screenshot a img {
-    cursor: pointer;
+.extract-popup a {
+    position: relative;
+    z-index: 0;
+}
+.extract-popup > div .data-field {
+    text-align: left;
+    text-indent: 0;
+}
+.extract-popup > div .data-field + .data-field {
+    margin-top: 0.25em;
+}
+.extract-popup > div .data-field:empty {
+    display: none;
+}
+.extract-popup > div.popup-screenshot {
+    padding: 0;
+    max-width: unset;
+}
+.extract-popup > div.popup-screenshot img {
+    display: block;
+}
+.extract-popup > div.popup-screenshot a::after {
+    content: none;
+}
+
+.extract-popup > div.popup-video {
+	padding: 0;
+}
+
+.extract-popup > div.popup-video iframe {
+	width: 495px;
+	height: 310px;
+}
+
+.extract-popup > div.popup-section-embed,
+.extract-popup > div.popup-citation-context {
+    height: 100%;
+    overflow-x: hidden;
+}
+.popup-citation-context:first-child::before,
+.popup-citation-context:last-child::after {
+	content: "…";
+}
+
+.extract-popup > div.popup-section-embed > h1:first-child,
+.extract-popup > div.popup-section-embed > h2:first-child,
+.extract-popup > div.popup-section-embed > h3:first-child,
+.extract-popup > div.popup-section-embed > h4:first-child,
+.extract-popup > div.popup-citation-context > h1:first-child,
+.extract-popup > div.popup-citation-context > h2:first-child,
+.extract-popup > div.popup-citation-context > h3:first-child,
+.extract-popup > div.popup-citation-context > h4:first-child {
+    margin-top: 0;
+}
+.extract-popup > div .icon {
+    background-image: none !important;
+    position: relative;
 }
 
 /*********************/

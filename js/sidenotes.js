@@ -257,15 +257,12 @@ function updateFootnoteEventListeners() {
 
     if (sidenotesMode) {
         if (window.Footnotes) {
-            //  Unbind footnote events.
-            Footnotes.unbind();
+            //  Unbind footnote events and clean up onscreen footnote popups.
+            Footnotes.cleanup();
         }
 
         //  Bind sidenote mouse events.
 		bindSidenoteMouseEvents();
-
-		//	Clear any extant footnote popups.
-        clearFootnotePopups();
     } else {
         if (window.Footnotes &&
             GW.sidenotes.mediaQueries.mobileViewportWidthBreakpoint.matches == false &&
@@ -321,16 +318,6 @@ function unbindSidenoteMouseEvents() {
 		sidenote.removeEventListener("mouseout", sidenote.sidenoteout);
 		sidenote.sidenoteout = null;
 	}
-}
-
-/*  In some rare cases, we might switch to sidenote mode while a footnote popup
-    is on the screen. Since we remove footnote popup event listeners during the
-    switch, that popup will remain there forever... unless we clean it up.
-    */
-function clearFootnotePopups() {
-    GWLog("clearFootnotePopups", "sidenotes.js");
-
-    document.querySelectorAll("#footnotediv").forEach(footnotePopup => { footnotePopup.remove(); });
 }
 
 /**********/

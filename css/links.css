@@ -410,10 +410,8 @@ p a[href^='#'].identifier-link-down:hover::after {
 /*  Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
     */
 
-body:not(.index) #markdownBody a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
-body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
-#popupdiv a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
-#popupdiv a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after {
+body:not(.index) a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
+body:not(.index) a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after{
     content: "\1D50A"; /* (𝔊) Gothic G / MATHEMATICAL FRAKTUR CAPITAL G */
     margin: 0 0 0 2px;
     vertical-align: baseline;
@@ -421,6 +419,10 @@ body:not(.index) #markdownBody a[href^="https://www.gwern.net/"]:not([href*="/do
     bottom: 0.15em;
     opacity: 0.75;
     font-size: 0.9em;
+}
+#page-metadata a[href^="/"]::after,
+#page-metadata a[href^="https://www.gwern.net/"]::after {
+	content: none;
 }
 
 /*=-------------------------------=*/

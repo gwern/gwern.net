@@ -139,10 +139,6 @@ Popups = {
 		//  Position the popup appropriately with respect to the target.
 		Popups.positionPopup(popup, target, event);
 
-		//  Assign the popup and target to each other.
-		target.popup = popup;
-		popup.popupTarget = target;
-
 		GW.notificationCenter.fireEvent("Popups.popupSpawned", { popup: popup });
 	},
 	injectPopup: (popup) => {
@@ -183,8 +179,8 @@ Popups = {
 				by the layout system, and taking into account the popup's content,
 				and the max-width, min-width, etc., CSS properties.
 				*/
-			var popupIntrinsicWidth = popup.clientWidth;
-			var popupIntrinsicHeight = popup.clientHeight;
+			var popupIntrinsicWidth = popup.offsetWidth;
+			var popupIntrinsicHeight = popup.offsetHeight;
 
 			var provisionalPopupXPosition;
 			var provisionalPopupYPosition;
@@ -303,6 +299,9 @@ Popups = {
 			//  Create the new popup.
 			target.popup = Popups.newPopup();
 
+			//  Give the popup a reference to the target.
+			target.popup.popupTarget = target;
+
 			// Prepare the newly created popup for spawning.
 			if (prepareFunction(target.popup, target) == false)
 				return;
@@ -392,15 +391,13 @@ Popups.stylesHTML = `<style id='${Popups.stylesID}'>
     position: absolute;
     opacity: 1.0;
     transition: none;
+    overflow: auto;
+    overscroll-behavior: none;
 }
 .popupdiv.fading {
     opacity: 0.0;
     transition:
         opacity 0.25s ease-in 0.1s;
-}
-.popupdiv > div {
-    overflow: auto;
-    overscroll-behavior: none;
 }
 </style>`;
 

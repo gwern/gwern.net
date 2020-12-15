@@ -103,15 +103,6 @@
     --GW-footnote-ref-highlight-box-shadow-interstitial-color: #000;
     --GW-footnote-ref-highlight-background-color: rgba(0, 0, 0, 0.75);
 
-    /*  Footnote popups.
-        */
-    --GW-footnote-popup-box-shadow-color: #000;
-    --GW-footnote-popup-background-color: #000;
-    --GW-footnote-popup-border-color: #7c7c7c;
-    --GW-footnote-popup-scrollbar-thumb-color: #5c5c5c;
-    --GW-footnote-popup-scrollbar-track-color: #000;
-    --GW-footnote-popup-scrollbar-thumb-hover-color: #8b8b8b;
-
     /*  Sidenotes.
         */
     --GW-sidenote-highlight-background-color: #000;
@@ -277,8 +268,7 @@ body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
     filter: invert(1);
 }
 
-#markdownBody ul > li::before,
-#popupdiv ul > li::before {
+ul > li::before {
     filter: invert(1);
 }
 

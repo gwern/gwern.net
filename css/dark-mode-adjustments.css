@@ -29,8 +29,7 @@ body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
     filter: invert(1);
 }
 
-#markdownBody ul > li::before,
-#popupdiv ul > li::before {
+ul > li::before {
     filter: invert(1);
 }
 

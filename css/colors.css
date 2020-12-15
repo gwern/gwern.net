@@ -103,15 +103,6 @@
     --GW-footnote-ref-highlight-box-shadow-interstitial-color: #fff;
     --GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
 
-    /*  Footnote popups.
-        */
-    --GW-footnote-popup-box-shadow-color: #fff;
-    --GW-footnote-popup-background-color: #fff;
-    --GW-footnote-popup-border-color: #aaa;
-    --GW-footnote-popup-scrollbar-thumb-color: #ccc;
-    --GW-footnote-popup-scrollbar-track-color: #fff;
-    --GW-footnote-popup-scrollbar-thumb-hover-color: #999;
-
     /*  Sidenotes.
         */
     --GW-sidenote-highlight-background-color: #fff;

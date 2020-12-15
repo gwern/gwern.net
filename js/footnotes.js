@@ -8,8 +8,6 @@ Footnotes = {
 	/**********/
 	/*	Config.
 		*/
-    stylesID: "footnotes-styles",
-
 	targets: {
 		targetElementsSelector: ".footnote-ref",
 		excludedElementsSelector: null,
@@ -19,21 +17,16 @@ Footnotes = {
 	/******************/
 	/*	Implementation.
 		*/
-	unbind: () => {
-		GWLog("Footnotes.unbind", "footnotes.js", 1);
-
-		Popups.removeTargets(Footnotes.targets);
-
-		GW.notificationCenter.fireEvent("Footnotes.eventsUnbound");
-	},
     cleanup: () => {
 		GWLog("Footnotes.cleanup", "footnotes.js", 1);
 
         //  Unbind event listeners.
-        Footnotes.unbind();
+		Popups.removeTargets(Footnotes.targets);
 
-        //  Remove popups container and injected styles.
-        document.querySelectorAll(`#${Footnotes.stylesID}`).forEach(element => element.remove());
+        //  Remove popups.
+        document.querySelectorAll(`#${Popups.popupContainerID} .footnote-popup`).forEach(element => element.remove());
+
+		GW.notificationCenter.fireEvent("Footnotes.cleanupComplete");
     },
 	setup: () => {
 		GWLog("Footnotes.setup", "footnotes.js", 1);
@@ -47,9 +40,6 @@ Footnotes = {
         } else {
             GWLog("Non-mobile client detected. Setting up.", "footnotes.js", 1);
         }
-
-        //  Inject styles.
-        document.querySelector("head").insertAdjacentHTML("beforeend", Footnotes.stylesHTML);
 
 		//  Set up targets.
 		Popups.addTargets(Footnotes.targets, Footnotes.preparePopup);
@@ -80,7 +70,8 @@ Footnotes = {
 	preparePopup: (popup, target) => {
 		GWLog("Footnotes.preparePopup", "footnotes.js", 2);
 
-		popup.id = "footnotediv";
+		//  Add some classes.
+		popup.classList.add("footnote-popup", "markdownBody");
 
 		//	Inject the contents of the footnote into the popup.
 		if (Footnotes.fillPopup(popup, target) == false)
@@ -89,12 +80,6 @@ Footnotes = {
 		return true;
 	}
 };
-
-/********************/
-/*	Essential styles.
-	*/
-Footnotes.stylesHTML = `<style id='${Popups.stylesID}'>
-</style>`;
 
 /******************/
 /*	Initialization.

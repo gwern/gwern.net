@@ -17,20 +17,12 @@ Extracts = {
 	/**********/
 	/*	Config.
 		*/
-    stylesID: "extracts-styles",
-
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targets: {
 		targetElementsSelector: "#markdownBody a.docMetadata, #markdownBody a[href^='./images/'], #markdownBody a[href^='../images/'], #markdownBody a[href^='/images/'], #markdownBody a[href^='https://www.gwern.net/images/'], #markdownBody a[href*='youtube.com'], #markdownBody a[href*='youtu.be'], #TOC a, #markdownBody a[href^='#'], #markdownBody a.footnote-back, span.defnMetadata",
 		excludedElementsSelector: ".footnote-ref",
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
-
-    minPopupWidth: 360,
-    maxPopupWidth: 640,
-    popupBorderWidth: 3,
-    videoPopupWidth: 495,
-    videoPopupHeight: 310,
 
 	/******************/
 	/*	Implementation.
@@ -137,10 +129,9 @@ Extracts = {
     videoForTarget: (target, videoId) => {
 		GWLog("Extracts.videoForTarget", "extracts.js", 2);
 
-        return `<div class='popup-screenshot'>` +
-            `<iframe width="${Extracts.videoPopupWidth}px" height="${Extracts.videoPopupHeight}px"` +
-            `src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen>` +
-            `</iframe></div>`;
+        return `<div class='popup-video'>` +
+            `<iframe src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>` + 
+            `</div>`;
     },
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
@@ -168,21 +159,14 @@ Extracts = {
         return `<div class='popup-local-image'><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
 
-	unbind: () => {
-		GWLog("Extracts.unbind", "extracts.js", 1);
-
-		Popups.removeTargets(Extracts.targets);
-
-		GW.notificationCenter.fireEvent("Extracts.eventsUnbound");
-    },
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
         //  Unbind event listeners.
-        Extracts.unbind();
+		Popups.removeTargets(Extracts.targets);
 
-        //  Remove injected styles.
-        document.querySelectorAll(`#${Extracts.stylesID}`).forEach(element => element.remove());
+        //  Remove popups.
+        document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
@@ -197,15 +181,11 @@ Extracts = {
             GWLog("Non-mobile client detected. Setting up.", "extracts.js", 1);
         }
 
-        //  Inject styles.
-        document.querySelector("head").insertAdjacentHTML("beforeend", Extracts.stylesHTML);
-
+		//  Set up targets.
 		let prepareTarget = (target) => {
             //  Remove the title attribute.
             target.removeAttribute("title");
 		};
-
-		//  Set up targets.
 		Popups.addTargets(Extracts.targets, Extracts.preparePopup, prepareTarget);
 
 		//  Recursively set up targets within newly-spawned popups as well.
@@ -239,90 +219,21 @@ Extracts = {
     preparePopup: (popup, target) => {
 		GWLog("Extracts.preparePopup", "extracts.js", 2);
 
-		popup.id = "popupdiv";
+		//  Import the class(es) of the target, and add some others.
+		popup.classList.add(...target.classList, "extract-popup", "markdownBody");
 
-		//  Import the class(es) of the target.
-		popup.classList.add(...target.classList);
+		//  Special handling for section links spawned by the TOC.
+		if (target.closest("#TOC")) {
+			popup.classList.add("toc-section-popup");
+		}
 
 		//	Inject the extract for the target into the popup.
 		if (Extracts.fillPopup(popup, target) == false)
 			return false;
 
-		if (popup.firstElementChild.tagName == 'DIV') {
-			let innerDiv = popup.firstElementChild;
-
-			innerDiv.style.minWidth = `${Extracts.minPopupWidth}px`;
-			innerDiv.style.maxWidth = `${Extracts.maxPopupWidth}px`;
-
-			if (target.tagName == "A" && target.getAttribute("href").startsWith("#") && target.closest("#TOC") == null) {
-				// Section embed elsewhere but the TOC.
-				innerDiv.style.maxHeight = `calc(${Extracts.maxPopupWidth}px * 0.75)`;
-			} else {
-				innerDiv.style.maxHeight = `calc(100vh - 2 * ${Extracts.popupBorderWidth}px - 26px)`;
-			}
-		}
-
 		return true;
     }
 };
-
-/********************/
-/*	Essential styles.
-	*/
-Extracts.stylesHTML = `<style id='${Extracts.stylesID}'>
-#popupdiv img {
-	width: 100%;
-}
-#popupdiv a {
-    position: relative;
-    z-index: 0;
-}
-#popupdiv > div .data-field {
-    text-align: left;
-    text-indent: 0;
-}
-#popupdiv > div .data-field + .data-field {
-    margin-top: 0.25em;
-}
-#popupdiv > div .data-field:empty {
-    display: none;
-}
-#popupdiv > div.popup-screenshot {
-    padding: 0;
-    max-width: unset;
-}
-#popupdiv > div.popup-screenshot img {
-    display: block;
-}
-#popupdiv > div.popup-screenshot a::after {
-    content: none;
-}
-
-#popupdiv > div.popup-section-embed,
-#popupdiv > div.popup-citation-context {
-    height: 100%;
-    overflow-x: hidden;
-}
-.popup-citation-context:first-child::before,
-.popup-citation-context:last-child::after {
-	content: "…";
-}
-
-#popupdiv > div.popup-section-embed > h1:first-child,
-#popupdiv > div.popup-section-embed > h2:first-child,
-#popupdiv > div.popup-section-embed > h3:first-child,
-#popupdiv > div.popup-section-embed > h4:first-child,
-#popupdiv > div.popup-citation-context > h1:first-child,
-#popupdiv > div.popup-citation-context > h2:first-child,
-#popupdiv > div.popup-citation-context > h3:first-child,
-#popupdiv > div.popup-citation-context > h4:first-child {
-    margin-top: 0;
-}
-#popupdiv > div .icon {
-    background-image: none !important;
-    position: relative;
-}
-</style>`;
 
 doWhenPageLoaded(() => {
 	GW.notificationCenter.fireEvent("Extracts.loaded");
