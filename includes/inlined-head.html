@@ -1822,14 +1822,14 @@ GW.notificationCenter.cancelHandlerForEvent = function (eventName, f, options = 
 GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
 	GW.notificationCenter[eventName] = null;
 }
-GW.notificationCenter.fireEvent = function (eventName) {
+GW.notificationCenter.fireEvent = function (eventName, eventInfo) {
 	GWLog(`Event “${eventName}” fired.`, "notification");
 
 	if (GW.notificationCenter[eventName] == null)
 		return;
 
 	GW.notificationCenter[eventName].forEach(handler => {
-		handler.f();
+		handler.f(eventInfo);
 		if (handler.options.once)
 			GW.notificationCenter.cancelHandlerForEvent(eventName, handler.f);
 	});
