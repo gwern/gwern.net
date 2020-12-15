@@ -450,8 +450,8 @@ hr::after,
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     width: 30px;
 }
-.horizontalRule-nth-0 hr::after {
-	filter: drop-shadow(0 0 0 currentColor);
+.horizontalRule-nth-0 {
+    filter: drop-shadow(0 0 0 currentColor);
 }
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
@@ -845,16 +845,16 @@ blockquote table {
     overflow: visible;
 }
 @supports (width: fit-content) {
-	.epigraph,
-	.epigraph blockquote {
-		width: fit-content;
-	}
+    .epigraph,
+    .epigraph blockquote {
+        width: fit-content;
+    }
 }
 @supports (width: -moz-fit-content) {
-	.epigraph,
-	.epigraph blockquote {
-		width: -moz-fit-content;
-	}
+    .epigraph,
+    .epigraph blockquote {
+        width: -moz-fit-content;
+    }
 }
 .epigraph p  {
     font-style: italic;
@@ -1259,11 +1259,11 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     content: " ";
 }
 .marginnote.sidenote {
-	display: initial;
+    display: initial;
     width: calc(50vw - (50% + 104px));
     left: calc(100% + 60px);
 
-	/*  We inherit left and right padding from .sidenote class. */
+    /*  We inherit left and right padding from .sidenote class. */
     padding-top: 0.5em;
     padding-bottom: 0.5em;
 
@@ -1971,7 +1971,7 @@ article > :not(#TOC) .admonition a:hover {
 
 /*  Header self-links on home page need not be full-width. */
 body.index article #markdownBody section:not(.collapse) > h1:first-child a {
-	display: inline;
+    display: inline;
 }
 
 /*  Internal links on the home page need no decoration. */
@@ -2006,7 +2006,7 @@ body.index section:not(.collapse) > h1:first-child {
 /*  No pilcrows.
     */
 body.index #markdownBody section > h1:first-child a::after {
-	display: none;
+    display: none;
 }
 
 /*  Nice-looking bottom decoration.
@@ -2049,10 +2049,10 @@ body.tags article::before {
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
 @media only screen and (min-width: 650px) {
  /*  Horizontal ruler on the home page.
-	*/
-	body.index hr {
-		margin: 1.5em 0 0;
-	}
+    */
+    body.index hr {
+        margin: 1.5em 0 0;
+    }
     body.index [class^='horizontalRule'] {
         display: none;
     }
@@ -2180,7 +2180,7 @@ body.directory-index #navigation,
 body.directory-index #footer,
 body.directory-index #comments,
 body.directory-index #disqus_thread {
-	display: none;
+    display: none;
 }
 
 /*************************/
