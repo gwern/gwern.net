@@ -248,7 +248,8 @@ Popups = {
 				the container's right edge.
 				*/
 			if (provisionalPopupXPosition + popupIntrinsicWidth > popupContainerViewportRect.width) {
-				provisionalPopupXPosition -= provisionalPopupXPosition + popupIntrinsicWidth - popupContainerViewportRect.width;
+				//  We add 1.0 here to prevent wrapping due to rounding.
+				provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - popupContainerViewportRect.width + 1.0);
 			}
 
 			/*  Now (after having nudged the popup left, if need be),

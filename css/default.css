@@ -2631,6 +2631,14 @@ body.directory-index #disqus_thread {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
 }
 
+/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
+.popupdiv a {
+    text-decoration: underline;
+}
+.popupdiv a:hover {
+    color: var(--GW-popups-popup-link-hover-color);
+}
+
 /*=-----------------=*/
 /*= FOOTNOTE POPUPS =*/
 /*=-----------------=*/
@@ -2669,14 +2677,6 @@ body.directory-index #disqus_thread {
 }
 .popupdiv.extract-popup:not(.toc-section-popup) {
 	max-height: 480px;
-}
-
-/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
-.extract-popup a {
-    text-decoration: underline;
-}
-.extract-popup a:hover {
-    color: var(--GW-popups-popup-link-hover-color);
 }
 
 .extract-popup > div .data-field.title {
