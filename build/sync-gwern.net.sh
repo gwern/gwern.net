@@ -254,7 +254,7 @@ then
           cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/custom.yaml'
           cm "video/mp4" 'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
-          cm "video/x-msvideo" 'https://www.gwern.net/docs/dnb/2009-argumzio-pentuple-nback.avi'; }
+        }
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
