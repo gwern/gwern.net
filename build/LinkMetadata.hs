@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-14 11:19:46 gwern"
+When:  Time-stamp: "2020-12-14 20:10:35 gwern"
 License: CC-0
 -}
 
@@ -148,7 +148,7 @@ constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructA
 -- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
 trimAuthors, initializeAuthors :: String -> String
 trimAuthors a = let maxLength = 64 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
-initializeAuthors a' = subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
+initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
@@ -247,7 +247,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                 (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
                 let ecreator = U.toString mb2
-                let author = initializeAuthors $ trim $ if length eauthor > length ecreator then eauthor else ecreator
+                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator) then eauthor else ecreator
                 print $ "PDF: " ++ p ++" DOI: " ++ edoi
                 aMaybe <- doi2Abstract edoi
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
@@ -398,6 +398,8 @@ cleanAbstractsHTML t = trim $
     , ("<strong>SUMMARY</jats:title>", "")
     , ("<strong>Abstract</jats:title>", "")
     , ("<strong>Abstract</strong><br/>", "")
+    , ("<h3>Abstract:</h3>", "")
+    , ("<h3>Summary/Abstract</h3>", "")
     , ("Alzheimer9", "Alzheimer'")
     , ("<p> ", "<p>")
     , (" <p>", "<p>")
@@ -426,6 +428,12 @@ cleanAbstractsHTML t = trim $
     , (" -- ", "&mdash;")
     , ("---", "&mdash;")
     , (" - ", "—")
+    , ("<p>Background: ", "<p><strong>Background</strong>: ")
+    , ("<p>Methods: ", "<p><strong>Methods</strong>: ")
+    , ("<p>Outcomes: ", "<p><strong>Outcomes</strong>: ")
+    , ("<p>Interpretation: ", "<p><strong>Interpretation</strong>: ")
+    , ("<p>Funding: ", "<p><strong>Funding</strong>: ")
+    , ("<em>N</em> =", "<em>n</em> =")
     , ("<strong><strong>", "<strong>")
     , ("</strong></strong>", "</strong>")
     , ("<b>", "<strong>")
@@ -550,6 +558,10 @@ cleanAbstractsHTML t = trim $
     , ("\40n=",     "\40<em>n</em> = ")
     , ("\40N=",     "\40<em>N</em> = ")
     , (" N ~ ",     " <em>n</em> ~ ")
+    , ("( N = ", "(<em>n</em> = ")
+    , ("( n = ", "(<em>n</em> = ")
+    , ("( ns = ", "(<em>ns</em> = ")
+    , ("( n = ", "(<em>n</em> = ")
     , ("<em>p</em> = .", "<em>p</em> = 0.")
     , ("<em>p</em> < .", "<em>p</em> < 0.")
     , (" N=",     " <em>N</em> = ")

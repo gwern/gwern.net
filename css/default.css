@@ -2250,6 +2250,21 @@ body.lorem div[class^='drop-cap'] {
 }
 
 /*************************/
+/* Directory index listings: trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /idex. */
+/*************************/
+body.directory-index #sidebar a.patreon,
+body.tags #sidebar a.patreon,
+body.directory-index #page-tags,
+body.directory-index #page-metadata-block,
+body.directory-index #TOC,
+body.directory-index #navigation,
+body.directory-index #footer,
+body.directory-index #comments,
+body.directory-index #disqus_thread {
+	display: none;
+}
+
+/*************************/
 /* UI ELEMENTS CONTAINER */
 /*************************/
 
