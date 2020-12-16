@@ -125,9 +125,8 @@ Popups = {
 	newPopup: () => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
-		let popup = document.createElement('div');
-		popup.id = 'popupdiv';
-		popup.classList.toggle('popupdiv', true);
+		let popup = document.createElement("div");
+		popup.classList.add("popupdiv");
 		return popup;
 	},
 	spawnPopup: (popup, target, event) => {
