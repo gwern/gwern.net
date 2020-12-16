@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-15 22:59:15 gwern"
+When:  Time-stamp: "2020-12-16 15:26:24 gwern"
 License: CC-0
 -}
 
@@ -356,7 +356,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
-                         let title = findTxt $ fst $ element "title" tags
+                         let title = replace "\n " "" $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          let doi = findTxt $ fst $ element "arxiv:doi" tags
