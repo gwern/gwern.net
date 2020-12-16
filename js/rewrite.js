@@ -111,7 +111,7 @@ document.querySelectorAll("table").forEach(table => {
     if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
         table.parentElement.classList.toggle("tableWrapper", true);
     else
-    	table.outerHTML = "<div class='table-wrapper'>" + table.outerHTML = "</div>";
+    	table.outerHTML = "<div class='table-wrapper'>" + table.outerHTML + "</div>";
 });
 
 /*  Wrap each pre.full-width in a div.full-width (for layout purposes).
