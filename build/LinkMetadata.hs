@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-15 14:26:30 gwern"
+When:  Time-stamp: "2020-12-15 22:19:42 gwern"
 License: CC-0
 -}
 
@@ -38,7 +38,7 @@ import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 import System.IO.Unsafe (unsafePerformIO)
-
+import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (typographyTransform, invertImage)
 
 type Metadata = M.Map Path MetadataItem -- (Title, Author, Date, DOI, Abstract)
@@ -85,7 +85,7 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,abst) = do auto <- readYaml "metadata/auto.yaml"
                                            when (not (l `elem` (map fst auto))) $ do
-                                             print i
+                                             hPrint stderr i
                                              let newYaml = Y.encode [(l,t,a,d,di,abst)]
                                              B.appendFile "metadata/auto.yaml" newYaml
 
@@ -252,7 +252,7 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
-                ExitFailure err -> (print $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
+                ExitFailure err -> (hPrint stderr $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
                 _ -> do
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return Nothing else
@@ -267,7 +267,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
                 let ecreator = U.toString mb2
                 let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator) then eauthor else ecreator
-                print $ "PDF: " ++ p ++" DOI: " ++ edoi
+                hPrint stderr $ "PDF: " ++ p ++" DOI: " ++ edoi
                 aMaybe <- doi2Abstract edoi
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 case aMaybe of
@@ -286,7 +286,7 @@ doi2Abstract doi = if length doi <7 then return Nothing
                            if bs=="Resource not found." then return Nothing
                            else let j = eitherDecode bs :: Either String Crossref
                                 in case j of -- start unwrapping...
-                                    Left e -> putStrLn ("Error: Crossref request failed: "++doi++" "++e) >> return Nothing
+                                    Left e -> hPutStrLn stderr ("Error: Crossref request failed: "++doi++" "++e) >> return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
@@ -310,10 +310,10 @@ wikipedia p
                    when ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bs) $ error ("Linked to a Wikipedia disambiguation page! " ++ p)
                    today <- fmap (take 10 . show) $ TC.getCurrentTime -- create dates like "2020-08-31"
                    case status of
-                     ExitFailure _ -> putStrLn ("Wikipedia tooltip failed: " ++ p''') >> return Nothing
+                     ExitFailure _ -> hPutStrLn stderr ("Wikipedia tooltip failed: " ++ p''') >> return Nothing
                      _ -> let j = eitherDecode bs :: Either String WP
                           in case j of
-                               Left e -> putStrLn ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
+                               Left e -> hPutStrLn stderr ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
                                Right wp -> do let wpTitle = title wp
                                               let wpAbstract = extract_html wp
                                               wpThumbnail <- case thumbnail wp of
@@ -332,13 +332,13 @@ wikipedia p
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> putStrLn ("BioRxiv download failed: " ++ p) >> return Nothing
+                 ExitFailure _ -> hPutStrLn stderr ("BioRxiv download failed: " ++ p) >> return Nothing
                  _ -> do
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Title" then snd $ head b else "") metas
-                        if (title=="") then print ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return Nothing
+                        if (title=="") then hPrint stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return Nothing
                           else do
                                  let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Date" then snd $ head b else "") metas
                                  let author = initializeAuthors $ intercalate ", " $ filter (/="") $ map (\(TagOpen _ (a:b)) -> if snd a == "DC.Contributor" then snd $ head b else "") metas
@@ -354,7 +354,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                                  else replace "https://arxiv.org/abs/" "" url
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> putStrLn ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
+                 ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          let title = findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
@@ -617,7 +617,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
         | otherwise =
             do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p, "--user-agent", "gwern+gwernscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> putStrLn ("Gwern.net download failed: " ++ p) >> return Nothing
+                 ExitFailure _ -> hPutStrLn stderr ("Gwern.net download failed: " ++ p) >> return Nothing
                  _ -> do
                         let b = U.toString bs
                         let f = parseTags b

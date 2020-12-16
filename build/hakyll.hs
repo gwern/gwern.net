@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-15 12:34:05 gwern"
+When: Time-stamp: "2020-12-15 22:39:56 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -45,12 +45,13 @@ import qualified Data.Map as M (fromList, lookup, Map)
 import System.Directory (doesFileExist)
 import System.FilePath (takeExtension)
 import Data.FileStore.Utils (runShellCommand)
-import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField, compressCss, cached, readTemplate, getResourceString,
+import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
                symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, lookupString,
                defaultHakyllWriterOptions, fromCapture, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAll, loadAndApplyTemplate, loadBody, makeItem, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess,
-               tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Template, Tags, unsafeCompiler)
+               -- Template, cached, compressCss, readTemplate, getResourceString,
+               tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Tags, unsafeCompiler)
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Pandoc.Shared (blocksToInlines)
@@ -67,7 +68,7 @@ import qualified Data.Text as T
 -- local custom modules:
 -- import Definition -- (dictionary)
 import Inflation (nominalToRealInflationAdjuster)
-import LinkMetadata (readLinkMetadata, annotateLink, metadataRecurse, Metadata)
+import LinkMetadata (readLinkMetadata, annotateLink, Metadata)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography
 
@@ -148,12 +149,12 @@ main = hakyll $ do
 
              match "static/templates/*.html" $ compile templateCompiler
 
-             match "static/includes/inlined-head-escaped.html" $ compile $ fmap readTemplate <$> getResourceString
+             match "static/includes/inlined-head-escaped.html" $ compile templateCompiler
 
 -- https://kyle.marek-spartz.org/posts/2014-12-09-hakyll-css-template-compiler.html
-cssTemplateCompiler :: Compiler (Item Template)
-cssTemplateCompiler = cached "Hakyll.Web.Template.cssTemplateCompiler" $
-    fmap (readTemplate . compressCss) <$> getResourceString
+-- cssTemplateCompiler :: Compiler (Item Template)
+-- cssTemplateCompiler = cached "Hakyll.Web.Template.cssTemplateCompiler" $
+--     fmap (readTemplate . compressCss) <$> getResourceString
 
 woptions :: WriterOptions
 woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
