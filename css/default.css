@@ -2661,7 +2661,7 @@ body.directory-index #disqus_thread {
     —Obormot (2019-02-17)
     */
 .footnote-popup > div > blockquote:nth-last-child(2) {
-    margin-bottom: 2px;
+    margin-bottom: calc(1em/9);
 }
 .footnote-popup > div > blockquote:nth-last-child(2) + p {
     margin-top: 1em;
@@ -2679,6 +2679,16 @@ body.directory-index #disqus_thread {
 	max-height: 480px;
 }
 
+.extract-popup > div .data-field {
+    text-align: left;
+    text-indent: 0;
+}
+.extract-popup > div .data-field + .data-field {
+    margin-top: 0.25em;
+}
+.extract-popup > div .data-field:empty {
+    display: none;
+}
 .extract-popup > div .data-field.title {
     font-weight: bold;
     font-size: 1.125em;
@@ -2686,35 +2696,15 @@ body.directory-index #disqus_thread {
 .extract-popup > div .data-field.author {
     font-style: italic;
 }
-
-.extract-popup > div .icon {
-    top: 0.15em;
-    font-size: 1.125em;
-}
-
-/* TODO: the 4-letter block link icons defined in 'links.css' interact badly with the popup links, so we have to manually filter them out pending a rewrite: */
-.extract-popup > div .icon:not([href*='sagepub.com']):not([href*='pnas.org']):not([href*='xkcd.com']):not([href*='rand.org']):not([href*='www.cell.com']):not([href*='publicdomainreview.org']):not([href*='mlp.fandom.com']):not([href*='www.nber.org'])::after {
-    margin: 0 0.175em 0 0;
-    width: 1em;
-    height: 1em;
-    font-size: 1em;
-}
-.extract-popup > div .icon:not([href*='.pdf'])::after {
-    background-position: center center;
-    background-size: 100%;
-}
-.extract-popup > div .title-link::after {
-    content: none;
-}
-
 .extract-popup .originalURL {
   font-size: 0.75em;
 }
-
 .extract-popup .iaMirror {
     padding-right: 0.3em;
 }
 
+/*	TODO: remove this once popups inherit from main body styles.
+	*/
 .extract-popup > div .data-field.popupAbstract > p,
 .extract-popup > div.popup-section-embed p,
 .extract-popup > div.popup-citation-context p {
@@ -2729,12 +2719,6 @@ body.directory-index #disqus_thread {
     margin-top: -3em;
 }
 
-/*  Popups for videos.
-    */
-.extract-popup iframe {
-	display: block;
-}
-
 .extract-popup img {
 	width: 100%;
 }
@@ -2742,36 +2726,24 @@ body.directory-index #disqus_thread {
     position: relative;
     z-index: 0;
 }
-.extract-popup > div .data-field {
-    text-align: left;
-    text-indent: 0;
-}
-.extract-popup > div .data-field + .data-field {
-    margin-top: 0.25em;
-}
-.extract-popup > div .data-field:empty {
-    display: none;
-}
-.extract-popup > div.popup-screenshot {
-    padding: 0;
-    max-width: unset;
-}
-.extract-popup > div.popup-screenshot img {
-    display: block;
-}
-.extract-popup > div.popup-screenshot a::after {
-    content: none;
+
+.extract-popup > div > blockquote:last-child {
+    margin-bottom: calc(1em/9);
 }
 
+/*  Popups for videos.
+    */
 .extract-popup > div.popup-video {
 	padding: 0;
 }
-
 .extract-popup > div.popup-video iframe {
+	display: block;
 	width: 495px;
 	height: 310px;
 }
 
+/*	Section embeds.
+	*/
 .extract-popup > div.popup-section-embed,
 .extract-popup > div.popup-citation-context {
     height: 100%;
@@ -2781,7 +2753,6 @@ body.directory-index #disqus_thread {
 .popup-citation-context:last-child::after {
 	content: "…";
 }
-
 .extract-popup > div.popup-section-embed > h1:first-child,
 .extract-popup > div.popup-section-embed > h2:first-child,
 .extract-popup > div.popup-section-embed > h3:first-child,
@@ -2791,10 +2762,6 @@ body.directory-index #disqus_thread {
 .extract-popup > div.popup-citation-context > h3:first-child,
 .extract-popup > div.popup-citation-context > h4:first-child {
     margin-top: 0;
-}
-.extract-popup > div .icon {
-    background-image: none !important;
-    position: relative;
 }
 
 /*********************/
