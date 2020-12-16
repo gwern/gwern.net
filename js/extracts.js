@@ -33,19 +33,12 @@ Extracts = {
 
         var archive = "";
         if (target.dataset.urlOriginal != undefined && target.dataset.urlOriginal != target.href) {
-            archive = (`<span class="originalURL"><code>` + 
-            		   "[" + 
+            archive = (`<span class="originalURL"><code>` + "[" + 
             		   `<a href="${target.dataset.urlOriginal}" 
                        		title="Link to original URL for ‘${target.dataset.popupTitle}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
-                       "URL" + 
-                       `</a>` + "]" + `</code></span>`);
-        } else if (   !target.href.startsWith("https://www.gwern.net")
-        		   && !target.href.startsWith("https://en.wikipedia.org")
-        		   && !target.href.startsWith("https://archive.org")
-        		   && !target.href.startsWith("https://www.biorxiv.org")
-        		   && !target.href.startsWith("https://arxiv.org")
-        		   ) {
+                       "URL" + `</a>` + "]" + `</code></span>`);
+        } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
 			archive = (`<span class="iaMirror">` +
 					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${target.dataset.popupTitle}’)" 
 					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
