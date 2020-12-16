@@ -441,7 +441,7 @@ function unfocusImageOverlay() {
 	});
 
 	// Reset the hash, if needed.
-	if (location.hash.hasPrefix("#if_slide_"))
+	if (location.hash.startsWith("#if_slide_"))
 		history.replaceState(null, null, "#");
 }
 
@@ -539,7 +539,7 @@ function cancelImageFocusHideUITimer() {
 
 function focusImageSpecifiedByURL() {
 	GWLog("focusImageSpecifiedByURL", "image-focus.js");
-	if (location.hash.hasPrefix("#if_slide_")) {
+	if (location.hash.startsWith("#if_slide_")) {
 		document.addEventListener("readystatechange", () => {
 			let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
 			let imageToFocus = (/#if_slide_([0-9]+)/.exec(location.hash)||{})[1];

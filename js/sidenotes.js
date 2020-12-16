@@ -655,7 +655,7 @@ function constructSidenotes() {
             if (decodeURIComponent(location.hash) == sidenote.id || event.target.tagName == "A" || event.target.tagName == "IMG") return;
 
             //  Preserve hash before changing it.
-            if (!(location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref")))
+            if (!(location.hash.startsWith("#sn") || location.hash.startsWith("#fnref")))
                 GW.sidenotes.hashBeforeSidenoteWasFocused = location.hash;
             setHashWithoutScrolling(encodeURIComponent(sidenote.id));
         });
@@ -823,7 +823,7 @@ function sidenotesSetup() {
     /*  Save the hash, if need be (if it does NOT point to a sidenote or a
         footnote reference).
         */
-    GW.sidenotes.hashBeforeSidenoteWasFocused = (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref")) ?
+    GW.sidenotes.hashBeforeSidenoteWasFocused = (location.hash.startsWith("#sn") || location.hash.startsWith("#fnref")) ?
                                                 "" : location.hash;
     /*  Add event listener to un-focus a sidenote (by resetting the hash) when
         the document is clicked anywhere but a sidenote or a link.
@@ -832,7 +832,7 @@ function sidenotesSetup() {
         GWLog("GW.sidenotes.bodyClicked", "sidenotes.js");
 
         if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
-            (location.hash.hasPrefix("#sn") || location.hash.hasPrefix("#fnref"))) {
+            (location.hash.startsWith("#sn") || location.hash.startsWith("#fnref"))) {
             setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
         }
     });
