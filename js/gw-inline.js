@@ -42,6 +42,15 @@ GW.setLogLevel = (level, permanently = false) => {
 /* HELPERS */
 /***********/
 
+/*  Returns true if the string begins with any of the given prefixes.
+    */
+String.prototype.startsWithAnyOf = function (prefixes) {
+    for (const prefix of prefixes)
+        if (this.startsWith(prefix))
+            return true;
+    return false;
+}
+
 Array.prototype.remove = function (item) {
 	var index = this.indexOf(item);
 	if (index !== -1)
