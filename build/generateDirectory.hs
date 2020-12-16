@@ -12,6 +12,7 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMar
                     Block(BlockQuote, BulletList, RawBlock, Para), Format(..), Inline(Space, Str, Code, Link, RawInline), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup)
 import qualified Data.Text as T (unpack, pack)
+import System.IO (stderr, hPrint)
 
 import LinkMetadata (readLinkMetadata, Metadata, MetadataItem)
 
@@ -29,7 +30,7 @@ main = do dir <- fmap head getArgs
           let document = Pandoc nullMeta body
           let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
           case p of
-            Left e   -> print e
+            Left e   -> hPrint stderr e
             Right p' -> putStrLn $ header ++ (T.unpack p')
 
 generateYAMLHeader :: FilePath -> String -> String

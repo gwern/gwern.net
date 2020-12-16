@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-12-08 20:45:15 gwern"
+When:  Time-stamp: "2020-12-15 22:35:56 gwern"
 License: CC-0
 -}
 
@@ -52,6 +52,7 @@ import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
+import System.IO (stderr, hPutStrLn)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg 2019-11-22 = 58810
@@ -122,11 +123,11 @@ currentDay = fmap (toModifiedJulianDay . utctDay) $ Data.Time.Clock.getCurrentTi
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
-archiveURL l = do (exit,stderr,stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l]
+archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l]
                   case exit of
-                     ExitSuccess -> do putStrLn ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
+                     ExitSuccess -> do hPutStrLn stderr ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
                                        return $ Just $ U.toString stdout
-                     ExitFailure _ -> putStrLn (l ++ " : archiving failed: " ++ U.toString stderr) >> return Nothing
+                     ExitFailure _ -> hPutStrLn stderr (l ++ " : archiving failed: " ++ U.toString stderr') >> return Nothing
 
 -- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of URLs we always archive even if otherwise on a safe domain:
 -- 1. some matches we always want to skip
