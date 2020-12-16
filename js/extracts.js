@@ -31,28 +31,28 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-        var doi = "";
         var archive = "";
         if (target.dataset.urlOriginal != undefined && target.dataset.urlOriginal != target.href) {
-            archive = (`<span class="originalURL"><code>[` +
-                       `<a href="${target.dataset.urlOriginal}" ` +
-                       `title="Link to original URL: '${target.dataset.urlOriginal}' (for '${target.dataset.popupTitle}')" ` +
-                       `alt="Original URL for this archived link; may be broken.">URL</a>` +
-                       `]</code></span>`); }
-        else {
-            if (   !target.href.startsWith("https://www.gwern.net")
-           	&& !target.href.startsWith("https://en.wikipedia.org")
-           	&& !target.href.startsWith("https://archive.org")
-           	&& !target.href.startsWith("https://www.biorxiv.org")
-           	&& !target.href.startsWith("https://arxiv.org")
-           	) {
-                archive = (`<span class="iaMirror">` +
-                           `<a title="Search Internet Archive via Memento for mirrors of URL: '${target.href}' (for '${target.dataset.popupTitle}')" ` +
-                           `href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
-                           `</a></span>`);
-            }
+            archive = (`<span class="originalURL"><code>` + 
+            		   "[" + 
+            		   `<a href="${target.dataset.urlOriginal}" 
+                       		title="Link to original URL for ‘${target.dataset.popupTitle}’" 
+                       		alt="Original URL for this archived link; may be broken.">` + 
+                       "URL" + 
+                       `</a>` + "]" + `</code></span>`);
+        } else if (   !target.href.startsWith("https://www.gwern.net")
+        		   && !target.href.startsWith("https://en.wikipedia.org")
+        		   && !target.href.startsWith("https://archive.org")
+        		   && !target.href.startsWith("https://www.biorxiv.org")
+        		   && !target.href.startsWith("https://arxiv.org")
+        		   ) {
+			archive = (`<span class="iaMirror">` +
+					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${target.dataset.popupTitle}’)" 
+					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
+					   `</a></span>`);
         }
 
+        var doi = "";
         if (target.dataset.popupDoi != undefined) {
             doi = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Google Scholar">cites</a>`;
         } else if (target.href.includes("pdf") ||
@@ -206,16 +206,22 @@ Extracts = {
 		//  Inject the contents of the popup into the popup div.
 		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
 		if (videoId) {
+			//  Videos (both local and remote).
 			popup.innerHTML = Extracts.videoForTarget(target, videoId);
 		} else if (target.classList.contains("footnote-back")) {
+			//  Context surrounding a citation (displayed on footnote-back links).
 			popup.innerHTML = Extracts.citationContextForTarget(target);
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
+			//  Identified sections of the current page.
 			popup.innerHTML = Extracts.sectionEmbedForTarget(target);
 		} else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
+			//  Locally hosted images.
 			popup.innerHTML = Extracts.localImageForTarget(target);
 		} else if (target.classList.contains("docMetadata")) {
+			//  Summaries of links to elsewhere.
 			popup.innerHTML = Extracts.extractForTarget(target);
 		} else if (target.classList.contains("defnMetadata")) {
+			//  Definitions.
 			popup.innerHTML = Extracts.definitionForTarget(target);
 		}
 

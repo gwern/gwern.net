@@ -341,6 +341,7 @@ Popups = {
     //	The “user moved mouse out of popup” mouseleave event.
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
+		return;
 
 		Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
 			Popups.clearPopupTimers(popupInStack.popupTarget);
@@ -377,6 +378,7 @@ Popups = {
 	//	The mouseleave event.
 	targetMouseleave: (event) => {
 		GWLog("Popups.targetMouseleave", "popups.js", 2);
+		return;
 
 		Popups.clearPopupTimers(event.target);
 
