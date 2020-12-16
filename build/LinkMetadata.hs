@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-16 15:26:24 gwern"
+When:  Time-stamp: "2020-12-16 17:23:23 gwern"
 License: CC-0
 -}
 
@@ -132,8 +132,8 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
   if abstract == "" then x else -- if no abstract, don't bother
     let lid' = if lid=="" then generateID (T.unpack target) author date else lid in
     let annotationAttributes = (lid', "docMetadata":classes,
-          (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII title),
-                                         ("popup-title-html", htmlToBetterHTML $ T.pack title),
+          (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII $ trimTitle title),
+                                         ("popup-title-html", htmlToBetterHTML $ T.pack $ trimTitle title),
                                          ("popup-author",     htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
                                          ("popup-date",       T.pack date),
                                          ("popup-doi",        T.pack doi),
@@ -165,9 +165,12 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
 constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructAnnotation'! This should never happen." ++ show b ++ " " ++ show c
 
 -- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
-trimAuthors, initializeAuthors :: String -> String
+trimAuthors, initializeAuthors, trimTitle :: String -> String
 trimAuthors a = let maxLength = 64 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
 initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
+-- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
+trimTitle t = let t' = reverse $ replace " : " ": " $ replace "\n " "" $ trim t in
+                reverse (if head t' == '.' then tail t' else t)
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
@@ -356,7 +359,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
-                         let title = replace "\n " "" $ findTxt $ fst $ element "title" tags
+                         let title = trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          let doi = findTxt $ fst $ element "arxiv:doi" tags
