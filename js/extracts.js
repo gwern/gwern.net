@@ -224,6 +224,16 @@ Extracts = {
 			fullWidthBlock.style.marginRight = "";
 		});
 
+		//  Qualify internal links in extracts.
+		let targetHref = target.getAttribute("href");
+		if (popup.classList.contains("docMetadata") && targetHref.startsWith("/")) {
+			popup.querySelectorAll("a[href^='#']").forEach(anchorLink => {
+				let savedHash = anchorLink.hash;
+				anchorLink.setAttribute("href", targetHref);
+				anchorLink.hash = savedHash;
+			});
+		}
+
 		return true;
     }
 };
