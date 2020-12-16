@@ -38,6 +38,7 @@ then
     generateDirectory () {
                 rm "$1/index.page" > /dev/null || true;
                 runhaskell -istatic/build/ static/build/generateDirectory.hs "$1" > "$1/index.page"; }
+    generateDirectory docs/ai/poetry/ # test run; doing 1 run first also updates auto.yaml as necessary while avoiding race conditions in parallel updates
     export -f generateDirectory
     echo "$DIRS" | tr --squeeze-repeats ' ' '\n' | parallel --jobs 16 --progress generateDirectory
 
