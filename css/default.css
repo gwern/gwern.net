@@ -2679,6 +2679,8 @@ body.directory-index #disqus_thread {
 	max-height: 480px;
 }
 
+/*	Data fields.
+	*/
 .extract-popup > div .data-field {
     text-align: left;
     text-indent: 0;
@@ -2746,12 +2748,7 @@ body.directory-index #disqus_thread {
 	*/
 .extract-popup > div.popup-section-embed,
 .extract-popup > div.popup-citation-context {
-    height: 100%;
     overflow-x: hidden;
-}
-.popup-citation-context:first-child::before,
-.popup-citation-context:last-child::after {
-	content: "…";
 }
 .extract-popup > div.popup-section-embed > h1:first-child,
 .extract-popup > div.popup-section-embed > h2:first-child,

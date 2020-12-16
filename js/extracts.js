@@ -104,24 +104,27 @@ Extracts = {
 
         return `<div class="popup-video"><iframe src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
     },
+    nearestBlockElement: (element) => {
+    	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul");
+    },
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
-        let targetSectionHTML = document.querySelector(target.getAttribute('href')).innerHTML;
-        if (targetSectionHTML.length < 2) { // not a section but a random <div> target
-            return Extracts.citationContextForTarget(target);
-        } else {
-            return Extracts.citationContextForTarget(target);
-        }
-        // NOTE: experiment for supporting link ID popups; testing the length breaks link popups because they're too short
-        // but if we present *everything* as a citation-with-context, the '.closest' selector including '<section>' seems to work acceptably?
-            // return `<div class='popup-section-embed'>${targetSectionHTML}</div>`;
+        let targetElement = document.querySelector(target.getAttribute('href'));
+        if (targetElement.tagName != "SECTION")
+	        targetElement = Extracts.nearestBlockElement(targetElement);
+		let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
+
+        return `<div class='popup-section-embed'>${sectionEmbedHTML}</div>`;
     },
     citationContextForTarget: (target) => {
 		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
 
-        let citationContextHTML = document.querySelector(target.getAttribute('href')).closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul").innerHTML;
-        return `<div class='popup-citation-context'>${citationContextHTML}</div>`; // ellipses added via CSS
+        let targetCitation = document.querySelector(target.getAttribute('href'));
+        let citationContextBlockElement = Extracts.nearestBlockElement(targetCitation);
+		let citationContextHTML = (citationContextBlockElement.tagName == "SECTION") ? citationContextBlockElement.innerHTML : citationContextBlockElement.outerHTML;
+
+        return `<div class='popup-citation-context'>${citationContextHTML}</div>`;
     },
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
