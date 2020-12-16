@@ -821,6 +821,7 @@ a code {
 	z-index: -1;
 	position: relative;
 	border-bottom-width: 0;
+	word-break: normal;
 }
 /*  But not in the TOC…
     */
