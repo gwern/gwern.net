@@ -215,6 +215,15 @@ Extracts = {
 		if (Extracts.fillPopup(popup, target) == false)
 			return false;
 
+		//  Adjust contents of popup for display.
+		popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {
+			captionWrapper.style.minWidth = "";
+		});
+		popup.querySelectorAll(".full-width").forEach(fullWidthBlock => {
+			fullWidthBlock.style.marginLeft = "";
+			fullWidthBlock.style.marginRight = "";
+		});
+
 		return true;
     }
 };

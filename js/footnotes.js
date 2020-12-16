@@ -77,6 +77,11 @@ Footnotes = {
 		if (Footnotes.fillPopup(popup, target) == false)
 			return false;
 
+		//  Adjust contents of popup for display.
+		popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {
+			captionWrapper.style.minWidth = "";
+		});
+
 		return true;
 	}
 };

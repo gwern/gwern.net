@@ -2563,6 +2563,7 @@ body.directory-index #disqus_thread {
     box-shadow: 0 0 0 3px var(--GW-popups-body-background-color);
     opacity: 1.0;
     transition: none;
+    z-index: 1;
 }
 .popupdiv.fading {
     opacity: 0.0;
@@ -2582,6 +2583,22 @@ body.directory-index #disqus_thread {
 .popupdiv p + ol {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
+}
+.popupdiv h1,
+.popupdiv h2,
+.popupdiv h3,
+.popupdiv h4,
+.popupdiv h5,
+.popupdiv h6 {
+	margin-left: 0;
+}
+.popupdiv h1 a,
+.popupdiv h2 a,
+.popupdiv h3 a,
+.popupdiv h4 a,
+.popupdiv h5 a,
+.popupdiv h6 a {
+	text-decoration: none;
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
