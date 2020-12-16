@@ -31,86 +31,65 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-        var archive = "";
-        if (target.dataset.urlOriginal != undefined && target.dataset.urlOriginal != target.href) {
-            archive = (`<span class="originalURL"><code>` + "[" + 
+		//  Link to original URL (for archive links) or link to archive (for live links).
+        var archiveOrOriginalLink = "";
+        if (   target.dataset.urlOriginal != undefined 
+        	&& target.dataset.urlOriginal != target.href) {
+            archiveOrOriginalLink = (`<span class="originalURL"><code>` + "[" + 
             		   `<a href="${target.dataset.urlOriginal}" 
                        		title="Link to original URL for ‘${target.dataset.popupTitle}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
                        "URL" + `</a>` + "]" + `</code></span>`);
         } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
-			archive = (`<span class="iaMirror">` +
+			archiveOrOriginalLink = (`<span class="iaMirror">` +
 					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${target.dataset.popupTitle}’)" 
 					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
 					   `</a></span>`);
         }
 
-        var doi = "";
+		//  Extract title/link.
+		let titleLink = `<a class="title-link" target="_new" href="${target.href}" title="${target.href}">${(target.dataset.popupTitleHtml || "")}</a>`;
+
+		//	Author.
+		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`;
+
+		//  Link to citations on Google Scholar, or link to search for links on Google.
+        var citationsOrLinks = "";
         if (target.dataset.popupDoi != undefined) {
-            doi = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' with DOI '${target.dataset.popupDoi}' in Google Scholar">cites</a>`;
-        } else if (target.href.includes("pdf") ||
-                   /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
-                   target.href.includes("https://arxiv.org") ||
-                   target.href.includes("https://openreview.net") ||
-                   target.href.includes("ieee.org") ||
-                   target.href.includes("rand.org") ||
-                   target.href.includes("dspace.mit.edu") ||
-                   target.href.includes("thegradient.pub") ||
-                   target.href.includes("inkandswitch.com") ||
-                   target.href.includes("nature.com") ||
-                   target.href.includes("sciencemag.org") ) {
-            doi = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of the paper '${target.dataset.popupTitle}' in Google Scholar">cites</a>`;
+            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Reverse citations of this paper (‘${target.dataset.popupTitle}’), with DOI ‘${target.dataset.popupDoi}’, in Google Scholar">` + "cites" + `</a>`;
+        } else if (target.href.includesAnyOf([ "pdf", "https://arxiv.org", "https://openreview.net", "ieee.org", "rand.org", "dspace.mit.edu", "thegradient.pub", "inkandswitch.com", "nature.com", "sciencemag.org" ])) {
+            /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
+            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of this paper (‘${target.dataset.popupTitle}’) in Google Scholar">` + "cites" + `</a>`;
         } else if (!target.href.startsWith("https://en.wikipedia.org")) {
-            doi = `; ` +
-                  `<a href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" ` +
-                  `target='_new' ` +
-                  `title="Links to this page '${target.dataset.popupTitle}' in Google">` +
-                  `links</a>`;
+            citationsOrLinks = `; <a href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Links to this page (‘${target.dataset.popupTitle}’) in Google">` + "links" + `</a>`;
         }
-        var icon = "";
-        if (   !target.href.startsWith("https://www.gwern.net")
-       	&& !target.href.startsWith("/")
-       	&& !target.href.startsWith(".")
-       	) {
-            icon = `<a
-                        class='icon'
-                        target='_new'
-                        href='${target.href}'
-                        title='Open this reference in a new window'
-                    ></a>`; }
-        return `<div class='popup-extract'>` +
-                    `<p class='data-field title'>` +
-                         archive +
-                         `<a
-                            class='title-link'
-                            target='_new'
-                            href='${target.href}'
-                            title='${target.href}'
-                                >${target.dataset.popupTitleHtml || ""}</a>` +
-                         icon +
-                    `</p>` +
-                    `<p class='data-field author-plus-date'>` +
-                        `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + doi + ")") : ""}` +
-                    `</p>` +
-                    `<div class='data-field popupAbstract'>` +
-                        `${target.dataset.popupAbstract || ""}` +
-                    `</div>` +
-                `</div>`;
+
+		//	Date; citations/links.
+		let dateAndCitationsOrLinks = (target.dataset.popupDate ? ` (${target.dataset.popupDate}${citationsOrLinks})` : ``);
+
+		//	Abstract (extract body).
+		let abstract = (target.dataset.popupAbstract || "");
+
+		//  The fully constructed extract popup contents.
+        return `<div class="popup-extract">` +
+                   `<p class="data-field title">${archiveOrOriginalLink}${titleLink}</p>` +
+                   `<p class="data-field author-plus-date">${author}${dateAndCitationsOrLinks}</p>` +
+                   `<div class="data-field popupAbstract">${abstract}</div>` +
+               `</div>`;
     },
     definitionForTarget: (target) => {
 		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-        return `<div class='popup-extract'>` +
-                    `<p class='data-field title'>` +
-                        `${target.dataset.popupTitleHtml || ""}` +
-                    `</p>` +
-                    `<p class='data-field author-plus-date'>` +
-                        `<span class='data-field author'>${target.dataset.popupAuthor || ""}</span>${target.dataset.popupDate ? (" (" + target.dataset.popupDate + ")") : ""}` +
-                    `</p>` +
-                    `<div class='data-field popupAbstract'>` +
-                        `${target.dataset.popupAbstract || ""}` +
-                    `</div>` +
-                `</div>`;
+		let title = (target.dataset.popupTitleHtml || "");
+		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`
+		let date = (target.dataset.popupDate ? ` (${target.dataset.popupDate})` : ``);
+		let abstract = (target.dataset.popupAbstract || "");
+
+        return `<div class="popup-extract">` +
+        		   `<p class="data-field title">${title}</p>` +
+        		   `<p class="data-field author-plus-date">${author}${date}</p>` +
+        		   `<div class="data-field popupAbstract">${abstract}</div>` +
+        	   `</div>`;
     },
     youtubeId: (url) => {
         let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
@@ -123,9 +102,7 @@ Extracts = {
     videoForTarget: (target, videoId) => {
 		GWLog("Extracts.videoForTarget", "extracts.js", 2);
 
-        return `<div class='popup-video'>` +
-            `<iframe src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>` + 
-            `</div>`;
+        return `<div class="popup-video"><iframe src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
     },
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
