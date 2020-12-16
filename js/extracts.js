@@ -31,6 +31,10 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
+		//  Title and abstract are mandatory.
+		if (!target.dataset.popupTitleHtml || !target.dataset.popupAbstract)
+			return null;
+
 		//  Link to original URL (for archive links) or link to archive (for live links).
         var archiveOrOriginalLink = "";
         if (   target.dataset.urlOriginal != undefined 
@@ -48,7 +52,7 @@ Extracts = {
         }
 
 		//  Extract title/link.
-		let titleLink = `<a class="title-link" target="_new" href="${target.href}" title="${target.href}">${(target.dataset.popupTitleHtml || "")}</a>`;
+		let titleLink = `<a class="title-link" target="_new" href="${target.href}" title="${target.href}">${target.dataset.popupTitleHtml}</a>`;
 
 		//	Author.
 		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`;
@@ -67,28 +71,27 @@ Extracts = {
 		//	Date; citations/links.
 		let dateAndCitationsOrLinks = (target.dataset.popupDate ? ` (${target.dataset.popupDate}${citationsOrLinks})` : ``);
 
-		//	Abstract (extract body).
-		let abstract = (target.dataset.popupAbstract || "");
-
 		//  The fully constructed extract popup contents.
         return `<div class="popup-extract">` +
                    `<p class="data-field title">${archiveOrOriginalLink}${titleLink}</p>` +
                    `<p class="data-field author-plus-date">${author}${dateAndCitationsOrLinks}</p>` +
-                   `<div class="data-field popupAbstract">${abstract}</div>` +
+                   `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
                `</div>`;
     },
     definitionForTarget: (target) => {
 		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-		let title = (target.dataset.popupTitleHtml || "");
+		//  Title and abstract are mandatory.
+		if (!target.dataset.popupTitleHtml || !target.dataset.popupAbstract)
+			return null;
+
 		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`
 		let date = (target.dataset.popupDate ? ` (${target.dataset.popupDate})` : ``);
-		let abstract = (target.dataset.popupAbstract || "");
 
         return `<div class="popup-extract">` +
-        		   `<p class="data-field title">${title}</p>` +
+        		   `<p class="data-field title">${target.dataset.popupTitleHtml}</p>` +
         		   `<p class="data-field author-plus-date">${author}${date}</p>` +
-        		   `<div class="data-field popupAbstract">${abstract}</div>` +
+        		   `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
         	   `</div>`;
     },
     youtubeId: (url) => {
