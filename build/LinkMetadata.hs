@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-15 22:19:42 gwern"
+When:  Time-stamp: "2020-12-15 22:59:15 gwern"
 License: CC-0
 -}
 
@@ -155,7 +155,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      -- Why? Because many tooltips/link-titles are already written in the Markdown sources, like `[foo](/docs/bar.pdf "'On Dancing Angels', Quux 2020")`; these tooltips are important documentation while writing the Markdown page (so you can see at a glance what they are - the *author* can't mouse over them!), but are inferior to the generated tooltips. So if the original tooltip is not particularly long, that suggests it's not a special one (eg a Twitter tweet which has been inlined) and we should override it.
      abstractText = htmlToASCII abstract'
      possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++", " ++ "(" ++ date ++ ")" ++
-                        (if doi /= "" then " (DOI:"++doi++")" else "")
+                        (if doi /= "" then " (DOI: "++doi++")" else "")
                         ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ "…" else abstractText))++"\""
      newTooltip :: T.Text
      newTooltip = if (fromIntegral (length possibleTooltip)::Float) > ((fromIntegral $ T.length originalTooltip)*1.3::Float)
