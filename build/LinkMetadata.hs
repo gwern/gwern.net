@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-16 18:52:08 gwern"
+When:  Time-stamp: "2020-12-16 20:46:47 gwern"
 License: CC-0
 -}
 
@@ -157,7 +157,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      abstractText = htmlToASCII abstract'
      possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++", " ++ "(" ++ date ++ ")" ++
                         (if doi /= "" then " (DOI: "++doi++")" else "")
-                        ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ "…" else abstractText))++"\""
+                        ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ takeWhile (not . isSpace) (drop 350 abstractText) ++ "…" else abstractText))++"\""
      newTooltip :: T.Text
      newTooltip = if (fromIntegral (length possibleTooltip)::Float) > ((fromIntegral $ T.length originalTooltip)*1.3::Float)
                    then T.pack possibleTooltip else originalTooltip
@@ -425,6 +425,7 @@ cleanAbstractsHTML t = trim $
     , ("<h3>Abstract:</h3>", "")
     , ("<h3>Summary/Abstract</h3>", "")
     , ("Alzheimer9", "Alzheimer'")
+    , ("<br/> <br/>", "</br>")
     , ("<p> ", "<p>")
     , (" <p>", "<p>")
     , ("</p> ", "</p>")
