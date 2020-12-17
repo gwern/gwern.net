@@ -1836,7 +1836,7 @@ GW.notificationCenter.fireEvent = function (eventName, eventInfo) {
     GW.notificationCenter[eventName].forEach(handler => {
         handler.f(eventInfo);
         if (handler.options.once)
-            GW.notificationCenter.cancelHandlerForEvent(eventName, handler.f);
+            GW.notificationCenter.removeHandlerForEvent(eventName, handler.f);
     });
 }
 
