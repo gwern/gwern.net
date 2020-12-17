@@ -52,7 +52,7 @@ Extracts = {
         }
 
 		//  Extract title/link.
-		let titleLink = `<a class="title-link" target="_new" href="${target.href}" title="${target.href}">${target.dataset.popupTitleHtml}</a>`;
+		let titleLink = `<a class="title-link" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${target.dataset.popupTitleHtml}</a>`;
 
 		//	Author.
 		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`;
