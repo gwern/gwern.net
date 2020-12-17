@@ -1253,12 +1253,6 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 /* TABLES */
 /**********/
 
-.tableWrapper {
-    margin: 2em 0 2.125em 0;
-    overflow-x: auto;
-    overflow-y: hidden;
-    box-sizing: border-box;
-}
 h1 + .tableWrapper,
 h2 + .tableWrapper,
 h3 + .tableWrapper,

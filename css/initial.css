@@ -619,7 +619,9 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 }
 
 /* The table of contents is a *table*, so align */
-#TOC { font-variant-numeric: tabular-nums; }
+#TOC {
+	font-variant-numeric: tabular-nums;
+}
 
 /****************/
 /* MAIN CONTENT */
@@ -925,6 +927,13 @@ pre {
 /**********/
 /* TABLES */
 /**********/
+
+.tableWrapper {
+    margin: 2em 0 2.125em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-sizing: border-box;
+}
 
 /*=-------------------=*/
 /*= Full-width tables =*/
