@@ -42,6 +42,16 @@ GW.setLogLevel = (level, permanently = false) => {
 /* HELPERS */
 /***********/
 
+/*  Returns true if the given element intersects the viewport, false otherwise.
+    */
+function isOnScreen (element) {
+    let rect = element.getBoundingClientRect();
+    return (rect.top < window.innerHeight &&
+            rect.bottom > 0 &&
+            rect.left < window.innerWidth &&
+            rect.right > 0);
+}
+
 /*  Returns true if the string begins with any of the given prefixes.
     */
 String.prototype.startsWithAnyOf = function (prefixes) {

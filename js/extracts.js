@@ -21,7 +21,7 @@ Extracts = {
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targets: {
 		targetElementsSelector: "a.docMetadata, a[href^='./images/'], a[href^='../images/'], a[href^='/images/'], a[href^='https://www.gwern.net/images/'], a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a.footnote-back, span.defnMetadata",
-		excludedElementsSelector: ".footnote-ref",
+		excludedElementsSelector: null,
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
 
@@ -145,7 +145,7 @@ Extracts = {
         });
 
 		//  Remove event handler for newly-spawned popups.
-		GW.notificationCenter.removeHandlerForEvent("Popups.popupSpawned", Footnotes.popupSpawnedHandler);
+		GW.notificationCenter.removeHandlerForEvent("Popups.popupSpawned", Extracts.popupSpawnedHandler);
 
         //  Remove popups.
         document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
@@ -187,6 +187,19 @@ Extracts = {
 		if (videoId) {
 			//  Videos (both local and remote).
 			popup.innerHTML = Extracts.videoForTarget(target, videoId);
+		} else if (target.classList.contains("footnote-ref")) {
+			//  Citations.
+			if (!target.hash)
+				return false;
+
+			//  This could be a footnote, or a sidenote!
+			let targetNoteId = target.hash.substr(1);
+			let targetNote = document.querySelector("#" + targetNoteId);
+			if (!targetNote)
+				return false;
+
+			popup.innerHTML = `<div>${targetNote.innerHTML}</div>`;
+			popup.targetNote = targetNote;
 		} else if (target.classList.contains("footnote-back")) {
 			//  Context surrounding a citation (displayed on footnote-back links).
 			popup.innerHTML = Extracts.citationContextForTarget(target);
@@ -212,10 +225,24 @@ Extracts = {
 		//  Import the class(es) of the target, and add some others.
 		popup.classList.add(...target.classList, "extract-popup", "markdownBody");
 
-		//  Special handling for section links spawned by the TOC.
-		if (target.closest("#TOC")) {
+		if (target.classList.contains("footnote-ref")) {
+			popup.classList.add("footnote-popup");
+		} else if (target.closest("#TOC")) {
 			popup.classList.add("toc-section-popup");
+		}
 
+		//	Inject the extract for the target into the popup.
+		if (Extracts.fillPopup(popup, target) == false)
+			return false;
+
+		if (popup.classList.contains("footnote-popup")) {
+			//  Do not spawn footnote popup if sidenote is visible.
+			if (GW.sidenotes != null
+				&& !GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches
+				&& isOnScreen(popup.targetNote))
+				return false;
+		} else if (popup.classList.contains("toc-section-popup")) {
+			//  Special handling for section links spawned by the TOC.
 			target.popupSpecialPositioningFunction = (preparedPopup, popupTarget, mouseEvent) => {
 				let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 				let mouseEnterEventPositionInPopupContainer = {
@@ -231,10 +258,6 @@ Extracts = {
 				return [ provisionalPopupXPosition, provisionalPopupYPosition ];
 			}
 		}
-
-		//	Inject the extract for the target into the popup.
-		if (Extracts.fillPopup(popup, target) == false)
-			return false;
 
 		//  Fix full-width figures.
 		popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {

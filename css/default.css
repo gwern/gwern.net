@@ -2678,34 +2678,6 @@ body.directory-index #disqus_thread {
     color: var(--GW-popups-popup-link-hover-color);
 }
 
-/*=-----------------=*/
-/*= FOOTNOTE POPUPS =*/
-/*=-----------------=*/
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
-
-.popupdiv.footnote-popup {
-	max-width: 640px;
-	max-height: 480px;
-}
-
-.footnote-popup a.footnote-back {
-    display: none;
-}
-
-/*  The following compensates for the variable edge case where the last
-    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
-    back-to-citation link after it (which is not shown, if present, but makes it
-    uncertain whether the blockquote is the last child of the popup or not. This
-    code makes everything consistent regardless of which case applies.
-    —Obormot (2019-02-17)
-    */
-.footnote-popup > div > blockquote:nth-last-child(2) {
-    margin-bottom: calc(1em/9);
-}
-.footnote-popup > div > blockquote:nth-last-child(2) + p {
-    margin-top: 1em;
-}
-
 /*=----------=*/
 /*= EXTRACTS =*/
 /*=----------=*/
@@ -2799,6 +2771,35 @@ body.directory-index #disqus_thread {
 .extract-popup > div.popup-citation-context > h3:first-child,
 .extract-popup > div.popup-citation-context > h4:first-child {
     margin-top: 0;
+}
+
+/*=-----------------=*/
+/*= FOOTNOTE POPUPS =*/
+/*=-----------------=*/
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
+
+.popupdiv.footnote-popup {
+	min-width: unset;
+	max-width: 640px;
+	max-height: 480px;
+}
+
+.footnote-popup a.footnote-back {
+    display: none;
+}
+
+/*  The following compensates for the variable edge case where the last
+    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
+    back-to-citation link after it (which is not shown, if present, but makes it
+    uncertain whether the blockquote is the last child of the popup or not. This
+    code makes everything consistent regardless of which case applies.
+    —Obormot (2019-02-17)
+    */
+.footnote-popup > div > blockquote:nth-last-child(2) {
+    margin-bottom: calc(1em/9);
+}
+.footnote-popup > div > blockquote:nth-last-child(2) + p {
+    margin-top: 1em;
 }
 
 /*********************/

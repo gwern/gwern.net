@@ -92,13 +92,13 @@ Footnotes = {
 /******************/
 /*	Initialization.
 	*/
-doWhenPageLoaded(() => {
-	GW.notificationCenter.fireEvent("Footnotes.loaded");
-
-	if (window.Popups)
-		Footnotes.setup();
-	else
-		GW.notificationCenter.addHandlerForEvent("Popups.setupComplete", () => {
-			Footnotes.setup();
-		}, { once: true });
-});
+// doWhenPageLoaded(() => {
+// 	GW.notificationCenter.fireEvent("Footnotes.loaded");
+// 
+// 	if (window.Popups)
+// 		Footnotes.setup();
+// 	else
+// 		GW.notificationCenter.addHandlerForEvent("Popups.setupComplete", () => {
+// 			Footnotes.setup();
+// 		}, { once: true });
+// });

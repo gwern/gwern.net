@@ -126,8 +126,8 @@ Popups = {
 				return;
 
 			//	Unbind existing mouseenter/mouseleave events, if any.
-			target.removeEventListener("mouseenter", Footnotes.targetMouseenter);
-			target.removeEventListener("mouseleave", Footnotes.targetMouseleave);
+			target.removeEventListener("mouseenter", Popups.targetMouseenter);
+			target.removeEventListener("mouseleave", Popups.targetMouseleave);
 
 			//  Unset popup prepare function.
 			target.popupPrepareFunction = null;
