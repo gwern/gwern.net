@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-16 17:23:23 gwern"
+When:  Time-stamp: "2020-12-16 18:52:08 gwern"
 License: CC-0
 -}
 
@@ -38,6 +38,7 @@ import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 import System.IO.Unsafe (unsafePerformIO)
+import Debug.Trace (trace)
 import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (typographyTransform, invertImage)
 
@@ -99,7 +100,7 @@ metadataRecurse md = M.map annotateItem md
                                                     html <- writeHtml5String def{writerExtensions = pandocExtensions} pandocAnnotated
                                                     return $ T.unpack html
                                        in case ai of
-                                            Left e -> x -- something went wrong parsing it so return original MetadataItem
+                                            Left e -> trace (show e) x -- something went wrong parsing it so return original MetadataItem
                                             Right ab' -> (t,a,d,di,ab') -- annotation now has any annotations inside it inlined
 
 annotateLink :: Metadata -> Inline -> IO Inline
@@ -169,8 +170,9 @@ trimAuthors, initializeAuthors, trimTitle :: String -> String
 trimAuthors a = let maxLength = 64 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
 initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
+trimTitle [] = ""
 trimTitle t = let t' = reverse $ replace " : " ": " $ replace "\n " "" $ trim t in
-                reverse (if head t' == '.' then tail t' else t)
+                if length t' > 0 then reverse (if head t' == '.' then tail t' else t') else ""
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
@@ -260,7 +262,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return Nothing else
                           do let (title:author:date:doi:abstract:_) = parsed
-                             return $ Just (l, (trim title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML abstract))
+                             return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML abstract))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-Date", "-DOI", p]
@@ -275,7 +277,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 case aMaybe of
                   Nothing -> return Nothing
-                  Just a -> return $ Just (p, (trim etitle, author, trim edate, edoi, a))
+                  Just a -> return $ Just (p, (trimTitle etitle, author, trim edate, edoi, a))
            else return Nothing
 
 -- nested JSON object: eg 'jq .message.abstract'
