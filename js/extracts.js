@@ -72,7 +72,7 @@ Extracts = {
 		let dateAndCitationsOrLinks = (target.dataset.popupDate ? ` (${target.dataset.popupDate}${citationsOrLinks})` : ``);
 
 		//  The fully constructed extract popup contents.
-        return `<div class="popup-extract">` +
+        return `<div>` +
                    `<p class="data-field title">${archiveOrOriginalLink}${titleLink}</p>` +
                    `<p class="data-field author-plus-date">${author}${dateAndCitationsOrLinks}</p>` +
                    `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
@@ -88,7 +88,7 @@ Extracts = {
 		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`
 		let date = (target.dataset.popupDate ? ` (${target.dataset.popupDate})` : ``);
 
-        return `<div class="popup-extract">` +
+        return `<div>` +
         		   `<p class="data-field title">${target.dataset.popupTitleHtml}</p>` +
         		   `<p class="data-field author-plus-date">${author}${date}</p>` +
         		   `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
@@ -105,7 +105,7 @@ Extracts = {
     videoForTarget: (target, videoId) => {
 		GWLog("Extracts.videoForTarget", "extracts.js", 2);
 
-        return `<div class="popup-video"><iframe src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
+        return `<div><iframe src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
     },
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul");
@@ -118,7 +118,7 @@ Extracts = {
 	        targetElement = Extracts.nearestBlockElement(targetElement);
 		let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
 
-        return `<div class='popup-section-embed'>${sectionEmbedHTML}</div>`;
+        return `<div>${sectionEmbedHTML}</div>`;
     },
     citationContextForTarget: (target) => {
 		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
@@ -127,13 +127,13 @@ Extracts = {
         let citationContextBlockElement = Extracts.nearestBlockElement(targetCitation);
 		let citationContextHTML = (citationContextBlockElement.tagName == "SECTION") ? citationContextBlockElement.innerHTML : citationContextBlockElement.outerHTML;
 
-        return `<div class='popup-citation-context'>${citationContextHTML}</div>`;
+        return `<div>${citationContextHTML}</div>`;
     },
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
         // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
-        return `<div class='popup-local-image'><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
+        return `<div><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
 
     cleanup: () => {
@@ -187,6 +187,7 @@ Extracts = {
 		if (videoId) {
 			//  Videos (both local and remote).
 			popup.innerHTML = Extracts.videoForTarget(target, videoId);
+			popup.classList.add("video-popup");
 		} else if (target.classList.contains("footnote-ref")) {
 			//  Citations.
 			if (!target.hash)
@@ -208,17 +209,20 @@ Extracts = {
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
 			//  Identified sections of the current page.
 			popup.innerHTML = Extracts.sectionEmbedForTarget(target);
+			popup.classList.add("section-embed-popup");
 			if (target.closest("#TOC"))
 				popup.classList.add("toc-section-popup");
 		} else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
 			//  Locally hosted images.
 			popup.innerHTML = Extracts.localImageForTarget(target);
+			popup.classList.add("image-popup");
 		} else if (target.classList.contains("docMetadata")) {
 			//  Summaries of links to elsewhere.
 			popup.innerHTML = Extracts.extractForTarget(target);
 		} else if (target.classList.contains("defnMetadata")) {
 			//  Definitions.
 			popup.innerHTML = Extracts.definitionForTarget(target);
+			popup.classList.add("definition-popup");
 		}
 
 		return (popup.childElementCount != 0);

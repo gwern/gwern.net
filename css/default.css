@@ -2724,9 +2724,9 @@ body.directory-index #disqus_thread {
 
 /*	TODO: remove this once popups inherit from main body styles.
 	*/
-.extract-popup > div .data-field.popupAbstract > p,
-.extract-popup > div.popup-section-embed p,
-.extract-popup > div.popup-citation-context p {
+.extract-popup .data-field.popupAbstract p,
+.extract-popup.section-embed-popup p,
+.extract-popup.citation-context-popup p {
     text-align: justify;
     text-indent: 1em;
     hyphens: auto;
@@ -2753,10 +2753,10 @@ body.directory-index #disqus_thread {
 
 /*  Popups for videos.
     */
-.extract-popup > div.popup-video {
+.extract-popup.video-popup > div {
 	padding: 0;
 }
-.extract-popup > div.popup-video iframe {
+.extract-popup.video-popup iframe {
 	display: block;
 	width: 495px;
 	height: 310px;
@@ -2764,18 +2764,18 @@ body.directory-index #disqus_thread {
 
 /*	Section embeds.
 	*/
-.extract-popup > div.popup-section-embed,
-.extract-popup > div.popup-citation-context {
+.extract-popup.section-embed-popup > div,
+.extract-popup.citation-context-popup > div {
     overflow-x: hidden;
 }
-.extract-popup > div.popup-section-embed > h1:first-child,
-.extract-popup > div.popup-section-embed > h2:first-child,
-.extract-popup > div.popup-section-embed > h3:first-child,
-.extract-popup > div.popup-section-embed > h4:first-child,
-.extract-popup > div.popup-citation-context > h1:first-child,
-.extract-popup > div.popup-citation-context > h2:first-child,
-.extract-popup > div.popup-citation-context > h3:first-child,
-.extract-popup > div.popup-citation-context > h4:first-child {
+.extract-popup.section-embed-popup > div > h1:first-child,
+.extract-popup.section-embed-popup > div > h2:first-child,
+.extract-popup.section-embed-popup > div > h3:first-child,
+.extract-popup.section-embed-popup > div > h4:first-child,
+.extract-popup.citation-context-popup > div > h1:first-child,
+.extract-popup.citation-context-popup > div > h2:first-child,
+.extract-popup.citation-context-popup > div > h3:first-child,
+.extract-popup.citation-context-popup > div > h4:first-child {
     margin-top: 0;
 }
 
