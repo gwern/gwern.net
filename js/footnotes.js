@@ -26,6 +26,9 @@ Footnotes = {
         //  Remove popups.
         document.querySelectorAll(`#${Popups.popupContainerID} .footnote-popup`).forEach(element => element.remove());
 
+		//  Remove event handler for newly-spawned popups.
+		GW.notificationCenter.removeHandlerForEvent("Popups.popupSpawned", Footnotes.popupSpawnedHandler);
+
 		GW.notificationCenter.fireEvent("Footnotes.cleanupComplete");
     },
 	setup: () => {
@@ -45,7 +48,7 @@ Footnotes = {
 		Popups.addTargets(Footnotes.targets, Footnotes.preparePopup);
 
 		//  Recursively set up targets within newly-spawned popups as well.
-		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", (info) => {
+		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", Footnotes.popupSpawnedHandler = (info) => {
 			Popups.addTargetsWithin(info.popup, Footnotes.targets, Footnotes.preparePopup);
 		});
 

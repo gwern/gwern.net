@@ -144,6 +144,9 @@ Extracts = {
         	Popups.removeTargetsWithin(container, Extracts.targets);
         });
 
+		//  Remove event handler for newly-spawned popups.
+		GW.notificationCenter.removeHandlerForEvent("Popups.popupSpawned", Footnotes.popupSpawnedHandler);
+
         //  Remove popups.
         document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
     },
@@ -170,7 +173,7 @@ Extracts = {
 		});
 
 		//  Recursively set up targets within newly-spawned popups as well.
-		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", (info) => {
+		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", Extracts.popupSpawnedHandler = (info) => {
 			Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
 		});
  

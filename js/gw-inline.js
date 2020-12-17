@@ -115,7 +115,7 @@ GW.notificationCenter.addHandlerForEvent = function (eventName, f, options = { }
 
     GW.notificationCenter[eventName].push({ f: f, options: options });
 };
-GW.notificationCenter.cancelHandlerForEvent = function (eventName, f, options = { }) {
+GW.notificationCenter.removeHandlerForEvent = function (eventName, f, options = { }) {
     if (GW.notificationCenter[eventName] == null)
         return;
 

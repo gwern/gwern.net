@@ -2635,6 +2635,18 @@ body.directory-index #disqus_thread {
 	display: initial;
 }
 
+/*  Sidenote popups.
+	*/
+.popupdiv .sidenote-self-link {
+	display: none;
+}
+.popupdiv .sidenote-inner-wrapper {
+	margin: 0;
+}
+.popupdiv .sidenote-outer-wrapper {
+	border: none;
+}
+
 /*  Scroll bar styles (for WebKit/Blink).
     */
 .popupdiv::-webkit-scrollbar {
