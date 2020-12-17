@@ -235,6 +235,12 @@ Extracts = {
 			});
 		});
 
+		//  Rectify margin note style.
+		popup.querySelectorAll(".marginnote").forEach(marginNote => {
+			marginNote.classList.add("inline");
+			marginNote.classList.remove("sidenote");
+		});
+
 		//  Qualify internal links in extracts.
 		let targetHref = target.getAttribute("href");
 		if (popup.classList.contains("docMetadata") && targetHref.startsWith("/")) {

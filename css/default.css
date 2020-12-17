@@ -1220,9 +1220,6 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     /* bolding turns out to be too obtrusive for users' liking; italicized both inline & popped-out */
     font-style: italic;
 }
-.marginnote.inline::after {
-    content: " ";
-}
 .marginnote.sidenote {
     display: initial;
     width: calc(50vw - (50% + 104px));
@@ -2630,6 +2627,12 @@ body.directory-index #disqus_thread {
 }
 .popupdiv :not(section).collapse > .disclosure-button:not(:checked) + * > :first-child:not(.collapseSummary) {
 	max-height: unset;
+}
+
+/*	Margin notes in popups.
+	*/
+.popupdiv .marginnote {
+	display: initial;
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
