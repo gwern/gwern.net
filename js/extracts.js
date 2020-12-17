@@ -200,12 +200,16 @@ Extracts = {
 
 			popup.innerHTML = `<div>${targetNote.innerHTML}</div>`;
 			popup.targetNote = targetNote;
+			popup.classList.add("footnote-popup");
 		} else if (target.classList.contains("footnote-back")) {
 			//  Context surrounding a citation (displayed on footnote-back links).
 			popup.innerHTML = Extracts.citationContextForTarget(target);
+			popup.classList.add("citation-context-popup");
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
 			//  Identified sections of the current page.
 			popup.innerHTML = Extracts.sectionEmbedForTarget(target);
+			if (target.closest("#TOC"))
+				popup.classList.add("toc-section-popup");
 		} else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
 			//  Locally hosted images.
 			popup.innerHTML = Extracts.localImageForTarget(target);
@@ -225,13 +229,6 @@ Extracts = {
 		//  Import the class(es) of the target, and add some others.
 		popup.classList.add(...target.classList, "extract-popup", "markdownBody");
 
-		//  Special additional classes.
-		if (target.classList.contains("footnote-ref")) {
-			popup.classList.add("footnote-popup");
-		} else if (target.closest("#TOC")) {
-			popup.classList.add("toc-section-popup");
-		}
-
 		//	Inject the extract for the target into the popup.
 		if (Extracts.fillPopup(popup, target) == false)
 			return false;
@@ -242,8 +239,20 @@ Extracts = {
 				&& !GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches
 				&& isOnScreen(popup.targetNote))
 				return false;
+		} else if (popup.classList.contains("citation-context-popup")) {
+			//  Do not spawn citation context popup if citation is visible.
+			if (isOnScreen(document.querySelector("#markdownBody " + target.getAttribute("href"))))
+				return false;
+
+			//  Remove the .targeted class from a targeted citation (if any).
+			popup.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
+				targetedCitation.classList.remove("targeted");
+			});
+
+			//  Highlight citation in a citation context popup.
+			popup.querySelector(target.getAttribute("href")).classList.add("highlighted");
 		} else if (popup.classList.contains("toc-section-popup")) {
-			//  Special handling for section links spawned by the TOC.
+			//  Special positioning for section links spawned by the TOC.
 			target.popupSpecialPositioningFunction = (preparedPopup, popupTarget, mouseEvent) => {
 				let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 				let mouseEnterEventPositionInPopupContainer = {
