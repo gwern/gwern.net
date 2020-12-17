@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-16 20:46:47 gwern"
+When:  Time-stamp: "2020-12-17 00:12:14 gwern"
 License: CC-0
 -}
 
@@ -130,7 +130,7 @@ annotateLink _ x = return x
 
 constructAnnotation :: Inline -> MetadataItem -> Inline
 constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)) (title, author, date, doi, abstract) =
-  if abstract == "" then x else -- if no abstract, don't bother
+  if abstract == "" || title == "" then x else -- if no abstract/title, don't bother (author/date/DOI are relatively optional in comparison, but what doesn't have a title‽)
     let lid' = if lid=="" then generateID (T.unpack target) author date else lid in
     let annotationAttributes = (lid', "docMetadata":classes,
           (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII $ trimTitle title),
