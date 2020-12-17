@@ -59,7 +59,7 @@ Popups = {
             GWLog("Popup container parent element not found. Exiting.", "popups.js", 1);
             return;
         }
-        popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Popups.popupContainerID}' style='z-index: ${Popups.popupContainerZIndex};'></div>`);
+        popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Popups.popupContainerID}'></div>`);
         requestAnimationFrame(() => {
             Popups.popupContainer = document.querySelector(`#${Popups.popupContainerID}`);
         });
@@ -394,6 +394,7 @@ Popups.stylesHTML = `<style id='${Popups.stylesID}'>
     top: 0;
     width: 100%;
     pointer-events: none;
+    z-index: ${Popups.popupContainerZIndex};
 }
 #${Popups.popupContainerID} > * {
     pointer-events: auto;
