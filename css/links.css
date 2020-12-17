@@ -1493,6 +1493,7 @@ a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.
 .extract-popup a[href*='archive-it.org'    ]::after,
 .extract-popup a[href*='archiveteam.org'   ]::after,
 .extract-popup a[href*='waybackmachine.org']::after {
+    background-image: url('/static/img/icons/internetarchive.svg');
     height: 0.9em;
     width: 0.9em;
     margin: 0 0 0 -4px;
