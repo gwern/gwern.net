@@ -2795,11 +2795,17 @@ body.directory-index #disqus_thread {
     code makes everything consistent regardless of which case applies.
     —Obormot (2019-02-17)
     */
-.footnote-popup > div > blockquote:nth-last-child(2) {
+.footnote-popup > div > blockquote:nth-last-child(2),
+.footnote-popup .sidenote-inner-wrapper blockquote:nth-last-child(2) {
     margin-bottom: calc(1em/9);
 }
-.footnote-popup > div > blockquote:nth-last-child(2) + p {
+.footnote-popup > div > blockquote:nth-last-child(2) + p,
+.footnote-popup .sidenote-inner-wrapper blockquote:nth-last-child(2) + p {
     margin-top: 1em;
+}
+
+.footnote-popup .sidenote-outer-wrapper {
+    max-height: unset;
 }
 
 /*********************/

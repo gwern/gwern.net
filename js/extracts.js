@@ -225,6 +225,7 @@ Extracts = {
 		//  Import the class(es) of the target, and add some others.
 		popup.classList.add(...target.classList, "extract-popup", "markdownBody");
 
+		//  Special additional classes.
 		if (target.classList.contains("footnote-ref")) {
 			popup.classList.add("footnote-popup");
 		} else if (target.closest("#TOC")) {
