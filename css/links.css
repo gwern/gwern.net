@@ -1485,6 +1485,21 @@ a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.
     margin: 0 0 2px 2px;
     opacity: 0.6;
 }
+/*	Archive link in extracts.
+	*/
+.extract-popup a[href*='webcitation.org'   ]::after,
+.extract-popup a[href*='mementoweb.org'    ]::after,
+.extract-popup a[href*='archive.org'       ]::after,
+.extract-popup a[href*='archive-it.org'    ]::after,
+.extract-popup a[href*='archiveteam.org'   ]::after,
+.extract-popup a[href*='waybackmachine.org']::after {
+    height: 0.9em;
+    width: 0.9em;
+    margin: 0 0 0 -4px;
+    padding: 0 3px;
+    position: relative;
+    top: 3px;
+}
 
 /*  Tumblr.
     */
