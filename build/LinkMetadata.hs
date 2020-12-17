@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-15 22:19:42 gwern"
+When:  Time-stamp: "2020-12-17 10:58:43 gwern"
 License: CC-0
 -}
 
@@ -38,6 +38,7 @@ import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 import System.IO.Unsafe (unsafePerformIO)
+import Debug.Trace (trace)
 import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (typographyTransform, invertImage)
 
@@ -99,7 +100,7 @@ metadataRecurse md = M.map annotateItem md
                                                     html <- writeHtml5String def{writerExtensions = pandocExtensions} pandocAnnotated
                                                     return $ T.unpack html
                                        in case ai of
-                                            Left e -> x -- something went wrong parsing it so return original MetadataItem
+                                            Left e -> trace (show e) x -- something went wrong parsing it so return original MetadataItem
                                             Right ab' -> (t,a,d,di,ab') -- annotation now has any annotations inside it inlined
 
 annotateLink :: Metadata -> Inline -> IO Inline
@@ -129,11 +130,11 @@ annotateLink _ x = return x
 
 constructAnnotation :: Inline -> MetadataItem -> Inline
 constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)) (title, author, date, doi, abstract) =
-  if abstract == "" then x else -- if no abstract, don't bother
+  if abstract == "" || title == "" then x else -- if no abstract/title, don't bother (author/date/DOI are relatively optional in comparison, but what doesn't have a title‽)
     let lid' = if lid=="" then generateID (T.unpack target) author date else lid in
     let annotationAttributes = (lid', "docMetadata":classes,
-          (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII title),
-                                         ("popup-title-html", htmlToBetterHTML $ T.pack title),
+          (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII $ trimTitle title),
+                                         ("popup-title-html", htmlToBetterHTML $ T.pack $ trimTitle title),
                                          ("popup-author",     htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
                                          ("popup-date",       T.pack date),
                                          ("popup-doi",        T.pack doi),
@@ -155,8 +156,8 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
      -- Why? Because many tooltips/link-titles are already written in the Markdown sources, like `[foo](/docs/bar.pdf "'On Dancing Angels', Quux 2020")`; these tooltips are important documentation while writing the Markdown page (so you can see at a glance what they are - the *author* can't mouse over them!), but are inferior to the generated tooltips. So if the original tooltip is not particularly long, that suggests it's not a special one (eg a Twitter tweet which has been inlined) and we should override it.
      abstractText = htmlToASCII abstract'
      possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++", " ++ "(" ++ date ++ ")" ++
-                        (if doi /= "" then " (DOI:"++doi++")" else "")
-                        ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ "…" else abstractText))++"\""
+                        (if doi /= "" then " (DOI: "++doi++")" else "")
+                        ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ takeWhile (not . isSpace) (drop 350 abstractText) ++ "…" else abstractText))++"\""
      newTooltip :: T.Text
      newTooltip = if (fromIntegral (length possibleTooltip)::Float) > ((fromIntegral $ T.length originalTooltip)*1.3::Float)
                    then T.pack possibleTooltip else originalTooltip
@@ -165,9 +166,13 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
 constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructAnnotation'! This should never happen." ++ show b ++ " " ++ show c
 
 -- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
-trimAuthors, initializeAuthors :: String -> String
+trimAuthors, initializeAuthors, trimTitle :: String -> String
 trimAuthors a = let maxLength = 64 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
 initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
+-- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
+trimTitle [] = ""
+trimTitle t = let t' = reverse $ replace " : " ": " $ replace "\n " "" $ trim t in
+                if length t' > 0 then reverse (if head t' == '.' then tail t' else t') else ""
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
@@ -215,7 +220,7 @@ htmlToASCII input = let cleaned = runPure $ do
                                     return $ T.unpack txt
               in case cleaned of
                  Left _ -> ""
-                 Right output -> trim output
+                 Right output -> replace "\n\n" "" $ trim output
 
 -- clean up abstracts & titles with functions from Typography module: smallcaps & hyphenation (hyphenation is particularly important in popups because of the highly restricted horizontal width).
 -- WARNING: Pandoc is not lossless when reading HTML; eg classes set on unsupported elements like `<figure>` will be erased:
@@ -257,7 +262,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return Nothing else
                           do let (title:author:date:doi:abstract:_) = parsed
-                             return $ Just (l, (trim title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML abstract))
+                             return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML abstract))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-Date", "-DOI", p]
@@ -272,7 +277,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 case aMaybe of
                   Nothing -> return Nothing
-                  Just a -> return $ Just (p, (trim etitle, author, trim edate, edoi, a))
+                  Just a -> return $ Just (p, (trimTitle etitle, author, trim edate, edoi, a))
            else return Nothing
 
 -- nested JSON object: eg 'jq .message.abstract'
@@ -356,7 +361,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
-                         let title = findTxt $ fst $ element "title" tags
+                         let title = trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          let doi = findTxt $ fst $ element "arxiv:doi" tags
@@ -420,6 +425,7 @@ cleanAbstractsHTML t = trim $
     , ("<h3>Abstract:</h3>", "")
     , ("<h3>Summary/Abstract</h3>", "")
     , ("Alzheimer9", "Alzheimer'")
+    , ("<br/> <br/>", "</br>")
     , ("<p> ", "<p>")
     , (" <p>", "<p>")
     , ("</p> ", "</p>")
@@ -626,14 +632,16 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
                         let doi = ""
-                        let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract f
+                        let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
                         let description = concatMap (\(TagOpen _ (a:b)) -> if snd a == "description" then snd $ head b else "") metas
                         -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
                         let abstract'     = if length description > length abstract then description else abstract
 
                         return $ Just (p, (title, author, date, doi, abstract'))
         where
-          dropToAbstract (TagOpen "div" [("id", "abstract")]) = False
+          dropToBody (TagOpen "body" _) = False
+          dropToBody _ = True
+          dropToAbstract (TagOpen "div" [("class", "abstract")]) = False
           dropToAbstract _                                    = True
           takeToAbstract (TagClose "div") = False
           takeToAbstract _                = True
