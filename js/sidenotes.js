@@ -43,16 +43,6 @@ function updateTargetCounterpart() {
         counterpart.classList.toggle("targeted", true);
 }
 
-/*  Returns true if the given element intersects the viewport, false otherwise.
-    */
-function isOnScreen(element) {
-    let rect = element.getBoundingClientRect();
-    return (rect.top < window.innerHeight &&
-            rect.bottom > 0 &&
-            rect.left < window.innerWidth &&
-            rect.right > 0);
-}
-
 /*  This is necessary to defeat a bug where if the page is loaded with the URL
     hash targeting some element, the element does not match the :target CSS
     pseudo-class.
@@ -245,31 +235,16 @@ function updateFootnoteReferenceLinks() {
 /*  Bind event listeners for the footnote popups or the sidenotes, as
     appropriate for the current viewport width; unbind the others.
     */
-function updateFootnoteEventListeners() {
-    GWLog("updateFootnoteEventListeners", "sidenotes.js");
+function updateEventListeners() {
+    GWLog("updateEventListeners", "sidenotes.js");
 
     //  Unbind sidenote mouse events.
 	unbindSidenoteMouseEvents();
 
-    /*  Determine whether we are in sidenote mode or footnote mode.
-        */
-    var sidenotesMode = (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false);
-
-    if (sidenotesMode) {
-        if (window.Footnotes) {
-            //  Unbind footnote events and clean up onscreen footnote popups.
-            Footnotes.cleanup();
-        }
-
-        //  Bind sidenote mouse events.
+    //  Determine whether we are in sidenote mode or footnote mode.
+    if (!GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches) {
+        //  If we are in sidenotes mode, bind sidenote mouse events.
 		bindSidenoteMouseEvents();
-    } else {
-        if (window.Footnotes &&
-            GW.sidenotes.mediaQueries.mobileViewportWidthBreakpoint.matches == false &&
-            GW.sidenotes.mediaQueries.hover == true) {
-            //  Bind footnote events.
-            Footnotes.setup();
-        }
     }
 }
 
@@ -329,10 +304,10 @@ function unbindSidenoteMouseEvents() {
 function updateSidenotePositions() {
     GWLog("updateSidenotePositions", "sidenotes.js");
 
-    /*  If we're in footnotes mode (i.e., the viewport is too narrow), then
-        don't do anything.
+    /*  If we’re in footnotes mode (i.e., the viewport is too narrow), then
+        don’t do anything.
         */
-    if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true)
+    if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
         return;
 
     /*  Position left sidenote column so top is flush with top of first
@@ -719,10 +694,10 @@ function sidenotesSetup() {
         sidenotes or vice/versa, as appropriate.
         (This listener may also be fired if the dev tools pane is opened, etc.)
         */
-        GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
+    GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(GW.sidenotes.viewportWidthBreakpointChanged = () => {
         GWLog("GW.sidenotes.viewportWidthBreakpointChanged", "sidenotes.js");
 
-        updateFootnoteEventListeners();
+        updateEventListeners();
         updateFootnoteReferenceLinks();
     });
 
@@ -760,17 +735,9 @@ function sidenotesSetup() {
         or to sidenotes, as appropriate.
         */
     doWhenPageLoaded(() => {
-        updateFootnoteEventListeners();
+        updateEventListeners();
         updateFootnoteReferenceLinks();
     });
-    /*  In case footnotes.js loads later, make sure event listeners are set in
-        order afterwards.
-        */
-    GW.notificationCenter.addHandlerForEvent("Footnotes.loaded", () => {
-		GWLog("Sidenotes.js has detected that footnotes.js has loaded.", "sidenotes.js");
-
-		GW.notificationCenter.addHandlerForEvent("Footnotes.setupComplete", updateFootnoteEventListeners, { once: true });
-	}, { once: true });
 
     /*  If the page was loaded with a hash that points to a footnote, but
         sidenotes are enabled (or vice-versa), rewrite the hash in accordance

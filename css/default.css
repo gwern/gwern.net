@@ -1131,6 +1131,11 @@ a.footnote-ref {
 /*= Citations =*/
 /*=-----------=*/
 
+.footnote-ref::before {
+    transition: 
+        background-color 0.15s ease 0.05s,
+        box-shadow 0.15s ease 0.05s;
+}
 .footnote-ref.highlighted::before,
 .footnote-ref:hover::before,
 .footnote-ref:target::before,
@@ -1140,6 +1145,7 @@ a.footnote-ref {
         0 0 0 1px var(--GW-footnote-ref-highlight-box-shadow-color),
         0 0 0 2px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
         0 0 0 3px var(--GW-footnote-ref-highlight-box-shadow-color);
+    transition: none;
 }
 /*  (Not very) special styles for (everyone except) special browsers.
     */
@@ -2635,6 +2641,18 @@ body.directory-index #disqus_thread {
 	display: initial;
 }
 
+/*  Sidenote popups.
+	*/
+.popupdiv .sidenote-self-link {
+	display: none;
+}
+.popupdiv .sidenote-inner-wrapper {
+	margin: 0;
+}
+.popupdiv .sidenote-outer-wrapper {
+	border: none;
+}
+
 /*  Scroll bar styles (for WebKit/Blink).
     */
 .popupdiv::-webkit-scrollbar {
@@ -2664,34 +2682,6 @@ body.directory-index #disqus_thread {
 }
 .popupdiv a:hover {
     color: var(--GW-popups-popup-link-hover-color);
-}
-
-/*=-----------------=*/
-/*= FOOTNOTE POPUPS =*/
-/*=-----------------=*/
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
-
-.popupdiv.footnote-popup {
-	max-width: 640px;
-	max-height: 480px;
-}
-
-.footnote-popup a.footnote-back {
-    display: none;
-}
-
-/*  The following compensates for the variable edge case where the last
-    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
-    back-to-citation link after it (which is not shown, if present, but makes it
-    uncertain whether the blockquote is the last child of the popup or not. This
-    code makes everything consistent regardless of which case applies.
-    —Obormot (2019-02-17)
-    */
-.footnote-popup > div > blockquote:nth-last-child(2) {
-    margin-bottom: calc(1em/9);
-}
-.footnote-popup > div > blockquote:nth-last-child(2) + p {
-    margin-top: 1em;
 }
 
 /*=----------=*/
@@ -2734,9 +2724,9 @@ body.directory-index #disqus_thread {
 
 /*	TODO: remove this once popups inherit from main body styles.
 	*/
-.extract-popup > div .data-field.popupAbstract > p,
-.extract-popup > div.popup-section-embed p,
-.extract-popup > div.popup-citation-context p {
+.extract-popup .data-field.popupAbstract p,
+.extract-popup.section-embed-popup p,
+.extract-popup.citation-context-popup p {
     text-align: justify;
     text-indent: 1em;
     hyphens: auto;
@@ -2763,10 +2753,10 @@ body.directory-index #disqus_thread {
 
 /*  Popups for videos.
     */
-.extract-popup > div.popup-video {
+.extract-popup.video-popup > div {
 	padding: 0;
 }
-.extract-popup > div.popup-video iframe {
+.extract-popup.video-popup iframe {
 	display: block;
 	width: 495px;
 	height: 310px;
@@ -2774,19 +2764,54 @@ body.directory-index #disqus_thread {
 
 /*	Section embeds.
 	*/
-.extract-popup > div.popup-section-embed,
-.extract-popup > div.popup-citation-context {
+.extract-popup.section-embed-popup > div,
+.extract-popup.citation-context-popup > div {
     overflow-x: hidden;
 }
-.extract-popup > div.popup-section-embed > h1:first-child,
-.extract-popup > div.popup-section-embed > h2:first-child,
-.extract-popup > div.popup-section-embed > h3:first-child,
-.extract-popup > div.popup-section-embed > h4:first-child,
-.extract-popup > div.popup-citation-context > h1:first-child,
-.extract-popup > div.popup-citation-context > h2:first-child,
-.extract-popup > div.popup-citation-context > h3:first-child,
-.extract-popup > div.popup-citation-context > h4:first-child {
+.extract-popup.section-embed-popup > div > h1:first-child,
+.extract-popup.section-embed-popup > div > h2:first-child,
+.extract-popup.section-embed-popup > div > h3:first-child,
+.extract-popup.section-embed-popup > div > h4:first-child,
+.extract-popup.citation-context-popup > div > h1:first-child,
+.extract-popup.citation-context-popup > div > h2:first-child,
+.extract-popup.citation-context-popup > div > h3:first-child,
+.extract-popup.citation-context-popup > div > h4:first-child {
     margin-top: 0;
+}
+
+/*=-----------------=*/
+/*= FOOTNOTE POPUPS =*/
+/*=-----------------=*/
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
+
+.popupdiv.footnote-popup {
+	min-width: unset;
+	max-width: 640px;
+	max-height: 480px;
+}
+
+.footnote-popup a.footnote-back {
+    display: none;
+}
+
+/*  The following compensates for the variable edge case where the last
+    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
+    back-to-citation link after it (which is not shown, if present, but makes it
+    uncertain whether the blockquote is the last child of the popup or not. This
+    code makes everything consistent regardless of which case applies.
+    —Obormot (2019-02-17)
+    */
+.footnote-popup > div > blockquote:nth-last-child(2),
+.footnote-popup .sidenote-inner-wrapper blockquote:nth-last-child(2) {
+    margin-bottom: calc(1em/9);
+}
+.footnote-popup > div > blockquote:nth-last-child(2) + p,
+.footnote-popup .sidenote-inner-wrapper blockquote:nth-last-child(2) + p {
+    margin-top: 1em;
+}
+
+.footnote-popup .sidenote-outer-wrapper {
+    max-height: unset;
 }
 
 /*********************/

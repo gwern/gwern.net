@@ -126,8 +126,8 @@ Popups = {
 				return;
 
 			//	Unbind existing mouseenter/mouseleave events, if any.
-			target.removeEventListener("mouseenter", Footnotes.targetMouseenter);
-			target.removeEventListener("mouseleave", Footnotes.targetMouseleave);
+			target.removeEventListener("mouseenter", Popups.targetMouseenter);
+			target.removeEventListener("mouseleave", Popups.targetMouseleave);
 
 			//  Unset popup prepare function.
 			target.popupPrepareFunction = null;
@@ -154,6 +154,9 @@ Popups = {
 
 		//  Position the popup appropriately with respect to the target.
 		Popups.positionPopup(popup, target, event);
+
+		//  Mark target as having an active popup associated with it.
+		target.classList.add("has-active-popup");
 
 		GW.notificationCenter.fireEvent("Popups.popupSpawned", { popup: popup });
 	},
@@ -201,10 +204,8 @@ Popups = {
 			var provisionalPopupXPosition;
 			var provisionalPopupYPosition;
 
-			var tocLink = target.closest("#TOC");
-			if (tocLink) {
-				provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
-				provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
+			if (target.popupSpecialPositioningFunction) {
+				[ provisionalPopupXPosition, provisionalPopupYPosition ] = target.popupSpecialPositioningFunction(popup, target, event);
 			} else {
 				var offToTheSide = false;
 
@@ -290,6 +291,7 @@ Popups = {
 
 	    popup.classList.remove("fading");
         popup.remove();
+        popup.popupTarget.classList.remove("has-active-popup");
         popup.popupTarget.popup = null;
         document.activeElement.blur();
     },
