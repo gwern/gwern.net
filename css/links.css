@@ -363,7 +363,8 @@ a[href$='.ttf' i]::after {
 /*=----------------------------=*/
 
 section > :not(:first-child) a[href^='#']::after,
-p a[href^='#']::after {
+.markdownBody p a[href^='#']::after,
+.markdownBody li a[href^='#']::after {
     content: "\00B6"; /* (¶) Pilcrow Sign */
     margin: 0 1px 0 3px;
     font-size: 0.75em;
@@ -380,15 +381,14 @@ figure a[href^='#'].footnote-back::after,
 li a[href^='#'].footnote-ref::after,
 li a[href^='#'].footnote-back::after,
 p a[href^='#'].footnote-ref::after,
-p a[href^='#'].footnote-back::after{
+p a[href^='#'].footnote-back::after {
     content: none;
 }
 
 /* Dynamically set direction of internal link to an upwards or downwards arrow: */
-section > :not(:first-child) a[href^='#'].identifier-link-up::after,
-p a[href^='#'].identifier-link-up::after,
-section > :not(:first-child) a[href^='#'].identifier-link-down::after,
-p a[href^='#'].identifier-link-down::after {
+section > :not(:first-child) a[href^='#'][class^='identifier-link-']::after,
+p a[href^='#'][class^='identifier-link-']::after,
+li a[href^='#'][class^='identifier-link-']::after {
     content: "";
     bottom: 0.2em;
     width: 1em;
@@ -397,18 +397,19 @@ p a[href^='#'].identifier-link-down::after {
     background-repeat: no-repeat;
 }
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
-p a[href^='#'].identifier-link-up::after {
+p a[href^='#'].identifier-link-up::after,
+li a[href^='#'].identifier-link-up::after {
     background-image: url('/static/img/icons/arrow-up.svg');
 }
 section > :not(:first-child) a[href^='#'].identifier-link-down::after,
-p a[href^='#'].identifier-link-down::after {
+p a[href^='#'].identifier-link-down::after,
+li a[href^='#'].identifier-link-down::after {
     background-image: url('/static/img/icons/arrow-up.svg');
     transform: rotate(180deg);
 }
-section > :not(:first-child) a[href^='#'].identifier-link-up:hover::after,
-p a[href^='#'].identifier-link-up:hover::after,
-section > :not(:first-child) a[href^='#'].identifier-link-down:hover::after,
-p a[href^='#'].identifier-link-down:hover::after {
+section > :not(:first-child) a[href^='#'][class^='identifier-link-']:hover::after,
+p a[href^='#'][class^='identifier-link-']:hover::after,
+li a[href^='#'][class^='identifier-link-']:hover::after {
     opacity: 0.3;
 }
 

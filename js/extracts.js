@@ -218,13 +218,21 @@ Extracts = {
 		if (Extracts.fillPopup(popup, target) == false)
 			return false;
 
-		//  Adjust contents of popup for display.
+		//  Fix full-width figures.
 		popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {
 			captionWrapper.style.minWidth = "";
 		});
 		popup.querySelectorAll(".full-width").forEach(fullWidthBlock => {
 			fullWidthBlock.style.marginLeft = "";
 			fullWidthBlock.style.marginRight = "";
+		});
+
+		//  Expand collapsed code blocks and then re-rectify heights.
+		popup.querySelectorAll("pre code").forEach(codeBlock => {
+			codeBlock.style.height = "";
+			requestAnimationFrame(() => {
+				rectifyCodeBlockHeight(codeBlock);
+			});
 		});
 
 		//  Qualify internal links in extracts.
