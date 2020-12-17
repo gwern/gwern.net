@@ -2594,6 +2594,9 @@ body.directory-index #disqus_thread {
 .popupdiv blockquote {
     margin: 1em 0;
 }
+.popupdiv .image-wrapper::after {
+    content: none;
+}
 
 /*  Scroll bar styles (for WebKit/Blink).
     */
