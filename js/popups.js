@@ -43,6 +43,9 @@ Popups = {
 
         //  Remove popups container and injected styles.
         document.querySelectorAll(`#${Popups.stylesID}, #${Popups.popupContainerID}`).forEach(element => element.remove());
+
+		//  Remove Escape key event listener.
+		document.removeEventListener("keyup", Popups.keyUp);
 	},
 	setup: () => {
 		GWLog("Popups.setup", "popups.js", 1);
@@ -63,6 +66,20 @@ Popups = {
         requestAnimationFrame(() => {
             Popups.popupContainer = document.querySelector(`#${Popups.popupContainerID}`);
         });
+
+		//  Add Escape key event listener.
+		document.addEventListener("keyup", Popups.keyUp = (event) => {
+			GWLog("Popups.keyUp", "popups.js", 3);
+			let allowedKeys = [ "Escape", "Esc" ];
+			if (!allowedKeys.includes(event.key) || Popups.popupContainer.childElementCount == 0)
+				return;
+
+			event.preventDefault();
+
+			[...Popups.popupContainer.children].forEach(popup => {
+				Popups.despawnPopup(popup);
+			});
+		});
 
 		GW.notificationCenter.fireEvent("Popups.setupComplete");
 	},
