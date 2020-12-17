@@ -1131,6 +1131,11 @@ a.footnote-ref {
 /*= Citations =*/
 /*=-----------=*/
 
+.footnote-ref::before {
+    transition: 
+        background-color 0.15s ease 0.05s,
+        box-shadow 0.15s ease 0.05s;
+}
 .footnote-ref.highlighted::before,
 .footnote-ref:hover::before,
 .footnote-ref:target::before,
@@ -1140,6 +1145,7 @@ a.footnote-ref {
         0 0 0 1px var(--GW-footnote-ref-highlight-box-shadow-color),
         0 0 0 2px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
         0 0 0 3px var(--GW-footnote-ref-highlight-box-shadow-color);
+    transition: none;
 }
 /*  (Not very) special styles for (everyone except) special browsers.
     */

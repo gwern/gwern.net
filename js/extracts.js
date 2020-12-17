@@ -239,6 +239,16 @@ Extracts = {
 				&& !GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches
 				&& isOnScreen(popup.targetNote))
 				return false;
+
+			/*  Add event listeners to highlight citation when its footnote
+				popup is spawned.
+				*/
+			popup.addEventListener("mouseenter", (event) => {
+				target.classList.toggle("highlighted", true);
+			});
+			popup.addEventListener("mouseleave", (event) => {
+				target.classList.toggle("highlighted", false);
+			});
 		} else if (popup.classList.contains("citation-context-popup")) {
 			//  Do not spawn citation context popup if citation is visible.
 			if (isOnScreen(document.querySelector("#markdownBody " + target.getAttribute("href"))))
