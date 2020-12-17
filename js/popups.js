@@ -201,10 +201,8 @@ Popups = {
 			var provisionalPopupXPosition;
 			var provisionalPopupYPosition;
 
-			var tocLink = target.closest("#TOC");
-			if (tocLink) {
-				provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
-				provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
+			if (target.popupSpecialPositioningFunction) {
+				[ provisionalPopupXPosition, provisionalPopupYPosition ] = target.popupSpecialPositioningFunction(popup, target, event);
 			} else {
 				var offToTheSide = false;
 

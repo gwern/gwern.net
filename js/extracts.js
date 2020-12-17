@@ -215,6 +215,21 @@ Extracts = {
 		//  Special handling for section links spawned by the TOC.
 		if (target.closest("#TOC")) {
 			popup.classList.add("toc-section-popup");
+
+			target.popupSpecialPositioningFunction = (preparedPopup, popupTarget, mouseEvent) => {
+				let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
+				let mouseEnterEventPositionInPopupContainer = {
+					x: (mouseEvent.clientX - popupContainerViewportRect.left),
+					y: (mouseEvent.clientY - popupContainerViewportRect.top)
+				};
+
+				var popupIntrinsicHeight = preparedPopup.offsetHeight;
+
+				let provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
+				let provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((mouseEvent.clientY / window.innerHeight) * popupIntrinsicHeight);
+
+				return [ provisionalPopupXPosition, provisionalPopupYPosition ];
+			}
 		}
 
 		//	Inject the extract for the target into the popup.
