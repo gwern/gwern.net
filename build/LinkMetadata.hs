@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-17 00:12:14 gwern"
+When:  Time-stamp: "2020-12-17 10:58:43 gwern"
 License: CC-0
 -}
 
@@ -220,7 +220,7 @@ htmlToASCII input = let cleaned = runPure $ do
                                     return $ T.unpack txt
               in case cleaned of
                  Left _ -> ""
-                 Right output -> trim output
+                 Right output -> replace "\n\n" "" $ trim output
 
 -- clean up abstracts & titles with functions from Typography module: smallcaps & hyphenation (hyphenation is particularly important in popups because of the highly restricted horizontal width).
 -- WARNING: Pandoc is not lossless when reading HTML; eg classes set on unsupported elements like `<figure>` will be erased:
@@ -632,14 +632,16 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
                         let doi = ""
-                        let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract f
+                        let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
                         let description = concatMap (\(TagOpen _ (a:b)) -> if snd a == "description" then snd $ head b else "") metas
                         -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
                         let abstract'     = if length description > length abstract then description else abstract
 
                         return $ Just (p, (title, author, date, doi, abstract'))
         where
-          dropToAbstract (TagOpen "div" [("id", "abstract")]) = False
+          dropToBody (TagOpen "body" _) = False
+          dropToBody _ = True
+          dropToAbstract (TagOpen "div" [("class", "abstract")]) = False
           dropToAbstract _                                    = True
           takeToAbstract (TagClose "div") = False
           takeToAbstract _                = True
