@@ -2600,6 +2600,13 @@ body.directory-index #disqus_thread {
 
 /*	Drop caps in popups.
 	*/
+.popupdiv.markdownBody .drop-cap-goudy > p,
+.popupdiv.markdownBody .drop-cap-yinit > p,
+.popupdiv.markdownBody .drop-cap-de-zs > p,
+.popupdiv.markdownBody .drop-cap-cheshire > p,
+.popupdiv.markdownBody .drop-cap-kanzlei > p {
+    text-indent: 0;
+}
 .popupdiv.markdownBody .drop-cap-goudy > p::first-letter {
 	font-size: 6.5em;
 }
