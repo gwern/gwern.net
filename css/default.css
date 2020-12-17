@@ -735,35 +735,35 @@ blockquote blockquote {
 /*= Various edge cases =*/
 /*=--------------------=*/
 
-#markdownBody blockquote blockquote:first-child {
+.markdownBody blockquote blockquote:first-child {
     margin: 0.25em 1px 1em 1px;
 }
 
-#markdownBody blockquote > :last-child,
-#markdownBody blockquote > :last-child > :last-child,
-#markdownBody blockquote > :last-child > :last-child > :last-child,
-#markdownBody blockquote > :last-child > :last-child > :last-child > :last-child {
+.markdownBody blockquote > :last-child,
+.markdownBody blockquote > :last-child > :last-child,
+.markdownBody blockquote > :last-child > :last-child > :last-child,
+.markdownBody blockquote > :last-child > :last-child > :last-child > :last-child {
     margin-bottom: 0;
 }
-#markdownBody blockquote > :first-child,
-#markdownBody blockquote > :first-child > :first-child,
-#markdownBody blockquote > :first-child > :first-child > :first-child,
-#markdownBody blockquote > :first-child > :first-child > :first-child > :first-child {
+.markdownBody blockquote > :first-child,
+.markdownBody blockquote > :first-child > :first-child,
+.markdownBody blockquote > :first-child > :first-child > :first-child,
+.markdownBody blockquote > :first-child > :first-child > :first-child > :first-child {
     margin-top: 0;
 }
 
 /*  Special case for tables in blockquotes.
     */
-#markdownBody blockquote > table:last-child,
-#markdownBody blockquote > :last-child > table:last-child,
-#markdownBody blockquote > :last-child > :last-child > table:last-child,
-#markdownBody blockquote > :last-child > :last-child > :last-child > table:last-child {
+.markdownBody blockquote > table:last-child,
+.markdownBody blockquote > :last-child > table:last-child,
+.markdownBody blockquote > :last-child > :last-child > table:last-child,
+.markdownBody blockquote > :last-child > :last-child > :last-child > table:last-child {
     margin-bottom: 0.5em;
 }
-#markdownBody blockquote > table:first-child,
-#markdownBody blockquote > :first-child > table:first-child,
-#markdownBody blockquote > :first-child > :first-child > table:first-child,
-#markdownBody blockquote > :first-child > :first-child > :first-child > table:first-child {
+.markdownBody blockquote > table:first-child,
+.markdownBody blockquote > :first-child > table:first-child,
+.markdownBody blockquote > :first-child > :first-child > table:first-child,
+.markdownBody blockquote > :first-child > :first-child > :first-child > table:first-child {
     margin-top: 0.5em;
 }
 
@@ -2756,7 +2756,8 @@ body.directory-index #disqus_thread {
     z-index: 0;
 }
 
-.extract-popup blockquote:last-child {
+.extract-popup blockquote:last-child,
+.extract-popup .tableWrapper:last-child {
     margin-bottom: calc(1em/9);
 }
 
