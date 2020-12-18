@@ -901,6 +901,7 @@ blockquote table {
 sub,
 sup {
     line-height: 0.3em;
+    font-feature-settings: 'lnum';
 }
 a.footnote-ref sup {
     vertical-align: baseline;
