@@ -180,7 +180,7 @@ Extracts = {
 			Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
 		});
  
-		GW.notificationCenter.fireEvent("Extracts.setupComplete");
+		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
 	disableExtractPopups: () => {
 		localStorage.setItem("extract-popups-disabled", "true");
@@ -356,12 +356,12 @@ Extracts = {
 };
 
 doWhenPageLoaded(() => {
-	GW.notificationCenter.fireEvent("Extracts.loaded");
+	GW.notificationCenter.fireEvent("Extracts.didLoad");
 
 	if (window.Popups)
 		Extracts.setup();
 	else
-		GW.notificationCenter.addHandlerForEvent("Popups.setupComplete", () => {
+		GW.notificationCenter.addHandlerForEvent("Popups.setupDidComplete", () => {
 			Extracts.setup();
 		}, { once: true });
 });

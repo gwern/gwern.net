@@ -81,7 +81,7 @@ Popups = {
 			});
 		});
 
-		GW.notificationCenter.fireEvent("Popups.setupComplete");
+		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
 	addTargetsWithin: (contentContainer, targetSelectors, prepareFunction, targetPrepareFunction = null) => {
 		if (typeof contentContainer == "string")
@@ -431,7 +431,7 @@ Popups.stylesHTML = `<style id='${Popups.stylesID}'>
 /*	Initialization.
 	*/
 doWhenPageLoaded(() => {
-	GW.notificationCenter.fireEvent("Popups.loaded");
+	GW.notificationCenter.fireEvent("Popups.didLoad");
 
 	Popups.setup();
 });
