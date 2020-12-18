@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-18 12:41:28 gwern"
+When:  Time-stamp: "2020-12-18 14:15:22 gwern"
 License: CC-0
 -}
 
@@ -331,7 +331,7 @@ wikipedia p
                                                                                Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
                                                                                                         (color,h,w) <- invertImage $ T.unpack href
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
-                                                                                                        return ("<p><figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure></p> ")
+                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract' = cleanAbstractsHTML wpAbstract in
