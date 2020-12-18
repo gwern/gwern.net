@@ -156,6 +156,9 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
+		if (localStorage.getItem("extract-popups-disabled") == "true")
+			return;
+
         if (Popups.isMobile()) {
             GWLog("Mobile client detected. Exiting.", "extracts.js", 1);
             return;
@@ -179,6 +182,35 @@ Extracts = {
  
 		GW.notificationCenter.fireEvent("Extracts.setupComplete");
     },
+	disableExtractPopups: () => {
+		localStorage.setItem("extract-popups-disabled", "true");
+		Popups.cleanup();
+	},
+	enableExtractPopups: () => {
+		localStorage.removeItem("extract-popups-disabled");
+		Popups.setup();
+	},
+	showPopupOptionsDialog: () => {
+		var popupOptionsDialog = document.querySelector("#popup-options-dialog");
+		if (popupOptionsDialog == null) {
+			popupOptionsDialog = addUIElement(`<div id='popup-options-dialog' style='display: none;'><div>` + 
+				`<h1>Popups</h1>` + 
+				`<div class='option-buttons'>` + 
+					`<button type='button' class='popups-enabled'>Enable</button>` + 
+					`<button type='button' class='popups-enabled'>Disable</button>` + 
+				`</div>` + 
+				`<button type='button' class='close-button'></button>` + 
+				`<button type='button' class='save-button'>Save</button>` + 
+				`</div></div>`);
+		}
+		popupOptionsDialog.style.display = "";
+	},
+	hidePopupOptionsDialog: () => {
+		let popupOptionsDialog = document.querySelector("#popup-options-dialog");
+		if (popupOptionsDialog != null)
+			popupOptionsDialog.style.display = "none";
+	},
+
     fillPopup: (popup, target) => {
 		GWLog("Extracts.fillPopup", "extracts.js", 2);
 
