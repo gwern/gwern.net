@@ -650,7 +650,7 @@ function constructSidenotes() {
         });
     });
 
-	GW.notificationCenter.fireEvent("Sidenotes.sidenotesConstructed");
+	GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 }
 
 /******************/
@@ -804,10 +804,10 @@ function sidenotesSetup() {
         }
     });
 
-	GW.notificationCenter.fireEvent("Sidenotes.setupComplete");
+	GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 }
 
-GW.notificationCenter.fireEvent("Sidenotes.loaded");
+GW.notificationCenter.fireEvent("Sidenotes.didLoad");
 
 //  LET... THERE... BE... SIDENOTES!!!
 sidenotesSetup();

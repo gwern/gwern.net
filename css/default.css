@@ -2735,7 +2735,7 @@ body.directory-index #disqus_thread {
 
 /*  Images such as the ones in Wikipedia popups.
     */
-.extract-popup figure.float-right:first-of-type {
+.extract-popup figure.float-right:first-child {
     margin-top: -3em;
 }
 

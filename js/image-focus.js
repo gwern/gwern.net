@@ -125,7 +125,7 @@ function imageFocusSetup() {
 	// UI starts out hidden.
 	hideImageFocusUI();
 
-	GW.notificationCenter.fireEvent("ImageFocus.setupComplete");
+	GW.notificationCenter.fireEvent("ImageFocus.setupDidComplete");
 }
 
 function focusImage(imageToFocus) {
@@ -556,7 +556,7 @@ function focusImageSpecifiedByURL() {
 	}
 }
 
-GW.notificationCenter.fireEvent("ImageFocus.loaded");
+GW.notificationCenter.fireEvent("ImageFocus.didLoad");
 
 /******************/
 /* INITIALIZATION */
@@ -566,6 +566,6 @@ imageFocusSetup();
 focusImageSpecifiedByURL();
 
 // TODO: re-enable this once imageFocusSetup() is refactored to be repeatable
-// GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesConstructed", () => {
+// GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
 // 	imageFocusSetup();
 // }, { once: true });
