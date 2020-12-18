@@ -10,14 +10,14 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
-    body:not(.index) a.docMetadata,
-    body:not(.index) .defnMetadata {
+    a.docMetadata,
+    .defnMetadata {
         margin: 0 0.05em;
         padding: 0 0 0 0.3em;
         position: relative;
     }
-    body:not(.index) a.docMetadata::before,
-    body:not(.index) .defnMetadata::before {
+    a.docMetadata::before,
+    .defnMetadata::before {
         content: "0";
         position: absolute;
         width: 0.55em;
@@ -39,13 +39,23 @@
         background-position: 0 0, 1px 0, 100% 0, 2px 100%;
         left: -1px;
     }
-    body:not(.index) a.docMetadata:hover::before,
-    body:not(.index) .defnMetadata:hover::before {
+    a.docMetadata:hover::before,
+    .defnMetadata:hover::before {
 		background-image:
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
 			linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
 			linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
+    }
+    body.index a.docMetadata,
+    body.index .defnMetadata {
+        margin: 0;
+        padding: 0;
+        position: static;
+    }
+    body.index .docMetadata::before,
+    body.index .defnMetadata::before {
+        content: none;
     }
 }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
