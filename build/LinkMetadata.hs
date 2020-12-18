@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-17 21:37:55 gwern"
+When:  Time-stamp: "2020-12-18 12:41:28 gwern"
 License: CC-0
 -}
 
@@ -166,7 +166,7 @@ constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructA
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
 restoreFloatRight :: String -> String -> String
-restoreFloatRight original final = if ("float-right" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
+restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
 
 -- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
 trimAuthors, initializeAuthors, trimTitle :: String -> String
