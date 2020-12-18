@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-17 21:37:55 gwern"
+When:  Time-stamp: "2020-12-18 15:45:33 gwern"
 License: CC-0
 -}
 
@@ -146,7 +146,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
    where
      abstract', abstractText, possibleTooltip :: String
     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
-     abstract' = if (take 3 abstract) == "<p>" then abstract else "<p>" ++ abstract ++ "</p>"
+     abstract' = if (take 3 abstract) == "<p>" || (take 7 abstract) == "<figure" then abstract else "<p>" ++ abstract ++ "</p>"
      tabstract' = htmlToBetterHTML $ T.pack abstract'
      finalAbstract = restoreFloatRight abstract' (T.unpack tabstract')
      -- Tooltip rewriting
@@ -166,7 +166,7 @@ constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructA
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
 restoreFloatRight :: String -> String -> String
-restoreFloatRight original final = if ("float-right" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
+restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
 
 -- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
 trimAuthors, initializeAuthors, trimTitle :: String -> String
@@ -331,7 +331,7 @@ wikipedia p
                                                                                Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
                                                                                                         (color,h,w) <- invertImage $ T.unpack href
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
-                                                                                                        return ("<p><figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure></p> ")
+                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract' = cleanAbstractsHTML wpAbstract in
@@ -614,6 +614,7 @@ cleanAbstractsHTML t = trim $
     , (" ", " ")
     , ("∼", "~")
     , ("GxE", "G×E")
+    , ("<p> ", "<p>")
       ]
 
 trim :: String -> String
