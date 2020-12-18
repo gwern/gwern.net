@@ -368,6 +368,7 @@ section > :not(:first-child) a[href^='#']::after,
     content: "\00B6"; /* (¶) Pilcrow Sign */
     margin: 0 1px 0 3px;
     font-size: 0.75em;
+    font-style: normal;
     vertical-align: baseline;
     position: relative;
     bottom: 0.45em;
@@ -419,8 +420,8 @@ li a[href^='#'][class^='identifier-link-']:hover::after {
 /*  Avoid 'G' icons on hosted documents, local images, and infrastructure, which aren't formal writings.
     */
 
-body:not(.index) a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
-body:not(.index) a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after{
+a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
+a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after {
     content: "\1D50A"; /* (𝔊) Gothic G / MATHEMATICAL FRAKTUR CAPITAL G */
     margin: 0 0 0 2px;
     vertical-align: baseline;
@@ -428,7 +429,10 @@ body:not(.index) a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([hr
     bottom: 0.15em;
     opacity: 0.75;
     font-size: 0.9em;
+    font-style: normal;
 }
+body.index a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
+body.index a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #page-metadata a[href^="/"]::after,
 #page-metadata a[href^="https://www.gwern.net/"]::after {
 	content: none;
@@ -523,6 +527,7 @@ a[href*="meltingasphalt.com"]::after,
 a[href*="neweva.blog103.fc2.com"]::after {
     font-size: 0.75em;
     font-weight: 600;
+    font-style: normal;
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
@@ -1342,7 +1347,7 @@ article > :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata,
 article > :not(#TOC) a[href*='wikisource.org'].docMetadata {
     background-image: var(--GW-dotted-underline-background-image);
     background-size: 2px 1px;
-    padding: 0 0 0 0; /* reset the padding from the left-bracket being removed */
+    padding: 0; /* reset the padding from the left-bracket being removed */
 }
 article > :not(#TOC) a[href*='wikipedia.org'].docMetadata:hover,
 article > :not(#TOC) a[href*='wikimedia.org'].docMetadata:hover,
@@ -1363,6 +1368,16 @@ a[href*='wiktionary.org'].docMetadata::after,
 a[href*='wikimediafoundation.org'].docMetadata::after,
 a[href*='wikisource.org'].docMetadata::after {
 	content: none;
+}
+/*  TEMPORARY!!
+	Dotted underlines for WP links in popups.
+	*/
+.popupdiv a[href*='wikipedia.org'].docMetadata,
+.popupdiv :not(#TOC) a[href*='wikimedia.org'].docMetadata,
+.popupdiv :not(#TOC) a[href*='wiktionary.org'].docMetadata,
+.popupdiv :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata,
+.popupdiv :not(#TOC) a[href*='wikisource.org'].docMetadata {
+	text-decoration: dotted underline;
 }
 a[href*='wikipedia.org']::after, /* primary user: en.wikipedia.org */
 a[href*='wikimedia.org']::after, /* secondary user: meta.wikimedia.org */

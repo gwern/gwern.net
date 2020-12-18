@@ -1562,10 +1562,9 @@ article > div:not(#TOC) a[href*='wikisource.org'].docMetadata:hover,
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
-section > :not(:first-child) a[href^='#'].identifier-link-up::after,
-p a[href^='#'].identifier-link-up::after,
-section > :not(:first-child) a[href^='#'].identifier-link-down::after,
-p a[href^='#'].identifier-link-down::after,
+section > :not(:first-child) a[href^='#'][class^='identifier-link-']::after,
+p a[href^='#'][class^='identifier-link-']::after,
+li a[href^='#'][class^='identifier-link-']::after,
 a[href$='.pdf' i]::after,
 a[href$='/pdf' i]::after,
 a[href$='type=pdf' i]::after,
