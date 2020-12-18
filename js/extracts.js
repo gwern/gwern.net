@@ -43,14 +43,14 @@ Extracts = {
         if (   target.dataset.urlOriginal != undefined 
         	&& target.dataset.urlOriginal != target.href) {
             archiveOrOriginalLink = (`<span class="originalURL"><code>` + "[" + 
-            		   `<a href="${target.dataset.urlOriginal}" 
+            		   `<a href="${target.dataset.urlOriginal}" target="_new" 
                        		title="Link to original URL for ‘${target.dataset.popupTitle}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
                        "URL" + `</a>` + "]" + `</code></span>`);
         } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
 			archiveOrOriginalLink = (`<span class="iaMirror">` +
 					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${target.dataset.popupTitle}’)" 
-					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}">` +
+					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" target="_new">` +
 					   `</a></span>`);
         }
 
