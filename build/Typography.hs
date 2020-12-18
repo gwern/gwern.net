@@ -148,7 +148,7 @@ hyphenateInline x@(Str s) = if T.any (=='\173') s then x else -- U+00AD SOFT HYP
                               T.replace "f\173l" "fl" $
                               T.replace "f\173j" "fj" $
                               T.replace "f\173t" "ft" $
-                              T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=3}) $ words $ T.unpack s
+                              T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=2}) $ words $ T.unpack s
 hyphenateInline x = x
 
 -------------------------------------------
