@@ -1204,6 +1204,10 @@ a[href*='washingtonpost.com']::after {
     height: 1em;
     width: 1.1em;
     opacity: 0.7;
+    margin: 0 0 0 1px;
+}
+a[href*='washingtonpost.com']:hover::after {
+    opacity: 0.55;
 }
 
 /*  The New York Times: reduction of full SVG logo to just the 'T' they use as an icon.
