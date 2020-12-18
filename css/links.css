@@ -433,6 +433,8 @@ li a[href^='#'][class^='identifier-link-']:hover::after {
 a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after {
     content: "\1D50A"; /* (𝔊) Gothic G / MATHEMATICAL FRAKTUR CAPITAL G */
+    background-image: none;
+    display: inline;
     margin: 0 0 0 2px;
     vertical-align: baseline;
     position: relative;
