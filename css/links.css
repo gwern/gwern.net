@@ -446,7 +446,8 @@ a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):
 body.index a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 body.index a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #page-metadata a[href^="/"]::after,
-#page-metadata a[href^="https://www.gwern.net/"]::after {
+#page-metadata a[href^="https://www.gwern.net/"]::after,
+#navigation a::after {
 	content: none;
 }
 
