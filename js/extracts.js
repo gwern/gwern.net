@@ -28,6 +28,8 @@ Extracts = {
 	/******************/
 	/*	Implementation.
 		*/
+	popupOptionsDialog: null,
+
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
@@ -139,9 +141,17 @@ Extracts = {
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
-        //  Unbind event listeners.
+        //  Unbind event listeners and restore targets.
+        let restoreTarget = (target) => {
+        	if (!target.title && target.dataset.attributeTitle) {
+				//  Restore the title attribute, saved in `data-attribute-title`.
+				target.title = target.dataset.attributeTitle;
+				//  Remove the data attribute.
+				target.removeAttribute("data-attribute-title");
+			}
+		};
         document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-        	Popups.removeTargetsWithin(container, Extracts.targets);
+        	Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
         });
 
 		//  Remove event handler for newly-spawned popups.
@@ -168,8 +178,12 @@ Extracts = {
 
 		//  Set up targets.
 		let prepareTarget = (target) => {
-            //  Remove the title attribute.
-            target.removeAttribute("title");
+			if (target.title) {
+				//  Preserve the title attribute, for possible restoration later.
+				target.dataset.attributeTitle = target.title;
+				//  Remove the title attribute.
+				target.removeAttribute("title");
+        	}
 		};
 		document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 			Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
@@ -184,31 +198,85 @@ Extracts = {
     },
 	disableExtractPopups: () => {
 		localStorage.setItem("extract-popups-disabled", "true");
-		Popups.cleanup();
+		Extracts.cleanup();
 	},
 	enableExtractPopups: () => {
 		localStorage.removeItem("extract-popups-disabled");
-		Popups.setup();
+		Extracts.setup();
 	},
 	showPopupOptionsDialog: () => {
-		var popupOptionsDialog = document.querySelector("#popup-options-dialog");
-		if (popupOptionsDialog == null) {
-			popupOptionsDialog = addUIElement(`<div id='popup-options-dialog' style='display: none;'><div>` + 
+		//  Create the options dialog, if needed.
+		if (Extracts.popupOptionsDialog == null) {
+			let popupsEnabled = localStorage.getItem("extract-popups-disabled") != "true";
+			let enabledRadioButtonChecked = popupsEnabled ? `checked=""` : ``;
+			let disabledRadioButtonChecked = popupsEnabled ? `` : `checked=""`;
+			Extracts.popupOptionsDialog = addUIElement(`<div id='popup-options-dialog' style='display: none;'><div>` + 
 				`<h1>Popups</h1>` + 
-				`<div class='option-buttons'>` + 
-					`<button type='button' class='popups-enabled'>Enable</button>` + 
-					`<button type='button' class='popups-enabled'>Disable</button>` + 
-				`</div>` + 
-				`<button type='button' class='close-button'></button>` + 
+				`<form class="option-buttons">
+					<label>
+						<input class="popups-enable" name="popups-enable-status" ${enabledRadioButtonChecked} value="enabled" type="radio">
+						<span class='button-text'>
+							<span class='label'>Enable</span>
+							<span class='explanation'>Show popups when hovering over annotated links.</span>
+						</span>
+					</label>
+					<label>
+						<input class="popups-disable" name="popups-enable-status" ${disabledRadioButtonChecked} value="disabled" type="radio">
+						<span class='button-text'>
+							<span class='label'>Disable</span>
+							<span class='explanation'>Don’t show popups.</span>
+						</span>
+					</label>
+				</form>` +
+				`<button type='button' class='close-button'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg></button>` + 
 				`<button type='button' class='save-button'>Save</button>` + 
 				`</div></div>`);
+			//  Add event listeners.
+			requestAnimationFrame(() => {
+				Extracts.popupOptionsDialog.addEventListener("click", (event) => {
+					event.stopPropagation();
+					Extracts.fadePopupOptionsDialog();
+				});
+				Extracts.popupOptionsDialog.firstElementChild.addEventListener("click", (event) => {
+					event.stopPropagation();
+				});
+				Extracts.popupOptionsDialog.querySelector("button.close-button").addActivateEvent(event => {
+					Extracts.fadePopupOptionsDialog();
+				});
+				Extracts.popupOptionsDialog.querySelector("button.save-button").addActivateEvent(event => {
+					Extracts.savePopupOptions();
+					Extracts.fadePopupOptionsDialog();
+				});
+				document.addEventListener("keyup", Extracts.keyUp = (event) => {
+					GWLog("Extracts.keyUp", "extracts.js", 3);
+					let allowedKeys = [ "Escape", "Esc" ];
+					if (!allowedKeys.includes(event.key) || Extracts.popupOptionsDialog.style.display == "none")
+						return;
+
+					event.preventDefault();
+					Extracts.fadePopupOptionsDialog();
+				});
+			});
 		}
-		popupOptionsDialog.style.display = "";
+
+		//  Un-hide the options dialog.
+		Extracts.popupOptionsDialog.style.display = "";
+	},
+	fadePopupOptionsDialog: () => {
+		Extracts.popupOptionsDialog.classList.toggle("fading", true);
+		setTimeout(Extracts.hidePopupOptionsDialog, 150);
 	},
 	hidePopupOptionsDialog: () => {
-		let popupOptionsDialog = document.querySelector("#popup-options-dialog");
-		if (popupOptionsDialog != null)
-			popupOptionsDialog.style.display = "none";
+		if (Extracts.popupOptionsDialog != null) {
+			Extracts.popupOptionsDialog.style.display = "none";
+			Extracts.popupOptionsDialog.classList.toggle("fading", false);
+		}
+	},
+	savePopupOptions: () => {
+		if (Extracts.popupOptionsDialog.querySelector("input.popups-enable").checked)
+			Extracts.enableExtractPopups();
+		else
+			Extracts.disableExtractPopups();
 	},
 
     fillPopup: (popup, target) => {

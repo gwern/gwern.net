@@ -113,7 +113,7 @@ Popups = {
 
 		Popups.addTargetsWithin(document, targetSelectors, prepareFunction, targetPrepareFunction);
 	},
-	removeTargetsWithin: (contentContainer, targetSelectors) => {
+	removeTargetsWithin: (contentContainer, targetSelectors, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
@@ -131,12 +131,16 @@ Popups = {
 
 			//  Unset popup prepare function.
 			target.popupPrepareFunction = null;
+
+			//  Run any custom processing.
+			if (targetRestoreFunction)
+				targetRestoreFunction(target);
 		});
 	},
-	removeTargets: (targetSelectors) => {
+	removeTargets: (targetSelectors, targetRestoreFunction = null) => {
 		GWLog("Popups.removeTargets", "popups.js", 1);
 
-		Popups.removeTargetsWithin(document, targetSelectors);
+		Popups.removeTargetsWithin(document, targetSelectors, targetRestoreFunction);
 	},
 
 	newPopup: () => {

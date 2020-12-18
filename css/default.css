@@ -2815,6 +2815,155 @@ body.directory-index #disqus_thread {
     max-height: unset;
 }
 
+/*=-----------------------=*/
+/*= POPUPS OPTIONS DIALOG =*/
+/*=-----------------------=*/
+
+#popup-options-dialog {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255,255,255,0.95);
+    opacity: 1;
+    transition:
+    	opacity 0.15s ease;
+}
+#popup-options-dialog.fading {
+	opacity: 0;
+}
+
+#popup-options-dialog > div {
+    position: absolute;
+    width: 500px;
+    background-color: #fff;
+    border: 1px solid #aaa;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.25);
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    user-select: none;
+}
+
+#popup-options-dialog h1 {
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+    text-align: center;
+    padding: 0.25em 0 0.375em 0;
+    font-feature-settings: unset;
+    font-size: 1.5em;
+    height: 1.25em;
+}
+
+#popup-options-dialog button {
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background-color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+#popup-options-dialog button.save-button {
+    background-color: #fff;
+    padding: 0 0.75em;
+    height: 2em;
+    font-weight: 600;
+    color: #000;
+    position: absolute;
+    right: 0.4em;
+    top: 0.4em;
+    border: 1px solid #000;
+}
+#popup-options-dialog button.save-button:hover {
+    cursor: pointer;
+    box-shadow: 
+        0 0 0 2px #fff inset,
+        0 0 0 3px #000 inset;
+}
+#popup-options-dialog button.save-button:active {
+    box-shadow: 
+        0 0 0 4px #fff inset,
+        0 0 0 5px #000 inset;
+}
+
+#popup-options-dialog button.close-button {
+    display: block;
+    width: 2em;
+    position: absolute;
+    left: 9px;
+    top: 9px;
+}
+#popup-options-dialog button.close-button:hover {
+    cursor: pointer;
+}
+#popup-options-dialog button.close-button:active {
+    transform: scale(0.9);
+}
+#popup-options-dialog button.close-button svg {
+    display: block;
+    fill: currentColor;
+}
+
+#popup-options-dialog .option-buttons {
+    padding: 0.5em 1.5em 0.75em 1.5em;
+}
+#popup-options-dialog .option-buttons label {
+    font-size: 1.125rem;
+    font-weight: bold;
+    text-align: left;
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+#popup-options-dialog .option-buttons label .button-text {
+    display: block;
+    flex: 1 0 100%;
+    padding: 0.5em 0.75em;
+}
+#popup-options-dialog .option-buttons label input:checked + .button-text .label {
+    text-decoration: underline;    
+}
+#popup-options-dialog .option-buttons label .explanation {
+    display: block;
+    font-weight: normal;
+    font-size: 0.875rem;
+    color: #777;
+}
+#popup-options-dialog .option-buttons label:hover,
+#popup-options-dialog .option-buttons label:hover input {
+    cursor: pointer;
+}
+#popup-options-dialog .option-buttons label:hover {
+    color: #777;
+}
+#popup-options-dialog .option-buttons label:hover .button-text .label {
+    text-decoration: dotted underline;
+}
+
+#popup-options-dialog .option-buttons input {
+    appearance: none;
+    -moz-appearance: none;
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid #000;
+    width: 1rem;
+    height: 1rem;
+    padding: 0;
+    margin: 0.75em 0 0 0;
+    flex: 1 0 auto;
+    transition:
+        box-shadow 0.15s ease;
+}
+
+#popup-options-dialog .option-buttons input:checked {
+    box-shadow: 
+        0 0 0 3px #fff inset,
+        0 0 0 1em #000 inset;
+}
+
 /*********************/
 /* SEQUENTIAL NAV UI */
 /*********************/
