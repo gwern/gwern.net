@@ -1353,6 +1353,9 @@ a[href*='erowid.org']::after {
     margin: 0 0 0 2px;
     opacity: 0.8;
 }
+a[href*='erowid.org']:hover::after {
+    opacity: 0.7;
+}
 
 /*  Wikipedia.
     (WP is used on almost every page, so make an exception and inline it)
