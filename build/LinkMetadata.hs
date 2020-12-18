@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-17 13:27:33 gwern"
+When:  Time-stamp: "2020-12-17 21:37:55 gwern"
 License: CC-0
 -}
 
@@ -68,7 +68,7 @@ readLinkMetadata = do
 
              -- merge the hand-written & auto-generated link annotations, and return:
              let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
-             let secondVersion = metadataRecurse firstVersion
+             let secondVersion = metadataRecurse $ metadataRecurse $ metadataRecurse firstVersion
              return secondVersion
 
 
@@ -134,8 +134,8 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
     let lid' = if lid=="" then generateID (T.unpack target) author date else lid in
     let annotationAttributes = (lid', "docMetadata":classes,
           (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII $ trimTitle title),
-                                         ("popup-title-html", htmlToBetterHTML $ T.pack $ trimTitle title),
-                                         ("popup-author",     htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
+                                         ("popup-title-html", T.pack $ replace "<p>" "" $ replace "</p>" "" $ T.unpack $ htmlToBetterHTML $ T.pack $ trimTitle title),
+                                         ("popup-author",     T.pack $ replace "<p>" "" $ replace "</p>" "" $ T.unpack $ htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
                                          ("popup-date",       T.pack date),
                                          ("popup-doi",        T.pack doi),
                                          ("popup-abstract",   T.pack finalAbstract)
