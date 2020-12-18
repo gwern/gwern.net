@@ -2829,6 +2829,7 @@ body.directory-index #disqus_thread {
     justify-content: center;
     align-items: center;
     background-color: rgba(255,255,255,0.95);
+    z-index: 2;
     opacity: 1;
     transition:
     	opacity 0.15s ease;
@@ -2962,6 +2963,34 @@ body.directory-index #disqus_thread {
     box-shadow: 
         0 0 0 3px #fff inset,
         0 0 0 1em #000 inset;
+}
+
+/*  With popups disabled, the “show popup options dialog” icon/button.
+	*/
+#popups-disabled-show-popup-options-dialog-button {
+	position: fixed;
+	top: calc(0.55em + 3px);
+	right: 12em;
+	z-index: 1;
+}
+#popups-disabled-show-popup-options-dialog-button button {
+	-moz-appearance: none;
+	appearance: none;
+	border: none;
+	font-family: inherit;
+	font-size: inherit;
+	background: inherit;
+	color: #999;
+	fill: currentColor;
+	padding: 0;
+	line-height: 1;
+	display: block;
+    width: 1.125em;
+    opacity: 0.3;
+}
+#popups-disabled-show-popup-options-dialog-button button:hover {
+    cursor: pointer;
+    opacity: 1.0;
 }
 
 /*********************/

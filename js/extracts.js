@@ -29,6 +29,7 @@ Extracts = {
 	/*	Implementation.
 		*/
 	popupOptionsDialog: null,
+	popupsDisabledShowPopupOptionsDialogButton: null,
 
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
@@ -141,6 +142,9 @@ Extracts = {
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
+		//  Remove “popups disabled” icon/button, if present.
+		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
+
         //  Unbind event listeners and restore targets.
         let restoreTarget = (target) => {
         	if (!target.title && target.dataset.attributeTitle) {
@@ -166,8 +170,11 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
-		if (localStorage.getItem("extract-popups-disabled") == "true")
+		if (localStorage.getItem("extract-popups-disabled") == "true") {
+			//  Inject “popups disabled” icon/button.
+			Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
 			return;
+		}
 
         if (Popups.isMobile()) {
             GWLog("Mobile client detected. Exiting.", "extracts.js", 1);
@@ -193,16 +200,19 @@ Extracts = {
 		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
 			Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
 		});
- 
+
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
+
 	disableExtractPopups: () => {
 		localStorage.setItem("extract-popups-disabled", "true");
 		Extracts.cleanup();
+		Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
 	},
 	enableExtractPopups: () => {
 		localStorage.removeItem("extract-popups-disabled");
 		Extracts.setup();
+		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 	},
 	showPopupOptionsDialog: () => {
 		//  Create the options dialog, if needed.
@@ -277,6 +287,28 @@ Extracts = {
 			Extracts.enableExtractPopups();
 		else
 			Extracts.disableExtractPopups();
+	},
+	injectPopupsDisabledShowPopupOptionsDialogButton: () => {
+		if (Extracts.popupsDisabledShowPopupOptionsDialogButton != null)
+			return;
+
+		//  Create and inject the button.
+		Extracts.popupsDisabledShowPopupOptionsDialogButton = addUIElement(`<div id="popups-disabled-show-popup-options-dialog-button">` + 
+			`<button type="button" title="Show options for link popups. (Popups are currently disabled.)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M64 352c0 35.3 28.7 64 64 64h96v84c0 9.8 11.2 15.5 19.1 9.7L368 416h2L64 179.5V352zm569.8 106.1l-77.6-60c12.1-11.6 19.8-28 19.8-46.1V64c0-35.3-28.7-64-64-64H128c-21.5 0-40.4 10.7-52 27L45.5 3.4C38.5-2 28.5-.8 23 6.2L3.4 31.4c-5.4 7-4.2 17 2.8 22.4l588.4 454.7c7 5.4 17 4.2 22.5-2.8l19.6-25.3c5.4-6.8 4.1-16.9-2.9-22.3z"/></svg></button>` + `</div>`);
+
+		//  Add event listener.
+		requestAnimationFrame(() => {
+			Extracts.popupsDisabledShowPopupOptionsDialogButton.addActivateEvent(event => {
+				Extracts.showPopupOptionsDialog();
+			});
+		});
+	},
+	removePopupsDisabledShowPopupOptionsDialogButton: () => {
+		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
+			return;
+
+		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
+		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	},
 
     fillPopup: (popup, target) => {
