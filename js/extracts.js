@@ -145,7 +145,7 @@ Extracts = {
         });
 
 		//  Remove event handler for newly-spawned popups.
-		GW.notificationCenter.removeHandlerForEvent("Popups.popupSpawned", Extracts.popupSpawnedHandler);
+		GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler);
 
         //  Remove popups.
         document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
@@ -173,7 +173,7 @@ Extracts = {
 		});
 
 		//  Recursively set up targets within newly-spawned popups as well.
-		GW.notificationCenter.addHandlerForEvent("Popups.popupSpawned", Extracts.popupSpawnedHandler = (info) => {
+		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
 			Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
 		});
  
@@ -251,6 +251,9 @@ Extracts = {
 				target.classList.toggle("highlighted", true);
 			});
 			popup.addEventListener("mouseleave", (event) => {
+				target.classList.toggle("highlighted", false);
+			});
+			GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", Extracts.footnotePopupDespawnHandler = (info) => {
 				target.classList.toggle("highlighted", false);
 			});
 		} else if (popup.classList.contains("citation-context-popup")) {

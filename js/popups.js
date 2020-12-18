@@ -158,7 +158,7 @@ Popups = {
 		//  Mark target as having an active popup associated with it.
 		target.classList.add("has-active-popup");
 
-		GW.notificationCenter.fireEvent("Popups.popupSpawned", { popup: popup });
+		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: popup });
 	},
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
@@ -288,6 +288,8 @@ Popups = {
 
 		if (popup == null)
 			return;
+
+		GW.notificationCenter.fireEvent("Popups.popupWillDespawn", { popup: popup });
 
 	    popup.classList.remove("fading");
         popup.remove();
