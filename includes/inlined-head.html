@@ -1180,6 +1180,17 @@ pre {
     overflow: auto;
 }
 
+@supports (width: fit-content) {
+	.full-width-code-block-wrapper {
+		width: fit-content;
+	}
+}
+@supports (width: -moz-fit-content) {
+	.full-width-code-block-wrapper {
+		width: -moz-fit-content;
+	}
+}
+
 /********/
 /* MATH */
 /********/

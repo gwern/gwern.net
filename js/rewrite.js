@@ -105,6 +105,12 @@ function rectifyCodeBlockHeight(codeBlock) {
 /* SETUP */
 /*********/
 
+/*  Unwrap pre.sourceCode blocks from their extraneous containing divs.
+    */
+document.querySelectorAll("div.sourceCode").forEach(scd => {
+    scd.outerHTML = scd.innerHTML;
+});
+
 /*  Wrap each table in a div.tableWrapper (for layout purposes).
     */
 document.querySelectorAll("table").forEach(table => {
@@ -118,9 +124,9 @@ document.querySelectorAll("table").forEach(table => {
     */
 document.querySelectorAll("pre.full-width").forEach(fullWidthPre => {
     if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
-        fullWidthPre.parentElement.classList.toggle("full-width", true);
+        fullWidthPre.parentElement.classList.toggle("full-width full-width-code-block-wrapper", true);
     else
-        fullWidthPre.outerHTML = "<div class='full-width'>" + fullWidthPre.outerHTML + "</div>";
+        fullWidthPre.outerHTML = "<div class='full-width full-width-code-block-wrapper'>" + fullWidthPre.outerHTML + "</div>";
 });
 
 /*  Expand full-width blocks, and add a listener to recompute their size and
@@ -128,12 +134,6 @@ document.querySelectorAll("pre.full-width").forEach(fullWidthPre => {
     */
 doWhenPageLoaded(expandFullWidthBlocks);
 window.addEventListener("resize", expandFullWidthBlocks);
-
-/*  Unwrap pre.sourceCode blocks from their extraneous containing divs.
-    */
-document.querySelectorAll("div.sourceCode").forEach(scd => {
-    scd.outerHTML = scd.innerHTML;
-});
 
 /*  Rectify heights of all code blocks.
     */
