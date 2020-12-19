@@ -11,12 +11,14 @@
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
     a.docMetadata,
+    a.spawns-popup,
     span.defnMetadata {
         margin: 0 0.05em;
         padding: 0 0 0 0.3em;
         position: relative;
     }
     a.docMetadata::before,
+    a.spawns-popup::before,
     span.defnMetadata::before {
         content: "0";
         position: absolute;
@@ -40,6 +42,7 @@
         left: -1px;
     }
     a.docMetadata:hover::before,
+    a.spawns-popup:hover,
     span.defnMetadata:hover::before {
         background-image:
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),

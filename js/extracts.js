@@ -153,6 +153,8 @@ Extracts = {
 				//  Remove the data attribute.
 				target.removeAttribute("data-attribute-title");
 			}
+
+			target.classList.toggle("spawns-popup", false);
 		};
         document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
         	Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
@@ -191,6 +193,10 @@ Extracts = {
 				//  Remove the title attribute.
 				target.removeAttribute("title");
         	}
+
+			let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
+			if (videoId)
+				target.classList.toggle("spawns-popup", true);
 		};
 		document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 			Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
