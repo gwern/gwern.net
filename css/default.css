@@ -2833,7 +2833,7 @@ body.directory-index #disqus_thread {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(255,255,255,0.95);
+    background-color: var(--GW-popups-popup-options-dialog-backdrop-background-color);
     z-index: 2;
     opacity: 1;
     transition:
@@ -2846,15 +2846,15 @@ body.directory-index #disqus_thread {
 #popup-options-dialog > div {
     position: absolute;
     width: 500px;
-    background-color: #fff;
-    border: 1px solid #aaa;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.25);
+    background-color: var(--GW-popups-popup-options-dialog-background-color);
+    border: 1px solid var(--GW-popups-popup-options-dialog-border-color);
+    box-shadow: 0 2px 2px 0 var(--GW-popups-popup-options-dialog-box-shadow-color);
 	font-family: var(--GW-sans-serif-font-stack);
     user-select: none;
 }
 
 #popup-options-dialog h1 {
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--GW-popups-popup-options-dialog-horizontal-rule-color);
     margin: 0;
     text-align: center;
     padding: 0.25em 0 0.375em 0;
@@ -2873,26 +2873,26 @@ body.directory-index #disqus_thread {
 }
 
 #popup-options-dialog button.save-button {
-    background-color: #fff;
+    background-color: var(--GW-popups-popup-options-dialog-button-background-color);
     padding: 0 0.75em;
     height: 2em;
     font-weight: 600;
-    color: #000;
+    color: var(--GW-popups-popup-options-dialog-button-text-color);
     position: absolute;
     right: 0.4em;
     top: 0.4em;
-    border: 1px solid #000;
+    border: 1px solid var(--GW-popups-popup-options-dialog-button-border-color);
 }
 #popup-options-dialog button.save-button:hover {
     cursor: pointer;
     box-shadow: 
-        0 0 0 2px #fff inset,
-        0 0 0 3px #000 inset;
+        0 0 0 2px var(--GW-popups-popup-options-dialog-button-background-color) inset,
+        0 0 0 3px var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 #popup-options-dialog button.save-button:active {
     box-shadow: 
-        0 0 0 4px #fff inset,
-        0 0 0 5px #000 inset;
+        0 0 0 4px var(--GW-popups-popup-options-dialog-button-background-color) inset,
+        0 0 0 5px var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 
 #popup-options-dialog button.close-button {
@@ -2936,14 +2936,14 @@ body.directory-index #disqus_thread {
     display: block;
     font-weight: normal;
     font-size: 0.875rem;
-    color: #777;
+    color: var(--GW-popups-popup-options-dialog-option-button-explanation-text-color);
 }
 #popup-options-dialog .option-buttons label:hover,
 #popup-options-dialog .option-buttons label:hover input {
     cursor: pointer;
 }
 #popup-options-dialog .option-buttons label:hover {
-    color: #777;
+    color: var(--GW-popups-popup-options-dialog-option-button-hover-text-color);
 }
 #popup-options-dialog .option-buttons label:hover .button-text .label {
     text-decoration: dotted underline;
@@ -2954,7 +2954,7 @@ body.directory-index #disqus_thread {
     -moz-appearance: none;
     font-family: inherit;
     font-size: inherit;
-    border: 1px solid #000;
+    border: 1px solid var(--GW-popups-popup-options-dialog-radio-button-border-color);
     width: 1rem;
     height: 1rem;
     padding: 0;
@@ -2966,8 +2966,8 @@ body.directory-index #disqus_thread {
 
 #popup-options-dialog .option-buttons input:checked {
     box-shadow: 
-        0 0 0 3px #fff inset,
-        0 0 0 1em #000 inset;
+        0 0 0 3px var(--GW-popups-popup-options-dialog-button-background-color) inset,
+        0 0 0 1em var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 
 /*  With popups disabled, the “show popup options dialog” icon/button.
@@ -2985,7 +2985,7 @@ body.directory-index #disqus_thread {
 	font-family: inherit;
 	font-size: inherit;
 	background: inherit;
-	color: #999;
+	color: var(--GW-popups-show-popup-options-dialog-button-color);
 	fill: currentColor;
 	padding: 0;
 	line-height: 1;
