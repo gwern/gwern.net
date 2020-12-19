@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-18 15:45:33 gwern"
+When:  Time-stamp: "2020-12-18 19:00:58 gwern"
 License: CC-0
 -}
 
@@ -170,7 +170,7 @@ restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfix
 
 -- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
 trimAuthors, initializeAuthors, trimTitle :: String -> String
-trimAuthors a = let maxLength = 64 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
+trimAuthors a = let maxLength = 60 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
 initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle [] = ""
@@ -571,6 +571,8 @@ cleanAbstractsHTML t = trim $
     , ("R (2) ", "R<sup>2</sup> ")
     , ("CO(2)", "CO<sub>2</sub>")
     , (" = .",    " = 0.")
+    , (" gf ", " <em>gf</em> ")
+    , (" gc ", " <em>gc</em> ")
     , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
@@ -590,6 +592,7 @@ cleanAbstractsHTML t = trim $
     , ("( n = ", "(<em>n</em> = ")
     , ("( ns = ", "(<em>ns</em> = ")
     , ("( n = ", "(<em>n</em> = ")
+    , ("n = ", "<em>n</em> = ")
     , ("<em>p</em> = .", "<em>p</em> = 0.")
     , ("<em>p</em> < .", "<em>p</em> < 0.")
     , (" N=",     " <em>N</em> = ")
