@@ -1309,6 +1309,7 @@ table th {
     font-weight: bold;
     border-bottom: 1px solid var(--GW-table-row-horizontal-border-color);
     text-align: left;
+    hyphens: none;
 }
 table td {
     vertical-align: top;
@@ -1316,6 +1317,10 @@ table td {
 table th + th,
 table td + td {
     border-left: 1px solid var(--GW-table-cell-vertical-border-color);
+}
+
+table td > code {
+    word-break: normal;
 }
 
 /*  Horizontal scroll bar styles (for WebKit/Chromium).
