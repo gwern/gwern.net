@@ -1,7 +1,7 @@
 :root {
-	--GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAP///ywAAAAABAACAAACBAQShgUAOw==');
-	--GW-dotted-underline-hover-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMYiIiP///ywAAAAABAACAAACBAQShgUAOw==');
-	--GW-dotted-underline-hover-dark-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAJ6eniwAAAAABAACAAACBAQShgUAOw==');
+    --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAP///ywAAAAABAACAAACBAQShgUAOw==');
+    --GW-dotted-underline-hover-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMYiIiP///ywAAAAABAACAAACBAQShgUAOw==');
+    --GW-dotted-underline-hover-dark-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMQAAAJ6eniwAAAAABAACAAACBAQShgUAOw==');
 }
 
 /* If a link has an automatic or custom link annotation (eg a paper abstract, or excerpts), subtly mark it with a dog-ear/tag-like icon, */
@@ -26,26 +26,26 @@
         text-shadow: none;
         top: 1px;
 
-		/*  Yes, it has to be like this. (Thanks, Firefox!)
-			—Obormot 2020-12-16
-			*/
-		background-image:
+        /*  Yes, it has to be like this. (Thanks, Firefox!)
+            —Obormot 2020-12-16
+            */
+        background-image:
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-			linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
-			linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
-		background-size: 1px 1px;
-		background-repeat: no-repeat, no-repeat, repeat-x, repeat-y;
+            linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
+            linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+        background-size: 1px 1px;
+        background-repeat: no-repeat, no-repeat, repeat-x, repeat-y;
         background-position: 0 0, 1px 0, 100% 0, 2px 100%;
         left: -1px;
     }
     a.docMetadata:hover::before,
     .defnMetadata:hover::before {
-		background-image:
+        background-image:
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-			linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
-			linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
+            linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
+            linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
     }
     body.index a.docMetadata,
     body.index .defnMetadata {
@@ -447,7 +447,7 @@ body.index a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*
 body.index a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 #page-metadata a[href^="/"]::after,
 #page-metadata a[href^="https://www.gwern.net/"]::after {
-	content: none;
+    content: none;
 }
 
 /*=-------------------------------=*/
@@ -1374,22 +1374,28 @@ body:not(.index) a[href*='wikimedia.org'].docMetadata::before,
 body:not(.index) a[href*='wiktionary.org'].docMetadata::before,
 body:not(.index) a[href*='wikimediafoundation.org'].docMetadata::before,
 body:not(.index) a[href*='wikisource.org'].docMetadata::before,
+.popupdiv a[href*='wikipedia.org'].docMetadata::before,
+.popupdiv a[href*='wikimedia.org'].docMetadata::before,
+.popupdiv a[href*='wiktionary.org'].docMetadata::before,
+.popupdiv a[href*='wikimediafoundation.org'].docMetadata::before,
+.popupdiv a[href*='wikisource.org'].docMetadata::before,
 a[href*='wikipedia.org'].docMetadata::after,
 a[href*='wikimedia.org'].docMetadata::after,
 a[href*='wiktionary.org'].docMetadata::after,
 a[href*='wikimediafoundation.org'].docMetadata::after,
 a[href*='wikisource.org'].docMetadata::after {
-	content: none;
+    content: none;
 }
 /*  TEMPORARY!!
-	Dotted underlines for WP links in popups.
-	*/
+    Dotted underlines for WP links in popups.
+    */
 .popupdiv a[href*='wikipedia.org'].docMetadata,
 .popupdiv :not(#TOC) a[href*='wikimedia.org'].docMetadata,
 .popupdiv :not(#TOC) a[href*='wiktionary.org'].docMetadata,
 .popupdiv :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata,
 .popupdiv :not(#TOC) a[href*='wikisource.org'].docMetadata {
-	text-decoration: dotted underline;
+    text-decoration: dotted underline;
+    padding-left: 0;
 }
 a[href*='wikipedia.org']::after, /* primary user: en.wikipedia.org */
 a[href*='wikimedia.org']::after, /* secondary user: meta.wikimedia.org */
@@ -1512,8 +1518,8 @@ a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.
     margin: 0 0 2px 2px;
     opacity: 0.6;
 }
-/*	Archive link in extracts.
-	*/
+/*  Archive link in extracts.
+    */
 .extract-popup a[href*='webcitation.org'   ]::after,
 .extract-popup a[href*='mementoweb.org'    ]::after,
 .extract-popup a[href*='archive.org'       ]::after,
