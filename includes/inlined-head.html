@@ -255,6 +255,10 @@
 /*************/
 
 :root {
+	--GW-serif-font-stack: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Times New Roman", "Droid Serif", "Times", serif;
+	--GW-sans-serif-font-stack: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	--GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", Consolas, Courier, monospace;
+
     --GW-body-text-font-size: 1rem;
 }
 
@@ -268,7 +272,7 @@ html {
 	background-color: var(--GW-body-background-color);
 	color: var(--GW-body-text-color);
 	font-weight: 400;
-	font-family: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Times New Roman", "Droid Serif", "Times", serif;
+	font-family: var(--GW-serif-font-stack);
 }
 
 body {
@@ -638,7 +642,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 #TOC {
 	border: 1px solid var(--GW-TOC-border-color);
 	background-color: var(--GW-TOC-background-color);
-	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	font-family: var(--GW-sans-serif-font-stack);
 	margin: 0 2rem 1.5rem 0;
 	line-height: 1.25;
 	padding: 10px 10px 2px 14px;

@@ -207,7 +207,7 @@ section.collapse:target > .disclosure-button::before {
     content: "… Click to expand …";
     font-size: 1.25em;
     font-weight: 600;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--GW-sans-serif-font-stack);
     color: var(--GW-collapse-block-click-to-expand-text-color);
     text-shadow:
          1px -1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
@@ -1463,7 +1463,7 @@ code {
     /*  Tufte CSS's monospace/sans suggestions, borrowing from Github: */
     /*  Added IBM Plex Mono webfont for styling consistency across platforms. */
     /* Primary font: https://en.wikipedia.org/wiki/IBM_Plex This was chosen for its dotted/slashed zero (a sine qua non of coding fonts where O/0 ambiguity is fatal), and for rendering well on Macs. */
-    font-family: "IBM Plex Mono", "Liberation Mono", Consolas, Courier, monospace;
+    font-family: var(--GW-monospaced-font-stack);
     /*  OpenType stylistic sets to enable single-story 'g' and slashed zero in
         IBM Plex Mono. */
     font-feature-settings: 'ss02', 'ss03';
@@ -1838,7 +1838,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
 /* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
 .admonition {
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875em;
     position: relative;
     margin: 2em 0 1.5em 0;
@@ -2172,6 +2172,8 @@ body.directory-index #disqus_thread {
 /*=--------=*/
 
 :root {
+	--SA-image-focus-sans-serif-font-stack: var(--GW-sans-serif-font-stack);
+
     --SA-image-focus-image-hover-drop-shadow-color: var(--GW-image-focus-image-hover-drop-shadow-color);
     --SA-image-focus-overlay-background-color: #000;
     --SA-image-focus-overlay-image-caption-background-color: rgba(0, 0, 0, 0.7);
@@ -2269,7 +2271,7 @@ body.directory-index #disqus_thread {
     margin: auto;
     max-width: calc(100% - 9em);
     text-align: center;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--SA-image-focus-sans-serif-font-stack);
     border-radius: 8px;
     z-index: 1;
     transition:
@@ -2327,7 +2329,7 @@ body.directory-index #disqus_thread {
     display: flex;
     flex-flow: column;
     z-index: 2;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--SA-image-focus-sans-serif-font-stack);
     font-size: 1.25rem;
     padding: 1em;
     border-radius: 10px;
@@ -2397,7 +2399,7 @@ body.directory-index #disqus_thread {
 #image-focus-overlay .image-number {
     position: absolute;
     z-index: 2;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--SA-image-focus-sans-serif-font-stack);
     font-size: 1.5rem;
     left: 1em;
     top: 1em;
@@ -2521,7 +2523,7 @@ body.directory-index #disqus_thread {
     bottom: 10px;
     padding: 6px 15px 7px 15px;
     font-size: 1rem;
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--SA-image-focus-sans-serif-font-stack);
     background-color: var(--SA-image-focus-image-hover-tooltip-background-color);
     color: var(--SA-image-focus-image-hover-tooltip-text-color);
     border-radius: 5px;
@@ -2847,7 +2849,7 @@ body.directory-index #disqus_thread {
     background-color: #fff;
     border: 1px solid #aaa;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.25);
-	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	font-family: var(--GW-sans-serif-font-stack);
     user-select: none;
 }
 

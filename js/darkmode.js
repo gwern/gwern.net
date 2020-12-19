@@ -176,7 +176,7 @@ function injectModeSelector() {
 		padding: 0.5em;
 		margin: 0 0 0 1.375em;
 		line-height: 1;
-		font-family: Lucida Sans Unicode, Source Sans Pro, Helvetica, Trebuchet MS, sans-serif;
+		font-family: var(--GW-sans-serif-font-stack);
 		font-size: 0.75rem;
 		text-align: center;
 		color: var(--GW-mode-selector-button-text-color);

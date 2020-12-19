@@ -570,7 +570,7 @@ a[href*="myanimelist.net"]::after,
 a[href*="animenewsnetwork.com"]::after,
 a[href*="fda.gov"]::after,
 a[href*="predictionbook.com"]::after {
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--GW-sans-serif-font-stack);
 }
 
 /* MR: cheaper to abuse Unicode */
@@ -907,7 +907,7 @@ a[href*="sagepub.com"]::after {
 a[href*="pnas.org"]::after,
 a[href*="publicdomainreview.org"]::after,
 a[href*="www.nber.org"]:not([href$=".pdf"])::after {
-    font-family: "Apple Garamond", "Baskerville", "Times New Roman", "Droid Serif", "Times", "Source Serif Pro", serif;
+    font-family: var(--GW-serif-font-stack);
     line-height: 0.85;
     margin: 0 0 0 2px;
 }
@@ -938,7 +938,7 @@ a[href*="sagepub.com"]::after,
 a[href*="xkcd.com"]::after,
 a[href*="rand.org"]::after,
 a[href*="www.cell.com"]::after {
-    font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+    font-family: var(--GW-sans-serif-font-stack);
     line-height: 0.8;
 }
 
