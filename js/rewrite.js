@@ -124,9 +124,11 @@ document.querySelectorAll("table").forEach(table => {
     */
 document.querySelectorAll("pre.full-width").forEach(fullWidthPre => {
     if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
-        fullWidthPre.parentElement.classList.toggle("full-width full-width-code-block-wrapper", true);
+//         fullWidthPre.parentElement.classList.toggle("full-width full-width-code-block-wrapper", true);
+        fullWidthPre.parentElement.classList.toggle("full-width", true);
     else
-        fullWidthPre.outerHTML = "<div class='full-width full-width-code-block-wrapper'>" + fullWidthPre.outerHTML + "</div>";
+//         fullWidthPre.outerHTML = "<div class='full-width full-width-code-block-wrapper'>" + fullWidthPre.outerHTML + "</div>";
+        fullWidthPre.outerHTML = "<div class='full-width'>" + fullWidthPre.outerHTML + "</div>";
 });
 
 /*  Expand full-width blocks, and add a listener to recompute their size and
