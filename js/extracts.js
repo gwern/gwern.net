@@ -68,11 +68,11 @@ Extracts = {
             /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
             citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of this paper (‘${target.dataset.popupTitle}’) in Google Scholar">` + "cites" + `</a>`;
         } else if (!target.href.startsWith("https://en.wikipedia.org")) {
-            citationsOrLinks = `; <a href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Links to this page (‘${target.dataset.popupTitle}’) in Google">` + "links" + `</a>`;
+            citationsOrLinks = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Links to this page (‘${target.dataset.popupTitle}’) in Google">` + "links" + `</a>`;
         }
 
 		//	Date; citations/links.
-		let dateAndCitationsOrLinks = (target.dataset.popupDate ? ` (${target.dataset.popupDate}${citationsOrLinks})` : ``);
+		let dateAndCitationsOrLinks = (target.dataset.popupDate ? ` <span class="date-plus-cites">(<span class="data-field date">${target.dataset.popupDate}</span>${citationsOrLinks})</span>` : ``);
 
 		//  The fully constructed extract popup contents.
         return `<div>` +

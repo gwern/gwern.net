@@ -2699,22 +2699,25 @@ body.directory-index #disqus_thread {
 
 /*	Data fields.
 	*/
-.extract-popup > div .data-field {
+.extract-popup .data-field {
     text-align: left;
     text-indent: 0;
 }
-.extract-popup > div .data-field + .data-field {
+.extract-popup .data-field + .data-field {
     margin-top: 0.25em;
 }
-.extract-popup > div .data-field:empty {
+.extract-popup .data-field:empty {
     display: none;
 }
-.extract-popup > div .data-field.title {
+.extract-popup .data-field.title {
     font-weight: bold;
     font-size: 1.125em;
 }
-.extract-popup > div .data-field.author {
+.extract-popup .data-field.author {
     font-style: italic;
+}
+.extract-popup .date-plus-cites {
+  display: inline-block;
 }
 .extract-popup .originalURL {
   font-size: 0.75em;
