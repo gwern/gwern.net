@@ -300,13 +300,13 @@ section:not(.collapse) > h1:first-child {
         margin: 1.75em 0 0.375em -0.75rem;
         font-size: 2em;
         overflow: hidden;
-        padding: 0 0 7px 0.75rem;
+        padding: 0 0 7px 1.25rem;
         box-shadow:
             0 -5px 0 0 var(--GW-H1-box-shadow-background-color) inset,
             0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
     }
     #markdownBody section:not(.collapse) > h1:first-child a::after {
-        left: -0.375em;
+        left: -0.75em;
     }
 }
 
