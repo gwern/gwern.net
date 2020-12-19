@@ -28,16 +28,6 @@ Popups = {
 	popupSpawnTimer: false,
 	popupContainer: null,
 
-	isMobile: () => {
-		/*  We consider a client to be mobile if one of two conditions obtain:
-		    1. JavaScript detects touch capability, AND viewport is narrow; or,
-		    2. CSS does NOT detect hover capability.
-		    */
-		return (   (   ('ontouchstart' in document.documentElement)
-					&& GW.mediaQueries.mobileWidth.matches)
-				|| !GW.mediaQueries.hoverAvailable.matches);
-	},
-
 	cleanup: () => {
 		GWLog("Popups.cleanup", "popups.js", 1);
 

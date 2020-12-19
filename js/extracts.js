@@ -31,6 +31,16 @@ Extracts = {
 	popupOptionsDialog: null,
 	popupsDisabledShowPopupOptionsDialogButton: null,
 
+	isMobile: () => {
+		/*  We consider a client to be mobile if one of two conditions obtain:
+		    1. JavaScript detects touch capability, AND viewport is narrow; or,
+		    2. CSS does NOT detect hover capability.
+		    */
+		return (   (   ('ontouchstart' in document.documentElement)
+					&& GW.mediaQueries.mobileWidth.matches)
+				|| !GW.mediaQueries.hoverAvailable.matches);
+	},
+
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
@@ -178,7 +188,7 @@ Extracts = {
 			return;
 		}
 
-        if (Popups.isMobile()) {
+        if (Extracts.isMobile()) {
             GWLog("Mobile client detected. Exiting.", "extracts.js", 1);
             return;
         } else {
@@ -344,7 +354,6 @@ Extracts = {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	},
-
     fillPopup: (popup, target) => {
 		GWLog("Extracts.fillPopup", "extracts.js", 2);
 
