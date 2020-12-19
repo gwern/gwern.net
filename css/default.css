@@ -722,9 +722,12 @@ figure.full-width {
 
 /* main gray background is implemented in initial.css to avoid 'flash' on load */
 
-/* avoid problems with floating */
 blockquote {
+	/* avoid problems with floating */
     clear: both;
+
+    position: relative;
+    z-index: 1;
 }
 
 blockquote blockquote {
