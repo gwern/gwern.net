@@ -1853,6 +1853,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     padding: 0.75em 1.25em 0.875em 1.125em;
     border-left: 2.875em solid var(--GW-admonition-default-left-border-color);
     background-color: var(--GW-admonition-default-background-color);
+	--GW-link-underline-background-color: var(--GW-admonition-default-background-color);
 }
 .admonition-title {
     font-weight: bold;
@@ -1860,11 +1861,13 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .admonition.tip {
     border-left-color: var(--GW-admonition-tip-left-border-color);
     background-color: var(--GW-admonition-tip-background-color);
+	--GW-link-underline-background-color: var(--GW-admonition-tip-background-color);
 }
 .admonition.warn,
 .admonition.warning {
     border-left-color: var(--GW-admonition-warning-left-border-color);
     background-color: var(--GW-admonition-warning-background-color);
+	--GW-link-underline-background-color: var(--GW-admonition-warning-background-color);
     color: var(--GW-admonition-warning-text-color);
 }
 .admonition.warn > .admonition-title::after,
@@ -1874,6 +1877,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .admonition.error {
     border-left-color: var(--GW-admonition-error-left-border-color);
     background-color: var(--GW-admonition-error-background-color);
+	--GW-link-underline-background-color: var(--GW-admonition-error-background-color);
     color: var(--GW-admonition-error-text-color);
 }
 .admonition.error > .admonition-title::after {
@@ -1920,16 +1924,6 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     border: none;
     padding-left: 0;
     font-size: unset;
-}
-
-article > :not(#TOC) .admonition a:link {
-    text-shadow: none;
-    color: currentColor;
-    background-image: none;
-    text-decoration: underline;
-}
-article > :not(#TOC) .admonition a:hover {
-    text-decoration: dotted underline;
 }
 
 /*******************************/
