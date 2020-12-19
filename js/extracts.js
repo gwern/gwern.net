@@ -205,16 +205,22 @@ Extracts = {
     },
 
 	disableExtractPopups: () => {
+		GWLog("Extracts.disableExtractPopups", "extracts.js", 1);
+
 		localStorage.setItem("extract-popups-disabled", "true");
 		Extracts.cleanup();
 		Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
 	},
 	enableExtractPopups: () => {
+		GWLog("Extracts.enableExtractPopups", "extracts.js", 1);
+
 		localStorage.removeItem("extract-popups-disabled");
 		Extracts.setup();
 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 	},
 	showPopupOptionsDialog: () => {
+		GWLog("Extracts.showPopupOptionsDialog", "extracts.js", 1);
+
 		//  Create the options dialog, if needed.
 		if (Extracts.popupOptionsDialog == null) {
 			let popupsEnabled = localStorage.getItem("extract-popups-disabled") != "true";
@@ -243,22 +249,31 @@ Extracts = {
 				`</div></div>`);
 			//  Add event listeners.
 			requestAnimationFrame(() => {
-				Extracts.popupOptionsDialog.addEventListener("click", (event) => {
+				Extracts.popupOptionsDialog.addEventListener("click", Extracts.popupOptionsDialogBackdropClicked = (event) => {
+					GWLog("Extracts.popupOptionsDialogBackdropClicked", "extracts.js", 2);
+
 					event.stopPropagation();
 					Extracts.fadePopupOptionsDialog();
 				});
-				Extracts.popupOptionsDialog.firstElementChild.addEventListener("click", (event) => {
+				Extracts.popupOptionsDialog.firstElementChild.addEventListener("click", Extracts.popupOptionsDialogClicked = (event) => {
+					GWLog("Extracts.popupOptionsDialogClicked", "extracts.js", 3);
+
 					event.stopPropagation();
 				});
-				Extracts.popupOptionsDialog.querySelector("button.close-button").addActivateEvent(event => {
+				Extracts.popupOptionsDialog.querySelector("button.close-button").addActivateEvent(Extracts.popupOptionsDialogCloseButtonClicked = (event) => {
+					GWLog("Extracts.popupOptionsDialogCloseButtonClicked", "extracts.js", 2);
+
 					Extracts.fadePopupOptionsDialog();
 				});
-				Extracts.popupOptionsDialog.querySelector("button.save-button").addActivateEvent(event => {
+				Extracts.popupOptionsDialog.querySelector("button.save-button").addActivateEvent(Extracts.popupOptionsDialogSaveButtonClicked = (event) => {
+					GWLog("Extracts.popupOptionsDialogSaveButtonClicked", "extracts.js", 2);
+
 					Extracts.savePopupOptions();
 					Extracts.fadePopupOptionsDialog();
 				});
-				document.addEventListener("keyup", Extracts.keyUp = (event) => {
-					GWLog("Extracts.keyUp", "extracts.js", 3);
+				document.addEventListener("keyup", Extracts.popupOptionsDialogKeyUp = (event) => {
+					GWLog("Extracts.popupOptionsDialogKeyUp", "extracts.js", 3);
+
 					let allowedKeys = [ "Escape", "Esc" ];
 					if (!allowedKeys.includes(event.key) || Extracts.popupOptionsDialog.style.display == "none")
 						return;
@@ -273,22 +288,30 @@ Extracts = {
 		Extracts.popupOptionsDialog.style.display = "";
 	},
 	fadePopupOptionsDialog: () => {
+		GWLog("Extracts.fadePopupOptionsDialog", "extracts.js", 1);
+
 		Extracts.popupOptionsDialog.classList.toggle("fading", true);
 		setTimeout(Extracts.hidePopupOptionsDialog, 150);
 	},
 	hidePopupOptionsDialog: () => {
+		GWLog("Extracts.hidePopupOptionsDialog", "extracts.js", 1);
+
 		if (Extracts.popupOptionsDialog != null) {
 			Extracts.popupOptionsDialog.style.display = "none";
 			Extracts.popupOptionsDialog.classList.toggle("fading", false);
 		}
 	},
 	savePopupOptions: () => {
+		GWLog("Extracts.savePopupOptions", "extracts.js", 1);
+
 		if (Extracts.popupOptionsDialog.querySelector("input.popups-enable").checked)
 			Extracts.enableExtractPopups();
 		else
 			Extracts.disableExtractPopups();
 	},
 	injectPopupsDisabledShowPopupOptionsDialogButton: () => {
+		GWLog("Extracts.injectPopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
+
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton != null)
 			return;
 
@@ -298,12 +321,17 @@ Extracts = {
 
 		//  Add event listener.
 		requestAnimationFrame(() => {
-			Extracts.popupsDisabledShowPopupOptionsDialogButton.addActivateEvent(event => {
+			Extracts.popupsDisabledShowPopupOptionsDialogButton.addActivateEvent(Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked = (event) => {
+				GWLog("Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked", "extracts.js", 2);
+
+				event.stopPropagation();
 				Extracts.showPopupOptionsDialog();
 			});
 		});
 	},
 	removePopupsDisabledShowPopupOptionsDialogButton: () => {
+		GWLog("Extracts.removePopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
+
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
 			return;
 
