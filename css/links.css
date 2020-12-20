@@ -11,14 +11,14 @@
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
     a.docMetadata,
-    a.spawns-popup,
+    a.has-annotation,
     span.defnMetadata {
         margin: 0 0.05em;
         padding: 0 0 0 0.3em;
         position: relative;
     }
     a.docMetadata::before,
-    a.spawns-popup::before,
+    a.has-annotation::before,
     span.defnMetadata::before {
         content: "0";
         position: absolute;
@@ -42,7 +42,7 @@
         left: -1px;
     }
     a.docMetadata:hover::before,
-    a.spawns-popup:hover,
+    a.has-annotation:hover::before,
     span.defnMetadata:hover::before {
         background-image:
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
@@ -1377,7 +1377,6 @@ article > :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata,
 article > :not(#TOC) a[href*='wikisource.org'].docMetadata {
     background-image: var(--GW-dotted-underline-background-image);
     background-size: 2px 1px;
-    padding: 0; /* reset the padding from the left-bracket being removed */
 }
 article > :not(#TOC) a[href*='wikipedia.org'].docMetadata:hover,
 article > :not(#TOC) a[href*='wikimedia.org'].docMetadata:hover,
@@ -1386,17 +1385,6 @@ article > :not(#TOC) a[href*='wikimediafoundation.org'].docMetadata:hover,
 article > :not(#TOC) a[href*='wikisource.org'].docMetadata:hover {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
-/* Remove the left-bracket for annotated links - as almost every WP link is annotated, it's visual clutter. */
-body:not(.index) a[href*='wikipedia.org'].docMetadata::before,
-body:not(.index) a[href*='wikimedia.org'].docMetadata::before,
-body:not(.index) a[href*='wiktionary.org'].docMetadata::before,
-body:not(.index) a[href*='wikimediafoundation.org'].docMetadata::before,
-body:not(.index) a[href*='wikisource.org'].docMetadata::before,
-.popupdiv a[href*='wikipedia.org'].docMetadata::before,
-.popupdiv a[href*='wikimedia.org'].docMetadata::before,
-.popupdiv a[href*='wiktionary.org'].docMetadata::before,
-.popupdiv a[href*='wikimediafoundation.org'].docMetadata::before,
-.popupdiv a[href*='wikisource.org'].docMetadata::before,
 a[href*='wikipedia.org'].docMetadata::after,
 a[href*='wikimedia.org'].docMetadata::after,
 a[href*='wiktionary.org'].docMetadata::after,
@@ -1413,7 +1401,6 @@ a[href*='wikisource.org'].docMetadata::after {
 .popupdiv a[href*='wikimediafoundation.org'].docMetadata,
 .popupdiv a[href*='wikisource.org'].docMetadata {
     text-decoration: dotted underline;
-    padding-left: 0;
 }
 a[href*='wikipedia.org']::after, /* primary user: en.wikipedia.org */
 a[href*='wikimedia.org']::after, /* secondary user: meta.wikimedia.org */

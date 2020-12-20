@@ -46,15 +46,12 @@ Popins = {
 				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
 				return;
 
-			//  Set prepare function.
-			target.popinPrepareFunction = prepareFunction;
-
 			//  Run any custom processing.
 			if (targetPrepareFunction)
 				targetPrepareFunction(target);
 
 			//  Inject the popin.
-			Popins.injectPopin(target);
+			Popins.injectPopin(target, prepareFunction);
 		});
 	},
 	addTargets: (targetSelectors, prepareFunction, targetPrepareFunction = null) => {
@@ -74,9 +71,6 @@ Popins = {
 				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
 				return;
 
-			//  Unset popin prepare function.
-			target.popinPrepareFunction = null;
-
 			//  Remove the popin.
 			Popins.removePopin(target);
 
@@ -91,7 +85,7 @@ Popins = {
 		Popins.removeTargetsWithin(document, targetSelectors, targetRestoreFunction);
 	},
 
-	injectPopin: (target) => {
+	injectPopin: (target, prepareFunction) => {
 		GWLog("Popins.injectPopin", "popins.js", 2);
 
 		//  Create the new popin.
@@ -105,10 +99,15 @@ Popins = {
 		if (prepareFunction(target.popin, target) == false)
 			return;
 
-		//  Inject the popin.
-		//  TODO: this
+		//  Inject the popin (and its checkbox).
+		target.classList.toggle("has-popin", true);
+		target.onclick = (event) => {
+			event.preventDefault();
+			target.classList.toggle("popin-open");
+		};
+		target.parentElement.insertBefore(target.popin, target.nextSibling);
 
-		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: popin });
+		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
 	removePopin: (target) => {
 		//  TODO: this
@@ -119,6 +118,21 @@ Popins = {
 /*	Essential styles.
 	*/
 Popins.stylesHTML = `<style id='${Popins.stylesID}'>
+
+.popindiv {
+    display: none;
+}
+.has-popin.popin-open + .popindiv {
+    display: block;
+    float: left;
+    border-width: 3px;
+    border-style: double;
+    margin: 1em 0;
+    padding: 0.625em 1em 0.75em 1em;
+    font-size: 0.9em;
+    width: 100%;
+    box-sizing: border-box;
+}
 </style>`;
 
 /******************/

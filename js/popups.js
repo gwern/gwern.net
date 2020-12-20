@@ -150,7 +150,7 @@ Popups = {
 		Popups.positionPopup(popup, target, event);
 
 		//  Mark target as having an active popup associated with it.
-		target.classList.add("has-active-popup");
+		target.classList.add("popup-open");
 
 		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: popup });
 	},
@@ -287,7 +287,7 @@ Popups = {
 
 	    popup.classList.remove("fading");
         popup.remove();
-        popup.popupTarget.classList.remove("has-active-popup");
+        popup.popupTarget.classList.remove("popup-open");
         popup.popupTarget.popup = null;
         document.activeElement.blur();
     },

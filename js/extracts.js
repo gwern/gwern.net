@@ -25,22 +25,9 @@ Extracts = {
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
 
-	/******************/
-	/*	Implementation.
+	/***********/
+	/*	Content.
 		*/
-	popupOptionsDialog: null,
-	popupsDisabledShowPopupOptionsDialogButton: null,
-
-	isMobile: () => {
-		/*  We consider a client to be mobile if one of two conditions obtain:
-		    1. JavaScript detects touch capability, AND viewport is narrow; or,
-		    2. CSS does NOT detect hover capability.
-		    */
-		return (   (   ('ontouchstart' in document.documentElement)
-					&& GW.mediaQueries.mobileWidth.matches)
-				|| !GW.mediaQueries.hoverAvailable.matches);
-	},
-
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
@@ -149,32 +136,49 @@ Extracts = {
         return `<div><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
 
+	/***********/
+	/*	General.
+		*/
+	isMobile: () => {
+		/*  We consider a client to be mobile if one of two conditions obtain:
+		    1. JavaScript detects touch capability, AND viewport is narrow; or,
+		    2. CSS does NOT detect hover capability.
+		    */
+		return true;
+		return (   (   ('ontouchstart' in document.documentElement)
+					&& GW.mediaQueries.mobileWidth.matches)
+				|| !GW.mediaQueries.hoverAvailable.matches);
+	},
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
-		//  Remove “popups disabled” icon/button, if present.
-		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
+		if (Extracts.isMobile()) {
+			//  TODO: this
+		} else {
+			//  Remove “popups disabled” icon/button, if present.
+			Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 
-        //  Unbind event listeners and restore targets.
-        let restoreTarget = (target) => {
-        	if (!target.title && target.dataset.attributeTitle) {
-				//  Restore the title attribute, saved in `data-attribute-title`.
-				target.title = target.dataset.attributeTitle;
-				//  Remove the data attribute.
-				target.removeAttribute("data-attribute-title");
-			}
+			//  Unbind event listeners and restore targets.
+			let restoreTarget = (target) => {
+				if (!target.title && target.dataset.attributeTitle) {
+					//  Restore the title attribute, saved in `data-attribute-title`.
+					target.title = target.dataset.attributeTitle;
+					//  Remove the data attribute.
+					target.removeAttribute("data-attribute-title");
+				}
 
-			target.classList.toggle("spawns-popup", false);
-		};
-        document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-        	Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
-        });
+				target.classList.toggle("spawns-popup", false);
+			};
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
+			});
 
-		//  Remove event handler for newly-spawned popups.
-		GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler);
+			//  Remove event handler for newly-spawned popups.
+			GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler);
 
-        //  Remove popups.
-        document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
+			//  Remove popups.
+			document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
+		}
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
@@ -182,44 +186,133 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
-		if (localStorage.getItem("extract-popups-disabled") == "true") {
-			//  Inject “popups disabled” icon/button.
-			Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
-			return;
-		}
-
         if (Extracts.isMobile()) {
-            GWLog("Mobile client detected. Exiting.", "extracts.js", 1);
-            return;
+            GWLog("Mobile client detected. Injecting pop-ins.", "extracts.js", 1);
+
+			//  Set up targets.
+			let prepareTarget = (target) => {
+				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
+				if (videoId)
+					target.classList.toggle("has-annotation", true);
+			};
+
+			//  Recursively inject popins within newly-injected popin as well.
+			GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", Extracts.popinInjectHandler = (info) => {
+				Popins.addTargetsWithin(info.popin, Extracts.targets, Extracts.preparePopin, prepareTarget);
+			});
+
+			//  Inject popins.
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, prepareTarget);
+			});
         } else {
-            GWLog("Non-mobile client detected. Setting up.", "extracts.js", 1);
+            GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
+
+			if (localStorage.getItem("extract-popups-disabled") == "true") {
+				//  Inject “popups disabled” icon/button.
+				Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
+				return;
+			}
+
+			//  Set up targets.
+			let prepareTarget = (target) => {
+				if (target.title) {
+					//  Preserve the title attribute, for possible restoration later.
+					target.dataset.attributeTitle = target.title;
+					//  Remove the title attribute.
+					target.removeAttribute("title");
+				}
+
+				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
+				if (videoId)
+					target.classList.toggle("has-annotation", true);
+			};
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+			});
+
+			//  Recursively set up targets within newly-spawned popups as well.
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
+				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
+			});
         }
-
-		//  Set up targets.
-		let prepareTarget = (target) => {
-			if (target.title) {
-				//  Preserve the title attribute, for possible restoration later.
-				target.dataset.attributeTitle = target.title;
-				//  Remove the title attribute.
-				target.removeAttribute("title");
-        	}
-
-			let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-			if (videoId)
-				target.classList.toggle("spawns-popup", true);
-		};
-		document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-			Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
-		});
-
-		//  Recursively set up targets within newly-spawned popups as well.
-		GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
-			Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
-		});
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
 
+	/**********/
+	/*	Popins.
+		*/
+    fillPopin: (popin, target) => {
+		GWLog("Extracts.fillPopin", "extracts.js", 2);
+
+		//  Inject the contents of the popin into the popin div.
+		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
+		if (videoId) {
+			//  Videos (both local and remote).
+			popin.innerHTML = Extracts.videoForTarget(target, videoId);
+			popin.classList.add("video-popin");
+		} else if (target.classList.contains("footnote-ref")) {
+			//  Citations.
+			if (!target.hash)
+				return false;
+
+			//  This could be a footnote, or a sidenote!
+			let targetNoteId = target.hash.substr(1);
+			let targetNote = document.querySelector("#" + targetNoteId);
+			if (!targetNote)
+				return false;
+
+			popin.innerHTML = `<div>${targetNote.innerHTML}</div>`;
+			popin.targetNote = targetNote;
+			popin.classList.add("footnote-popin");
+		} else if (target.classList.contains("footnote-back")) {
+			return false;
+		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
+			return false;
+		} else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
+			//  Locally hosted images.
+			popin.innerHTML = Extracts.localImageForTarget(target);
+			popin.classList.add("image-popin");
+		} else if (target.classList.contains("docMetadata")) {
+			//  Summaries of links to elsewhere.
+			popin.innerHTML = Extracts.extractForTarget(target);
+		} else if (target.classList.contains("defnMetadata")) {
+			//  Definitions.
+			popin.innerHTML = Extracts.definitionForTarget(target);
+			popin.classList.add("definition-popin");
+		}
+
+		return (popin.childElementCount != 0);
+    },
+    preparePopin: (popin, target) => {
+		GWLog("Extracts.preparePopin", "extracts.js", 2);
+
+		//  Import the class(es) of the target, and add some others.
+		popin.classList.add(...target.classList, "extract-popin");
+
+		//	Inject the extract for the target into the popin.
+		if (Extracts.fillPopin(popin, target) == false)
+			return false;
+
+		//  Qualify internal links in extracts.
+		let targetHref = target.getAttribute("href");
+		if (popin.classList.contains("docMetadata") && targetHref.startsWith("/")) {
+			popin.querySelectorAll("a[href^='#']").forEach(anchorLink => {
+				let savedHash = anchorLink.hash;
+				anchorLink.setAttribute("href", targetHref);
+				anchorLink.hash = savedHash;
+			});
+		}
+
+		return true;
+    },
+
+	/**********/
+	/*	Popups.
+		*/
+	popupOptionsDialog: null,
+	popupsDisabledShowPopupOptionsDialogButton: null,
 	disableExtractPopups: () => {
 		GWLog("Extracts.disableExtractPopups", "extracts.js", 1);
 
@@ -501,10 +594,12 @@ Extracts = {
 doWhenPageLoaded(() => {
 	GW.notificationCenter.fireEvent("Extracts.didLoad");
 
-	if (window.Popups)
+	let serviceProviderObjectName = Extracts.isMobile() ? "Popins" : "Popups";
+
+	if (window[serviceProviderObjectName])
 		Extracts.setup();
 	else
-		GW.notificationCenter.addHandlerForEvent("Popups.setupDidComplete", () => {
+		GW.notificationCenter.addHandlerForEvent(serviceProviderObjectName + ".setupDidComplete", () => {
 			Extracts.setup();
 		}, { once: true });
 });
