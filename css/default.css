@@ -2766,8 +2766,22 @@ body.directory-index #disqus_thread {
 }
 .extract-popup.video-popup iframe {
 	display: block;
-	width: 495px;
-	height: 310px;
+    width: 495px;
+    height: 310px;
+}
+
+/*	Popups for local documents.
+	*/
+.extract-popup.local-document-popup {
+	height: 480px;
+}
+.extract-popup.local-document-popup > div {
+    padding: 0;
+}
+.extract-popup.local-document-popup object {
+    display: block;
+    width: 632px;
+    height: 474px;
 }
 
 /*	Section embeds.

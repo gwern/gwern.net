@@ -20,7 +20,7 @@ Extracts = {
 	contentContainersSelector: "#markdownBody, #TOC",
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     targets: {
-		targetElementsSelector: "a.docMetadata, a[href^='./images/'], a[href^='../images/'], a[href^='/images/'], a[href^='https://www.gwern.net/images/'], a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a.footnote-back, span.defnMetadata",
+		targetElementsSelector: "a.docMetadata, a[href^='./images/'], a[href^='../images/'], a[href^='/images/'], a[href^='https://www.gwern.net/images/'], a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/docs/www'], a.footnote-back, span.defnMetadata",
 		excludedElementsSelector: null,
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
@@ -135,6 +135,14 @@ Extracts = {
         // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
         return `<div><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
     },
+    localDocumentForTarget: (target) => {
+		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
+
+		//  TEMPORARY!
+		let href = target.getAttribute("href");
+		return `<div><object data="https://www.gwern.net${href}"></object></div>`
+// 		return `<div><object data="${target.href}"></object></div>`
+    },
 
 	/***********/
 	/*	General.
@@ -144,7 +152,7 @@ Extracts = {
 		    1. JavaScript detects touch capability, AND viewport is narrow; or,
 		    2. CSS does NOT detect hover capability.
 		    */
-		return true;
+// 		return true;
 		return (   (   ('ontouchstart' in document.documentElement)
 					&& GW.mediaQueries.mobileWidth.matches)
 				|| !GW.mediaQueries.hoverAvailable.matches);
@@ -192,8 +200,11 @@ Extracts = {
 			//  Set up targets.
 			let prepareTarget = (target) => {
 				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-				if (videoId)
+				if (videoId) {
 					target.classList.toggle("has-annotation", true);
+				} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+					target.classList.toggle("has-annotation", true);
+				}
 			};
 
 			//  Recursively inject popins within newly-injected popin as well.
@@ -224,8 +235,11 @@ Extracts = {
 				}
 
 				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-				if (videoId)
+				if (videoId) {
 					target.classList.toggle("has-annotation", true);
+				} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+					target.classList.toggle("has-annotation", true);
+				}
 			};
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
@@ -281,6 +295,9 @@ Extracts = {
 			//  Definitions.
 			popin.innerHTML = Extracts.definitionForTarget(target);
 			popin.classList.add("definition-popin");
+		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+			popin.innerHTML = Extracts.localDocumentForTarget(target);
+			popin.classList.add("local-document-popin");
 		}
 
 		return (popin.childElementCount != 0);
@@ -491,6 +508,9 @@ Extracts = {
 			//  Definitions.
 			popup.innerHTML = Extracts.definitionForTarget(target);
 			popup.classList.add("definition-popup");
+		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+			popup.innerHTML = Extracts.localDocumentForTarget(target);
+			popup.classList.add("local-document-popup");
 		}
 
 		return (popup.childElementCount != 0);
