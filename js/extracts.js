@@ -175,7 +175,7 @@ Extracts = {
 					target.removeAttribute("data-attribute-title");
 				}
 
-				target.classList.toggle("spawns-popup", false);
+				target.classList.toggle("has-content-popup", false);
 			};
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
@@ -201,9 +201,9 @@ Extracts = {
 			let prepareTarget = (target) => {
 				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
 				if (videoId) {
-					target.classList.toggle("has-annotation", true);
+					target.classList.toggle("has-content-popup", true);
 				} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
-					target.classList.toggle("has-annotation", true);
+					target.classList.toggle("has-content-popup", true);
 				}
 			};
 
@@ -236,9 +236,9 @@ Extracts = {
 
 				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
 				if (videoId) {
-					target.classList.toggle("has-annotation", true);
+					target.classList.toggle("has-content-popup", true);
 				} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
-					target.classList.toggle("has-annotation", true);
+					target.classList.toggle("has-content-popup", true);
 				}
 			};
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
