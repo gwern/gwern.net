@@ -96,6 +96,9 @@ Popups = {
 			//  Run any custom processing.
 			if (targetPrepareFunction)
 				targetPrepareFunction(target);
+
+			//  Mark target as spawning a popup.
+			target.classList.toggle("spawns-popup", true);
 		});
 	},
 	addTargets: (targetSelectors, prepareFunction, targetPrepareFunction = null) => {
@@ -121,6 +124,15 @@ Popups = {
 
 			//  Unset popup prepare function.
 			target.popupPrepareFunction = null;
+
+			//  Clear timers for target.
+			Popups.clearPopupTimers(target);
+
+			//  Un-mark target as spawning a popup.
+			target.classList.toggle("spawns-popup", false);
+
+			//  Remove spawned popup for target, if any.
+			Popups.despawnPopup(target.popup);
 
 			//  Run any custom processing.
 			if (targetRestoreFunction)

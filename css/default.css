@@ -9,6 +9,15 @@
 /**********/
 /* colors are now in /static/css/colors.css or dark-mode.css */
 
+/****************/
+/* FIXED COLORS */
+/****************/
+/* Not to be inverted in dark mode! */
+
+:root {
+	--GW-local-document-popup-background-color: #fff;
+}
+
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -2774,6 +2783,7 @@ body.directory-index #disqus_thread {
 	*/
 .extract-popup.local-document-popup {
 	height: 480px;
+	background-color: var(--GW-local-document-popup-background-color);
 }
 .extract-popup.local-document-popup > div {
     padding: 0;
@@ -3014,6 +3024,19 @@ body.directory-index #disqus_thread {
 #popups-disabled-show-popup-options-dialog-button button:hover {
     cursor: pointer;
     opacity: 1.0;
+}
+
+/**********/
+/* POPINS */
+/**********/
+
+.popindiv.video-popin {
+	padding: 0;
+}
+
+.video-popin iframe {
+	display: block;
+	width: 100%;
 }
 
 /*********************/
