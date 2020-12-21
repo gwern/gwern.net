@@ -76,8 +76,8 @@ then
     }
     export -f syntaxHighlight
     set +e
+    find _site/static/ -type f -name "*.html" | sort | parallel syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
     find _site/ -type f -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" | sort | parallel syntaxHighlight
-    find _site/static/ -type f -name "*.html" | sort | parallel syntaxHighlight
     set -e
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
