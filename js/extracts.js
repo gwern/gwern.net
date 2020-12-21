@@ -252,6 +252,9 @@ Extracts = {
 		};
 
 		if (Extracts.isMobile()) {
+			//  TEMPORARY!!
+			return;
+
 			//  Restore targets and remove popins.
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 				Popins.removeTargetsWithin(container, Extracts.targets, restoreTarget);
@@ -294,6 +297,9 @@ Extracts = {
 		};
 
         if (Extracts.isMobile()) {
+			//  TEMPORARY!!
+			return;
+
             GWLog("Mobile client detected. Injecting pop-ins.", "extracts.js", 1);
 
 			//  Set up targets.
