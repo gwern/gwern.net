@@ -69,6 +69,20 @@ then
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
 
+    ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
+    syntaxHighlight() {
+        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" )
+        for FILE in "$@"; do
+            FILENAME=$(basename -- "$FILE")
+            EXTENSION="${FILENAME##*.}"
+            LANGUAGE=${extensionToLanguage[$EXTENSION]}
+            echo -e "~~~{.$LANGUAGE}\n$(cat $FILE)\n~~~" | pandoc -w html >> $FILE.html
+        done
+    }
+    export -f syntaxHighlight
+    find _site/ -type f -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" | sort | parallel syntaxHighlight
+    find _site/static/ -type f -name "*.html" | sort | parallel syntaxHighlight
+
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
     staticCompileMathJax () {
