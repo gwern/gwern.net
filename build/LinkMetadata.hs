@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-18 19:00:58 gwern"
+When:  Time-stamp: "2020-12-20 18:48:04 gwern"
 License: CC-0
 -}
 
@@ -56,9 +56,9 @@ readLinkMetadata = do
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be
              let urls = map (\(u,_) -> u) custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nub urls)
-             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml'!" ++ unlines brokenUrls
-             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml'!" ++ unlines (titles \\ nub titles)
-             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml'!" ++ unlines (annotations \\ nub annotations)
+             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nub titles)
+             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nub annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
              let emptyCheck = filter (\(u,(t,a,_,_,s)) -> any (=="") [u,t,a,s]) custom
              when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
@@ -68,7 +68,8 @@ readLinkMetadata = do
 
              -- merge the hand-written & auto-generated link annotations, and return:
              let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
-             let secondVersion = metadataRecurse $ metadataRecurse $ metadataRecurse firstVersion
+             -- at 3 metadataRecurses, /index hits 11MB+:
+             let secondVersion = metadataRecurse $ metadataRecurse firstVersion
              return secondVersion
 
 
@@ -91,6 +92,9 @@ writeLinkMetadata l i@(t,a,d,di,abst) = do auto <- readYaml "metadata/auto.yaml"
                                              B.appendFile "metadata/auto.yaml" newYaml
 
 -- An annotation will often have links inside it; these links will often have annotations themselves. We of course don't want to inline those annotations by hand, as they will get out of date. So instead we update the metadata database recursively: take a Metadata, map over each MetadataItem and update it with annotated links, and return a new internally-annotated Metadata for use annotating regular pages. Then you can popup while you popup, dawg.
+-- TODO: the combinatorial explosion of recursive inlining is making pages unacceptably large and the current architecture is not going to scale: even at 3 levels of recursion, pages are already >10MB in HTML alone! While inlining metadata in place is straightforward and convenient to implement as a rewrite pass, it needs to be rethought.
+-- The current plan is to switch from local rewrites to a global rewrite: every annotation will be aggregated globally and placed in a separate section at the end of each Pandoc document. JS will then take care of reacting to hovers by extracting the relevant annotation. This avoids the combinatorial explosion where every use of a link inlines the entire dependency tree of annotations: each annotation used in any link will be 'inlined' just once, going from O(???) in links to O(n) in total annotations.
+-- Specifically, the rewrite pass will use a State monad to gather the set of links in a Pandoc document, look up each link in the annotation database, add the annotations as links in a new 'Bibliography' section, and inline the annotation to the link (and expose a copy the same way `generateDirectories.hs` exposes the annotation by default inside the list of files).
 metadataRecurse :: Metadata -> Metadata
 metadataRecurse md = M.map (annotateItem md) md
 annotateItem :: Metadata -> MetadataItem -> MetadataItem

@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
--- Read a directory like "docs/iodine/" for its files, and look up each file as a link in the link annotation database of `metadata/*.yaml`; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but an automatically-annotated one! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
+-- Read directories like "docs/iodine/" for its files, and look up each file as a link in the link annotation database of `metadata/*.yaml`; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but an automatically-annotated one! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import Data.Time (getCurrentTime)
@@ -17,21 +17,26 @@ import System.IO (stderr, hPrint)
 import LinkMetadata (readLinkMetadata, Metadata, MetadataItem)
 
 main :: IO ()
-main = do dir <- fmap head getArgs
-          let dir' = if "./" `isPrefixOf` dir then drop 2 dir else dir
+main = do dirs <- getArgs
+          let dirs' = map (\dir -> if "./" `isPrefixOf` dir then drop 2 dir else dir) dirs
 
           today <- fmap (take 10 . show) Data.Time.getCurrentTime
-          let header = generateYAMLHeader dir' today
-
           meta <- readLinkMetadata
-          pairs <- listFiles meta dir'
 
-          let body = [BulletList (map generateListItems pairs)]
-          let document = Pandoc nullMeta body
-          let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
-          case p of
-            Left e   -> hPrint stderr e
-            Right p' -> putStrLn $ header ++ (T.unpack p')
+          mapM_ (generateDirectory meta today) dirs'
+
+generateDirectory :: Metadata -> String -> FilePath -> IO ()
+generateDirectory mta tdy dir'' = do
+  pairs <- listFiles mta dir''
+
+  let header = generateYAMLHeader dir'' tdy
+  let body = [BulletList (map generateListItems pairs)]
+  let document = Pandoc nullMeta body
+  let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
+
+  case p of
+    Left e   -> hPrint stderr e
+    Right p' -> writeFile (dir'' ++ "index.page") $ header ++ (T.unpack p')
 
 generateYAMLHeader :: FilePath -> String -> String
 generateYAMLHeader d tdy = "---\n" ++
@@ -64,7 +69,7 @@ generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (tle,aut,dt,_,abst) -> [Para [Link nullAttr [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),
-                                                                  Str ",", Space, Str (T.pack $ aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
+                                                                  Str ",", Space, Str (T.pack aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
                                                            BlockQuote [RawBlock (Format "html") (T.pack abst)]
                                                            ]
                              where

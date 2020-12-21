@@ -21,26 +21,21 @@ then
     cd ~/wiki/ && (git status &)
 
     ## Update the directory listing pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
-    DIRS="docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ docs/ai/poetry/ docs/algernon/ docs/anime/ docs/aspirin/ \
-          docs/biology/ docs/bitcoin/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
-          docs/creatine/ docs/cs/ docs/culture/ docs/design/ docs/dnb/ docs/economics/ docs/elections/ docs/eva/ docs/fiction/ \
-          docs/genetics/ docs/genetics/correlation/ docs/genetics/editing/ docs/genetics/heritable/ docs/genetics/selection/ \
-          docs/history/ docs/history/medici/ docs/iodine/ docs/iq/ docs/iq/fullerton/ docs/iq/munich/ docs/iq/roe/ docs/iq/smpy/ \
-          docs/japanese/ docs/japanese/zeami/ docs/linkrot/ docs/lithium/ docs/longevity/ docs/longevity/aspirin/ \
-          docs/math/ docs/melatonin/ docs/modafinil/ docs/modafinil/blackmarkets/ \
-          docs/modafinil/survey/ docs/music-distraction/ docs/nature/ docs/nicotine/ docs/nootropics/ docs/philo/ \
-          docs/philo/brethrenofpurity/ docs/predictions/ docs/psychology/ \
-          docs/psychology/okcupid/ docs/psychology/writing/ docs/radiance/ docs/rl/ docs/science/ docs/sociology/ docs/spacedrepetition/ \
-          docs/sr/ docs/statistics/ docs/statistics/bayes/ docs/statistics/bias/ docs/statistics/causality/ \
-          docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
-          docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
-          docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/"
-    generateDirectory () {
-                rm "$1/index.page" > /dev/null || true;
-                runhaskell -istatic/build/ static/build/generateDirectory.hs "$1" > "$1/index.page"; }
-    generateDirectory docs/ai/poetry/ # test run; doing 1 run first also updates auto.yaml as necessary while avoiding race conditions in parallel updates
-    export -f generateDirectory
-    echo "$DIRS" | tr --squeeze-repeats ' ' '\n' | parallel --jobs 16 --progress generateDirectory
+    runhaskell -istatic/build/ static/build/generateDirectory.hs docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ \
+               docs/ai/poetry/ docs/algernon/ docs/anime/ docs/aspirin/ \
+               docs/biology/ docs/bitcoin/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
+               docs/creatine/ docs/cs/ docs/culture/ docs/design/ docs/dnb/ docs/economics/ docs/elections/ docs/eva/ docs/fiction/ \
+               docs/genetics/ docs/genetics/correlation/ docs/genetics/editing/ docs/genetics/heritable/ docs/genetics/selection/ \
+               docs/history/ docs/history/medici/ docs/iodine/ docs/iq/ docs/iq/fullerton/ docs/iq/munich/ docs/iq/roe/ docs/iq/smpy/ \
+               docs/japanese/ docs/japanese/zeami/ docs/linkrot/ docs/lithium/ docs/longevity/ docs/longevity/aspirin/ \
+               docs/math/ docs/melatonin/ docs/modafinil/ docs/modafinil/blackmarkets/ \
+               docs/modafinil/survey/ docs/music-distraction/ docs/nature/ docs/nicotine/ docs/nootropics/ docs/philo/ \
+               docs/philo/brethrenofpurity/ docs/predictions/ docs/psychology/ \
+               docs/psychology/okcupid/ docs/psychology/writing/ docs/radiance/ docs/rl/ docs/science/ docs/sociology/ docs/spacedrepetition/ \
+               docs/sr/ docs/statistics/ docs/statistics/bayes/ docs/statistics/bias/ docs/statistics/causality/ \
+               docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
+               docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
+               docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/
 
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/
@@ -68,6 +63,22 @@ then
      find -L _site/ -not -name "*.page" -type f | fgrep --invert-match -e 'static/' -e 'docs/' -e 'images/' -e 'Fulltext' | sort | parallel urlencode -m |
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
+
+    ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
+    syntaxHighlight() {
+        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" )
+        for FILE in "$@"; do
+            FILENAME=$(basename -- "$FILE")
+            EXTENSION="${FILENAME##*.}"
+            LANGUAGE=${extensionToLanguage[$EXTENSION]}
+            echo -e "~~~{.$LANGUAGE}\n$(cat $FILE)\n~~~" | pandoc -w html >> $FILE.html
+        done
+    }
+    export -f syntaxHighlight
+    set +e
+    find _site/ -type f -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" | sort | parallel syntaxHighlight
+    find _site/static/ -type f -name "*.html" | sort | parallel syntaxHighlight
+    set -e
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`

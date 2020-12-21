@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-15 22:39:56 gwern"
+When: Time-stamp: "2020-12-20 23:17:51 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -115,6 +115,8 @@ main = hakyll $ do
                                      "**.page",
                                      "**.css",
                                      "**.R",
+                                     "**.conf",
+                                     "**.php",
                                      "**.svg",
                                      "**.png",
                                      "**.jpg",
