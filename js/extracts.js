@@ -13,14 +13,43 @@
 
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
+function doAjax(options) {
+	let req = new XMLHttpRequest();
+	req.addEventListener("load", (event) => {
+		if (event.target.status < 400) {
+			if (options["onSuccess"]) options.onSuccess(event);
+		} else {
+			if (options["onFailure"]) options.onFailure(event);
+		}
+	});
+	req.open((options["method"] || "GET"), (options.location || document.location) + (options.params ? "?" + urlEncodeQuery(options.params) : ""));
+	if (options["method"] == "POST") {
+		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		req.send(urlEncodeQuery(options.params));
+	} else {
+		req.send();
+	}
+}
+
+Extracts = {
+    imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
+    codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf" ],
+};
+
 Extracts = {
 	/**********/
 	/*	Config.
 		*/
 	contentContainersSelector: "#markdownBody, #TOC",
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
+    imageFileExtensions: Extracts.imageFileExtensions,
+    codeFileExtensions: Extracts.codeFileExtensions,
     targets: {
-		targetElementsSelector: "a.docMetadata, a[href^='./images/'], a[href^='../images/'], a[href^='/images/'], a[href^='https://www.gwern.net/images/'], a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/docs/www'], a.footnote-back, span.defnMetadata",
+		targetElementsSelector: [
+			"a.docMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/docs/www/'], a.footnote-back, span.defnMetadata", 
+			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
+			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
+			].join(", "),
 		excludedElementsSelector: null,
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
@@ -99,12 +128,17 @@ Extracts = {
         if (match && match[2].length == 11) {
             return match[2];
         } else {
-            return '';
+            return null;
         }
     },
-    videoForTarget: (target, videoId) => {
+    isVideoLink: (target) => {
+		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
+		return (videoId != null);
+    },
+    videoForTarget: (target) => {
 		GWLog("Extracts.videoForTarget", "extracts.js", 2);
 
+		let videoId = Extracts.youtubeId(target.href);
 		let videoEmbedURL = `https://www.youtube.com/embed/${videoId}`;
 		let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 		let srcdocStyles = `<style>` + 
@@ -140,20 +174,69 @@ Extracts = {
 
         return `<div>${citationContextHTML}</div>`;
     },
+    isLocalImageLink: (target) => {
+    	if (target.tagName != "A")
+    		return false;
+
+		let targetHref = target.getAttribute("href");
+		let imageFileURLRegExp = new RegExp('^\\/.*(' + Extracts.imageFileExtensions.map(ext => `\\.${ext}`).join("|") + ')', 'i');
+
+		return targetHref.startsWith("/images/") || (targetHref.match(imageFileURLRegExp) != null);
+    },
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
         // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
-        return `<div><img class='${target.classList}' width='${Extracts.maxPopupWidth}' src='${target.href}'></div>`;
+        //  TEMPORARY!!
+        let href = target.getAttribute("href");
+		return `<div><img class="${target.classList}" src="https://www.gwern.net${href}" loading="lazy"></div>`;
+//         return `<div><img class="${target.classList}" src="${target.href}" loading="lazy"></div>`;
+    },
+    isLocalDocumentLink: (target) => {
+	    return (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www"));
     },
     localDocumentForTarget: (target) => {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
 
-		//  TEMPORARY!
+		//  TEMPORARY!!
 		return null;
 		let href = target.getAttribute("href");
-		return `<div><object data="https://www.gwern.net${href}" loading="lazy"></object></div>`;
+		return `<div><object data="https://www.gwern.net${href}"></object></div>`;
 // 		return `<div><object data="${target.href}"></object></div>`;
+    },
+    isLocalCodeFileLink: (target) => {
+    	if (target.tagName != "A")
+    		return false;
+
+		let targetHref = target.getAttribute("href");
+		let codeFileURLRegExp = new RegExp('^\\/.*(' + Extracts.codeFileExtensions.map(ext => `\\.${ext}`).join("|") + ')', 'i');
+
+		return targetHref.match(codeFileURLRegExp) != null;
+    },
+    localCodeFileForTarget: (target) => {
+		GWLog("Extracts.localCodeFileForTarget", "extracts.js", 2);
+
+		doAjax({
+			location: target.href + ".html",
+			onSuccess: (event) => {
+				if (target.popup)
+					target.popup.innerHTML = event.target.responseText;
+			},
+			onFailure: (event) => {
+				doAjax({
+					location: target.href,
+					onSuccess: (event) => {
+						if (target.popup)
+							target.popup.innerHTML = `<pre><code>${event.target.responseText}</code></pre>`;;
+					},
+					onFailure: (event) => {
+						//  TODO: Inject some sort of "not found" message
+					}
+				});
+			}
+		});
+
+		return `<div></div>`;
     },
 
 	/***********/
@@ -218,10 +301,10 @@ Extracts = {
 				target.dataset.attributeTitle = target.title;
 			}
 
-			let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-			if (videoId) {
-				target.classList.toggle("has-content", true);
-			} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+			if (   Extracts.isVideoLink(target)
+				|| Extracts.isLocalImageLink(target)
+				|| Extracts.isLocalDocumentLink(target)
+				|| Extracts.isLocalCodeFileLink(target)) {
 				target.classList.toggle("has-content", true);
 			}
 		};
@@ -282,11 +365,10 @@ Extracts = {
 		GWLog("Extracts.fillPopin", "extracts.js", 2);
 
 		//  Inject the contents of the popin into the popin div.
-		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-		if (videoId) {
+		if (Extracts.isVideoLink(target)) {
 			//  Videos (both local and remote).
-			popin.innerHTML = Extracts.videoForTarget(target, videoId);
-			popin.classList.add("video-popin");
+			popin.innerHTML = Extracts.videoForTarget(target);
+			popin.classList.add("video-popin", "object-popin");
 		} else if (target.classList.contains("footnote-ref")) {
 			//  Citations.
 			if (!target.hash)
@@ -307,10 +389,10 @@ Extracts = {
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
 			//  There are no section embed popins.
 			return false;
-		} else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
+		} else if (Extracts.isLocalImageLink(target)) {
 			//  Locally hosted images.
 			popin.innerHTML = Extracts.localImageForTarget(target);
-			popin.classList.add("image-popin");
+			popin.classList.add("image-popin", "object-popin");
 		} else if (target.classList.contains("docMetadata")) {
 			//  Summaries of links to elsewhere.
 			popin.innerHTML = Extracts.extractForTarget(target);
@@ -318,10 +400,14 @@ Extracts = {
 			//  Definitions.
 			popin.innerHTML = Extracts.definitionForTarget(target);
 			popin.classList.add("definition-popin");
-		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+		} else if (Extracts.isLocalDocumentLink(target)) {
 			//  Locally hosted documents (html, pdf, etc.).
 			popin.innerHTML = Extracts.localDocumentForTarget(target);
-			popin.classList.add("local-document-popin");
+			popin.classList.add("local-document-popin", "object-popin");
+		} else if (Extracts.isLocalCodeFileLink(target)) {
+			//  Locally hosted code files (css, js, hs, etc.).
+			popin.innerHTML = Extracts.localCodeFileForTarget(target);
+			popin.classList.add("local-code-file-popin", "object-popin");
 		}
 
 		return (popin.childElementCount != 0);
@@ -492,11 +578,10 @@ Extracts = {
 		GWLog("Extracts.fillPopup", "extracts.js", 2);
 
 		//  Inject the contents of the popup into the popup div.
-		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-		if (videoId) {
+		if (Extracts.isVideoLink(target)) {
 			//  Videos (both local and remote).
-			popup.innerHTML = Extracts.videoForTarget(target, videoId);
-			popup.classList.add("video-popup");
+			popup.innerHTML = Extracts.videoForTarget(target);
+			popup.classList.add("video-popup", "object-popup");
 		} else if (target.classList.contains("footnote-ref")) {
 			//  Citations.
 			if (!target.hash)
@@ -521,10 +606,10 @@ Extracts = {
 			popup.classList.add("section-embed-popup");
 			if (target.closest("#TOC"))
 				popup.classList.add("toc-section-popup");
-		} else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
+		} else if (Extracts.isLocalImageLink(target)) {
 			//  Locally hosted images.
 			popup.innerHTML = Extracts.localImageForTarget(target);
-			popup.classList.add("image-popup");
+			popup.classList.add("image-popup", "object-popup");
 		} else if (target.classList.contains("docMetadata")) {
 			//  Summaries of links to elsewhere.
 			popup.innerHTML = Extracts.extractForTarget(target);
@@ -532,10 +617,14 @@ Extracts = {
 			//  Definitions.
 			popup.innerHTML = Extracts.definitionForTarget(target);
 			popup.classList.add("definition-popup");
-		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+		} else if (Extracts.isLocalDocumentLink(target)) {
 			//  Locally hosted documents (html, pdf, etc.).
 			popup.innerHTML = Extracts.localDocumentForTarget(target);
-			popup.classList.add("local-document-popup");
+			popup.classList.add("local-document-popup", "object-popup");
+		} else if (Extracts.isLocalCodeFileLink(target)) {
+			//  Locally hosted code files (css, js, hs, etc.).
+			popup.innerHTML = Extracts.localCodeFileForTarget(target);
+			popup.classList.add("local-code-file-popup", "object-popup");
 		}
 
 		return (popup.childElementCount != 0);
@@ -545,6 +634,8 @@ Extracts = {
 
 		//  Import the class(es) of the target, and add some others.
 		popup.classList.add(...target.classList, "extract-popup", "markdownBody");
+		//  We then remove some of the imported classes.
+		popup.classList.remove("has-content", "spawns-popup");
 
 		//	Inject the extract for the target into the popup.
 		if (Extracts.fillPopup(popup, target) == false)

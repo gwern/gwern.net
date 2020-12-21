@@ -45,6 +45,7 @@
         background-position: 0 100%, 1px 100%, 100% 100%, 2px 100%;
         top: unset;
         bottom: 0.1em;
+        width: 3px;
     }
     a.docMetadata:hover::before,
     a.has-content:hover::before,
@@ -133,7 +134,8 @@ a[href$='.hs' i]::after,
 a[href$='.js' i]::after,
 a[href$='.json' i]::after,
 a[href$='.jsonl' i]::after,
-a[href^="."][href$='.php' i]::after,
+a[href^="/"][href$='.php' i]::after,
+a[href$='.conf' i]::after,
 a[href$='.sh' i]::after,
 a[href$='.R' i]::after,
 a[href$='.patch' i]::after,
@@ -213,7 +215,8 @@ a[href$='.hs' i]:hover::after,
 a[href$='.js' i]:hover::after,
 a[href$='.json' i]:hover::after,
 a[href$='.jsonl' i]:hover::after,
-a[href^="."][href$='.php' i]:hover::after,
+a[href^="/"][href$='.php' i]:hover::after,
+a[href$='.conf' i]:hover::after,
 a[href$='.sh' i]:hover::after,
 a[href$='.R' i]:hover::after,
 a[href$='.patch' i]:hover::after,
@@ -297,7 +300,8 @@ a[href$='.jsonl' i]::after,
 a[href$='.R' i]::after,
 a[href$='.diff' i]::after,
 a[href$='.patch' i]::after,
-a[href^="."][href$='.php' i]::after,
+a[href^="/"][href$='.php' i]::after,
+a[href$='.conf' i]::after,
 a[href$='.sh' i]::after {
     background-image: url('/static/img/icons/code.svg');
 }

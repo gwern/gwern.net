@@ -2768,13 +2768,26 @@ body.directory-index #disqus_thread {
     margin-bottom: calc(1em/9);
 }
 
+/*	“Object popups”: videos, images, PDFs, archived web pages, etc.
+	*/
+.extract-popup.object-popup > div {
+    padding: 0;
+}
+.extract-popup.object-popup img,
+.extract-popup.object-popup iframe,
+.extract-popup.object-popup object {
+    display: block;
+}
+
+/*	Popups for images.
+	*/
+.extract-popup.image-popup {
+    min-width: 64px;
+}
+
 /*  Popups for videos.
     */
-.extract-popup.video-popup > div {
-	padding: 0;
-}
 .extract-popup.video-popup iframe {
-	display: block;
     width: 495px;
     height: 310px;
 }
@@ -2785,13 +2798,24 @@ body.directory-index #disqus_thread {
 	height: 480px;
 	background-color: var(--GW-local-document-popup-background-color);
 }
-.extract-popup.local-document-popup > div {
-    padding: 0;
-}
 .extract-popup.local-document-popup object {
-    display: block;
     width: 632px;
     height: 474px;
+}
+
+/*	Popups for local code files.
+	*/
+.extract-popup.local-code-file-popup {
+	width: 640px;
+	height: 480px;
+}
+.extract-popup.local-code-file-popup > div {
+    height: 100%;
+}
+.extract-popup.local-code-file-popup pre {
+    height: 100%;
+	margin: 0;
+    border: none;
 }
 
 /*	Section embeds.
