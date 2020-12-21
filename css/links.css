@@ -127,12 +127,12 @@ a[href*='eprint.iacr.org' i]::after,
 a[href$='.opml' i]::after,
 a[href$='.txt' i]::after,
 a[href$='.xml' i]::after,
+a[href$='.json' i]::after,
+a[href$='.jsonl' i]::after,
 /*  Code */
 a[href$='.css' i]::after,
 a[href$='.hs' i]::after,
 a[href$='.js' i]::after,
-a[href$='.json' i]::after,
-a[href$='.jsonl' i]::after,
 a[href^="."][href$='.php' i]::after,
 a[href$='.sh' i]::after,
 a[href$='.R' i]::after,
@@ -207,12 +207,12 @@ a[href*='eprint.iacr.org' i]:hover::after,
 a[href$='.opml' i]:hover::after,
 a[href$='.txt' i]:hover::after,
 a[href$='.xml' i]:hover::after,
+a[href$='.json' i]:hover::after,
+a[href$='.jsonl' i]:hover::after,
 /*  Code */
 a[href$='.css' i]:hover::after,
 a[href$='.hs' i]:hover::after,
 a[href$='.js' i]:hover::after,
-a[href$='.json' i]:hover::after,
-a[href$='.jsonl' i]:hover::after,
 a[href^="."][href$='.php' i]:hover::after,
 a[href$='.sh' i]:hover::after,
 a[href$='.R' i]:hover::after,
@@ -283,8 +283,16 @@ a[href*='eprint.iacr.org' i]::after {
     */
 a[href$='.opml' i]::after,
 a[href$='.txt' i]::after,
-a[href$='.xml' i]::after {
+a[href$='.xml' i]::after,
+a[href$='.json' i]::after,
+a[href$='.jsonl' i]::after {
     background-image: url('/static/img/icons/txt.svg');
+}
+
+/*  CSV files.
+    */
+a[href$='.csv' i]::after {
+    background-image: url('/static/img/icons/csv.svg');
 }
 
 /*  Code, scripts, etc.
@@ -292,8 +300,6 @@ a[href$='.xml' i]::after {
 a[href$='.css' i]::after,
 a[href$='.hs' i]::after,
 a[href$='.js' i]::after,
-a[href$='.json' i]::after,
-a[href$='.jsonl' i]::after,
 a[href$='.R' i]::after,
 a[href$='.diff' i]::after,
 a[href$='.patch' i]::after,
@@ -316,12 +322,6 @@ a[href$='.xls' i]::after,
 a[href$='.ods' i]::after,
 a[href$='.xlsx' i]::after {
     background-image: url('/static/img/icons/spreadsheet.svg');
-}
-
-/*  CSV files.
-    */
-a[href$='.csv' i]::after {
-    background-image: url('/static/img/icons/csv.svg');
 }
 
 /*  Images.
