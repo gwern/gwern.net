@@ -105,7 +105,18 @@ Extracts = {
     videoForTarget: (target, videoId) => {
 		GWLog("Extracts.videoForTarget", "extracts.js", 2);
 
-        return `<div><iframe src="//www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe></div>`;
+		let videoEmbedURL = `https://www.youtube.com/embed/${videoId}`;
+		let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+		let srcdocStyles = `<style>` + 
+			`* { padding: 0; margin: 0; overflow: hidden; }` + 
+			`html, body { height: 100%; } ` + 
+			`img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } ` + 
+			`span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` + 
+			`</style>`;
+		let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
+		let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
+
+        return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen></iframe></div>`;
     },
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul");
@@ -139,9 +150,10 @@ Extracts = {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
 
 		//  TEMPORARY!
+		return null;
 		let href = target.getAttribute("href");
-		return `<div><object data="https://www.gwern.net${href}"></object></div>`
-// 		return `<div><object data="${target.href}"></object></div>`
+		return `<div><object data="https://www.gwern.net${href}" loading="lazy"></object></div>`;
+// 		return `<div><object data="${target.href}"></object></div>`;
     },
 
 	/***********/
@@ -160,32 +172,37 @@ Extracts = {
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
+		//  Target restore function (same for mobile and non-mobile).
+		let restoreTarget = (target) => {
+			if (target.dataset.attributeTitle) {
+				//  Restore the title attribute, saved in `data-attribute-title`.
+				target.title = target.dataset.attributeTitle;
+				//  Remove the data attribute.
+				target.removeAttribute("data-attribute-title");
+			}
+
+			target.classList.toggle("has-content", false);
+		};
+
 		if (Extracts.isMobile()) {
-			//  TODO: this
+			//  Restore targets and remove popins.
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popins.removeTargetsWithin(container, Extracts.targets, restoreTarget);
+			});
+
+			//  Remove event handler for newly-spawned popups.
+			GW.notificationCenter.removeHandlerForEvent("Popups.popinDidInject", Extracts.popinInjectHandler);
 		} else {
 			//  Remove “popups disabled” icon/button, if present.
 			Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 
-			//  Unbind event listeners and restore targets.
-			let restoreTarget = (target) => {
-				if (!target.title && target.dataset.attributeTitle) {
-					//  Restore the title attribute, saved in `data-attribute-title`.
-					target.title = target.dataset.attributeTitle;
-					//  Remove the data attribute.
-					target.removeAttribute("data-attribute-title");
-				}
-
-				target.classList.toggle("has-content-popup", false);
-			};
+			//  Unbind event listeners, restore targets, and remove popups.
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
 			});
 
 			//  Remove event handler for newly-spawned popups.
 			GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler);
-
-			//  Remove popups.
-			document.querySelectorAll(`#${Popups.popupContainerID} .extract-popup`).forEach(element => element.remove());
 		}
     },
     setup: () => {
@@ -194,17 +211,30 @@ Extracts = {
         //  Run cleanup.
         Extracts.cleanup();
 
+		//  Shared target prepare function (for both mobile and non-mobile).
+		let sharedPrepareTarget = (target) => {
+			if (target.title) {
+				//  Preserve the title attribute, for possible restoration later.
+				target.dataset.attributeTitle = target.title;
+			}
+
+			let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
+			if (videoId) {
+				target.classList.toggle("has-content", true);
+			} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+				target.classList.toggle("has-content", true);
+			}
+		};
+
         if (Extracts.isMobile()) {
             GWLog("Mobile client detected. Injecting pop-ins.", "extracts.js", 1);
 
 			//  Set up targets.
 			let prepareTarget = (target) => {
-				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-				if (videoId) {
-					target.classList.toggle("has-content-popup", true);
-				} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
-					target.classList.toggle("has-content-popup", true);
-				}
+				sharedPrepareTarget(target);
+
+				//  Alter the title attribute.
+				target.title = "Click to reveal";
 			};
 
 			//  Recursively inject popins within newly-injected popin as well.
@@ -227,19 +257,10 @@ Extracts = {
 
 			//  Set up targets.
 			let prepareTarget = (target) => {
-				if (target.title) {
-					//  Preserve the title attribute, for possible restoration later.
-					target.dataset.attributeTitle = target.title;
-					//  Remove the title attribute.
-					target.removeAttribute("title");
-				}
+				sharedPrepareTarget(target);
 
-				let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-				if (videoId) {
-					target.classList.toggle("has-content-popup", true);
-				} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
-					target.classList.toggle("has-content-popup", true);
-				}
+				//  Remove the title attribute.
+				target.removeAttribute("title");
 			};
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
@@ -281,8 +302,10 @@ Extracts = {
 			popin.targetNote = targetNote;
 			popin.classList.add("footnote-popin");
 		} else if (target.classList.contains("footnote-back")) {
+			//  There are no citation-context popins.
 			return false;
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
+			//  There are no section embed popins.
 			return false;
 		} else if (target.tagName == "A" && target.href.startsWith("https://www.gwern.net/images/")) {
 			//  Locally hosted images.
@@ -296,6 +319,7 @@ Extracts = {
 			popin.innerHTML = Extracts.definitionForTarget(target);
 			popin.classList.add("definition-popin");
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+			//  Locally hosted documents (html, pdf, etc.).
 			popin.innerHTML = Extracts.localDocumentForTarget(target);
 			popin.classList.add("local-document-popin");
 		}
@@ -509,6 +533,7 @@ Extracts = {
 			popup.innerHTML = Extracts.definitionForTarget(target);
 			popup.classList.add("definition-popup");
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www")) {
+			//  Locally hosted documents (html, pdf, etc.).
 			popup.innerHTML = Extracts.localDocumentForTarget(target);
 			popup.classList.add("local-document-popup");
 		}

@@ -99,18 +99,27 @@ Popins = {
 		if (prepareFunction(target.popin, target) == false)
 			return;
 
-		//  Inject the popin (and its checkbox).
-		target.classList.toggle("has-popin", true);
+		//  Inject the popin.
 		target.onclick = (event) => {
 			event.preventDefault();
+			if (target.popinPreShowFunction)
+				target.popinPreShowFunction(target.popin);
 			target.classList.toggle("popin-open");
+			document.activeElement.blur();
 		};
 		target.parentElement.insertBefore(target.popin, target.nextSibling);
+		target.classList.toggle("spawns-popin", true);
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
 	removePopin: (target) => {
-		//  TODO: this
+		GWLog("Popins.removePopin", "popins.js", 2);
+
+		target.classList.toggle("popin-open", false);
+		target.classList.toggle("spawns-popin", false);
+		if (target.popin)
+			target.popin.remove();
+		target.popin = null;
 	}
 };
 
@@ -121,9 +130,7 @@ Popins.stylesHTML = `<style id='${Popins.stylesID}'>
 
 .popindiv {
     display: none;
-}
-.has-popin.popin-open + .popindiv {
-    display: block;
+
     float: left;
     border-width: 3px;
     border-style: double;
@@ -132,6 +139,9 @@ Popins.stylesHTML = `<style id='${Popins.stylesID}'>
     font-size: 0.9em;
     width: 100%;
     box-sizing: border-box;
+}
+.spawns-popin.popin-open + .popindiv {
+    display: block;
 }
 </style>`;
 

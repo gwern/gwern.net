@@ -786,7 +786,7 @@ span.defnMetadata {
 	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
 	background-size: 1px 1px;
 	background-repeat: repeat-x;
-	background-position: 0% 90%;
+	background-position: 0% calc(100% - 0.1em);
 
 	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
 	font-variant-numeric: lining-nums;
