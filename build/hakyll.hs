@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-20 23:17:51 gwern"
+When: Time-stamp: "2020-12-21 15:48:04 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -241,6 +241,7 @@ pandocTransform md adb = walkM (\x -> annotateLink md x >>= localizeLink adb >>=
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
+-- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
 imageSrcset (Image (c, t, pairs) inlines (target, title)) =
   do let ext = takeExtension $ T.unpack target
@@ -261,6 +262,12 @@ imageSrcset (Image (c, t, pairs) inlines (target, title)) =
      let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
      return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
                     inlines (target, title)
+-- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
+imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if not ("/" `T.isPrefixOf` p) || not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then return x
+                                                          else do (h,w) <- imageMagickDimensions $ tail $ T.unpack p
+                                                                  return (Link (htmlid, classes,
+                                                                                  kvs++[("image-height",(T.pack h)),("image-width",(T.pack w))])
+                                                                           xs (p,t))
 imageSrcset x = return x
 
 -- For Amazon links, there are two scenarios: there are parameters (denoted by a
