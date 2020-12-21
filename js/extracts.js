@@ -13,24 +13,6 @@
 
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
-function doAjax(options) {
-	let req = new XMLHttpRequest();
-	req.addEventListener("load", (event) => {
-		if (event.target.status < 400) {
-			if (options["onSuccess"]) options.onSuccess(event);
-		} else {
-			if (options["onFailure"]) options.onFailure(event);
-		}
-	});
-	req.open((options["method"] || "GET"), (options.location || document.location) + (options.params ? "?" + urlEncodeQuery(options.params) : ""));
-	if (options["method"] == "POST") {
-		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		req.send(urlEncodeQuery(options.params));
-	} else {
-		req.send();
-	}
-}
-
 Extracts = {
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf" ],
