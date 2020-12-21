@@ -208,8 +208,10 @@ Extracts = {
 				doAjax({
 					location: target.href,
 					onSuccess: (event) => {
-						if (target.popup)
-							target.popup.innerHTML = `<pre><code>${event.target.responseText}</code></pre>`;;
+						if (target.popup) {
+							let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
+							target.popup.innerHTML = `<pre><code>${htmlEncodedResponse}</code></pre>`;
+						}
 					},
 					onFailure: (event) => {
 						//  TODO: Inject some sort of "not found" message
@@ -334,6 +336,10 @@ Extracts = {
 			//  Recursively set up targets within newly-spawned popups as well.
 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
 				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
+
+				//  Remove click listener from code popups, to allow selection.
+				if (info.popup.classList.contains("local-code-file-popup"))
+					info.popup.removeEventListener("click", Popups.popupClicked);
 			});
         }
 
