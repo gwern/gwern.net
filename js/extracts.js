@@ -32,7 +32,7 @@ Extracts = {
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
 			].join(", "),
-		excludedElementsSelector: ".external-section-embed-popup .footnote-ref",
+		excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
 
@@ -154,39 +154,52 @@ Extracts = {
 		let targetHref = target.getAttribute("href");
 		return targetHref.match(/^\/[^\.]+?#.+$/) != null;
     },
+    cachedPages: { },
     externalSectionEmbedForTarget: (target) => {
 		GWLog("Extracts.externalSectionEmbedForTarget", "extracts.js", 2);
 
-		doAjax({
-			location: target.href,
-			onSuccess: (event) => {
-				if (!target.popup)
-					return;
+		let fillPopup = (markdownBody) => {
+			GWLog("Filling popup...", "extracts.js", 2);
 
-				target.popup.innerHTML = `<div>${event.target.responseText}</div>`;
-				requestAnimationFrame(() => {
-					let targetElement = target.popup.querySelector(target.hash);
-					if (targetElement.tagName != "SECTION")
-						targetElement = Extracts.nearestBlockElement(targetElement);
-					let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
-					target.popup.innerHTML = `<div>${sectionEmbedHTML}</div>`;
+			target.popup.innerHTML = `<div>${markdownBody.innerHTML}</div>`;
 
-					/*  Because the Popups.popupDidSpawn event has already fired,
-						we must process the newly-constructed popup manually,
-						to enable recursive popups within.
-						*/
-					requestAnimationFrame(() => {
-						//  But first, qualify internal links in the popup.
-						Extracts.qualifyLinksInPopContent(target.popup, target);
-						//  Now process targets in the popup.
-						Popups.addTargetsWithin(target.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
-					});
-				});
-			},
-			onFailure: (event) => {
-				//  TODO: Inject some sort of "not found" message
-			}
-		});
+			//  Give the popup inner div an identifying class.
+			target.popup.firstElementChild.classList.toggle("page-" + target.pathname.substring(1), true);
+
+			//  First, qualify internal links in the popup.
+			Extracts.qualifyLinksInPopContent(target.popup, target);
+
+			/*  Because the Popups.popupDidSpawn event has already fired,
+				we must process the newly-constructed popup manually,
+				to enable recursive popups within.
+				*/
+			Popups.addTargetsWithin(target.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
+
+			//  Scroll to the target.
+			let targetElement = target.popup.querySelector(target.hash);
+			target.popup.scrollTop = targetElement.offsetTop;
+		};
+
+		if (Extracts.cachedPages[target.pathname]) {
+			requestAnimationFrame(() => {
+				fillPopup(Extracts.cachedPages[target.pathname]);
+			});
+		} else {
+			doAjax({
+				location: target.href,
+				onSuccess: (event) => {
+					if (!target.popup)
+						return;
+
+					target.popup.innerHTML = `<div>${event.target.responseText}</div>`;
+					Extracts.cachedPages[target.pathname] = target.popup.querySelector("#markdownBody");
+					fillPopup(Extracts.cachedPages[target.pathname]);
+				},
+				onFailure: (event) => {
+					//  TODO: Inject some sort of "not found" message
+				}
+			});
+		}
 
 		return `<div></div>`;
     },

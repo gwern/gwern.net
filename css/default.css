@@ -2698,6 +2698,10 @@ body.directory-index #disqus_thread {
 .popupdiv a:hover {
     color: var(--GW-popups-popup-link-hover-color);
 }
+.external-section-embed-popup a.footnote-back {
+	text-decoration: none;
+    z-index: 1;
+}
 
 /*=----------=*/
 /*= EXTRACTS =*/
@@ -2744,10 +2748,16 @@ body.directory-index #disqus_thread {
 	*/
 .extract-popup .data-field.popupAbstract p,
 .extract-popup.section-embed-popup p,
+.extract-popup.external-section-embed-popup p,
 .extract-popup.citation-context-popup p {
     text-align: justify;
-    text-indent: 1em;
     hyphens: auto;
+}
+.extract-popup .data-field.popupAbstract p + p,
+.extract-popup.section-embed-popup p + p,
+.extract-popup.external-section-embed-popup p + p,
+.extract-popup.citation-context-popup p + p {
+    text-indent: 1em;
 }
 
 /*  Images such as the ones in Wikipedia popups.
@@ -2850,7 +2860,8 @@ body.directory-index #disqus_thread {
 /*	External section embeds.
 	*/
 .extract-popup.external-section-embed-popup {
-	min-height: 240px;
+	width: 640px;
+	height: 480px;
 }
 
 /*	Special case for inline math in Wikipedia popups.
