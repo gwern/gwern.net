@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-21 23:10:20 gwern"
+When: Time-stamp: "2020-12-22 15:20:48 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -144,6 +144,7 @@ main = hakyll $ do
                                      "static/**.svg",
                                      "static/**.ttf",
                                      "static/**.otf",
+                                     "static/**.php",
                                      "**.yaml",
                                      "metadata/**",
                                      "atom.xml", -- copy stub of deprecated RSS feed
