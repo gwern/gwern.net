@@ -15,7 +15,7 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, append, isSuffixOf, pack, unpack, replace, Text)
+import qualified Data.Text as T (any, append, isInfixOf, isSuffixOf, pack, unpack, replace, Text)
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import System.IO (stderr, hPrint)
 
@@ -26,7 +26,7 @@ import Text.Pandoc (Inline(..), Block(..), Pandoc)
 import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk hyphenate . walk smallcapsfy . walk breakSlashes . rulersCycle 3
+typographyTransform = walk hyphenate . walk smallcapsfyInlineCleanup . walk smallcapsfy . walk breakSlashes . rulersCycle 3
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
 -- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
@@ -64,11 +64,11 @@ typographyTransform = walk hyphenate . walk smallcapsfy . walk breakSlashes . ru
 --  walk smallcapsfyInline [Str "bigGAN means", Emph [Str "BIG"]]
 -- → [RawInline (Format "html") "big<span class=\"smallcaps-auto\">GAN</span> means",Emph [RawInline (Format "html") "<span class=\"smallcaps-auto\">BIG</span>"]]
 --
--- We exclude headers because on gwern.net, headers are uppercased, which makes auto-smallcaps look odd. So we skip header Block elements before doing the replacement on all other Block elements
+-- We exclude headers because on gwern.net, headers are uppercase already, which makes auto-smallcaps look odd. So we skip header Block elements before doing the replacement on all other Block elements
 smallcapsfy :: Block -> Block
 smallcapsfy h@Header{} = h
-smallcapsfy x          = walk smallcapsfyInline x
-smallcapsfyInline :: Inline -> Inline
+smallcapsfy x          = walk (smallcapsfyInline) x
+smallcapsfyInline, smallcapsfyInlineCleanup :: Inline -> Inline
 smallcapsfyInline x@(Str s) = let rewrite = go s in if s /= rewrite then RawInline "html" rewrite else x
   where
     go :: T.Text -> T.Text
@@ -80,6 +80,11 @@ smallcapsfyInline x@(Str s) = let rewrite = go s in if s /= rewrite then RawInli
                                          `T.append` "<span class=\"smallcaps-auto\">"`T.append` (T.pack matched) `T.append` "</span>"
                                          `T.append` go (T.pack after)
 smallcapsfyInline x = x
+-- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg if we scrape a gwern.net abstract (which will already be smallcaps/hyphenated) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
+smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) [y@(RawInline _ t)]) = if "<span class=\"smallcaps-auto\">" `T.isInfixOf` t then y else x
+smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"],_) (y@(Span (_,["smallcaps-auto"],_) _):_)) = y
+smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) _) = x
+smallcapsfyInlineCleanup x = x
 
 -- define at top level to memoize / avoid recomputation for efficiency since it runs everywhere
 smallcapsfyRegex :: R.Regex
