@@ -176,8 +176,7 @@ Extracts = {
 			Popups.addTargetsWithin(target.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
 
 			//  Scroll to the target.
-			let targetElement = target.popup.querySelector(target.hash);
-			target.popup.scrollTop = targetElement.offsetTop;
+			target.popup.scrollTop = target.popup.querySelector(target.hash).getBoundingClientRect().top - target.popup.getBoundingClientRect().top;
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
