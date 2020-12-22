@@ -2828,11 +2828,27 @@ body.directory-index #disqus_thread {
 .extract-popup.section-embed-popup > div > h2:first-child,
 .extract-popup.section-embed-popup > div > h3:first-child,
 .extract-popup.section-embed-popup > div > h4:first-child,
+.extract-popup.section-embed-popup > div > h5:first-child,
+.extract-popup.section-embed-popup > div > h6:first-child,
+.extract-popup.external-section-embed-popup > div > h1:first-child,
+.extract-popup.external-section-embed-popup > div > h2:first-child,
+.extract-popup.external-section-embed-popup > div > h3:first-child,
+.extract-popup.external-section-embed-popup > div > h4:first-child,
+.extract-popup.external-section-embed-popup > div > h5:first-child,
+.extract-popup.external-section-embed-popup > div > h6:first-child,
 .extract-popup.citation-context-popup > div > h1:first-child,
 .extract-popup.citation-context-popup > div > h2:first-child,
 .extract-popup.citation-context-popup > div > h3:first-child,
-.extract-popup.citation-context-popup > div > h4:first-child {
+.extract-popup.citation-context-popup > div > h4:first-child,
+.extract-popup.citation-context-popup > div > h5:first-child,
+.extract-popup.citation-context-popup > div > h6:first-child {
     margin-top: 0;
+}
+
+/*	External section embeds.
+	*/
+.extract-popup.external-section-embed-popup {
+	min-height: 240px;
 }
 
 /*	Special case for inline math in Wikipedia popups.

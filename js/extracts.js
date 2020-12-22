@@ -32,7 +32,7 @@ Extracts = {
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
 			].join(", "),
-		excludedElementsSelector: null,
+		excludedElementsSelector: ".external-section-embed-popup .footnote-ref",
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
     },
 
@@ -152,24 +152,43 @@ Extracts = {
     		return false;
 
 		let targetHref = target.getAttribute("href");
-		return targetHref.match(/\/[^\.]+?#.+$/) != null;
-
-//     	return (target.tagName == "A"
-// 				&& target.getAttribute("href").startsWith("/")
-// 				&& target.getAttribute("href").includes("#")
-// 				&& !target.getAttribute("href").includes("."));
+		return targetHref.match(/^\/[^\.]+?#.+$/) != null;
     },
     externalSectionEmbedForTarget: (target) => {
 		GWLog("Extracts.externalSectionEmbedForTarget", "extracts.js", 2);
 
-		//  TEMPORARY!!
-		return null;
-        let targetElement = document.querySelector(target.getAttribute('href'));
-        if (targetElement.tagName != "SECTION")
-	        targetElement = Extracts.nearestBlockElement(targetElement);
-		let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
+		doAjax({
+			location: target.href,
+			onSuccess: (event) => {
+				if (!target.popup)
+					return;
 
-        return `<div>${sectionEmbedHTML}</div>`;
+				target.popup.innerHTML = `<div>${event.target.responseText}</div>`;
+				requestAnimationFrame(() => {
+					let targetElement = target.popup.querySelector(target.hash);
+					if (targetElement.tagName != "SECTION")
+						targetElement = Extracts.nearestBlockElement(targetElement);
+					let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
+					target.popup.innerHTML = `<div>${sectionEmbedHTML}</div>`;
+
+					/*  Because the Popups.popupDidSpawn event has already fired,
+						we must process the newly-constructed popup manually,
+						to enable recursive popups within.
+						*/
+					requestAnimationFrame(() => {
+						//  But first, qualify internal links in the popup.
+						Extracts.qualifyLinksInPopContent(target.popup, target);
+						//  Now process targets in the popup.
+						Popups.addTargetsWithin(target.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
+					});
+				});
+			},
+			onFailure: (event) => {
+				//  TODO: Inject some sort of "not found" message
+			}
+		});
+
+		return `<div></div>`;
     },
     citationContextForTarget: (target) => {
 		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
@@ -245,6 +264,12 @@ Extracts = {
 		});
 
 		return `<div></div>`;
+    },
+    qualifyLinksInPopContent: (popX, target) => {
+		let targetHref = target.getAttribute("href");
+		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
+			anchorLink.setAttribute("href", targetHref.match(/^([^#]+)/)[1] + anchorLink.hash);
+		});
     },
 
 	/***********/
@@ -329,7 +354,7 @@ Extracts = {
             GWLog("Mobile client detected. Injecting pop-ins.", "extracts.js", 1);
 
 			//  Set up targets.
-			let prepareTarget = (target) => {
+			Extracts.prepareTargetForPopins = (target) => {
 				sharedPrepareTarget(target);
 
 				//  Alter the title attribute.
@@ -338,12 +363,12 @@ Extracts = {
 
 			//  Recursively inject popins within newly-injected popin as well.
 			GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", Extracts.popinInjectHandler = (info) => {
-				Popins.addTargetsWithin(info.popin, Extracts.targets, Extracts.preparePopin, prepareTarget);
+				Popins.addTargetsWithin(info.popin, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
 			});
 
 			//  Inject popins.
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, prepareTarget);
+				Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
 			});
         } else {
             GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
@@ -355,19 +380,19 @@ Extracts = {
 			}
 
 			//  Set up targets.
-			let prepareTarget = (target) => {
+			Extracts.prepareTargetForPopups = (target) => {
 				sharedPrepareTarget(target);
 
 				//  Remove the title attribute.
 				target.removeAttribute("title");
 			};
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
 			});
 
 			//  Recursively set up targets within newly-spawned popups as well.
 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
-				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, prepareTarget);
+				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
 
 				//  Remove click listener from code popups, to allow selection.
 				if (info.popup.classList.contains("local-code-file-popup"))
@@ -447,14 +472,8 @@ Extracts = {
 			return false;
 
 		//  Qualify internal links in extracts.
-		let targetHref = target.getAttribute("href");
-		if (popin.classList.contains("docMetadata") && targetHref.startsWith("/")) {
-			popin.querySelectorAll("a[href^='#']").forEach(anchorLink => {
-				let savedHash = anchorLink.hash;
-				anchorLink.setAttribute("href", targetHref);
-				anchorLink.hash = savedHash;
-			});
-		}
+		if (popin.classList.contains("docMetadata") && target.getAttribute("href").startsWith("/"))
+			Extracts.qualifyLinksInPopContent(popin, target);
 
 		return true;
     },
@@ -743,14 +762,8 @@ Extracts = {
 		});
 
 		//  Qualify internal links in extracts.
-		let targetHref = target.getAttribute("href");
-		if (popup.classList.contains("docMetadata") && targetHref.startsWith("/")) {
-			popup.querySelectorAll("a[href^='#']").forEach(anchorLink => {
-				let savedHash = anchorLink.hash;
-				anchorLink.setAttribute("href", targetHref);
-				anchorLink.hash = savedHash;
-			});
-		}
+		if (popup.classList.contains("docMetadata") && target.getAttribute("href").startsWith("/"))
+			Extracts.qualifyLinksInPopContent(popup, target);
 
 		return true;
     }
