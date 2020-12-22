@@ -2835,6 +2835,23 @@ body.directory-index #disqus_thread {
     margin-top: 0;
 }
 
+/*	Special case for inline math in Wikipedia popups.
+	*/
+.extract-popup .mwe-math-element {
+	display: inline-block;
+	height: 1.25em;
+	line-height: 1;
+	margin: 0;
+	vertical-align: bottom;
+	padding: 0;
+	text-indent: 0;
+}
+.extract-popup .mwe-math-element img {
+	display: inline-block;
+	height: 100%;
+}
+
+
 /*=-----------------=*/
 /*= FOOTNOTE POPUPS =*/
 /*=-----------------=*/
