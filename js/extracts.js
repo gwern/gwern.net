@@ -471,6 +471,11 @@ Extracts = {
 		if (Extracts.fillPopin(popin, target) == false)
 			return false;
 
+		//  Ensure no reflow due to figures.
+		popup.querySelectorAll("img[width]").forEach(img => {
+			img.style.width = img.width + "px";
+		});
+
 		//  Qualify internal links in extracts.
 		if (popin.classList.contains("docMetadata") && target.getAttribute("href").startsWith("/"))
 			Extracts.qualifyLinksInPopContent(popin, target);
@@ -745,6 +750,11 @@ Extracts = {
 		popup.querySelectorAll(".full-width").forEach(fullWidthBlock => {
 			fullWidthBlock.style.marginLeft = "";
 			fullWidthBlock.style.marginRight = "";
+		});
+
+		//  Ensure no reflow due to figures.
+		popup.querySelectorAll("img[width]").forEach(img => {
+			img.style.width = img.width + "px";
 		});
 
 		//  Expand collapsed code blocks and then re-rectify heights.
