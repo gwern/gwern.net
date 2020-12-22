@@ -2583,6 +2583,7 @@ body.directory-index #disqus_thread {
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     line-height: 1.45;
+    overflow: auto;
 }
 
 /*	Adjustments for styles in popups.
@@ -2753,6 +2754,7 @@ body.directory-index #disqus_thread {
     */
 .extract-popup figure.float-right:first-child {
     margin-top: -3em;
+    margin-bottom: 0.125em;
 }
 
 .extract-popup img {
