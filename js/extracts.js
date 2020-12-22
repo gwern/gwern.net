@@ -185,17 +185,22 @@ Extracts = {
 				fillPopup(Extracts.cachedPages[target.pathname]);
 			});
 		} else {
+			target.popup.classList.toggle("loading", true);
 			doAjax({
 				location: target.href,
 				onSuccess: (event) => {
 					if (!target.popup)
 						return;
 
+					target.popup.classList.toggle("loading", false);
+
 					target.popup.innerHTML = `<div>${event.target.responseText}</div>`;
 					Extracts.cachedPages[target.pathname] = target.popup.querySelector("#markdownBody");
 					fillPopup(Extracts.cachedPages[target.pathname]);
 				},
 				onFailure: (event) => {
+					target.popup.classList.toggle("loading", false);
+
 					//  TODO: Inject some sort of "not found" message
 				}
 			});
@@ -254,20 +259,26 @@ Extracts = {
     localCodeFileForTarget: (target) => {
 		GWLog("Extracts.localCodeFileForTarget", "extracts.js", 2);
 
+		target.popup.classList.toggle("loading", true);
 		doAjax({
 			location: target.href + ".html",
 			onSuccess: (event) => {
-				if (target.popup)
-					target.popup.innerHTML = event.target.responseText;
+				if (!target.popup)
+					return;
+
+				target.popup.classList.toggle("loading", false);
+				target.popup.innerHTML = event.target.responseText;
 			},
 			onFailure: (event) => {
 				doAjax({
 					location: target.href,
 					onSuccess: (event) => {
-						if (target.popup) {
-							let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
-							target.popup.innerHTML = `<pre><code>${htmlEncodedResponse}</code></pre>`;
-						}
+						if (!target.popup)
+							return;
+
+						target.popup.classList.toggle("loading", false);
+						let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
+						target.popup.innerHTML = `<pre><code>${htmlEncodedResponse}</code></pre>`;
 					},
 					onFailure: (event) => {
 						//  TODO: Inject some sort of "not found" message
