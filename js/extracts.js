@@ -162,6 +162,8 @@ Extracts = {
     externalSectionEmbedForTarget: (target) => {
 		GWLog("Extracts.externalSectionEmbedForTarget", "extracts.js", 2);
 
+		//  TEMPORARY!!
+		return null;
         let targetElement = document.querySelector(target.getAttribute('href'));
         if (targetElement.tagName != "SECTION")
 	        targetElement = Extracts.nearestBlockElement(targetElement);
@@ -190,11 +192,11 @@ Extracts = {
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
-        // note that we pass in the original image-link's classes - this is good for classes like 'invertible'.
         //  TEMPORARY!!
-        let href = target.getAttribute("href");
-		return `<div><img class="${target.classList}" src="https://www.gwern.net${href}" loading="lazy"></div>`;
-//         return `<div><img class="${target.classList}" src="${target.href}" loading="lazy"></div>`;
+//         let href = target.getAttribute("href");
+// 		return `<div><img class="${target.classList}" src="https://www.gwern.net${href}" loading="lazy"></div>`;
+        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
+        return `<div><img class="${target.classList}" src="${target.href}" loading="lazy"></div>`;
     },
     isLocalDocumentLink: (target) => {
 	    return (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www"));
@@ -203,10 +205,10 @@ Extracts = {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
 
 		//  TEMPORARY!!
-		return null;
-		let href = target.getAttribute("href");
-		return `<div><object data="https://www.gwern.net${href}"></object></div>`;
-// 		return `<div><object data="${target.href}"></object></div>`;
+// 		return null;
+// 		let href = target.getAttribute("href");
+// 		return `<div><object data="https://www.gwern.net${href}"></object></div>`;
+		return `<div><object data="${target.href}"></object></div>`;
     },
     isLocalCodeFileLink: (target) => {
     	if (target.tagName != "A")
