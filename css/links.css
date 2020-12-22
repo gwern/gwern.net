@@ -473,6 +473,7 @@ body.index a[href^="https://www.gwern.net/"]:not([href*="/docs/"]):not([href*="/
 	content: none;
 }
 .external-section-embed-popup a.footnote-ref[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
+.external-section-embed-popup a.footnote-back[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 .external-section-embed-popup h1 a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 .external-section-embed-popup h2 a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
 .external-section-embed-popup h3 a[href^="/"]:not([href*="/docs/"]):not([href*="/images/"]):not([href*="/static/"]):not([href$=".hs"]):not([href$=".sh"]):not([href$=".R"])::after,
