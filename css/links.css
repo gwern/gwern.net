@@ -12,6 +12,7 @@
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
     a.docMetadata,
     a.has-content,
+    a.has-annotation,
     span.defnMetadata {
         margin: 0 0.05em;
         padding: 0 0 0 0.3em;
@@ -19,6 +20,7 @@
     }
     a.docMetadata::before,
     a.has-content::before,
+    a.has-annotation::before,
     span.defnMetadata::before {
         content: "0";
         position: absolute;
@@ -49,6 +51,7 @@
     }
     a.docMetadata:hover::before,
     a.has-content:hover::before,
+    a.has-annotation:hover::before,
     span.defnMetadata:hover::before {
         background-image:
             linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
@@ -1534,12 +1537,12 @@ a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.
 }
 /*  Archive link in extracts.
     */
-.extract-popup a[href*='webcitation.org'   ]::after,
-.extract-popup a[href*='mementoweb.org'    ]::after,
-.extract-popup a[href*='archive.org'       ]::after,
-.extract-popup a[href*='archive-it.org'    ]::after,
-.extract-popup a[href*='archiveteam.org'   ]::after,
-.extract-popup a[href*='waybackmachine.org']::after {
+.extract-popup .iaMirror a[href*='webcitation.org'   ]::after,
+.extract-popup .iaMirror a[href*='mementoweb.org'    ]::after,
+.extract-popup .iaMirror a[href*='archive.org'       ]::after,
+.extract-popup .iaMirror a[href*='archive-it.org'    ]::after,
+.extract-popup .iaMirror a[href*='archiveteam.org'   ]::after,
+.extract-popup .iaMirror a[href*='waybackmachine.org']::after {
     background-image: url('/static/img/icons/internetarchive.svg');
     height: 0.9em;
     width: 0.9em;
