@@ -1,0 +1,3 @@
+# Serve .php files as plain text, instead of executing them.
+
+AddType text/plain .php
