@@ -28,7 +28,7 @@ Extracts = {
     codeFileExtensions: Extracts.codeFileExtensions,
     targets: {
 		targetElementsSelector: [
-			"a.docMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/docs/www/'], a.footnote-back, span.defnMetadata", 
+			"a.docMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-back, span.defnMetadata", 
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
 			].join(", "),
@@ -147,6 +147,28 @@ Extracts = {
 
         return `<div>${sectionEmbedHTML}</div>`;
     },
+    isExternalSectionLink: (target) => {
+    	if (target.tagName != "A")
+    		return false;
+
+		let targetHref = target.getAttribute("href");
+		return targetHref.match(/\/[^\.]+?#.+$/) != null;
+
+//     	return (target.tagName == "A"
+// 				&& target.getAttribute("href").startsWith("/")
+// 				&& target.getAttribute("href").includes("#")
+// 				&& !target.getAttribute("href").includes("."));
+    },
+    externalSectionEmbedForTarget: (target) => {
+		GWLog("Extracts.externalSectionEmbedForTarget", "extracts.js", 2);
+
+        let targetElement = document.querySelector(target.getAttribute('href'));
+        if (targetElement.tagName != "SECTION")
+	        targetElement = Extracts.nearestBlockElement(targetElement);
+		let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
+
+        return `<div>${sectionEmbedHTML}</div>`;
+    },
     citationContextForTarget: (target) => {
 		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
 
@@ -249,6 +271,7 @@ Extracts = {
 			}
 
 			target.classList.toggle("has-content", false);
+			target.classList.toggle("has-annotation", false);
 		};
 
 		if (Extracts.isMobile()) {
@@ -291,7 +314,8 @@ Extracts = {
 			if (   Extracts.isVideoLink(target)
 				|| Extracts.isLocalImageLink(target)
 				|| Extracts.isLocalDocumentLink(target)
-				|| Extracts.isLocalCodeFileLink(target)) {
+				|| Extracts.isLocalCodeFileLink(target)
+				|| Extracts.isExternalSectionLink(target)) {
 				target.classList.toggle("has-content", true);
 			}
 		};
@@ -383,6 +407,10 @@ Extracts = {
 		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
 			//  There are no section embed popins.
 			return false;
+		} else if (Extracts.isExternalSectionLink(target)) {
+			//  Identified sections of another page on gwern.net.
+			popin.innerHTML = Extracts.externalSectionEmbedForTarget(target);
+			popin.classList.add("external-section-embed-popin");
 		} else if (Extracts.isLocalImageLink(target)) {
 			//  Locally hosted images.
 			popin.innerHTML = Extracts.localImageForTarget(target);
@@ -594,12 +622,17 @@ Extracts = {
 			//  Context surrounding a citation (displayed on footnote-back links).
 			popup.innerHTML = Extracts.citationContextForTarget(target);
 			popup.classList.add("citation-context-popup");
-		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
+		} else if (   target.tagName == "A" 
+				   && target.getAttribute("href").startsWith("#")) {
 			//  Identified sections of the current page.
 			popup.innerHTML = Extracts.sectionEmbedForTarget(target);
 			popup.classList.add("section-embed-popup");
 			if (target.closest("#TOC"))
 				popup.classList.add("toc-section-popup");
+		} else if (Extracts.isExternalSectionLink(target)) {
+			//  Identified sections of another page on gwern.net.
+			popup.innerHTML = Extracts.externalSectionEmbedForTarget(target);
+			popup.classList.add("external-section-embed-popup");
 		} else if (Extracts.isLocalImageLink(target)) {
 			//  Locally hosted images.
 			popup.innerHTML = Extracts.localImageForTarget(target);
