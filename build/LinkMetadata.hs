@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-22 14:01:10 gwern"
+When:  Time-stamp: "2020-12-22 15:34:33 gwern"
 License: CC-0
 -}
 
@@ -16,7 +16,7 @@ module LinkMetadata where
 import Control.Monad (when, void)
 import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
-import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- (encode, decode) -- TODO: why doesn't using U.toString fix the Unicode problems?
+import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
 import qualified Data.HashMap.Strict as HM (lookup)
 import GHC.Generics (Generic)
@@ -41,6 +41,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Debug.Trace (trace)
 import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (typographyTransform, invertImage)
+import Network.HTTP (urlDecode)
 
 type Metadata = M.Map Path MetadataItem -- (Title, Author, Date, DOI, Abstract)
 type MetadataItem = (String, String, String, String, String)
@@ -344,7 +345,7 @@ wikipedia p
 
 downloadWPThumbnail :: FilePath -> IO FilePath
 downloadWPThumbnail href = do
-  let f = "images/thumbnails/wikipedia/"++(takeFileName href)
+  let f = "images/thumbnails/wikipedia/"++(takeFileName (urlDecode href))
   (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
   let ext = map toLower $ takeExtension f
   if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
