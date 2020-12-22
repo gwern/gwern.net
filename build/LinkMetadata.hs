@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-21 15:31:15 gwern"
+When:  Time-stamp: "2020-12-21 18:12:51 gwern"
 License: CC-0
 -}
 
@@ -13,7 +13,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata where
 
-import Control.Monad (when)
+import Control.Monad (when, void)
 import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- (encode, decode) -- TODO: why doesn't using U.toString fix the Unicode problems?
@@ -30,7 +30,7 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
-import System.FilePath (takeBaseName)
+import System.FilePath (takeBaseName, takeFileName, takeExtension)
 import Data.List.Utils (replace, split, uniq)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
@@ -333,13 +333,25 @@ wikipedia p
                                                      Just thumbnailObject -> case (HM.lookup "source" thumbnailObject) of
                                                                                Nothing -> return ""
                                                                                Just (String href) -> do -- check whether the WP thumbnail should be auto-inverted in popups for dark mode users:
-                                                                                                        (color,h,w) <- invertImage $ T.unpack href
+                                                                                                        newThumbnail <- downloadWPThumbnail $ T.unpack href
+                                                                                                        (color,h,w) <- invertImage newThumbnail
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
-                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"" ++ T.unpack href ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
+                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ newThumbnail ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract' = cleanAbstractsHTML wpAbstract in
                                                                                                           wpThumbnail ++ wpAbstract'))
+
+downloadWPThumbnail :: FilePath -> IO FilePath
+downloadWPThumbnail href = do
+  let f = "images/thumbnails/wikipedia/"++(takeFileName href)
+  (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+  let ext = takeExtension f
+  if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
+                     void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [f]
+                   else
+                     void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [f]
+  return f
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
