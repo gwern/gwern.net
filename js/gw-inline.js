@@ -42,6 +42,27 @@ GW.setLogLevel = (level, permanently = false) => {
 /* HELPERS */
 /***********/
 
+/*	Helper function for AJAX, by kronusaturn
+	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
+	*/
+function doAjax(options) {
+	let req = new XMLHttpRequest();
+	req.addEventListener("load", (event) => {
+		if (event.target.status < 400) {
+			if (options["onSuccess"]) options.onSuccess(event);
+		} else {
+			if (options["onFailure"]) options.onFailure(event);
+		}
+	});
+	req.open((options["method"] || "GET"), (options.location || document.location) + (options.params ? "?" + urlEncodeQuery(options.params) : ""));
+	if (options["method"] == "POST") {
+		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		req.send(urlEncodeQuery(options.params));
+	} else {
+		req.send();
+	}
+}
+
 /*  Returns true if the given element intersects the viewport, false otherwise.
     */
 function isOnScreen (element) {

@@ -122,17 +122,18 @@ Popups = {
 			target.removeEventListener("mouseenter", Popups.targetMouseenter);
 			target.removeEventListener("mouseleave", Popups.targetMouseleave);
 
-			//  Unset popup prepare function.
-			target.popupPrepareFunction = null;
-
 			//  Clear timers for target.
 			Popups.clearPopupTimers(target);
 
+			//  Remove spawned popup for target, if any.
+			if (target.popup)
+				Popups.despawnPopup(target.popup);
+
+			//  Unset popup prepare function.
+			target.popupPrepareFunction = null;
+
 			//  Un-mark target as spawning a popup.
 			target.classList.toggle("spawns-popup", false);
-
-			//  Remove spawned popup for target, if any.
-			Popups.despawnPopup(target.popup);
 
 			//  Run any custom processing.
 			if (targetRestoreFunction)
@@ -292,9 +293,6 @@ Popups = {
     despawnPopup: (popup) => {
 		GWLog("Popups.despawnPopup", "popups.js", 2);
 
-		if (popup == null)
-			return;
-
 		GW.notificationCenter.fireEvent("Popups.popupWillDespawn", { popup: popup });
 
 	    popup.classList.remove("fading");
@@ -312,7 +310,7 @@ Popups = {
 	},
 
     clearPopupTimers: (target) => {
-	    GWLog("Popups.clearPopupTimers", "popups.js", 2);
+	    GWLog("Popups.clearPopupTimers", "popups.js", 3);
 
 		if (target.popup)
 			target.popup.classList.remove("fading");
@@ -328,7 +326,8 @@ Popups = {
 			GWLog("Popups.popupSpawnTimer fired", "popups.js", 2);
 
 			//  Despawn existing popup, if any.
-			Popups.despawnPopup(target.popup);
+			if (target.popup)
+				Popups.despawnPopup(target.popup);
 
 			//  Create the new popup.
 			target.popup = Popups.newPopup();
