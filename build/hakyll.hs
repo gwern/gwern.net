@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-21 23:10:20 gwern"
+When: Time-stamp: "2020-12-22 16:23:18 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -144,6 +144,7 @@ main = hakyll $ do
                                      "static/**.svg",
                                      "static/**.ttf",
                                      "static/**.otf",
+                                     "static/**.php",
                                      "**.yaml",
                                      "metadata/**",
                                      "atom.xml", -- copy stub of deprecated RSS feed
@@ -244,25 +245,25 @@ pandocTransform md adb = walkM (\x -> annotateLink md x >>= localizeLink adb >>=
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
 -- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
-imageSrcset (Image (c, t, pairs) inlines (target, title)) =
+imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
   do let ext = takeExtension $ T.unpack target
      let target' = T.unpack target
      (_,w) <- imageMagickDimensions $ tail target'
-
-     let smallerPath = (tail target')++"-768px"++ext
-     notExist <- fmap not $ doesFileExist smallerPath
-     when notExist $ do
-       (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
-       case status of
-         ExitFailure _ -> error $ show status ++ show bs
-         _ -> do if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
-                     void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
-                   else
-                     void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
-                 void $ print ("Created smaller image: " ++ smallerPath)
-     let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
-     return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
-                    inlines (target, title)
+     if (read w :: Int) <= 768 then return x else do
+         let smallerPath = (tail target')++"-768px"++ext
+         notExist <- fmap not $ doesFileExist smallerPath
+         when notExist $ do
+           (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
+           case status of
+             ExitFailure _ -> error $ show status ++ show bs
+             _ -> do if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
+                         void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
+                       else
+                         void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
+                     void $ print ("Created smaller image: " ++ smallerPath)
+         let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
+         return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
+                        inlines (target, title)
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if not ("/" `T.isPrefixOf` p) || not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then return x
                                                           else do (h,w) <- imageMagickDimensions $ tail $ T.unpack p
