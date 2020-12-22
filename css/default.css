@@ -2605,14 +2605,16 @@ body.directory-index #disqus_thread {
             transform: rotate(0deg); }
   100% {
     -webkit-transform: rotate(360deg);
-            transform: rotate(360deg); } }
+            transform: rotate(360deg); }
+}
 @keyframes fa-spin {
   0% {
     -webkit-transform: rotate(0deg);
             transform: rotate(0deg); }
   100% {
     -webkit-transform: rotate(360deg);
-            transform: rotate(360deg); } }
+            transform: rotate(360deg); }
+}
 
 .popupdiv > div {
     font-size: 0.9em;
@@ -2830,6 +2832,10 @@ body.directory-index #disqus_thread {
 	*/
 .extract-popup.image-popup {
     min-width: 64px;
+}
+.popupdiv.image-popup.loading::before {
+    height: 2em;
+    width: 2em;
 }
 
 /*  Popups for videos.

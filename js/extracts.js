@@ -281,6 +281,7 @@ Extracts = {
 						target.popup.innerHTML = `<pre><code>${htmlEncodedResponse}</code></pre>`;
 					},
 					onFailure: (event) => {
+						target.popup.classList.toggle("loading", false);
 						//  TODO: Inject some sort of "not found" message
 					}
 				});
@@ -798,6 +799,28 @@ Extracts = {
 		//  Qualify internal links in extracts.
 		if (popup.classList.contains("docMetadata") && target.getAttribute("href").startsWith("/"))
 			Extracts.qualifyLinksInPopContent(popup, target);
+
+		//  Loading spinners.
+		if (popup.classList.contains("local-document-popup")) {
+			popup.classList.toggle("loading", true);
+			popup.querySelector("object").onload = (event) => {
+				popup.classList.toggle("loading", false);
+			};
+			popup.querySelector("object").onerror = (event) => {
+				popup.classList.toggle("loading", false);
+				//  TODO: do some sort of "loading failed" message
+			};
+		}
+		if (popup.classList.contains("image-popup")) {
+			popup.classList.toggle("loading", true);
+			popup.querySelector("img").onload = (event) => {
+				popup.classList.toggle("loading", false);
+			};
+			popup.querySelector("img").onerror = (event) => {
+				popup.classList.toggle("loading", false);
+				//  TODO: do some sort of "loading failed" message
+			};
+		}
 
 		return true;
     }
