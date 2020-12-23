@@ -468,7 +468,7 @@ Extracts = {
 
 						target.popup.classList.toggle("loading", false);
 						let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
-						target.popup.innerHTML = `<pre><code>${htmlEncodedResponse}</code></pre>`;
+						target.popup.innerHTML = `<div><pre><code>${htmlEncodedResponse}</code></pre></div>`;
 					},
 					onFailure: (event) => {
 						target.popup.classList.toggle("loading", false);
@@ -610,13 +610,13 @@ Extracts = {
 			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
 			[ "isCitation", 			"noteForTarget", 					"footnote-popup" 						],
 			[ "isCitationBackLink", 	"citationContextForTarget", 		"citation-context-popup" 				],
-			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"external-section-embed-popup" 			],
+			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
 			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
 			[ "isExtractLink", 			"extractForTarget", 				"" 										],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup object-popup" 	]
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				]
 		];
 
 		for ([ testMethodName, fillMethodName, classes ] of possiblePopupTypes) {

@@ -2866,6 +2866,7 @@ body.directory-index #disqus_thread {
 }
 .extract-popup.local-code-file-popup > div {
     height: 100%;
+    padding: 0;
 }
 .extract-popup.local-code-file-popup pre {
     height: 100%;
