@@ -262,7 +262,7 @@ then
           cm "text/x-opml; charset=utf-8" 'https://www.gwern.net/docs/personal/rss-subscriptions.opml'
           cm "text/x-patch; charset=utf-8" 'https://www.gwern.net/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
           cm "text/x-r; charset=utf-8" 'https://www.gwern.net/static/build/linkAbstract.R'
-          cm "text/plain" 'https://www.gwern.net/static/build/linkArchive.sh'
+          cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/build/linkArchive.sh'
           cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/custom.yaml'
           cm "video/mp4" 'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
