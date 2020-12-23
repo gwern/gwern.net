@@ -350,9 +350,6 @@ Extracts = {
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
-        //  Run cleanup.
-        Extracts.cleanup();
-
 		//  Shared target prepare function (for both mobile and non-mobile).
 		let sharedPrepareTarget = (target) => {
 			if (target.title) {
