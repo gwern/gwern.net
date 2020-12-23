@@ -262,7 +262,7 @@ then
           cm "text/x-opml; charset=utf-8" 'https://www.gwern.net/docs/personal/rss-subscriptions.opml'
           cm "text/x-patch; charset=utf-8" 'https://www.gwern.net/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
           cm "text/x-r; charset=utf-8" 'https://www.gwern.net/static/build/linkAbstract.R'
-          cm "text/x-shellscript; charset=utf-8" 'https://www.gwern.net/static/build/linkArchive.sh'
+          cm "text/plain" 'https://www.gwern.net/static/build/linkArchive.sh'
           cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/custom.yaml'
           cm "video/mp4" 'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
@@ -293,7 +293,7 @@ then
     λ(){ fgrep -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
     wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
 
-    λ(){ find . -type f -name "*--*"; find . -type f -name "*~*"; }
+    λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v images/thumbnails/; }
     wrap λ "No files should have double hyphens or tildes in their names."
 
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
@@ -337,7 +337,7 @@ then
     λ(){ fgrep --files-with-matches 'noindex' $(find ./ -type f -name "*.html" | fgrep --invert-match -e './docs/www/' -e './static/404.html'); }
     wrap λ "Noindex tags detected in HTML pages"
 
-    λ() { find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' | parallel identify | egrep '\.gif\[[0-9]\] '; }
+    λ() { find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel identify | egrep '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4"
 
     λ() {  find ./ -type f -name "*.jpg" | parallel --max-args=100 "identify -format '%Q %F\n'" {} | sort --numeric-sort | egrep -e '^[7-9][0-9] ' -e '^6[6-9]'; }
