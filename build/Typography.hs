@@ -193,8 +193,9 @@ invertImage f | "http" `isPrefixOf` f = do (temp,_) <- mkstemp "/tmp/image-inver
                                                      removeFile temp
                                                      return (invertp, h, w)
               | otherwise = do c <- imageMagickColor f f
+                               (h,w) <- imageMagickDimensions f
                                let invertp = c < threshold
-                               return (invertp, "320", "320")
+                               return (invertp, h, w)
               where threshold = 0.09
 
 -- Manually check the inverted version of new images which trigger the inversion heuristic. I don't want to store a database of image inversion status, so I'll use the cheaper heuristic of just opening up every image modified <1 day ago (which should catch all of the WP thumbnails + any images added).
