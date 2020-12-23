@@ -170,11 +170,15 @@ Extracts = {
 	/*	Content.
 		*/
 
+	//  Helper methods.
     qualifyLinksInPopContent: (popX, target) => {
 		let targetHref = target.getAttribute("href");
 		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
 			anchorLink.setAttribute("href", targetHref.match(/^([^#]+)/)[1] + anchorLink.hash);
 		});
+    },
+    nearestBlockElement: (element) => {
+    	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
 
 	//  Summaries of links to elsewhere.
@@ -284,8 +288,39 @@ Extracts = {
 		//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
         return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe></div>`;
     },
-    nearestBlockElement: (element) => {
-    	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul");
+
+	//  Citations.
+    isCitation: (target) => {
+		return target.classList.contains("footnote-ref");
+	},
+    noteAssociatedWithTarget: (target) => {
+		if (!target.hash)
+			return null;
+
+		//  This could be a footnote, or a sidenote!
+		let targetNoteId = target.hash.substr(1);
+		return document.querySelector("#" + targetNoteId);
+    },
+    noteForTarget: (target) => {
+		let targetNote = Extracts.noteAssociatedWithTarget(target);
+		if (!targetNote)
+			return null;
+
+		return `<div>${targetNote.innerHTML}</div>`;
+    },
+
+	//  Context surrounding a citation (displayed on footnote-back links).
+    isCitationBackLink: (target) => {
+	    return target.classList.contains("footnote-back");
+    },
+    citationContextForTarget: (target) => {
+		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
+
+        let targetCitation = document.querySelector(target.getAttribute('href'));
+        let citationContextBlockElement = Extracts.nearestBlockElement(targetCitation);
+		let citationContextHTML = (citationContextBlockElement.tagName == "SECTION") ? citationContextBlockElement.innerHTML : citationContextBlockElement.outerHTML;
+
+        return `<div>${citationContextHTML}</div>`;
     },
 
 	//  Identified sections of the current page.
@@ -370,20 +405,6 @@ Extracts = {
 		return `<div></div>`;
     },
 
-	//  Context surrounding a citation (displayed on footnote-back links).
-    isCitationBackLink: (target) => {
-	    return target.classList.contains("footnote-back");
-    },
-    citationContextForTarget: (target) => {
-		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
-
-        let targetCitation = document.querySelector(target.getAttribute('href'));
-        let citationContextBlockElement = Extracts.nearestBlockElement(targetCitation);
-		let citationContextHTML = (citationContextBlockElement.tagName == "SECTION") ? citationContextBlockElement.innerHTML : citationContextBlockElement.outerHTML;
-
-        return `<div>${citationContextHTML}</div>`;
-    },
-
 	//  Locally hosted images.
     isLocalImageLink: (target) => {
     	if (target.tagName != "A")
@@ -458,26 +479,6 @@ Extracts = {
 		});
 
 		return `<div></div>`;
-    },
-
-	//  Citations.
-    isCitation: (target) => {
-		return target.classList.contains("footnote-ref");
-	},
-    noteAssociatedWithTarget: (target) => {
-		if (!target.hash)
-			return null;
-
-		//  This could be a footnote, or a sidenote!
-		let targetNoteId = target.hash.substr(1);
-		return document.querySelector("#" + targetNoteId);
-    },
-    noteForTarget: (target) => {
-		let targetNote = Extracts.noteAssociatedWithTarget(target);
-		if (!targetNote)
-			return null;
-
-		return `<div>${targetNote.innerHTML}</div>`;
     },
 
 	/**********/
