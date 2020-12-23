@@ -781,6 +781,15 @@ Extracts = {
 			img.style.width = img.width + "px";
 		});
 
+		//  Allow for floated figures at the start of abstract.
+		if (   popup.classList.contains("docMetadata")
+			|| popup.classList.contains("defnMetadata")) {
+			let initialFigure = popup.querySelector(".popupAbstract > figure.float-right:first-child");
+			if (initialFigure) {
+				popup.querySelector(".data-field.title").style.paddingRight = "50%";
+			}
+		}
+
 		//  Expand collapsed code blocks and then re-rectify heights.
 		popup.querySelectorAll("pre code").forEach(codeBlock => {
 			codeBlock.style.height = "";
