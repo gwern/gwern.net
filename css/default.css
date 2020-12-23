@@ -2568,7 +2568,7 @@ body.directory-index #disqus_thread {
 	max-height: 100vh;
     background-color: var(--GW-popups-popup-background-color);
     border: 3px double var(--GW-popups-popup-border-color);
-    box-shadow: 0 0 0 3px var(--GW-popups-body-background-color);
+    box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
     opacity: 1.0;
     transition: none;
     z-index: 1;
