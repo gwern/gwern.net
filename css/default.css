@@ -965,6 +965,7 @@ a.footnote-ref {
     text-indent: 0;
     vertical-align: bottom;
     bottom: 2px;
+    z-index: 1;
 }
 #markdownBody .footnotes a.footnote-back {
     background-image: none;
