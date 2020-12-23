@@ -313,15 +313,6 @@ Extracts = {
     isCitationBackLink: (target) => {
 	    return target.classList.contains("footnote-back");
     },
-    citationContextForTarget: (target) => {
-		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
-
-        let targetCitation = document.querySelector(target.getAttribute('href'));
-        let citationContextBlockElement = Extracts.nearestBlockElement(targetCitation);
-		let citationContextHTML = (citationContextBlockElement.tagName == "SECTION") ? citationContextBlockElement.innerHTML : citationContextBlockElement.outerHTML;
-
-        return `<div>${citationContextHTML}</div>`;
-    },
 
 	//  Identified sections of the current page.
     isInternalSectionLink: (target) => {
@@ -331,9 +322,8 @@ Extracts = {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
         let targetElement = document.querySelector(target.getAttribute('href'));
-        if (targetElement.tagName != "SECTION")
-	        targetElement = Extracts.nearestBlockElement(targetElement);
-		let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
+        let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
+		let sectionEmbedHTML = (nearestBlockElement.tagName == "SECTION") ? nearestBlockElement.innerHTML : nearestBlockElement.outerHTML;
 
         return `<div>${sectionEmbedHTML}</div>`;
     },
@@ -609,7 +599,7 @@ Extracts = {
 		let possiblePopupTypes = [
 			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
 			[ "isCitation", 			"noteForTarget", 					"footnote-popup" 						],
-			[ "isCitationBackLink", 	"citationContextForTarget", 		"citation-context-popup" 				],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
 			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
 			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
