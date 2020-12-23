@@ -1837,7 +1837,7 @@ String.prototype.startsWithAnyOf = function (prefixes) {
 /*  Returns true if the string includes any of the given substrings.
     */
 String.prototype.includesAnyOf = function (substrings) {
-    for (const substring of substrings)
+    for (substring of substrings)
         if (this.includes(substring))
             return true
     return false;
