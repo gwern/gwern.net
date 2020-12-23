@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-22 15:34:33 gwern"
+When:  Time-stamp: "2020-12-23 15:22:58 gwern"
 License: CC-0
 -}
 
@@ -25,9 +25,10 @@ import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
 import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String,
-                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions)
+                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
+                    queryWith, nullAttr, Inline(Str, Code, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, Header, BulletList, BlockQuote))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (head, length, unpack, pack, Text)
+import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeBaseName, takeFileName, takeExtension)
@@ -43,6 +44,78 @@ import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (typographyTransform, invertImage)
 import Network.HTTP (urlDecode)
 
+-------------------------------------------------------------------------------------------------------------------------------
+-- Prototype flat annotation implementation
+
+readLinkMetadataOnce :: IO Metadata
+readLinkMetadataOnce = do
+             -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
+             custom <- readYaml "metadata/custom.yaml"
+
+             -- Quality checks:
+             -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
+             let urls = map (\(u,_) -> u) custom
+             when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nub urls)
+             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nub titles)
+             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nub annotations)
+             -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
+             let emptyCheck = filter (\(u,(t,a,_,_,s)) -> any (=="") [u,t,a,s]) custom
+             when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
+
+             -- auto-generated cached definitions; can be deleted if gone stale
+             auto <- readYaml "metadata/auto.yaml"
+
+             -- merge the hand-written & auto-generated link annotations, and return:
+             let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
+             return firstVersion
+
+
+generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
+generateLinkBibliography md (Pandoc meta doc) = do let links = collectLinks doc
+                                                   let sectionContents = recurseList md links
+                                                   sectionContents' <- return sectionContents -- walkM (annotateLink  md) sectionContents :: IO [Block]
+                                                   return (Pandoc meta (doc++sectionContents'))
+
+-- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
+recurseList :: Metadata -> [String] -> [Block]
+recurseList md links = Debug.Trace.trace (unlines links) $ if (sort $ uniq links)==finalLinks then [Header 1 ("",["collapse"], []) [Str "Link Bibliography"]] ++ sectionContents else recurseList md finalLinks
+                       where linkAnnotations = map (`M.lookup` md) links
+                             pairs = zip links linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
+                             sectionContents = [BulletList (map (generateListItems md) pairs)] :: [Block]
+                             finalLinks = collectLinks sectionContents
+
+
+generateListItems :: Metadata -> (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
+generateListItems md (f, ann) = case ann of
+                              Nothing -> nonAnnotatedLink
+                              Just ("",   _, _,_ ,_) -> nonAnnotatedLink
+                              Just (tle,aut,dt,_,abst) -> let lid = (generateID f aut dt) `T.append` (T.pack "-linkBibliography") in
+                                                              [Para [unsafePerformIO(annotateLink md(Link (lid,["linkBibliography-annotated"],[]) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""))),
+                                                                  Str ",", Space, Str (T.pack aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
+                                                           BlockQuote [RawBlock (Format "html") (T.pack abst)]
+                                                           ]
+                             where
+                               nonAnnotatedLink :: [Block]
+                               nonAnnotatedLink = [Para [Link ("",["linkBibliography-null"],[]) [Code nullAttr (T.pack f)] (T.pack f, "")]]
+
+
+collectLinks :: [Block] -> [String]
+collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "http" `isPrefixOf` u) $ uniq $ sort $ queryWith collectLink p
+  where
+   collectLink :: Block -> [String]
+   collectLink (RawBlock (Format "html") t) = if not ("href=" `T.isInfixOf` t) then [] else let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} t in
+                                                   case markdown of
+                                                     Left e -> error (T.unpack t ++ ": " ++ show e)
+                                                     Right markdown' -> Debug.Trace.trace (show markdown') $ queryWith collectLinks markdown'
+   collectLink x = queryWith extractLink x
+
+   extractLink :: Inline -> [String]
+   extractLink (Link _ _ (path, _)) = [T.unpack path]
+   extractLink _ = []
+
+-------------------------------------------------------------------------------------------------------------------------------
+
 type Metadata = M.Map Path MetadataItem -- (Title, Author, Date, DOI, Abstract)
 type MetadataItem = (String, String, String, String, String)
 type MetadataList = [(Path, MetadataItem)]
@@ -54,7 +127,7 @@ readLinkMetadata = do
              custom <- readYaml "metadata/custom.yaml"
 
              -- Quality checks:
-             -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be
+             -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
              let urls = map (\(u,_) -> u) custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nub urls)
              let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
@@ -105,7 +178,7 @@ annotateItem md x@(t,a,d,di,ab) = let ai = runPure $ do
                                             html <- writeHtml5String def{writerExtensions = pandocExtensions} pandocAnnotated
                                             return $ restoreFloatRight ab $ T.unpack html
                                in case ai of
-                                    Left e -> trace (show e) x -- something went wrong parsing it so return original MetadataItem
+                                    Left e -> Debug.Trace.trace (show e) x -- something went wrong parsing it so return original MetadataItem
                                     Right ab' -> (t,a,d,di,ab') -- annotation now has any annotations inside it inlined
 
 annotateLink :: Metadata -> Inline -> IO Inline
@@ -257,10 +330,13 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
                  | "plosgenetics.org" `isInfixOf` l = pubmed l
                  | "plosmedicine.org" `isInfixOf` l = pubmed l
                  | "plosone.org" `isInfixOf` l = pubmed l
-                 | "https://www.gwern.net/" `isPrefixOf` l = gwern (drop 22 l)
-                 | head l == '/' = gwern (drop 1 l)
-                 | head l == '#' = gwern l
-                 | otherwise = return Nothing
+                 | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern l else return Nothing
+
+linkCanonicalize :: String -> String
+linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = drop 22 l
+                   | head l == '/' = drop 1 l
+                   | head l == '#' = l
+                   | otherwise = l
 
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
