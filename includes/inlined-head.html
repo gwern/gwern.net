@@ -1828,7 +1828,7 @@ function isOnScreen (element) {
 /*  Returns true if the string begins with any of the given prefixes.
     */
 String.prototype.startsWithAnyOf = function (prefixes) {
-    for (const prefix of prefixes)
+    for (prefix of prefixes)
         if (this.startsWith(prefix))
             return true;
     return false;
