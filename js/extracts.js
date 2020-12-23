@@ -132,7 +132,8 @@ Extracts = {
 		let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
 		let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
-        return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen></iframe></div>`;
+		//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
+        return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe></div>`;
     },
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul");
@@ -242,9 +243,11 @@ Extracts = {
 
 		//  TEMPORARY!!
 // 		return null;
-// 		let href = target.getAttribute("href");
-// 		return `<div><object data="https://www.gwern.net${href}"></object></div>`;
-		return `<div><object data="${target.href}"></object></div>`;
+		if (target.href.match(/\.pdf#|$/) != null) {
+			return `<div><object data="${target.href}"></object></div>`;
+		} else {
+			return `<div><iframe src="${target.href}" frameborder="0" allowfullscreen sandbox="allow-scripts"></iframe></div>`;
+		}
     },
     isLocalCodeFileLink: (target) => {
     	if (target.tagName != "A")
@@ -811,10 +814,10 @@ Extracts = {
 		//  Loading spinners.
 		if (popup.classList.contains("local-document-popup")) {
 			popup.classList.toggle("loading", true);
-			popup.querySelector("object").onload = (event) => {
+			popup.querySelector("iframe, object").onload = (event) => {
 				popup.classList.toggle("loading", false);
 			};
-			popup.querySelector("object").onerror = (event) => {
+			popup.querySelector("iframe, object").onerror = (event) => {
 				popup.classList.toggle("loading", false);
 				//  TODO: do some sort of "loading failed" message
 			};

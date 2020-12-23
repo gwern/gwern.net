@@ -2851,6 +2851,7 @@ body.directory-index #disqus_thread {
 	height: 480px;
 	background-color: var(--GW-local-document-popup-background-color);
 }
+.extract-popup.local-document-popup iframe,
 .extract-popup.local-document-popup object {
     width: 632px;
     height: 474px;
