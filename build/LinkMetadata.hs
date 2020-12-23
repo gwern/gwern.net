@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-23 16:33:11 gwern"
+When:  Time-stamp: "2020-12-23 16:44:47 gwern"
 License: CC-0
 -}
 
@@ -20,9 +20,9 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
 import qualified Data.HashMap.Strict as HM (lookup)
 import GHC.Generics (Generic)
-import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, sortOn, (\\))
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, (\\))
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M -- (fromList, lookup, map, union, Map)
+import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
@@ -72,29 +72,20 @@ readLinkMetadataOnce = do
 
 
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
-generateLinkBibliography md (Pandoc meta doc) = do let links = countMonotonic M.empty $ collectLinks doc
+generateLinkBibliography md (Pandoc meta doc) = do let links = collectLinks doc
                                                    let sectionContents = recurseList md links
                                                    sectionContents' <- return sectionContents -- walkM (annotateLink  md) sectionContents :: IO [Block]
                                                    return (Pandoc meta (doc++sectionContents'))
 
 -- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
--- we use a Map to store
-recurseList :: Metadata -> (M.Map String Int) -> [Block]
-recurseList md links = Debug.Trace.trace (show links) $ if (M.keys links)==(M.keys finalLinks) then [Header 1 ("",["collapse"], []) [Str "Link Bibliography"]] ++ sectionContents else recurseList md finalLinks
-                       where linkAnnotations = map (`M.lookup` md) $ M.keys links
-                             linkList = map fst $ M.toList links
-                             -- linkSortedList = map fst $ sortOn snd $ M.toList links
-                             pairs = zip linkList linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
+recurseList :: Metadata -> [String] -> [Block]
+recurseList md links = Debug.Trace.trace (unlines links) $ if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("",["collapse"], []) [Str "Link Bibliography"]] ++ sectionContents else recurseList md finalLinks
+                       where links' = nub links
+                             linkAnnotations = map (`M.lookup` md) links'
+                             pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
                              sectionContents = [BulletList (map (generateListItems md) pairs)] :: [Block]
-                             finalLinks = countMonotonic links (collectLinks sectionContents)
+                             finalLinks = collectLinks sectionContents
 
--- maintain a dictionary of all URLs seen to date, with their ID = being the nth URL seen so far; we can then sort by this to reconstruct the list of URLs in the recursive traversals:
---  countMonotonic M.empty ["/Faces", "/Sidenotes", "/Sidenotes", "/Faces", "/Timing"] → fromList [("/Faces",0),("/Sidenotes",1),("/Timing",2)]
-countMonotonic :: (M.Map String Int) -> [String] -> (M.Map String Int)
-countMonotonic map [] = map
-countMonotonic map (u:us) = case M.lookup u map of
-               Nothing -> countMonotonic (M.insert u (M.size map) map) us -- 0-indexed
-               Just _ -> countMonotonic map us -- already present
 
 generateListItems :: Metadata -> (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateListItems md (f, ann) = case ann of
