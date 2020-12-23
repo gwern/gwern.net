@@ -37,8 +37,154 @@ Extracts = {
     },
 
 	/***********/
+	/*	General.
+		*/
+	isMobile: () => {
+		/*  We consider a client to be mobile if one of two conditions obtain:
+		    1. JavaScript detects touch capability, AND viewport is narrow; or,
+		    2. CSS does NOT detect hover capability.
+		    */
+// 		return true;
+		return (   (   ('ontouchstart' in document.documentElement)
+					&& GW.mediaQueries.mobileWidth.matches)
+				|| !GW.mediaQueries.hoverAvailable.matches);
+	},
+    cleanup: () => {
+		GWLog("Extracts.cleanup", "extracts.js", 1);
+
+		//  Target restore function (same for mobile and non-mobile).
+		let restoreTarget = (target) => {
+			if (target.dataset.attributeTitle) {
+				//  Restore the title attribute, saved in `data-attribute-title`.
+				target.title = target.dataset.attributeTitle;
+				//  Remove the data attribute.
+				target.removeAttribute("data-attribute-title");
+			}
+
+			target.classList.toggle("has-content", false);
+			target.classList.toggle("has-annotation", false);
+		};
+
+		if (Extracts.isMobile()) {
+			//  TEMPORARY!!
+			return;
+
+			//  Restore targets and remove popins.
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popins.removeTargetsWithin(container, Extracts.targets, restoreTarget);
+			});
+
+			//  Remove event handler for newly-spawned popups.
+			GW.notificationCenter.removeHandlerForEvent("Popups.popinDidInject", Extracts.popinInjectHandler);
+		} else {
+			//  Remove “popups disabled” icon/button, if present.
+			Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
+
+			//  Unbind event listeners, restore targets, and remove popups.
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
+			});
+
+			//  Remove event handler for newly-spawned popups.
+			GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler);
+		}
+    },
+    setup: () => {
+		GWLog("Extracts.setup", "extracts.js", 1);
+
+		//  Shared target prepare function (for both mobile and non-mobile).
+		let sharedPrepareTarget = (target) => {
+			if (target.title) {
+				//  Preserve the title attribute, for possible restoration later.
+				target.dataset.attributeTitle = target.title;
+			}
+
+			if (   Extracts.isVideoLink(target)
+				|| Extracts.isLocalImageLink(target)
+				|| Extracts.isLocalDocumentLink(target)
+				|| Extracts.isLocalCodeFileLink(target)
+				|| Extracts.isExternalSectionLink(target)) {
+				target.classList.toggle("has-content", true);
+			}
+		};
+
+        if (Extracts.isMobile()) {
+			//  TEMPORARY!!
+			return;
+
+            GWLog("Mobile client detected. Injecting pop-ins.", "extracts.js", 1);
+
+			//  Target prepare function.
+			Extracts.prepareTargetForPopins = (target) => {
+				sharedPrepareTarget(target);
+
+				//  Alter the title attribute.
+				target.title = "Click to reveal";
+			};
+
+			//  Prepare to recursively inject popins within newly-injected popins.
+			GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", Extracts.popinInjectHandler = (info) => {
+				Popins.addTargetsWithin(info.popin, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
+			});
+
+			//  Inject popins.
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
+			});
+        } else {
+            GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
+
+			if (localStorage.getItem("extract-popups-disabled") == "true") {
+				//  Inject “popups disabled” icon/button.
+				Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
+				return;
+			}
+
+			//  Target prepare function.
+			Extracts.prepareTargetForPopups = (target) => {
+				sharedPrepareTarget(target);
+
+				//  Remove the title attribute.
+				target.removeAttribute("title");
+			};
+
+			//  Set up targets.
+			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
+			});
+
+			//  Recursively set up targets within newly-spawned popups as well.
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
+				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
+
+				//  Remove click listener from code popups, to allow selection.
+				if (info.popup.classList.contains("local-code-file-popup"))
+					info.popup.removeEventListener("click", Popups.popupClicked);
+			});
+        }
+
+		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
+    },
+
+	/***********/
 	/*	Content.
 		*/
+
+	//  Helper methods.
+    qualifyLinksInPopContent: (popX, target) => {
+		let targetHref = target.getAttribute("href");
+		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
+			anchorLink.setAttribute("href", targetHref.match(/^([^#]+)/)[1] + anchorLink.hash);
+		});
+    },
+    nearestBlockElement: (element) => {
+    	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
+    },
+
+	//  Summaries of links to elsewhere.
+	isExtractLink: (target) => {
+		return target.classList.contains("docMetadata");
+	},
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
@@ -89,6 +235,11 @@ Extracts = {
                    `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
                `</div>`;
     },
+
+	//  Definitions.
+    isDefinitionLink: (target) => {
+		return target.classList.contains("defnMetadata");
+	},
     definitionForTarget: (target) => {
 		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
@@ -105,6 +256,8 @@ Extracts = {
         		   `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
         	   `</div>`;
     },
+
+	//  Videos (both local and remote).
     youtubeId: (url) => {
         let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
         if (match && match[2].length == 11) {
@@ -132,21 +285,55 @@ Extracts = {
 		let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
 		let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
-        return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen></iframe></div>`;
+		//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
+        return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe></div>`;
     },
-    nearestBlockElement: (element) => {
-    	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, p, pre, section, table, tfoot, ol, ul");
+
+	//  Citations.
+    isCitation: (target) => {
+		return target.classList.contains("footnote-ref");
+	},
+    noteAssociatedWithTarget: (target) => {
+		if (!target.hash)
+			return null;
+
+		//  This could be a footnote, or a sidenote!
+		let targetNoteId = target.hash.substr(1);
+		return document.querySelector("#" + targetNoteId);
     },
+    noteForTarget: (target) => {
+		let targetNote = Extracts.noteAssociatedWithTarget(target);
+		if (!targetNote)
+			return null;
+
+		return `<div>${targetNote.innerHTML}</div>`;
+    },
+
+	//  Context surrounding a citation (displayed on footnote-back links).
+    isCitationBackLink: (target) => {
+	    return target.classList.contains("footnote-back");
+    },
+
+	//  Identified sections of the current page.
+    isInternalSectionLink: (target) => {
+   		return (target.tagName == "A" && target.getAttribute("href").startsWith("#"));
+	},
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
         let targetElement = document.querySelector(target.getAttribute('href'));
-        if (targetElement.tagName != "SECTION")
-	        targetElement = Extracts.nearestBlockElement(targetElement);
-		let sectionEmbedHTML = (targetElement.tagName == "SECTION") ? targetElement.innerHTML : targetElement.outerHTML;
+        let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
+		let sectionEmbedHTML = (nearestBlockElement.tagName == "SECTION") ? nearestBlockElement.innerHTML : nearestBlockElement.outerHTML;
 
         return `<div>${sectionEmbedHTML}</div>`;
     },
+
+	//  TOC links.
+	isTOCLink: (target) => {
+		return (target.closest("#TOC") != null);
+	},
+
+	//  Identified sections of another page on gwern.net.
     isExternalSectionLink: (target) => {
     	if (target.tagName != "A")
     		return false;
@@ -207,15 +394,8 @@ Extracts = {
 
 		return `<div></div>`;
     },
-    citationContextForTarget: (target) => {
-		GWLog("Extracts.citationContextForTarget", "extracts.js", 2);
 
-        let targetCitation = document.querySelector(target.getAttribute('href'));
-        let citationContextBlockElement = Extracts.nearestBlockElement(targetCitation);
-		let citationContextHTML = (citationContextBlockElement.tagName == "SECTION") ? citationContextBlockElement.innerHTML : citationContextBlockElement.outerHTML;
-
-        return `<div>${citationContextHTML}</div>`;
-    },
+	//  Locally hosted images.
     isLocalImageLink: (target) => {
     	if (target.tagName != "A")
     		return false;
@@ -228,24 +408,25 @@ Extracts = {
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
-        //  TEMPORARY!!
-//         let href = target.getAttribute("href");
-// 		return `<div><img class="${target.classList}" src="https://www.gwern.net${href}" loading="lazy"></div>`;
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
         return `<div><img class="${target.classList}" src="${target.href}" loading="lazy"></div>`;
     },
+
+	//  Locally hosted documents (html, pdf, etc.).
     isLocalDocumentLink: (target) => {
 	    return (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www"));
     },
     localDocumentForTarget: (target) => {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
 
-		//  TEMPORARY!!
-// 		return null;
-// 		let href = target.getAttribute("href");
-// 		return `<div><object data="https://www.gwern.net${href}"></object></div>`;
-		return `<div><object data="${target.href}"></object></div>`;
+		if (target.href.match(/\.pdf(#|$)/) != null) {
+			return `<div><object data="${target.href}"></object></div>`;
+		} else {
+			return `<div><iframe src="${target.href}" frameborder="0" allowfullscreen sandbox></iframe></div>`;
+		}
     },
+
+	//  Locally hosted code files (css, js, hs, etc.).
     isLocalCodeFileLink: (target) => {
     	if (target.tagName != "A")
     		return false;
@@ -277,7 +458,7 @@ Extracts = {
 
 						target.popup.classList.toggle("loading", false);
 						let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
-						target.popup.innerHTML = `<pre><code>${htmlEncodedResponse}</code></pre>`;
+						target.popup.innerHTML = `<div><pre><code>${htmlEncodedResponse}</code></pre></div>`;
 					},
 					onFailure: (event) => {
 						target.popup.classList.toggle("loading", false);
@@ -288,143 +469,6 @@ Extracts = {
 		});
 
 		return `<div></div>`;
-    },
-    qualifyLinksInPopContent: (popX, target) => {
-		let targetHref = target.getAttribute("href");
-		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
-			anchorLink.setAttribute("href", targetHref.match(/^([^#]+)/)[1] + anchorLink.hash);
-		});
-    },
-
-	/***********/
-	/*	General.
-		*/
-	isMobile: () => {
-		/*  We consider a client to be mobile if one of two conditions obtain:
-		    1. JavaScript detects touch capability, AND viewport is narrow; or,
-		    2. CSS does NOT detect hover capability.
-		    */
-// 		return true;
-		return (   (   ('ontouchstart' in document.documentElement)
-					&& GW.mediaQueries.mobileWidth.matches)
-				|| !GW.mediaQueries.hoverAvailable.matches);
-	},
-    cleanup: () => {
-		GWLog("Extracts.cleanup", "extracts.js", 1);
-
-		//  Target restore function (same for mobile and non-mobile).
-		let restoreTarget = (target) => {
-			if (target.dataset.attributeTitle) {
-				//  Restore the title attribute, saved in `data-attribute-title`.
-				target.title = target.dataset.attributeTitle;
-				//  Remove the data attribute.
-				target.removeAttribute("data-attribute-title");
-			}
-
-			target.classList.toggle("has-content", false);
-			target.classList.toggle("has-annotation", false);
-		};
-
-		if (Extracts.isMobile()) {
-			//  TEMPORARY!!
-			return;
-
-			//  Restore targets and remove popins.
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popins.removeTargetsWithin(container, Extracts.targets, restoreTarget);
-			});
-
-			//  Remove event handler for newly-spawned popups.
-			GW.notificationCenter.removeHandlerForEvent("Popups.popinDidInject", Extracts.popinInjectHandler);
-		} else {
-			//  Remove “popups disabled” icon/button, if present.
-			Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
-
-			//  Unbind event listeners, restore targets, and remove popups.
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
-			});
-
-			//  Remove event handler for newly-spawned popups.
-			GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler);
-		}
-    },
-    setup: () => {
-		GWLog("Extracts.setup", "extracts.js", 1);
-
-        //  Run cleanup.
-        Extracts.cleanup();
-
-		//  Shared target prepare function (for both mobile and non-mobile).
-		let sharedPrepareTarget = (target) => {
-			if (target.title) {
-				//  Preserve the title attribute, for possible restoration later.
-				target.dataset.attributeTitle = target.title;
-			}
-
-			if (   Extracts.isVideoLink(target)
-				|| Extracts.isLocalImageLink(target)
-				|| Extracts.isLocalDocumentLink(target)
-				|| Extracts.isLocalCodeFileLink(target)
-				|| Extracts.isExternalSectionLink(target)) {
-				target.classList.toggle("has-content", true);
-			}
-		};
-
-        if (Extracts.isMobile()) {
-			//  TEMPORARY!!
-			return;
-
-            GWLog("Mobile client detected. Injecting pop-ins.", "extracts.js", 1);
-
-			//  Set up targets.
-			Extracts.prepareTargetForPopins = (target) => {
-				sharedPrepareTarget(target);
-
-				//  Alter the title attribute.
-				target.title = "Click to reveal";
-			};
-
-			//  Recursively inject popins within newly-injected popin as well.
-			GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", Extracts.popinInjectHandler = (info) => {
-				Popins.addTargetsWithin(info.popin, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
-			});
-
-			//  Inject popins.
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
-			});
-        } else {
-            GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
-
-			if (localStorage.getItem("extract-popups-disabled") == "true") {
-				//  Inject “popups disabled” icon/button.
-				Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
-				return;
-			}
-
-			//  Set up targets.
-			Extracts.prepareTargetForPopups = (target) => {
-				sharedPrepareTarget(target);
-
-				//  Remove the title attribute.
-				target.removeAttribute("title");
-			};
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
-			});
-
-			//  Recursively set up targets within newly-spawned popups as well.
-			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
-				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
-
-				//  Remove click listener from code popups, to allow selection.
-				if (info.popup.classList.contains("local-code-file-popup"))
-					info.popup.removeEventListener("click", Popups.popupClicked);
-			});
-        }
-
-		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
 
 	/**********/
@@ -483,7 +527,12 @@ Extracts = {
 			popin.classList.add("local-code-file-popin", "object-popin");
 		}
 
-		return (popin.childElementCount != 0);
+		if (popin.childElementCount != 0) {
+			return true;
+		} else {
+			GWLog("Unable to fill popin!", "extracts.js", 1);
+			return false;
+		}
     },
     preparePopin: (popin, target) => {
 		GWLog("Extracts.preparePopin", "extracts.js", 2);
@@ -510,113 +559,7 @@ Extracts = {
 	/**********/
 	/*	Popups.
 		*/
-	popupOptionsDialog: null,
 	popupsDisabledShowPopupOptionsDialogButton: null,
-	disableExtractPopups: () => {
-		GWLog("Extracts.disableExtractPopups", "extracts.js", 1);
-
-		localStorage.setItem("extract-popups-disabled", "true");
-		Extracts.cleanup();
-		Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
-	},
-	enableExtractPopups: () => {
-		GWLog("Extracts.enableExtractPopups", "extracts.js", 1);
-
-		localStorage.removeItem("extract-popups-disabled");
-		Extracts.setup();
-		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
-	},
-	showPopupOptionsDialog: () => {
-		GWLog("Extracts.showPopupOptionsDialog", "extracts.js", 1);
-
-		//  Create the options dialog, if needed.
-		if (Extracts.popupOptionsDialog == null) {
-			let popupsEnabled = localStorage.getItem("extract-popups-disabled") != "true";
-			let enabledRadioButtonChecked = popupsEnabled ? `checked=""` : ``;
-			let disabledRadioButtonChecked = popupsEnabled ? `` : `checked=""`;
-			Extracts.popupOptionsDialog = addUIElement(`<div id='popup-options-dialog' style='display: none;'><div>` + 
-				`<h1>Popups</h1>` + 
-				`<form class="option-buttons">
-					<label>
-						<input class="popups-enable" name="popups-enable-status" ${enabledRadioButtonChecked} value="enabled" type="radio">
-						<span class='button-text'>
-							<span class='label'>Enable</span>
-							<span class='explanation'>Show popups when hovering over annotated links.</span>
-						</span>
-					</label>
-					<label>
-						<input class="popups-disable" name="popups-enable-status" ${disabledRadioButtonChecked} value="disabled" type="radio">
-						<span class='button-text'>
-							<span class='label'>Disable</span>
-							<span class='explanation'>Don’t show popups.</span>
-						</span>
-					</label>
-				</form>` +
-				`<button type='button' class='close-button'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg></button>` + 
-				`<button type='button' class='save-button'>Save</button>` + 
-				`</div></div>`);
-			//  Add event listeners.
-			requestAnimationFrame(() => {
-				Extracts.popupOptionsDialog.addEventListener("click", Extracts.popupOptionsDialogBackdropClicked = (event) => {
-					GWLog("Extracts.popupOptionsDialogBackdropClicked", "extracts.js", 2);
-
-					event.stopPropagation();
-					Extracts.fadePopupOptionsDialog();
-				});
-				Extracts.popupOptionsDialog.firstElementChild.addEventListener("click", Extracts.popupOptionsDialogClicked = (event) => {
-					GWLog("Extracts.popupOptionsDialogClicked", "extracts.js", 3);
-
-					event.stopPropagation();
-				});
-				Extracts.popupOptionsDialog.querySelector("button.close-button").addActivateEvent(Extracts.popupOptionsDialogCloseButtonClicked = (event) => {
-					GWLog("Extracts.popupOptionsDialogCloseButtonClicked", "extracts.js", 2);
-
-					Extracts.fadePopupOptionsDialog();
-				});
-				Extracts.popupOptionsDialog.querySelector("button.save-button").addActivateEvent(Extracts.popupOptionsDialogSaveButtonClicked = (event) => {
-					GWLog("Extracts.popupOptionsDialogSaveButtonClicked", "extracts.js", 2);
-
-					Extracts.savePopupOptions();
-					Extracts.fadePopupOptionsDialog();
-				});
-				document.addEventListener("keyup", Extracts.popupOptionsDialogKeyUp = (event) => {
-					GWLog("Extracts.popupOptionsDialogKeyUp", "extracts.js", 3);
-
-					let allowedKeys = [ "Escape", "Esc" ];
-					if (!allowedKeys.includes(event.key) || Extracts.popupOptionsDialog.style.display == "none")
-						return;
-
-					event.preventDefault();
-					Extracts.fadePopupOptionsDialog();
-				});
-			});
-		}
-
-		//  Un-hide the options dialog.
-		Extracts.popupOptionsDialog.style.display = "";
-	},
-	fadePopupOptionsDialog: () => {
-		GWLog("Extracts.fadePopupOptionsDialog", "extracts.js", 1);
-
-		Extracts.popupOptionsDialog.classList.toggle("fading", true);
-		setTimeout(Extracts.hidePopupOptionsDialog, 150);
-	},
-	hidePopupOptionsDialog: () => {
-		GWLog("Extracts.hidePopupOptionsDialog", "extracts.js", 1);
-
-		if (Extracts.popupOptionsDialog != null) {
-			Extracts.popupOptionsDialog.style.display = "none";
-			Extracts.popupOptionsDialog.classList.toggle("fading", false);
-		}
-	},
-	savePopupOptions: () => {
-		GWLog("Extracts.savePopupOptions", "extracts.js", 1);
-
-		if (Extracts.popupOptionsDialog.querySelector("input.popups-enable").checked)
-			Extracts.enableExtractPopups();
-		else
-			Extracts.disableExtractPopups();
-	},
 	injectPopupsDisabledShowPopupOptionsDialogButton: () => {
 		GWLog("Extracts.injectPopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
 
@@ -633,7 +576,11 @@ Extracts = {
 				GWLog("Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked", "extracts.js", 2);
 
 				event.stopPropagation();
-				Extracts.showPopupOptionsDialog();
+				if (Extracts.showPopupOptionsDialog) {
+					Extracts.showPopupOptionsDialog();
+				} else {
+					GWLog("Script not loaded: extracts-options.js", "extracts.js", 1);
+				}
 			});
 		});
 	},
@@ -649,62 +596,35 @@ Extracts = {
     fillPopup: (popup, target) => {
 		GWLog("Extracts.fillPopup", "extracts.js", 2);
 
-		//  Inject the contents of the popup into the popup div.
-		if (Extracts.isVideoLink(target)) {
-			//  Videos (both local and remote).
-			popup.innerHTML = Extracts.videoForTarget(target);
-			popup.classList.add("video-popup", "object-popup");
-		} else if (target.classList.contains("footnote-ref")) {
-			//  Citations.
-			if (!target.hash)
-				return false;
+		let possiblePopupTypes = [
+			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
+			[ "isCitation", 			"noteForTarget", 					"footnote-popup" 						],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
+			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
+			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
+			[ "isExtractLink", 			"extractForTarget", 				"" 										],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				]
+		];
 
-			//  This could be a footnote, or a sidenote!
-			let targetNoteId = target.hash.substr(1);
-			let targetNote = document.querySelector("#" + targetNoteId);
-			if (!targetNote)
-				return false;
-
-			popup.innerHTML = `<div>${targetNote.innerHTML}</div>`;
-			popup.targetNote = targetNote;
-			popup.classList.add("footnote-popup");
-		} else if (target.classList.contains("footnote-back")) {
-			//  Context surrounding a citation (displayed on footnote-back links).
-			popup.innerHTML = Extracts.citationContextForTarget(target);
-			popup.classList.add("citation-context-popup");
-		} else if (   target.tagName == "A" 
-				   && target.getAttribute("href").startsWith("#")) {
-			//  Identified sections of the current page.
-			popup.innerHTML = Extracts.sectionEmbedForTarget(target);
-			popup.classList.add("section-embed-popup");
-			if (target.closest("#TOC"))
-				popup.classList.add("toc-section-popup");
-		} else if (Extracts.isExternalSectionLink(target)) {
-			//  Identified sections of another page on gwern.net.
-			popup.innerHTML = Extracts.externalSectionEmbedForTarget(target);
-			popup.classList.add("external-section-embed-popup");
-		} else if (Extracts.isLocalImageLink(target)) {
-			//  Locally hosted images.
-			popup.innerHTML = Extracts.localImageForTarget(target);
-			popup.classList.add("image-popup", "object-popup");
-		} else if (target.classList.contains("docMetadata")) {
-			//  Summaries of links to elsewhere.
-			popup.innerHTML = Extracts.extractForTarget(target);
-		} else if (target.classList.contains("defnMetadata")) {
-			//  Definitions.
-			popup.innerHTML = Extracts.definitionForTarget(target);
-			popup.classList.add("definition-popup");
-		} else if (Extracts.isLocalDocumentLink(target)) {
-			//  Locally hosted documents (html, pdf, etc.).
-			popup.innerHTML = Extracts.localDocumentForTarget(target);
-			popup.classList.add("local-document-popup", "object-popup");
-		} else if (Extracts.isLocalCodeFileLink(target)) {
-			//  Locally hosted code files (css, js, hs, etc.).
-			popup.innerHTML = Extracts.localCodeFileForTarget(target);
-			popup.classList.add("local-code-file-popup", "object-popup");
+		for ([ testMethodName, fillMethodName, classes ] of possiblePopupTypes) {
+			if (   Extracts[fillMethodName] != null
+				&& Extracts[testMethodName](target)) {
+				popup.innerHTML = Extracts[fillMethodName](target);
+				if (classes > "")
+					popup.classList.add(...(classes.split(" ")));
+				break;
+			}
 		}
 
-		return (popup.childElementCount != 0);
+		if (popup.childElementCount != 0) {
+			return true;
+		} else {
+			GWLog("Unable to fill popup!", "extracts.js", 1);
+			return false;
+		}
     },
     preparePopup: (popup, target) => {
 		GWLog("Extracts.preparePopup", "extracts.js", 2);
@@ -712,17 +632,17 @@ Extracts = {
 		//  Import the class(es) of the target, and add some others.
 		popup.classList.add(...target.classList, "extract-popup", "markdownBody");
 		//  We then remove some of the imported classes.
-		popup.classList.remove("has-content", "spawns-popup");
+		popup.classList.remove("has-annotation", "has-content", "spawns-popup");
 
 		//	Inject the extract for the target into the popup.
 		if (Extracts.fillPopup(popup, target) == false)
 			return false;
 
-		if (popup.classList.contains("footnote-popup")) {
+		if (Extracts.isCitation(target)) {
 			//  Do not spawn footnote popup if sidenote is visible.
-			if (GW.sidenotes != null
+			if (   GW.sidenotes != null
 				&& !GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches
-				&& isOnScreen(popup.targetNote))
+				&& isOnScreen(Extracts.noteAssociatedWithTarget(target)))
 				return false;
 
 			/*  Add event listeners to highlight citation when its footnote
@@ -737,7 +657,7 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", Extracts.footnotePopupDespawnHandler = (info) => {
 				target.classList.toggle("highlighted", false);
 			});
-		} else if (popup.classList.contains("citation-context-popup")) {
+		} else if (Extracts.isCitationBackLink(target)) {
 			//  Do not spawn citation context popup if citation is visible.
 			if (isOnScreen(document.querySelector("#markdownBody " + target.getAttribute("href"))))
 				return false;
@@ -749,7 +669,9 @@ Extracts = {
 
 			//  Highlight citation in a citation context popup.
 			popup.querySelector(target.getAttribute("href")).classList.add("highlighted");
-		} else if (popup.classList.contains("toc-section-popup")) {
+		} else if (Extracts.isTOCLink(target)) {
+			popup.classList.add("toc-section-popup");
+
 			//  Special positioning for section links spawned by the TOC.
 			target.popupSpecialPositioningFunction = (preparedPopup, popupTarget, mouseEvent) => {
 				let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
@@ -782,8 +704,8 @@ Extracts = {
 		});
 
 		//  Allow for floated figures at the start of abstract.
-		if (   popup.classList.contains("docMetadata")
-			|| popup.classList.contains("defnMetadata")) {
+		if (   Extracts.isExtractLink(target)
+			|| Extracts.isDefinitionLink(target)) {
 			let initialFigure = popup.querySelector(".popupAbstract > figure.float-right:first-child");
 			if (initialFigure) {
 				popup.querySelector(".data-field.title").style.paddingRight = "50%";
@@ -805,21 +727,23 @@ Extracts = {
 		});
 
 		//  Qualify internal links in extracts.
-		if (popup.classList.contains("docMetadata") && target.getAttribute("href").startsWith("/"))
+		if (   Extracts.isExtractLink(target) 
+			&& target.getAttribute("href").startsWith("/")) {
 			Extracts.qualifyLinksInPopContent(popup, target);
+		}
 
 		//  Loading spinners.
-		if (popup.classList.contains("local-document-popup")) {
+		if (Extracts.isLocalDocumentLink(target)) {
 			popup.classList.toggle("loading", true);
-			popup.querySelector("object").onload = (event) => {
+			popup.querySelector("iframe, object").onload = (event) => {
 				popup.classList.toggle("loading", false);
 			};
-			popup.querySelector("object").onerror = (event) => {
+			popup.querySelector("iframe, object").onerror = (event) => {
 				popup.classList.toggle("loading", false);
 				//  TODO: do some sort of "loading failed" message
 			};
 		}
-		if (popup.classList.contains("image-popup")) {
+		if (Extracts.isLocalImageLink(target)) {
 			popup.classList.toggle("loading", true);
 			popup.querySelector("img").onload = (event) => {
 				popup.classList.toggle("loading", false);

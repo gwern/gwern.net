@@ -76,7 +76,7 @@ function isOnScreen (element) {
 /*  Returns true if the string begins with any of the given prefixes.
     */
 String.prototype.startsWithAnyOf = function (prefixes) {
-    for (const prefix of prefixes)
+    for (prefix of prefixes)
         if (this.startsWith(prefix))
             return true;
     return false;
@@ -85,7 +85,7 @@ String.prototype.startsWithAnyOf = function (prefixes) {
 /*  Returns true if the string includes any of the given substrings.
     */
 String.prototype.includesAnyOf = function (substrings) {
-    for (const substring of substrings)
+    for (substring of substrings)
         if (this.includes(substring))
             return true
     return false;

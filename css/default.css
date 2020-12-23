@@ -965,6 +965,7 @@ a.footnote-ref {
     text-indent: 0;
     vertical-align: bottom;
     bottom: 2px;
+    z-index: 1;
 }
 #markdownBody .footnotes a.footnote-back {
     background-image: none;
@@ -2568,7 +2569,7 @@ body.directory-index #disqus_thread {
 	max-height: 100vh;
     background-color: var(--GW-popups-popup-background-color);
     border: 3px double var(--GW-popups-popup-border-color);
-    box-shadow: 0 0 0 3px var(--GW-popups-body-background-color);
+    box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
     opacity: 1.0;
     transition: none;
     z-index: 1;
@@ -2851,6 +2852,7 @@ body.directory-index #disqus_thread {
 	height: 480px;
 	background-color: var(--GW-local-document-popup-background-color);
 }
+.extract-popup.local-document-popup iframe,
 .extract-popup.local-document-popup object {
     width: 632px;
     height: 474px;
@@ -2864,6 +2866,7 @@ body.directory-index #disqus_thread {
 }
 .extract-popup.local-code-file-popup > div {
     height: 100%;
+    padding: 0;
 }
 .extract-popup.local-code-file-popup pre {
     height: 100%;

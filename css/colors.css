@@ -221,6 +221,7 @@
     --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
     --GW-popups-popup-border-color: #aaa;
+    --GW-popups-box-shadow-color: #aaa;
     --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
     --GW-popups-popup-scrollbar-thumb-color: #ccc;
     --GW-popups-popup-scrollbar-track-color: #fff;
