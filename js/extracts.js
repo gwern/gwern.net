@@ -293,21 +293,6 @@ Extracts = {
     isCitation: (target) => {
 		return target.classList.contains("footnote-ref");
 	},
-    noteAssociatedWithTarget: (target) => {
-		if (!target.hash)
-			return null;
-
-		//  This could be a footnote, or a sidenote!
-		let targetNoteId = target.hash.substr(1);
-		return document.querySelector("#" + targetNoteId);
-    },
-    noteForTarget: (target) => {
-		let targetNote = Extracts.noteAssociatedWithTarget(target);
-		if (!targetNote)
-			return null;
-
-		return `<div>${targetNote.innerHTML}</div>`;
-    },
 
 	//  Context surrounding a citation (displayed on footnote-back links).
     isCitationBackLink: (target) => {
@@ -323,7 +308,11 @@ Extracts = {
 
         let targetElement = document.querySelector(target.getAttribute('href'));
         let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
-		let sectionEmbedHTML = (nearestBlockElement.tagName == "SECTION") ? nearestBlockElement.innerHTML : nearestBlockElement.outerHTML;
+
+		//  Unwrap sections and {foot|side}notes from their containers.
+		let sectionEmbedHTML = (nearestBlockElement.tagName == "SECTION" || target.classList.contains("footnote-ref")) 
+								? nearestBlockElement.innerHTML 
+								: nearestBlockElement.outerHTML;
 
         return `<div>${sectionEmbedHTML}</div>`;
     },
@@ -470,6 +459,27 @@ Extracts = {
 
 		return `<div></div>`;
     },
+	fillPopElement: (popElement, target, possiblePopTypes) => {
+		GWLog("Extracts.fillPopElement", "extracts.js", 2);
+
+		for ([ testMethodName, fillMethodName, classes ] of possiblePopTypes) {
+			if (   Extracts[fillMethodName] != null
+				&& Extracts[testMethodName](target)) {
+				popElement.innerHTML = Extracts[fillMethodName](target);
+				if (classes)
+					popElement.classList.add(...(classes.split(" ")));
+				break;
+			}
+		}
+
+		if (popElement.childElementCount != 0) {
+			return true;
+		} else {
+			GWLog("Unable to fill popup!", "extracts.js", 1);
+			return false;
+		}
+	},
+	
 
 	/**********/
 	/*	Popins.
@@ -593,39 +603,6 @@ Extracts = {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	},
-    fillPopup: (popup, target) => {
-		GWLog("Extracts.fillPopup", "extracts.js", 2);
-
-		let possiblePopupTypes = [
-			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
-			[ "isCitation", 			"noteForTarget", 					"footnote-popup" 						],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
-			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
-			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
-			[ "isExtractLink", 			"extractForTarget", 				"" 										],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				]
-		];
-
-		for ([ testMethodName, fillMethodName, classes ] of possiblePopupTypes) {
-			if (   Extracts[fillMethodName] != null
-				&& Extracts[testMethodName](target)) {
-				popup.innerHTML = Extracts[fillMethodName](target);
-				if (classes > "")
-					popup.classList.add(...(classes.split(" ")));
-				break;
-			}
-		}
-
-		if (popup.childElementCount != 0) {
-			return true;
-		} else {
-			GWLog("Unable to fill popup!", "extracts.js", 1);
-			return false;
-		}
-    },
     preparePopup: (popup, target) => {
 		GWLog("Extracts.preparePopup", "extracts.js", 2);
 
@@ -635,14 +612,25 @@ Extracts = {
 		popup.classList.remove("has-annotation", "has-content", "spawns-popup");
 
 		//	Inject the extract for the target into the popup.
-		if (Extracts.fillPopup(popup, target) == false)
+		if (Extracts.fillPopElement(popup, target, [
+			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
+			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
+			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
+			[ "isExtractLink", 			"extractForTarget", 				null 										],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				]
+			]) == false)
 			return false;
 
 		if (Extracts.isCitation(target)) {
 			//  Do not spawn footnote popup if sidenote is visible.
 			if (   GW.sidenotes != null
 				&& !GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches
-				&& isOnScreen(Extracts.noteAssociatedWithTarget(target)))
+				&& isOnScreen(document.querySelector(target.hash)))
 				return false;
 
 			/*  Add event listeners to highlight citation when its footnote
