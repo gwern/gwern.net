@@ -551,8 +551,7 @@ ol > li:nth-of-type(n+2) {
     margin: 0.5em 0 0 0;
 }
 
-ul > li::before,
-ol > li::before {
+ul > li::before {
     position: absolute;
     z-index: 1;
 }
