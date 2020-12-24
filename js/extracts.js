@@ -28,7 +28,7 @@ Extracts = {
     codeFileExtensions: Extracts.codeFileExtensions,
     targets: {
 		targetElementsSelector: [
-			"a.docMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-back, span.defnMetadata", 
+			"a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-ref, a.footnote-back", 
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
 			].join(", "),
@@ -180,6 +180,26 @@ Extracts = {
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
+	fillPopElement: (popElement, target, possiblePopTypes) => {
+		GWLog("Extracts.fillPopElement", "extracts.js", 2);
+
+		for ([ testMethodName, fillMethodName, classes ] of possiblePopTypes) {
+			if (   Extracts[fillMethodName] != null
+				&& Extracts[testMethodName](target)) {
+				popElement.innerHTML = Extracts[fillMethodName](target);
+				if (classes)
+					popElement.classList.add(...(classes.split(" ")));
+				break;
+			}
+		}
+
+		if (popElement.childElementCount != 0) {
+			return true;
+		} else {
+			GWLog("Unable to fill popup!", "extracts.js", 1);
+			return false;
+		}
+	},
 
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
@@ -458,92 +478,11 @@ Extracts = {
 		});
 
 		return `<div></div>`;
-    },
-	fillPopElement: (popElement, target, possiblePopTypes) => {
-		GWLog("Extracts.fillPopElement", "extracts.js", 2);
-
-		for ([ testMethodName, fillMethodName, classes ] of possiblePopTypes) {
-			if (   Extracts[fillMethodName] != null
-				&& Extracts[testMethodName](target)) {
-				popElement.innerHTML = Extracts[fillMethodName](target);
-				if (classes)
-					popElement.classList.add(...(classes.split(" ")));
-				break;
-			}
-		}
-
-		if (popElement.childElementCount != 0) {
-			return true;
-		} else {
-			GWLog("Unable to fill popup!", "extracts.js", 1);
-			return false;
-		}
-	},
-	
+    },	
 
 	/**********/
 	/*	Popins.
 		*/
-    fillPopin: (popin, target) => {
-		GWLog("Extracts.fillPopin", "extracts.js", 2);
-
-		//  Inject the contents of the popin into the popin div.
-		if (Extracts.isVideoLink(target)) {
-			//  Videos (both local and remote).
-			popin.innerHTML = Extracts.videoForTarget(target);
-			popin.classList.add("video-popin", "object-popin");
-		} else if (target.classList.contains("footnote-ref")) {
-			//  Citations.
-			if (!target.hash)
-				return false;
-
-			//  This could be a footnote, or a sidenote!
-			let targetNoteId = target.hash.substr(1);
-			let targetNote = document.querySelector("#" + targetNoteId);
-			if (!targetNote)
-				return false;
-
-			popin.innerHTML = `<div>${targetNote.innerHTML}</div>`;
-			popin.targetNote = targetNote;
-			popin.classList.add("footnote-popin");
-		} else if (target.classList.contains("footnote-back")) {
-			//  There are no citation-context popins.
-			return false;
-		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
-			//  There are no section embed popins.
-			return false;
-		} else if (Extracts.isExternalSectionLink(target)) {
-			//  Identified sections of another page on gwern.net.
-			popin.innerHTML = Extracts.externalSectionEmbedForTarget(target);
-			popin.classList.add("external-section-embed-popin");
-		} else if (Extracts.isLocalImageLink(target)) {
-			//  Locally hosted images.
-			popin.innerHTML = Extracts.localImageForTarget(target);
-			popin.classList.add("image-popin", "object-popin");
-		} else if (target.classList.contains("docMetadata")) {
-			//  Summaries of links to elsewhere.
-			popin.innerHTML = Extracts.extractForTarget(target);
-		} else if (target.classList.contains("defnMetadata")) {
-			//  Definitions.
-			popin.innerHTML = Extracts.definitionForTarget(target);
-			popin.classList.add("definition-popin");
-		} else if (Extracts.isLocalDocumentLink(target)) {
-			//  Locally hosted documents (html, pdf, etc.).
-			popin.innerHTML = Extracts.localDocumentForTarget(target);
-			popin.classList.add("local-document-popin", "object-popin");
-		} else if (Extracts.isLocalCodeFileLink(target)) {
-			//  Locally hosted code files (css, js, hs, etc.).
-			popin.innerHTML = Extracts.localCodeFileForTarget(target);
-			popin.classList.add("local-code-file-popin", "object-popin");
-		}
-
-		if (popin.childElementCount != 0) {
-			return true;
-		} else {
-			GWLog("Unable to fill popin!", "extracts.js", 1);
-			return false;
-		}
-    },
     preparePopin: (popin, target) => {
 		GWLog("Extracts.preparePopin", "extracts.js", 2);
 
@@ -551,7 +490,18 @@ Extracts = {
 		popin.classList.add(...target.classList, "extract-popin");
 
 		//	Inject the extract for the target into the popin.
-		if (Extracts.fillPopin(popin, target) == false)
+		if (Extracts.fillPopElement(popin, target, [
+			[ "isVideoLink", 			"videoForTarget", 					"video-popin object-popin" 				],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
+			[ "isCitationBackLink", 	null, 								null					 				],
+			[ "isInternalSectionLink",	null,					 			null				 					],
+			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popin"			],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
+			[ "isExtractLink", 			"extractForTarget", 				null 										],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				]
+			]) == false)
 			return false;
 
 		//  Ensure no reflow due to figures.
@@ -560,7 +510,8 @@ Extracts = {
 		});
 
 		//  Qualify internal links in extracts.
-		if (popin.classList.contains("docMetadata") && target.getAttribute("href").startsWith("/"))
+		if (   Extracts.isExtractLink(target) 
+			&& target.getAttribute("href").startsWith("/"))
 			Extracts.qualifyLinksInPopContent(popin, target);
 
 		return true;
