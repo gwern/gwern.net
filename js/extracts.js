@@ -16,7 +16,8 @@
 Extracts = {
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf" ],
-    qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ]
+    qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ],
+    foreignSiteURLPrefixes: [ "http://", "https://", "http://www.", "https://www." ]
 };
 
 Extracts = {
@@ -30,12 +31,13 @@ Extracts = {
     imageFileExtensions: Extracts.imageFileExtensions,
     codeFileExtensions: Extracts.codeFileExtensions,
     qualifyingForeignDomains: Extracts.qualifyingForeignDomains,
+    foreignSiteURLPrefixes: Extracts.foreignSiteURLPrefixes,
     targets: {
 		targetElementsSelector: [
 			"a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-ref, a.footnote-back", 
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
-			Extracts.qualifyingForeignDomains.map(domain => `a[href^='https://${domain}'], a[href^='https://www.${domain}']`).join(", ")
+			Extracts.qualifyingForeignDomains.map(domain => Extracts.foreignSiteURLPrefixes.map(prefix => `a[href^='${prefix}${domain}']`).join(", ")).join(", ")
 			].join(", "),
 		excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6, #link-bibliography li > p:first-child"
@@ -111,7 +113,7 @@ Extracts = {
 				|| Extracts.isLocalDocumentLink(target)
 				|| Extracts.isLocalCodeFileLink(target)
 				|| Extracts.isExternalSectionLink(target)
-// 				|| Extracts.isForeignSiteLink(target)
+				|| Extracts.isForeignSiteLink(target)
 				) {
 				target.classList.toggle("has-content", true);
 			}
@@ -434,10 +436,12 @@ Extracts = {
     	if (target.tagName != "A")
     		return false;
 
-		return target.href.match(/^https:\/\/(www\.)?(less|greater)wrong\.com\/posts/) != null;
+		return target.href.match(/^https?:\/\/(www\.)?(less|greater)wrong\.com\//) != null;
 	},
 	foreignSiteForTarget: (target) => {
-		return `<div><iframe src="${target.href.replace('lesswrong.com', 'greaterwrong.com')}?format=preview&theme=classic" frameborder="0" allowfullscreen sandbox></iframe></div>`;
+		let foreignSiteURL = target.href.replace('lesswrong.com', 'greaterwrong.com').replace('http:', 'https:');
+
+		return `<div><iframe src="${foreignSiteURL}?format=preview&theme=classic" frameborder="0" allowfullscreen sandbox></iframe></div>`;
 	},
 
 	//  Locally hosted images.
@@ -537,7 +541,7 @@ Extracts = {
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
-// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
 			]) == false)
 			return false;
 
@@ -611,7 +615,7 @@ Extracts = {
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
-// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
 			]) == false)
 			return false;
 
