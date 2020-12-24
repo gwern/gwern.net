@@ -15,7 +15,7 @@
 /* Not to be inverted in dark mode! */
 
 :root {
-	--GW-local-document-popup-background-color: #fff;
+	--GW-object-popup-background-color: #fff;
 }
 
 /*********************/
@@ -2883,6 +2883,10 @@ body.directory-index #disqus_thread {
 
 /*	“Object popups”: videos, images, PDFs, archived web pages, etc.
 	*/
+.extract-popup.object-popup {
+	height: 480px;
+	background-color: var(--GW-object-popup-background-color);
+}
 .extract-popup.object-popup > div {
     padding: 0;
 }
@@ -2890,6 +2894,11 @@ body.directory-index #disqus_thread {
 .extract-popup.object-popup iframe,
 .extract-popup.object-popup object {
     display: block;
+}
+.extract-popup.object-popup iframe,
+.extract-popup.object-popup object {
+    width: 632px;
+    height: 474px;
 }
 
 /*	Popups for images.
@@ -2911,15 +2920,6 @@ body.directory-index #disqus_thread {
 
 /*	Popups for local documents.
 	*/
-.extract-popup.local-document-popup {
-	height: 480px;
-	background-color: var(--GW-local-document-popup-background-color);
-}
-.extract-popup.local-document-popup iframe,
-.extract-popup.local-document-popup object {
-    width: 632px;
-    height: 474px;
-}
 
 /*	Popups for local code files.
 	*/

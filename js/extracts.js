@@ -16,6 +16,7 @@
 Extracts = {
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf" ],
+    qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ]
 };
 
 Extracts = {
@@ -27,11 +28,13 @@ Extracts = {
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     imageFileExtensions: Extracts.imageFileExtensions,
     codeFileExtensions: Extracts.codeFileExtensions,
+    qualifyingForeignDomains: Extracts.qualifyingForeignDomains,
     targets: {
 		targetElementsSelector: [
 			"a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-ref, a.footnote-back", 
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
-			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
+			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
+			Extracts.qualifyingForeignDomains.map(domain => `a[href^='https://${domain}'], a[href^='https://www.${domain}']`).join(", ")
 			].join(", "),
 		excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6, #link-bibliography li > p:first-child"
@@ -106,7 +109,9 @@ Extracts = {
 				|| Extracts.isLocalImageLink(target)
 				|| Extracts.isLocalDocumentLink(target)
 				|| Extracts.isLocalCodeFileLink(target)
-				|| Extracts.isExternalSectionLink(target)) {
+				|| Extracts.isExternalSectionLink(target)
+// 				|| Extracts.isForeignSiteLink(target)
+				) {
 				target.classList.toggle("has-content", true);
 			}
 		};
@@ -415,6 +420,14 @@ Extracts = {
 		return `<div></div>`;
     },
 
+	//  Other websites.
+	isForeignSiteLink: (target) => {
+		return target.href.match(/^https:\/\/(www\.)?(less|greater)wrong\.com\/posts/) != null;
+	},
+	foreignSiteForTarget: (target) => {
+		return `<div><iframe src="${target.href.replace('lesswrong.com', 'greaterwrong.com')}?format=preview&theme=classic" frameborder="0" allowfullscreen sandbox></iframe></div>`;
+	},
+
 	//  Locally hosted images.
     isLocalImageLink: (target) => {
     	if (target.tagName != "A")
@@ -511,7 +524,8 @@ Extracts = {
 			[ "isExtractLink", 			"extractForTarget", 				null 										],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				]
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
+// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
 			]) == false)
 			return false;
 
@@ -584,7 +598,8 @@ Extracts = {
 			[ "isExtractLink", 			"extractForTarget", 				null 										],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				]
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
+// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
 			]) == false)
 			return false;
 
@@ -683,7 +698,8 @@ Extracts = {
 		}
 
 		//  Loading spinners.
-		if (Extracts.isLocalDocumentLink(target)) {
+		if (   Extracts.isLocalDocumentLink(target)
+			|| Extracts.isForeignSiteLink(target)) {
 			popup.classList.toggle("loading", true);
 			popup.querySelector("iframe, object").onload = (event) => {
 				popup.classList.toggle("loading", false);
