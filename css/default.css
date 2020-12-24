@@ -2036,33 +2036,34 @@ body.tags article::before {
 /*=---------------=*/
 /*= /Book-reviews =*/
 /*=---------------=*/
-body.bookreviews #markdownBody blockquote {
+
+body.book-reviews #markdownBody blockquote {
   clear: none;
 }
-body.bookreviews #markdownBody ol {
+body.book-reviews #markdownBody ol {
   overflow: unset;
 }
 
-body.bookreviews #markdownBody h2 + p {
+body.book-reviews #markdownBody h2 + p {
     margin: -0.5em 0 1.5em 0;
     display: flex;
     flex-flow: row;
     justify-content: flex-start;
     max-width: 100%;
 }
-body.bookreviews h2 + p span {
+body.book-reviews h2 + p span {
     white-space: nowrap;
 }
-body.bookreviews h2 + p span + span {
+body.book-reviews h2 + p span + span {
     margin-left: 1em;
 }
-body.bookreviews h2 + p span:first-of-type {
+body.book-reviews h2 + p span:first-of-type {
     flex: 0 1 auto;
     max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
 }
-body.bookreviews h2 + p span:first-of-type:hover {
+body.book-reviews h2 + p span:first-of-type:hover {
     overflow: visible;
     white-space: normal;
     text-align: left;
@@ -2102,7 +2103,7 @@ body.hafu .tableWrapper#hafu-list-table td:last-of-type {
 /*= /komm-susser-tod =*/
 /*=------------------=*/
 
-body.kommsussertod .tableWrapper#lyrics-table {
+body.komm-susser-tod .tableWrapper#lyrics-table {
     padding: 0 calc((100vw - 6.5ch - 105ch) / 2);
 }
 
@@ -2110,7 +2111,7 @@ body.kommsussertod .tableWrapper#lyrics-table {
 /*= /Catnip-survey =*/
 /*=----------------=*/
 
-body.catnipsurvey .tableWrapper#results-table {
+body.catnip-survey .tableWrapper#results-table {
     padding: 0 calc((100vw - 6.5ch - 120ch) / 2);
 }
 
@@ -2126,9 +2127,9 @@ body.iodine .tableWrapper#data-table {
 /*= /DNM-arrests =*/
 /*=--------------=*/
 
-body.dnmarrests .tableWrapper#data-table td:nth-of-type(6),
-body.dnmarrests .tableWrapper#data-table td:nth-of-type(12),
-body.dnmarrests .tableWrapper#data-table td:nth-of-type(13) {
+body.dnm-arrests .tableWrapper#data-table td:nth-of-type(6),
+body.dnm-arrests .tableWrapper#data-table td:nth-of-type(12),
+body.dnm-arrests .tableWrapper#data-table td:nth-of-type(13) {
     white-space: nowrap;
 }
 body.dnmarrests .tableWrapper#data-table td:last-of-type {
@@ -2143,9 +2144,11 @@ body.lorem div[class^='drop-cap'] {
     margin: 1em 0 0 0;
 }
 
-/*************************/
-/* Directory index listings: trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /idex. */
-/*************************/
+/****************************/
+/* DIRECTORY INDEX LISTINGS */ 
+/****************************/
+/* trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /index. */
+
 body.directory-index #sidebar a.patreon,
 body.tags #sidebar a.patreon,
 body.directory-index #page-tags,
