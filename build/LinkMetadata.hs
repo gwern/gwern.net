@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-24 15:45:46 gwern"
+When:  Time-stamp: "2020-12-24 17:00:31 gwern"
 License: CC-0
 -}
 
@@ -100,7 +100,11 @@ hasAnnotationInline md x@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated
                                               case M.lookup (linkCanonicalize $ T.unpack f) md of
                                                 Nothing                   -> x
                                                 Just ("", "", "", "", "") -> x
-                                                Just _ -> Link (a, nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+                                                Just _ -> if T.head f == '?' then
+                                                  Span (a, nub (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
+                                                            if "docMetadata" `elem` b then
+                                                                                                                                                                                                                      Link (a, nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+                                                                                                                                                                                                                      else x
 hasAnnotationInline _ x = x
 
 
@@ -122,7 +126,7 @@ generateListItems (f, ann) = case ann of
                                                               let date = Span ("", ["date"], []) [Str (T.pack dt)] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
                                                                   let link = if head f == '?' then
-                                                                               Span (lid, ["defnMetadata", "linkBibliography-annotated"], [("originalDefinitionID",T.pack f)]++values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
+                                                                               Span (lid, ["defnMetadata", "linkBibliography-annotated"], [("original-definition-id",T.pack f)]++values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
                                                                         else
                                                                                Link (lid, ["docMetadata", "linkBibliography-annotated"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
@@ -147,7 +151,7 @@ collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" 
    collectLink x = queryWith extractLink x
 
    extractLink :: Inline -> [String]
-   extractLink x@(Span (_, "defnMetadata":_, ("originalDefinitionID",f):_) y) = [T.unpack f] ++ queryWith collectLinks y
+   extractLink x@(Span (_, "defnMetadata":_, ("original-definition-id",f):_) y) = [T.unpack f] ++ queryWith collectLinks y
    extractLink (Link _ _ (path, _)) = [T.unpack path]
    extractLink _ = []
 
