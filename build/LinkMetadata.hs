@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-24 17:00:31 gwern"
+When:  Time-stamp: "2020-12-24 17:20:58 gwern"
 License: CC-0
 -}
 
@@ -102,9 +102,8 @@ hasAnnotationInline md x@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated
                                                 Just ("", "", "", "", "") -> x
                                                 Just _ -> if T.head f == '?' then
                                                   Span (a, nub (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
-                                                            if "docMetadata" `elem` b then
-                                                                                                                                                                                                                      Link (a, nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
-                                                                                                                                                                                                                      else x
+                                                  Link (a, nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+
 hasAnnotationInline _ x = x
 
 
