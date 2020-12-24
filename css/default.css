@@ -601,6 +601,7 @@ ul ul ul ul ul ul > li::before {
 /*=-----------------------=*/
 /*= Numbered list markers =*/
 /*=-----------------------=*/
+
 ol,
 ol ol ol ol {
     list-style-type: decimal;
@@ -984,6 +985,37 @@ a.footnote-ref {
     top: unset;
     bottom: -0.5em;
     background-color: var(--GW-footnote-backlink-after-bordered-block-background-color);
+}
+
+section.footnotes > ol {
+	list-style-type: none;
+	padding-left: 2.25em;
+}
+section.footnotes > ol > li {
+	counter-increment: footnotes;
+	min-height: calc(1.625em + 1px);
+}
+section.footnotes > ol > li::before {
+    position: absolute;
+    z-index: 1;
+}
+section.footnotes > ol > li::before {
+	border: 1px dotted #aaa;
+	border-right-width: 0;
+	width: 1.625em;
+	font-feature-settings: 'pnum', 'lnum';
+	content: counter(footnotes);
+	display: flex;
+	justify-content: center;
+	right: calc(100% + 0.5em);
+}
+section.footnotes > ol > li::after {
+	content: "";
+	position: absolute;
+	border-right: 1px dotted #aaa;
+	height: 100%;
+	top: 0;
+	left: calc(-0.5em - 1px);
 }
 
 /*************/
