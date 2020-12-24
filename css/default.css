@@ -989,33 +989,61 @@ a.footnote-ref {
 
 section.footnotes > ol {
 	list-style-type: none;
-	padding-left: 2.25em;
+	padding-left: 2.625em;
+    overflow: visible;
 }
 section.footnotes > ol > li {
 	counter-increment: footnotes;
-	min-height: calc(1.625em + 1px);
+	min-height: calc(1.75em + 1px);
 }
 section.footnotes > ol > li::before {
     position: absolute;
     z-index: 1;
 }
 section.footnotes > ol > li::before {
-	border: 1px dotted #aaa;
+	border: 1px dotted var(--GW-footnote-border-color);
 	border-right-width: 0;
-	width: 1.625em;
-	font-feature-settings: 'pnum', 'lnum';
+	width: 1.75em;
+    height: 1.75em;
+    line-height: 1;
+	font-feature-settings: 'lnum';
 	content: counter(footnotes);
 	display: flex;
 	justify-content: center;
-	right: calc(100% + 0.5em);
+    align-items: center;
+	right: calc(100% + 0.75em);
+    top: calc(-0.125em - 1px);
 }
 section.footnotes > ol > li::after {
 	content: "";
 	position: absolute;
-	border-right: 1px dotted #aaa;
+	border-right: 1px dotted var(--GW-footnote-border-color);
 	height: 100%;
-	top: 0;
-	left: calc(-0.5em - 1px);
+    top: calc(-0.125em - 1px);
+	left: calc(-0.75em - 1px);
+}
+
+section.footnotes > hr:first-child {
+	position: relative;
+}
+section.footnotes > hr:first-child::after {
+	content: "";
+	border: 1px solid var(--GW-footnotes-section-top-rule-color);
+	width: 2em;
+	height: 2em;
+	background-color: var(--GW-body-background-color);
+	z-index: 1;
+	box-shadow: 
+		0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
+		0 0 0 0.5em var(--GW-footnotes-section-top-rule-color) inset;
+}
+section.footnotes > hr:first-child::before {
+	content: "";
+	position: absolute;
+	height: 1px;
+	background-color: var(--GW-footnotes-section-top-rule-color);
+	width: 100%;
+	top: 50%;
 }
 
 /*************/
