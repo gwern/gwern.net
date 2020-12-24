@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-23 23:06:44 gwern"
+When:  Time-stamp: "2020-12-24 15:45:46 gwern"
 License: CC-0
 -}
 
@@ -26,7 +26,7 @@ import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
-                    queryWith, nullAttr, Inline(Str, Code, RawInline, Space), Pandoc(..), Format(..), Block(Div, RawBlock, Para, Header, BulletList, BlockQuote))
+                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, Header, BulletList, BlockQuote))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
@@ -73,18 +73,35 @@ readLinkMetadataOnce = do
 
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
 generateLinkBibliography md (Pandoc meta doc) = do let links = collectLinks doc
-                                                   let doc' = walk (hasAnnotation md) doc
                                                    let sectionContents = recurseList md links
                                                    sectionContents' <- return sectionContents -- walkM (annotateLink  md) sectionContents :: IO [Block]
-                                                   return (Pandoc meta (doc'++sectionContents'))
+                                                   let doc' = Pandoc meta (doc++sectionContents')
+                                                   let doc'' = walk (hasAnnotation md) doc'
+                                                   return doc''
 
-hasAnnotation :: Metadata -> Inline -> Inline
-hasAnnotation md x@(Link (a,b,c) e (f,g)) = case M.lookup (linkCanonicalize $ T.unpack f) md of
-                                                Nothing -> x
+-- for links
+hasAnnotation :: Metadata -> Block -> Block
+-- goddamn it Pandoc, why can't you read the very HTML you just wrote‽
+hasAnnotation md x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` h) then x else
+                                                  let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+                                                   case markdown of
+                                                     Left e -> error (show x ++ ": " ++ show e)
+                                                     Right markdown' -> let p@(Pandoc _ blocks) = walk (hasAnnotation md) markdown' in
+                                                                          let p' = runPure $ do html <- writeHtml5String def{writerExtensions = pandocExtensions} p
+                                                                                                return $ RawBlock (Format "html") html
+                                                                          in case p' of
+                                                                            Left e -> error (show x ++ ": " ++ show e)
+                                                                            Right p'' -> p''
+                                                                    -- case html of
+                                                                    --   Right e -> error (show x ++ ": " ++ show e)
+                                                                    --  Left html' -> return $ RawBlock (Format "html") html'
+hasAnnotation md x = walk (hasAnnotationInline md) x
+hasAnnotationInline md x@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated" `elem` b then x else
+                                              case M.lookup (linkCanonicalize $ T.unpack f) md of
+                                                Nothing                   -> x
                                                 Just ("", "", "", "", "") -> x
-                                                Just _ -> let annotationOrDefinition = if T.head f == '?' then "defnMetadata" else "docMetadata" in
-                                                            (Link (a,b++[annotationOrDefinition, "linkBibliography-has-annotation"],c) e (f,g))
-hasAnnotation md x = x
+                                                Just _ -> Link (a, nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+hasAnnotationInline _ x = x
 
 
 -- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
@@ -93,20 +110,25 @@ recurseList md links = Debug.Trace.trace (unlines links) $ if (sort $ uniq links
                        where links' = nub links
                              linkAnnotations = map (`M.lookup` md) links'
                              pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
-                             sectionContents = [BulletList (map (generateListItems md) pairs)] :: [Block]
+                             sectionContents = [BulletList (map generateListItems pairs)] :: [Block]
                              finalLinks = collectLinks sectionContents
 
-generateListItems :: Metadata -> (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
-generateListItems md (f, ann) = case ann of
+generateListItems :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
+generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,abst) -> let lid = (generateID f aut dt) `T.append` (T.pack "-linkBibliography") in
                                                             let author = Span ("", ["author"], []) [Str (T.pack aut)] in
                                                               let date = Span ("", ["date"], []) [Str (T.pack dt)] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
+                                                                  let link = if head f == '?' then
+                                                                               Span (lid, ["defnMetadata", "linkBibliography-annotated"], [("originalDefinitionID",T.pack f)]++values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
+                                                                        else
+                                                                               Link (lid, ["docMetadata", "linkBibliography-annotated"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
+                                                                        in
                                                               [Para
-                                                                [Link (lid, ["docMetadata", "linkBibliography-annotated"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),
-                                                                  Str ",", Space, author, Space, date, Str ":"],
+                                                                [link,
+                                                                  Str ",", Space, author, Space, Str "(", date, Str ")", Str ":"],
                                                            BlockQuote [RawBlock (Format "html") (T.pack abst)]
                                                            ]
                              where
@@ -115,7 +137,7 @@ generateListItems md (f, ann) = case ann of
 
 
 collectLinks :: [Block] -> [String]
-collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
+collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
   where
    collectLink :: Block -> [String]
    collectLink (RawBlock (Format "html") t) = if not ("href=" `T.isInfixOf` t) then [] else let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} t in
@@ -125,6 +147,7 @@ collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "htt
    collectLink x = queryWith extractLink x
 
    extractLink :: Inline -> [String]
+   extractLink x@(Span (_, "defnMetadata":_, ("originalDefinitionID",f):_) y) = [T.unpack f] ++ queryWith collectLinks y
    extractLink (Link _ _ (path, _)) = [T.unpack path]
    extractLink _ = []
 
@@ -344,12 +367,11 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
                  | "plosgenetics.org" `isInfixOf` l = pubmed l
                  | "plosmedicine.org" `isInfixOf` l = pubmed l
                  | "plosone.org" `isInfixOf` l = pubmed l
-                 | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern l else return Nothing
+                 | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern $ tail l else return Nothing
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = drop 22 l
-                   | head l == '/' = drop 1 l
-                   | head l == '#' = l
+                   -- | head l == '#' = l
                    | otherwise = l
 
 -- handles both PM & PLOS right now:
@@ -436,7 +458,7 @@ wikipedia p
 downloadWPThumbnail :: FilePath -> IO FilePath
 downloadWPThumbnail href = do
   let f = "images/thumbnails/wikipedia/"++(takeFileName (urlDecode href))
-  (status,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+  (_,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
   let ext = map toLower $ takeExtension f
   if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
                      void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [f]
