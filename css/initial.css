@@ -533,6 +533,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 	border: 0;
 	display: block;
 	position: relative;
+	padding: 0 0.25rem 0 0;
 }
 
 #TOC a:hover {
@@ -703,7 +704,7 @@ html {
 /* auto-smallcaps the first line of the introduction (= the first `<p>` after `<div class="abstract"></div>`); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
 .abstract + p::first-line, #markdownBody > p:first-child::first-line { font-feature-settings: 'smcp'; }
 
-#markdownBody h1 {
+h1 {
 	margin: 0.6em 0 0.5em -0.75rem;
 	font-weight: bold;
 	position: relative;

@@ -15,6 +15,8 @@
     viewport (minus a specified margin on both sides).
     */
 function expandFullWidthBlocks() {
+	GWLog("expandFullWidthBlocks", "rewrite.js", 1);
+
     document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
         fullWidthImage.closest("figure").classList.add("full-width");
     });
@@ -71,6 +73,8 @@ function expandFullWidthBlocks() {
     element). These are all the captioned media elements on the page.
     */
 function getAllCaptionedMedia() {
+	GWLog("getAllCaptionedMedia", "rewrite.js", 1);
+
     return Array.prototype.map.call(document.querySelectorAll("figure"), figure => {
         let media = figure.querySelector("img") || figure.querySelector("video");
         let caption = figure.querySelector("figcaption");
@@ -82,6 +86,8 @@ function getAllCaptionedMedia() {
     media (image or video) element.
     */
 function setCaptionsMinimumWidth() {
+	GWLog("setCaptionsMinimumWidth", "rewrite.js", 1);
+
     getAllCaptionedMedia().forEach(captionedMedia => {
         //  Get the caption wrapper span.
         let wrapper = captionedMedia.caption.closest(".caption-wrapper");
@@ -98,6 +104,8 @@ function setCaptionsMinimumWidth() {
     nearest pixel), to fix a weird bug that cuts off the bottom border.
     */
 function rectifyCodeBlockHeight(codeBlock) {
+	GWLog("rectifyCodeBlockHeight", "rewrite.js", 1);
+
     codeBlock.style.height = parseInt(getComputedStyle(codeBlock).height) + "px";
 }
 
@@ -107,29 +115,44 @@ function rectifyCodeBlockHeight(codeBlock) {
 
 /*  Unwrap pre.sourceCode blocks from their extraneous containing divs.
     */
-document.querySelectorAll("div.sourceCode").forEach(scd => {
-    scd.outerHTML = scd.innerHTML;
-});
+function unwrapSourceCodeBlocks() {
+	GWLog("unwrapSourceCodeBlocks", "rewrite.js", 1);
+
+	document.querySelectorAll("div.sourceCode").forEach(scd => {
+		scd.outerHTML = scd.innerHTML;
+	});
+}
+unwrapSourceCodeBlocks();
 
 /*  Wrap each table in a div.tableWrapper (for layout purposes).
     */
-document.querySelectorAll("table").forEach(table => {
-    if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
-        table.parentElement.classList.toggle("tableWrapper", true);
-    else
-    	table.outerHTML = "<div class='table-wrapper'>" + table.outerHTML + "</div>";
-});
+function wrapTables() {
+	GWLog("wrapTables", "rewrite.js", 1);
+
+	document.querySelectorAll("table").forEach(table => {
+		if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
+			table.parentElement.classList.toggle("tableWrapper", true);
+		else
+			table.outerHTML = "<div class='table-wrapper'>" + table.outerHTML + "</div>";
+	});
+}
+wrapTables();
 
 /*  Wrap each pre.full-width in a div.full-width (for layout purposes).
     */
-document.querySelectorAll("pre.full-width").forEach(fullWidthPre => {
-    if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
-//         fullWidthPre.parentElement.classList.toggle("full-width full-width-code-block-wrapper", true);
-        fullWidthPre.parentElement.classList.toggle("full-width", true);
-    else
-//         fullWidthPre.outerHTML = "<div class='full-width full-width-code-block-wrapper'>" + fullWidthPre.outerHTML + "</div>";
-        fullWidthPre.outerHTML = "<div class='full-width'>" + fullWidthPre.outerHTML + "</div>";
-});
+function wrapPreBlocks() {
+	GWLog("wrapPreBlocks", "rewrite.js", 1);
+
+	document.querySelectorAll("pre.full-width").forEach(fullWidthPre => {
+		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
+	//         fullWidthPre.parentElement.classList.toggle("full-width full-width-code-block-wrapper", true);
+			fullWidthPre.parentElement.classList.toggle("full-width", true);
+		else
+	//         fullWidthPre.outerHTML = "<div class='full-width full-width-code-block-wrapper'>" + fullWidthPre.outerHTML + "</div>";
+			fullWidthPre.outerHTML = "<div class='full-width'>" + fullWidthPre.outerHTML + "</div>";
+	});
+}
+wrapPreBlocks();
 
 /*  Expand full-width blocks, and add a listener to recompute their size and
     position upon window resize.
@@ -147,63 +170,73 @@ doWhenPageLoaded(() => {
 
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
-document.querySelectorAll(".collapse").forEach(collapseBlock => {
-    let disclosureButtonHTML = "<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'>";
-    if (collapseBlock.tagName == "SECTION") {
-        //  Inject the disclosure button.
-        collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
-    } else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
-        // Remove the `collapse` class and do nothing else.
-        collapseBlock.classList.remove("collapse");
-    } else {
-        //  Construct collapse block wrapper and inject the disclosure button.
-        let realCollapseBlock = document.createElement("div");
-        realCollapseBlock.classList.add("collapse");
-        realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
-        //  Move block-to-be-collapsed into wrapper.
-        collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
-        collapseBlock.classList.remove("collapse");
-        realCollapseBlock.appendChild(collapseBlock);
-    }
-});
-/*  Add listeners to toggle 'expanded' class of collapse blocks.
-    */
-document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
-    let collapseBlock = disclosureButton.closest(".collapse");
-    disclosureButton.addEventListener("change", (event) => {
-        collapseBlock.classList.toggle("expanded", disclosureButton.checked);
+function prepareCollapseBlocks() {
+	GWLog("prepareCollapseBlocks", "rewrite.js", 1);
 
-        //  If it's a code block, adjust its height.
-        if (collapseBlock.lastElementChild.tagName == "PRE") {
-            let codeBlock = collapseBlock.lastElementChild.lastElementChild;
-            if (codeBlock.tagName != "CODE") return;
+	document.querySelectorAll(".collapse").forEach(collapseBlock => {
+		let disclosureButtonHTML = "<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'>";
+		if (collapseBlock.tagName == "SECTION") {
+			//  Inject the disclosure button.
+			collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
+		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
+			// Remove the `collapse` class and do nothing else.
+			collapseBlock.classList.remove("collapse");
+		} else {
+			//  Construct collapse block wrapper and inject the disclosure button.
+			let realCollapseBlock = document.createElement("div");
+			realCollapseBlock.classList.add("collapse");
+			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+			//  Move block-to-be-collapsed into wrapper.
+			collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
+			collapseBlock.classList.remove("collapse");
+			realCollapseBlock.appendChild(collapseBlock);
+		}
+	});
+	/*  Add listeners to toggle 'expanded' class of collapse blocks.
+		*/
+	document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+		let collapseBlock = disclosureButton.closest(".collapse");
+		disclosureButton.addEventListener("change", (event) => {
+			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
-            codeBlock.style.height = "";
-            requestAnimationFrame(() => {
-                rectifyCodeBlockHeight(codeBlock);
-            });
-        }
-    });
-});
+			//  If it's a code block, adjust its height.
+			if (collapseBlock.lastElementChild.tagName == "PRE") {
+				let codeBlock = collapseBlock.lastElementChild.lastElementChild;
+				if (codeBlock.tagName != "CODE") return;
+
+				codeBlock.style.height = "";
+				requestAnimationFrame(() => {
+					rectifyCodeBlockHeight(codeBlock);
+				});
+			}
+		});
+	});
+}
+prepareCollapseBlocks();
 
 /*  Wrap all captions in figures in a span.
     */
-getAllCaptionedMedia().forEach(captionedMedia => {
-    //  Wrap the caption in the wrapper span.
-    let wrapper = document.createElement("span");
-    wrapper.classList.add("caption-wrapper");
-    wrapper.appendChild(captionedMedia.caption);
+function wrapFigureCaptions() {
+	GWLog("wrapFigureCaptions", "rewrite.js", 1);
 
-    //  Re-insert the wrapped caption into the figure.
-    let figure = captionedMedia.media.closest("figure");
-    figure.appendChild(wrapper);
+	getAllCaptionedMedia().forEach(captionedMedia => {
+		//  Wrap the caption in the wrapper span.
+		let wrapper = document.createElement("span");
+		wrapper.classList.add("caption-wrapper");
+		wrapper.appendChild(captionedMedia.caption);
 
-    // Tag the figure with the image's float class.
-    if (captionedMedia.media.classList.contains("float-left"))
-        captionedMedia.media.closest("figure").classList.add("float-left");
-    if (captionedMedia.media.classList.contains("float-right"))
-        captionedMedia.media.closest("figure").classList.add("float-right");
-});
+		//  Re-insert the wrapped caption into the figure.
+		let figure = captionedMedia.media.closest("figure");
+		figure.appendChild(wrapper);
+
+		// Tag the figure with the image's float class.
+		if (captionedMedia.media.classList.contains("float-left"))
+			captionedMedia.media.closest("figure").classList.add("float-left");
+		if (captionedMedia.media.classList.contains("float-right"))
+			captionedMedia.media.closest("figure").classList.add("float-right");
+	});
+}
+wrapFigureCaptions();
 
 /*  Set minimum caption box width, and add listener to recalculate on
     window resize.
@@ -214,20 +247,27 @@ window.addEventListener('resize', setCaptionsMinimumWidth);
 /*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
     (This is to mitigate justification/wrapping problems.)
     */
-let problematicCharacters = '/';
-let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
-let problematicCharactersReplacementPattern = "$1\u{200B}$2";
-let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
-document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
-    element.childNodes.forEach(node => {
-       if (node.childNodes.length > 0) return;
-       node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
-    });
-});
+function insertZeroWidthSpaces() {
+	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
+
+	let problematicCharacters = '/';
+	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
+	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
+	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
+	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
+		element.childNodes.forEach(node => {
+		   if (node.childNodes.length > 0) return;
+		   node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
+		});
+	});
+}
+insertZeroWidthSpaces();
 
 /*  Set the display form of margin notes (margin vs. inline).
  */
 function updateMarginNoteStyle() {
+	GWLog("updateMarginNoteStyle", "rewrite.js", 1);
+
     document.querySelectorAll(".marginnote").forEach(marginNote => {
         if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches) {
             marginNote.classList.add("inline");
@@ -253,6 +293,8 @@ doWhenPageLoaded (() => {
 /*  Reveals the given node by expanding all containing collapse blocks.
     */
 function expandAllAncestorsOfNode(node) {
+	GWLog("expandAllAncestorsOfNode", "rewrite.js", 2);
+
     // If the node is not an element (e.g. a text node), get its parent element.
     let element = node instanceof HTMLElement ? node : node.parentElement;
 
@@ -288,11 +330,16 @@ window.addEventListener("focus", () => {
 let t,e;const n=new Set,o=document.createElement("link"),z=o.relList&&o.relList.supports&&o.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype,s="instantAllowQueryString"in document.body.dataset,a=true,r="instantWhitelist"in document.body.dataset,c="instantMousedownShortcut"in document.body.dataset,d=1111;let l=800,u=!1,f=!1,m=!1;if("instantIntensity"in document.body.dataset){const t=document.body.dataset.instantIntensity;if("mousedown"==t.substr(0,"mousedown".length))u=!0,"mousedown-only"==t&&(f=!0);else if("viewport"==t.substr(0,"viewport".length))navigator.connection&&(navigator.connection.saveData||navigator.connection.effectiveType&&navigator.connection.effectiveType.includes("2g"))||("viewport"==t?document.documentElement.clientWidth*document.documentElement.clientHeight<45e4&&(m=!0):"viewport-all"==t&&(m=!0));else{const e=parseInt(t);isNaN(e)||(l=e)}}if(z){const n={capture:!0,passive:!0};if(f||document.addEventListener("touchstart",function(t){e=performance.now();const n=t.target.closest("a");if(!h(n))return;v(n.href)},n),u?c||document.addEventListener("mousedown",function(t){const e=t.target.closest("a");if(!h(e))return;v(e.href)},n):document.addEventListener("mouseover",function(n){if(performance.now()-e<d)return;const o=n.target.closest("a");if(!h(o))return;o.addEventListener("mouseout",p,{passive:!0}),t=setTimeout(()=>{v(o.href),t=void 0},l)},n),c&&document.addEventListener("mousedown",function(t){if(performance.now()-e<d)return;const n=t.target.closest("a");if(t.which>1||t.metaKey||t.ctrlKey)return;if(!n)return;n.addEventListener("click",function(t){1337!=t.detail&&t.preventDefault()},{capture:!0,passive:!1,once:!0});const o=new MouseEvent("click",{view:window,bubbles:!0,cancelable:!1,detail:1337});n.dispatchEvent(o)},n),m){let t;(t=window.requestIdleCallback?t=>{requestIdleCallback(t,{timeout:1500})}:t=>{t()})(()=>{const t=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){const n=e.target;t.unobserve(n),v(n.href)}})});document.querySelectorAll("a").forEach(e=>{h(e)&&t.observe(e)})})}}function p(e){e.relatedTarget&&e.target.closest("a")==e.relatedTarget.closest("a")||t&&(clearTimeout(t),t=void 0)}function h(t){if(t&&t.href&&(!r||"instant"in t.dataset)&&(a||t.origin==location.origin||"instant"in t.dataset)&&["http:","https:"].includes(t.protocol)&&("http:"!=t.protocol||"https:"!=location.protocol)&&(s||!t.search||"instant"in t.dataset)&&!(t.hash&&t.pathname+t.search==location.pathname+location.search||"noInstant"in t.dataset))return!0}function v(t){if(n.has(t))return;const e=document.createElement("link");console.log("Prefetched: "+t);e.rel="prefetch",e.href=t,document.head.appendChild(e),n.add(t)};
 
 /* Directional navigation links on self-links: for each self-link like "see [later](#later-identifier)", find the linked identifier, whether it's before or after, and if it is before/previously, annotate the self-link with '↑' and if after/later, '↓'. This helps the reader know if it's a backwards link to a identifier already read, or an unread identifier. */
-document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) > a[href^='#']:not(.footnote-ref):not(.footnote-back):not(.sidenote-self-link):not(.sidenote-back):not(.sidenote)").forEach(identifierLink => {
-    header = document.body.querySelector("#markdownBody *[id='" + identifierLink.hash.substring(1) + "']");
-    if (!header) return;
-    identifierLink.classList.add((identifierLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
-});
+function directionalizeAnchorLinks() {
+	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
+
+	document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) > a[href^='#']:not(.footnote-ref):not(.footnote-back):not(.sidenote-self-link):not(.sidenote-back):not(.sidenote)").forEach(identifierLink => {
+		header = document.body.querySelector("#markdownBody *[id='" + identifierLink.hash.substring(1) + "']");
+		if (!header) return;
+		identifierLink.classList.add((identifierLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
+	});
+}
+directionalizeAnchorLinks();
 
 /*	HYPHENS
 	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
@@ -303,6 +350,8 @@ function getSelectionHTML() {
     return container.innerHTML;
 }
 window.addEventListener("copy", GW.textCopied = (event) => {
+	GWLog("GW.textCopied", "rewrite.js", 2);
+
     if (event.target.matches("input, textarea")) return;
     event.preventDefault();
     const selectedHTML = getSelectionHTML();

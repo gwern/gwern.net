@@ -15,7 +15,7 @@
 /* Not to be inverted in dark mode! */
 
 :root {
-	--GW-local-document-popup-background-color: #fff;
+	--GW-object-popup-background-color: #fff;
 }
 
 /*********************/
@@ -551,8 +551,7 @@ ol > li:nth-of-type(n+2) {
     margin: 0.5em 0 0 0;
 }
 
-ul > li::before,
-ol > li::before {
+ul > li::before {
     position: absolute;
     z-index: 1;
 }
@@ -602,19 +601,20 @@ ul ul ul ul ul ul > li::before {
 /*=-----------------------=*/
 /*= Numbered list markers =*/
 /*=-----------------------=*/
-ol > li,
-ol ol ol ol > li {
+
+ol,
+ol ol ol ol {
     list-style-type: decimal;
 }
 ol li::marker {
     font-feature-settings: 'onum';
 }
-ol ol > li,
-ol ol ol ol ol > li {
+ol ol,
+ol ol ol ol ol {
     list-style-type: upper-roman;
 }
-ol ol ol > li,
-ol ol ol ol ol ol > li {
+ol ol ol,
+ol ol ol ol ol ol {
     list-style-type: lower-alpha;
 }
 
@@ -985,6 +985,66 @@ a.footnote-ref {
     top: unset;
     bottom: -0.5em;
     background-color: var(--GW-footnote-backlink-after-bordered-block-background-color);
+}
+
+section.footnotes > ol {
+	list-style-type: none;
+	padding-left: 2.625em;
+    overflow: visible;
+}
+section.footnotes > ol > li {
+	counter-increment: footnotes;
+	min-height: calc(1.75em + 1px);
+}
+section.footnotes > ol > li::before {
+    position: absolute;
+    z-index: 1;
+}
+section.footnotes > ol > li::before {
+	border: 1px dotted var(--GW-footnote-border-color);
+	border-right-width: 0;
+	width: 1.75em;
+    height: 1.75em;
+    line-height: 1;
+	font-feature-settings: 'lnum';
+	content: counter(footnotes);
+	display: flex;
+	justify-content: center;
+    align-items: center;
+	right: calc(100% + 0.75em);
+    top: calc(-0.125em - 1px);
+}
+section.footnotes > ol > li::after {
+	content: "";
+	position: absolute;
+	border-right: 1px dotted var(--GW-footnote-border-color);
+	height: 100%;
+    top: calc(-0.125em - 1px);
+	left: calc(-0.75em - 1px);
+}
+
+section.footnotes > hr:first-child {
+	position: relative;
+    margin: 1.75em 0 1.375em 0;
+}
+section.footnotes > hr:first-child::after {
+	content: "";
+	border: 1px solid var(--GW-footnotes-section-top-rule-color);
+	width: 2em;
+	height: 2em;
+	background-color: var(--GW-body-background-color);
+	z-index: 1;
+	box-shadow: 
+		0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
+		0 0 0 0.5em var(--GW-footnotes-section-top-rule-color) inset;
+}
+section.footnotes > hr:first-child::before {
+	content: "";
+	position: absolute;
+	height: 1px;
+	background-color: var(--GW-footnotes-section-top-rule-color);
+	width: 100%;
+	top: 50%;
 }
 
 /*************/
@@ -1499,7 +1559,7 @@ pre {
 }
 pre code {
     display: block;
-    padding: 8px 14px;
+    padding: 0.4rem 0.7rem;
     margin: 0;
     border: none;
     background-color: transparent;
@@ -2036,33 +2096,34 @@ body.tags article::before {
 /*=---------------=*/
 /*= /Book-reviews =*/
 /*=---------------=*/
-body.bookreviews #markdownBody blockquote {
+
+body.book-reviews #markdownBody blockquote {
   clear: none;
 }
-body.bookreviews #markdownBody ol {
+body.book-reviews #markdownBody ol {
   overflow: unset;
 }
 
-body.bookreviews #markdownBody h2 + p {
+body.book-reviews #markdownBody h2 + p {
     margin: -0.5em 0 1.5em 0;
     display: flex;
     flex-flow: row;
     justify-content: flex-start;
     max-width: 100%;
 }
-body.bookreviews h2 + p span {
+body.book-reviews h2 + p span {
     white-space: nowrap;
 }
-body.bookreviews h2 + p span + span {
+body.book-reviews h2 + p span + span {
     margin-left: 1em;
 }
-body.bookreviews h2 + p span:first-of-type {
+body.book-reviews h2 + p span:first-of-type {
     flex: 0 1 auto;
     max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
 }
-body.bookreviews h2 + p span:first-of-type:hover {
+body.book-reviews h2 + p span:first-of-type:hover {
     overflow: visible;
     white-space: normal;
     text-align: left;
@@ -2102,7 +2163,7 @@ body.hafu .tableWrapper#hafu-list-table td:last-of-type {
 /*= /komm-susser-tod =*/
 /*=------------------=*/
 
-body.kommsussertod .tableWrapper#lyrics-table {
+body.komm-susser-tod .tableWrapper#lyrics-table {
     padding: 0 calc((100vw - 6.5ch - 105ch) / 2);
 }
 
@@ -2110,7 +2171,7 @@ body.kommsussertod .tableWrapper#lyrics-table {
 /*= /Catnip-survey =*/
 /*=----------------=*/
 
-body.catnipsurvey .tableWrapper#results-table {
+body.catnip-survey .tableWrapper#results-table {
     padding: 0 calc((100vw - 6.5ch - 120ch) / 2);
 }
 
@@ -2126,9 +2187,9 @@ body.iodine .tableWrapper#data-table {
 /*= /DNM-arrests =*/
 /*=--------------=*/
 
-body.dnmarrests .tableWrapper#data-table td:nth-of-type(6),
-body.dnmarrests .tableWrapper#data-table td:nth-of-type(12),
-body.dnmarrests .tableWrapper#data-table td:nth-of-type(13) {
+body.dnm-arrests .tableWrapper#data-table td:nth-of-type(6),
+body.dnm-arrests .tableWrapper#data-table td:nth-of-type(12),
+body.dnm-arrests .tableWrapper#data-table td:nth-of-type(13) {
     white-space: nowrap;
 }
 body.dnmarrests .tableWrapper#data-table td:last-of-type {
@@ -2143,9 +2204,11 @@ body.lorem div[class^='drop-cap'] {
     margin: 1em 0 0 0;
 }
 
-/*************************/
-/* Directory index listings: trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /idex. */
-/*************************/
+/****************************/
+/* DIRECTORY INDEX LISTINGS */ 
+/****************************/
+/* trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /index. */
+
 body.directory-index #sidebar a.patreon,
 body.tags #sidebar a.patreon,
 body.directory-index #page-tags,
@@ -2820,6 +2883,10 @@ body.directory-index #disqus_thread {
 
 /*	“Object popups”: videos, images, PDFs, archived web pages, etc.
 	*/
+.extract-popup.object-popup {
+	height: 480px;
+	background-color: var(--GW-object-popup-background-color);
+}
 .extract-popup.object-popup > div {
     padding: 0;
 }
@@ -2827,6 +2894,11 @@ body.directory-index #disqus_thread {
 .extract-popup.object-popup iframe,
 .extract-popup.object-popup object {
     display: block;
+}
+.extract-popup.object-popup iframe,
+.extract-popup.object-popup object {
+    width: 632px;
+    height: 474px;
 }
 
 /*	Popups for images.
@@ -2848,15 +2920,6 @@ body.directory-index #disqus_thread {
 
 /*	Popups for local documents.
 	*/
-.extract-popup.local-document-popup {
-	height: 480px;
-	background-color: var(--GW-local-document-popup-background-color);
-}
-.extract-popup.local-document-popup iframe,
-.extract-popup.local-document-popup object {
-    width: 632px;
-    height: 474px;
-}
 
 /*	Popups for local code files.
 	*/

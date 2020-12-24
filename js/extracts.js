@@ -16,6 +16,7 @@
 Extracts = {
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf" ],
+    qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ]
 };
 
 Extracts = {
@@ -23,17 +24,20 @@ Extracts = {
 	/*	Config.
 		*/
 	contentContainersSelector: "#markdownBody, #TOC",
+	referenceLinkContainerSelector: "#link-bibliography",
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     imageFileExtensions: Extracts.imageFileExtensions,
     codeFileExtensions: Extracts.codeFileExtensions,
+    qualifyingForeignDomains: Extracts.qualifyingForeignDomains,
     targets: {
 		targetElementsSelector: [
-			"a.docMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-back, span.defnMetadata", 
+			"a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-ref, a.footnote-back", 
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
-			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
+			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
+			Extracts.qualifyingForeignDomains.map(domain => `a[href^='https://${domain}'], a[href^='https://www.${domain}']`).join(", ")
 			].join(", "),
 		excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
-		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
+		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6, #link-bibliography li > p:first-child"
     },
 
 	/***********/
@@ -92,6 +96,8 @@ Extracts = {
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
+		Extracts.referenceLinkContainer = document.querySelector(Extracts.referenceLinkContainerSelector);
+
 		//  Shared target prepare function (for both mobile and non-mobile).
 		let sharedPrepareTarget = (target) => {
 			if (target.title) {
@@ -103,7 +109,9 @@ Extracts = {
 				|| Extracts.isLocalImageLink(target)
 				|| Extracts.isLocalDocumentLink(target)
 				|| Extracts.isLocalCodeFileLink(target)
-				|| Extracts.isExternalSectionLink(target)) {
+				|| Extracts.isExternalSectionLink(target)
+// 				|| Extracts.isForeignSiteLink(target)
+				) {
 				target.classList.toggle("has-content", true);
 			}
 		};
@@ -180,6 +188,29 @@ Extracts = {
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
+	fillPopElement: (popElement, target, possiblePopTypes) => {
+		GWLog("Extracts.fillPopElement", "extracts.js", 2);
+
+		for ([ testMethodName, fillMethodName, classes ] of possiblePopTypes) {
+			if (   Extracts[fillMethodName] != null
+				&& Extracts[testMethodName](target)) {
+				popElement.innerHTML = Extracts[fillMethodName](target);
+				if (classes)
+					popElement.classList.add(...(classes.split(" ")));
+				break;
+			}
+		}
+
+		if (popElement.childElementCount != 0) {
+			return true;
+		} else {
+			GWLog("Unable to fill popup!", "extracts.js", 1);
+			return false;
+		}
+	},
+
+	//  Reference links, for extracts and definitions.
+	referenceLinkContainer: null,
 
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
@@ -188,51 +219,56 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-		//  Title and abstract are mandatory.
-		if (!target.dataset.popupTitleHtml || !target.dataset.popupAbstract)
-			return null;
+		let referenceLinkElement = Extracts.referenceLinkContainer.querySelector(`a[href='${target.getAttribute("href")}']`);
+		let referenceLinkListEntry = referenceLinkElement.closest("li");
+
+		let titleHTML = referenceLinkElement.innerHTML;
+		let titleText = referenceLinkElement.textContent;
+		let abstractHTML = referenceLinkListEntry.querySelector("blockquote").innerHTML;
 
 		//  Link to original URL (for archive links) or link to archive (for live links).
-        var archiveOrOriginalLink = "";
-        if (   target.dataset.urlOriginal != undefined 
-        	&& target.dataset.urlOriginal != target.href) {
-            archiveOrOriginalLink = (`<span class="originalURL"><code>` + "[" + 
-            		   `<a href="${target.dataset.urlOriginal}" target="_new" 
-                       		title="Link to original URL for ‘${target.dataset.popupTitle}’" 
+        var archiveOrOriginalLinkHTML = "";
+        if (   referenceLinkElement.dataset.urlOriginal != undefined 
+        	&& referenceLinkElement.dataset.urlOriginal != target.href) {
+            archiveOrOriginalLinkHTML = (`<span class="originalURL"><code>` + "[" + 
+            		   `<a href="${referenceLinkElement.dataset.urlOriginal}" target="_new" 
+                       		title="Link to original URL for ‘${titleText}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
                        "URL" + `</a>` + "]" + `</code></span>`);
         } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
-			archiveOrOriginalLink = (`<span class="iaMirror">` +
-					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${target.dataset.popupTitle}’)" 
+			archiveOrOriginalLinkHTML = (`<span class="iaMirror">` +
+					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${titleText}’)" 
 					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" target="_new">` +
 					   `</a></span>`);
         }
 
 		//  Extract title/link.
-		let titleLink = `<a class="title-link" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${target.dataset.popupTitleHtml}</a>`;
+		let titleLinkHTML = `<a class="title-link" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${titleHTML}</a>`;
 
 		//	Author.
-		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`;
+		let authorElement = referenceLinkListEntry.querySelector(".author");
+		let authorHTML = (authorElement ? `<span class="data-field author">${(authorElement.textContent || "")}</span>` : ``);
 
 		//  Link to citations on Google Scholar, or link to search for links on Google.
         var citationsOrLinks = "";
-        if (target.dataset.popupDoi != undefined) {
-            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Reverse citations of this paper (‘${target.dataset.popupTitle}’), with DOI ‘${target.dataset.popupDoi}’, in Google Scholar">` + "cites" + `</a>`;
+        if (referenceLinkElement.dataset.doi != undefined) {
+            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${referenceLinkElement.dataset.doi}%22+OR+%22${titleText}%22" target="_new" title="Reverse citations of this paper (‘${titleText}’), with DOI ‘${referenceLinkElement.dataset.doi}’, in Google Scholar">` + "cites" + `</a>`;
         } else if (target.href.includesAnyOf([ "pdf", "https://arxiv.org", "https://openreview.net", "ieee.org", "rand.org", "dspace.mit.edu", "thegradient.pub", "inkandswitch.com", "nature.com", "sciencemag.org" ])) {
             /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
-            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of this paper (‘${target.dataset.popupTitle}’) in Google Scholar">` + "cites" + `</a>`;
+            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${titleText}%22" target='_new' title="Reverse citations of this paper (‘${titleText}’) in Google Scholar">` + "cites" + `</a>`;
         } else if (!target.href.startsWith("https://en.wikipedia.org")) {
-            citationsOrLinks = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Links to this page (‘${target.dataset.popupTitle}’) in Google">` + "links" + `</a>`;
+            citationsOrLinks = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${titleText}%22" target="_new" title="Links to this page (‘${titleText}’) in Google">` + "links" + `</a>`;
         }
 
 		//	Date; citations/links.
-		let dateAndCitationsOrLinks = (target.dataset.popupDate ? ` <span class="date-plus-cites">(<span class="data-field date">${target.dataset.popupDate}</span>${citationsOrLinks})</span>` : ``);
+		let dateElement = referenceLinkListEntry.querySelector(".date");
+		let dateAndCitationsOrLinksHTML = (dateElement ? ` <span class="date-plus-cites">(<span class="data-field date">${dateElement.textContent}</span>${citationsOrLinks})</span>` : ``);
 
 		//  The fully constructed extract popup contents.
         return `<div>` +
-                   `<p class="data-field title">${archiveOrOriginalLink}${titleLink}</p>` +
-                   `<p class="data-field author-plus-date">${author}${dateAndCitationsOrLinks}</p>` +
-                   `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
+                   `<p class="data-field title">${archiveOrOriginalLinkHTML}${titleLinkHTML}</p>` +
+                   `<p class="data-field author-plus-date">${authorHTML}${dateAndCitationsOrLinksHTML}</p>` +
+                   `<div class="data-field popupAbstract">${abstractHTML}</div>` +
                `</div>`;
     },
 
@@ -293,21 +329,6 @@ Extracts = {
     isCitation: (target) => {
 		return target.classList.contains("footnote-ref");
 	},
-    noteAssociatedWithTarget: (target) => {
-		if (!target.hash)
-			return null;
-
-		//  This could be a footnote, or a sidenote!
-		let targetNoteId = target.hash.substr(1);
-		return document.querySelector("#" + targetNoteId);
-    },
-    noteForTarget: (target) => {
-		let targetNote = Extracts.noteAssociatedWithTarget(target);
-		if (!targetNote)
-			return null;
-
-		return `<div>${targetNote.innerHTML}</div>`;
-    },
 
 	//  Context surrounding a citation (displayed on footnote-back links).
     isCitationBackLink: (target) => {
@@ -323,7 +344,11 @@ Extracts = {
 
         let targetElement = document.querySelector(target.getAttribute('href'));
         let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
-		let sectionEmbedHTML = (nearestBlockElement.tagName == "SECTION") ? nearestBlockElement.innerHTML : nearestBlockElement.outerHTML;
+
+		//  Unwrap sections and {foot|side}notes from their containers.
+		let sectionEmbedHTML = (nearestBlockElement.tagName == "SECTION" || target.classList.contains("footnote-ref")) 
+								? nearestBlockElement.innerHTML 
+								: nearestBlockElement.outerHTML;
 
         return `<div>${sectionEmbedHTML}</div>`;
     },
@@ -394,6 +419,14 @@ Extracts = {
 
 		return `<div></div>`;
     },
+
+	//  Other websites.
+	isForeignSiteLink: (target) => {
+		return target.href.match(/^https:\/\/(www\.)?(less|greater)wrong\.com\/posts/) != null;
+	},
+	foreignSiteForTarget: (target) => {
+		return `<div><iframe src="${target.href.replace('lesswrong.com', 'greaterwrong.com')}?format=preview&theme=classic" frameborder="0" allowfullscreen sandbox></iframe></div>`;
+	},
 
 	//  Locally hosted images.
     isLocalImageLink: (target) => {
@@ -469,71 +502,11 @@ Extracts = {
 		});
 
 		return `<div></div>`;
-    },
+    },	
 
 	/**********/
 	/*	Popins.
 		*/
-    fillPopin: (popin, target) => {
-		GWLog("Extracts.fillPopin", "extracts.js", 2);
-
-		//  Inject the contents of the popin into the popin div.
-		if (Extracts.isVideoLink(target)) {
-			//  Videos (both local and remote).
-			popin.innerHTML = Extracts.videoForTarget(target);
-			popin.classList.add("video-popin", "object-popin");
-		} else if (target.classList.contains("footnote-ref")) {
-			//  Citations.
-			if (!target.hash)
-				return false;
-
-			//  This could be a footnote, or a sidenote!
-			let targetNoteId = target.hash.substr(1);
-			let targetNote = document.querySelector("#" + targetNoteId);
-			if (!targetNote)
-				return false;
-
-			popin.innerHTML = `<div>${targetNote.innerHTML}</div>`;
-			popin.targetNote = targetNote;
-			popin.classList.add("footnote-popin");
-		} else if (target.classList.contains("footnote-back")) {
-			//  There are no citation-context popins.
-			return false;
-		} else if (target.tagName == "A" && target.getAttribute("href").startsWith("#")) {
-			//  There are no section embed popins.
-			return false;
-		} else if (Extracts.isExternalSectionLink(target)) {
-			//  Identified sections of another page on gwern.net.
-			popin.innerHTML = Extracts.externalSectionEmbedForTarget(target);
-			popin.classList.add("external-section-embed-popin");
-		} else if (Extracts.isLocalImageLink(target)) {
-			//  Locally hosted images.
-			popin.innerHTML = Extracts.localImageForTarget(target);
-			popin.classList.add("image-popin", "object-popin");
-		} else if (target.classList.contains("docMetadata")) {
-			//  Summaries of links to elsewhere.
-			popin.innerHTML = Extracts.extractForTarget(target);
-		} else if (target.classList.contains("defnMetadata")) {
-			//  Definitions.
-			popin.innerHTML = Extracts.definitionForTarget(target);
-			popin.classList.add("definition-popin");
-		} else if (Extracts.isLocalDocumentLink(target)) {
-			//  Locally hosted documents (html, pdf, etc.).
-			popin.innerHTML = Extracts.localDocumentForTarget(target);
-			popin.classList.add("local-document-popin", "object-popin");
-		} else if (Extracts.isLocalCodeFileLink(target)) {
-			//  Locally hosted code files (css, js, hs, etc.).
-			popin.innerHTML = Extracts.localCodeFileForTarget(target);
-			popin.classList.add("local-code-file-popin", "object-popin");
-		}
-
-		if (popin.childElementCount != 0) {
-			return true;
-		} else {
-			GWLog("Unable to fill popin!", "extracts.js", 1);
-			return false;
-		}
-    },
     preparePopin: (popin, target) => {
 		GWLog("Extracts.preparePopin", "extracts.js", 2);
 
@@ -541,7 +514,19 @@ Extracts = {
 		popin.classList.add(...target.classList, "extract-popin");
 
 		//	Inject the extract for the target into the popin.
-		if (Extracts.fillPopin(popin, target) == false)
+		if (Extracts.fillPopElement(popin, target, [
+			[ "isVideoLink", 			"videoForTarget", 					"video-popin object-popin" 				],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
+			[ "isCitationBackLink", 	null, 								null					 				],
+			[ "isInternalSectionLink",	null,					 			null				 					],
+			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popin"			],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
+			[ "isExtractLink", 			"extractForTarget", 				null 										],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
+// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
+			]) == false)
 			return false;
 
 		//  Ensure no reflow due to figures.
@@ -550,7 +535,8 @@ Extracts = {
 		});
 
 		//  Qualify internal links in extracts.
-		if (popin.classList.contains("docMetadata") && target.getAttribute("href").startsWith("/"))
+		if (   Extracts.isExtractLink(target) 
+			&& target.getAttribute("href").startsWith("/"))
 			Extracts.qualifyLinksInPopContent(popin, target);
 
 		return true;
@@ -593,39 +579,6 @@ Extracts = {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	},
-    fillPopup: (popup, target) => {
-		GWLog("Extracts.fillPopup", "extracts.js", 2);
-
-		let possiblePopupTypes = [
-			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
-			[ "isCitation", 			"noteForTarget", 					"footnote-popup" 						],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
-			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
-			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
-			[ "isExtractLink", 			"extractForTarget", 				"" 										],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				]
-		];
-
-		for ([ testMethodName, fillMethodName, classes ] of possiblePopupTypes) {
-			if (   Extracts[fillMethodName] != null
-				&& Extracts[testMethodName](target)) {
-				popup.innerHTML = Extracts[fillMethodName](target);
-				if (classes > "")
-					popup.classList.add(...(classes.split(" ")));
-				break;
-			}
-		}
-
-		if (popup.childElementCount != 0) {
-			return true;
-		} else {
-			GWLog("Unable to fill popup!", "extracts.js", 1);
-			return false;
-		}
-    },
     preparePopup: (popup, target) => {
 		GWLog("Extracts.preparePopup", "extracts.js", 2);
 
@@ -635,14 +588,26 @@ Extracts = {
 		popup.classList.remove("has-annotation", "has-content", "spawns-popup");
 
 		//	Inject the extract for the target into the popup.
-		if (Extracts.fillPopup(popup, target) == false)
+		if (Extracts.fillPopElement(popup, target, [
+			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
+			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
+			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
+			[ "isExtractLink", 			"extractForTarget", 				null 										],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
+// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
+			]) == false)
 			return false;
 
 		if (Extracts.isCitation(target)) {
 			//  Do not spawn footnote popup if sidenote is visible.
 			if (   GW.sidenotes != null
 				&& !GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches
-				&& isOnScreen(Extracts.noteAssociatedWithTarget(target)))
+				&& isOnScreen(document.querySelector(target.hash)))
 				return false;
 
 			/*  Add event listeners to highlight citation when its footnote
@@ -733,7 +698,8 @@ Extracts = {
 		}
 
 		//  Loading spinners.
-		if (Extracts.isLocalDocumentLink(target)) {
+		if (   Extracts.isLocalDocumentLink(target)
+			|| Extracts.isForeignSiteLink(target)) {
 			popup.classList.toggle("loading", true);
 			popup.querySelector("iframe, object").onload = (event) => {
 				popup.classList.toggle("loading", false);
