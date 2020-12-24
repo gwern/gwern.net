@@ -3203,6 +3203,15 @@ body.directory-index #disqus_thread {
     opacity: 1.0;
 }
 
+/*********************/
+/* LINK BIBLIOGRAPHY */
+/*********************/
+
+#link-bibliography > ul,
+#link-bibliography > ul > li:last-child > blockquote {
+    margin-bottom: 0;
+}
+
 /**********/
 /* POPINS */
 /**********/

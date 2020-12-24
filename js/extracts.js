@@ -24,7 +24,8 @@ Extracts = {
 	/*	Config.
 		*/
 	contentContainersSelector: "#markdownBody, #TOC",
-	referenceLinkContainerSelector: "#link-bibliography",
+	referenceElementContainerSelector: "#link-bibliography",
+	referenceElementEntrySelectorPrefix: "#link-bibliography > ul > li > p:first-child",
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     imageFileExtensions: Extracts.imageFileExtensions,
     codeFileExtensions: Extracts.codeFileExtensions,
@@ -96,7 +97,7 @@ Extracts = {
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
-		Extracts.referenceLinkContainer = document.querySelector(Extracts.referenceLinkContainerSelector);
+		Extracts.referenceElementContainer = document.querySelector(Extracts.referenceElementContainerSelector);
 
 		//  Shared target prepare function (for both mobile and non-mobile).
 		let sharedPrepareTarget = (target) => {
@@ -210,7 +211,7 @@ Extracts = {
 	},
 
 	//  Reference links, for extracts and definitions.
-	referenceLinkContainer: null,
+	referenceElementContainer: null,
 
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
@@ -219,19 +220,20 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-		let referenceLinkElement = Extracts.referenceLinkContainer.querySelector(`a[href='${target.getAttribute("href")}']`);
-		let referenceLinkListEntry = referenceLinkElement.closest("li");
+		let referenceElement = Extracts.referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
+								`a[href='${target.getAttribute("href")}']`);
+		let referenceListEntry = referenceElement.closest("li");
 
-		let titleHTML = referenceLinkElement.innerHTML;
-		let titleText = referenceLinkElement.textContent;
-		let abstractHTML = referenceLinkListEntry.querySelector("blockquote").innerHTML;
+		let titleHTML = referenceElement.innerHTML;
+		let titleText = referenceElement.textContent;
+		let abstractHTML = referenceListEntry.querySelector("blockquote").innerHTML;
 
 		//  Link to original URL (for archive links) or link to archive (for live links).
         var archiveOrOriginalLinkHTML = "";
-        if (   referenceLinkElement.dataset.urlOriginal != undefined 
-        	&& referenceLinkElement.dataset.urlOriginal != target.href) {
+        if (   referenceElement.dataset.urlOriginal != undefined 
+        	&& referenceElement.dataset.urlOriginal != target.href) {
             archiveOrOriginalLinkHTML = (`<span class="originalURL"><code>` + "[" + 
-            		   `<a href="${referenceLinkElement.dataset.urlOriginal}" target="_new" 
+            		   `<a href="${referenceElement.dataset.urlOriginal}" target="_new" 
                        		title="Link to original URL for ‘${titleText}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
                        "URL" + `</a>` + "]" + `</code></span>`);
@@ -246,13 +248,13 @@ Extracts = {
 		let titleLinkHTML = `<a class="title-link" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${titleHTML}</a>`;
 
 		//	Author.
-		let authorElement = referenceLinkListEntry.querySelector(".author");
+		let authorElement = referenceListEntry.querySelector(".author");
 		let authorHTML = (authorElement ? `<span class="data-field author">${(authorElement.textContent || "")}</span>` : ``);
 
 		//  Link to citations on Google Scholar, or link to search for links on Google.
         var citationsOrLinks = "";
-        if (referenceLinkElement.dataset.doi != undefined) {
-            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${referenceLinkElement.dataset.doi}%22+OR+%22${titleText}%22" target="_new" title="Reverse citations of this paper (‘${titleText}’), with DOI ‘${referenceLinkElement.dataset.doi}’, in Google Scholar">` + "cites" + `</a>`;
+        if (referenceElement.dataset.doi != undefined) {
+            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${referenceElement.dataset.doi}%22+OR+%22${titleText}%22" target="_new" title="Reverse citations of this paper (‘${titleText}’), with DOI ‘${referenceElement.dataset.doi}’, in Google Scholar">` + "cites" + `</a>`;
         } else if (target.href.includesAnyOf([ "pdf", "https://arxiv.org", "https://openreview.net", "ieee.org", "rand.org", "dspace.mit.edu", "thegradient.pub", "inkandswitch.com", "nature.com", "sciencemag.org" ])) {
             /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
             citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${titleText}%22" target='_new' title="Reverse citations of this paper (‘${titleText}’) in Google Scholar">` + "cites" + `</a>`;
@@ -261,7 +263,7 @@ Extracts = {
         }
 
 		//	Date; citations/links.
-		let dateElement = referenceLinkListEntry.querySelector(".date");
+		let dateElement = referenceListEntry.querySelector(".date");
 		let dateAndCitationsOrLinksHTML = (dateElement ? ` <span class="date-plus-cites">(<span class="data-field date">${dateElement.textContent}</span>${citationsOrLinks})</span>` : ``);
 
 		//  The fully constructed extract popup contents.
@@ -279,17 +281,24 @@ Extracts = {
     definitionForTarget: (target) => {
 		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-		//  Title and abstract are mandatory.
-		if (!target.dataset.popupTitleHtml || !target.dataset.popupAbstract)
-			return null;
+		let referenceElement = Extracts.referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
+								`span[data-original-definition-id='${target.dataset.originalDefinitionId}']`);
+		let referenceListEntry = referenceElement.closest("li");
 
-		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`
-		let date = (target.dataset.popupDate ? ` (${target.dataset.popupDate})` : ``);
+		let titleHTML = referenceElement.innerHTML;
+		let titleText = referenceElement.textContent;
+		let abstractHTML = referenceListEntry.querySelector("blockquote").innerHTML;
+
+		let authorElement = referenceListEntry.querySelector(".author");
+		let authorHTML = (authorElement ? `<span class="data-field author">${(authorElement.textContent || "")}</span>` : ``);
+
+		let dateElement = referenceListEntry.querySelector(".date");
+		let dateHTML = (dateElement ? ` (${dateElement.textContent})` : ``);
 
         return `<div>` +
-        		   `<p class="data-field title">${target.dataset.popupTitleHtml}</p>` +
-        		   `<p class="data-field author-plus-date">${author}${date}</p>` +
-        		   `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
+        		   `<p class="data-field title">${titleHTML}</p>` +
+        		   `<p class="data-field author-plus-date">${authorHTML}${dateHTML}</p>` +
+        		   `<div class="data-field popupAbstract">${abstractHTML}</div>` +
         	   `</div>`;
     },
 
@@ -422,6 +431,9 @@ Extracts = {
 
 	//  Other websites.
 	isForeignSiteLink: (target) => {
+    	if (target.tagName != "A")
+    		return false;
+
 		return target.href.match(/^https:\/\/(www\.)?(less|greater)wrong\.com\/posts/) != null;
 	},
 	foreignSiteForTarget: (target) => {
