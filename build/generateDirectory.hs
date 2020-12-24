@@ -10,7 +10,7 @@ import System.Environment (getArgs)
 import System.FilePath (takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BlockQuote, BulletList, RawBlock, Para), Format(..), Inline(Space, Str, Code, Link, RawInline), Pandoc(Pandoc))
-import qualified Data.Map as M (lookup)
+import qualified Data.Map as M (lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
 
@@ -61,9 +61,18 @@ generateYAMLHeader d tdy = "---\n" ++
 listFiles :: Metadata -> FilePath -> IO [(FilePath, Maybe LinkMetadata.MetadataItem)]
 listFiles m d = do files <- listDirectory d
                    let files'          = map (\f -> "/"++d++f) $ (sort . filter (not . isSuffixOf ".tar") .  filter (/="index.page")) files
-                   let fileAnnotations = map (`M.lookup` m) files'
-                   return $ zip files' fileAnnotations
+                   let fileAnnotations = map (lookupFallback m) files'
+                   return fileAnnotations
 
+-- how do we handle files with appended data, like '/docs/rl/2020-bellemare.pdf#google'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
+lookupFallback :: Metadata -> String -> (FilePath, Maybe LinkMetadata.MetadataItem)
+lookupFallback m u = case M.lookup u m of
+                       Nothing -> tryPrefix
+                       Just ("","","","","") -> tryPrefix
+                       Just i -> (u, Just i)
+                       where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
+                                           if M.size possibles > 0 then (fst $ head $ M.toList possibles, Just $ snd $ head $ M.toList possibles) else
+                                             (u, Nothing)
 generateListItems :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
