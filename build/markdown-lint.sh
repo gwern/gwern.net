@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-12-21 18:26:58 gwern"
+# When:  Time-stamp: "2020-12-24 09:59:35 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -45,7 +45,8 @@ do
                  -e 'dlcs.io/' -e 'centerforcollegeaffordability.org' -e 'quora.com' -e 'times-news.com' -e 'www.cebp.nl' \
                  -e '#filmtv' -e 'nybooks.com' -e '<div id="columns">' -e 'http://slatestarcodex.com' -e 'annualreviews.org' \
                  -e 'dspace.mit.edu' -e 'shirky.com' -e '](http://www.nzherald.co.nz)' -e 'https://www.arxiv.org' -e 'http://arxiv.org' \
-                 -e 'http://www.arxiv.org' -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id=' -e 'http://myanimelist.net' -e 'cloudfront.net' -- "$PAGE";
+                 -e 'http://www.arxiv.org' -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id=' -e 'http://myanimelist.net' \
+                 -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' -- "$PAGE";
            egp -e 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- "$PAGE";}
         wrap λ "find bad URLS, unacceptable/unreliable/risky domains, malformed syntax, unmatched apostrophes"
 
