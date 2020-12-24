@@ -601,19 +601,19 @@ ul ul ul ul ul ul > li::before {
 /*=-----------------------=*/
 /*= Numbered list markers =*/
 /*=-----------------------=*/
-ol > li,
-ol ol ol ol > li {
+ol,
+ol ol ol ol {
     list-style-type: decimal;
 }
 ol li::marker {
     font-feature-settings: 'onum';
 }
-ol ol > li,
-ol ol ol ol ol > li {
+ol ol,
+ol ol ol ol ol {
     list-style-type: upper-roman;
 }
-ol ol ol > li,
-ol ol ol ol ol ol > li {
+ol ol ol,
+ol ol ol ol ol ol {
     list-style-type: lower-alpha;
 }
 
