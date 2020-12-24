@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-22 16:23:18 gwern"
+When: Time-stamp: "2020-12-23 22:36:28 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -68,7 +68,7 @@ import qualified Data.Text as T
 -- local custom modules:
 -- import Definition -- (dictionary)
 import Inflation (nominalToRealInflationAdjuster)
-import LinkMetadata (readLinkMetadata, annotateLink, Metadata)
+import LinkMetadata -- (readLinkMetadata, annotateLink, Metadata)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography
 
@@ -78,7 +78,7 @@ main = hakyll $ do
 
              -- popup metadata:
              preprocess $ print ("Popups parsing..." :: String)
-             meta <- preprocess readLinkMetadata
+             meta <- preprocess readLinkMetadataOnce
 
              preprocess $ print ("Local archives parsing..." :: String)
              archive <- preprocess readArchiveMetadata
@@ -239,7 +239,9 @@ postCtx tags =
 -- pandocTransform md adb dict = walkM (\x -> annotateLink md x >>= localizeLink adb) . walk smallcapsfy . walk headerSelflink . annotateFirstDefinitions . walkInlineM (defineAbbreviations dict) . bottomUp mergeSpaces . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md adb = walkM (\x -> annotateLink md x >>= localizeLink adb >>= imageSrcset >>= invertImageInline) . typographyTransform . walk headerSelflink . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
+pandocTransform md adb p = do let p' = typographyTransform . walk headerSelflink . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate)) $ p
+                              p'' <- generateLinkBibliography md p'
+                              walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) p''
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
@@ -320,7 +322,7 @@ staticImg (TagOpen "img" xs) |
     -- No images should be more than a screen in height either, so we'll set a maximum of 1400
     let width' =  show ((read width::Int) `min` 1400)
     let height' = show ((read height::Int) `min` 1400)
-    return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load all images (upcoming feature in Chrome)
+    return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load all images
                                    ("height", height'), ("width", width')]++xs)))
   where uniq = nub . sort
 staticImg x = return x

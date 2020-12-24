@@ -165,7 +165,7 @@ invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
                                        let p'' = if head p' == '/' then tail p' else p'
                                        (color,_,_) <- invertImage p''
                                        if not color || notInvertibleP classes then return x else
-                                         return (Image (htmlid, "invertible-auto":classes, kvs) xs (p,t))
+                                         return (Image (htmlid, "invertible-auto":classes, kvs++[("loading","lazy")]) xs (p,t))
 invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) = if not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then
                                                           return x else
                                                             do let p' = T.unpack p
