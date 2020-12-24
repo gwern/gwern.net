@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-23 16:44:47 gwern"
+When:  Time-stamp: "2020-12-23 22:02:53 gwern"
 License: CC-0
 -}
 
@@ -26,7 +26,7 @@ import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
-                    queryWith, nullAttr, Inline(Str, Code, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, Header, BulletList, BlockQuote))
+                    queryWith, nullAttr, Inline(Str, Code, RawInline, Space), Pandoc(..), Format(..), Block(Div, RawBlock, Para, Header, BulletList, BlockQuote))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
@@ -73,9 +73,19 @@ readLinkMetadataOnce = do
 
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
 generateLinkBibliography md (Pandoc meta doc) = do let links = collectLinks doc
+                                                   let doc' = walk (hasAnnotation md) doc
                                                    let sectionContents = recurseList md links
                                                    sectionContents' <- return sectionContents -- walkM (annotateLink  md) sectionContents :: IO [Block]
-                                                   return (Pandoc meta (doc++sectionContents'))
+                                                   return (Pandoc meta (doc'++sectionContents'))
+
+hasAnnotation :: Metadata -> Inline -> Inline
+hasAnnotation md x@(Link (a,b,c) e (f,g)) = case M.lookup (linkCanonicalize $ T.unpack f) md of
+                                                Nothing -> x
+                                                Just ("", "", "", "", "") -> x
+                                                Just _ -> let annotationOrDefinition = if T.head f == '?' then "defnMetadata" else "docMetadata" in
+                                                            (Link (a,b++[annotationOrDefinition, "linkBibliography-has-annotation"],c) e (f,g))
+hasAnnotation md x = x
+
 
 -- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
 recurseList :: Metadata -> [String] -> [Block]
@@ -86,19 +96,20 @@ recurseList md links = Debug.Trace.trace (unlines links) $ if (sort $ uniq links
                              sectionContents = [BulletList (map (generateListItems md) pairs)] :: [Block]
                              finalLinks = collectLinks sectionContents
 
-
 generateListItems :: Metadata -> (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateListItems md (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
-                              Just (tle,aut,dt,_,abst) -> let lid = (generateID f aut dt) `T.append` (T.pack "-linkBibliography") in
-                                                              [Para [unsafePerformIO(annotateLink md(Link (lid,["linkBibliography-annotated"],[]) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""))),
-                                                                  Str ",", Space, Str (T.pack aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
+                              Just (tle,aut,dt,doi,abst) -> let lid = (generateID f aut dt) `T.append` (T.pack "-linkBibliography") in
+                                                            let author = Span ("", ["author"], []) [Str (T.pack aut)] in
+                                                              let date = Span ("", ["date"], []) [Str (T.pack dt)] in
+                                                              [Para [Link (lid, ["docMetadata", "linkBibliography-annotated"], [("popup-doi",T.pack doi)]) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),
+                                                                  Str ",", Space, author, Space, date, Str ":"],
                                                            BlockQuote [RawBlock (Format "html") (T.pack abst)]
                                                            ]
                              where
                                nonAnnotatedLink :: [Block]
-                               nonAnnotatedLink = [Para [Link ("",["linkBibliography-null"],[]) [Code nullAttr (T.pack f)] (T.pack f, "")]]
+                               nonAnnotatedLink = [Para [Link ("",["linkBibliography-null"],[]) [Str (T.pack f)] (T.pack f, "")]]
 
 
 collectLinks :: [Block] -> [String]
