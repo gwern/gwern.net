@@ -23,6 +23,7 @@ Extracts = {
 	/*	Config.
 		*/
 	contentContainersSelector: "#markdownBody, #TOC",
+	referenceLinkContainerSelector: "#link-bibliography",
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     imageFileExtensions: Extracts.imageFileExtensions,
     codeFileExtensions: Extracts.codeFileExtensions,
@@ -33,7 +34,7 @@ Extracts = {
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", ")
 			].join(", "),
 		excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
-		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
+		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6, #link-bibliography li > p:first-child"
     },
 
 	/***********/
@@ -91,6 +92,8 @@ Extracts = {
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
+
+		Extracts.referenceLinkContainer = document.querySelector(Extracts.referenceLinkContainerSelector);
 
 		//  Shared target prepare function (for both mobile and non-mobile).
 		let sharedPrepareTarget = (target) => {
@@ -201,6 +204,9 @@ Extracts = {
 		}
 	},
 
+	//  Reference links, for extracts and definitions.
+	referenceLinkContainer: null,
+
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
 		return target.classList.contains("docMetadata");
@@ -208,51 +214,56 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-		//  Title and abstract are mandatory.
-		if (!target.dataset.popupTitleHtml || !target.dataset.popupAbstract)
-			return null;
+		let referenceLinkElement = Extracts.referenceLinkContainer.querySelector(`a[href='${target.getAttribute("href")}']`);
+		let referenceLinkListEntry = referenceLinkElement.closest("li");
+
+		let titleHTML = referenceLinkElement.innerHTML;
+		let titleText = referenceLinkElement.textContent;
+		let abstractHTML = referenceLinkListEntry.querySelector("blockquote").innerHTML;
 
 		//  Link to original URL (for archive links) or link to archive (for live links).
-        var archiveOrOriginalLink = "";
-        if (   target.dataset.urlOriginal != undefined 
-        	&& target.dataset.urlOriginal != target.href) {
-            archiveOrOriginalLink = (`<span class="originalURL"><code>` + "[" + 
-            		   `<a href="${target.dataset.urlOriginal}" target="_new" 
-                       		title="Link to original URL for ‘${target.dataset.popupTitle}’" 
+        var archiveOrOriginalLinkHTML = "";
+        if (   referenceLinkElement.dataset.urlOriginal != undefined 
+        	&& referenceLinkElement.dataset.urlOriginal != target.href) {
+            archiveOrOriginalLinkHTML = (`<span class="originalURL"><code>` + "[" + 
+            		   `<a href="${referenceLinkElement.dataset.urlOriginal}" target="_new" 
+                       		title="Link to original URL for ‘${titleText}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
                        "URL" + `</a>` + "]" + `</code></span>`);
         } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
-			archiveOrOriginalLink = (`<span class="iaMirror">` +
-					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${target.dataset.popupTitle}’)" 
+			archiveOrOriginalLinkHTML = (`<span class="iaMirror">` +
+					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${titleText}’)" 
 					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" target="_new">` +
 					   `</a></span>`);
         }
 
 		//  Extract title/link.
-		let titleLink = `<a class="title-link" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${target.dataset.popupTitleHtml}</a>`;
+		let titleLinkHTML = `<a class="title-link" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${titleHTML}</a>`;
 
 		//	Author.
-		let author = `<span class="data-field author">${(target.dataset.popupAuthor || "")}</span>`;
+		let authorElement = referenceLinkListEntry.querySelector(".author");
+		let authorHTML = (authorElement ? `<span class="data-field author">${(authorElement.textContent || "")}</span>` : ``);
 
 		//  Link to citations on Google Scholar, or link to search for links on Google.
         var citationsOrLinks = "";
-        if (target.dataset.popupDoi != undefined) {
-            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupDoi}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Reverse citations of this paper (‘${target.dataset.popupTitle}’), with DOI ‘${target.dataset.popupDoi}’, in Google Scholar">` + "cites" + `</a>`;
+        if (referenceLinkElement.dataset.doi != undefined) {
+            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${referenceLinkElement.dataset.doi}%22+OR+%22${titleText}%22" target="_new" title="Reverse citations of this paper (‘${titleText}’), with DOI ‘${referenceLinkElement.dataset.doi}’, in Google Scholar">` + "cites" + `</a>`;
         } else if (target.href.includesAnyOf([ "pdf", "https://arxiv.org", "https://openreview.net", "ieee.org", "rand.org", "dspace.mit.edu", "thegradient.pub", "inkandswitch.com", "nature.com", "sciencemag.org" ])) {
             /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
-            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${target.dataset.popupTitle}%22" target='_new' title="Reverse citations of this paper (‘${target.dataset.popupTitle}’) in Google Scholar">` + "cites" + `</a>`;
+            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${titleText}%22" target='_new' title="Reverse citations of this paper (‘${titleText}’) in Google Scholar">` + "cites" + `</a>`;
         } else if (!target.href.startsWith("https://en.wikipedia.org")) {
-            citationsOrLinks = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${target.dataset.popupTitle}%22" target="_new" title="Links to this page (‘${target.dataset.popupTitle}’) in Google">` + "links" + `</a>`;
+            citationsOrLinks = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${titleText}%22" target="_new" title="Links to this page (‘${titleText}’) in Google">` + "links" + `</a>`;
         }
 
 		//	Date; citations/links.
-		let dateAndCitationsOrLinks = (target.dataset.popupDate ? ` <span class="date-plus-cites">(<span class="data-field date">${target.dataset.popupDate}</span>${citationsOrLinks})</span>` : ``);
+		let dateElement = referenceLinkListEntry.querySelector(".date");
+		let dateAndCitationsOrLinksHTML = (dateElement ? ` <span class="date-plus-cites">(<span class="data-field date">${dateElement.textContent}</span>${citationsOrLinks})</span>` : ``);
 
 		//  The fully constructed extract popup contents.
         return `<div>` +
-                   `<p class="data-field title">${archiveOrOriginalLink}${titleLink}</p>` +
-                   `<p class="data-field author-plus-date">${author}${dateAndCitationsOrLinks}</p>` +
-                   `<div class="data-field popupAbstract">${target.dataset.popupAbstract}</div>` +
+                   `<p class="data-field title">${archiveOrOriginalLinkHTML}${titleLinkHTML}</p>` +
+                   `<p class="data-field author-plus-date">${authorHTML}${dateAndCitationsOrLinksHTML}</p>` +
+                   `<div class="data-field popupAbstract">${abstractHTML}</div>` +
                `</div>`;
     },
 

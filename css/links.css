@@ -60,13 +60,17 @@
             linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
     }
     body.index a.docMetadata,
-    body.index span.defnMetadata {
+    body.index span.defnMetadata,
+    #link-bibliography li > p:first-child a.docMetadata,
+    #link-bibliography li > p:first-child span.defnMetadata {
         margin: 0;
         padding: 0;
         position: static;
     }
     body.index a.docMetadata::before,
-    body.index span.defnMetadata::before {
+    body.index span.defnMetadata::before,
+    #link-bibliography li > p:first-child a.docMetadata::before,
+    #link-bibliography li > p:first-child span.defnMetadata::before {
         content: none;
     }
 }
