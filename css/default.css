@@ -1025,6 +1025,7 @@ section.footnotes > ol > li::after {
 
 section.footnotes > hr:first-child {
 	position: relative;
+    margin: 1.75em 0 1.375em 0;
 }
 section.footnotes > hr:first-child::after {
 	content: "";
@@ -1558,7 +1559,7 @@ pre {
 }
 pre code {
     display: block;
-    padding: 8px 14px;
+    padding: 0.4rem 0.7rem;
     margin: 0;
     border: none;
     background-color: transparent;
