@@ -455,8 +455,9 @@ Extracts = {
     isLocalDocumentLink: (target) => {
 	    return (   target.tagName == "A" 
 	    		&& (   target.getAttribute("href").startsWith("/docs/www/")
-	    			|| target.href.match(/\.html(#|$)/) != null
-	    			|| target.href.match(/\.pdf(#|$)/) != null));
+	    			|| (target.getAttribute("href").startsWith("/docs/")
+	    			    && (   target.href.match(/\.html(#|$)/) != null
+	    			        || target.href.match(/\.pdf(#|$)/) != null))));
     },
     localDocumentForTarget: (target) => {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
