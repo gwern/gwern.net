@@ -3238,6 +3238,13 @@ body.directory-index #disqus_thread {
 	padding: 0 0.75em 0 1.75em;
     overflow: visible;
 }
+#link-bibliography > ol > li::marker {
+    font-weight: 600;
+}
+
+#link-bibliography > ol > li > blockquote {
+    margin-bottom: 1em;
+}
 
 #link-bibliography > ol,
 #link-bibliography > ol > li:last-child > blockquote {
