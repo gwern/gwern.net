@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-12-20 20:56:38 gwern"
+When:  Time-stamp: "2020-12-25 12:13:47 gwern"
 License: CC-0
 -}
 
@@ -73,7 +73,7 @@ localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescri
          let targetDescription' = T.unpack targetDescription ++ padding ++ "(Original URL: " ++ T.unpack targetURL ++ " )"
          -- specify that the rewritten links are mirrors & to be ignored:
          let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original",targetURL)]
-         let archivedLink = Link (identifier, classes, pairs++archiveAttributes) b (T.pack targetURL', (T.pack targetDescription'))
+         let archivedLink = Link (identifier, classes++["localArchive"], pairs++archiveAttributes) b (T.pack targetURL', (T.pack targetDescription'))
          return archivedLink
 localizeLink _ x = return x
 
