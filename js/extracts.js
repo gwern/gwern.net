@@ -621,9 +621,7 @@ Extracts = {
 
 		if (Extracts.isCitation(target)) {
 			//  Do not spawn footnote popup if sidenote is visible.
-			if (   GW.sidenotes != null
-				&& !GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches
-				&& isOnScreen(document.querySelector(target.hash)))
+			if (isOnScreen(document.querySelector(target.hash)))
 				return false;
 
 			/*  Add event listeners to highlight citation when its footnote
