@@ -2846,6 +2846,9 @@ body.directory-index #disqus_thread {
 .extract-popup .iaMirror {
     padding-right: 0.3em;
 }
+.extract-popup .data-field.popupAbstract {
+    margin-top: 0.5em;
+}
 
 /*	TODO: remove this once popups inherit from main body styles.
 	*/
