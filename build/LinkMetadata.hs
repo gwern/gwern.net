@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-25 12:08:19 gwern"
+When:  Time-stamp: "2020-12-25 12:42:24 gwern"
 License: CC-0
 -}
 
@@ -26,7 +26,7 @@ import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
-                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote))
+                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote, Div))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
@@ -112,7 +112,9 @@ hasAnnotationInline _ _ x = x
 
 -- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
 recurseList :: Metadata -> [String] -> [Block]
-recurseList md links = if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++ sectionContents else recurseList md finalLinks
+recurseList md links = if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++
+  [Div ("link-bibliography-description", ["collapseSummary"], []) [Para [Str "Bibliography of page links in reading order (with annotations when available):"]]] ++
+  sectionContents else recurseList md finalLinks
                        where links' = nub links
                              linkAnnotations = map (`M.lookup` md) links'
                              pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
