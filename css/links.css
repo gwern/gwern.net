@@ -69,8 +69,8 @@
     }
     body.index a.docMetadata::before,
     body.index span.defnMetadata::before,
-    #link-bibliography li > p:first-child a.docMetadata::before,
-    #link-bibliography li > p:first-child span.defnMetadata::before {
+    #link-bibliography > ol > li > p:first-child a.docMetadata::before,
+    #link-bibliography > ol > li > p:first-child span.defnMetadata::before {
         content: none;
     }
 }

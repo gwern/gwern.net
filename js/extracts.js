@@ -14,19 +14,28 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 Extracts = {
+	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
+	unannotatedTargetSelectors: "a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/'], a.footnote-ref, a.footnote-back",
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf" ],
     qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ],
-    foreignSiteURLPrefixes: [ "http://", "https://", "http://www.", "https://www." ]
+    foreignSiteURLPrefixes: [ "http://", "https://", "http://www.", "https://www." ],
+	contentContainersSelector: "#markdownBody, #TOC",
+	referenceElementContainerSelector: "#link-bibliography",
+	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p:first-child",
+	excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
+	excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6"
 };
 
 Extracts = {
 	/**********/
 	/*	Config.
 		*/
-	contentContainersSelector: "#markdownBody, #TOC",
-	referenceElementContainerSelector: "#link-bibliography",
-	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p:first-child",
+	annotatedTargetSelectors: Extracts.annotatedTargetSelectors,
+	unannotatedTargetSelectors: Extracts.unannotatedTargetSelectors,
+	contentContainersSelector: Extracts.contentContainersSelector,
+	referenceElementContainerSelector: Extracts.referenceElementContainerSelector,
+	referenceElementEntrySelectorPrefix: Extracts.referenceElementEntrySelectorPrefix,
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     imageFileExtensions: Extracts.imageFileExtensions,
     codeFileExtensions: Extracts.codeFileExtensions,
@@ -34,13 +43,17 @@ Extracts = {
     foreignSiteURLPrefixes: Extracts.foreignSiteURLPrefixes,
     targets: {
 		targetElementsSelector: [
-			"a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/'], a.footnote-ref, a.footnote-back", 
+			Extracts.annotatedTargetSelectors.join(", "), 
+			Extracts.unannotatedTargetSelectors,
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.qualifyingForeignDomains.map(domain => Extracts.foreignSiteURLPrefixes.map(prefix => `a[href^='${prefix}${domain}']`).join(", ")).join(", ")
 			].join(", "),
-		excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
-		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6, #link-bibliography li > p:first-child"
+		excludedElementsSelector: Extracts.excludedElementsSelector,
+		excludedContainerElementsSelector: [ 
+			Extracts.excludedContainerElementsSelector, 
+			Extracts.annotatedTargetSelectors.map(selector => `${Extracts.referenceElementEntrySelectorPrefix} ${selector}`).join(", "),
+			].join(", ")
     },
 
 	/***********/
@@ -454,6 +467,7 @@ Extracts = {
 	//  Locally hosted documents (html, pdf, etc.).
     isLocalDocumentLink: (target) => {
 	    return (   target.tagName == "A" 
+	    		&& !Extracts.isExtractLink(target)
 	    		&& (   target.getAttribute("href").startsWith("/docs/www/")
 	    			|| (target.getAttribute("href").startsWith("/docs/")
 	    			    && (   target.href.match(/\.html(#|$)/) != null
