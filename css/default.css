@@ -2901,6 +2901,7 @@ body.directory-index #disqus_thread {
 	*/
 .extract-popup.image-popup {
     min-width: 64px;
+    height: unset;
 }
 .popupdiv.image-popup.loading::before {
     height: 2em;

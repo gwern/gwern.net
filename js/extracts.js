@@ -34,7 +34,7 @@ Extracts = {
     foreignSiteURLPrefixes: Extracts.foreignSiteURLPrefixes,
     targets: {
 		targetElementsSelector: [
-			"a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/www/'], a.footnote-ref, a.footnote-back", 
+			"a.docMetadata, span.defnMetadata, a[href*='youtube.com'], a[href*='youtu.be'], #TOC a, a[href^='#'], a[href^='/'][href*='#'], a[href^='/docs/'], a.footnote-ref, a.footnote-back", 
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='https://www.gwern.net/'][href$='${ext}']`).join(", "),
 			Extracts.qualifyingForeignDomains.map(domain => Extracts.foreignSiteURLPrefixes.map(prefix => `a[href^='${prefix}${domain}']`).join(", ")).join(", ")
@@ -96,12 +96,14 @@ Extracts = {
 
 		//  Shared target prepare function (for both mobile and non-mobile).
 		let sharedPrepareTarget = (target) => {
-			if (   Extracts.isVideoLink(target)
-				|| Extracts.isLocalImageLink(target)
-				|| Extracts.isLocalDocumentLink(target)
-				|| Extracts.isLocalCodeFileLink(target)
-				|| Extracts.isExternalSectionLink(target)
-// 				|| Extracts.isForeignSiteLink(target)
+			if (   !Extracts.isExtractLink(target)
+				&& (Extracts.isVideoLink(target)
+				 || Extracts.isLocalImageLink(target)
+				 || Extracts.isLocalDocumentLink(target)
+				 || Extracts.isLocalCodeFileLink(target)
+				 || Extracts.isExternalSectionLink(target)
+// 				 || Extracts.isForeignSiteLink(target)
+					)
 				) {
 				target.classList.toggle("has-content", true);
 			}
@@ -451,7 +453,9 @@ Extracts = {
 
 	//  Locally hosted documents (html, pdf, etc.).
     isLocalDocumentLink: (target) => {
-	    return (target.tagName == "A" && target.getAttribute("href").startsWith("/docs/www"));
+	    return (   target.tagName == "A" 
+	    		&& (   target.getAttribute("href").startsWith("/docs/www/")
+	    			|| target.href.match(/\.pdf(#|$)/) != null));
     },
     localDocumentForTarget: (target) => {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
