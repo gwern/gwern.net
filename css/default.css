@@ -3206,8 +3206,8 @@ body.directory-index #disqus_thread {
 #link-bibliography {
 	padding: 0.25em 0 1em 0;
 	margin-left: 0;
-	border-top: 1px solid #ccc;
-	border-bottom: 1px solid #ccc;
+	border-top: 1px solid var(--GW-link-bibliography-border-color);
+	border-bottom: 1px solid var(--GW-link-bibliography-border-color);
 }
 #link-bibliography:not(:target) > .disclosure-button::after {
 	top: calc(100% - 1.375em);
