@@ -118,7 +118,9 @@ function rectifyCodeBlockHeight(codeBlock) {
 function identifyFootnotesSection() {
 	GWLog("identifyFootnotesSection", "rewrite.js", 1);
 
-	document.querySelector("section.footnotes").id = "footnotes";
+	let footnotesSection = document.querySelector("section.footnotes");
+	if (footnotesSection)
+		footnotesSection.id = "footnotes";
 }
 window.addEventListener("DOMContentLoaded", () => {
 	identifyFootnotesSection();
