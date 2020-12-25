@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-25 14:25:11 gwern"
+When:  Time-stamp: "2020-12-25 16:17:21 gwern"
 License: CC-0
 -}
 
@@ -28,7 +28,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
                     queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote, Div))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, Text)
+import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, take, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeBaseName, takeFileName, takeExtension, splitPath)
@@ -134,6 +134,8 @@ generateListItems (f, ann) = case ann of
                                                                         else
                                                                                Link (lid, ["docMetadata", "linkBibliography-annotated"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
+                                                                    -- make sure every abstract is wrapped in paragraph tags for proper rendering:
+                                                                     let abst' = if (take 3 abst) == "<p>" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
                                                               [Para
                                                                 [link,
                                                                   Str ",", Space, author, Space, Str "(", date, Str ")", Str ":"],
