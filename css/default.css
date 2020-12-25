@@ -969,17 +969,16 @@ a.footnote-ref {
 /*=------------------------=*/
 
 .footnotes .footnote-back {
-    margin: 0 0 0 10px;
+    margin: 0 0 0 0.5em;
     position: relative;
     font-weight: bold;
-    line-height: 1;
+    line-height: 0.5;
     border: 1px dotted var(--GW-footnote-backlink-border-color);
     display: inline-block;
-    padding: 2px 3px 0 3px;
     text-indent: 0;
-    vertical-align: bottom;
-    bottom: 2px;
     z-index: 1;
+    top: 0.15em;
+    padding: 0.45em 0.2em 0.2em 0.2em;
 }
 #markdownBody .footnotes a.footnote-back {
     background-image: none;
