@@ -3227,6 +3227,7 @@ body.directory-index #disqus_thread {
 
 #link-bibliography > ol {
 	padding: 0 0.75em 0 1.75em;
+    overflow: visible;
 }
 
 #link-bibliography > ol,
