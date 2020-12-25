@@ -88,16 +88,6 @@ Extracts = {
 	/***********/
 	/*	General.
 		*/
-	isMobile: () => {
-		/*  We consider a client to be mobile if one of two conditions obtain:
-		    1. JavaScript detects touch capability, AND viewport is narrow; or,
-		    2. CSS does NOT detect hover capability.
-		    */
-// 		return true;
-		return (   (   ('ontouchstart' in document.documentElement)
-					&& GW.mediaQueries.mobileWidth.matches)
-				|| !GW.mediaQueries.hoverAvailable.matches);
-	},
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
@@ -107,7 +97,7 @@ Extracts = {
 			target.classList.toggle("has-annotation", false);
 		};
 
-		if (Extracts.isMobile()) {
+		if (GW.isMobile()) {
 			//  TEMPORARY!!
 			return;
 
@@ -151,7 +141,7 @@ Extracts = {
 			}
 		};
 
-        if (Extracts.isMobile()) {
+        if (GW.isMobile()) {
 			//  TEMPORARY!!
 			return;
 
@@ -779,7 +769,7 @@ Extracts = {
 doWhenPageLoaded(() => {
 	GW.notificationCenter.fireEvent("Extracts.didLoad");
 
-	let serviceProviderObjectName = Extracts.isMobile() ? "Popins" : "Popups";
+	let serviceProviderObjectName = GW.isMobile() ? "Popins" : "Popups";
 
 	if (window[serviceProviderObjectName])
 		Extracts.setup();

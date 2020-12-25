@@ -3,8 +3,6 @@
 /* License: GPL (derivative work of https://www.pmwiki.org/wiki/Cookbook/ImgFocus ) */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
-GW.isMobile = ('ontouchstart' in document.documentElement);
-
 /****************/
 /* MISC HELPERS */
 /****************/
@@ -32,6 +30,7 @@ function togglePageScrolling(enable) {
 function imageFocusSetup() {
 	if (typeof GW.imageFocus == "undefined")
 		GW.imageFocus = {
+			isMobile: ('ontouchstart' in document.documentElement),
 			contentImagesSelector:	"#markdownBody img",
 			focusedImageSelector:	"#markdownBody img.focused",
 			pageContentSelector:	"main",
@@ -56,7 +55,7 @@ function imageFocusSetup() {
 		GWLog("GW.imageClickedToFocus", "image-focus.js");
 		focusImage(event.target);
 
-		if (!GW.isMobile) {
+		if (!GW.imageFocus.isMobile) {
 			// Set timer to hide the image focus UI.
 			unhideImageFocusUI();
 			GW.imageFocus.hideUITimer = setTimeout(GW.imageFocus.hideUITimerExpired, GW.imageFocus.hideUITimerDuration);
@@ -546,7 +545,7 @@ function focusImageSpecifiedByURL() {
 			if (imageToFocus > 0 && imageToFocus <= images.length) {
 				focusImage(images[imageToFocus - 1]);
 
-				if (!GW.isMobile) {
+				if (!GW.imageFocus.isMobile) {
 					// Set timer to hide the image focus UI.
 					unhideImageFocusUI();
 					GW.imageFocus.hideUITimer = setTimeout(GW.imageFocus.hideUITimerExpired, GW.imageFocus.hideUITimerDuration);

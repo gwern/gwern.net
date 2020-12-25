@@ -13,6 +13,16 @@ GW.mediaQueries = {
     hoverAvailable:        matchMedia("only screen and (hover:hover) and (pointer:fine)")
 };
 
+GW.isMobile = () => {
+	/*  We consider a client to be mobile if one of two conditions obtain:
+		1. JavaScript detects touch capability, AND viewport is narrow; or,
+		2. CSS does NOT detect hover capability.
+		*/
+	return (   (   ('ontouchstart' in document.documentElement)
+				&& GW.mediaQueries.mobileWidth.matches)
+			|| !GW.mediaQueries.hoverAvailable.matches);
+};
+
 /********************/
 /* DEBUGGING OUTPUT */
 /********************/
