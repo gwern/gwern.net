@@ -1023,6 +1023,14 @@ section.footnotes > ol > li::after {
 	left: calc(-0.75em - 1px);
 }
 
+section.footnotes > ol > li:target::before,
+section.footnotes > ol > li:target::after,
+section.footnotes > ol > li.highlighted::before,
+section.footnotes > ol > li.highlighted::after {
+    border-style: solid;
+    border-color: var(--GW-footnote-highlighted-border-color);
+}
+
 section.footnotes > hr:first-child {
 	position: relative;
     margin: 1.75em 0 1.375em 0;
