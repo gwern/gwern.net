@@ -467,6 +467,7 @@ Extracts = {
 	//  Locally hosted documents (html, pdf, etc.).
     isLocalDocumentLink: (target) => {
 	    return (   target.tagName == "A" 
+	    		&& !Extracts.isExtractLink(target)
 	    		&& (   target.getAttribute("href").startsWith("/docs/www/")
 	    			|| (target.getAttribute("href").startsWith("/docs/")
 	    			    && (   target.href.match(/\.html(#|$)/) != null
