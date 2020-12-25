@@ -938,18 +938,20 @@ a.footnote-ref::before {
     left: calc(-0.25em - 3px);
     top: -3px;
     z-index: -1;
+    border-color: transparent;
+    border-style: double;
+    border-width: 3px;
     transition: 
         background-color 0.15s ease 0.05s,
-        border 0.15s ease 0.05s;
+        border-color 0.15s ease 0.05s;
 }
 a.footnote-ref.highlighted::before,
 a.footnote-ref:hover::before,
 a.footnote-ref:target::before,
 a.footnote-ref.targeted::before {
     background-color: var(--GW-footnote-ref-highlight-background-color);
-    border: 3px double var(--GW-footnote-ref-highlight-box-shadow-color);
+    border-color: var(--GW-footnote-ref-highlight-box-shadow-color);
     outline: none;
-    transition: none;
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
