@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-24 22:49:50 gwern"
+When:  Time-stamp: "2020-12-25 12:08:19 gwern"
 License: CC-0
 -}
 
@@ -26,12 +26,12 @@ import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
-                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(DefaultStyle), ListNumberDelim(DefaultDelim), Block(..)) -- Block(RawBlock, Para, Header, BulletList, BlockQuote))
+                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
-import System.FilePath (takeBaseName, takeFileName, takeExtension)
+import System.FilePath (takeBaseName, takeFileName, takeExtension, splitPath)
 import Data.List.Utils (replace, split, uniq)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
@@ -73,20 +73,22 @@ readLinkMetadataOnce = do
 
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
 generateLinkBibliography md (Pandoc meta doc) = do let links = collectLinks doc
-                                                   let sectionContents = recurseList md links
-                                                   sectionContents' <- return sectionContents -- walkM (annotateLink  md) sectionContents :: IO [Block]
-                                                   let doc' = Pandoc meta (doc++sectionContents')
-                                                   let doc'' = walk (hasAnnotation md) doc'
-                                                   return doc''
+                                                   let bibContents = recurseList md links
+                                                   bibContents' <- return bibContents -- walkM (annotateLink  md) bibContents :: IO [Block]
+                                                   -- now, annotate existing links with a class indicating if they can be popped up or not; but skip duplicate IDs while doing the link bibliography:
+                                                   let doc' = walk (hasAnnotation md True) doc
+                                                   let bibContents'' = walk (hasAnnotation md False) bibContents'
+                                                   let finalDoc = Pandoc meta (doc'++bibContents'')
+                                                   return finalDoc
 
 -- for links
-hasAnnotation :: Metadata -> Block -> Block
+hasAnnotation :: Metadata -> Bool -> Block -> Block
 -- goddamn it Pandoc, why can't you read the very HTML you just wrote‽
-hasAnnotation md x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` h) then x else
+hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` h) then x else
                                                   let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
                                                    case markdown of
                                                      Left e -> error (show x ++ ": " ++ show e)
-                                                     Right markdown' -> let p@(Pandoc _ blocks) = walk (hasAnnotation md) markdown' in
+                                                     Right markdown' -> let p@(Pandoc _ blocks) = walk (hasAnnotation md idp) markdown' in
                                                                           let p' = runPure $ do html <- writeHtml5String def{writerExtensions = pandocExtensions} p
                                                                                                 return $ RawBlock (Format "html") html
                                                                           in case p' of
@@ -95,32 +97,33 @@ hasAnnotation md x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` 
                                                                     -- case html of
                                                                     --   Right e -> error (show x ++ ": " ++ show e)
                                                                     --  Left html' -> return $ RawBlock (Format "html") html'
-hasAnnotation md x = walk (hasAnnotationInline md) x
-hasAnnotationInline md x@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated" `elem` b then x else
+hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
+hasAnnotationInline md idp x@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated" `elem` b then x else
                                               case M.lookup (linkCanonicalize $ T.unpack f) md of
                                                 Nothing                   -> x
                                                 Just ("", "", "", "", "") -> x
-                                                Just _ -> if T.head f == '?' then
-                                                  Span (a, nub (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
-                                                  Link (a, nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+                                                Just _ -> let a' = if idp then a else "" in -- erase link ID?
+                                                  if T.head f == '?' then
+                                                  Span (a', nub (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
+                                                  Link (a', nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
 
-hasAnnotationInline _ x = x
+hasAnnotationInline _ _ x = x
 
 
 -- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
 recurseList :: Metadata -> [String] -> [Block]
-recurseList md links = Debug.Trace.trace (unlines links) $ if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++ sectionContents else recurseList md finalLinks
+recurseList md links = if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++ sectionContents else recurseList md finalLinks
                        where links' = nub links
                              linkAnnotations = map (`M.lookup` md) links'
                              pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
-                             sectionContents = [OrderedList (1,DefaultStyle,DefaultDelim) (map generateListItems pairs)] :: [Block]
+                             sectionContents = [OrderedList (1,Decimal,Period) (map generateListItems pairs)] :: [Block]
                              finalLinks = collectLinks sectionContents
 
 generateListItems :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
-                              Just (tle,aut,dt,doi,abst) -> let lid = (generateID f aut dt) `T.append` (T.pack "-linkBibliography") in
+                              Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID `T.append` T.pack("-" ++ (last $ splitPath f)) in
                                                             let author = Span ("", ["author"], []) [Str (T.pack aut)] in
                                                               let date = Span ("", ["date"], []) [Str (T.pack dt)] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
