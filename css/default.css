@@ -1030,6 +1030,10 @@ section.footnotes > ol > li.highlighted::after {
     border-style: solid;
     border-color: var(--GW-footnote-highlighted-border-color);
 }
+section.footnotes > ol > li:target::after,
+section.footnotes > ol > li.highlighted::after {
+    border-width: 0 1px 0 0;
+}
 
 section.footnotes > hr:first-child {
 	position: relative;
