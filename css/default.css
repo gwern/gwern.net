@@ -969,17 +969,16 @@ a.footnote-ref {
 /*=------------------------=*/
 
 .footnotes .footnote-back {
-    margin: 0 0 0 10px;
+    margin: 0 0 0 0.5em;
     position: relative;
     font-weight: bold;
-    line-height: 1;
+    line-height: 0.5;
     border: 1px dotted var(--GW-footnote-backlink-border-color);
     display: inline-block;
-    padding: 2px 3px 0 3px;
     text-indent: 0;
-    vertical-align: bottom;
-    bottom: 2px;
     z-index: 1;
+    top: 0.15em;
+    padding: 0.45em 0.2em 0.2em 0.2em;
 }
 #markdownBody .footnotes a.footnote-back {
     background-image: none;
@@ -1016,7 +1015,6 @@ section.footnotes > ol > li::before {
 }
 section.footnotes > ol > li::before {
 	border: 1px dotted var(--GW-footnote-border-color);
-	border-right-width: 0;
 	width: 1.75em;
     height: 1.75em;
     line-height: 1;
@@ -1043,10 +1041,15 @@ section.footnotes > ol > li.highlighted::before,
 section.footnotes > ol > li.highlighted::after {
     border-style: solid;
     border-color: var(--GW-footnote-highlighted-border-color);
+    box-shadow:
+        0 0 0 1px var(--GW-body-background-color) inset,
+        0 0 0 2px var(--GW-footnote-highlighted-border-color) inset;
 }
 section.footnotes > ol > li:target::after,
 section.footnotes > ol > li.highlighted::after {
-    border-width: 0 1px 0 0;
+    border-width: 0 3px 0 0;
+    border-style: double;
+	left: calc(-0.75em - 3px);
 }
 
 section.footnotes > hr:first-child {
@@ -2913,6 +2916,9 @@ body.directory-index #disqus_thread {
 
 /*  Popups for videos.
     */
+.extract-popup.video-popup {
+	height: unset;
+}
 .extract-popup.video-popup iframe {
     width: 495px;
     height: 310px;
