@@ -26,7 +26,7 @@ Extracts = {
 		*/
 	contentContainersSelector: "#markdownBody, #TOC",
 	referenceElementContainerSelector: "#link-bibliography",
-	referenceElementEntrySelectorPrefix: "#link-bibliography > ul > li > p:first-child",
+	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p:first-child",
     // WARNING: selectors must not contain periods; Pandoc will generate section headers which contain periods in them, which will break the query selector; see https://github.com/jgm/pandoc/issues/6553
     imageFileExtensions: Extracts.imageFileExtensions,
     codeFileExtensions: Extracts.codeFileExtensions,

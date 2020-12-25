@@ -3221,12 +3221,12 @@ body.directory-index #disqus_thread {
 	margin-left: 0;
 }
 
-#link-bibliography > ul {
+#link-bibliography > ol {
 	padding: 0 0.75em 0 1.75em;
 }
 
-#link-bibliography > ul,
-#link-bibliography > ul > li:last-child > blockquote {
+#link-bibliography > ol,
+#link-bibliography > ol > li:last-child > blockquote {
     margin-bottom: 0;
 }
 
