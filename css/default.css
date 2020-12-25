@@ -3203,6 +3203,28 @@ body.directory-index #disqus_thread {
 /* LINK BIBLIOGRAPHY */
 /*********************/
 
+#link-bibliography {
+	padding: 0.25em 0 1em 0;
+	margin-left: 0;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+#link-bibliography:not(:target) > .disclosure-button::after {
+	top: calc(100% - 1.375em);
+}
+#link-bibliography:not(:target) > .disclosure-button:checked::after {
+	top: 2px;
+	right: 30px;
+}
+
+#link-bibliography > h1:first-child {
+	margin-left: 0;
+}
+
+#link-bibliography > ul {
+	padding: 0 0.75em 0 1.75em;
+}
+
 #link-bibliography > ul,
 #link-bibliography > ul > li:last-child > blockquote {
     margin-bottom: 0;
