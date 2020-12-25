@@ -61,13 +61,6 @@ Extracts = {
 
 		//  Target restore function (same for mobile and non-mobile).
 		let restoreTarget = (target) => {
-			if (target.dataset.attributeTitle) {
-				//  Restore the title attribute, saved in `data-attribute-title`.
-				target.title = target.dataset.attributeTitle;
-				//  Remove the data attribute.
-				target.removeAttribute("data-attribute-title");
-			}
-
 			target.classList.toggle("has-content", false);
 			target.classList.toggle("has-annotation", false);
 		};
@@ -103,11 +96,6 @@ Extracts = {
 
 		//  Shared target prepare function (for both mobile and non-mobile).
 		let sharedPrepareTarget = (target) => {
-			if (target.title) {
-				//  Preserve the title attribute, for possible restoration later.
-				target.dataset.attributeTitle = target.title;
-			}
-
 			if (   Extracts.isVideoLink(target)
 				|| Extracts.isLocalImageLink(target)
 				|| Extracts.isLocalDocumentLink(target)
