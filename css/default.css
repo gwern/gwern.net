@@ -935,9 +935,23 @@ a.footnote-ref::before {
     position: absolute;
     width: calc(100% + 0.5em);
     height: 125%;
-    left: -0.25em;
-    top: 0;
+    left: calc(-0.25em - 3px);
+    top: -3px;
     z-index: -1;
+    border-color: transparent;
+    border-style: double;
+    border-width: 3px;
+    transition: 
+        background-color 0.15s ease 0.05s,
+        border-color 0.15s ease 0.05s;
+}
+a.footnote-ref.highlighted::before,
+a.footnote-ref:hover::before,
+a.footnote-ref:target::before,
+a.footnote-ref.targeted::before {
+    background-color: var(--GW-footnote-ref-highlight-background-color);
+    border-color: var(--GW-footnote-ref-highlight-box-shadow-color);
+    outline: none;
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
@@ -1023,6 +1037,18 @@ section.footnotes > ol > li::after {
 	left: calc(-0.75em - 1px);
 }
 
+section.footnotes > ol > li:target::before,
+section.footnotes > ol > li:target::after,
+section.footnotes > ol > li.highlighted::before,
+section.footnotes > ol > li.highlighted::after {
+    border-style: solid;
+    border-color: var(--GW-footnote-highlighted-border-color);
+}
+section.footnotes > ol > li:target::after,
+section.footnotes > ol > li.highlighted::after {
+    border-width: 0 1px 0 0;
+}
+
 section.footnotes > hr:first-child {
 	position: relative;
     margin: 1.75em 0 1.375em 0;
@@ -1087,11 +1113,6 @@ section.footnotes > hr:first-child::before {
 .sidenote:target,
 .sidenote.targeted {
     background-color: var(--GW-sidenote-highlight-background-color);
-    box-shadow:
-        0 0 0 10px var(--GW-sidenote-highlight-background-color),
-        0 0 0 11px var(--GW-sidenote-highlight-box-shadow-color),
-        0 0 0 12px var(--GW-sidenote-highlight-background-color),
-        0 0 0 13px var(--GW-sidenote-highlight-box-shadow-color);
     opacity: 1.0;
 }
 .sidenote:target {
@@ -1107,10 +1128,16 @@ section.footnotes > hr:first-child::before {
 .sidenote::after {
     content: "";
     position: absolute;
-    width: calc(100% + 26px);
-    height: calc(100% + 26px);
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
     top: -13px;
     left: -13px;
+}
+.sidenote.highlighted::after,
+.sidenote:hover::after,
+.sidenote:target::after,
+.sidenote.targeted::after {
+    border: 3px double var(--GW-sidenote-highlight-box-shadow-color);
 }
 
 /*=-------------------=*/
@@ -1199,37 +1226,6 @@ section.footnotes > hr:first-child::before {
 
 #markdownBody .sidenote li {
     text-align: left;
-}
-
-/*=-----------=*/
-/*= Citations =*/
-/*=-----------=*/
-
-.footnote-ref::before {
-    transition: 
-        background-color 0.15s ease 0.05s,
-        box-shadow 0.15s ease 0.05s;
-}
-.footnote-ref.highlighted::before,
-.footnote-ref:hover::before,
-.footnote-ref:target::before,
-.footnote-ref.targeted::before {
-    background-color: var(--GW-footnote-ref-highlight-background-color);
-    box-shadow:
-        0 0 0 1px var(--GW-footnote-ref-highlight-box-shadow-color),
-        0 0 0 2px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
-        0 0 0 3px var(--GW-footnote-ref-highlight-box-shadow-color);
-    transition: none;
-}
-/*  (Not very) special styles for (everyone except) special browsers.
-    */
-@supports not (-moz-user-focus: normal) {
-    @media only screen and (max-width: 1760px) {
-        .footnote-ref:target::before {
-            background-color: inherit;
-            box-shadow: none;
-        }
-    }
 }
 
 /*=-------------------------------=*/
@@ -3201,6 +3197,37 @@ body.directory-index #disqus_thread {
 #popups-disabled-show-popup-options-dialog-button button:hover {
     cursor: pointer;
     opacity: 1.0;
+}
+
+/*********************/
+/* LINK BIBLIOGRAPHY */
+/*********************/
+
+#link-bibliography {
+	padding: 0.25em 0 1em 0;
+	margin-left: 0;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+#link-bibliography:not(:target) > .disclosure-button::after {
+	top: calc(100% - 1.375em);
+}
+#link-bibliography:not(:target) > .disclosure-button:checked::after {
+	top: 2px;
+	right: 30px;
+}
+
+#link-bibliography > h1:first-child {
+	margin-left: 0;
+}
+
+#link-bibliography > ol {
+	padding: 0 0.75em 0 1.75em;
+}
+
+#link-bibliography > ol,
+#link-bibliography > ol > li:last-child > blockquote {
+    margin-bottom: 0;
 }
 
 /**********/

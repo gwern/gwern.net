@@ -94,6 +94,7 @@
     /*  Footnotes.
         */
     --GW-footnote-border-color: #aaa;
+    --GW-footnote-highlighted-border-color: #000;
     --GW-footnotes-section-top-rule-color: #ccc;
     --GW-footnote-backlink-border-color: #000;
     --GW-footnote-backlink-border-hover-color: #999;
@@ -102,7 +103,6 @@
     /*  Footnote references.
         */
     --GW-footnote-ref-highlight-box-shadow-color: #aaa;
-    --GW-footnote-ref-highlight-box-shadow-interstitial-color: #fff;
     --GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
 
     /*  Sidenotes.
