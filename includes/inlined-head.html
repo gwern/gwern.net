@@ -1838,6 +1838,12 @@ function isOnScreen (element) {
             rect.right > 0);
 }
 
+/*	Returns the string trimmed of opening/closing quotes.
+	*/
+String.prototype.trimQuotes = function () {
+	return this.replace(/^["'“‘]?(.+?)["'”’]?$/, '$1');
+};
+
 /*  Returns true if the string begins with any of the given prefixes.
     */
 String.prototype.startsWithAnyOf = function (prefixes) {

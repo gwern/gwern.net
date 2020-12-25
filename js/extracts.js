@@ -216,7 +216,7 @@ Extracts = {
 								`a[href='${target.getAttribute("href")}']`);
 		let referenceListEntry = referenceElement.closest("li");
 
-		let titleHTML = referenceElement.innerHTML;
+		let titleHTML = referenceElement.innerHTML.trimQuotes();
 		let titleText = referenceElement.textContent;
 		let abstractHTML = referenceListEntry.querySelector("blockquote").innerHTML;
 
@@ -277,7 +277,7 @@ Extracts = {
 								`span[data-original-definition-id='${target.dataset.originalDefinitionId}']`);
 		let referenceListEntry = referenceElement.closest("li");
 
-		let titleHTML = referenceElement.innerHTML;
+		let titleHTML = referenceElement.innerHTML.trimQuotes();
 		let titleText = referenceElement.textContent;
 		let abstractHTML = referenceListEntry.querySelector("blockquote").innerHTML;
 
@@ -455,8 +455,9 @@ Extracts = {
     isLocalDocumentLink: (target) => {
 	    return (   target.tagName == "A" 
 	    		&& (   target.getAttribute("href").startsWith("/docs/www/")
-	    			|| target.href.match(/\.html(#|$)/) != null
-	    			|| target.href.match(/\.pdf(#|$)/) != null));
+	    			|| (target.getAttribute("href").startsWith("/docs/")
+	    			    && (   target.href.match(/\.html(#|$)/) != null
+	    			        || target.href.match(/\.pdf(#|$)/) != null))));
     },
     localDocumentForTarget: (target) => {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
