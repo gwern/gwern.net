@@ -1030,7 +1030,7 @@ section.footnotes > ol > li::after {
 	content: "";
 	position: absolute;
 	border-right: 1px dotted var(--GW-footnote-border-color);
-	height: 100%;
+	height: calc(100% + 0.125em + 2px);
     top: calc(-0.125em - 1px);
 	left: calc(-0.75em - 1px);
 }
