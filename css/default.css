@@ -935,9 +935,21 @@ a.footnote-ref::before {
     position: absolute;
     width: calc(100% + 0.5em);
     height: 125%;
-    left: -0.25em;
-    top: 0;
+    left: calc(-0.25em - 3px);
+    top: -3px;
     z-index: -1;
+    transition: 
+        background-color 0.15s ease 0.05s,
+        border 0.15s ease 0.05s;
+}
+a.footnote-ref.highlighted::before,
+a.footnote-ref:hover::before,
+a.footnote-ref:target::before,
+a.footnote-ref.targeted::before {
+    background-color: var(--GW-footnote-ref-highlight-background-color);
+    border: 3px double var(--GW-footnote-ref-highlight-box-shadow-color);
+    outline: none;
+    transition: none;
 }
 
 /* Deal with multiple footnote superscripts one after another; per Charuru */
@@ -1099,11 +1111,6 @@ section.footnotes > hr:first-child::before {
 .sidenote:target,
 .sidenote.targeted {
     background-color: var(--GW-sidenote-highlight-background-color);
-    box-shadow:
-        0 0 0 10px var(--GW-sidenote-highlight-background-color),
-        0 0 0 11px var(--GW-sidenote-highlight-box-shadow-color),
-        0 0 0 12px var(--GW-sidenote-highlight-background-color),
-        0 0 0 13px var(--GW-sidenote-highlight-box-shadow-color);
     opacity: 1.0;
 }
 .sidenote:target {
@@ -1119,10 +1126,16 @@ section.footnotes > hr:first-child::before {
 .sidenote::after {
     content: "";
     position: absolute;
-    width: calc(100% + 26px);
-    height: calc(100% + 26px);
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
     top: -13px;
     left: -13px;
+}
+.sidenote.highlighted::after,
+.sidenote:hover::after,
+.sidenote:target::after,
+.sidenote.targeted::after {
+    border: 3px double var(--GW-sidenote-highlight-box-shadow-color);
 }
 
 /*=-------------------=*/
@@ -1211,37 +1224,6 @@ section.footnotes > hr:first-child::before {
 
 #markdownBody .sidenote li {
     text-align: left;
-}
-
-/*=-----------=*/
-/*= Citations =*/
-/*=-----------=*/
-
-.footnote-ref::before {
-    transition: 
-        background-color 0.15s ease 0.05s,
-        box-shadow 0.15s ease 0.05s;
-}
-.footnote-ref.highlighted::before,
-.footnote-ref:hover::before,
-.footnote-ref:target::before,
-.footnote-ref.targeted::before {
-    background-color: var(--GW-footnote-ref-highlight-background-color);
-    box-shadow:
-        0 0 0 1px var(--GW-footnote-ref-highlight-box-shadow-color),
-        0 0 0 2px var(--GW-footnote-ref-highlight-box-shadow-interstitial-color),
-        0 0 0 3px var(--GW-footnote-ref-highlight-box-shadow-color);
-    transition: none;
-}
-/*  (Not very) special styles for (everyone except) special browsers.
-    */
-@supports not (-moz-user-focus: normal) {
-    @media only screen and (max-width: 1760px) {
-        .footnote-ref:target::before {
-            background-color: inherit;
-            box-shadow: none;
-        }
-    }
 }
 
 /*=-------------------------------=*/
