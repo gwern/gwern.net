@@ -56,7 +56,7 @@ function realignHashIfNeeded() {
 function realignHash() {
     GWLog("realignHash", "sidenotes.js");
 
-    var hash = location.hash;
+    let hash = location.hash;
     history.replaceState(null, null, "#");
     location.hash = hash;
 }
@@ -683,9 +683,7 @@ function sidenotesSetup() {
     /*  Create media query objects (for checking and attaching listeners).
         */
     GW.sidenotes.mediaQueries = {
-        viewportWidthBreakpoint: matchMedia("(max-width: 1760px)"),
-        mobileViewportWidthBreakpoint: matchMedia("(max-width: 650px)"),
-        hover: matchMedia("only screen and (hover: hover) and (pointer: fine)")
+        viewportWidthBreakpoint: matchMedia("(max-width: 1760px)")
     };
 
     /*  Listen for changes to whether the viewport width media query is matched;
