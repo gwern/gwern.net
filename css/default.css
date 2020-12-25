@@ -1055,6 +1055,7 @@ section.footnotes > ol > li.highlighted::after {
 section.footnotes > hr:first-child {
 	position: relative;
     margin: 1.75em 0 1.375em 0;
+    padding: 3px 0 0 0;
 }
 section.footnotes > hr:first-child::after {
 	content: "";
