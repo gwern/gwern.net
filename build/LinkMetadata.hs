@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-25 12:42:24 gwern"
+When:  Time-stamp: "2020-12-25 14:25:11 gwern"
 License: CC-0
 -}
 
@@ -125,7 +125,7 @@ generateListItems :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
-                              Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID `T.append` T.pack("-" ++ (last $ splitPath f)) in
+                              Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID `T.append` T.pack("-" ++ (filter (=='.') $ last $ splitPath f)) in
                                                             let author = Span ("", ["author"], []) [Str (T.pack aut)] in
                                                               let date = Span ("", ["date"], []) [Str (T.pack dt)] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
@@ -137,12 +137,16 @@ generateListItems (f, ann) = case ann of
                                                               [Para
                                                                 [link,
                                                                   Str ",", Space, author, Space, Str "(", date, Str ")", Str ":"],
-                                                           BlockQuote [RawBlock (Format "html") (T.pack abst)]
+                                                           BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst))]
                                                            ]
                              where
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link ("",["linkBibliography-null"],[]) [Str (T.pack f)] (T.pack f, "")]]
 
+-- annotations, like /Faces, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/Faces#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
+-- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
+rewriteAnchors :: FilePath -> T.Text -> T.Text
+rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 collectLinks :: [Block] -> [String]
 collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
@@ -151,7 +155,7 @@ collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" 
    collectLink (RawBlock (Format "html") t) = if not ("href=" `T.isInfixOf` t) then [] else let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} t in
                                                    case markdown of
                                                      Left e -> error (T.unpack t ++ ": " ++ show e)
-                                                     Right markdown' -> Debug.Trace.trace (show markdown') $ queryWith collectLinks markdown'
+                                                     Right markdown' -> queryWith collectLinks markdown'
    collectLink x = queryWith extractLink x
 
    extractLink :: Inline -> [String]
@@ -330,7 +334,7 @@ generateID url author date
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
                                  -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
                                  let suffix = (let s = take 1 $ reverse $ takeBaseName url in if not (s=="") && isNumber (head s) then "-" ++ s else "") in
-                                 map toLower $ if authorCount >= 3 then
+                                 filter (=='.') $ map toLower $ if authorCount >= 3 then
                                                  firstAuthorSurname ++ "-et-al-" ++ year ++ suffix else
                                                    if authorCount == 2 then
                                                      let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ (authors !! 1) in
