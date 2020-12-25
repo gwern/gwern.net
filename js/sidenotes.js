@@ -253,6 +253,18 @@ function updateEventListeners() {
 function bindSidenoteMouseEvents() {
     GWLog("bindSidenoteMouseEvents", "sidenotes.js");
 
+    /*  Add event listener to un-focus a sidenote (by resetting the hash) when
+        the document is clicked anywhere but a sidenote or a link.
+        */
+    document.body.addEventListener("click", GW.sidenotes.bodyClicked = (event) => {
+        GWLog("GW.sidenotes.bodyClicked", "sidenotes.js");
+
+        if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
+            (location.hash.startsWith("#sn"))) {
+            setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
+        }
+    });
+
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let fnref = GW.sidenotes.footnoteRefs[i];
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
@@ -276,6 +288,8 @@ function bindSidenoteMouseEvents() {
 	*/
 function unbindSidenoteMouseEvents() {
     GWLog("unbindSidenoteMouseEvents", "sidenotes.js");
+
+	document.body.removeEventListener("click", GW.sidenotes.bodyClicked);
 
 	for (var i = 0; i < GW.sidenotes.footnoteRefs.length; i++) {
 		let fnref = GW.sidenotes.footnoteRefs[i];
@@ -762,15 +776,22 @@ function sidenotesSetup() {
         Also, if the hash points to a collapse block, or to an element within a
         collapse block, expand it and all collapse blocks enclosing it.
         */
+    let hashUpdateResponse = () => {
+        revealTarget();
+        updateTargetCounterpart();
+
+		//  Prepare for hash reversion.
+		/*  Save the hash, if need be (if it does NOT point to a sidenote).
+			*/
+		GW.sidenotes.hashBeforeSidenoteWasFocused = location.hash.startsWith("#sn") ? "" : location.hash;
+    };
     window.addEventListener("hashchange", GW.sidenotes.hashChanged = () => {
         GWLog("GW.sidenotes.hashChanged", "sidenotes.js");
 
-        revealTarget();
-        updateTargetCounterpart();
+		hashUpdateResponse();
     });
     window.addEventListener("load", () => {
-        revealTarget();
-        updateTargetCounterpart();
+		hashUpdateResponse();
     });
 
     /*  Add event listeners to (asynchronously) recompute sidenote positioning
@@ -782,24 +803,6 @@ function sidenotesSetup() {
 
             setTimeout(updateSidenotePositions);
         });
-    });
-
-    //  Prepare for hash reversion.
-    /*  Save the hash, if need be (if it does NOT point to a sidenote or a
-        footnote reference).
-        */
-    GW.sidenotes.hashBeforeSidenoteWasFocused = (location.hash.startsWith("#sn") || location.hash.startsWith("#fnref")) ?
-                                                "" : location.hash;
-    /*  Add event listener to un-focus a sidenote (by resetting the hash) when
-        the document is clicked anywhere but a sidenote or a link.
-        */
-    document.body.addEventListener("click", GW.sidenotes.bodyClicked = (event) => {
-        GWLog("GW.sidenotes.bodyClicked", "sidenotes.js");
-
-        if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
-            (location.hash.startsWith("#sn") || location.hash.startsWith("#fnref"))) {
-            setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
-        }
     });
 
 	GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
