@@ -2043,12 +2043,14 @@ body.index #markdownBody section > h1:first-child a::after {
 /*  Nice-looking bottom decoration.
     */
 body.index article,
-body.tags article {
+body.tags article,
+body.directory-index article {
     position: relative;
     padding-bottom: 4em;
 }
 body.index article::after,
-body.tags article::after {
+body.tags article::after,
+body.directory-index article::after {
     content: "";
     background-color: var(--GW-body-background-color);
     background-image: url('/static/img/logo/logo-smooth.svg');
@@ -2067,7 +2069,8 @@ body.tags article::after {
     z-index: 1;
 }
 body.index article::before,
-body.tags article::before {
+body.tags article::before,
+body.directory-index article::before {
     content: "";
     display: block;
     position: absolute;
