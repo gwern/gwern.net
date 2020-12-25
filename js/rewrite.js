@@ -113,6 +113,17 @@ function rectifyCodeBlockHeight(codeBlock) {
 /* SETUP */
 /*********/
 
+/*	The footnotes section has no ID because Pandoc is weird. Give it one.
+	*/
+function identifyFootnotesSection() {
+	GWLog("identifyFootnotesSection", "rewrite.js", 1);
+
+	document.querySelector("section.footnotes").id = "footnotes";
+}
+window.addEventListener("DOMContentLoaded", () => {
+	identifyFootnotesSection();
+});
+
 /*  Unwrap pre.sourceCode blocks from their extraneous containing divs.
     */
 function unwrapSourceCodeBlocks() {
