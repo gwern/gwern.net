@@ -157,11 +157,9 @@ svg {
 	#sidebar a.mail::before,
 	#sidebar a.r_gwern::before {
 		content: "\2727\2007";
-		text-shadow: 0 0 0 var(--GW-sidebar-bullet-text-shadow-color);
 		bottom: 0.2em;
 		position: relative;
 		font-size: 0.6em;
-		color: var(--GW-sidebar-bullet-color);
 	}
 }
 
@@ -697,6 +695,7 @@ html {
 
 .abstract > blockquote {
 	margin: 0 0 1.5em 0;
+	background-color: var(--GW-abstract-background-color);
 	border-color: var(--GW-abstract-border-color);
 	padding: 0.9rem 1.25rem 0.95rem 1.25rem;
 	clear: none;

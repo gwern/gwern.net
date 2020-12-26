@@ -394,9 +394,6 @@ article #markdownBody section:not(.collapse) > h1:first-child a,
 article #markdownBody section:not(.collapse) > h2:first-child a {
     display: block;
 }
-section > :first-child a:hover {
-    color: var(--GW-heading-self-link-hover-color);
-}
 section > :first-child a::after {
     content: "\00B6"; /* Pilcrow sign: ¶ */
     font-size: 0.75em;
@@ -2148,10 +2145,6 @@ body.mead p > img {
     position: relative;
     z-index: 1;
     margin: 1em 1em 1em 2em;
-    box-shadow:
-        0 0 0 15px var(--GW-page-mead-image-box-shadow-inner-color),
-        0 0 0 16px var(--GW-page-mead-image-box-shadow-outer-color),
-        0 0 0 17px transparent;
 }
 
 /*=-------=*/
