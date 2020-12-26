@@ -229,7 +229,7 @@ Extracts = {
 		if (popElement.childElementCount != 0) {
 			return true;
 		} else {
-			GWLog("Unable to fill popup!", "extracts.js", 1);
+			GWLog("Unable to fill popup ( " + (target.href || target.dataset.originalDefinitionId) + " )!", "extracts.js", 1);
 			return false;
 		}
 	},
