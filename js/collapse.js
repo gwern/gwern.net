@@ -2,7 +2,7 @@
 /*  Reveals the given node by expanding all containing collapse blocks.
     */
 function expandAllAncestorsOfNode(node) {
-	GWLog("expandAllAncestorsOfNode", "rewrite.js", 2);
+	GWLog("expandAllAncestorsOfNode", "collapse.js", 2);
 
     // If the node is not an element (e.g. a text node), get its parent element.
     let element = node instanceof HTMLElement ? node : node.parentElement;
@@ -55,7 +55,7 @@ function isWithinCollapsedBlock(element) {
     if any such expansion occurred.
     */
 function expandCollapseBlocksToReveal(element) {
-    GWLog("expandCollapseBlocksToReveal", "rewrite.js");
+    GWLog("expandCollapseBlocksToReveal", "collapse.js", 1);
 
     /*  If the given element is not within any collapse block, there is nothing
         to do.
@@ -86,7 +86,7 @@ function expandCollapseBlocksToReveal(element) {
     scrolls the targeted element into view.
     */
 function revealTarget() {
-    GWLog("revealTarget", "rewrite.js");
+    GWLog("revealTarget", "collapse.js", 1);
 
     if (!location.hash) return;
 
@@ -109,7 +109,7 @@ function revealTarget() {
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
 function prepareCollapseBlocks() {
-	GWLog("prepareCollapseBlocks", "rewrite.js", 1);
+	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
 	document.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let disclosureButtonHTML = "<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'>";
