@@ -2,83 +2,9 @@
 /* author: Said Achmiz */
 /* license: MIT (derivative of footnotes.js, which is PD) */
 
-/*************************/
-/* TABLES, FIGURES, ETC. */
-/*************************/
-
-/*  Expands all tables (& other blocks) whose wrapper block is marked with class
-    "full-width", and all figures marked with class "full-width", to span the 
-    viewport (minus a specified margin on both sides).
-    */
-function expandFullWidthBlocks() {
-	GWLog("expandFullWidthBlocks", "rewrite.js", 1);
-
-	//  TODO: active media queries to switch between mobile and non-mobile
-
-	/*	On narrow (“mobile”) viewports, do no layout (figures on mobile are
-		already as “full-width” as they’re going to get).
-		*/
-	if (GW.mediaQueries.mobileWidth.matches) return;
-
-	/*	Configuration and dynamic value storage.
-		*/
-	GW.fullWidthBlockLayout = {
-		sideMargin: 25,
-		pageWidth: 0,
-		leftAdjustment: 0
-	};
-
-	/*	Pre-query key elements, to save performance on resize.
-		*/
-	let rootElement = document.querySelector("html");
-	let markdownBody = document.querySelector("#markdownBody");
-
-	/*	Inject styles block to hold dynamically updated layout variables.
-		*/
-	document.querySelector("head").insertAdjacentHTML("beforeend", `<style id="full-width-block-layout-styles"></style>`);
-	let fullWidthBlockLayoutStyles = document.querySelector("#full-width-block-layout-styles");
-
-	/*	Function to update layout variables (called immediately and on resize).
-		*/
-	let updateFullWidthBlockLayoutStyles = () => {
-		GWLog("updateFullWidthBlockLayoutStyles", "rewrite.js", 2);
-
-		if (GW.mediaQueries.mobileWidth.matches) {
-			document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
-				fullWidthBlock.style.marginLeft = "";
-				fullWidthBlock.style.marginRight = "";
-			});
-			return;
-		}
-
-		GW.fullWidthBlockLayout.pageWidth = rootElement.offsetWidth;
-
-		let markdownBodyRect = markdownBody.getBoundingClientRect();
-		let markdownBodyRightMargin = GW.fullWidthBlockLayout.pageWidth - markdownBodyRect.right;
-		GW.fullWidthBlockLayout.leftAdjustment = markdownBodyRect.left - markdownBodyRightMargin;
-
-		fullWidthBlockLayoutStyles.innerHTML = `:root { 
-			--GW-full-width-block-layout-side-margin: ${GW.fullWidthBlockLayout.sideMargin}px;
-			--GW-full-width-block-layout-page-width: ${GW.fullWidthBlockLayout.pageWidth}px;
-			--GW-full-width-block-layout-left-adjustment: ${GW.fullWidthBlockLayout.leftAdjustment}px; 
-		}`;
-	};
-	updateFullWidthBlockLayoutStyles();
-
-	/*	Set margins of full-width blocks.
-		*/
-    document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
-		fullWidthBlock.style.marginLeft = `calc((-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0)) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
-		fullWidthBlock.style.marginRight = `calc((var(--GW-full-width-block-layout-left-adjustment) / 2.0) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
-    });
-
-	/*	Add listener to update layout variables on window resize.
-		*/
-	window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
-
-	GW.notificationCenter.fireEvent("Rewrite.didExpandFullWidthBlocks");
-}
-doWhenPageLoaded(expandFullWidthBlocks);
+/**********/
+/* TABLES */
+/**********/
 
 /*  Wrap each table in a div.table-wrapper (for layout purposes).
     */
@@ -104,6 +30,10 @@ function markFullWidthFigures() {
     });
 }
 markFullWidthFigures();
+
+/***********/
+/* FIGURES */
+/***********/
 
 /*  Inject wrappers into figures.
     */
@@ -182,7 +112,7 @@ function rectifyAllCodeBlockHeights() {
         rectifyCodeBlockHeight(codeBlock);
     });
 }
-doWhenPageLoaded(rectifyAllCodeBlockHeights);
+// doWhenPageLoaded(rectifyAllCodeBlockHeights);
 
 /**************/
 /* TYPOGRAPHY */
@@ -225,6 +155,84 @@ window.addEventListener("copy", GW.textCopied = (event) => {
     event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
     event.clipboardData.setData("text/html",  selectedHTML.replace(/\u00AD|\u200b/g, ""));
 });
+
+/*********************/
+/* FULL-WIDTH BLOCKS */
+/*********************/
+
+/*  Expands all tables (& other blocks) whose wrapper block is marked with class
+    "full-width", and all figures marked with class "full-width", to span the 
+    viewport (minus a specified margin on both sides).
+    */
+function expandFullWidthBlocks() {
+	GWLog("expandFullWidthBlocks", "rewrite.js", 1);
+
+	//  TODO: active media queries to switch between mobile and non-mobile
+
+	/*	On narrow (“mobile”) viewports, do no layout (figures on mobile are
+		already as “full-width” as they’re going to get).
+		*/
+	if (GW.mediaQueries.mobileWidth.matches) return;
+
+	/*	Configuration and dynamic value storage.
+		*/
+	GW.fullWidthBlockLayout = {
+		sideMargin: 25,
+		pageWidth: 0,
+		leftAdjustment: 0
+	};
+
+	/*	Pre-query key elements, to save performance on resize.
+		*/
+	let rootElement = document.querySelector("html");
+	let markdownBody = document.querySelector("#markdownBody");
+
+	/*	Inject styles block to hold dynamically updated layout variables.
+		*/
+	document.querySelector("head").insertAdjacentHTML("beforeend", `<style id="full-width-block-layout-styles"></style>`);
+	let fullWidthBlockLayoutStyles = document.querySelector("#full-width-block-layout-styles");
+
+	/*	Function to update layout variables (called immediately and on resize).
+		*/
+	let updateFullWidthBlockLayoutStyles = () => {
+		GWLog("updateFullWidthBlockLayoutStyles", "rewrite.js", 2);
+
+		if (GW.mediaQueries.mobileWidth.matches) {
+			document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
+				fullWidthBlock.style.marginLeft = "";
+				fullWidthBlock.style.marginRight = "";
+			});
+			return;
+		}
+
+		GW.fullWidthBlockLayout.pageWidth = rootElement.offsetWidth;
+
+		let markdownBodyRect = markdownBody.getBoundingClientRect();
+		let markdownBodyRightMargin = GW.fullWidthBlockLayout.pageWidth - markdownBodyRect.right;
+		GW.fullWidthBlockLayout.leftAdjustment = markdownBodyRect.left - markdownBodyRightMargin;
+
+		fullWidthBlockLayoutStyles.innerHTML = `:root { 
+			--GW-full-width-block-layout-side-margin: ${GW.fullWidthBlockLayout.sideMargin}px;
+			--GW-full-width-block-layout-page-width: ${GW.fullWidthBlockLayout.pageWidth}px;
+			--GW-full-width-block-layout-left-adjustment: ${GW.fullWidthBlockLayout.leftAdjustment}px; 
+		}`;
+	};
+	updateFullWidthBlockLayoutStyles();
+
+	/*	Set margins of full-width blocks.
+		*/
+    document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
+		fullWidthBlock.style.marginLeft = `calc((-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0)) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
+		fullWidthBlock.style.marginRight = `calc((var(--GW-full-width-block-layout-left-adjustment) / 2.0) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
+    });
+
+	/*	Add listener to update layout variables on window resize.
+		*/
+	window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
+
+	GW.notificationCenter.fireEvent("Rewrite.didExpandFullWidthBlocks");
+}
+doWhenPageLoaded(expandFullWidthBlocks);
 
 /*********/
 /* MISC. */

@@ -149,15 +149,15 @@ function prepareCollapseBlocks() {
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
 			//  If it’s a code block, adjust its height.
-			if (collapseBlock.lastElementChild.tagName == "PRE") {
-				let codeBlock = collapseBlock.lastElementChild.lastElementChild;
-				if (codeBlock.tagName != "CODE") return;
-
-				codeBlock.style.height = "";
-				requestAnimationFrame(() => {
-					rectifyCodeBlockHeight(codeBlock);
-				});
-			}
+// 			if (collapseBlock.lastElementChild.tagName == "PRE") {
+// 				let codeBlock = collapseBlock.lastElementChild.lastElementChild;
+// 				if (codeBlock.tagName != "CODE") return;
+// 
+// 				codeBlock.style.height = "";
+// 				requestAnimationFrame(() => {
+// 					rectifyCodeBlockHeight(codeBlock);
+// 				});
+// 			}
 
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
 		});
