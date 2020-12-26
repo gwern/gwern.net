@@ -719,21 +719,17 @@ Sidenotes = {
 			hashUpdateResponse();
 		});
 
-		/*  Add event listeners to (asynchronously) recompute sidenote positioning
-			when a collapse block is manually collapsed or expanded.
-			*/
-		document.querySelectorAll(".disclosure-button").forEach(collapseCheckbox => {
-			collapseCheckbox.addEventListener("change", Sidenotes.disclosureButtonValueChanged = (event) => {
-				GWLog("Sidenotes.disclosureButtonValueChanged", "sidenotes.js");
-
-				requestAnimationFrame(Sidenotes.updateSidenotePositions);
-			});
-		});
-
 		/*	Add event handler to (asynchronously) recompute sidenote positioning 
 			when full-width blocks are expanded.
 			*/
 		GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", () => {
+			requestAnimationFrame(Sidenotes.updateSidenotePositions);
+		});
+
+		/*	Add event handler to (asynchronously) recompute sidenote positioning
+			when full-width blocks are expanded/collapse.
+			*/
+		GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", () => {
 			requestAnimationFrame(Sidenotes.updateSidenotePositions);
 		});
 

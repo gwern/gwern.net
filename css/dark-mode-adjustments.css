@@ -46,10 +46,10 @@ th.tablesorter-headerDesc {
     background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
 }
 
-.tableWrapper::-webkit-scrollbar-thumb {
+.table-wrapper::-webkit-scrollbar-thumb {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
 }
-.tableWrapper::-webkit-scrollbar-thumb:hover {
+.table-wrapper::-webkit-scrollbar-thumb:hover {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
 }
 

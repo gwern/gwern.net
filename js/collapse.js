@@ -1,4 +1,3 @@
-/* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
 /*  Reveals the given node by expanding all containing collapse blocks.
     */
 function expandAllAncestorsOfNode(node) {
@@ -16,6 +15,42 @@ function expandAllAncestorsOfNode(node) {
 
     // Recursively expand all ancestors of the collapse block.
     expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
+}
+
+/*  This function expands all collapse blocks containing the given node, if
+    any (including the node itself, if it is a collapse block). Returns true
+    if any such expansion occurred.
+    */
+function expandCollapseBlocksToReveal(node) {
+    GWLog("expandCollapseBlocksToReveal", "collapse.js", 2);
+
+	if (!node)
+		return;
+
+    // If the node is not an element (e.g. a text node), get its parent element.
+    let element = node instanceof HTMLElement ? node : node.parentElement;
+
+    /*  If the given element is not within any collapsed block, there is nothing
+        to do.
+        */
+    if (!isWithinCollapsedBlock(element)) return false;
+
+    //  Expand the nearest collapse block.
+    let collapseParent = element.closest(".collapse");
+    let disclosureButton = collapseParent.querySelector(".disclosure-button");
+    let expansionOccurred = (disclosureButton.checked == false);
+    disclosureButton.checked = true;
+    collapseParent.classList.toggle("expanded", disclosureButton.checked);
+
+    /*  Expand any higher-level collapse blocks!
+        Fire state change event only if we did NOT have to do any further
+        expansion (otherwise we'll do redundant layout).
+        */
+    if (!expandCollapseBlocksToReveal(collapseParent.parentElement) && expansionOccurred)
+    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
+
+    //  Report whether we had to expand a collapse block.
+    return expansionOccurred;
 }
 
 /*  Returns true if the given collapse block is currently collapsed.
@@ -50,36 +85,6 @@ function isWithinCollapsedBlock(element) {
     return isWithinCollapsedBlock(collapseParent.parentElement);
 }
 
-/*  This function expands all collapse blocks containing the given element, if
-    any (including the element itself, if it is a collapse block). Returns true
-    if any such expansion occurred.
-    */
-function expandCollapseBlocksToReveal(element) {
-    GWLog("expandCollapseBlocksToReveal", "collapse.js", 1);
-
-    /*  If the given element is not within any collapse block, there is nothing
-        to do.
-        */
-    if (!isWithinCollapsedBlock(element)) return false;
-
-    //  Expand the nearest collapse block.
-    let collapseParent = element.closest(".collapse");
-    let disclosureButton = collapseParent.querySelector(".disclosure-button");
-    let expansionOccurred = (disclosureButton.checked == false);
-    disclosureButton.checked = true;
-    collapseParent.classList.toggle("expanded", disclosureButton.checked);
-
-    //  Expand any higher-level collapse blocks!
-    /*  Update sidenote positions only if we do NOT have to do any further
-        expansion (otherwise we'll do redundant layout).
-        */
-    if (!expandCollapseBlocksToReveal(collapseParent.parentElement) && expansionOccurred)
-        setTimeout(updateSidenotePositions);
-
-    //  Report whether we had to expand a collapse block.
-    return expansionOccurred;
-}
-
 /*  This function expands all necessary collapse blocks to reveal the element
     targeted by the URL hash. (This includes expanding collapse blocks to
     reveal a footnote reference associated with a targeted sidenote). It also
@@ -97,9 +102,9 @@ function revealTarget() {
         itself; if the target is a sidenote, expand collapsed blocks to reveal
         the citation reference.
         */
-    let targetInText = location.hash.match(/#sn[0-9]/) ?
-                       document.querySelector("#fnref" + location.hash.substr(3)) :
-                       target;
+    let targetInText = location.hash.match(/#sn[0-9]/) 
+    				   ? document.querySelector("#fnref" + location.hash.substr(3)) 
+    				   : target;
     expandCollapseBlocksToReveal(targetInText);
 
     //  Scroll the target into view.
@@ -130,7 +135,7 @@ function prepareCollapseBlocks() {
 			realCollapseBlock.appendChild(collapseBlock);
 		}
 	});
-	/*  Add listeners to toggle 'expanded' class of collapse blocks.
+	/*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
 	document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		let collapseBlock = disclosureButton.closest(".collapse");
@@ -147,8 +152,9 @@ function prepareCollapseBlocks() {
 					rectifyCodeBlockHeight(codeBlock);
 				});
 			}
+
+	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
 		});
 	});
 }
 prepareCollapseBlocks();
-

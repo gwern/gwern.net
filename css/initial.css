@@ -926,15 +926,9 @@ pre {
     overflow: auto;
 }
 
-@supports (width: fit-content) {
-	.full-width-code-block-wrapper {
-		width: fit-content;
-	}
-}
-@supports (width: -moz-fit-content) {
-	.full-width-code-block-wrapper {
-		width: -moz-fit-content;
-	}
+.full-width-code-block-wrapper {
+	width: -moz-fit-content;
+	width: fit-content;
 }
 
 /********/
@@ -950,7 +944,7 @@ pre {
 /* TABLES */
 /**********/
 
-.tableWrapper {
+.table-wrapper {
     margin: 2em 0 2.125em 0;
     overflow-x: auto;
     overflow-y: hidden;
@@ -961,7 +955,7 @@ pre {
 /*= Full-width tables =*/
 /*=-------------------=*/
 
-.tableWrapper.full-width {
+.table-wrapper.full-width {
     position: relative;
 }
 
