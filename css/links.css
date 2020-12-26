@@ -699,7 +699,7 @@ a[href*="sciencemag.org"]::after {
 
 /* SSC logo too bad to use */
 a[href*="yvain"]::after,
-a[href*="slatestarcodex.com"]:not(href*=".pdf")::after,
+a[href*="slatestarcodex.com"]:not([href*=".pdf"])::after,
 a[href*="slatestarscratchpad.tumblr.com/"]::after,
 a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
     content: "SSC";
