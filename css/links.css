@@ -24,38 +24,32 @@
     span.defnMetadata::before {
         content: "0";
         position: absolute;
-        width: 0.55em;
+        width: 0.45em;
         height: 0.75em;
         color: transparent;
         text-shadow: none;
-        top: 1px;
+        top: 0.05em;
 
-        /*  Yes, it has to be like this. (Thanks, Firefox!)
-            —Obormot 2020-12-16
-            */
         background-image:
-            linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-            linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
             linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
             linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
         background-size: 1px 1px;
-        background-repeat: no-repeat, no-repeat, repeat-x, repeat-y;
-        background-position: 0 0, 1px 0, 100% 0, 2px 100%;
-        left: -1px;
+        background-repeat: repeat-x, repeat-y;
+        background-position: 100% 0, 0 100%;
+        left: 0;
+        overflow: hidden;
     }
     a.has-content::before {
-        background-position: 0 100%, 1px 100%, 100% 100%, 2px 100%;
+        background-position: 100% 100%, 0 100%;
         top: unset;
         bottom: 0.1em;
-        width: 3px;
+        width: 1px;
     }
     a.docMetadata:hover::before,
     a.has-content:hover::before,
     a.has-annotation:hover::before,
     span.defnMetadata:hover::before {
         background-image:
-            linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
-            linear-gradient(var(--GW-link-underline-background-color), var(--GW-link-underline-background-color)),
             linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
             linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
     }
