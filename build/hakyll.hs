@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-23 22:36:28 gwern"
+When: Time-stamp: "2020-12-26 11:40:22 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -239,9 +239,10 @@ postCtx tags =
 -- pandocTransform md adb dict = walkM (\x -> annotateLink md x >>= localizeLink adb) . walk smallcapsfy . walk headerSelflink . annotateFirstDefinitions . walkInlineM (defineAbbreviations dict) . bottomUp mergeSpaces . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md adb p = do let p' = typographyTransform . walk headerSelflink . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate)) $ p
+pandocTransform md adb p = do let p' = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate)) $ p
                               p'' <- generateLinkBibliography md p'
-                              walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) p''
+                              let p''' = walk headerSelflink p'' -- run headerSelflink after generateLinkBibliography to cover the generated '# Link Bibliography' sections
+                              walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) p'''
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
