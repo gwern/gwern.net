@@ -1,3 +1,6 @@
+:root {
+	--GW-body-background-color: #010101;
+}
 
 hr::after,
 .horizontalRule-nth-0 hr::after {

@@ -239,10 +239,8 @@ function injectModeSelector() {
 	}
     </style>`);
 
-    document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='mode-styles'></style>`);
-
-    // We pre-query the relevant elements, so we don’t have to run queryAll on
-    // every firing of the scroll listener.
+    // We pre-query the relevant elements, so we don’t have to run 
+    // querySelectorAll on every firing of the scroll listener.
     GW.scrollState = {
         "lastScrollTop":                    window.pageYOffset || document.documentElement.scrollTop,
         "unbrokenDownScrollDistance":       0,
