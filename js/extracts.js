@@ -696,9 +696,6 @@ Extracts = {
 		}
 
 		//  Fix full-width figures.
-		popup.querySelectorAll(".caption-wrapper").forEach(captionWrapper => {
-			captionWrapper.style.minWidth = "";
-		});
 		popup.querySelectorAll(".full-width").forEach(fullWidthBlock => {
 			fullWidthBlock.style.marginLeft = "";
 			fullWidthBlock.style.marginRight = "";

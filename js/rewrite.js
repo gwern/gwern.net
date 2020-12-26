@@ -91,24 +91,10 @@ doWhenPageLoaded(expandFullWidthBlocks);
     */
 function getAllCaptionedMedia() {
     return Array.prototype.map.call(document.querySelectorAll("figure"), figure => {
-        let media = figure.querySelector("img") || figure.querySelector("video");
+        let media = figure.querySelector("img, video, audio");
         let caption = figure.querySelector("figcaption");
         return { media: media, caption: caption };
     }).filter(captionedMedia => captionedMedia.media && captionedMedia.caption);
-}
-
-/*  Sets minimum width of all captions to the width of their associated
-    media (image or video) element.
-    */
-function setCaptionsMinimumWidth() {
-	GWLog("setCaptionsMinimumWidth", "rewrite.js", 1);
-
-    getAllCaptionedMedia().forEach(captionedMedia => {
-        //  Get the caption wrapper span.
-        let wrapper = captionedMedia.caption.closest(".caption-wrapper");
-        //  Set wrapper minimum width to width of media element.
-        wrapper.style.minWidth = captionedMedia.media.clientWidth + "px";
-    });
 }
 
 /*=-------------=*/
@@ -119,10 +105,20 @@ function setCaptionsMinimumWidth() {
     nearest pixel), to fix a weird bug that cuts off the bottom border.
     */
 function rectifyCodeBlockHeight(codeBlock) {
-	GWLog("rectifyCodeBlockHeight", "rewrite.js", 1);
+	GWLog("rectifyCodeBlockHeight", "rewrite.js", 3);
 
     codeBlock.style.height = parseInt(getComputedStyle(codeBlock).height) + "px";
 }
+function rectifyAllCodeBlockHeights() {
+	GWLog("rectifyAllCodeBlockHeights", "rewrite.js", 1);
+
+    document.querySelectorAll("pre code").forEach(codeBlock => {
+        rectifyCodeBlockHeight(codeBlock);
+    });
+}
+/*  Rectify heights of all code blocks.
+    */
+doWhenPageLoaded(rectifyAllCodeBlockHeights);
 
 /*********/
 /* SETUP */
@@ -192,43 +188,40 @@ function markFullWidthFigures() {
 }
 markFullWidthFigures();
 
-/*  Rectify heights of all code blocks.
+/*  Inject wrappers into figures.
     */
-doWhenPageLoaded(() => {
-    document.querySelectorAll("pre code").forEach(codeBlock => {
-        rectifyCodeBlockHeight(codeBlock);
-    });
-});
-
-/*  Wrap all captions in figures in a span.
-    */
-function wrapFigureCaptions() {
-	GWLog("wrapFigureCaptions", "rewrite.js", 1);
+function wrapFigures() {
+	GWLog("wrapFigures", "rewrite.js", 1);
 
 	getAllCaptionedMedia().forEach(captionedMedia => {
+		let figure = captionedMedia.media.closest("figure");
+
 		//  Wrap the caption in the wrapper span.
 		let wrapper = document.createElement("span");
 		wrapper.classList.add("caption-wrapper");
 		wrapper.appendChild(captionedMedia.caption);
 
-		//  Re-insert the wrapped caption into the figure.
-		let figure = captionedMedia.media.closest("figure");
-		figure.appendChild(wrapper);
+		//  Create an inner wrapper for the figure contents.
+		let innerWrapper = document.createElement("span");
+		innerWrapper.classList.add("figure-inner-wrapper");
+		figure.appendChild(innerWrapper);
 
-		// Tag the figure with the image's float class.
+		//  Get the media, or (if any) the image wrapper.
+		let mediaBlock = captionedMedia.media.closest(".image-wrapper") || captionedMedia.media;
+
+		//  Re-insert the (possibly wrapped) media and the wrapped caption into 
+		//  the figure.
+		innerWrapper.appendChild(mediaBlock);
+		innerWrapper.appendChild(wrapper);
+
+		// Tag the figure with the image’s float class.
 		if (captionedMedia.media.classList.contains("float-left"))
 			captionedMedia.media.closest("figure").classList.add("float-left");
 		if (captionedMedia.media.classList.contains("float-right"))
 			captionedMedia.media.closest("figure").classList.add("float-right");
 	});
 }
-wrapFigureCaptions();
-
-/*  Set minimum caption box width, and add listener to recalculate on
-    window resize.
-    */
-doWhenPageLoaded(setCaptionsMinimumWidth);
-window.addEventListener('resize', setCaptionsMinimumWidth);
+wrapFigures();
 
 /*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
     (This is to mitigate justification/wrapping problems.)

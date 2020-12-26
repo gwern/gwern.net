@@ -645,8 +645,25 @@ figure + figure {
         margin-top: 2em;
     }
 }
+
+.figure-inner-wrapper {
+    display: block;
+    margin: auto;
+}
+@supports (width: -moz-fit-content) {
+    .figure-inner-wrapper {
+        width: -moz-fit-content;
+    }
+}
+@supports (width: fit-content) {
+    .figure-inner-wrapper {
+        width: fit-content;
+    }
+}
+
 figure img,
-figure video {
+figure video,
+figure audio {
     outline: 1px solid var(--GW-figure-outline-color);
 }
 /* WARNING: work around Chrome layout bug */
@@ -654,6 +671,9 @@ figure audio {
     display: block;
     margin: 0 auto;
 }
+
+/*	Figure captions.
+	*/
 figcaption {
     font-size: 0.9375em;
     font-weight: bold;
@@ -661,20 +681,13 @@ figcaption {
     margin: auto;
     padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
 }
-.caption-wrapper {
-    display: block;
-    outline: 1px solid var(--GW-figure-caption-outline-color);
-    margin: 1px auto 0 auto;
-}
 @supports (width: -moz-fit-content) {
-    figcaption,
-    .caption-wrapper {
+    figcaption {
         width: -moz-fit-content;
     }
 }
 @supports (width: fit-content) {
-    figcaption,
-    .caption-wrapper {
+    figcaption {
         width: fit-content;
     }
 }
@@ -682,6 +695,22 @@ figcaption {
     figcaption {
         font-size: 0.875em;
     }
+}
+
+.caption-wrapper {
+    display: block;
+    outline: 1px solid var(--GW-figure-caption-outline-color);
+    margin: 1px auto 0 auto;
+    width: 100%;
+}
+video + .caption-wrapper {
+	margin-top: 2px;
+}
+
+/*	Prevent lower border from being cut off.
+	*/
+.columns li figure {
+    padding-bottom: 1px;
 }
 
 /* enable the various `![caption](/images/foo.jpg){.full-width}` uses; analogous to full-width tables */
