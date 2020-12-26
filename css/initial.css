@@ -964,6 +964,11 @@ pre {
 .table-wrapper.full-width {
     position: relative;
 }
+.table-wrapper.full-width table {
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 0 auto;
+}
 
 /***********/
 /* FIGURES */
