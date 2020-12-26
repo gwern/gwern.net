@@ -2,9 +2,163 @@
 /* author: Said Achmiz */
 /* license: MIT (derivative of footnotes.js, which is PD) */
 
-/*************************/
-/* TABLES, FIGURES, ETC. */
-/*************************/
+/**********/
+/* TABLES */
+/**********/
+
+/*  Wrap each table in a div.table-wrapper (for layout purposes).
+    */
+function wrapTables() {
+	GWLog("wrapTables", "rewrite.js", 1);
+
+	let wrapperClass = "table-wrapper";
+	document.querySelectorAll("table").forEach(table => {
+		if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
+			table.parentElement.classList.toggle(wrapperClass, true);
+		else
+			table.outerHTML = `<div class="${wrapperClass}">` + table.outerHTML + `</div>`;
+	});
+}
+wrapTables();
+
+/*	Designate full-width figures as such (with a ‘full-width’ class).
+	*/
+function markFullWidthFigures() {
+	let fullWidthClass = "full-width";
+    document.querySelectorAll(`img.${fullWidthClass}`).forEach(fullWidthImage => {
+        fullWidthImage.closest("figure").classList.toggle(fullWidthClass, true);
+    });
+}
+markFullWidthFigures();
+
+/***********/
+/* FIGURES */
+/***********/
+
+/*  Inject wrappers into figures.
+    */
+function wrapFigures() {
+	GWLog("wrapFigures", "rewrite.js", 1);
+
+	document.querySelectorAll("figure").forEach(figure => {
+		let media = figure.querySelector("img, audio, video");
+		let caption = figure.querySelector("figcaption");
+
+		if (!(media && caption))
+			return;
+
+		//  Create an inner wrapper for the figure contents.
+		let innerWrapper = document.createElement("span");
+		innerWrapper.classList.add("figure-inner-wrapper");
+		figure.appendChild(innerWrapper);
+
+		//  Wrap the caption in the wrapper span.
+		let wrapper = document.createElement("span");
+		wrapper.classList.add("caption-wrapper");
+		wrapper.appendChild(caption);
+
+		//  Get the media, or (if any) the image wrapper.
+		let mediaBlock = media.closest(".image-wrapper") || media;
+
+		//  Re-insert the (possibly wrapped) media and the wrapped caption into 
+		//  the figure.
+		innerWrapper.appendChild(mediaBlock);
+		innerWrapper.appendChild(wrapper);
+
+		// Tag the figure with the image’s float class.
+		if (media.classList.contains("float-left"))
+			media.closest("figure").classList.add("float-left");
+		if (media.classList.contains("float-right"))
+			media.closest("figure").classList.add("float-right");
+	});
+}
+wrapFigures();
+
+/***************/
+/* CODE BLOCKS */
+/***************/
+
+/*  Wrap each pre.full-width in a div.full-width and a 
+	div.full-width-code-block-wrapper (for layout purposes).
+    */
+function wrapFullWidthPreBlocks() {
+	GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
+
+	let fullWidthClass = "full-width";
+	let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
+	document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
+		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
+			fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
+		else
+			fullWidthPre.outerHTML = `<div class="${fullWidthClass}">` + fullWidthPre.outerHTML + `</div>`;
+
+		fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
+	});
+}
+wrapFullWidthPreBlocks();
+
+/*  Rounds the height of all code blocks to the nearest integer (i.e., the
+    nearest pixel), to fix a weird bug that cuts off the bottom border.
+    */
+// function rectifyCodeBlockHeight(codeBlock) {
+// 	GWLog("rectifyCodeBlockHeight", "rewrite.js", 3);
+// 
+//     codeBlock.style.height = parseInt(getComputedStyle(codeBlock).height) + "px";
+// }
+// function rectifyAllCodeBlockHeights() {
+// 	GWLog("rectifyAllCodeBlockHeights", "rewrite.js", 1);
+// 
+//     document.querySelectorAll("pre code").forEach(codeBlock => {
+//         rectifyCodeBlockHeight(codeBlock);
+//     });
+// }
+// doWhenPageLoaded(rectifyAllCodeBlockHeights);
+
+/**************/
+/* TYPOGRAPHY */
+/**************/
+
+/*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
+    (This is to mitigate justification/wrapping problems.)
+    */
+function insertZeroWidthSpaces() {
+	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
+
+	let problematicCharacters = '/';
+	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
+	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
+	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
+	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
+		element.childNodes.forEach(node => {
+		   if (node.childNodes.length > 0) return;
+		   node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
+		});
+	});
+}
+insertZeroWidthSpaces();
+
+/*	HYPHENS
+	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
+	*/
+function getSelectionHTML() {
+    var container = document.createElement("div");
+    container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+    return container.innerHTML;
+}
+window.addEventListener("copy", GW.textCopied = (event) => {
+	GWLog("GW.textCopied", "rewrite.js", 2);
+
+    if (event.target.matches("input, textarea")) return;
+    event.preventDefault();
+    const selectedHTML = getSelectionHTML();
+    const selectedText = getSelection().toString();
+    event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
+    event.clipboardData.setData("text/html",  selectedHTML.replace(/\u00AD|\u200b/g, ""));
+});
+
+/*********************/
+/* FULL-WIDTH BLOCKS */
+/*********************/
 
 /*  Expands all tables (& other blocks) whose wrapper block is marked with class
     "full-width", and all figures marked with class "full-width", to span the 
@@ -79,152 +233,6 @@ function expandFullWidthBlocks() {
 	GW.notificationCenter.fireEvent("Rewrite.didExpandFullWidthBlocks");
 }
 doWhenPageLoaded(expandFullWidthBlocks);
-
-/*  Wrap each table in a div.table-wrapper (for layout purposes).
-    */
-function wrapTables() {
-	GWLog("wrapTables", "rewrite.js", 1);
-
-	let wrapperClass = "table-wrapper";
-	document.querySelectorAll("table").forEach(table => {
-		if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
-			table.parentElement.classList.toggle(wrapperClass, true);
-		else
-			table.outerHTML = `<div class="${wrapperClass}">` + table.outerHTML + `</div>`;
-	});
-}
-wrapTables();
-
-/*	Designate full-width figures as such (with a ‘full-width’ class).
-	*/
-function markFullWidthFigures() {
-	let fullWidthClass = "full-width";
-    document.querySelectorAll(`img.${fullWidthClass}`).forEach(fullWidthImage => {
-        fullWidthImage.closest("figure").classList.toggle(fullWidthClass, true);
-    });
-}
-markFullWidthFigures();
-
-/*  Inject wrappers into figures.
-    */
-function wrapFigures() {
-	GWLog("wrapFigures", "rewrite.js", 1);
-
-	document.querySelectorAll("figure").forEach(figure => {
-		let media = figure.querySelector("img, audio, video");
-		let caption = figure.querySelector("figcaption");
-
-		if (!(media && caption))
-			return;
-
-		//  Create an inner wrapper for the figure contents.
-		let innerWrapper = document.createElement("span");
-		innerWrapper.classList.add("figure-inner-wrapper");
-		figure.appendChild(innerWrapper);
-
-		//  Wrap the caption in the wrapper span.
-		let wrapper = document.createElement("span");
-		wrapper.classList.add("caption-wrapper");
-		wrapper.appendChild(caption);
-
-		//  Get the media, or (if any) the image wrapper.
-		let mediaBlock = media.closest(".image-wrapper") || media;
-
-		//  Re-insert the (possibly wrapped) media and the wrapped caption into 
-		//  the figure.
-		innerWrapper.appendChild(mediaBlock);
-		innerWrapper.appendChild(wrapper);
-
-		// Tag the figure with the image’s float class.
-		if (media.classList.contains("float-left"))
-			media.closest("figure").classList.add("float-left");
-		if (media.classList.contains("float-right"))
-			media.closest("figure").classList.add("float-right");
-	});
-}
-wrapFigures();
-
-/***************/
-/* CODE BLOCKS */
-/***************/
-
-/*  Wrap each pre.full-width in a div.full-width and a 
-	div.full-width-code-block-wrapper (for layout purposes).
-    */
-function wrapFullWidthPreBlocks() {
-	GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
-
-	let fullWidthClass = "full-width";
-	let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
-	document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
-		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
-			fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
-		else
-			fullWidthPre.outerHTML = `<div class="${fullWidthClass}">` + fullWidthPre.outerHTML + `</div>`;
-
-		fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
-	});
-}
-wrapFullWidthPreBlocks();
-
-/*  Rounds the height of all code blocks to the nearest integer (i.e., the
-    nearest pixel), to fix a weird bug that cuts off the bottom border.
-    */
-function rectifyCodeBlockHeight(codeBlock) {
-	GWLog("rectifyCodeBlockHeight", "rewrite.js", 3);
-
-    codeBlock.style.height = parseInt(getComputedStyle(codeBlock).height) + "px";
-}
-function rectifyAllCodeBlockHeights() {
-	GWLog("rectifyAllCodeBlockHeights", "rewrite.js", 1);
-
-    document.querySelectorAll("pre code").forEach(codeBlock => {
-        rectifyCodeBlockHeight(codeBlock);
-    });
-}
-doWhenPageLoaded(rectifyAllCodeBlockHeights);
-
-/**************/
-/* TYPOGRAPHY */
-/**************/
-
-/*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
-    (This is to mitigate justification/wrapping problems.)
-    */
-function insertZeroWidthSpaces() {
-	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
-
-	let problematicCharacters = '/';
-	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
-	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
-	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
-	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
-		element.childNodes.forEach(node => {
-		   if (node.childNodes.length > 0) return;
-		   node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
-		});
-	});
-}
-insertZeroWidthSpaces();
-
-/*	HYPHENS
-	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
-	*/
-function getSelectionHTML() {
-    var container = document.createElement("div");
-    container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
-    return container.innerHTML;
-}
-window.addEventListener("copy", GW.textCopied = (event) => {
-	GWLog("GW.textCopied", "rewrite.js", 2);
-
-    if (event.target.matches("input, textarea")) return;
-    event.preventDefault();
-    const selectedHTML = getSelectionHTML();
-    const selectedText = getSelection().toString();
-    event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
-    event.clipboardData.setData("text/html",  selectedHTML.replace(/\u00AD|\u200b/g, ""));
-});
 
 /*********/
 /* MISC. */
