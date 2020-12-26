@@ -191,6 +191,8 @@ Popups = {
 			y: (event.clientY - popupContainerViewportRect.top)
 		};
 
+		popup.style.visibility = "hidden";
+
 		//  Wait for the "naive" layout to be completed, and then...
 		requestAnimationFrame(() => {
 			/*  How much "breathing room" to give the target (i.e., offset of
@@ -286,6 +288,8 @@ Popups = {
 
 			popup.style.left = `${provisionalPopupXPosition}px`;
 			popup.style.top = `${provisionalPopupYPosition}px`;
+
+			popup.style.visibility = "visible";
 
 			document.activeElement.blur();
 		});
