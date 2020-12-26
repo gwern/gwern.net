@@ -100,18 +100,18 @@ wrapFullWidthPreBlocks();
 /*  Rounds the height of all code blocks to the nearest integer (i.e., the
     nearest pixel), to fix a weird bug that cuts off the bottom border.
     */
-function rectifyCodeBlockHeight(codeBlock) {
-	GWLog("rectifyCodeBlockHeight", "rewrite.js", 3);
-
-    codeBlock.style.height = parseInt(getComputedStyle(codeBlock).height) + "px";
-}
-function rectifyAllCodeBlockHeights() {
-	GWLog("rectifyAllCodeBlockHeights", "rewrite.js", 1);
-
-    document.querySelectorAll("pre code").forEach(codeBlock => {
-        rectifyCodeBlockHeight(codeBlock);
-    });
-}
+// function rectifyCodeBlockHeight(codeBlock) {
+// 	GWLog("rectifyCodeBlockHeight", "rewrite.js", 3);
+// 
+//     codeBlock.style.height = parseInt(getComputedStyle(codeBlock).height) + "px";
+// }
+// function rectifyAllCodeBlockHeights() {
+// 	GWLog("rectifyAllCodeBlockHeights", "rewrite.js", 1);
+// 
+//     document.querySelectorAll("pre code").forEach(codeBlock => {
+//         rectifyCodeBlockHeight(codeBlock);
+//     });
+// }
 // doWhenPageLoaded(rectifyAllCodeBlockHeights);
 
 /**************/
