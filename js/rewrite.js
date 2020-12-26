@@ -148,33 +148,24 @@ wrapFigures();
 /* CODE BLOCKS */
 /***************/
 
-/*  Unwrap pre.sourceCode blocks from their extraneous containing divs.
+/*  Wrap each pre.full-width in a div.full-width and a 
+	div.full-width-code-block-wrapper (for layout purposes).
     */
-function unwrapSourceCodeBlocks() {
-	GWLog("unwrapSourceCodeBlocks", "rewrite.js", 1);
-
-	document.querySelectorAll("div.sourceCode").forEach(scd => {
-		scd.outerHTML = scd.innerHTML;
-	});
-}
-unwrapSourceCodeBlocks();
-
-/*  Wrap each pre.full-width in a div.full-width (for layout purposes).
-    */
-function wrapPreBlocks() {
-	GWLog("wrapPreBlocks", "rewrite.js", 1);
+function wrapFullWidthPreBlocks() {
+	GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
+	let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
 	document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
 		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
-	//         fullWidthPre.parentElement.classList.toggle(`${fullWidthClass} ${fullWidthClass}-code-block-wrapper`, true);
 			fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
 		else
-	//         fullWidthPre.outerHTML = `<div class="${fullWidthClass} ${fullWidthClass}-code-block-wrapper">` + fullWidthPre.outerHTML + `</div>`;
 			fullWidthPre.outerHTML = `<div class="${fullWidthClass}">` + fullWidthPre.outerHTML + `</div>`;
+
+		fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
 	});
 }
-wrapPreBlocks();
+wrapFullWidthPreBlocks();
 
 /*  Rounds the height of all code blocks to the nearest integer (i.e., the
     nearest pixel), to fix a weird bug that cuts off the bottom border.

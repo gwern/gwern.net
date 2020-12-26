@@ -122,7 +122,13 @@ function prepareCollapseBlocks() {
 			//  Inject the disclosure button.
 			collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
 		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
-			// Remove the `collapse` class and do nothing else.
+			//  Remove the ‘collapse’ class and do nothing else.
+			collapseBlock.classList.remove("collapse");
+		} else if (collapseBlock.parentElement.tagName == "DIV" && collapseBlock.parentElement.children.length == 1) {
+			//  Use parent div as collapse block wrapper.
+			let realCollapseBlock = collapseBlock.parentElement;
+			realCollapseBlock.classList.add("collapse");
+			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
 			collapseBlock.classList.remove("collapse");
 		} else {
 			//  Construct collapse block wrapper and inject the disclosure button.
@@ -142,7 +148,7 @@ function prepareCollapseBlocks() {
 		disclosureButton.addEventListener("change", (event) => {
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
-			//  If it's a code block, adjust its height.
+			//  If it’s a code block, adjust its height.
 			if (collapseBlock.lastElementChild.tagName == "PRE") {
 				let codeBlock = collapseBlock.lastElementChild.lastElementChild;
 				if (codeBlock.tagName != "CODE") return;
