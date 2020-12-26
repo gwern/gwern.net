@@ -17,43 +17,67 @@
 function expandFullWidthBlocks() {
 	GWLog("expandFullWidthBlocks", "rewrite.js", 1);
 
-    document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
-        fullWidthImage.closest("figure").classList.add("full-width");
-    });
-
-    let fullWidthBlockMargin = 25;
-    let pageWidth = document.querySelector("html").clientWidth;
-	let targetWidth = pageWidth - (2 * fullWidthBlockMargin);
-
-    /*  Find all full-width blocks.
-        */
-	let allFullWidthBlocks = document.querySelectorAll("div.full-width, figure.full-width");
-
-	/*	Clear existing styles.
-		*/
-	allFullWidthBlocks.forEach(fullWidthBlock => {
-        fullWidthBlock.removeAttribute("style");
-	});
-
 	/*	On narrow (“mobile”) viewports, do no layout (figures on mobile are
 		already as “full-width” as they’re going to get).
 		*/
 	if (GW.mediaQueries.mobileWidth.matches) return;
 
-	/*	Set new margins of full-width blocks.
+	/*	Pre-query key elements, to save performance on resize.
 		*/
-    allFullWidthBlocks.forEach(fullWidthBlock => {
-		let fullWidthBlockRect = fullWidthBlock.getBoundingClientRect();
-		let currentWidth = fullWidthBlockRect.width;
-		let leftMargin = (fullWidthBlockRect.left * -1) + fullWidthBlockMargin;
-		let rightMargin = currentWidth - leftMargin - targetWidth;
+	GW.fullWidthBlockLayout = {
+		rootElement: document.querySelector("html"),
+		markdownBody: document.querySelector("#markdownBody"),
+		sideMargin: 25,
+		pageWidth: 0,
+		leftAdjustment: 0
+	};
 
-        fullWidthBlock.style.marginLeft = `${leftMargin + "px"}`;
-        fullWidthBlock.style.marginRight = `${rightMargin + "px"}`;
+	/*	Inject styles block to hold dynamically updated layout variables.
+		*/
+	document.querySelector("head").insertAdjacentHTML("beforeend", `<style id="full-width-block-layout-styles"></style>`);
+	let fullWidthBlockLayoutStyles = document.querySelector("#full-width-block-layout-styles");
+
+	/*	Function to update layout variables (called immediately and on resize).
+		*/
+	let updateFullWidthBlockLayoutStyles = () => {
+		GWLog("updateFullWidthBlockLayoutStyles", "rewrite.js", 2);
+
+		if (GW.mediaQueries.mobileWidth.matches) {
+			document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
+				fullWidthBlock.style.marginLeft = "";
+				fullWidthBlock.style.marginRight = "";
+			});
+			return;
+		}
+
+		GW.fullWidthBlockLayout.pageWidth = GW.fullWidthBlockLayout.rootElement.offsetWidth;
+
+		let markdownBodyRect = GW.fullWidthBlockLayout.markdownBody.getBoundingClientRect();
+		let markdownBodyRightMargin = GW.fullWidthBlockLayout.pageWidth - markdownBodyRect.right;
+		GW.fullWidthBlockLayout.leftAdjustment = markdownBodyRect.left - markdownBodyRightMargin;
+
+		fullWidthBlockLayoutStyles.innerHTML = `:root { 
+			--GW-full-width-block-layout-side-margin: ${GW.fullWidthBlockLayout.sideMargin}px;
+			--GW-full-width-block-layout-page-width: ${GW.fullWidthBlockLayout.pageWidth}px;
+			--GW-full-width-block-layout-left-adjustment: ${GW.fullWidthBlockLayout.leftAdjustment}px; 
+		}`;
+	};
+	updateFullWidthBlockLayoutStyles();
+
+	/*	Set margins of full-width blocks.
+		*/
+    document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
+		fullWidthBlock.style.marginLeft = `calc((-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0)) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
+		fullWidthBlock.style.marginRight = `calc((var(--GW-full-width-block-layout-left-adjustment) / 2.0) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
     });
+
+	/*	Add listener to update layout variables on window resize.
+		*/
+	window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
 
 	GW.notificationCenter.fireEvent("Rewrite.didExpandFullWidthBlocks");
 }
+doWhenPageLoaded(expandFullWidthBlocks);
 
 /*=-----------------=*/
 /*= Figure captions =*/
@@ -64,8 +88,6 @@ function expandFullWidthBlocks() {
     element). These are all the captioned media elements on the page.
     */
 function getAllCaptionedMedia() {
-	GWLog("getAllCaptionedMedia", "rewrite.js", 1);
-
     return Array.prototype.map.call(document.querySelectorAll("figure"), figure => {
         let media = figure.querySelector("img") || figure.querySelector("video");
         let caption = figure.querySelector("figcaption");
@@ -158,11 +180,12 @@ function wrapPreBlocks() {
 }
 wrapPreBlocks();
 
-/*  Expand full-width blocks, and add a listener to recompute their size and
-    position upon window resize.
-    */
-doWhenPageLoaded(expandFullWidthBlocks);
-window.addEventListener("resize", expandFullWidthBlocks);
+function markFullWidthFigures() {
+    document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
+        fullWidthImage.closest("figure").classList.toggle("full-width", true);
+    });
+}
+markFullWidthFigures();
 
 /*  Rectify heights of all code blocks.
     */
@@ -228,7 +251,9 @@ insertZeroWidthSpaces();
     */
 window.addEventListener("blur", () => {
     document.addEventListener("selectionchange", GW.selectionChangedWhenSearching = (event) => {
-        expandAllAncestorsOfNode((document.getSelection()||{}).anchorNode);
+		GWLog("GW.selectionChangedWhenSearching", "rewrite.js", 2);
+
+        expandCollapseBlocksToReveal((document.getSelection()||{}).anchorNode);
     });
 });
 
