@@ -17,6 +17,8 @@
 function expandFullWidthBlocks() {
 	GWLog("expandFullWidthBlocks", "rewrite.js", 1);
 
+	//  TODO: active media queries to switch between mobile and non-mobile
+
 	/*	On narrow (“mobile”) viewports, do no layout (figures on mobile are
 		already as “full-width” as they’re going to get).
 		*/
@@ -155,11 +157,12 @@ unwrapSourceCodeBlocks();
 function wrapTables() {
 	GWLog("wrapTables", "rewrite.js", 1);
 
+	let wrapperClass = "table-wrapper";
 	document.querySelectorAll("table").forEach(table => {
 		if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
-			table.parentElement.classList.toggle("table-wrapper", true);
+			table.parentElement.classList.toggle(wrapperClass, true);
 		else
-			table.outerHTML = "<div class='table-wrapper'>" + table.outerHTML + "</div>";
+			table.outerHTML = `<div class="${wrapperClass}">` + table.outerHTML + `</div>`;
 	});
 }
 wrapTables();
@@ -169,20 +172,22 @@ wrapTables();
 function wrapPreBlocks() {
 	GWLog("wrapPreBlocks", "rewrite.js", 1);
 
-	document.querySelectorAll("pre.full-width").forEach(fullWidthPre => {
+	let fullWidthClass = "full-width";
+	document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
 		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
-	//         fullWidthPre.parentElement.classList.toggle("full-width full-width-code-block-wrapper", true);
-			fullWidthPre.parentElement.classList.toggle("full-width", true);
+	//         fullWidthPre.parentElement.classList.toggle(`${fullWidthClass} ${fullWidthClass}-code-block-wrapper`, true);
+			fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
 		else
-	//         fullWidthPre.outerHTML = "<div class='full-width full-width-code-block-wrapper'>" + fullWidthPre.outerHTML + "</div>";
-			fullWidthPre.outerHTML = "<div class='full-width'>" + fullWidthPre.outerHTML + "</div>";
+	//         fullWidthPre.outerHTML = `<div class="${fullWidthClass} ${fullWidthClass}-code-block-wrapper">` + fullWidthPre.outerHTML + `</div>`;
+			fullWidthPre.outerHTML = `<div class="${fullWidthClass}">` + fullWidthPre.outerHTML + `</div>`;
 	});
 }
 wrapPreBlocks();
 
 function markFullWidthFigures() {
-    document.querySelectorAll("img.full-width").forEach(fullWidthImage => {
-        fullWidthImage.closest("figure").classList.toggle("full-width", true);
+	let fullWidthClass = "full-width";
+    document.querySelectorAll(`img.${fullWidthClass}`).forEach(fullWidthImage => {
+        fullWidthImage.closest("figure").classList.toggle(fullWidthClass, true);
     });
 }
 markFullWidthFigures();
