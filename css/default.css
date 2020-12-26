@@ -1064,6 +1064,7 @@ section.footnotes > hr:first-child::after {
 	box-shadow: 
 		0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
 		0 0 0 0.5em var(--GW-footnotes-section-top-rule-color) inset;
+    filter: none;
 }
 section.footnotes > hr:first-child::before {
 	content: "";
