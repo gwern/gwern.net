@@ -649,16 +649,8 @@ figure + figure {
 .figure-inner-wrapper {
     display: block;
     margin: auto;
-}
-@supports (width: -moz-fit-content) {
-    .figure-inner-wrapper {
-        width: -moz-fit-content;
-    }
-}
-@supports (width: fit-content) {
-    .figure-inner-wrapper {
-        width: fit-content;
-    }
+	width: -moz-fit-content;
+	width: fit-content;
 }
 
 figure img,
@@ -680,16 +672,8 @@ figcaption {
     line-height: 1.45;
     margin: auto;
     padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
-}
-@supports (width: -moz-fit-content) {
-    figcaption {
-        width: -moz-fit-content;
-    }
-}
-@supports (width: fit-content) {
-    figcaption {
-        width: fit-content;
-    }
+    width: -moz-fit-content;
+    width: fit-content;
 }
 @media only screen and (max-width: 649px) {
     figcaption {
@@ -847,17 +831,10 @@ blockquote table {
     z-index: 1;
     overflow: visible;
 }
-@supports (width: fit-content) {
-    .epigraph,
-    .epigraph blockquote {
-        width: fit-content;
-    }
-}
-@supports (width: -moz-fit-content) {
-    .epigraph,
-    .epigraph blockquote {
-        width: -moz-fit-content;
-    }
+.epigraph,
+.epigraph blockquote {
+	width: -moz-fit-content;
+	width: fit-content;
 }
 .epigraph p  {
     font-style: italic;
@@ -2371,22 +2348,14 @@ body.directory-index #disqus_thread {
     right: 4.5em;
     margin: auto;
     max-width: calc(100% - 9em);
+	width: -moz-fit-content;
+	width: fit-content;
     text-align: center;
     font-family: var(--SA-image-focus-sans-serif-font-stack);
     border-radius: 8px;
     z-index: 1;
     transition:
         bottom 0.15s ease;
-}
-@supports (width: -moz-fit-content) {
-    #image-focus-overlay .caption {
-        width: -moz-fit-content;
-    }
-}
-@supports (width: fit-content) {
-    #image-focus-overlay .caption {
-        width: fit-content;
-    }
 }
 #image-focus-overlay .caption.hidden {
     bottom: -50%;
@@ -2632,17 +2601,10 @@ body.directory-index #disqus_thread {
     transition: opacity 0.15s ease;
     pointer-events: none;
 }
-@supports (width: -moz-fit-content) {
-    .image-wrapper,
-    .image-wrapper::after {
-        width: -moz-fit-content;
-    }
-}
-@supports (width: fit-content) {
-    .image-wrapper,
-    .image-wrapper::after {
-        width: fit-content;
-    }
+.image-wrapper,
+.image-wrapper::after {
+	width: -moz-fit-content;
+	width: fit-content;
 }
 .image-wrapper:hover::after {
     opacity: 1.0;
