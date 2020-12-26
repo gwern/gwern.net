@@ -22,7 +22,7 @@
     a.has-content::before,
     a.has-annotation::before,
     span.defnMetadata::before {
-        content: "0";
+        content: " ";
         position: absolute;
         width: 0.45em;
         height: 0.75em;
