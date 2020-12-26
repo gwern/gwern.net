@@ -172,52 +172,6 @@ doWhenPageLoaded(() => {
     });
 });
 
-/*  Inject disclosure buttons and otherwise prepare the collapse blocks.
-    */
-function prepareCollapseBlocks() {
-	GWLog("prepareCollapseBlocks", "rewrite.js", 1);
-
-	document.querySelectorAll(".collapse").forEach(collapseBlock => {
-		let disclosureButtonHTML = "<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'>";
-		if (collapseBlock.tagName == "SECTION") {
-			//  Inject the disclosure button.
-			collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
-		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
-			// Remove the `collapse` class and do nothing else.
-			collapseBlock.classList.remove("collapse");
-		} else {
-			//  Construct collapse block wrapper and inject the disclosure button.
-			let realCollapseBlock = document.createElement("div");
-			realCollapseBlock.classList.add("collapse");
-			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
-			//  Move block-to-be-collapsed into wrapper.
-			collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
-			collapseBlock.classList.remove("collapse");
-			realCollapseBlock.appendChild(collapseBlock);
-		}
-	});
-	/*  Add listeners to toggle 'expanded' class of collapse blocks.
-		*/
-	document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
-		let collapseBlock = disclosureButton.closest(".collapse");
-		disclosureButton.addEventListener("change", (event) => {
-			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
-
-			//  If it's a code block, adjust its height.
-			if (collapseBlock.lastElementChild.tagName == "PRE") {
-				let codeBlock = collapseBlock.lastElementChild.lastElementChild;
-				if (codeBlock.tagName != "CODE") return;
-
-				codeBlock.style.height = "";
-				requestAnimationFrame(() => {
-					rectifyCodeBlockHeight(codeBlock);
-				});
-			}
-		});
-	});
-}
-prepareCollapseBlocks();
-
 /*  Wrap all captions in figures in a span.
     */
 function wrapFigureCaptions() {
@@ -266,26 +220,6 @@ function insertZeroWidthSpaces() {
 	});
 }
 insertZeroWidthSpaces();
-
-/* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
-/*  Reveals the given node by expanding all containing collapse blocks.
-    */
-function expandAllAncestorsOfNode(node) {
-	GWLog("expandAllAncestorsOfNode", "rewrite.js", 2);
-
-    // If the node is not an element (e.g. a text node), get its parent element.
-    let element = node instanceof HTMLElement ? node : node.parentElement;
-
-    // Get the closest containing collapse block. If none such, return.
-    let enclosingCollapseBlock = element.closest(".collapse");
-    if (!enclosingCollapseBlock) return;
-
-    // Expand the collapse block by checking the disclosure-button checkbox.
-    enclosingCollapseBlock.querySelector(`#${enclosingCollapseBlock.id} > .disclosure-button`).checked = true;
-
-    // Recursively expand all ancestors of the collapse block.
-    expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
-}
 
 /*  When the window loses focus, add the selectionchange listener.
     (This will be triggered when a "find in page" UI is opened.)
