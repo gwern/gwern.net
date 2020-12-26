@@ -148,17 +148,6 @@ wrapFigures();
 /* CODE BLOCKS */
 /***************/
 
-/*  Unwrap pre.sourceCode blocks from their extraneous containing divs.
-    */
-function unwrapSourceCodeBlocks() {
-	GWLog("unwrapSourceCodeBlocks", "rewrite.js", 1);
-
-	document.querySelectorAll("div.sourceCode").forEach(scd => {
-		scd.outerHTML = scd.innerHTML;
-	});
-}
-unwrapSourceCodeBlocks();
-
 /*  Wrap each pre.full-width in a div.full-width (for layout purposes).
     */
 function wrapPreBlocks() {
