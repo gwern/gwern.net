@@ -741,6 +741,7 @@ a[href*="rosettaproject.org"]::after,
 a[href*="theinterval.org"]::after {
     content: "X";
     text-decoration: overline;
+    bottom: 0.2em;
 }
 
 /* ArXiv: Chi (their logo is too bizarre & off-putting to use, in addition to not working in monochrome) */
@@ -826,6 +827,7 @@ a[href*="groups.yahoo.com"]::after,
 a[href*="www.mail-archive.com"]::after {
     content: "\2709"; /* (✉) ENVELOPE */
     opacity: 0.9;
+    left: 0.04em;
 }
 
 /* The Atlantic: replicate sloping by italics */
@@ -893,7 +895,7 @@ a[href*="link.springer.com"]::after {
     font-size: 1.2em;
     line-height: 1;
     font-weight: normal;
-    bottom: 0.15em;
+    bottom: 0.13em;
 }
 
 /* Oxford Academic Journals / OUP */
