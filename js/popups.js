@@ -432,11 +432,11 @@ Popups.stylesHTML = `<style id='${Popups.stylesID}'>
 }
 </style>`;
 
+GW.notificationCenter.fireEvent("Popups.didLoad");
+
 /******************/
 /*	Initialization.
 	*/
 doWhenPageLoaded(() => {
-	GW.notificationCenter.fireEvent("Popups.didLoad");
-
 	Popups.setup();
 });

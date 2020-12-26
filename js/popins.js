@@ -145,11 +145,11 @@ Popins.stylesHTML = `<style id='${Popins.stylesID}'>
 }
 </style>`;
 
+GW.notificationCenter.fireEvent("Popins.didLoad");
+
 /******************/
 /*	Initialization.
 	*/
 doWhenPageLoaded(() => {
-	GW.notificationCenter.fireEvent("Popins.didLoad");
-
 	Popins.setup();
 });

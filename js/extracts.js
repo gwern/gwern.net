@@ -766,9 +766,9 @@ Extracts = {
     }
 };
 
-doWhenPageLoaded(() => {
-	GW.notificationCenter.fireEvent("Extracts.didLoad");
+GW.notificationCenter.fireEvent("Extracts.didLoad");
 
+doWhenPageLoaded(() => {
 	let serviceProviderObjectName = GW.isMobile() ? "Popins" : "Popups";
 
 	if (window[serviceProviderObjectName])
