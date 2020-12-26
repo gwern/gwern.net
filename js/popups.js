@@ -191,6 +191,7 @@ Popups = {
 			y: (event.clientY - popupContainerViewportRect.top)
 		};
 
+		//	Prevent popup cycling in Chromium.
 		popup.style.visibility = "hidden";
 
 		//  Wait for the "naive" layout to be completed, and then...
@@ -289,6 +290,7 @@ Popups = {
 			popup.style.left = `${provisionalPopupXPosition}px`;
 			popup.style.top = `${provisionalPopupYPosition}px`;
 
+			//	Prevent popup cycling in Chromium.
 			popup.style.visibility = "visible";
 
 			document.activeElement.blur();
