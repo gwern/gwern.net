@@ -147,6 +147,7 @@ a[href$='.sh' i]::after,
 a[href$='.R' i]::after,
 a[href$='.patch' i]::after,
 a[href$='.diff' i]::after,
+a[href^="/static/" i][href$=".html" i]::after,
 /*  Word */
 a[href$='.doc' i]::after,
 a[href$='.docx' i]::after,
@@ -228,6 +229,7 @@ a[href$='.sh' i]:hover::after,
 a[href$='.R' i]:hover::after,
 a[href$='.patch' i]:hover::after,
 a[href$='.diff' i]:hover::after,
+a[href^="/static/" i][href$=".html" i]:hover::after,
 /*  Word */
 a[href$='.doc' i]:hover::after,
 a[href$='.docx' i]:hover::after,
@@ -315,7 +317,8 @@ a[href$='.diff' i]::after,
 a[href$='.patch' i]::after,
 a[href^="/"][href$='.php' i]::after,
 a[href$='.conf' i]::after,
-a[href$='.sh' i]::after {
+a[href$='.sh' i]::after,
+a[href^="/static/" i][href$=".html" i]::after {
     background-image: url('/static/img/icons/code.svg');
 }
 
