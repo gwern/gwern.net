@@ -1181,9 +1181,15 @@ pre {
     overflow: auto;
 }
 
+/*	Full-width code blocks.
+	*/
 .full-width-code-block-wrapper {
-	width: -moz-fit-content;
-	width: fit-content;
+	max-width: -moz-fit-content;
+	max-width: fit-content;
+	margin: auto;
+}
+.full-width-code-block-wrapper pre {
+	padding-right: 1px;
 }
 
 /********/
