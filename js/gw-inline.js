@@ -23,6 +23,10 @@ GW.isMobile = () => {
 			|| !GW.mediaQueries.hoverAvailable.matches);
 };
 
+GW.isFirefox = () => {
+	return (navigator.userAgent.indexOf("Firefox") > 0);
+};
+
 /********************/
 /* DEBUGGING OUTPUT */
 /********************/
@@ -168,7 +172,7 @@ GW.notificationCenter.removeHandlerForEvent = function (eventName, f, options = 
 
     GW.notificationCenter[eventName].removeIf(handler => handler.f == f);
 }
-GW.notificationCenter.cancelAllHandlersForEvent = function (eventName) {
+GW.notificationCenter.removeAllHandlersForEvent = function (eventName) {
     GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName, eventInfo) {

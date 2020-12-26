@@ -9,74 +9,79 @@ Author: Said Achmiz
 license: MIT (derivative of footnotes.js, which is PD)
 */
 
+Sidenotes = {
+	/*  The "target counterpart" is the element associated with the target, i.e.:
+		if the URL hash targets a footnote reference, its counterpart is the
+		sidenote for that citation; and vice-versa, if the hash targets a sidenote,
+		its counterpart is the in-text citation. We want a target counterpart to be
+		highlighted along with the target itself; therefore we apply a special
+		"targeted" class to the target counterpart.
+		*/
+	updateTargetCounterpart: () => {
+		GWLog("Sidenotes.updateTargetCounterpart", "sidenotes.js", 1);
+
+		/*  Clear existing targeting.
+			*/
+		document.querySelectorAll(".targeted").forEach(element => {
+			element.classList.remove("targeted");
+		});
+
+		/*  Identify new target counterpart, if any.
+			*/
+		var counterpart;
+		if (location.hash.match(/#sn[0-9]/)) {
+			counterpart = document.querySelector("#fnref" + location.hash.substr(3));
+		} else if (location.hash.match(/#fnref[0-9]/) && GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
+			counterpart = document.querySelector("#sn" + location.hash.substr(6));
+		}
+		/*  If a target counterpart exists, mark it as such.
+			*/
+		if (counterpart)
+			counterpart.classList.toggle("targeted", true);
+	},
+
+	/*  This is necessary to defeat a bug where if the page is loaded with the URL
+		hash targeting some element, the element does not match the :target CSS
+		pseudo-class.
+		*/
+	realignHashIfNeeded: () => {
+		GWLog("Sidenotes.realignHashIfNeeded", "sidenotes.js", 1);
+
+		if (location.hash.match(/#sn[0-9]/) || location.hash.match(/#fnref[0-9]/))
+			Sidenotes.realignHash();
+	},
+	realignHash: () => {
+		GWLog("Sidenotes.realignHash", "sidenotes.js", 1);
+
+		let hash = location.hash;
+		history.replaceState(null, null, "#");
+		location.hash = hash;
+	},
+
+	/*  Make sure clicking a sidenote does not cause scrolling.
+		*/
+	setHashWithoutScrolling: (newHash) => {
+		GWLog("Sidenotes.setHashWithoutScrolling", "sidenotes.js", 1);
+
+		var selectedRange;
+		if (GW.isFirefox())
+			selectedRange = window.getSelection().getRangeAt(0);
+
+		let scrollPositionBeforeNavigate = window.scrollY;
+		location.hash = newHash;
+		requestAnimationFrame(() => {
+			window.scrollTo(0, scrollPositionBeforeNavigate);
+		});
+
+		if (GW.isFirefox())
+			window.getSelection().addRange(selectedRange);
+	}
+};
+
 /***********/
 /* HELPERS */
 /***********/
 
-/*  The "target counterpart" is the element associated with the target, i.e.:
-    if the URL hash targets a footnote reference, its counterpart is the
-    sidenote for that citation; and vice-versa, if the hash targets a sidenote,
-    its counterpart is the in-text citation. We want a target counterpart to be
-    highlighted along with the target itself; therefore we apply a special
-    "targeted" class to the target counterpart.
-    */
-function updateTargetCounterpart() {
-    GWLog("updateTargetCounterpart", "sidenotes.js");
-
-    /*  Clear existing targeting.
-        */
-    document.querySelectorAll(".targeted").forEach(element => {
-        element.classList.remove("targeted");
-    });
-
-    /*  Identify new target counterpart, if any.
-        */
-    var counterpart;
-    if (location.hash.match(/#sn[0-9]/)) {
-        counterpart = document.querySelector("#fnref" + location.hash.substr(3));
-    } else if (location.hash.match(/#fnref[0-9]/) && GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
-        counterpart = document.querySelector("#sn" + location.hash.substr(6));
-    }
-    /*  If a target counterpart exists, mark it as such.
-        */
-    if (counterpart)
-        counterpart.classList.toggle("targeted", true);
-}
-
-/*  This is necessary to defeat a bug where if the page is loaded with the URL
-    hash targeting some element, the element does not match the :target CSS
-    pseudo-class.
-    */
-function realignHashIfNeeded() {
-    GWLog("realignHashIfNeeded", "sidenotes.js");
-
-    if (location.hash.match(/#sn[0-9]/) || location.hash.match(/#fnref[0-9]/))
-        realignHash();
-}
-function realignHash() {
-    GWLog("realignHash", "sidenotes.js");
-
-    let hash = location.hash;
-    history.replaceState(null, null, "#");
-    location.hash = hash;
-}
-
-/*  Make sure clicking a sidenote does not cause scrolling.
-    */
-function setHashWithoutScrolling(newHash) {
-    var selectedRange;
-    if (GW.isFirefox)
-        selectedRange = window.getSelection().getRangeAt(0);
-
-    let scrollPositionBeforeNavigate = window.scrollY;
-    location.hash = newHash;
-    requestAnimationFrame(() => {
-        window.scrollTo(0, scrollPositionBeforeNavigate);
-    });
-
-    if (GW.isFirefox)
-        window.getSelection().addRange(selectedRange);
-}
 
 /*******************/
 /* COLLAPSE BLOCKS */
@@ -261,7 +266,7 @@ function bindSidenoteMouseEvents() {
 
         if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
             (location.hash.startsWith("#sn"))) {
-            setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
+            Sidenotes.setHashWithoutScrolling(GW.sidenotes.hashBeforeSidenoteWasFocused);
         }
     });
 
@@ -269,17 +274,17 @@ function bindSidenoteMouseEvents() {
 		let fnref = GW.sidenotes.footnoteRefs[i];
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
 
-		fnref.addEventListener("mouseover", fnref.footnoteover = (event) => {
+		fnref.addEventListener("mouseenter", fnref.citationover = (event) => {
 			sidenote.classList.toggle("highlighted", true);
 		});
-		fnref.addEventListener("mouseout", fnref.footnoteout = (event) => {
-			sidenote.classList.remove("highlighted");
+		fnref.addEventListener("mouseleave", fnref.citationout = (event) => {
+			sidenote.classList.toggle("highlighted", false);
 		});
-		sidenote.addEventListener("mouseover", sidenote.sidenoteover = (event) => {
+		sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
 			fnref.classList.toggle("highlighted", true);
 		});
-		sidenote.addEventListener("mouseout", sidenote.sidenoteout = (event) => {
-			fnref.classList.remove("highlighted");
+		sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
+			fnref.classList.toggle("highlighted", false);
 		});
 	}
 }
@@ -295,16 +300,16 @@ function unbindSidenoteMouseEvents() {
 		let fnref = GW.sidenotes.footnoteRefs[i];
 		let sidenote = GW.sidenotes.sidenoteDivs[i];
 
-		fnref.removeEventListener("mouseover", fnref.footnoteover);
-		fnref.footnoteover = null;
+		fnref.removeEventListener("mouseenter", fnref.citationover);
+		fnref.citationover = null;
 
-		fnref.removeEventListener("mouseout", fnref.footnoteout);
-		fnref.footnoteout = null;
+		fnref.removeEventListener("mouseleave", fnref.citationout);
+		fnref.citationout = null;
 
-		sidenote.removeEventListener("mouseover", sidenote.sidenoteover);
+		sidenote.removeEventListener("mouseenter", sidenote.sidenoteover);
 		sidenote.sidenoteover = null;
 
-		sidenote.removeEventListener("mouseout", sidenote.sidenoteout);
+		sidenote.removeEventListener("mouseleave", sidenote.sidenoteout);
 		sidenote.sidenoteout = null;
 	}
 }
@@ -646,7 +651,7 @@ function constructSidenotes() {
             //  Preserve hash before changing it.
             if (!(location.hash.startsWith("#sn") || location.hash.startsWith("#fnref")))
                 GW.sidenotes.hashBeforeSidenoteWasFocused = location.hash;
-            setHashWithoutScrolling(encodeURIComponent(sidenote.id));
+            Sidenotes.setHashWithoutScrolling(encodeURIComponent(sidenote.id));
         });
     }
 
@@ -766,7 +771,7 @@ function sidenotesSetup() {
         /*  Otherwise, make sure that if a sidenote is targeted by the hash, it
             indeed ends up looking highlighted (this defeats a weird bug).
             */
-        requestAnimationFrame(realignHashIfNeeded);
+        requestAnimationFrame(Sidenotes.realignHashIfNeeded);
     }
 
     /*  Having updated the hash, now properly highlight everything, if needed,
@@ -778,7 +783,7 @@ function sidenotesSetup() {
         */
     let hashUpdateResponse = () => {
         revealTarget();
-        updateTargetCounterpart();
+        Sidenotes.updateTargetCounterpart();
 
 		//  Prepare for hash reversion.
 		/*  Save the hash, if need be (if it does NOT point to a sidenote).
@@ -801,9 +806,16 @@ function sidenotesSetup() {
         collapseCheckbox.addEventListener("change", GW.sidenotes.disclosureButtonValueChanged = (event) => {
             GWLog("GW.sidenotes.disclosureButtonValueChanged", "sidenotes.js");
 
-            setTimeout(updateSidenotePositions);
+            requestAnimationFrame(updateSidenotePositions);
         });
     });
+
+	/*	Add event handler to (asynchronously) recompute sidenote positioning 
+		when full-width blocks are expanded.
+		*/
+	GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", () => {
+		requestAnimationFrame(updateSidenotePositions);
+	});
 
 	GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 }
@@ -812,3 +824,30 @@ GW.notificationCenter.fireEvent("Sidenotes.didLoad");
 
 //  LET... THERE... BE... SIDENOTES!!!
 sidenotesSetup();
+
+/*  Set the display form of margin notes (margin vs. inline).
+ */
+function updateMarginNoteStyle() {
+	GWLog("updateMarginNoteStyle", "rewrite.js", 1);
+
+    document.querySelectorAll(".marginnote").forEach(marginNote => {
+        if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches) {
+            marginNote.classList.add("inline");
+            marginNote.classList.remove("sidenote");
+        } else {
+            marginNote.classList.remove("inline");
+            marginNote.classList.add("sidenote");
+        }
+    });
+}
+doWhenPageLoaded (() => {
+    if (typeof GW.sidenotes == "undefined" ||
+        GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
+        GW.sidenotes.sidenoteDivs.length == 0) {
+        return;
+    } else {
+        updateMarginNoteStyle();
+        GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(updateMarginNoteStyle);
+    }
+});
+

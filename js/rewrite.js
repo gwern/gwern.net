@@ -38,7 +38,7 @@ function expandFullWidthBlocks() {
 	/*	On narrow (“mobile”) viewports, do no layout (figures on mobile are
 		already as “full-width” as they’re going to get).
 		*/
-	if (matchMedia("(max-width: 768px)").matches) return;
+	if (GW.mediaQueries.mobileWidth.matches) return;
 
 	/*	Set new margins of full-width blocks.
 		*/
@@ -52,16 +52,7 @@ function expandFullWidthBlocks() {
         fullWidthBlock.style.marginRight = `${rightMargin + "px"}`;
     });
 
-	/*  If sidenotes exist, update sidenote positions.
-		*/
-	requestAnimationFrame(() => {
-		if (typeof GW.sidenotes == "undefined" ||
-			GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-			GW.sidenotes.sidenoteDivs.length == 0)
-			return;
-
-			updateSidenotePositions();
-	});
+	GW.notificationCenter.fireEvent("Rewrite.didExpandFullWidthBlocks");
 }
 
 /*=-----------------=*/
@@ -275,32 +266,6 @@ function insertZeroWidthSpaces() {
 	});
 }
 insertZeroWidthSpaces();
-
-/*  Set the display form of margin notes (margin vs. inline).
- */
-function updateMarginNoteStyle() {
-	GWLog("updateMarginNoteStyle", "rewrite.js", 1);
-
-    document.querySelectorAll(".marginnote").forEach(marginNote => {
-        if (GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches) {
-            marginNote.classList.add("inline");
-            marginNote.classList.remove("sidenote");
-        } else {
-            marginNote.classList.remove("inline");
-            marginNote.classList.add("sidenote");
-        }
-    });
-}
-doWhenPageLoaded (() => {
-    if (typeof GW.sidenotes == "undefined" ||
-        GW.sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true ||
-        GW.sidenotes.sidenoteDivs.length == 0) {
-        return;
-    } else {
-        updateMarginNoteStyle();
-        GW.sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(updateMarginNoteStyle);
-    }
-});
 
 /* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
 /*  Reveals the given node by expanding all containing collapse blocks.
