@@ -2,7 +2,7 @@
 {- LinkPrioritize.hs: simple CLI utility for taking a list of URLs, comparing to automatic & manual link annotation databases, and ranking poorly-annotated links by frequency to help prioritize creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2020-11-01 12:06:18 gwern"
+When:  Time-stamp: "2020-12-26 12:01:25 gwern"
 License: CC-0
 Dependencies: none
 
@@ -35,7 +35,6 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 6 https://www.reddit.com/r/TOUHOUMUSIC/search?q=author%3Agwern&sort=new&restrict_sr=on&t=all
 ...
 1 http://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a
-1 http://128.32.86.250/rea/bayareastudy/pdf/science_magazine_article.pdf
 1 http://1000enpark.com/park/tokyo/oota/photo_heiwajima/p_main.jpg
 1 http://10000yearclock.net/
 1 http://0xeb.net/wp-content/uploads/2018/02/StarCraft_EUD_Emulator.pdf
