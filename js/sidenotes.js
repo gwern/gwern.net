@@ -621,6 +621,10 @@ Sidenotes = {
 	setup: () => {
 		GWLog("Sidenotes.setup", "sidenotes.js", 1);
 
+		//  TEMPORARY!
+		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
+			return;
+
 		/*  Listen for changes to whether the viewport width media query is matched;
 			if such a change occurs (i.e., if the viewport becomes, or stops being,
 			wide enough to support sidenotes), switch modes from footnote popups to
