@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-26 11:48:48 gwern"
+When:  Time-stamp: "2020-12-26 17:02:25 gwern"
 License: CC-0
 -}
 
@@ -20,7 +20,8 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
 import qualified Data.HashMap.Strict as HM (lookup)
 import GHC.Generics (Generic)
-import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, nub, sort, (\\))
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
+import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
 import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
@@ -55,10 +56,10 @@ readLinkMetadataOnce = do
              -- Quality checks:
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
              let urls = map (\(u,_) -> u) custom
-             when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nub urls)
+             when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
              let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
-             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nub titles)
-             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nub annotations)
+             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
              let emptyCheck = filter (\(u,(t,a,_,_,s)) -> any (=="") [u,t,a,s]) custom
              when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
@@ -104,8 +105,8 @@ hasAnnotationInline md idp x@(Link (a,b,c) e (f,g)) = if "linkBibliography-annot
                                                 Just ("", "", "", "", "") -> x
                                                 Just _ -> let a' = if idp then a else "" in -- erase link ID?
                                                   if T.head f == '?' then
-                                                  Span (a', nub (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
-                                                  Link (a', nub (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+                                                  Span (a', nubOrd (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
+                                                  Link (a', nubOrd (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
 
 hasAnnotationInline _ _ x = x
 
@@ -115,7 +116,7 @@ recurseList :: Metadata -> [String] -> [Block]
 recurseList md links = if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++
   [Div ("link-bibliography-description", ["collapseSummary"], []) [Para [Str "Bibliography of page links in reading order (with annotations when available):"]]] ++
   sectionContents else recurseList md finalLinks
-                       where links' = nub links
+                       where links' = nubOrd links
                              linkAnnotations = map (`M.lookup` md) links'
                              pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
                              sectionContents = [OrderedList (1,Decimal,Period) (map generateListItems pairs)] :: [Block]
@@ -180,10 +181,10 @@ readLinkMetadata = do
              -- Quality checks:
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
              let urls = map (\(u,_) -> u) custom
-             when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nub urls)
+             when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
              let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
-             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nub titles)
-             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nub annotations)
+             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
              let emptyCheck = filter (\(u,(t,a,_,_,s)) -> any (=="") [u,t,a,s]) custom
              when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
@@ -766,7 +767,7 @@ cleanAbstractsHTML t = trim $
     , ("+/-", "±")
     , ("ml-1", "ml<sup-1</sup>")
     , ("Cmax", "C<sub>max</sub>")
-    , ("­" "") -- we do soft hyphenation at compile-time to keep the data sources clean & readable, and benefit from any upgrades
+    , ("\173", "") -- we do soft hyphenation at compile-time to keep the data sources clean & readable, and benefit from any upgrades
       ]
 
 trim :: String -> String
