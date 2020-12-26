@@ -150,14 +150,14 @@ function unwrapSourceCodeBlocks() {
 }
 unwrapSourceCodeBlocks();
 
-/*  Wrap each table in a div.tableWrapper (for layout purposes).
+/*  Wrap each table in a div.table-wrapper (for layout purposes).
     */
 function wrapTables() {
 	GWLog("wrapTables", "rewrite.js", 1);
 
 	document.querySelectorAll("table").forEach(table => {
 		if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
-			table.parentElement.classList.toggle("tableWrapper", true);
+			table.parentElement.classList.toggle("table-wrapper", true);
 		else
 			table.outerHTML = "<div class='table-wrapper'>" + table.outerHTML + "</div>";
 	});
