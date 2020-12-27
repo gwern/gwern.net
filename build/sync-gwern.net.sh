@@ -135,11 +135,11 @@ then
     λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=5000 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code"
 
-    λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -- ./metadata/custom.yaml; }
-    wrap λ "Check possible typo in custom.yaml"
+    λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' -e '<em<' -- ./metadata/*.yaml; }
+    wrap λ "Check possible typo in YAML metadata database"
 
-    λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/custom.yaml | fgrep -v 'wikimedia.org'; }
-    wrap λ "Check image hotlinking & non-absolute relative image paths in custom.yaml"
+    λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
+    wrap λ "Check image hotlinking & non-absolute relative image paths in YAML metadata database"
 
     λ() {
         set +e;
