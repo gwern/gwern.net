@@ -561,8 +561,8 @@ GW.notificationCenter.fireEvent("ImageFocus.didLoad");
 /* INITIALIZATION */
 /******************/
 
-imageFocusSetup();
-focusImageSpecifiedByURL();
+window.addEventListener("DOMContentLoaded", imageFocusSetup);
+doWhenPageLoaded(focusImageSpecifiedByURL);
 
 // TODO: re-enable this once imageFocusSetup() is refactored to be repeatable
 // GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
