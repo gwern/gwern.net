@@ -1,21 +1,23 @@
+/*	NOTE: redundant with (and inferior to) expandCollapseBlocksToReveal()
+	TODO: delete this at some point
 /*  Reveals the given node by expanding all containing collapse blocks.
     */
-function expandAllAncestorsOfNode(node) {
-	GWLog("expandAllAncestorsOfNode", "collapse.js", 2);
-
-    // If the node is not an element (e.g. a text node), get its parent element.
-    let element = node instanceof HTMLElement ? node : node.parentElement;
-
-    // Get the closest containing collapse block. If none such, return.
-    let enclosingCollapseBlock = element.closest(".collapse");
-    if (!enclosingCollapseBlock) return;
-
-    // Expand the collapse block by checking the disclosure-button checkbox.
-    enclosingCollapseBlock.querySelector(`#${enclosingCollapseBlock.id} > .disclosure-button`).checked = true;
-
-    // Recursively expand all ancestors of the collapse block.
-    expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
-}
+// function expandAllAncestorsOfNode(node) {
+// 	GWLog("expandAllAncestorsOfNode", "collapse.js", 2);
+// 
+//     // If the node is not an element (e.g. a text node), get its parent element.
+//     let element = node instanceof HTMLElement ? node : node.parentElement;
+// 
+//     // Get the closest containing collapse block. If none such, return.
+//     let enclosingCollapseBlock = element.closest(".collapse");
+//     if (!enclosingCollapseBlock) return;
+// 
+//     // Expand the collapse block by checking the disclosure-button checkbox.
+//     enclosingCollapseBlock.querySelector(`#${enclosingCollapseBlock.id} > .disclosure-button`).checked = true;
+// 
+//     // Recursively expand all ancestors of the collapse block.
+//     expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
+// }
 
 /*  This function expands all collapse blocks containing the given node, if
     any (including the node itself, if it is a collapse block). Returns true
