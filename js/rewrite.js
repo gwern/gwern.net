@@ -250,7 +250,8 @@ function identifyFootnotesSection() {
 doWhenDOMContentLoaded(identifyFootnotesSection);
 //  TODO: might have to realign hash after this?
 
-/* Directional navigation links on self-links: for each self-link like "see [later](#later-identifier)", find the linked identifier, whether it's before or after, and if it is before/previously, annotate the self-link with '↑' and if after/later, '↓'. This helps the reader know if it's a backwards link to a identifier already read, or an unread identifier. */
+/*	Directional navigation links on self-links: for each self-link like “see [later](#later-identifier)”, find the linked identifier, whether it’s before or after, and if it is before/previously, annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a backwards link to a identifier already read, or an unread identifier.
+	*/
 function directionalizeAnchorLinks() {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
@@ -261,27 +262,6 @@ function directionalizeAnchorLinks() {
 	});
 }
 doWhenDOMContentLoaded(directionalizeAnchorLinks);
-
-/* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
-
-//  TODO: re-enable this after figuring out why it's buggy
-/*  When the window loses focus, add the selectionchange listener.
-    (This will be triggered when a "find in page" UI is opened.)
-    */
-// window.addEventListener("blur", () => {
-//     document.addEventListener("selectionchange", GW.selectionChangedWhenSearching = (event) => {
-// 		GWLog("GW.selectionChangedWhenSearching", "rewrite.js", 2);
-// 
-//         expandCollapseBlocksToReveal((document.getSelection()||{}).anchorNode);
-//     });
-// });
-
-/*  When the window gains focus, remove the selectionchange listener.
-    (This will be triggered when a "find in page" UI is closed.)
-    */
-// window.addEventListener("focus", () => {
-//     document.removeEventListener("selectionchange", GW.selectionChangedWhenSearching);
-// });
 
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
 /* Settings: 'prefetch' (loads HTML of target) after 800ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */
