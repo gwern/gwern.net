@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-26 22:57:08 gwern"
+When:  Time-stamp: "2020-12-27 12:43:24 gwern"
 License: CC-0
 -}
 
@@ -129,7 +129,7 @@ generateListItems (f, ann) = case ann of
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID `T.append` T.pack("-" ++ (filter (=='.') $ last $ splitPath f)) in
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
-                                                              let date = Span ("", ["date"], []) [Str (T.pack dt)] in
+                                                              let date = if dt=="" then [] else [Str "(", Span ("", ["date"], []) [Str (T.pack dt)], Str ")"] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
                                                                   let link = if head f == '?' then
                                                                                Span (lid, ["defnMetadata", "linkBibliography-annotated"], [("original-definition-id",T.pack f)]++values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
@@ -142,7 +142,7 @@ generateListItems (f, ann) = case ann of
                                                                        let abst'' = restoreFloatRight abst abst' in
                                                               [Para
                                                                 ([link,
-                                                                  Str ","] ++ author ++ [Str "(", date, Str ")", Str ":"]),
+                                                                  Str ","] ++ author ++ date ++ [Str ":"]),
                                                            BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                                            ]
                              where
@@ -279,7 +279,7 @@ constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)
    where
      abstract', abstractText, possibleTooltip :: String
     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
-     abstract' = if (take 3 abstract) == "<p>" || (take 7 abstract) == "<figure" then abstract else "<p>" ++ abstract ++ "</p>"
+     abstract' = if (take 3 abstract) == "<p>" || (take 3 abstract) == "<ul>" || (take 3 abstract) == "<ol>" || (take 7 abstract) == "<figure" then abstract else "<p>" ++ abstract ++ "</p>"
      tabstract' = htmlToBetterHTML $ T.pack abstract'
      finalAbstract = restoreFloatRight abstract' (T.unpack tabstract')
      -- Tooltip rewriting
@@ -467,7 +467,7 @@ wikipedia p
                                                                                                         newThumbnail <- downloadWPThumbnail $ T.unpack href
                                                                                                         (color,h,w) <- invertImage newThumbnail
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
-                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ urlEncode newThumbnail ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
+                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ urlEncode newThumbnail ++ "\" alt=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract' = cleanAbstractsHTML wpAbstract in
@@ -796,7 +796,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
                               let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (urlEncode thumbnail') ++ "\" title=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (urlEncode thumbnail') ++ "\" alt=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
 
                         let doi = ""
                         let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
