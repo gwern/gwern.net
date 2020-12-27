@@ -66,7 +66,7 @@ function expandCollapseBlocksToReveal(node) {
     */
 function isCollapsed(collapseBlock) {
     let collapseCheckbox = collapseBlock.querySelector(".disclosure-button");
-    return (collapseCheckbox.checked == false);
+    return (collapseCheckbox && collapseCheckbox.checked == false);
 }
 
 /*  Returns true if the given element is within a currently-collapsed collapse
@@ -146,7 +146,14 @@ function prepareCollapseBlocks() {
 			realCollapseBlock.appendChild(collapseBlock);
 		}
 	});
-	/*  Add listeners to toggle ‘expanded’ class of collapse blocks.
+
+	/*	Fire notification event.
+		*/
+	requestAnimationFrame(() => {
+        GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
+    });
+
+    /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
 	document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		let collapseBlock = disclosureButton.closest(".collapse");

@@ -161,7 +161,7 @@ window.addEventListener("copy", GW.textCopied = (event) => {
 /*********************/
 
 /*  Expands all tables (& other blocks) whose wrapper block is marked with class
-    "full-width", and all figures marked with class "full-width", to span the 
+    ‘full-width’, and all figures marked with class ‘full-width’, to span the 
     viewport (minus a specified margin on both sides).
     */
 function expandFullWidthBlocks() {
