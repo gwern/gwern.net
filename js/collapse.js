@@ -21,7 +21,10 @@
 
 /*  This function expands all collapse blocks containing the given node, if
     any (including the node itself, if it is a collapse block). Returns true
-    if any such expansion occurred.
+    if any such expansion occurred. Fires Collapse.collapseStateDidChange event
+    after all (possibly recursive) expansion is completed. (Only one event fired
+    per non-recursive call to expandCollapseBlocksToReveal(), even if recursive
+    expansion occurred.)
     */
 function expandCollapseBlocksToReveal(node) {
     GWLog("expandCollapseBlocksToReveal", "collapse.js", 2);
@@ -46,7 +49,7 @@ function expandCollapseBlocksToReveal(node) {
 
     /*  Expand any higher-level collapse blocks!
         Fire state change event only if we did NOT have to do any further
-        expansion (otherwise we'll do redundant layout).
+        expansion (otherwise we’ll do redundant layout).
         */
     if (!expandCollapseBlocksToReveal(collapseParent.parentElement) && expansionOccurred)
     	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
