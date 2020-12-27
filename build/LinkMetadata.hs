@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-27 12:43:24 gwern"
+When:  Time-stamp: "2020-12-27 15:05:41 gwern"
 License: CC-0
 -}
 
@@ -137,7 +137,7 @@ generateListItems (f, ann) = case ann of
                                                                                Link (lid, ["docMetadata", "linkBibliography-annotated"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
                                                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
-                                                                     let abst' = if (take 3 abst) == "<p>" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
+                                                                     let abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
                                                                        -- check that float-right hasn't been deleted by Pandoc again:
                                                                        let abst'' = restoreFloatRight abst abst' in
                                                               [Para
