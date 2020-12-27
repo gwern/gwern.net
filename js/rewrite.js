@@ -121,21 +121,21 @@ wrapFullWidthPreBlocks();
 /*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
     (This is to mitigate justification/wrapping problems.)
     */
-function insertZeroWidthSpaces() {
-	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
-
-	let problematicCharacters = '/';
-	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
-	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
-	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
-	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
-		element.childNodes.forEach(node => {
-		   if (node.childNodes.length > 0) return;
-		   node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
-		});
-	});
-}
-insertZeroWidthSpaces();
+// function insertZeroWidthSpaces() {
+// 	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
+// 
+// 	let problematicCharacters = '/';
+// 	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
+// 	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
+// 	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
+// 	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
+// 		element.childNodes.forEach(node => {
+// 			if (node.childNodes.length > 0) return;
+// 			node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
+// 		});
+// 	});
+// }
+// insertZeroWidthSpaces();
 
 /*	HYPHENS
 	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
