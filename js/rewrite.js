@@ -19,17 +19,7 @@ function wrapTables() {
 			table.outerHTML = `<div class="${wrapperClass}">` + table.outerHTML + `</div>`;
 	});
 }
-wrapTables();
-
-/*	Designate full-width figures as such (with a ‘full-width’ class).
-	*/
-function markFullWidthFigures() {
-	let fullWidthClass = "full-width";
-    document.querySelectorAll(`img.${fullWidthClass}`).forEach(fullWidthImage => {
-        fullWidthImage.closest("figure").classList.toggle(fullWidthClass, true);
-    });
-}
-markFullWidthFigures();
+doWhenDOMContentLoaded(wrapTables);
 
 /***********/
 /* FIGURES */
@@ -72,7 +62,17 @@ function wrapFigures() {
 			media.closest("figure").classList.add("float-right");
 	});
 }
-wrapFigures();
+doWhenDOMContentLoaded(wrapFigures);
+
+/*	Designate full-width figures as such (with a ‘full-width’ class).
+	*/
+function markFullWidthFigures() {
+	let fullWidthClass = "full-width";
+    document.querySelectorAll(`img.${fullWidthClass}`).forEach(fullWidthImage => {
+        fullWidthImage.closest("figure").classList.toggle(fullWidthClass, true);
+    });
+}
+doWhenDOMContentLoaded(markFullWidthFigures);
 
 /***************/
 /* CODE BLOCKS */
@@ -95,7 +95,7 @@ function wrapFullWidthPreBlocks() {
 		fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
 	});
 }
-wrapFullWidthPreBlocks();
+doWhenDOMContentLoaded(wrapFullWidthPreBlocks);
 
 /*  Rounds the height of all code blocks to the nearest integer (i.e., the
     nearest pixel), to fix a weird bug that cuts off the bottom border.
@@ -121,21 +121,21 @@ wrapFullWidthPreBlocks();
 /*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
     (This is to mitigate justification/wrapping problems.)
     */
-function insertZeroWidthSpaces() {
-	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
-
-	let problematicCharacters = '/';
-	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
-	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
-	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
-	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
-		element.childNodes.forEach(node => {
-		   if (node.childNodes.length > 0) return;
-		   node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
-		});
-	});
-}
-insertZeroWidthSpaces();
+// function insertZeroWidthSpaces() {
+// 	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
+// 
+// 	let problematicCharacters = '/';
+// 	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
+// 	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
+// 	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
+// 	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
+// 		element.childNodes.forEach(node => {
+// 			if (node.childNodes.length > 0) return;
+// 			node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
+// 		});
+// 	});
+// }
+// insertZeroWidthSpaces();
 
 /*	HYPHENS
 	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
@@ -161,7 +161,7 @@ window.addEventListener("copy", GW.textCopied = (event) => {
 /*********************/
 
 /*  Expands all tables (& other blocks) whose wrapper block is marked with class
-    "full-width", and all figures marked with class "full-width", to span the 
+    ‘full-width’, and all figures marked with class ‘full-width’, to span the 
     viewport (minus a specified margin on both sides).
     */
 function expandFullWidthBlocks() {
@@ -247,43 +247,23 @@ function identifyFootnotesSection() {
 	if (footnotesSection)
 		footnotesSection.id = "footnotes";
 }
-window.addEventListener("DOMContentLoaded", () => {
-	identifyFootnotesSection();
-});
-//  TODO: might have to realign hash after this?
+doWhenDOMContentLoaded(identifyFootnotesSection);
 
-/* Directional navigation links on self-links: for each self-link like "see [later](#later-identifier)", find the linked identifier, whether it's before or after, and if it is before/previously, annotate the self-link with '↑' and if after/later, '↓'. This helps the reader know if it's a backwards link to a identifier already read, or an unread identifier. */
+/*	Directional navigation links on self-links: for each self-link like “see [later](#later-identifier)”, find the linked identifier, whether it’s before or after, and if it is before/previously, annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a backwards link to a identifier already read, or an unread identifier.
+	*/
 function directionalizeAnchorLinks() {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
-	document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) > a[href^='#']:not(.footnote-ref):not(.footnote-back):not(.sidenote-self-link):not(.sidenote-back):not(.sidenote)").forEach(identifierLink => {
-		header = document.body.querySelector("#markdownBody *[id='" + identifierLink.hash.substring(1) + "']");
-		if (!header) return;
-		identifierLink.classList.add((identifierLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
+	document.body.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
+		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
+			|| identifierLink.closest(".footnote-ref, .footnote-back, .sidenote-self-link"))
+			return;
+		target = document.body.querySelector(identifierLink.getAttribute("href"));
+		if (!target) return;
+		identifierLink.classList.add((identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 	});
 }
-directionalizeAnchorLinks();
-
-/* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
-
-//  TODO: re-enable this after figuring out why it's buggy
-/*  When the window loses focus, add the selectionchange listener.
-    (This will be triggered when a "find in page" UI is opened.)
-    */
-// window.addEventListener("blur", () => {
-//     document.addEventListener("selectionchange", GW.selectionChangedWhenSearching = (event) => {
-// 		GWLog("GW.selectionChangedWhenSearching", "rewrite.js", 2);
-// 
-//         expandCollapseBlocksToReveal((document.getSelection()||{}).anchorNode);
-//     });
-// });
-
-/*  When the window gains focus, remove the selectionchange listener.
-    (This will be triggered when a "find in page" UI is closed.)
-    */
-// window.addEventListener("focus", () => {
-//     document.removeEventListener("selectionchange", GW.selectionChangedWhenSearching);
-// });
+doWhenDOMContentLoaded(directionalizeAnchorLinks);
 
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
 /* Settings: 'prefetch' (loads HTML of target) after 800ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */

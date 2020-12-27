@@ -643,7 +643,7 @@ Sidenotes = {
 			*/
 		Sidenotes.constructSidenotes();
 		if (document.readyState == "loading")
-			window.addEventListener("DOMContentLoaded", Sidenotes.constructSidenotes);
+			doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
 
 		/*  Add a resize listener so that sidenote positions are recalculated when
 			the window is resized.
@@ -660,7 +660,7 @@ Sidenotes = {
 			Sidenotes.updateSidenotePositions();
 		} else {
 			if (document.readyState == "loading") {
-				window.addEventListener("DOMContentLoaded", Sidenotes.updateSidenotePositions);
+				doWhenDOMContentLoaded(Sidenotes.updateSidenotePositions);
 			} else {
 				Sidenotes.updateSidenotePositions();
 			}

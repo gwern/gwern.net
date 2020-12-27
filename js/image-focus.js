@@ -494,6 +494,7 @@ function focusNextImage(next = true) {
 
 function setImageFocusCaption() {
 	GWLog("setImageFocusCaption", "image-focus.js");
+
 	var T = { }; // Temporary storage.
 
 	// Clear existing caption, if any.
@@ -517,6 +518,7 @@ function setImageFocusCaption() {
 
 function hideImageFocusUI() {
 	GWLog("hideImageFocusUI", "image-focus.js");
+
 	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
 	imageFocusOverlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
 		element.classList.toggle("hidden", true);
@@ -525,6 +527,7 @@ function hideImageFocusUI() {
 
 function unhideImageFocusUI() {
 	GWLog("unhideImageFocusUI", "image-focus.js");
+
 	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
 	imageFocusOverlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
 		element.classList.remove("hidden");
@@ -538,8 +541,9 @@ function cancelImageFocusHideUITimer() {
 
 function focusImageSpecifiedByURL() {
 	GWLog("focusImageSpecifiedByURL", "image-focus.js");
+
 	if (location.hash.startsWith("#if_slide_")) {
-		document.addEventListener("readystatechange", () => {
+		doWhenPageLoaded(() => {
 			let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
 			let imageToFocus = (/#if_slide_([0-9]+)/.exec(location.hash)||{})[1];
 			if (imageToFocus > 0 && imageToFocus <= images.length) {
@@ -561,8 +565,8 @@ GW.notificationCenter.fireEvent("ImageFocus.didLoad");
 /* INITIALIZATION */
 /******************/
 
-imageFocusSetup();
-focusImageSpecifiedByURL();
+doWhenDOMContentLoaded(imageFocusSetup);
+doWhenDOMContentLoaded(focusImageSpecifiedByURL);
 
 // TODO: re-enable this once imageFocusSetup() is refactored to be repeatable
 // GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {

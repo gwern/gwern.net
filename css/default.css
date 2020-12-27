@@ -553,6 +553,10 @@ ul > li::before {
     z-index: 1;
 }
 
+:not(ul):not(ol) > li {
+	list-style-type: none;
+}
+
 @media only screen and (max-width: 649px) {
     ul,
     ol {
@@ -2854,9 +2858,8 @@ body.directory-index #disqus_thread {
 
 /*  Images such as the ones in Wikipedia popups.
     */
-.extract-popup figure.float-right:first-child {
-    margin-top: -3em;
-    margin-bottom: 0.125em;
+.extract-popup > div > figure.float-right {
+    margin: 0.125em 0 0 1.5em;
 }
 
 .extract-popup img {
@@ -3228,6 +3231,9 @@ body.directory-index #disqus_thread {
     font-weight: 600;
 }
 
+#link-bibliography > ol > li > p:first-child {
+    text-align: left;
+}
 #link-bibliography > ol > li > blockquote {
     margin-bottom: 1em;
 }
@@ -3235,6 +3241,16 @@ body.directory-index #disqus_thread {
 #link-bibliography > ol,
 #link-bibliography > ol > li:last-child > blockquote {
     margin-bottom: 0;
+}
+
+@media only screen and (max-width: 649px) {
+    #link-bibliography > ol > li > blockquote {
+        margin-left: -1.75em;
+        margin-right: -0.75em;
+    }
+     #link-bibliography > ol > li:nth-of-type(n+2) {
+        margin-top: 1em;
+    }
 }
 
 /**********/

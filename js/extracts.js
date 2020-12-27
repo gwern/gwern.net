@@ -211,7 +211,7 @@ Extracts = {
 		});
     },
     nearestBlockElement: (element) => {
-    	return element.closest("address, aside, blockquote, dd, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
+    	return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
 	fillPopElement: (popElement, target, possiblePopTypes) => {
 		GWLog("Extracts.fillPopElement", "extracts.js", 2);
@@ -711,7 +711,8 @@ Extracts = {
 			|| Extracts.isDefinitionLink(target)) {
 			let initialFigure = popup.querySelector(".popupAbstract > figure.float-right:first-child");
 			if (initialFigure) {
-				popup.querySelector(".data-field.title").style.paddingRight = "50%";
+				let popupdiv = popup.firstElementChild;
+				popupdiv.insertBefore(initialFigure, popupdiv.firstElementChild);
 			}
 		}
 

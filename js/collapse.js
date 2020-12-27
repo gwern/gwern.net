@@ -1,25 +1,30 @@
+/*	NOTE: redundant with (and inferior to) expandCollapseBlocksToReveal()
+	TODO: delete this at some point
 /*  Reveals the given node by expanding all containing collapse blocks.
     */
-function expandAllAncestorsOfNode(node) {
-	GWLog("expandAllAncestorsOfNode", "collapse.js", 2);
-
-    // If the node is not an element (e.g. a text node), get its parent element.
-    let element = node instanceof HTMLElement ? node : node.parentElement;
-
-    // Get the closest containing collapse block. If none such, return.
-    let enclosingCollapseBlock = element.closest(".collapse");
-    if (!enclosingCollapseBlock) return;
-
-    // Expand the collapse block by checking the disclosure-button checkbox.
-    enclosingCollapseBlock.querySelector(`#${enclosingCollapseBlock.id} > .disclosure-button`).checked = true;
-
-    // Recursively expand all ancestors of the collapse block.
-    expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
-}
+// function expandAllAncestorsOfNode(node) {
+// 	GWLog("expandAllAncestorsOfNode", "collapse.js", 2);
+// 
+//     // If the node is not an element (e.g. a text node), get its parent element.
+//     let element = node instanceof HTMLElement ? node : node.parentElement;
+// 
+//     // Get the closest containing collapse block. If none such, return.
+//     let enclosingCollapseBlock = element.closest(".collapse");
+//     if (!enclosingCollapseBlock) return;
+// 
+//     // Expand the collapse block by checking the disclosure-button checkbox.
+//     enclosingCollapseBlock.querySelector(`#${enclosingCollapseBlock.id} > .disclosure-button`).checked = true;
+// 
+//     // Recursively expand all ancestors of the collapse block.
+//     expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
+// }
 
 /*  This function expands all collapse blocks containing the given node, if
     any (including the node itself, if it is a collapse block). Returns true
-    if any such expansion occurred.
+    if any such expansion occurred. Fires Collapse.collapseStateDidChange event
+    after all (possibly recursive) expansion is completed. (Only one event fired
+    per non-recursive call to expandCollapseBlocksToReveal(), even if recursive
+    expansion occurred.)
     */
 function expandCollapseBlocksToReveal(node) {
     GWLog("expandCollapseBlocksToReveal", "collapse.js", 2);
@@ -44,7 +49,7 @@ function expandCollapseBlocksToReveal(node) {
 
     /*  Expand any higher-level collapse blocks!
         Fire state change event only if we did NOT have to do any further
-        expansion (otherwise we'll do redundant layout).
+        expansion (otherwise we’ll do redundant layout).
         */
     if (!expandCollapseBlocksToReveal(collapseParent.parentElement) && expansionOccurred)
     	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
@@ -61,7 +66,7 @@ function expandCollapseBlocksToReveal(node) {
     */
 function isCollapsed(collapseBlock) {
     let collapseCheckbox = collapseBlock.querySelector(".disclosure-button");
-    return (collapseCheckbox.checked == false);
+    return (collapseCheckbox && collapseCheckbox.checked == false);
 }
 
 /*  Returns true if the given element is within a currently-collapsed collapse
@@ -141,7 +146,14 @@ function prepareCollapseBlocks() {
 			realCollapseBlock.appendChild(collapseBlock);
 		}
 	});
-	/*  Add listeners to toggle ‘expanded’ class of collapse blocks.
+
+	/*	Fire notification event.
+		*/
+	requestAnimationFrame(() => {
+        GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
+    });
+
+    /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
 	document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		let collapseBlock = disclosureButton.closest(".collapse");
@@ -163,4 +175,15 @@ function prepareCollapseBlocks() {
 		});
 	});
 }
-prepareCollapseBlocks();
+doWhenDOMContentLoaded(prepareCollapseBlocks);
+
+/*	What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. We do this by watching for selection changes. (We don’t bother checking for window focus/blur because that is unreliable and in any case doesn’t work for “Search Again” key command.
+	*/
+
+document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
+	GWLog("GW.selectionChanged", "rewrite.js", 3);
+
+	let newSelection = document.getSelection();
+	if (newSelection && newSelection.getRangeAt(0).toString().length > 0)
+		expandCollapseBlocksToReveal(newSelection.anchorNode);
+});
