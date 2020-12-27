@@ -711,7 +711,8 @@ Extracts = {
 			|| Extracts.isDefinitionLink(target)) {
 			let initialFigure = popup.querySelector(".popupAbstract > figure.float-right:first-child");
 			if (initialFigure) {
-				popup.querySelector(".data-field.title").style.paddingRight = "50%";
+				let popupdiv = popup.firstElementChild;
+				popupdiv.insertBefore(initialFigure, popupdiv.firstElementChild);
 			}
 		}
 
