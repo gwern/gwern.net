@@ -255,10 +255,13 @@ doWhenDOMContentLoaded(identifyFootnotesSection);
 function directionalizeAnchorLinks() {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
-	document.body.querySelectorAll("#markdownBody :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) > a[href^='#']:not(.footnote-ref):not(.footnote-back):not(.sidenote-self-link):not(.sidenote-back):not(.sidenote)").forEach(identifierLink => {
-		header = document.body.querySelector("#markdownBody *[id='" + identifierLink.hash.substring(1) + "']");
-		if (!header) return;
-		identifierLink.classList.add((identifierLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
+	document.body.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
+		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
+			|| identifierLink.closest(".footnote-ref, .footnote-back, .sidenote-self-link"))
+			return;
+		target = document.body.querySelector(identifierLink.getAttribute("href"));
+		if (!target) return;
+		identifierLink.classList.add((identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 	});
 }
 doWhenDOMContentLoaded(directionalizeAnchorLinks);
