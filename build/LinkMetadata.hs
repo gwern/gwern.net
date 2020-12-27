@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-26 20:40:53 gwern"
+When:  Time-stamp: "2020-12-26 22:57:08 gwern"
 License: CC-0
 -}
 
@@ -91,7 +91,8 @@ hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfix
                                                      Left e -> error (show x ++ ": " ++ show e)
                                                      Right markdown' -> let p@(Pandoc _ blocks) = walk (hasAnnotation md idp) markdown' in
                                                                           let p' = runPure $ do html <- writeHtml5String def{writerExtensions = pandocExtensions} p
-                                                                                                return $ RawBlock (Format "html") html
+                                                                                                let html' = T.pack $ restoreFloatRight (T.unpack h) (T.unpack html)
+                                                                                                return $ RawBlock (Format "html") html'
                                                                           in case p' of
                                                                             Left e -> error (show x ++ ": " ++ show e)
                                                                             Right p'' -> p''
@@ -137,10 +138,12 @@ generateListItems (f, ann) = case ann of
                                                                         in
                                                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
                                                                      let abst' = if (take 3 abst) == "<p>" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
+                                                                       -- check that float-right hasn't been deleted by Pandoc again:
+                                                                       let abst'' = restoreFloatRight abst abst' in
                                                               [Para
                                                                 ([link,
                                                                   Str ","] ++ author ++ [Str "(", date, Str ")", Str ":"]),
-                                                           BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst))]
+                                                           BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                                            ]
                              where
                                nonAnnotatedLink :: [Block]
@@ -788,13 +791,20 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "title" then snd $ head b else "") metas
                         let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
+                        let TagOpen _ [_, ("content", thumbnail)] = head $ filter filterThumbnail metas
+                        let thumbnail' = (if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail) :: String
+                        thumbnailFigure <- if thumbnail'=="" then return "" else do
+                              (color,h,w) <- invertImage thumbnail'
+                              let imgClass = if color then "class=\"invertible-auto\" " else ""
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (urlEncode thumbnail') ++ "\" title=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
+
                         let doi = ""
                         let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
                         let description = concatMap (\(TagOpen _ (a:b)) -> if snd a == "description" then snd $ head b else "") metas
                         -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
                         let abstract'     = if length description > length abstract then description else abstract
 
-                        return $ Just (p, (title, author, date, doi, abstract'))
+                        return $ Just (p, (title, author, date, doi, thumbnailFigure++abstract'))
         where
           dropToBody (TagOpen "body" _) = False
           dropToBody _ = True
@@ -807,3 +817,5 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
           filterAbstract (TagOpen  "blockquote" _) = False
           filterAbstract (TagClose "blockquote")   = False
           filterAbstract _                         = True
+          filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
+          filterThumbnail _ = False
