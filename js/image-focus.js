@@ -561,7 +561,7 @@ GW.notificationCenter.fireEvent("ImageFocus.didLoad");
 /* INITIALIZATION */
 /******************/
 
-window.addEventListener("DOMContentLoaded", imageFocusSetup);
+doWhenDOMContentLoaded(imageFocusSetup);
 doWhenPageLoaded(focusImageSpecifiedByURL);
 
 // TODO: re-enable this once imageFocusSetup() is refactored to be repeatable

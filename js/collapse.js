@@ -163,4 +163,4 @@ function prepareCollapseBlocks() {
 		});
 	});
 }
-window.addEventListener("DOMContentLoaded", prepareCollapseBlocks);
+doWhenDOMContentLoaded(prepareCollapseBlocks);

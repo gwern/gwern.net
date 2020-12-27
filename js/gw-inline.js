@@ -133,6 +133,17 @@ function doWhenPageLoaded(f) {
         window.addEventListener("load", f);
 }
 
+/*  Run the given function immediately if the page content has already loaded
+	(DOMContentLoaded event has fired), or add a listener to run it as soon as 
+	the event fires.
+    */
+function doWhenDOMContentLoaded(f) {
+    if (GW.DOMContentLoaded == true)
+        f();
+    else
+        window.addEventListener("DOMContentLoaded", f);
+}
+
 /*  Given an HTML string, creates an element from that HTML, adds it to
     #ui-elements-container (creating the latter if it does not exist), and
     returns the created element.
@@ -192,9 +203,12 @@ GW.notificationCenter.fireEvent = function (eventName, eventInfo) {
 /* BROWSER EVENTS */
 /******************/
 
+GW.DOMContentLoaded = false;
+
 GWLog("document.readyState." + document.readyState, "browser event");
 window.addEventListener("DOMContentLoaded", () => {
     GWLog("window.DOMContentLoaded", "browser event");
+    GW.DOMContentLoaded = true;
 });
 window.addEventListener("load", () => {
     GWLog("window.load", "browser event");

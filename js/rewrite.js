@@ -19,7 +19,7 @@ function wrapTables() {
 			table.outerHTML = `<div class="${wrapperClass}">` + table.outerHTML + `</div>`;
 	});
 }
-window.addEventListener("DOMContentLoaded", wrapTables);
+doWhenDOMContentLoaded(wrapTables);
 
 /***********/
 /* FIGURES */
@@ -62,7 +62,7 @@ function wrapFigures() {
 			media.closest("figure").classList.add("float-right");
 	});
 }
-window.addEventListener("DOMContentLoaded", wrapFigures);
+doWhenDOMContentLoaded(wrapFigures);
 
 /*	Designate full-width figures as such (with a ‘full-width’ class).
 	*/
@@ -72,7 +72,7 @@ function markFullWidthFigures() {
         fullWidthImage.closest("figure").classList.toggle(fullWidthClass, true);
     });
 }
-window.addEventListener("DOMContentLoaded", markFullWidthFigures);
+doWhenDOMContentLoaded(markFullWidthFigures);
 
 /***************/
 /* CODE BLOCKS */
@@ -95,7 +95,7 @@ function wrapFullWidthPreBlocks() {
 		fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
 	});
 }
-window.addEventListener("DOMContentLoaded", wrapFullWidthPreBlocks);
+doWhenDOMContentLoaded(wrapFullWidthPreBlocks);
 
 /*  Rounds the height of all code blocks to the nearest integer (i.e., the
     nearest pixel), to fix a weird bug that cuts off the bottom border.
@@ -247,7 +247,7 @@ function identifyFootnotesSection() {
 	if (footnotesSection)
 		footnotesSection.id = "footnotes";
 }
-window.addEventListener("DOMContentLoaded", identifyFootnotesSection);
+doWhenDOMContentLoaded(identifyFootnotesSection);
 //  TODO: might have to realign hash after this?
 
 /* Directional navigation links on self-links: for each self-link like "see [later](#later-identifier)", find the linked identifier, whether it's before or after, and if it is before/previously, annotate the self-link with '↑' and if after/later, '↓'. This helps the reader know if it's a backwards link to a identifier already read, or an unread identifier. */
@@ -260,7 +260,7 @@ function directionalizeAnchorLinks() {
 		identifierLink.classList.add((identifierLink.compareDocumentPosition(header) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 	});
 }
-window.addEventListener("DOMContentLoaded", directionalizeAnchorLinks);
+doWhenDOMContentLoaded(directionalizeAnchorLinks);
 
 /* What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. Hooking keybindings like C-f is the usual approach, but that breaks on all the possible ways to invoke searches (different keys, bindings, browsers, toolbars, buttons etc). It's more reliable to check the 'blur'. */
 
