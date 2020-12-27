@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-26 17:02:25 gwern"
+When:  Time-stamp: "2020-12-26 20:40:53 gwern"
 License: CC-0
 -}
 
@@ -43,7 +43,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Debug.Trace (trace)
 import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (typographyTransform, invertImage)
-import Network.HTTP (urlDecode)
+import Network.HTTP (urlDecode, urlEncode)
 
 -------------------------------------------------------------------------------------------------------------------------------
 -- Prototype flat annotation implementation
@@ -127,7 +127,7 @@ generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID `T.append` T.pack("-" ++ (filter (=='.') $ last $ splitPath f)) in
-                                                            let author = Span ("", ["author"], []) [Str (T.pack aut)] in
+                                                            let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = Span ("", ["date"], []) [Str (T.pack dt)] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
                                                                   let link = if head f == '?' then
@@ -138,8 +138,8 @@ generateListItems (f, ann) = case ann of
                                                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
                                                                      let abst' = if (take 3 abst) == "<p>" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
                                                               [Para
-                                                                [link,
-                                                                  Str ",", Space, author, Space, Str "(", date, Str ")", Str ":"],
+                                                                ([link,
+                                                                  Str ","] ++ author ++ [Str "(", date, Str ")", Str ":"]),
                                                            BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst))]
                                                            ]
                              where
@@ -464,7 +464,7 @@ wikipedia p
                                                                                                         newThumbnail <- downloadWPThumbnail $ T.unpack href
                                                                                                         (color,h,w) <- invertImage newThumbnail
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
-                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ newThumbnail ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
+                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ urlEncode newThumbnail ++ "\" title=\"Wikipedia thumbnail image of '" ++ wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract' = cleanAbstractsHTML wpAbstract in
@@ -472,7 +472,7 @@ wikipedia p
 
 downloadWPThumbnail :: FilePath -> IO FilePath
 downloadWPThumbnail href = do
-  let f = "images/thumbnails/wikipedia/"++(takeFileName (urlDecode href))
+  let f = "images/thumbnails/wikipedia/"++(filter (not . (\c -> c=='?' || c=='!' || c=='\'' || c=='"' || c=='&')) $ takeFileName (urlDecode href))
   (_,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
   let ext = map toLower $ takeExtension f
   if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
