@@ -553,6 +553,10 @@ ul > li::before {
     z-index: 1;
 }
 
+:not(ul):not(ol) > li {
+	list-style-type: none;
+}
+
 @media only screen and (max-width: 649px) {
     ul,
     ol {
