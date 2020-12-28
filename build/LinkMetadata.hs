@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-28 14:31:58 gwern"
+When:  Time-stamp: "2020-12-28 15:20:27 gwern"
 License: CC-0
 -}
 
@@ -32,6 +32,7 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text) -- length, take
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
+import System.Directory (doesFileExist)
 import System.FilePath (takeBaseName, takeFileName, takeExtension, splitPath)
 import Data.List.Utils (replace, split, uniq)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
@@ -501,7 +502,9 @@ wikipedia p
 downloadWPThumbnail :: FilePath -> IO FilePath
 downloadWPThumbnail href = do
   let f = "images/thumbnails/wikipedia/"++(filter (not . (\c -> c=='?' || c=='!' || c=='\'' || c=='"' || c=='&')) $ takeFileName (urlDecode href))
-  (_,_,_) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+  filep <- doesFileExist f
+  when (not filep ) $ void $
+    runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
   let ext = map toLower $ takeExtension f
   if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
                      void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [f]
