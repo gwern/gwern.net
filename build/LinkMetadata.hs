@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-27 23:26:11 gwern"
+When:  Time-stamp: "2020-12-28 14:31:58 gwern"
 License: CC-0
 -}
 
@@ -23,13 +23,13 @@ import GHC.Generics (Generic)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M (fromList, lookup, map, union, Map)
+import qualified Data.Map.Strict as M (fromList, lookup, union, Map) -- map
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
-                    HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String,
-                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writePlain, writerExtensions,
+                    HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String, -- readMarkdown, writePlain
+                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions,
                     queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote, Div))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isInfixOf, head, length, unpack, pack, take, Text)
+import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text) -- length, take
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeBaseName, takeFileName, takeExtension, splitPath)
@@ -39,10 +39,10 @@ import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
-import System.IO.Unsafe (unsafePerformIO)
-import Debug.Trace (trace)
+-- import System.IO.Unsafe (unsafePerformIO)
+-- import Debug.Trace (trace)
 import System.IO (stderr, hPutStrLn, hPrint)
-import Typography (typographyTransform, invertImage)
+import Typography (invertImage) -- typographyTransform
 import Network.HTTP (urlDecode, urlEncode)
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -71,16 +71,42 @@ readLinkMetadataOnce = do
              let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
              return firstVersion
 
-
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
-generateLinkBibliography md (Pandoc meta doc) = do let links = collectLinks doc
-                                                   let bibContents = recurseList md links
-                                                   bibContents' <- return bibContents -- walkM (annotateLink  md) bibContents :: IO [Block]
-                                                   -- now, annotate existing links with a class indicating if they can be popped up or not; but skip duplicate IDs while doing the link bibliography:
-                                                   let doc' = walk (hasAnnotation md True) doc
-                                                   let bibContents'' = walk (hasAnnotation md False) bibContents'
-                                                   let finalDoc = Pandoc meta (doc'++bibContents'')
-                                                   return finalDoc
+generateLinkBibliography md x@(Pandoc meta doc) = do let links = collectLinks doc
+                                                     let bibContents = recurseList md links
+                                                     -- now, annotate existing links with a class indicating if they can be popped up or not; but skip duplicate IDs while doing the link bibliography:
+                                                     let doc' = walk (hasAnnotation md True) doc
+                                                     let bibContents'' = walk (hasAnnotation md False) bibContents
+                                                     let finalDoc = Pandoc meta (doc'++bibContents'')
+                                                     -- extract final full set of URLs, and run a pass
+                                                     let targets = nubOrd links
+                                                     changes <- mapM (annotateLink' md) targets
+                                                     -- if we faulted in new URLs, our page is stale & missing an annotation, so rebuild until it's clean:
+                                                     if or changes then do
+                                                         md' <- readLinkMetadataOnce
+                                                         generateLinkBibliography md' x
+                                                       else return finalDoc
+
+annotateLink' :: Metadata -> String -> IO Bool
+annotateLink' md target =
+  do when (target=="") $ error (show target)
+     -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
+     -- the leading '/' indicates this is a local gwern.net file
+     let target' = replace "https://www.gwern.net/" "/" target
+     let target'' = if head target' == '.' then drop 1 target' else target'
+
+     let annotated = M.lookup target'' md
+     case annotated of
+       -- the link has a valid annotation already defined, so we're done: nothing changed.
+       Just _  -> return False
+       Nothing -> do new <- linkDispatcher target''
+                     case new of
+                       -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations
+                       Nothing -> writeLinkMetadata target'' ("", "", "", "", "") >> return False
+                       Just y@(f,m@(_,_,_,_,e)) -> do
+                                       when (e=="") $ error $ (f ++ ": " ++ show target ++ ": " ++ show y)
+                                       -- return true because we *did* change the database & need to rebuild:
+                                       writeLinkMetadata target'' m >> return True
 
 -- for links
 hasAnnotation :: Metadata -> Bool -> Block -> Block
@@ -89,7 +115,7 @@ hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfix
                                                   let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
                                                    case markdown of
                                                      Left e -> error (show x ++ ": " ++ show e)
-                                                     Right markdown' -> let p@(Pandoc _ blocks) = walk (hasAnnotation md idp) markdown' in
+                                                     Right markdown' -> let p@(Pandoc _ _) = walk (hasAnnotation md idp) markdown' in
                                                                           let p' = runPure $ do html <- writeHtml5String def{writerExtensions = pandocExtensions} p
                                                                                                 let html' = T.pack $ restoreFloatRight (T.unpack h) (T.unpack html)
                                                                                                 return $ RawBlock (Format "html") html'
@@ -100,16 +126,17 @@ hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfix
                                                                     --   Right e -> error (show x ++ ": " ++ show e)
                                                                     --  Left html' -> return $ RawBlock (Format "html") html'
 hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
-hasAnnotationInline md idp x@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated" `elem` b then x else
-                                              case M.lookup (linkCanonicalize $ T.unpack f) md of
-                                                Nothing                   -> x
-                                                Just ("", "", "", "", "") -> x
-                                                Just _ -> let a' = if idp then a else "" in -- erase link ID?
-                                                  if T.head f == '?' then
-                                                  Span (a', nubOrd (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
-                                                  Link (a', nubOrd (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+    where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
+          hasAnnotationInline mdb idBool y@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated" `elem` b then y else
+                                                        case M.lookup (linkCanonicalize $ T.unpack f) mdb of
+                                                          Nothing                   -> y
+                                                          Just ("", "", "", "", "") -> y
+                                                          Just _ -> let a' = if idBool then a else "" in -- erase link ID?
+                                                            if T.head f == '?' then
+                                                            Span (a', nubOrd (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
+                                                            Link (a', nubOrd (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
 
-hasAnnotationInline _ _ x = x
+          hasAnnotationInline _ _ y = y
 
 
 -- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
@@ -155,7 +182,7 @@ rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 collectLinks :: [Block] -> [String]
-collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
+collectLinks p = nubOrd $ map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
   where
    collectLink :: Block -> [String]
    collectLink (RawBlock (Format "html") t) = if not ("href=" `T.isInfixOf` t) then [] else let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} t in
@@ -165,7 +192,7 @@ collectLinks p = map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" 
    collectLink x = queryWith extractLink x
 
    extractLink :: Inline -> [String]
-   extractLink x@(Span (_, "defnMetadata":_, ("original-definition-id",f):_) y) = [T.unpack f] ++ queryWith collectLinks y
+   extractLink (Span (_, "defnMetadata":_, ("original-definition-id",f):_) y) = [T.unpack f] ++ queryWith collectLinks y
    extractLink (Link _ _ (path, _)) = [T.unpack path]
    extractLink _ = []
 
@@ -176,31 +203,30 @@ type MetadataItem = (String, String, String, String, String)
 type MetadataList = [(Path, MetadataItem)]
 type Path = String
 
-readLinkMetadata :: IO Metadata
-readLinkMetadata = do
-             -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
-             custom <- readYaml "metadata/custom.yaml"
+-- readLinkMetadata :: IO Metadata
+-- readLinkMetadata = do
+--              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
+--              custom <- readYaml "metadata/custom.yaml"
 
-             -- Quality checks:
-             -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
-             let urls = map (\(u,_) -> u) custom
-             when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
-             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
-             let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
-             let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
-             -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
-             let emptyCheck = filter (\(u,(t,a,_,_,s)) -> any (=="") [u,t,a,s]) custom
-             when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
+--              -- Quality checks:
+--              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
+--              let urls = map (\(u,_) -> u) custom
+--              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
+--              let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+--              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /=  length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+--              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
+--              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
+--              let emptyCheck = filter (\(u,(t,a,_,_,s)) -> any (=="") [u,t,a,s]) custom
+--              when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
-             -- auto-generated cached definitions; can be deleted if gone stale
-             auto <- readYaml "metadata/auto.yaml"
+--              -- auto-generated cached definitions; can be deleted if gone stale
+--              auto <- readYaml "metadata/auto.yaml"
 
-             -- merge the hand-written & auto-generated link annotations, and return:
-             let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
-             -- at 3 metadataRecurses, /index hits 11MB+:
-             let secondVersion = metadataRecurse $ metadataRecurse firstVersion
-             return secondVersion
-
+--              -- merge the hand-written & auto-generated link annotations, and return:
+--              let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
+--              -- at 3 metadataRecurses, /index hits 11MB+:
+--              let secondVersion = metadataRecurse $ metadataRecurse firstVersion
+--              return secondVersion
 
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
@@ -214,96 +240,95 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 
 -- append a new automatic annotation if its Path is not already in the auto database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,abst) = do auto <- readYaml "metadata/auto.yaml"
-                                           when (not (l `elem` (map fst auto))) $ do
+writeLinkMetadata l i@(t,a,d,di,abst) = do -- auto <- readYaml "metadata/auto.yaml"
+                                           -- when (not (l `elem` (map fst auto))) $ do
                                              hPrint stderr i
                                              let newYaml = Y.encode [(l,t,a,d,di,abst)]
                                              B.appendFile "metadata/auto.yaml" newYaml
 
--- An annotation will often have links inside it; these links will often have annotations themselves. We of course don't want to inline those annotations by hand, as they will get out of date. So instead we update the metadata database recursively: take a Metadata, map over each MetadataItem and update it with annotated links, and return a new internally-annotated Metadata for use annotating regular pages. Then you can popup while you popup, dawg.
--- TODO: the combinatorial explosion of recursive inlining is making pages unacceptably large and the current architecture is not going to scale: even at 3 levels of recursion, pages are already >10MB in HTML alone! While inlining metadata in place is straightforward and convenient to implement as a rewrite pass, it needs to be rethought.
--- The current plan is to switch from local rewrites to a global rewrite: every annotation will be aggregated globally and placed in a separate section at the end of each Pandoc document. JS will then take care of reacting to hovers by extracting the relevant annotation. This avoids the combinatorial explosion where every use of a link inlines the entire dependency tree of annotations: each annotation used in any link will be 'inlined' just once, going from O(???) in links to O(n) in total annotations.
--- Specifically, the rewrite pass will use a State monad to gather the set of links in a Pandoc document, look up each link in the annotation database, add the annotations as links in a new 'Bibliography' section, and inline the annotation to the link (and expose a copy the same way `generateDirectories.hs` exposes the annotation by default inside the list of files).
-metadataRecurse :: Metadata -> Metadata
-metadataRecurse md = M.map (annotateItem md) md
-annotateItem :: Metadata -> MetadataItem -> MetadataItem
-annotateItem md x@(t,a,d,di,ab) = let ai = runPure $ do
-                                            pandoc <- readHtml def{ readerExtensions = pandocExtensions } (T.pack ab)
-                                            let pandocAnnotated = walk (unsafePerformIO . annotateLink md) pandoc
-                                            html <- writeHtml5String def{writerExtensions = pandocExtensions} pandocAnnotated
-                                            return $ restoreFloatRight ab $ T.unpack html
-                               in case ai of
-                                    Left e -> Debug.Trace.trace (show e) x -- something went wrong parsing it so return original MetadataItem
-                                    Right ab' -> (t,a,d,di,ab') -- annotation now has any annotations inside it inlined
+-- -- An annotation will often have links inside it; these links will often have annotations themselves. We of course don't want to inline those annotations by hand, as they will get out of date. So instead we update the metadata database recursively: take a Metadata, map over each MetadataItem and update it with annotated links, and return a new internally-annotated Metadata for use annotating regular pages. Then you can popup while you popup, dawg.
+-- metadataRecurse :: Metadata -> Metadata
+-- metadataRecurse md = M.map (annotateItem md) md
+-- annotateItem :: Metadata -> MetadataItem -> MetadataItem
+-- annotateItem md x@(t,a,d,di,ab) = let ai = runPure $ do
+--                                             pandoc <- readHtml def{ readerExtensions = pandocExtensions } (T.pack ab)
+--                                             let pandocAnnotated = walk (unsafePerformIO . annotateLink md) pandoc
+--                                             html <- writeHtml5String def{writerExtensions = pandocExtensions} pandocAnnotated
+--                                             return $ restoreFloatRight ab $ T.unpack html
+--                                in case ai of
+--                                     Left e -> Debug.Trace.trace (show e) x -- something went wrong parsing it so return original MetadataItem
+--                                     Right ab' -> (t,a,d,di,ab') -- annotation now has any annotations inside it inlined
 
-annotateLink :: Metadata -> Inline -> IO Inline
--- Relevant Pandoc types: Link = Link Attr [Inline] Target
---                        Attr = (String, [String], [(String, String)])
---                        Target = (String, String)
-annotateLink md x@(Link _ _ (target, _)) =
-  do
-     -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
-     -- the leading '/' indicates this is a local gwern.net file
-     when (target=="") $ error (show x)
-     let target' = replace "https://www.gwern.net/" "/" (T.unpack target)
-     let target'' = if head target' == '.' then drop 1 target' else target'
+-- annotateLink :: Metadata -> Inline -> IO Inline
+-- -- Relevant Pandoc types: Link = Link Attr [Inline] Target
+-- --                        Attr = (String, [String], [(String, String)])
+-- --                        Target = (String, String)
+-- annotateLink md x@(Link _ _ (target, _)) =
+--   do
+--      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
+--      -- the leading '/' indicates this is a local gwern.net file
+--      when (target=="") $ error (show x)
+--      let target' = replace "https://www.gwern.net/" "/" (T.unpack target)
+--      let target'' = if head target' == '.' then drop 1 target' else target'
 
-     let annotated = M.lookup target'' md
-     case annotated of
-       -- the link has a valid annotation already defined, so build & return
-       Just l  -> return $ constructAnnotation x l
-       Nothing -> do new <- linkDispatcher target''
-                     case new of
-                       -- cache the failures too, so we don't waste time rechecking the PDFs every build:
-                       Nothing -> writeLinkMetadata target'' ("", "", "", "", "") >> return x
-                       Just (_,m) -> do
-                                       writeLinkMetadata target'' m
-                                       return $ constructAnnotation x m
-annotateLink _ x = return x
+--      let annotated = M.lookup target'' md
+--      case annotated of
+--        -- the link has a valid annotation already defined, so build & return
+--        Just l  -> return $ constructAnnotation x l
+--        Nothing -> do new <- linkDispatcher target''
+--                      case new of
+--                        -- cache the failures too, so we don't waste time rechecking the PDFs every build:
+--                        Nothing -> writeLinkMetadata target'' ("", "", "", "", "") >> return x
+--                        Just y@(f,m@(a,b,c,d,e)) -> do
+--                                        when (e=="") $ error $ (f ++ ": " ++ show x ++ ": " ++ show y)
+--                                        writeLinkMetadata target'' m
+--                                        return $ constructAnnotation x m
+-- annotateLink _ x = return x
 
-constructAnnotation :: Inline -> MetadataItem -> Inline
-constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)) (title, author, date, doi, abstract) =
-  if abstract == "" || title == "" then x else -- if no abstract/title, don't bother (author/date/DOI are relatively optional in comparison, but what doesn't have a title‽)
-    let lid' = if lid=="" then generateID (T.unpack target) author date else lid in
-    let annotationAttributes = (lid', "docMetadata":classes,
-          (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII $ trimTitle title),
-                                         ("popup-title-html", T.pack $ replace "<p>" "" $ replace "</p>" "" $ T.unpack $ htmlToBetterHTML $ T.pack $ trimTitle title),
-                                         ("popup-author",     T.pack $ replace "<p>" "" $ replace "</p>" "" $ T.unpack $ htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
-                                         ("popup-date",       T.pack date),
-                                         ("popup-doi",        T.pack doi),
-                                         ("popup-abstract",   T.pack finalAbstract)
-                                         ])++pairs) in
-    if T.head target /= '?' then Link annotationAttributes text (target, newTooltip) else
-      -- Special in-place annotation definition: `<span data-metadata="Full HTML version" title="ASCII version fallback">original text anchor</span>`
-      Span ("", ["defnMetadata"], (third annotationAttributes) ++ [("title", newTooltip)]) text
-   where
-     abstract', abstractText, possibleTooltip :: String
-    -- make sure every abstract is wrapped in paragraph tags for proper rendering:
-     abstract' = if (take 3 abstract) == "<p>" || (take 3 abstract) == "<ul>" || (take 3 abstract) == "<ol>" || (take 7 abstract) == "<figure" then abstract else "<p>" ++ abstract ++ "</p>"
-     tabstract' = htmlToBetterHTML $ T.pack abstract'
-     finalAbstract = restoreFloatRight abstract' (T.unpack tabstract')
-     -- Tooltip rewriting
-     -- Progressive enhancement: we create a crude, shortened, ASCII version of the full annotation to use as a regular tooltip, for non-JS users (and possibly bots)
-     -- This happens if the existing tooltip is empty; but we *also* override short tooltips (defined as one where the annotation-tooltip is >30% longer than the original tooltip).
-     -- Why? Because many tooltips/link-titles are already written in the Markdown sources, like `[foo](/docs/bar.pdf "'On Dancing Angels', Quux 2020")`; these tooltips are important documentation while writing the Markdown page (so you can see at a glance what they are - the *author* can't mouse over them!), but are inferior to the generated tooltips. So if the original tooltip is not particularly long, that suggests it's not a special one (eg a Twitter tweet which has been inlined) and we should override it.
-     abstractText = htmlToASCII abstract'
-     possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++" " ++ "(" ++ date ++ ")" ++
-                        (if doi /= "" then " (DOI: "++doi++")" else "")
-                        ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ takeWhile isAlpha (drop 350 abstractText) ++ "…" else abstractText))++"\""
-     newTooltip :: T.Text
-     newTooltip = if (fromIntegral (length possibleTooltip)::Float) > ((fromIntegral $ T.length originalTooltip)*1.3::Float)
-                   then T.pack possibleTooltip else originalTooltip
-     third :: (a,b,c) -> c
-     third    (_,_,c)  = c
-constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructAnnotation'! This should never happen." ++ show b ++ " " ++ show c
+-- constructAnnotation :: Inline -> MetadataItem -> Inline
+-- constructAnnotation x@(Link (lid, classes, pairs) text (target, originalTooltip)) (title, author, date, doi, abstract) =
+--   if abstract == "" || title == "" then x else -- if no abstract/title, don't bother (author/date/DOI are relatively optional in comparison, but what doesn't have a title‽)
+--     let lid' = if lid=="" then generateID (T.unpack target) author date else lid in
+--     let annotationAttributes = (lid', "docMetadata":classes,
+--           (filter (\d -> (snd d) /= "") [("popup-title",      T.pack $ htmlToASCII $ trimTitle title),
+--                                          ("popup-title-html", T.pack $ replace "<p>" "" $ replace "</p>" "" $ T.unpack $ htmlToBetterHTML $ T.pack $ trimTitle title),
+--                                          ("popup-author",     T.pack $ replace "<p>" "" $ replace "</p>" "" $ T.unpack $ htmlToBetterHTML $ T.pack $ trimAuthors $ initializeAuthors author),
+--                                          ("popup-date",       T.pack date),
+--                                          ("popup-doi",        T.pack doi),
+--                                          ("popup-abstract",   T.pack finalAbstract)
+--                                          ])++pairs) in
+--     if T.head target /= '?' then Link annotationAttributes text (target, newTooltip) else
+--       -- Special in-place annotation definition: `<span data-metadata="Full HTML version" title="ASCII version fallback">original text anchor</span>`
+--       Span ("", ["defnMetadata"], (third annotationAttributes) ++ [("title", newTooltip)]) text
+--    where
+--      abstract', abstractText, possibleTooltip :: String
+--     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
+--      abstract' = if (take 3 abstract) == "<p>" || (take 3 abstract) == "<ul>" || (take 3 abstract) == "<ol>" || (take 7 abstract) == "<figure" then abstract else "<p>" ++ abstract ++ "</p>"
+--      tabstract' = htmlToBetterHTML $ T.pack abstract'
+--      finalAbstract = restoreFloatRight abstract' (T.unpack tabstract')
+--      -- Tooltip rewriting
+--      -- Progressive enhancement: we create a crude, shortened, ASCII version of the full annotation to use as a regular tooltip, for non-JS users (and possibly bots)
+--      -- This happens if the existing tooltip is empty; but we *also* override short tooltips (defined as one where the annotation-tooltip is >30% longer than the original tooltip).
+--      -- Why? Because many tooltips/link-titles are already written in the Markdown sources, like `[foo](/docs/bar.pdf "'On Dancing Angels', Quux 2020")`; these tooltips are important documentation while writing the Markdown page (so you can see at a glance what they are - the *author* can't mouse over them!), but are inferior to the generated tooltips. So if the original tooltip is not particularly long, that suggests it's not a special one (eg a Twitter tweet which has been inlined) and we should override it.
+--      abstractText = htmlToASCII abstract'
+--      possibleTooltip = "\""++title++"\", " ++ (trimAuthors author)++" " ++ "(" ++ date ++ ")" ++
+--                         (if doi /= "" then " (DOI: "++doi++")" else "")
+--                         ++ "; abstract: \""++(replace "\n" " · " $ replace "\n\n" "\n" $ replace "[]" "" (if (length abstractText)>350 then (take 350 abstractText) ++ takeWhile isAlpha (drop 350 abstractText) ++ "…" else abstractText))++"\""
+--      newTooltip :: T.Text
+--      newTooltip = if (fromIntegral (length possibleTooltip)::Float) > ((fromIntegral $ T.length originalTooltip)*1.3::Float)
+--                    then T.pack possibleTooltip else originalTooltip
+--      third :: (a,b,c) -> c
+--      third    (_,_,c)  = c
+-- constructAnnotation b c = error $ "Error: a non-Link was passed into 'constructAnnotation'! This should never happen." ++ show b ++ " " ++ show c
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
 restoreFloatRight :: String -> String -> String
 restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
 
 -- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
-trimAuthors, initializeAuthors, trimTitle :: String -> String
-trimAuthors a = let maxLength = 58 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
+-- trimAuthors, initializeAuthors, trimTitle :: String -> String
+-- trimAuthors a = let maxLength = 58 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
+initializeAuthors, trimTitle :: String -> String
 initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle [] = ""
@@ -348,29 +373,29 @@ generateID url author date
                                                    else
                                                      firstAuthorSurname ++ "-" ++ year ++ suffix
 
--- compile HTML strings to Pandoc's plaintext ASCII outputs (since tooltips can't render HTML like we get from Wikipedia or many hand-written annotations)
-htmlToASCII :: String -> String
-htmlToASCII input = let cleaned = runPure $ do
-                                    html <- readHtml def{ readerExtensions = pandocExtensions } (T.pack input)
-                                    txt  <- writePlain def{writerWrapText=WrapNone} html
-                                    return $ T.unpack txt
-              in case cleaned of
-                 Left _ -> ""
-                 Right output -> replace "\n\n" "" $ trim output
+-- -- compile HTML strings to Pandoc's plaintext ASCII outputs (since tooltips can't render HTML like we get from Wikipedia or many hand-written annotations)
+-- htmlToASCII :: String -> String
+-- htmlToASCII input = let cleaned = runPure $ do
+--                                     html <- readHtml def{ readerExtensions = pandocExtensions } (T.pack input)
+--                                     txt  <- writePlain def{writerWrapText=WrapNone} html
+--                                     return $ T.unpack txt
+--               in case cleaned of
+--                  Left _ -> ""
+--                  Right output -> replace "\n\n" "" $ trim output
 
--- clean up abstracts & titles with functions from Typography module: smallcaps & hyphenation (hyphenation is particularly important in popups because of the highly restricted horizontal width).
--- WARNING: Pandoc is not lossless when reading HTML; eg classes set on unsupported elements like `<figure>` will be erased:
--- $ echo '<figure class="float-right"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" /></figure>' | pandoc -f html -w html
--- → '<figure> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" alt="" /> </figure>'
-htmlToBetterHTML :: T.Text -> T.Text
-htmlToBetterHTML html = let cleaned = runPure $ do
-                                    pandoc <- readMarkdown def{ readerExtensions = pandocExtensions } html
-                                    let pandoc' = typographyTransform pandoc
-                                    html' <- writeHtml5String def{writerExtensions = pandocExtensions, writerWrapText=WrapNone,writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc'
-                                    return html'
-              in case cleaned of
-                 Left _ -> error (T.unpack html)
-                 Right output -> output -- T.pack $ trim $ T.unpack output
+-- -- clean up abstracts & titles with functions from Typography module: smallcaps & hyphenation (hyphenation is particularly important in popups because of the highly restricted horizontal width).
+-- -- WARNING: Pandoc is not lossless when reading HTML; eg classes set on unsupported elements like `<figure>` will be erased:
+-- -- $ echo '<figure class="float-right"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" /></figure>' | pandoc -f html -w html
+-- -- → '<figure> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Winner%27s_Curse.png" alt="" /> </figure>'
+-- htmlToBetterHTML :: T.Text -> T.Text
+-- htmlToBetterHTML html = let cleaned = runPure $ do
+--                                     pandoc <- readMarkdown def{ readerExtensions = pandocExtensions } html
+--                                     let pandoc' = typographyTransform pandoc
+--                                     html' <- writeHtml5String def{writerExtensions = pandocExtensions, writerWrapText=WrapNone,writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc'
+--                                     return html'
+--               in case cleaned of
+--                  Left _ -> error (T.unpack html)
+--                  Right output -> output -- T.pack $ trim $ T.unpack output
 
 linkDispatcher, wikipedia, gwern, arxiv, biorxiv, pubmed :: Path -> IO (Maybe (Path, MetadataItem))
 linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
@@ -795,7 +820,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "title" then snd $ head b else "") metas
                         let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
-                        let TagOpen _ [_, ("content", thumbnail)] = head $ filter filterThumbnail metas
+                        let thumbnail = if length (filter filterThumbnail metas) >0 then
+                                          (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
                         let thumbnail' = (if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail) :: String
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
