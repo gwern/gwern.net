@@ -225,6 +225,10 @@ section.collapse > *:first-child {
     pointer-events: none;
     margin-left: -0.5rem;
 }
+section.collapse > :first-child a::after {
+    top: -0.1em;
+    left: 0.5em;
+}
 section.collapse > h1:first-child {
     margin-bottom: 0.375em;
 }
