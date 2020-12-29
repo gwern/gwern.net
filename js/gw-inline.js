@@ -111,12 +111,17 @@ String.prototype.includesAnyOf = function (substrings) {
     return false;
 }
 
+/*  Remove given item from array.
+	*/
 Array.prototype.remove = function (item) {
     var index = this.indexOf(item);
     if (index !== -1)
         this.splice(index, 1);
 };
 
+/*  Remove from array the first item that passes the provided test function.
+	The test function should take an array item and return true/false.
+	*/
 Array.prototype.removeIf = function (test) {
     var index = this.findIndex(test);
     if (index !== -1)

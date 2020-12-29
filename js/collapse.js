@@ -131,6 +131,11 @@ function prepareCollapseBlocks() {
 				*/
 			if (!disclosureButton.checked && !isOnScreen(collapseBlock))
 				scrollElementIntoView(collapseBlock);
+			/*	If a collapse block was expanded from the bottom, the top of the
+				collapse block might be up off the screen. Scroll it into view.
+				*/
+			else if (disclosureButton.checked && collapseBlock.getBoundingClientRect().top < 0)
+				scrollElementIntoView(collapseBlock);
 
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
 		});
