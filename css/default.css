@@ -280,11 +280,11 @@ section.collapse > :first-child > a {
     text-shadow: none;
 }
 
-/*  Collapsible tables (special case).
+/*  Collapsible tables.
     */
-.collapse:not(.expanded) > .disclosure-button + .table-wrapper {
-    max-height: 2.125em;
-    overflow: hidden;
+.collapse .table-wrapper {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /************/
@@ -3243,8 +3243,6 @@ body.directory-index #disqus_thread {
 
 #link-bibliography {
 	padding: 0 0 2.5rem 1em;
-	border-top: 1px solid var(--GW-link-bibliography-border-color);
-	border-bottom: 1px solid var(--GW-link-bibliography-border-color);
 }
 
 #link-bibliography .collapseSummary {
