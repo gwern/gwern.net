@@ -1689,7 +1689,9 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /* MISC */
 /********/
 
-/* LaTeX/TeX: Format the logotypes correctly (a higher up, e lower) (borrowed from https://latex.now.sh/ ) */
+/*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower) 
+    (borrowed from https://latex.now.sh/ ) 
+    */
 .latex span:nth-child(1) {
     text-transform: uppercase;
     font-size: 0.76em;
@@ -1713,9 +1715,30 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     font-size: 1em;
 }
 
-/*  Prevent text-shadow of italics in links from creating visual glitches (also fixes occasional link icon overlaps, eg a WP link to 'MGS:V' where the right-tilted 'V' would touch the WP 'W' link icon). */
+/*  Prevent text-shadow of italics in links from creating visual glitches 
+    (also fixes occasional link icon overlaps, eg a WP link to 'MGS:V' where 
+    the right-tilted 'V' would touch the WP 'W' link icon).
+    */
 #markdownBody em {
     margin-right: 0.1em;
+}
+
+/*  SUPERSCRIPT+SUBSCRIPT (necessary for inflation adjuster, and other math)
+    */
+.supsub {
+    display: inline-block;
+    margin-left: 0.1em;
+    text-indent: initial; /* override the `p + p { text-indent: 2.5em; }` */
+}
+.supsub sup,
+.supsub sub {
+    position: relative;
+    display: block;
+    font-size: 0.7em;
+    line-height: 0.7;
+}
+.supsub sub {
+    top: .2em;
 }
 
 /*************/
@@ -3343,21 +3366,4 @@ body.directory-index #disqus_thread {
 #navigation #navigation-center {
     text-shadow: none;
     background: var(--GW-sequential-nav-link-background-color);
-}
-
-/** SUPERSCRIPT+SUBSCRIPT (necessary for inflation adjuster, and other math) **/
-.supsub {
-    display: inline-block;
-    margin-left: 0.1em;
-    text-indent: initial; /* override the p+p { text-indent: 2.5em; } */
-}
-.supsub sup,
-.supsub sub {
-    position: relative;
-    display: block;
-    font-size: 0.7em;
-    line-height: 0.7;
-}
-.supsub sub {
-    top: .2em;
 }
