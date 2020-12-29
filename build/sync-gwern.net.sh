@@ -71,16 +71,14 @@ then
             FILENAME=$(basename -- "$FILE")
             EXTENSION="${FILENAME##*.}"
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
-            echo -e "~~~{.$LANGUAGE}\n$(cat $FILE)\n~~~" | pandoc -w html >> $FILE.html
+            (echo -e "~~~{.$LANGUAGE}\n"; cat $FILE; echo -e "\n~~~") | pandoc -w html >> $FILE.html
         done
     }
     export -f syntaxHighlight
     set +e
-    find _site/static/ -type f -name "*.html" | sort | parallel syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/ -type f -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" | sort | \
+    find _site/static/ -type f,l -name "*.html" | sort | parallel syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
+    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" | sort | fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' | parallel syntaxHighlight
         # Pandoc fails on embedded Unicode/regexps in JQuery
-        fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' | \
-                   parallel syntaxHighlight
     set -e
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
