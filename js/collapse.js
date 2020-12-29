@@ -116,6 +116,18 @@ function prepareCollapseBlocks() {
 }
 doWhenDOMContentLoaded(prepareCollapseBlocks);
 
+/*	Ensure that the given element is scrolled into view when layout is complete.
+	*/
+function scrollElementIntoView(element) {
+    GWLog("scrollElementIntoView", "collapse.js", 2);
+
+	doWhenPageLoaded(() => {
+		requestAnimationFrame(() => {
+			element.scrollIntoView();
+		});
+	});
+}
+
 /*	Expand collapse blocks to reveal the given element, and scroll it into view.
 	*/
 function revealElement(element, scrollIntoView = true) {
@@ -123,11 +135,7 @@ function revealElement(element, scrollIntoView = true) {
 
 	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
 	if (scrollIntoView) {
-		doWhenPageLoaded(() => {
-			requestAnimationFrame(() => {
-				element.scrollIntoView();
-			});
-		});
+		scrollElementIntoView(element);
 	}
 	return didExpandCollapseBlocks;
 }
@@ -157,10 +165,7 @@ function revealTarget() {
 	/*	Fire notification event. Pass handlers the revealElement() function,
 		so that they can reveal other elements, if desired.
 		*/
-	GW.notificationCenter.fireEvent("Collapse.targetDidRevealOnHashUpdate", { 
-		revealTargetFunction: revealTarget,
-		revealElementFunction: revealElement
-	});
+	GW.notificationCenter.fireEvent("Collapse.targetDidRevealOnHashUpdate");
 }
 /*	We don’t need to do this unconditionally (e.g. on DOMContentLoaded) because
 	the hashchange event will be triggered by the realignHash() function in

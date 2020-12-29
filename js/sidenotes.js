@@ -611,8 +611,10 @@ Sidenotes = {
 			collapse block, expand it and all collapse blocks enclosing it.
 			*/
 		GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", (info) => {
-			if (location.hash.match(/#sn[0-9]/))
-				info.revealElementFunction(document.querySelector("#fnref" + location.hash.substr(3)), true);
+			if (location.hash.match(/#sn[0-9]/)) {
+				revealElement(document.querySelector("#fnref" + location.hash.substr(3)), false);
+				scrollElementIntoView(getHashTargetedElement());
+			}
 
 			Sidenotes.updateTargetCounterpart();
 		});
