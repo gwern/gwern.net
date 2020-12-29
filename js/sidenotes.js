@@ -613,7 +613,7 @@ Sidenotes = {
 		GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", (info) => {
 			if (location.hash.match(/#sn[0-9]/)) {
 				revealElement(document.querySelector("#fnref" + location.hash.substr(3)), false);
-				scrollElementIntoView(getHashTargetedElement());
+				scrollElementIntoView(getHashTargetedElement(), -13.0);
 			}
 
 			Sidenotes.updateTargetCounterpart();

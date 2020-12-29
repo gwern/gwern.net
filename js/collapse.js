@@ -118,12 +118,14 @@ doWhenDOMContentLoaded(prepareCollapseBlocks);
 
 /*	Ensure that the given element is scrolled into view when layout is complete.
 	*/
-function scrollElementIntoView(element) {
+function scrollElementIntoView(element, offset = 0) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
 
 	doWhenPageLoaded(() => {
 		requestAnimationFrame(() => {
 			element.scrollIntoView();
+			if (offset != 0)
+				window.scrollBy(0, offset);
 		});
 	});
 }
