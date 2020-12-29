@@ -136,6 +136,22 @@ Sidenotes = {
 		}
 	},
 
+	/*  If the page was loaded with a hash that points to a footnote, but
+		sidenotes are enabled (or vice-versa), rewrite the hash in accordance
+		with the current mode (this will also cause the page to end up scrolled
+		to the appropriate element - footnote or sidenote).
+		*/
+	rewriteHashForCurrentMode: () => {
+		GWLog("Sidenotes.rewriteHashForCurrentMode", "sidenotes.js", 1);
+		if (location.hash.match(/#sn[0-9]/) &&
+			Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true) {
+			GW.hashRealignValue = "#fn" + location.hash.substr(3);
+		} else if (location.hash.match(/#fn[0-9]/) &&
+			Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
+			GW.hashRealignValue = "#sn" + location.hash.substr(3);
+		}
+ 	},
+
 	/*  Bind or unbind sidenote-related event listeners, as appropriate to the
 		current viewport width.
 		*/
@@ -593,19 +609,6 @@ Sidenotes = {
 			Sidenotes.rewriteCitationTargetsForCurrentMode();
 		});
 
-		/*  If the page was loaded with a hash that points to a footnote, but
-			sidenotes are enabled (or vice-versa), rewrite the hash in accordance
-			with the current mode (this will also cause the page to end up scrolled
-			to the appropriate element - footnote or sidenote).
-			*/
-		if (location.hash.match(/#sn[0-9]/) &&
-			Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true) {
-			location.hash = "#fn" + location.hash.substr(3);
-		} else if (location.hash.match(/#fn[0-9]/) &&
-			Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
-			location.hash = "#sn" + location.hash.substr(3);
-		}
- 
 		/*  After the hash updates, properly highlight everything, if needed.
 			Also, if the hash points to a sidenote whose citation is in a 
 			collapse block, expand it and all collapse blocks enclosing it.
@@ -646,6 +649,10 @@ Sidenotes = {
 };
 
 GW.notificationCenter.fireEvent("Sidenotes.didLoad");
+
+/*	Do this regardless of whether we run setup.
+	*/
+Sidenotes.rewriteHashForCurrentMode();
 
 //  LET... THERE... BE... SIDENOTES!!!
 Sidenotes.setup();

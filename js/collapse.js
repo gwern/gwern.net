@@ -110,6 +110,8 @@ function prepareCollapseBlocks() {
 		disclosureButton.addEventListener("change", (event) => {
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
+			console.log(event.target.value);
+
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
 		});
 	});

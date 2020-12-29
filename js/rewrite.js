@@ -229,18 +229,22 @@ function identifyFootnotesSection() {
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
 
+function realignHash() {
+	GWLog("realignHash", "rewrite.js", 1);
+
+	let hash = GW.hashRealignValue || location.hash;
+	history.replaceState(null, null, "#");
+	location.hash = hash;
+	GW.hashRealignValue = null;
+}
+doWhenDOMContentLoaded(realignHash);
 /*  This is necessary to defeat a bug where if the page is loaded with the URL
 	hash targeting some element, the element does not match the :target CSS
 	pseudo-class.
 	*/
-function realignHash() {
-	GWLog("realignHash", "rewrite.js", 1);
-
-	let hash = location.hash;
-	history.replaceState(null, null, "#");
-	location.hash = hash;
-}
-doWhenDOMContentLoaded(realignHash)
+doWhenPageLoaded(() => {
+	requestAnimationFrame(realignHash);
+});
 
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
 /* Settings: 'prefetch' (loads HTML of target) after 800ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */
