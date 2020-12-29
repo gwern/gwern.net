@@ -261,7 +261,7 @@ section.collapse > :first-child > a {
     */
 .sourceCode .collapse,
 .sourceCode.collapse {
-    margin: 1.75em 0;
+    margin: 1.75em auto;
 }
 .sourceCode .collapse > pre,
 .sourceCode.collapse > pre {
