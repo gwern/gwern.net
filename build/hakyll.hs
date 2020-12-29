@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2020-12-26 11:40:22 gwern"
+When: Time-stamp: "2020-12-27 09:53:59 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -239,8 +239,8 @@ postCtx tags =
 -- pandocTransform md adb dict = walkM (\x -> annotateLink md x >>= localizeLink adb) . walk smallcapsfy . walk headerSelflink . annotateFirstDefinitions . walkInlineM (defineAbbreviations dict) . bottomUp mergeSpaces . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md adb p = do let p' = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate)) $ p
-                              p'' <- generateLinkBibliography md p'
+pandocTransform md adb p = do p' <- generateLinkBibliography md p
+                              let p'' = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate)) $ p'
                               let p''' = walk headerSelflink p'' -- run headerSelflink after generateLinkBibliography to cover the generated '# Link Bibliography' sections
                               walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) p'''
 
