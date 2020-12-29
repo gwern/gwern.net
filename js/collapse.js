@@ -24,6 +24,7 @@ function expandCollapseBlocksToReveal(node) {
     let disclosureButton = collapseParent.querySelector(".disclosure-button");
     let expansionOccurred = (disclosureButton.checked == false);
     disclosureButton.checked = true;
+    updateDisclosureButtonTitle(disclosureButton);
     collapseParent.classList.toggle("expanded", disclosureButton.checked);
 
     /*  Expand any higher-level collapse blocks!
@@ -35,6 +36,13 @@ function expandCollapseBlocksToReveal(node) {
 
     //  Report whether we had to expand a collapse block.
     return expansionOccurred;
+}
+
+function updateDisclosureButtonTitle(disclosureButton) {
+	let collapsedStateTitle = "This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.";
+	let expandedStateTitle = "This is an expanded collapse region; mouse click to collapse it.";
+
+	disclosureButton.title = disclosureButton.checked ? expandedStateTitle : collapsedStateTitle;
 }
 
 /*  Returns true if the given collapse block is currently collapsed.
@@ -72,7 +80,7 @@ function prepareCollapseBlocks() {
 	let hashTarget = getHashTargetedElement();
 	document.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let checked = collapseBlock.contains(hashTarget) ? " checked='checked'" : "";
-		let disclosureButtonHTML = `<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'${checked}>`;
+		let disclosureButtonHTML = `<input type='checkbox' class='disclosure-button' aria-label='Open/close collapsed section'${checked}>`;
 		if (collapseBlock.tagName == "SECTION") {
 			//  Inject the disclosure button.
 			collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
@@ -106,14 +114,20 @@ function prepareCollapseBlocks() {
     /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
 	document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+		updateDisclosureButtonTitle(disclosureButton);
+
 		let collapseBlock = disclosureButton.closest(".collapse");
 		disclosureButton.addEventListener("change", (event) => {
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
+			/*	Update the tooltip.
+				*/
+			updateDisclosureButtonTitle(disclosureButton);
+
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.
 				*/
-			if (!event.target.checked && !isOnScreen(collapseBlock))
+			if (!disclosureButton.checked && !isOnScreen(collapseBlock))
 				scrollElementIntoView(collapseBlock);
 
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
