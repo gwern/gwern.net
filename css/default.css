@@ -804,6 +804,11 @@ blockquote blockquote {
     margin: 1em 1px;
 }
 
+blockquote p {
+	position: relative;
+	z-index: 1;
+}
+
 /*=--------------------=*/
 /*= Various edge cases =*/
 /*=--------------------=*/
