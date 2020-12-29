@@ -232,6 +232,15 @@ doWhenDOMContentLoaded(identifyFootnotesSection);
 function realignHash() {
 	GWLog("realignHash", "rewrite.js", 1);
 
+	//  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
+	if (GW.isFirefox()) {
+		if (location.hash.startsWith("#:~:")) {
+			GW.hashRealignValue = GW.hashRealignValue || "#";
+		} else if (location.hash.includes(":~:")) {
+			GW.hashRealignValue = GW.hashRealignValue || location.hash.replace(/:~:.*$/, "");
+		}
+	}
+
 	let hash = GW.hashRealignValue || location.hash;
 	history.replaceState(null, null, "#");
 	location.hash = hash;

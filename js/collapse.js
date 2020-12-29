@@ -39,6 +39,8 @@ function expandCollapseBlocksToReveal(node) {
 }
 
 function updateDisclosureButtonTitle(disclosureButton) {
+    GWLog("expandCollapseBlocksToReveal", "collapse.js", 3);
+
 	let collapsedStateTitle = "This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.";
 	let expandedStateTitle = "This is an expanded collapse region; mouse click to collapse it.";
 
@@ -165,6 +167,10 @@ function revealElement(element, scrollIntoView = true) {
 /*  Return the element targeted by the URL hash, or null.
     */
 function getHashTargetedElement() {
+	//  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
+	if (GW.isFirefox() && location.hash.startsWith("#:~:"))
+		return null;
+
 	return (location.hash.length > 1)
 			? document.querySelector(decodeURIComponent(location.hash))
 			: null;
