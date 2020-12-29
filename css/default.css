@@ -88,7 +88,7 @@
 }
 .collapse.expanded > .disclosure-button ~ *:not(section):not(.collapseSummary),
 .collapse.expanded > .disclosure-button ~ figure.full-width .figure-inner-wrapper {
-    box-shadow: 
+    box-shadow:
         -0.125rem 0 0 0.375rem var(--GW-body-background-color);
     position: relative;
     z-index: 1;
@@ -117,13 +117,13 @@
     font-style: inherit;
     font-size: 0.875em;
     font-family: var(--GW-sans-serif-font-stack);
-    box-shadow: 
+    box-shadow:
         3em 0 0 0 #eee inset;
     transition:
         box-shadow 0.1s ease;
 }
 .disclosure-button:hover {
-    box-shadow: 
+    box-shadow:
         3em 0 0 0 #ddd inset;
 }
 .disclosure-button:checked {
@@ -139,7 +139,7 @@
 .disclosure-button::before,
 .disclosure-button::after {
     background-color: #eee;
-    transition: 
+    transition:
         color 0.1s ease,
         background-color 0.1s ease;
 }
@@ -3348,17 +3348,18 @@ body.directory-index #disqus_thread {
 }
 
 /** SUPERSCRIPT+SUBSCRIPT (necessary for inflation adjuster, and other math) **/
-  .supsub {
-      display: inline-block;
-      margin-left: 0.1em;
-  }
-  .supsub sup,
-  .supsub sub {
-      position: relative;
-      display: block;
-      font-size: 0.7em;
-      line-height: 0.7;
-  }
-  .supsub sub {
-      top: .2em;
-  }
+.supsub {
+    display: inline-block;
+    margin-left: 0.1em;
+    text-indent: initial; /* override the p+p { text-indent: 2.5em; } */
+}
+.supsub sup,
+.supsub sub {
+    position: relative;
+    display: block;
+    font-size: 0.7em;
+    line-height: 0.7;
+}
+.supsub sub {
+    top: .2em;
+}
