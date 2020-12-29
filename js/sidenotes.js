@@ -18,8 +18,6 @@ Sidenotes = {
 
 	potentiallyOverlappingElementsSelector: ".marginnote, .full-width",
 
-	problematicCharacters: '/=≠',
-
 	/*  Media query objects (for checking and attaching listeners).
 		*/
 	mediaQueries: {
@@ -32,8 +30,6 @@ Sidenotes = {
 	sidenoteColumnLeft: null,
 	sidenoteColumnRight: null,
 	hiddenSidenoteStorage: null,
-
-	hashBeforeSidenoteWasFocused: "",
 
 	/*  Set the display form of margin notes (margin vs. inline).
 		*/
@@ -79,43 +75,6 @@ Sidenotes = {
 			*/
 		if (counterpart)
 			counterpart.classList.toggle("targeted", true);
-	},
-
-	/*  This is necessary to defeat a bug where if the page is loaded with the URL
-		hash targeting some element, the element does not match the :target CSS
-		pseudo-class.
-		*/
-	realignHashIfNeeded: () => {
-		GWLog("Sidenotes.realignHashIfNeeded", "sidenotes.js", 1);
-
-		if (location.hash.match(/#sn[0-9]/) || location.hash.match(/#fnref[0-9]/))
-			Sidenotes.realignHash();
-	},
-	realignHash: () => {
-		GWLog("Sidenotes.realignHash", "sidenotes.js", 1);
-
-		let hash = location.hash;
-		history.replaceState(null, null, "#");
-		location.hash = hash;
-	},
-
-	/*  Make sure clicking a sidenote does not cause scrolling.
-		*/
-	setHashWithoutScrolling: (newHash) => {
-		GWLog("Sidenotes.setHashWithoutScrolling", "sidenotes.js", 1);
-
-		var selectedRange;
-		if (GW.isFirefox())
-			selectedRange = window.getSelection().getRangeAt(0);
-
-		let scrollPositionBeforeNavigate = window.scrollY;
-		location.hash = newHash;
-		requestAnimationFrame(() => {
-			window.scrollTo(0, scrollPositionBeforeNavigate);
-		});
-
-		if (GW.isFirefox())
-			window.getSelection().addRange(selectedRange);
 	},
 
 	/*  Move sidenotes within currently-collapsed collapse blocks to the hidden
@@ -164,8 +123,8 @@ Sidenotes = {
 		This function rewrites all footnote reference links appropriately to the
 		current mode (based on viewport width).
 		*/
-	updateFootnoteReferenceLinks: () => {
-		GWLog("Sidenotes.updateFootnoteReferenceLinks", "sidenotes.js", 1);
+	rewriteCitationTargetsForCurrentMode: () => {
+		GWLog("Sidenotes.rewriteCitationTargetsForCurrentMode", "sidenotes.js", 1);
 
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			let citation = Sidenotes.citations[i];
@@ -180,8 +139,8 @@ Sidenotes = {
 	/*  Bind or unbind sidenote-related event listeners, as appropriate to the
 		current viewport width.
 		*/
-	updateEventListeners: () => {
-		GWLog("Sidenotes.updateEventListeners", "sidenotes.js", 1);
+	bindOrUnbindEventListenersForCurrentMode: () => {
+		GWLog("Sidenotes.bindOrUnbindEventListenersForCurrentMode", "sidenotes.js", 1);
 
 		//  Unbind sidenote mouse events.
 		Sidenotes.unbindSidenoteMouseEvents();
@@ -197,18 +156,6 @@ Sidenotes = {
 		*/
 	bindSidenoteMouseEvents: () => {
 		GWLog("Sidenotes.bindSidenoteMouseEvents", "sidenotes.js", 1);
-
-		/*  Add event listener to un-focus a sidenote (by resetting the hash) when
-			the document is clicked anywhere but a sidenote or a link.
-			*/
-		document.body.addEventListener("click", Sidenotes.bodyClicked = (event) => {
-			GWLog("Sidenotes.bodyClicked", "sidenotes.js");
-
-			if (!(event.target.closest("a") || event.target.closest(".sidenote")) &&
-				(location.hash.startsWith("#sn"))) {
-				Sidenotes.setHashWithoutScrolling(Sidenotes.hashBeforeSidenoteWasFocused);
-			}
-		});
 
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			let citation = Sidenotes.citations[i];
@@ -233,8 +180,6 @@ Sidenotes = {
 		*/
 	unbindSidenoteMouseEvents: () => {
 		GWLog("Sidenotes.unbindSidenoteMouseEvents", "sidenotes.js", 1);
-
-		document.body.removeEventListener("click", Sidenotes.bodyClicked);
 
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			let citation = Sidenotes.citations[i];
@@ -508,6 +453,8 @@ Sidenotes = {
 		//  Show the sidenote columns.
 		Sidenotes.sidenoteColumnLeft.style.visibility = "";
 		Sidenotes.sidenoteColumnRight.style.visibility = "";
+
+		GW.notificationCenter.fireEvent("Sidenotes.sidenotePositionsDidUpdate");
 	},
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
@@ -574,35 +521,6 @@ Sidenotes = {
 		Sidenotes.hiddenSidenoteStorage.style.display = "none";
 		markdownBody.appendChild(Sidenotes.hiddenSidenoteStorage);
 
-		/*  Add listeners to target a sidenote when clicked.
-			*/
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
-			let sidenote = Sidenotes.sidenoteDivs[i];
-			sidenote.addEventListener("click", Sidenotes.sidenoteClicked = (event) => {
-				GWLog("Sidenotes.sidenoteClicked", "sidenotes.js");
-
-				if (decodeURIComponent(location.hash) == sidenote.id || event.target.tagName == "A" || event.target.tagName == "IMG") return;
-
-				//  Preserve hash before changing it.
-				if (!(location.hash.startsWith("#sn") || location.hash.startsWith("#fnref")))
-					Sidenotes.hashBeforeSidenoteWasFocused = location.hash;
-				Sidenotes.setHashWithoutScrolling(encodeURIComponent(sidenote.id));
-			});
-		}
-
-		/*  Insert zero-width spaces after problematic characters in sidenotes.
-			(This is to mitigate justification/wrapping problems.)
-			*/
-		Sidenotes.sidenoteDivs.forEach(sidenote => {
-			sidenote.querySelectorAll("*").forEach(element => {
-				if (element.closest(".sourceCode")) return;
-				element.childNodes.forEach(node => {
-					if (node.childNodes.length > 0) return;
-					node.textContent = node.textContent.replace(new RegExp("(\\w[" + Sidenotes.problematicCharacters + "])(\\w)", 'g'), "$1\u{200B}$2");
-				});
-			});
-		});
-
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 	},
 
@@ -634,16 +552,15 @@ Sidenotes = {
 		Sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(Sidenotes.viewportWidthBreakpointChanged = () => {
 			GWLog("Sidenotes.viewportWidthBreakpointChanged", "sidenotes.js");
 
-			Sidenotes.updateEventListeners();
-			Sidenotes.updateFootnoteReferenceLinks();
+			Sidenotes.bindOrUnbindEventListenersForCurrentMode();
+			Sidenotes.rewriteCitationTargetsForCurrentMode();
 		});
 
 		/*  Construct the sidenotes immediately, and also re-construct them as soon
 			as the HTML content is fully loaded (if it isn't already).
 			*/
 		Sidenotes.constructSidenotes();
-		if (document.readyState == "loading")
-			doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
+		doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
 
 		/*  Add a resize listener so that sidenote positions are recalculated when
 			the window is resized.
@@ -672,8 +589,8 @@ Sidenotes = {
 			or to sidenotes, as appropriate.
 			*/
 		doWhenPageLoaded(() => {
-			Sidenotes.updateEventListeners();
-			Sidenotes.updateFootnoteReferenceLinks();
+			Sidenotes.bindOrUnbindEventListenersForCurrentMode();
+			Sidenotes.rewriteCitationTargetsForCurrentMode();
 		});
 
 		/*  If the page was loaded with a hash that points to a footnote, but
@@ -687,36 +604,17 @@ Sidenotes = {
 		} else if (location.hash.match(/#fn[0-9]/) &&
 			Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
 			location.hash = "#sn" + location.hash.substr(3);
-		} else {
-			/*  Otherwise, make sure that if a sidenote is targeted by the hash, it
-				indeed ends up looking highlighted (this defeats a weird bug).
-				*/
-			requestAnimationFrame(Sidenotes.realignHashIfNeeded);
 		}
-
-		/*  Having updated the hash, now properly highlight everything, if needed,
-			and add a listener to update the target counterpart if the hash changes
-			later.
-
-			Also, if the hash points to a collapse block, or to an element within a
+ 
+		/*  After the hash updates, properly highlight everything, if needed.
+			Also, if the hash points to a sidenote whose citation is in a 
 			collapse block, expand it and all collapse blocks enclosing it.
 			*/
-		let hashUpdateResponse = () => {
-			revealTarget();
+		GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", (info) => {
+			if (location.hash.match(/#sn[0-9]/))
+				info.revealElementFunction(document.querySelector("#fnref" + location.hash.substr(3)), true);
+
 			Sidenotes.updateTargetCounterpart();
-
-			//  Prepare for hash reversion.
-			/*  Save the hash, if need be (if it does NOT point to a sidenote).
-				*/
-			Sidenotes.hashBeforeSidenoteWasFocused = location.hash.startsWith("#sn") ? "" : location.hash;
-		};
-		window.addEventListener("hashchange", Sidenotes.hashChanged = () => {
-			GWLog("Sidenotes.hashChanged", "sidenotes.js");
-
-			hashUpdateResponse();
-		});
-		window.addEventListener("load", () => {
-			hashUpdateResponse();
 		});
 
 		/*	Add event handler to (asynchronously) recompute sidenote positioning 

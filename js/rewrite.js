@@ -97,45 +97,9 @@ function wrapFullWidthPreBlocks() {
 }
 doWhenDOMContentLoaded(wrapFullWidthPreBlocks);
 
-/*  Rounds the height of all code blocks to the nearest integer (i.e., the
-    nearest pixel), to fix a weird bug that cuts off the bottom border.
-    */
-// function rectifyCodeBlockHeight(codeBlock) {
-// 	GWLog("rectifyCodeBlockHeight", "rewrite.js", 3);
-// 
-//     codeBlock.style.height = parseInt(getComputedStyle(codeBlock).height) + "px";
-// }
-// function rectifyAllCodeBlockHeights() {
-// 	GWLog("rectifyAllCodeBlockHeights", "rewrite.js", 1);
-// 
-//     document.querySelectorAll("pre code").forEach(codeBlock => {
-//         rectifyCodeBlockHeight(codeBlock);
-//     });
-// }
-// doWhenPageLoaded(rectifyAllCodeBlockHeights);
-
 /**************/
 /* TYPOGRAPHY */
 /**************/
-
-/*  Insert zero-width spaces after problematic characters in links (TODO: 'and popups' - probably have to do this in popups.js because the textContent doesn't exist until the popup is actually created).
-    (This is to mitigate justification/wrapping problems.)
-    */
-// function insertZeroWidthSpaces() {
-// 	GWLog("insertZeroWidthSpaces", "rewrite.js", 1);
-// 
-// 	let problematicCharacters = '/';
-// 	let problematicCharactersReplacementRegexp = new RegExp("(\\w[" + problematicCharacters + "])(\\w)", 'g');
-// 	let problematicCharactersReplacementPattern = "$1\u{200B}$2";
-// 	let problematicCharactersReplacementPatternEscaped = "$1&#x200b;$2";
-// 	document.querySelectorAll("p a, p a *, ul a, ul a *, ol a, ol a *").forEach(element => {
-// 		element.childNodes.forEach(node => {
-// 			if (node.childNodes.length > 0) return;
-// 			node.textContent = node.textContent.replace(problematicCharactersReplacementRegexp, problematicCharactersReplacementPattern);
-// 		});
-// 	});
-// }
-// insertZeroWidthSpaces();
 
 /*	HYPHENS
 	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
@@ -238,17 +202,6 @@ doWhenPageLoaded(expandFullWidthBlocks);
 /* MISC. */
 /*********/
 
-/*	The footnotes section has no ID because Pandoc is weird. Give it one.
-	*/
-function identifyFootnotesSection() {
-	GWLog("identifyFootnotesSection", "rewrite.js", 1);
-
-	let footnotesSection = document.querySelector("section.footnotes");
-	if (footnotesSection)
-		footnotesSection.id = "footnotes";
-}
-doWhenDOMContentLoaded(identifyFootnotesSection);
-
 /*	Directional navigation links on self-links: for each self-link like “see [later](#later-identifier)”, find the linked identifier, whether it’s before or after, and if it is before/previously, annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a backwards link to a identifier already read, or an unread identifier.
 	*/
 function directionalizeAnchorLinks() {
@@ -264,6 +217,30 @@ function directionalizeAnchorLinks() {
 	});
 }
 doWhenDOMContentLoaded(directionalizeAnchorLinks);
+
+/*	The footnotes section has no ID because Pandoc is weird. Give it one.
+	*/
+function identifyFootnotesSection() {
+	GWLog("identifyFootnotesSection", "rewrite.js", 1);
+
+	let footnotesSection = document.querySelector("section.footnotes");
+	if (footnotesSection)
+		footnotesSection.id = "footnotes";
+}
+doWhenDOMContentLoaded(identifyFootnotesSection);
+
+/*  This is necessary to defeat a bug where if the page is loaded with the URL
+	hash targeting some element, the element does not match the :target CSS
+	pseudo-class.
+	*/
+function realignHash() {
+	GWLog("realignHash", "rewrite.js", 1);
+
+	let hash = location.hash;
+	history.replaceState(null, null, "#");
+	location.hash = hash;
+}
+doWhenDOMContentLoaded(realignHash)
 
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
 /* Settings: 'prefetch' (loads HTML of target) after 800ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */

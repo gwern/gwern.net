@@ -1,24 +1,3 @@
-/*	NOTE: redundant with (and inferior to) expandCollapseBlocksToReveal()
-	TODO: delete this at some point
-/*  Reveals the given node by expanding all containing collapse blocks.
-    */
-// function expandAllAncestorsOfNode(node) {
-// 	GWLog("expandAllAncestorsOfNode", "collapse.js", 2);
-// 
-//     // If the node is not an element (e.g. a text node), get its parent element.
-//     let element = node instanceof HTMLElement ? node : node.parentElement;
-// 
-//     // Get the closest containing collapse block. If none such, return.
-//     let enclosingCollapseBlock = element.closest(".collapse");
-//     if (!enclosingCollapseBlock) return;
-// 
-//     // Expand the collapse block by checking the disclosure-button checkbox.
-//     enclosingCollapseBlock.querySelector(`#${enclosingCollapseBlock.id} > .disclosure-button`).checked = true;
-// 
-//     // Recursively expand all ancestors of the collapse block.
-//     expandAllAncestorsOfNode(enclosingCollapseBlock.parentElement);
-// }
-
 /*  This function expands all collapse blocks containing the given node, if
     any (including the node itself, if it is a collapse block). Returns true
     if any such expansion occurred. Fires Collapse.collapseStateDidChange event
@@ -59,14 +38,9 @@ function expandCollapseBlocksToReveal(node) {
 }
 
 /*  Returns true if the given collapse block is currently collapsed.
-    NOTE: This does not count targeted collapse blocks as expanded unless
-    their disclosure button is also engaged (i.e., in the checked state).
-    This is deliberate! (Because we use the disclosure button state to
-    determine whether we need to recompute layout.)
     */
 function isCollapsed(collapseBlock) {
-    let collapseCheckbox = collapseBlock.querySelector(".disclosure-button");
-    return (collapseCheckbox && collapseCheckbox.checked == false);
+    return !collapseBlock.classList.contains("expanded");
 }
 
 /*  Returns true if the given element is within a currently-collapsed collapse
@@ -90,42 +64,20 @@ function isWithinCollapsedBlock(element) {
     return isWithinCollapsedBlock(collapseParent.parentElement);
 }
 
-/*  This function expands all necessary collapse blocks to reveal the element
-    targeted by the URL hash. (This includes expanding collapse blocks to
-    reveal a footnote reference associated with a targeted sidenote). It also
-    scrolls the targeted element into view.
-    */
-function revealTarget() {
-    GWLog("revealTarget", "collapse.js", 1);
-
-    if (!location.hash) return;
-
-    let target = document.querySelector(decodeURIComponent(location.hash));
-    if (!target) return;
-
-    /*  What needs to be revealed is not necessarily the targeted element
-        itself; if the target is a sidenote, expand collapsed blocks to reveal
-        the citation reference.
-        */
-    let targetInText = location.hash.match(/#sn[0-9]/) 
-    				   ? document.querySelector("#fnref" + location.hash.substr(3)) 
-    				   : target;
-    expandCollapseBlocksToReveal(targetInText);
-
-    //  Scroll the target into view.
-    target.scrollIntoView();
-}
-
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
 function prepareCollapseBlocks() {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
+	let hashTarget = getHashTargetedElement();
 	document.querySelectorAll(".collapse").forEach(collapseBlock => {
-		let disclosureButtonHTML = "<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'>";
+		let checked = collapseBlock.contains(hashTarget) ? " checked='checked'" : "";
+		let disclosureButtonHTML = `<input type='checkbox' title='This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.' class='disclosure-button' aria-label='Open/close collapsed section'${checked}>`;
 		if (collapseBlock.tagName == "SECTION") {
 			//  Inject the disclosure button.
 			collapseBlock.children[0].insertAdjacentHTML("afterend", disclosureButtonHTML);
+			if (checked > "")
+				collapseBlock.classList.add("expanded");
 		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			//  Remove the ‘collapse’ class and do nothing else.
 			collapseBlock.classList.remove("collapse");
@@ -134,24 +86,22 @@ function prepareCollapseBlocks() {
 			let realCollapseBlock = collapseBlock.parentElement;
 			realCollapseBlock.classList.add("collapse");
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+			if (checked > "")
+				realCollapseBlock.classList.add("expanded");
 			collapseBlock.classList.remove("collapse");
 		} else {
 			//  Construct collapse block wrapper and inject the disclosure button.
 			let realCollapseBlock = document.createElement("div");
 			realCollapseBlock.classList.add("collapse");
 			realCollapseBlock.insertAdjacentHTML("afterbegin", disclosureButtonHTML);
+			if (checked > "")
+				realCollapseBlock.classList.add("expanded");
 			//  Move block-to-be-collapsed into wrapper.
 			collapseBlock.parentElement.insertBefore(realCollapseBlock, collapseBlock);
 			collapseBlock.classList.remove("collapse");
 			realCollapseBlock.appendChild(collapseBlock);
 		}
 	});
-
-	/*	Fire notification event.
-		*/
-	requestAnimationFrame(() => {
-        GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
-    });
 
     /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
@@ -160,26 +110,73 @@ function prepareCollapseBlocks() {
 		disclosureButton.addEventListener("change", (event) => {
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
-			//  If it’s a code block, adjust its height.
-// 			if (collapseBlock.lastElementChild.tagName == "PRE") {
-// 				let codeBlock = collapseBlock.lastElementChild.lastElementChild;
-// 				if (codeBlock.tagName != "CODE") return;
-// 
-// 				codeBlock.style.height = "";
-// 				requestAnimationFrame(() => {
-// 					rectifyCodeBlockHeight(codeBlock);
-// 				});
-// 			}
-
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
 		});
 	});
 }
 doWhenDOMContentLoaded(prepareCollapseBlocks);
 
+/*	Expand collapse blocks to reveal the given element, and scroll it into view.
+	*/
+function revealElement(element, scrollIntoView = true) {
+    GWLog("revealElement", "collapse.js", 2);
+
+	let didExpandCollapseBlocks = expandCollapseBlocksToReveal(element);
+	if (scrollIntoView) {
+		doWhenPageLoaded(() => {
+			requestAnimationFrame(() => {
+				element.scrollIntoView();
+			});
+		});
+	}
+	return didExpandCollapseBlocks;
+}
+
+/*  Return the element targeted by the URL hash, or null.
+    */
+function getHashTargetedElement() {
+	return (location.hash.length > 1)
+			? document.querySelector(decodeURIComponent(location.hash))
+			: null;
+}
+
+/*  Reveal the element targeted by the URL hash. Do the same on hash change.
+    */
+function revealTarget() {
+    GWLog("revealTarget", "collapse.js", 1);
+
+    if (!location.hash)
+    	return;
+
+    let target = getHashTargetedElement();
+    if (!target)
+    	return;
+
+	revealElement(target);
+
+	/*	Fire notification event. Pass handlers the revealElement() function,
+		so that they can reveal other elements, if desired.
+		*/
+	GW.notificationCenter.fireEvent("Collapse.targetDidRevealOnHashUpdate", { 
+		revealTargetFunction: revealTarget,
+		revealElementFunction: revealElement
+	});
+}
+/*	We don’t need to do this unconditionally (e.g. on DOMContentLoaded) because
+	the hashchange event will be triggered by the realignHash() function in
+	rewrite.js (and in any case we inject the collapse disclosure buttons in the
+	correct state to begin with). (We do still want realignHash() to cause the
+	hashchange event to fire, so that Collapse.targetDidRevealOnHashUpdate fires
+	if need be and triggers any auxiliary element reveals.)
+	*/
+window.addEventListener("hashchange", GW.hashUpdated = () => {
+	GWLog("GW.hashUpdated", "collapse.js", 1);
+
+	revealTarget();
+});
+
 /*	What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. We do this by watching for selection changes. (We don’t bother checking for window focus/blur because that is unreliable and in any case doesn’t work for “Search Again” key command.
 	*/
-
 document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
 	GWLog("GW.selectionChanged", "rewrite.js", 3);
 

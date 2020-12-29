@@ -36,219 +36,254 @@
     */
 
 .collapse {
+    min-height: 4.5rem;
     position: relative;
-}
-
-/*  Collapsible section elements. */
-#markdownBody .collapse + p {
-    margin-top: 1em;
-}
-section.collapse {
     overflow: hidden;
-    margin: 1.5em 0 0 -1em;
-    padding: 0 1em;
+    padding: 0 0 2rem 0;
+    box-sizing: border-box;
+    margin: 1em 0;
 }
-section.collapse.expanded,
-section.collapse:target {
-    overflow: visible;
-}
-section.collapse > :first-child {
-    padding-right: 1em;
-    margin-top: 0;
-    pointer-events: none;
-    z-index: 1;
-}
-section.collapse > :first-child > a {
-    pointer-events: auto;
-    position: relative;
-}
-section.collapse > :first-child > a::before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-}
-#markdownBody section.collapse:not(:target) > .disclosure-button:not(:checked) ~ :not(.collapseSummary) {
+.collapse:not(.expanded) > .disclosure-button ~ :not(.collapseSummary) {
     max-height: 0;
+    min-height: unset;
     overflow: hidden;
     padding: 0;
     margin: 0;
     border: none;
 }
-
-/*  Collapsible non-section blocks.
-    */
-:not(section).collapse > .disclosure-button:not(:checked) + * > :nth-child(n+2) {
-    max-height: 0;
-    overflow: hidden;
-}
-:not(section).collapse > .disclosure-button:not(:checked) + * > :first-child:not(.collapseSummary) {
-    max-height: 6ex;
-    overflow: hidden;
+.collapse.expanded {
+    overflow: visible;
 }
 
-/*  Collapsible tables (special case).
+/*  Collapse summary.
     */
-.collapse > .disclosure-button:not(:checked) + .table-wrapper {
-    max-height: 2.125em;
-    overflow: hidden;
-}
-
-/*  Making sure collapse summaries do not cause misalignment.
-    */
-.collapse:not(:target) > .disclosure-button:not(:checked) ~ .collapseSummary > :first-child {
-    margin-top: 0;
-}
-.collapse:not(:target) > .disclosure-button:not(:checked) ~ .collapseSummary > :last-child {
-    margin-bottom: 20px;
-}
 .collapseSummary {
+    margin: 0;
+}
+.collapse:not(.expanded) > .collapseSummary {
+    pointer-events: none;
+    position: relative;
+    z-index: 3;
+}
+.collapse:not(.expanded) > .collapseSummary blockquote {
+    margin: 0;
+}
+.collapse:not(.expanded) > .disclosure-button:hover + .collapseSummary blockquote {
+    background-color: #eee;
+}
+
+/*  Special-case formatting within collapses.
+    */
+.collapse p,
+.collapse .caption-wrapper,
+.collapse .epigraph,
+.collapse table,
+.collapse table caption,
+.collapse hr,
+.collapse > .disclosure-button ~ .collapseSummary *[class*='drop-cap-'] > p::first-letter {
+    background-color: var(--GW-body-background-color);
+}
+.collapse blockquote p {
+    background-color: inherit;
+}
+.collapse.expanded > .disclosure-button ~ *:not(section):not(.collapseSummary),
+.collapse.expanded > .disclosure-button ~ figure.full-width .figure-inner-wrapper {
+    box-shadow: 
+        -0.125rem 0 0 0.375rem var(--GW-body-background-color);
     position: relative;
     z-index: 1;
 }
-.collapse:not(:target) > .disclosure-button:not(:checked) ~ .collapseSummary {
-    opacity: 0.75;
+.collapse.expanded > .disclosure-button ~ figure.full-width,
+.collapse.expanded > .disclosure-button ~ pre:last-child {
+    box-shadow: none;
+}
+.collapse div[class^='horizontalRule'] {
+    filter: none;
 }
 
-/*  The interactable region to expand/collapse.
+/*  Disclosure button.
     */
 .disclosure-button {
-    z-index: 1;
-    position: absolute;
     -webkit-appearance: none;
     -moz-appearance: none;
-    margin: 0;
     cursor: pointer;
-    border: 1px solid transparent;
-}
-section.collapse > .disclosure-button {
+    margin: 0;
+    position: absolute;
     top: 0;
     right: 0;
-}
-section.collapse > .disclosure-button:not(:checked) {
     width: 100%;
     height: 100%;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 0.875em;
+    font-family: var(--GW-sans-serif-font-stack);
+    box-shadow: 
+        3em 0 0 0 #eee inset;
+    transition:
+        box-shadow 0.1s ease;
 }
-:not(section).collapse > .disclosure-button {
-    top: -2px;
-    right: -2px;
-}
-:not(section).collapse > .disclosure-button:not(:checked) {
-    width: calc(100% + 4px);
-    height: calc(100% + 4px);
+.disclosure-button:hover {
+    box-shadow: 
+        3em 0 0 0 #ddd inset;
 }
 .disclosure-button:checked {
-    height: 2em;
-}
-.collapse > .disclosure-button:checked {
-    width: 100%;
-    top: 0;
-    right: 0;
-}
-section.collapse > .disclosure-button:checked {
-    height: 3em;
-}
-.collapse > .disclosure-button:checked:hover {
-    background-color: var(--GW-collapse-block-disclosure-button-hover-background-color);
-}
-section.collapse:target > .disclosure-button {
     pointer-events: none;
-}
-.collapse:not(:target) > .disclosure-button:not(:checked) {
-    background-image: linear-gradient(var(--GW-collapse-block-fade-gradient-color-one), var(--GW-collapse-block-fade-gradient-color-two));
-}
-
-/*  Triangle/chevron/angle symbol. (Copied from WikiMedia's default 'Vector' skin where it's used on mobile to, by default, collapse sections; this means everyone in the world is familiar with it as a symbol of 'collapse'/'uncollapse'.)
-    */
-.disclosure-button::before {
-    content: url("data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M11.05 3.996l-.965-1.053-4.035 3.86-3.947-3.86L1.05 3.996l5 5 5-5' fill='%23222'/%3E%3C/svg%3E%0A");
-    font-size: 1.5em;
-    line-height: 1;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 1em;
-    height: 1em;
-    color: var(--GW-collapse-block-disclosure-button-color);
-    padding: 4px 0 4px 8px;
-}
-:not(section).collapse > .disclosure-button::before {
-    right: 1px;
-}
-.tableCollapse > .disclosure-button::before {
-    color: var(--GW-table-collapse-block-disclosure-button-color);
-}
-.disclosure-button:checked::before,
-.collapse:target > .disclosure-button::before {
-    transform: rotate(180deg);
-    top: 3px;
-}
-:not(section).collapse > .disclosure-button:checked::before {
-    top: 0;
-    right: -2px;
-}
-.collapse > .disclosure-button:hover::before {
-    color: var(--GW-collapse-block-disclosure-button-hover-color);
-}
-section.collapse:target > .disclosure-button::before {
-    color: var(--GW-collapse-block-disclosure-button-targeted-color);
-}
-.tableCollapse > .disclosure-button:hover::before {
-    color: var(--GW-table-collapse-block-disclosure-button-hover-color);
+    background-color: transparent;
 }
 .disclosure-button:focus {
     outline: none;
 }
-.disclosure-button:focus::before {
-    text-shadow:
-        0 0 1px var(--GW-collapse-block-disclosure-button-focus-text-shadow-color),
-        0 0 3px var(--GW-collapse-block-disclosure-button-focus-text-shadow-color),
-        0 0 5px var(--GW-collapse-block-disclosure-button-focus-text-shadow-color);
+
+/*  Top and bottom parts of disclosure button.
+    */
+.disclosure-button::before,
+.disclosure-button::after {
+    background-color: #eee;
+    transition: 
+        color 0.1s ease,
+        background-color 0.1s ease;
+}
+.disclosure-button:hover::before,
+.disclosure-button:hover::after {
+    background-color: #ddd;
+}
+.disclosure-button:checked::before,
+.disclosure-button:checked::after {
+    pointer-events: auto;
 }
 
-/*  "Click to expand" highlight
- */
-.collapse:not(:target) > .disclosure-button::after {
+/*  Top part of disclosure button.
+    */
+.disclosure-button::before {
+    content: "";
+    position: absolute;
     width: 100%;
+    height: 3rem;
+    text-align: right;
+    color: #bbb;
+    padding: 0.875rem 3rem;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>');
+    background-repeat: no-repeat;
+    background-position: calc(100% - 1rem) 0.625rem;
+    background-size: auto 1.5rem;
+    box-sizing: border-box;
+}
+.disclosure-button:hover::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23FFF"/></svg>');
+    color: #fff;
+}
+.disclosure-button:checked::before {
+    content: "Click to collapse";
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23CCC"/></svg>');
+    background-position: calc(100% - 0.75rem) 0.75rem;
+}
+.disclosure-button:checked:hover::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23FFF"/></svg>');
+}
+
+/*  Bottom part of disclosure button.
+    */
+.disclosure-button::after {
+    width: 100%;
+    height: 2rem;
     position: absolute;
     text-align: center;
     pointer-events: none;
     content: "… Click to expand …";
-    font-size: 1.25em;
-    font-weight: 600;
-    font-family: var(--GW-sans-serif-font-stack);
-    color: var(--GW-collapse-block-click-to-expand-text-color);
-    text-shadow:
-         1px -1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
-        -1px  1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
-        -1px -1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
-         1px  1px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color);
-    top: calc(100% - 1.225em);
+    color: #aaa;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.collapse:not(:target) > .disclosure-button:hover::after {
-    color: var(--GW-collapse-block-click-to-expand-text-hover-color);
-    text-shadow:
-         2px -2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
-        -2px  2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
-        -2px -2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color),
-         2px  2px 0 var(--GW-collapse-block-click-to-expand-text-shadow-color);
+.disclosure-button:hover::after {
+    color: #fff;
 }
-.collapse:not(:target) > .disclosure-button:checked::after {
+.disclosure-button:checked::after {
     content: "Click to collapse";
 }
-section.collapse:not(:target) > .disclosure-button:checked::after {
-    top: -6px;
-    text-align: right;
-    right: 24px;
+
+/*  Collapsible sections (the <section> element).
+    */
+section.collapse {
+    padding-left: 1em;
+    margin: 2.5em 0 2.25em -1em;
 }
-:not(section).collapse:not(:target) > .disclosure-button:not(:checked)::after {
-    top: calc(100% - 9px);
+section.collapse > *:first-child {
+    margin-top: 0;
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+    margin-left: -0.5rem;
 }
-:not(section).collapse:not(:target) > .disclosure-button:checked::after {
-    top: -7px;
+section.collapse > h1:first-child {
+    margin-bottom: 0.375em;
 }
-.disclosure-button:not(:checked):hover {
-    border: 1px dotted var(--GW-collapse-block-hover-border-color);
+section.collapse > h2:first-child {
+    line-height: 1.75;
+}
+section.collapse > h2:first-child::after {
+    content: none;
+}
+article > :not(#TOC) section.collapse > *:first-child a {
+    text-shadow: none;
+}
+section.collapse > :first-child > a {
+    pointer-events: auto;
+    position: relative;
+}
+
+/*  Collapsible non-section blocks.
+    */
+:not(section).collapse:not(.expanded) {
+    padding: 0;
+}
+:not(section).collapse > .disclosure-button {
+    box-shadow: none;
+}
+:not(section).collapse.expanded > .disclosure-button {
+    background-color: var(--GW-body-background-color);
+}
+:not(section).collapse:not(.expanded) > .disclosure-button::before,
+:not(section).collapse:not(.expanded) > .disclosure-button::after {
+    z-index: 2;
+    opacity: 0.95;
+}
+:not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.collapseSummary) {
+    max-height: 5rem;
+}
+:not(section).collapse.expanded {
+    padding-top: 3.5rem;
+    padding-bottom: 2.5rem;
+}
+
+/*  Collapsible code blocks.
+    */
+.sourceCode .collapse,
+.sourceCode.collapse {
+    margin: 1.75em 0;
+}
+.sourceCode .collapse > pre,
+.sourceCode.collapse > pre {
+    margin: 0;
+}
+.collapse:not(.expanded) > .disclosure-button ~ pre:not(.collapseSummary) {
+    border: 1px solid var(--GW-pre-element-border-color);
+    box-sizing: border-box;
+}
+.sourceCode :not(section).collapse:not(.expanded) > .disclosure-button::before,
+.sourceCode :not(section).collapse:not(.expanded) > .disclosure-button::after,
+.sourceCode:not(section).collapse:not(.expanded) > .disclosure-button::before,
+.sourceCode:not(section).collapse:not(.expanded) > .disclosure-button::after {
+    opacity: 0.7;
+    text-shadow: none;
+}
+
+/*  Collapsible tables (special case).
+    */
+.collapse:not(.expanded) > .disclosure-button + .table-wrapper {
+    max-height: 2.125em;
+    overflow: hidden;
 }
 
 /************/
@@ -1170,7 +1205,7 @@ section.footnotes > hr:first-child::before {
 .sidenote.cut-off .sidenote-outer-wrapper {
     overflow-y: auto;
     overscroll-behavior: none;
-    width: calc(100% + 2px);
+    width: 100%;
     padding: 0 1px 0 0;
 }
 
