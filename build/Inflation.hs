@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2020-12-03 11:26:59 gwern"
+-- When:  Time-stamp: "2020-12-29 10:33:20 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting https://en.wikipedia.org/wiki/Money_illusion by implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real price! (Misunderstanding of inflation may be getting worse over time: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008 )
@@ -41,10 +41,10 @@ $ echo '[$50.50]($1970)' | pandoc -w native
 [Para [Link ("",[],[]) [Str "$50.50"] ("$1970","")]]
 
 > nominalToRealInflationAdjuster $ Link ("",[],[]) [Str "$50.50"] ("$1970","")
-Span ("",["inflationAdjusted"],[("originalYear","1970"),("originalAmount","50.50"),("currentYear","2020"),("currentAmount","231.18"),("title","Inflation-adjusted currency: from $50.50 in 1970 \8594 $231.18 in 2020")]) [Str "$231.18",Math InlineMath "_{\\text{1970}}^{\\text{50.50}}"]
+Span ("",["inflationAdjusted"],[("originalYear","1970"),("originalAmount","50.50"),("currentYear","2020"),("currentAmount","231.18"),("title","CPI inflation-adjusted US dollar: from nominal $50.50 in 1970 \8594 real $231.18 in 2020")]) [Str "$231.18",Span ("",["supsub"],[]) [Superscript [Str "$50.50"],Subscript [Str "1970"]]]
 
-$ echo 'Span ("",["inflationAdjusted"],[("originalYear","1970"),("originalAmount","50.50"),("currentYear","2020"),("currentAmount","231.18"),("title","Inion-adjusted currency: from $50.50 in 1970 \8594 $231.18 in 2020")]) [Str "$231.18",Math InlineMath "_{\\text{1970}}^{\\text{50.50}}"]' | pandoc -f native -w html
-<span class="inflationAdjusted" data-originalYear="1970" data-originalAmount="50.50" data-currentYear="2020" data-currentAmount="231.18" title="Inflation-adjusted currency: from $50.50 in 1970 → $231.18 in 2020">$231.18<span class="math inline"><em></em><sub>1970</sub><sup>50.50</sup></span></span>
+$ echo '' | pandoc -f native -w html
+<span class="inflationAdjusted" data-originalYear="1970" data-originalAmount="50.50" data-currentYear="2020" data-currentAmount="231.18" title="CPI inflation-adjusted US dollar: from nominal $50.50 in 1970 → real $231.18 in 2020">$231.18<span class="supsub"><sup>$50.50</sup><sub>1970</sub></span></span>
 
 Bitcoin deflation example:
 
@@ -53,13 +53,13 @@ $ echo '[₿50.50](₿2017-01-1)' | pandoc -w native
 
 > :set -XOverloadedStrings
 > bitcoinAdjuster (Link ("",[],[]) [Str "\8383\&50.50"] ("\8383\&2017-01-01",""))
-Span ("",["inflationAdjusted"],[("originalYear","2017-01-01"),("originalAmount","50.50"),("currentYear","2020"),("currentAmount","56,617"),("title","Inflation-adjusted currency: from \8383\&50.50 in 2017-01-01 \8594 $56,617 in 2020")]) [Str "\\$56,617",Math InlineMath "_{\\text{2017}}^{\\text{\8383\&50.50}}"]
+Span ("",["inflationAdjusted"],[("originalYear","2017-01-01"),("originalAmount","50.50"),("currentYear","2020"),("currentAmount","56,617"),("title","Exchange-rate-adjusted currency: \8383\&50.50 in 2017-01-01 \8594 $56,617")]) [Str "$56,617",Span ("",["supsub"],[]) [Superscript [Str "\8383\&50.50"],Subscript [Str "2017"]]]
 
 $  echo 'Span ("",["inflationAdjusted"],[("originalYear","2017-01-01"),("originalAmount","50.50"),("currentYear","2020"),("currentAmount","56,617"),("title","Inflation-adjusted currency: from \8383\&50.50 in 2017-01-01 \8594 $56,617 in 2020")]) [Str "\\$56,617",Math InlineMath "_{\\text{2017}}^{\\text{\8383\&50.50}}"]' | pandoc -f native -w html
-<span class="inflationAdjusted" data-originalYear="2017-01-01" data-originalAmount="50.50" data-currentYear="2020" data-currentAmount="56,617" title="Inflation-adjusted currency: from ₿50.50 in 2017-01-01 → $56,617 in 2020">\$56,617<span class="math inline"><em></em><sub>2017</sub><sup>₿50.50</sup></span></span>
+<span class="inflationAdjusted" data-originalYear="2017-01-01" data-originalAmount="50.50" data-currentYear="2020" data-currentAmount="56,617" title="Exchange-rate-adjusted currency: ₿50.50 in 2017-01-01 → $56,617">$56,617<span class="supsub"><sup>₿50.50</sup><sub>2017</sub></span></span>
 -}
 
-import Text.Pandoc (Inline(Code, Link, Math, Span, Str), MathType(InlineMath))
+import Text.Pandoc (Inline(Code, Link, Span, Str, Subscript, Superscript))
 import Text.Printf (printf, PrintfArg)
 import Text.Read (readMaybe)
 import Data.List (intercalate, unfoldr)
@@ -91,7 +91,7 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
              ("currentYear",T.pack $ show currentYear),("currentAmount",T.pack adjustedDollarString),
              ("title", T.pack ("CPI inflation-adjusted US dollar: from nominal $"++oldDollarString++" in "++T.unpack oldYear++" → real $"++adjustedDollarString++" in "++(show currentYear))) ])
       -- [Str ("$" ++ oldDollarString), Subscript [Str oldYear, Superscript [Str ("$"++adjustedDollarString)]]]
-      [Str (T.pack $ "$"++adjustedDollarString),      Math InlineMath (T.pack ("_{\\text{"++T.unpack oldYear++"}}^{\\text{"++oldDollarString++"}}"))]
+      [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["supsub"],[]) [Superscript text, Subscript [Str oldYear]]]
     where -- oldYear = '$1970' → '1970'
           oldYear = T.tail oldYears
           oldDollarString = filter (/= '$') $ inlinesToString text -- '$50.50' → '50.50'
@@ -163,7 +163,7 @@ bitcoinAdjuster l@(Link _ text (oldDates, _)) =
             [("originalYear",oldDate),         ("originalAmount",T.pack oldBitcoinString),
              ("currentYear",T.pack $ show currentYear), ("currentAmount", T.pack adjustedBitcoinString),
              ("title", T.pack ("Exchange-rate-adjusted currency: \8383"++oldBitcoinString++" in "++T.unpack oldDate++" → $"++adjustedBitcoinString)) ])
-      [Str $ T.pack ("$"++adjustedBitcoinString), Math InlineMath $ T.pack ("_{\\text{"++oldYear++"}}^{\\text{\8383"++oldBitcoinString++"}}")]
+      [Str (T.pack $ "$"++adjustedBitcoinString),  Span ("",["supsub"],[]) [Superscript text, Subscript [Str (T.pack oldYear)]]]
   where oldDate = T.tail oldDates
         oldBitcoinString = filter (/= '\8383') $ inlinesToString text
         oldBitcoin = case (readMaybe (filter (/=',') oldBitcoinString) :: Maybe Float) of

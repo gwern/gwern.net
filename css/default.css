@@ -948,7 +948,7 @@ a.footnote-ref::before {
     border-color: transparent;
     border-style: double;
     border-width: 3px;
-    transition: 
+    transition:
         background-color 0.15s ease 0.05s,
         border-color 0.15s ease 0.05s;
 }
@@ -1071,7 +1071,7 @@ section.footnotes > hr:first-child::after {
 	height: 2em;
 	background-color: var(--GW-body-background-color);
 	z-index: 1;
-	box-shadow: 
+	box-shadow:
 		0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
 		0 0 0 0.5em var(--GW-footnotes-section-top-rule-color) inset;
     filter: none;
@@ -1884,7 +1884,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
         .markdownBody .drop-cap-kanzlei > p::first-letter {
             margin: 0.05em 0.02em 0 -0.03em;
         }
-    }    
+    }
 }
 
 /*****************/
@@ -2212,7 +2212,7 @@ body.lorem div[class^='drop-cap'] {
 }
 
 /****************************/
-/* DIRECTORY INDEX LISTINGS */ 
+/* DIRECTORY INDEX LISTINGS */
 /****************************/
 /* trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /index. */
 
@@ -2653,7 +2653,7 @@ body.directory-index #disqus_thread {
   overflow: hidden;
   opacity: 0.2;
   -webkit-animation: fa-spin 2s infinite linear;
-          animation: fa-spin 2s infinite linear; 
+          animation: fa-spin 2s infinite linear;
 }
 @-webkit-keyframes fa-spin {
   0% {
@@ -3086,12 +3086,12 @@ body.directory-index #disqus_thread {
 }
 #popup-options-dialog button.save-button:hover {
     cursor: pointer;
-    box-shadow: 
+    box-shadow:
         0 0 0 2px var(--GW-popups-popup-options-dialog-button-background-color) inset,
         0 0 0 3px var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
 #popup-options-dialog button.save-button:active {
-    box-shadow: 
+    box-shadow:
         0 0 0 4px var(--GW-popups-popup-options-dialog-button-background-color) inset,
         0 0 0 5px var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
@@ -3133,7 +3133,7 @@ body.directory-index #disqus_thread {
     padding: 0.5em 0.75em;
 }
 #popup-options-dialog .option-buttons label input:checked + .button-text .label {
-    text-decoration: underline;    
+    text-decoration: underline;
 }
 #popup-options-dialog .option-buttons label .explanation {
     display: block;
@@ -3168,7 +3168,7 @@ body.directory-index #disqus_thread {
 }
 
 #popup-options-dialog .option-buttons input:checked {
-    box-shadow: 
+    box-shadow:
         0 0 0 3px var(--GW-popups-popup-options-dialog-button-background-color) inset,
         0 0 0 1em var(--GW-popups-popup-options-dialog-button-hover-box-shadow-color) inset;
 }
@@ -3300,3 +3300,19 @@ body.directory-index #disqus_thread {
     text-shadow: none;
     background: var(--GW-sequential-nav-link-background-color);
 }
+
+/** SUPERSCRIPT+SUBSCRIPT (necessary for inflation adjuster, and other math) **/
+  .supsub {
+      display: inline-block;
+      margin-left: 0.1em;
+  }
+  .supsub sup,
+  .supsub sub {
+      position: relative;
+      display: block;
+      font-size: 0.7em;
+      line-height: 0.7;
+  }
+  .supsub sub {
+      top: .2em;
+  }
