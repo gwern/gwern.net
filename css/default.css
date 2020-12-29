@@ -243,6 +243,7 @@ section.collapse > :first-child > a {
 }
 :not(section).collapse.expanded > .disclosure-button {
     background-color: var(--GW-body-background-color);
+    z-index: 1;
 }
 :not(section).collapse:not(.expanded) > .disclosure-button::before,
 :not(section).collapse:not(.expanded) > .disclosure-button::after {
