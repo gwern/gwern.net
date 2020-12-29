@@ -282,9 +282,11 @@ section.collapse > :first-child > a {
 
 /*  Collapsible tables.
     */
-.collapse .table-wrapper {
-    margin-top: 0;
-    margin-bottom: 0;
+.table-wrapper > .collapse {
+    margin: 0;
+}
+.table-wrapper > .collapse:not(.expanded) {
+    max-height: 5rem;
 }
 
 /************/

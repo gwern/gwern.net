@@ -21,6 +21,24 @@ function wrapTables() {
 }
 doWhenDOMContentLoaded(wrapTables);
 
+/*	Wrap each full-width table in a div.full-width-table-wrapper, and also move
+	the .collapse class (if any) from the outer wrapper to the table (for
+	consistency).
+	*/
+function wrapFullWidthTables() {
+	let fullWidthClass = "full-width";
+	let fullWidthInnerWrapperClass = "full-width-table-inner-wrapper";
+	document.querySelectorAll(`.table-wrapper.${fullWidthClass}`).forEach(fullWidthTableWrapper => {
+		if (fullWidthTableWrapper.classList.contains("collapse")) {
+			fullWidthTableWrapper.classList.remove("collapse");
+			fullWidthTableWrapper.firstElementChild.classList.add("collapse");
+		}
+
+		fullWidthTableWrapper.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthTableWrapper.innerHTML + `</div>`;
+	});
+}
+doWhenDOMContentLoaded(wrapFullWidthTables);
+
 /***********/
 /* FIGURES */
 /***********/
