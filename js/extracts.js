@@ -43,7 +43,7 @@ Extracts = {
 
 	/*	Exclusions.
 		*/
-	excludedElementsSelector: ".external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
+	excludedElementsSelector: ".sidenote-self-link, .external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
 	excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 
 	/*	Infrastructure.
