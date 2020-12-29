@@ -3242,27 +3242,37 @@ body.directory-index #disqus_thread {
 /*********************/
 
 #link-bibliography {
-	padding: 0.25em 0 1em 0;
-	margin-left: 0;
+	padding: 0 0 2.5rem 1em;
 	border-top: 1px solid var(--GW-link-bibliography-border-color);
 	border-bottom: 1px solid var(--GW-link-bibliography-border-color);
 }
-#link-bibliography:not(:target) > .disclosure-button::after {
-	top: calc(100% - 1.375em);
-}
-#link-bibliography:not(:target) > .disclosure-button:checked::after {
-	top: 2px;
-	right: 30px;
-}
 
-#link-bibliography > h1:first-child {
-	margin-left: 0;
+#link-bibliography .collapseSummary {
+    position: relative;
+    z-index: 2;
+    margin: 2em 0 1.5em 0;
+    box-shadow: 0.125rem 0 0 0.625rem var(--GW-body-background-color);
+}
+#link-bibliography:not(.expanded) .collapseSummary {
+    margin-bottom: 0;
+}
+#link-bibliography:not(.expanded) > .disclosure-button ~ * {
+    pointer-events: none;
+}
+#link-bibliography .disclosure-button::after {
+    z-index: 2;
 }
 
 #link-bibliography > ol {
 	padding: 0 0.75em 0 1.75em;
     overflow: visible;
+    box-shadow: none;
 }
+
+#link-bibliography > ol > li > * {
+    box-shadow: -1.75rem 0 0 0.5rem var(--GW-body-background-color);
+}
+
 #link-bibliography > ol > li::marker {
     font-weight: 600;
 }
