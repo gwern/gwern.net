@@ -15,7 +15,7 @@
 /* Not to be inverted in dark mode! */
 
 :root {
-	--GW-object-popup-background-color: #fff;
+    --GW-object-popup-background-color: #fff;
 }
 
 /*********************/
@@ -590,7 +590,7 @@ ul > li::before {
 }
 
 :not(ul):not(ol) > li {
-	list-style-type: none;
+    list-style-type: none;
 }
 
 @media only screen and (max-width: 649px) {
@@ -689,8 +689,8 @@ figure + figure {
 .figure-inner-wrapper {
     display: block;
     margin: auto;
-	width: -moz-fit-content;
-	width: fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 
 figure img,
@@ -704,8 +704,8 @@ figure audio {
     margin: 0 auto;
 }
 
-/*	Figure captions.
-	*/
+/*  Figure captions.
+    */
 figcaption {
     font-size: 0.9375em;
     font-weight: bold;
@@ -728,11 +728,11 @@ figcaption {
     width: 100%;
 }
 video + .caption-wrapper {
-	margin-top: 2px;
+    margin-top: 2px;
 }
 
-/*	Prevent lower border from being cut off.
-	*/
+/*  Prevent lower border from being cut off.
+    */
 .columns li figure {
     padding-bottom: 1px;
 }
@@ -782,7 +782,7 @@ figure.full-width {
 /* main gray background is implemented in initial.css to avoid 'flash' on load */
 
 blockquote {
-	/* avoid problems with floating */
+    /* avoid problems with floating */
     clear: both;
 
     position: relative;
@@ -873,8 +873,8 @@ blockquote table {
 }
 .epigraph,
 .epigraph blockquote {
-	width: -moz-fit-content;
-	width: fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 .epigraph p  {
     font-style: italic;
@@ -1044,38 +1044,38 @@ a.footnote-ref {
 }
 
 section.footnotes > ol {
-	list-style-type: none;
-	padding-left: 2.625em;
+    list-style-type: none;
+    padding-left: 2.625em;
     overflow: visible;
 }
 section.footnotes > ol > li {
-	counter-increment: footnotes;
-	min-height: calc(1.75em + 1px);
+    counter-increment: footnotes;
+    min-height: calc(1.75em + 1px);
 }
 section.footnotes > ol > li::before {
     position: absolute;
     z-index: 1;
 }
 section.footnotes > ol > li::before {
-	border: 1px dotted var(--GW-footnote-border-color);
-	width: 1.75em;
+    border: 1px dotted var(--GW-footnote-border-color);
+    width: 1.75em;
     height: 1.75em;
     line-height: 1;
-	font-feature-settings: 'lnum';
-	content: counter(footnotes);
-	display: flex;
-	justify-content: center;
+    font-feature-settings: 'lnum';
+    content: counter(footnotes);
+    display: flex;
+    justify-content: center;
     align-items: center;
-	right: calc(100% + 0.75em);
+    right: calc(100% + 0.75em);
     top: calc(-0.125em - 1px);
 }
 section.footnotes > ol > li::after {
-	content: "";
-	position: absolute;
-	border-right: 1px dotted var(--GW-footnote-border-color);
-	height: calc(100% + 0.125em + 2px);
+    content: "";
+    position: absolute;
+    border-right: 1px dotted var(--GW-footnote-border-color);
+    height: calc(100% + 0.125em + 2px);
     top: calc(-0.125em - 1px);
-	left: calc(-0.75em - 1px);
+    left: calc(-0.75em - 1px);
 }
 
 section.footnotes > ol > li:target::before,
@@ -1092,33 +1092,33 @@ section.footnotes > ol > li:target::after,
 section.footnotes > ol > li.highlighted::after {
     border-width: 0 3px 0 0;
     border-style: double;
-	left: calc(-0.75em - 3px);
+    left: calc(-0.75em - 3px);
 }
 
 section.footnotes > hr:first-child {
-	position: relative;
+    position: relative;
     margin: 1.75em 0 1.375em 0;
     padding: 3px 0 0 0;
 }
 section.footnotes > hr:first-child::after {
-	content: "";
-	border: 1px solid var(--GW-footnotes-section-top-rule-color);
-	width: 2em;
-	height: 2em;
-	background-color: var(--GW-body-background-color);
-	z-index: 1;
-	box-shadow:
-		0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
-		0 0 0 0.5em var(--GW-footnotes-section-top-rule-color) inset;
+    content: "";
+    border: 1px solid var(--GW-footnotes-section-top-rule-color);
+    width: 2em;
+    height: 2em;
+    background-color: var(--GW-body-background-color);
+    z-index: 1;
+    box-shadow:
+        0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
+        0 0 0 0.5em var(--GW-footnotes-section-top-rule-color) inset;
     filter: none;
 }
 section.footnotes > hr:first-child::before {
-	content: "";
-	position: absolute;
-	height: 1px;
-	background-color: var(--GW-footnotes-section-top-rule-color);
-	width: 100%;
-	top: 50%;
+    content: "";
+    position: absolute;
+    height: 1px;
+    background-color: var(--GW-footnotes-section-top-rule-color);
+    width: 100%;
+    top: 50%;
 }
 
 /*************/
@@ -1967,7 +1967,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     padding: 0.75em 1.25em 0.875em 1.125em;
     border-left: 2.875em solid var(--GW-admonition-default-left-border-color);
     background-color: var(--GW-admonition-default-background-color);
-	--GW-link-underline-background-color: var(--GW-admonition-default-background-color);
+    --GW-link-underline-background-color: var(--GW-admonition-default-background-color);
 }
 .admonition-title {
     font-weight: bold;
@@ -1975,13 +1975,13 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .admonition.tip {
     border-left-color: var(--GW-admonition-tip-left-border-color);
     background-color: var(--GW-admonition-tip-background-color);
-	--GW-link-underline-background-color: var(--GW-admonition-tip-background-color);
+    --GW-link-underline-background-color: var(--GW-admonition-tip-background-color);
 }
 .admonition.warn,
 .admonition.warning {
     border-left-color: var(--GW-admonition-warning-left-border-color);
     background-color: var(--GW-admonition-warning-background-color);
-	--GW-link-underline-background-color: var(--GW-admonition-warning-background-color);
+    --GW-link-underline-background-color: var(--GW-admonition-warning-background-color);
     color: var(--GW-admonition-warning-text-color);
 }
 .admonition.warn > .admonition-title::after,
@@ -1991,7 +1991,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .admonition.error {
     border-left-color: var(--GW-admonition-error-left-border-color);
     background-color: var(--GW-admonition-error-background-color);
-	--GW-link-underline-background-color: var(--GW-admonition-error-background-color);
+    --GW-link-underline-background-color: var(--GW-admonition-error-background-color);
     color: var(--GW-admonition-error-text-color);
 }
 .admonition.error > .admonition-title::after {
@@ -2290,7 +2290,7 @@ body.directory-index #disqus_thread {
 /*=--------=*/
 
 :root {
-	--SA-image-focus-sans-serif-font-stack: var(--GW-sans-serif-font-stack);
+    --SA-image-focus-sans-serif-font-stack: var(--GW-sans-serif-font-stack);
 
     --SA-image-focus-image-hover-drop-shadow-color: var(--GW-image-focus-image-hover-drop-shadow-color);
     --SA-image-focus-overlay-background-color: #000;
@@ -2388,8 +2388,8 @@ body.directory-index #disqus_thread {
     right: 4.5em;
     margin: auto;
     max-width: calc(100% - 9em);
-	width: -moz-fit-content;
-	width: fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
     text-align: center;
     font-family: var(--SA-image-focus-sans-serif-font-stack);
     border-radius: 8px;
@@ -2643,8 +2643,8 @@ body.directory-index #disqus_thread {
 }
 .image-wrapper,
 .image-wrapper::after {
-	width: -moz-fit-content;
-	width: fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 .image-wrapper:hover::after {
     opacity: 1.0;
@@ -2655,9 +2655,9 @@ body.directory-index #disqus_thread {
 /**********/
 
 .popupdiv {
-	box-sizing: border-box;
-	max-width: 100vw;
-	max-height: 100vh;
+    box-sizing: border-box;
+    max-width: 100vw;
+    max-height: 100vh;
     background-color: var(--GW-popups-popup-background-color);
     border: 3px double var(--GW-popups-popup-border-color);
     box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
@@ -2671,8 +2671,8 @@ body.directory-index #disqus_thread {
         opacity 0.25s ease-in 0.1s;
 }
 
-/*	Loading spinner.
-	*/
+/*  Loading spinner.
+    */
 .popupdiv.loading::before {
   content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
   position: absolute;
@@ -2715,8 +2715,8 @@ body.directory-index #disqus_thread {
     overflow: auto;
 }
 
-/*	Adjustments for styles in popups.
-	*/
+/*  Adjustments for styles in popups.
+    */
 .popupdiv p + ul,
 .popupdiv p + ol {
     margin-top: 0.2em;
@@ -2728,7 +2728,7 @@ body.directory-index #disqus_thread {
 .popupdiv h4,
 .popupdiv h5,
 .popupdiv h6 {
-	margin-left: 0;
+    margin-left: 0;
 }
 .popupdiv h1 a,
 .popupdiv h2 a,
@@ -2736,7 +2736,7 @@ body.directory-index #disqus_thread {
 .popupdiv h4 a,
 .popupdiv h5 a,
 .popupdiv h6 a {
-	text-decoration: none;
+    text-decoration: none;
 }
 .popupdiv blockquote {
     margin: 1em 0;
@@ -2745,8 +2745,8 @@ body.directory-index #disqus_thread {
     content: none;
 }
 
-/*	Drop caps in popups.
-	*/
+/*  Drop caps in popups.
+    */
 .popupdiv.markdownBody .drop-cap-goudy > p,
 .popupdiv.markdownBody .drop-cap-yinit > p,
 .popupdiv.markdownBody .drop-cap-de-zs > p,
@@ -2755,46 +2755,46 @@ body.directory-index #disqus_thread {
     text-indent: 0;
 }
 .popupdiv.markdownBody .drop-cap-goudy > p::first-letter {
-	font-size: 6.5em;
+    font-size: 6.5em;
 }
 .popupdiv.markdownBody .drop-cap-yinit > p::first-letter {
-	font-size: 5.125em;
+    font-size: 5.125em;
 }
 .popupdiv.markdownBody .drop-cap-de-zs > p::first-letter {
-	font-size: 6.375em;
+    font-size: 6.375em;
 }
 .popupdiv.markdownBody .drop-cap-cheshire > p::first-letter {
-	font-size: 6.375em;
+    font-size: 6.375em;
 }
 .popupdiv.markdownBody .drop-cap-kanzlei > p::first-letter {
-	font-size: 6.625em;
+    font-size: 6.625em;
 }
 
-/*	Collapse blocks within popups.
-	*/
+/*  Collapse blocks within popups.
+    */
 .popupdiv .disclosure-button {
-	display: none;
+    display: none;
 }
 .popupdiv :not(section).collapse > .disclosure-button:not(:checked) + * > :first-child:not(.collapseSummary) {
-	max-height: unset;
+    max-height: unset;
 }
 
-/*	Margin notes in popups.
-	*/
+/*  Margin notes in popups.
+    */
 .popupdiv .marginnote {
-	display: initial;
+    display: initial;
 }
 
 /*  Sidenote popups.
-	*/
+    */
 .popupdiv .sidenote-self-link {
-	display: none;
+    display: none;
 }
 .popupdiv .sidenote-inner-wrapper {
-	margin: 0;
+    margin: 0;
 }
 .popupdiv .sidenote-outer-wrapper {
-	border: none;
+    border: none;
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
@@ -2828,7 +2828,7 @@ body.directory-index #disqus_thread {
     color: var(--GW-popups-popup-link-hover-color);
 }
 .external-section-embed-popup a.footnote-back {
-	text-decoration: none;
+    text-decoration: none;
     z-index: 1;
 }
 
@@ -2837,15 +2837,15 @@ body.directory-index #disqus_thread {
 /*=----------=*/
 
 .popupdiv.extract-popup {
-	min-width: 360px;
-	max-width: 640px;
+    min-width: 360px;
+    max-width: 640px;
 }
 .popupdiv.extract-popup:not(.toc-section-popup) {
-	max-height: 480px;
+    max-height: 480px;
 }
 
-/*	Data fields.
-	*/
+/*  Data fields.
+    */
 .extract-popup .data-field {
     text-align: left;
     text-indent: 0;
@@ -2876,8 +2876,8 @@ body.directory-index #disqus_thread {
     margin-top: 0.5em;
 }
 
-/*	TODO: remove this once popups inherit from main body styles.
-	*/
+/*  TODO: remove this once popups inherit from main body styles.
+    */
 .extract-popup .data-field.popupAbstract p,
 .extract-popup.section-embed-popup p,
 .extract-popup.external-section-embed-popup p,
@@ -2899,7 +2899,7 @@ body.directory-index #disqus_thread {
 }
 
 .extract-popup img {
-	width: 100%;
+    width: 100%;
 }
 .extract-popup a {
     position: relative;
@@ -2911,11 +2911,11 @@ body.directory-index #disqus_thread {
     margin-bottom: calc(1em/9);
 }
 
-/*	“Object popups”: videos, images, PDFs, archived web pages, etc.
-	*/
+/*  “Object popups”: videos, images, PDFs, archived web pages, etc.
+    */
 .extract-popup.object-popup {
-	height: 480px;
-	background-color: var(--GW-object-popup-background-color);
+    height: 480px;
+    background-color: var(--GW-object-popup-background-color);
 }
 .extract-popup.object-popup > div {
     padding: 0;
@@ -2931,8 +2931,8 @@ body.directory-index #disqus_thread {
     height: 474px;
 }
 
-/*	Popups for images.
-	*/
+/*  Popups for images.
+    */
 .extract-popup.image-popup {
     min-width: 64px;
     height: unset;
@@ -2945,21 +2945,21 @@ body.directory-index #disqus_thread {
 /*  Popups for videos.
     */
 .extract-popup.video-popup {
-	height: unset;
+    height: unset;
 }
 .extract-popup.video-popup iframe {
     width: 495px;
     height: 310px;
 }
 
-/*	Popups for local documents.
-	*/
+/*  Popups for local documents.
+    */
 
-/*	Popups for local code files.
-	*/
+/*  Popups for local code files.
+    */
 .extract-popup.local-code-file-popup {
-	width: 640px;
-	height: 480px;
+    width: 640px;
+    height: 480px;
 }
 .extract-popup.local-code-file-popup > div {
     height: 100%;
@@ -2967,12 +2967,12 @@ body.directory-index #disqus_thread {
 }
 .extract-popup.local-code-file-popup pre {
     height: 100%;
-	margin: 0;
+    margin: 0;
     border: none;
 }
 
-/*	Section embeds.
-	*/
+/*  Section embeds.
+    */
 .extract-popup.section-embed-popup > div,
 .extract-popup.citation-context-popup > div {
     overflow-x: hidden;
@@ -2998,27 +2998,27 @@ body.directory-index #disqus_thread {
     margin-top: 0;
 }
 
-/*	External section embeds.
-	*/
+/*  External section embeds.
+    */
 .extract-popup.external-section-embed-popup {
-	width: 640px;
-	height: 480px;
+    width: 640px;
+    height: 480px;
 }
 
-/*	Special case for inline math in Wikipedia popups.
-	*/
+/*  Special case for inline math in Wikipedia popups.
+    */
 .extract-popup .mwe-math-element {
-	display: inline-block;
-	height: 1.25em;
-	line-height: 1;
-	margin: 0;
-	vertical-align: bottom;
-	padding: 0;
-	text-indent: 0;
+    display: inline-block;
+    height: 1.25em;
+    line-height: 1;
+    margin: 0;
+    vertical-align: bottom;
+    padding: 0;
+    text-indent: 0;
 }
 .extract-popup .mwe-math-element img {
-	display: inline-block;
-	height: 100%;
+    display: inline-block;
+    height: 100%;
 }
 
 
@@ -3028,9 +3028,9 @@ body.directory-index #disqus_thread {
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
 .popupdiv.footnote-popup {
-	min-width: unset;
-	max-width: 640px;
-	max-height: 480px;
+    min-width: unset;
+    max-width: 640px;
+    max-height: 480px;
 }
 
 .footnote-popup a.footnote-back {
@@ -3074,10 +3074,10 @@ body.directory-index #disqus_thread {
     z-index: 2;
     opacity: 1;
     transition:
-    	opacity 0.15s ease;
+        opacity 0.15s ease;
 }
 #popup-options-dialog.fading {
-	opacity: 0;
+    opacity: 0;
 }
 
 #popup-options-dialog > div {
@@ -3086,7 +3086,7 @@ body.directory-index #disqus_thread {
     background-color: var(--GW-popups-popup-options-dialog-background-color);
     border: 1px solid var(--GW-popups-popup-options-dialog-border-color);
     box-shadow: 0 2px 2px 0 var(--GW-popups-popup-options-dialog-box-shadow-color);
-	font-family: var(--GW-sans-serif-font-stack);
+    font-family: var(--GW-sans-serif-font-stack);
     user-select: none;
 }
 
@@ -3210,25 +3210,25 @@ body.directory-index #disqus_thread {
 }
 
 /*  With popups disabled, the “show popup options dialog” icon/button.
-	*/
+    */
 #popups-disabled-show-popup-options-dialog-button {
-	position: fixed;
-	top: calc(0.55em + 3px);
-	right: 12em;
-	z-index: 1;
+    position: fixed;
+    top: calc(0.55em + 3px);
+    right: 12em;
+    z-index: 1;
 }
 #popups-disabled-show-popup-options-dialog-button button {
-	-moz-appearance: none;
-	appearance: none;
-	border: none;
-	font-family: inherit;
-	font-size: inherit;
-	background: inherit;
-	color: var(--GW-popups-show-popup-options-dialog-button-color);
-	fill: currentColor;
-	padding: 0;
-	line-height: 1;
-	display: block;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    background: inherit;
+    color: var(--GW-popups-show-popup-options-dialog-button-color);
+    fill: currentColor;
+    padding: 0;
+    line-height: 1;
+    display: block;
     width: 1.125em;
     opacity: 0.3;
 }
@@ -3242,9 +3242,9 @@ body.directory-index #disqus_thread {
 /*********************/
 
 #link-bibliography {
-	padding: 0 0 2.5rem 1em;
-	border-top: 1px solid var(--GW-link-bibliography-border-color);
-	border-bottom: 1px solid var(--GW-link-bibliography-border-color);
+    padding: 0 0 2.5rem 1em;
+    border-top: 1px solid var(--GW-link-bibliography-border-color);
+    border-bottom: 1px solid var(--GW-link-bibliography-border-color);
 }
 
 #link-bibliography .collapseSummary {
@@ -3264,7 +3264,7 @@ body.directory-index #disqus_thread {
 }
 
 #link-bibliography > ol {
-	padding: 0 0.75em 0 1.75em;
+    padding: 0 0.75em 0 1.75em;
     overflow: visible;
     box-shadow: none;
 }
@@ -3304,12 +3304,12 @@ body.directory-index #disqus_thread {
 /**********/
 
 .popindiv.video-popin {
-	padding: 0;
+    padding: 0;
 }
 
 .video-popin iframe {
-	display: block;
-	width: 100%;
+    display: block;
+    width: 100%;
 }
 
 /*********************/
@@ -3363,3 +3363,5 @@ body.directory-index #disqus_thread {
 .supsub sub {
     top: .2em;
 }
+/* make sure that adjusted prices move as a block: no breaking in the middle between the price & sup/sub; this works better than trying to use no-break Unicode entities */
+span.inflationAdjusted { white-space: nowrap; }
