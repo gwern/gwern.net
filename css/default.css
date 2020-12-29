@@ -65,6 +65,9 @@
     position: relative;
     z-index: 1;
 }
+.collapse.expanded > .collapseSummary:not(.abstract) {
+    margin-bottom: 0;
+}
 .collapse:not(.expanded) > .collapseSummary {
     pointer-events: none;
     position: relative;
