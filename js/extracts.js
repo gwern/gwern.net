@@ -37,7 +37,7 @@ Extracts = {
 		"a.footnote-back" 
 		],
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
-    codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf" ],
+    codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ],
     qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ],
     foreignSiteURLPrefixes: [ "http://", "https://", "http://www.", "https://www." ],
 
