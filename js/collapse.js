@@ -110,7 +110,11 @@ function prepareCollapseBlocks() {
 		disclosureButton.addEventListener("change", (event) => {
 			collapseBlock.classList.toggle("expanded", disclosureButton.checked);
 
-			console.log(event.target.value);
+			/*	If a collapse block was collapsed from the bottom, it might now
+				be up off the screen. Scroll it into view.
+				*/
+			if (!event.target.checked && !isOnScreen(collapseBlock))
+				scrollElementIntoView(collapseBlock);
 
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange");
 		});
