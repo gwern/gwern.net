@@ -1670,6 +1670,10 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .mjpage__block {
     overflow-y: hidden;
     margin: 1.25em auto;
+    background-color: var(--GW-math-block-background-color);
+    padding: 0.5em 0.5em 0.375em 0.5em;
+    box-shadow:
+        0 0 0 1px var(--GW-math-block-scrollbar-border-color) inset;
 }
 .mjpage__block .MJXc-display {
     margin: 0;
@@ -1681,6 +1685,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .mjpage__block::-webkit-scrollbar {
     height: 14px;
     border: 1px solid var(--GW-math-block-scrollbar-border-color);
+    background-color: var(--GW-math-block-scrollbar-track-color);
 }
 .mjpage__block::-webkit-scrollbar-thumb {
     box-shadow:
