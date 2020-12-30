@@ -59,11 +59,11 @@
     */
 .collapseSummary {
     margin: 0;
+    position: relative;
+    z-index: 1;
 }
 .collapseSummary:not(.abstract) {
     margin: 1.5em 0 0.25em 0;
-    position: relative;
-    z-index: 1;
 }
 .collapse.expanded > .collapseSummary:not(.abstract) {
     margin-bottom: 0;
@@ -799,18 +799,10 @@ figure.full-width {
 blockquote {
     /* avoid problems with floating */
     clear: both;
-
-    position: relative;
-    z-index: 1;
 }
 
 blockquote blockquote {
     margin: 1em 1px;
-}
-
-blockquote p {
-	position: relative;
-	z-index: 1;
 }
 
 /*=--------------------=*/
@@ -865,8 +857,6 @@ blockquote p > a:first-child code:first-child {
     */
 blockquote table {
     font-size: 0.7em;
-    position: relative;
-    z-index: 1;
 }
 
 /*************/
@@ -1412,8 +1402,6 @@ table {
     border-style: solid;
     border-color: var(--GW-table-border-color);
     border-width: 2px 0;
-    position: relative;
-    z-index: 1;
 }
 
 /*=-------------------=*/
@@ -2961,10 +2949,6 @@ body.directory-index #disqus_thread {
 .extract-popup img {
     width: 100%;
 }
-.extract-popup a {
-    position: relative;
-    z-index: 0;
-}
 
 .extract-popup blockquote:last-child,
 .extract-popup .table-wrapper:last-child {
@@ -3306,8 +3290,6 @@ body.directory-index #disqus_thread {
 }
 
 #link-bibliography .collapseSummary {
-    position: relative;
-    z-index: 2;
     margin: 2em 0 1.5em 0;
     box-shadow: 0.125rem 0 0 0.625rem var(--GW-body-background-color);
 }
@@ -3316,9 +3298,6 @@ body.directory-index #disqus_thread {
 }
 #link-bibliography:not(.expanded) > .disclosure-button ~ * {
     pointer-events: none;
-}
-#link-bibliography .disclosure-button::after {
-    z-index: 2;
 }
 
 #link-bibliography > ol {
@@ -3342,11 +3321,6 @@ body.directory-index #disqus_thread {
 }
 #link-bibliography > ol > li > blockquote {
     margin-bottom: 1em;
-}
-#link-bibliography > ol > li > blockquote figure.float-right,
-#link-bibliography > ol > li > blockquote figure.float-left {
-    position: relative;
-    z-index: 2;
 }
 
 #link-bibliography > ol,
