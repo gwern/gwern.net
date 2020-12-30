@@ -49,19 +49,12 @@
 
     /*  Collapse blocks.
         */
-    --GW-collapse-block-disclosure-button-color: #8b8b8b;
-    --GW-collapse-block-disclosure-button-hover-color: #b4b4b4;
-    --GW-collapse-block-disclosure-button-targeted-color: #515151;
-    --GW-table-collapse-block-disclosure-button-color: #5c5c5c;
-    --GW-table-collapse-block-disclosure-button-hover-color: #333;
-    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #ff5936;
-    --GW-collapse-block-disclosure-button-hover-background-color: rgba(255, 255, 255, 0.1);
-    --GW-collapse-block-click-to-expand-text-color: #a6a6a6;
-    --GW-collapse-block-click-to-expand-text-shadow-color: var(--GW-body-background-color);
-    --GW-collapse-block-click-to-expand-text-hover-color: #cecece;
-    --GW-collapse-block-hover-border-color: #a6a6a6;
-    --GW-collapse-block-fade-gradient-color-one: rgba(0, 0, 0, 0);
-    --GW-collapse-block-fade-gradient-color-two: rgba(0, 0, 0, 1);
+	--GW-collapse-summary-blockquote-hover-color: #333;
+	--GW-collapse-disclosure-button-color: #333;
+	--GW-collapse-disclosure-button-hover-color: #494949;
+	--GW-collapse-disclosure-button-top-part-text-color: #6c6c6c;
+	--GW-collapse-disclosure-button-bottom-part-text-color: #7c7c7c;
+	--GW-collapse-disclosure-button-text-hover-color: #000;
 
     /*  Headings.
         */

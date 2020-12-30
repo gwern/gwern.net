@@ -49,19 +49,12 @@
 
     /*  Collapse blocks.
         */
-    --GW-collapse-block-disclosure-button-color: #999;
-    --GW-collapse-block-disclosure-button-hover-color: #666;
-    --GW-collapse-block-disclosure-button-targeted-color: #d6d6d6;
-    --GW-table-collapse-block-disclosure-button-color: #ccc;
-    --GW-table-collapse-block-disclosure-button-hover-color: #eee;
-    --GW-collapse-block-disclosure-button-focus-text-shadow-color: #e00;
-    --GW-collapse-block-disclosure-button-hover-background-color: rgba(0,0,0,0.1);
-    --GW-collapse-block-click-to-expand-text-color: #777;
-    --GW-collapse-block-click-to-expand-text-shadow-color: var(--GW-body-background-color);
-    --GW-collapse-block-click-to-expand-text-hover-color: #444;
-    --GW-collapse-block-hover-border-color: #777;
-    --GW-collapse-block-fade-gradient-color-one: rgba(255,255,255,0);
-    --GW-collapse-block-fade-gradient-color-two: rgba(255,255,255,1);
+	--GW-collapse-summary-blockquote-hover-color: #eee;
+	--GW-collapse-disclosure-button-color: #eee;
+	--GW-collapse-disclosure-button-hover-color: #ddd;
+	--GW-collapse-disclosure-button-top-part-text-color: #bbb;
+	--GW-collapse-disclosure-button-bottom-part-text-color: #aaa;
+	--GW-collapse-disclosure-button-text-hover-color: #fff;
 
     /*  Headings.
         */
