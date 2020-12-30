@@ -1412,6 +1412,8 @@ table {
     border-style: solid;
     border-color: var(--GW-table-border-color);
     border-width: 2px 0;
+    position: relative;
+    z-index: 1;
 }
 
 /*=-------------------=*/
