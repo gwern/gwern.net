@@ -77,7 +77,7 @@
     margin: 0;
 }
 .collapse:not(.expanded) > .disclosure-button:hover + .collapseSummary blockquote {
-    background-color: #eee;
+    background-color: var(--GW-collapse-summary-blockquote-hover-color);
 }
 
 /*  Special-case formatting within collapses.
@@ -127,13 +127,13 @@
     font-size: 0.875em;
     font-family: var(--GW-sans-serif-font-stack);
     box-shadow:
-        3em 0 0 0 #eee inset;
+        3em 0 0 0 var(--GW-collapse-disclosure-button-color) inset;
     transition:
         box-shadow 0.1s ease;
 }
 .disclosure-button:hover {
     box-shadow:
-        3em 0 0 0 #ddd inset;
+        3em 0 0 0 var(--GW-collapse-disclosure-button-hover-color) inset;
 }
 .disclosure-button:checked {
     pointer-events: none;
@@ -147,14 +147,14 @@
     */
 .disclosure-button::before,
 .disclosure-button::after {
-    background-color: #eee;
+    background-color: var(--GW-collapse-disclosure-button-color);
     transition:
         color 0.1s ease,
         background-color 0.1s ease;
 }
 .disclosure-button:hover::before,
 .disclosure-button:hover::after {
-    background-color: #ddd;
+    background-color: var(--GW-collapse-disclosure-button-hover-color);
 }
 .disclosure-button:checked::before,
 .disclosure-button:checked::after {
@@ -169,7 +169,7 @@
     width: 100%;
     height: 3rem;
     text-align: right;
-    color: #bbb;
+    color: var(--GW-collapse-disclosure-button-top-part-text-color);
     padding: 0.875rem 3rem;
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23CCC"/></svg>');
     background-repeat: no-repeat;
@@ -179,7 +179,7 @@
 }
 .disclosure-button:hover::before {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23FFF"/></svg>');
-    color: #fff;
+    color: var(--GW-collapse-disclosure-button-text-hover-color);
 }
 .disclosure-button:checked::before {
     content: "Click to collapse";
@@ -199,14 +199,14 @@
     text-align: center;
     pointer-events: none;
     content: "… Click to expand …";
-    color: #aaa;
+    color: var(--GW-collapse-disclosure-button-bottom-part-text-color);
     bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 .disclosure-button:hover::after {
-    color: #fff;
+    color: var(--GW-collapse-disclosure-button-text-hover-color);
 }
 .disclosure-button:checked::after {
     content: "Click to collapse";
@@ -1118,7 +1118,7 @@ section.footnotes > ol > li.highlighted::after {
 section.footnotes > hr:first-child {
     position: relative;
     margin: 1.75em 0 1.375em 0;
-    padding: 3px 0 0 0;
+    padding: 3px 0;
 }
 section.footnotes > hr:first-child::after {
     content: "";
@@ -1412,6 +1412,8 @@ table {
     border-style: solid;
     border-color: var(--GW-table-border-color);
     border-width: 2px 0;
+    position: relative;
+    z-index: 1;
 }
 
 /*=-------------------=*/
@@ -1419,8 +1421,14 @@ table {
 /*=-------------------=*/
 
 .table-wrapper.full-width {
-    background-color: var(--GW-table-full-width-background-color);
     z-index: 1;
+}
+.table-wrapper.full-width .full-width-table-inner-wrapper {
+    background-color: var(--GW-table-full-width-background-color);
+}
+
+blockquote .table-wrapper.full-width {
+    background-color: transparent;
 }
 
 /*=-------------=*/
@@ -1670,6 +1678,10 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .mjpage__block {
     overflow-y: hidden;
     margin: 1.25em auto;
+    background-color: var(--GW-math-block-background-color);
+    padding: 0.5em 0.5em 0.375em 0.5em;
+    box-shadow:
+        0 0 0 1px var(--GW-math-block-scrollbar-border-color) inset;
 }
 .mjpage__block .MJXc-display {
     margin: 0;
@@ -1681,6 +1693,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 .mjpage__block::-webkit-scrollbar {
     height: 14px;
     border: 1px solid var(--GW-math-block-scrollbar-border-color);
+    background-color: var(--GW-math-block-scrollbar-track-color);
 }
 .mjpage__block::-webkit-scrollbar-thumb {
     box-shadow:

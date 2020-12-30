@@ -201,7 +201,7 @@ function injectModeSelector() {
 		left: -15px;
 	}
 	#mode-selector button.select-mode-dark {
-		margin: 0 0 0 1.125em;
+		margin-left: 1.125em;
 	}
 	#mode-selector button.select-mode-dark::before {
 		content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M283.211 512c78.962 0 151.079-35.925 198.857-94.792 7.068-8.708-.639-21.43-11.562-19.35-124.203 23.654-238.262-71.576-238.262-196.954 0-72.222 38.662-138.635 101.498-174.394 9.686-5.512 7.25-20.197-3.756-22.23A258.156 258.156 0 0 0 283.211 0c-141.309 0-256 114.511-256 256 0 141.309 114.511 256 256 256z"></path></svg>');
@@ -236,6 +236,55 @@ function injectModeSelector() {
 		border-bottom: 1px dotted currentColor;
 		width: calc(100% - 12px);
 		margin: auto;
+	}
+	@media only screen and (max-width: 1535px) {
+		#mode-selector {
+			flex-flow: column;
+			padding: 0.1em 0.1em 0.2em 0.15em;
+			align-items: flex-start;
+		}
+		#mode-selector button + button {
+			margin-top: 0.25em;
+		}
+		#mode-selector button.select-mode-light::before {
+			left: -16px;
+		}
+		#mode-selector button.select-mode-dark {
+			margin-left: 1.375em;
+		}
+		#mode-selector button.select-mode-dark::before {
+			left: -15px;
+		}
+	}
+	@media only screen and (max-width: 1279px) {
+		#mode-selector {
+			padding: 0.1em 0.1em 0.25em 0.15em;
+		}
+		#mode-selector button[class^='select-mode-'] {
+			color: transparent;
+			margin: 0;
+			padding: 0;
+			width: 2em;
+			height: 2em;
+			align-items: center;
+			box-shadow: none;
+			opacity: 0.55;
+		}
+		#mode-selector  button[class^='select-mode-'] + button {
+			margin-top: 0.5em;
+		}
+		#mode-selector button[class^='select-mode-']::before {
+			left: 12.5%;
+			width: 75%;
+			height: 75%;
+		}
+		#mode-selector button:not(:disabled):hover {
+			color: transparent;
+		}
+		#mode-selector button:hover,
+		#mode-selector button.selected {
+			opacity: 1.0;
+		}
 	}
     </style>`);
 
