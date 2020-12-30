@@ -1070,15 +1070,9 @@ article > :not(#TOC) a:hover {
 	underlining, for inline <code> elements in links.
 	*/
 a code {
-	z-index: -1;
-	position: relative;
 	border-bottom-width: 0;
 	word-break: normal;
-}
-/*  But not in the TOC…
-    */
-#TOC a code {
-	z-index: unset;
+	background-color: transparent;
 }
 
 /**************/
