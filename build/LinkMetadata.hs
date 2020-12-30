@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-29 17:41:34 gwern"
+When:  Time-stamp: "2020-12-29 22:40:05 gwern"
 License: CC-0
 -}
 
@@ -145,7 +145,7 @@ recurseList :: Metadata -> [String] -> [Block]
 recurseList md links = if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++
   [Div ("link-bibliography-description", ["collapseSummary"], []) [Para [Str "Bibliography of page links in reading order (with annotations when available):"]]] ++
   sectionContents else recurseList md finalLinks
-                       where links' = nubOrd links
+                       where links' = nubOrd $ map linkCanonicalize links
                              linkAnnotations = map (`M.lookup` md) links'
                              pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
                              sectionContents = [OrderedList (1,Decimal,Period) (map generateListItems pairs)] :: [Block]
@@ -414,7 +414,7 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
                  | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern $ tail l else return Nothing
 
 linkCanonicalize :: String -> String
-linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = drop 22 l
+linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
                    -- | head l == '#' = l
                    | otherwise = l
 
