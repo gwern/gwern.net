@@ -1419,8 +1419,14 @@ table {
 /*=-------------------=*/
 
 .table-wrapper.full-width {
-    background-color: var(--GW-table-full-width-background-color);
     z-index: 1;
+}
+.table-wrapper.full-width .full-width-table-inner-wrapper {
+    background-color: var(--GW-table-full-width-background-color);
+}
+
+blockquote .table-wrapper.full-width {
+    background-color: transparent;
 }
 
 /*=-------------=*/
