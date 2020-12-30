@@ -1,7 +1,7 @@
-{- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hover over link, popup, read, decide whether to go to link.
+{- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-29 22:40:05 gwern"
+When:  Time-stamp: "2020-12-29 23:38:40 gwern"
 License: CC-0
 -}
 
@@ -145,8 +145,8 @@ recurseList :: Metadata -> [String] -> [Block]
 recurseList md links = if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++
   [Div ("link-bibliography-description", ["collapseSummary"], []) [Para [Str "Bibliography of page links in reading order (with annotations when available):"]]] ++
   sectionContents else recurseList md finalLinks
-                       where links' = nubOrd $ map linkCanonicalize links
-                             linkAnnotations = map (`M.lookup` md) links'
+                       where links' = nubOrd links
+                             linkAnnotations = map (`M.lookup` md) (map linkCanonicalize links')
                              pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
                              sectionContents = [OrderedList (1,Decimal,Period) (map generateListItems pairs)] :: [Block]
                              finalLinks = collectLinks sectionContents
@@ -183,7 +183,7 @@ rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 collectLinks :: [Block] -> [String]
-collectLinks p = nubOrd $ map linkCanonicalize $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
+collectLinks p = nubOrd $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
   where
    collectLink :: Block -> [String]
    collectLink (RawBlock (Format "html") t) = if not ("href=" `T.isInfixOf` t) then [] else let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} t in
