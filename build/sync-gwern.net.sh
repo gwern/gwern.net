@@ -71,7 +71,7 @@ then
             FILENAME=$(basename -- "$FILE")
             EXTENSION="${FILENAME##*.}"
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
-            (echo -e "~~~{.$LANGUAGE}\n"; cat $FILE; echo -e "\n~~~") | pandoc -w html >> $FILE.html
+            (echo -e "~~~{.$LANGUAGE}"; cat $FILE; echo -e "\n~~~") | pandoc -w html >> $FILE.html
         done
     }
     export -f syntaxHighlight
