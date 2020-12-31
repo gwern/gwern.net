@@ -521,15 +521,9 @@ header h1 {
 
 /* interpunct separators for the metadata fields; looks nicer than semicolons or slashes */
 #page-metadata-block > span:not(:last-child)::after {
-  content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
-  display: inline-block;
-  margin:0 0.2em 0 0.6em;
-}
-#page-metadata-block > span:nth-child(1)::after {
-  margin-left: 0.875em;
-}
-#page-metadata-block > span:nth-child(2)::after {
-  margin-left: 0.8125em;
+    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+    display: inline-block;
+    margin: 0 0.35em 0 0.65em;
 }
 
 /*=--------=*/
