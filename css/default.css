@@ -3321,6 +3321,11 @@ body.directory-index #disqus_thread {
 }
 #link-bibliography > ol > li > blockquote {
     margin-bottom: 1em;
+    overflow: hidden;
+}
+#link-bibliography > ol > li > blockquote figure.float-right,
+#link-bibliography > ol > li > blockquote figure.float-left {
+    margin-bottom: 0;
 }
 
 #link-bibliography > ol,
