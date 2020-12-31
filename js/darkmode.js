@@ -29,18 +29,6 @@ GW.modeOptions = [
 /* HELPERS */
 /***********/
 
-/*  Adds an event listener to a button (or other clickable element), attaching
-    it to both "click" and "keyup" events (for use with keyboard navigation).
-    Optionally also attaches the listener to the 'mousedown' event, making the
-    element activate on mouse down instead of mouse up.
-    */
-Element.prototype.addActivateEvent = function(func, includeMouseDown) {
-    let ael = this.activateEventListener = (event) => { if (event.button === 0 || event.key === ' ') func(event) };
-    if (includeMouseDown) this.addEventListener("mousedown", ael);
-    this.addEventListener("click", ael);
-    this.addEventListener("keyup", ael);
-}
-
 /*  Adds a scroll event listener to the page.
     */
 function addScrollListener(fn, name) {

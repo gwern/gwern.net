@@ -1841,6 +1841,21 @@ function doAjax(options) {
 	}
 }
 
+/*  Adds an event listener to a button (or other clickable element), attaching
+    it to both ‘click’ and ‘keyup’ events (for use with keyboard navigation).
+    Optionally also attaches the listener to the ‘mousedown’ event, making the
+    element activate on mouse down instead of mouse up.
+    */
+Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
+    let ael = this.activateEventListener = (event) => { 
+    	if (event.button === 0 || event.key === ' ') 
+    		fn(event);
+    };
+    if (includeMouseDown) this.addEventListener("mousedown", ael);
+    this.addEventListener("click", ael);
+    this.addEventListener("keyup", ael);
+}
+
 /*  Returns true if the given element intersects the viewport, false otherwise.
     */
 function isOnScreen (element) {
