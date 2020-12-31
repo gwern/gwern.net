@@ -2295,6 +2295,21 @@ body.lorem div[class^='drop-cap'] {
     margin: 1em 0 0 0;
 }
 
+/*=--------=*/
+/*= /otaku =*/
+/*=--------=*/
+
+body.otaku blockquote {
+    overflow: hidden;
+    clear: none;
+}
+body.otaku #link-bibliography > ol {
+    padding-left: 2.5em;
+}
+body.otaku #link-bibliography > ol > li > * {
+    box-shadow: -2.5rem 0 0 .5rem var(--GW-body-background-color)
+}
+
 /****************************/
 /* DIRECTORY INDEX LISTINGS */
 /****************************/
