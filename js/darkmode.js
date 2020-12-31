@@ -45,64 +45,6 @@ function addScrollListener(fn, name) {
         GW[name] = wrapper;
 }
 
-/************************/
-/* ACTIVE MEDIA QUERIES */
-/************************/
-
-/*  This function provides two slightly different versions of its functionality,
-    depending on how many arguments it gets.
-
-    If one function is given (in addition to the media query and its name), it
-    is called whenever the media query changes (in either direction).
-
-    If two functions are given (in addition to the media query and its name),
-    then the first function is called whenever the media query starts matching,
-    and the second function is called whenever the media query stops matching.
-
-    If you want to call a function for a change in one direction only, pass an
-    empty closure (NOT null!) as one of the function arguments.
-
-    There is also an optional fifth argument. This should be a function to be
-    called when the active media query is canceled.
-    */
-function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = null, whenCanceledDo = null) {
-    if (typeof GW.mediaQueryResponders == "undefined")
-        GW.mediaQueryResponders = { };
-
-    let mediaQueryResponder = (event, canceling = false) => {
-        if (canceling) {
-            GWLog(`Canceling media query “${name}”`, "darkmode.js");
-
-            if (whenCanceledDo != null)
-                whenCanceledDo(mediaQuery);
-        } else {
-            let matches = (typeof event == "undefined") ? mediaQuery.matches : event.matches;
-
-            GWLog(`Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`, "darkmode.js");
-
-            if (otherwiseDo == null || matches) ifMatchesOrAlwaysDo(mediaQuery);
-            else otherwiseDo(mediaQuery);
-        }
-    };
-    mediaQueryResponder();
-    mediaQuery.addListener(mediaQueryResponder);
-
-    GW.mediaQueryResponders[name] = mediaQueryResponder;
-}
-
-/*  Deactivates and discards an active media query, after calling the function
-    that was passed as the whenCanceledDo parameter when the media query was
-    added.
-    */
-function cancelDoWhenMatchMedia(name) {
-    GW.mediaQueryResponders[name](null, true);
-
-    for ([ key, mediaQuery ] of Object.entries(GW.mediaQueries))
-        mediaQuery.removeListener(GW.mediaQueryResponders[name]);
-
-    GW.mediaQueryResponders[name] = null;
-}
-
 /******************/
 /* MODE SELECTION */
 /******************/
