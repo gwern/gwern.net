@@ -38,7 +38,8 @@ Extracts = {
 		],
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ],
-    qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ],
+//     qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ],
+    qualifyingForeignDomains: [ ],
     foreignSiteURLPrefixes: [ "http://", "https://", "http://www.", "https://www." ],
 
 	/*	Exclusions.
@@ -134,7 +135,7 @@ Extracts = {
 				 || Extracts.isLocalDocumentLink(target)
 				 || Extracts.isLocalCodeFileLink(target)
 				 || Extracts.isExternalSectionLink(target)
-// 				 || Extracts.isForeignSiteLink(target)
+				 || Extracts.isForeignSiteLink(target)
 					)
 				) {
 				target.classList.toggle("has-content", true);
@@ -568,7 +569,7 @@ Extracts = {
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
-// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
 			]) == false)
 			return false;
 
@@ -642,7 +643,7 @@ Extracts = {
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
-// 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
 			]) == false)
 			return false;
 
@@ -738,7 +739,7 @@ Extracts = {
 
 		//  Loading spinners.
 		if (   Extracts.isLocalDocumentLink(target)
-// 			|| Extracts.isForeignSiteLink(target)
+			|| Extracts.isForeignSiteLink(target)
 			) {
 			popup.classList.toggle("loading", true);
 			popup.querySelector("iframe, object").onload = (event) => {
