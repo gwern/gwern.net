@@ -18,6 +18,14 @@
     --GW-object-popup-background-color: #fff;
 }
 
+/*******************/
+/* OTHER VARIABLES */
+/*******************/
+
+:root {
+	--GW-sidenotes-max-width: 550px;
+}
+
 /*********************/
 /* ARTICLE CONTAINER */
 /*********************/
@@ -1138,7 +1146,7 @@ section.footnotes > hr:first-child::before {
 #sidenote-column-left,
 #sidenote-column-right {
     position: absolute;
-    max-width: 550px;
+    max-width: var(--GW-sidenotes-max-width);
     font-size: 0.85em;
 }
 #sidenote-column-left {
@@ -1357,6 +1365,7 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 .marginnote.sidenote {
     display: initial;
     width: calc(50vw - (50% + 104px));
+    max-width: var(--GW-sidenotes-max-width);
     left: calc(100% + 60px);
 
     /*  We inherit left and right padding from .sidenote class. */
