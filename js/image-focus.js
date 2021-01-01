@@ -75,6 +75,10 @@ function imageFocusSetup() {
 		wrapper.classList.add("image-wrapper");
 		wrapper.appendChild(image);
 		figure.insertBefore(wrapper, figure.firstChild);
+
+		//  Set `focusable` class, for CSS to apply the hover style and tooltip.
+		image.classList.toggle("focusable", true);
+		wrapper.classList.toggle("focusable", true);
 	});
 
 	// Create the image focus overlay.

@@ -2381,12 +2381,12 @@ body.directory-index #disqus_thread {
 /*= Hover styles =*/
 /*=--------------=*/
 
-#markdownBody img:hover {
+#markdownBody img.focusable:hover {
 /*     filter: drop-shadow(0 0 3px var(--SA-image-focus-image-hover-drop-shadow-color)); */
     cursor: zoom-in;
     box-shadow: 0 0 10px 0 var(--SA-image-focus-image-hover-drop-shadow-color);
 }
-#markdownBody img:active {
+#markdownBody img.focusable:active {
     transform: scale(0.975);
 }
 
@@ -2686,20 +2686,20 @@ body.directory-index #disqus_thread {
     display: block;
     margin: auto;
 }
-.image-wrapper::after {
+.image-wrapper.focusable::after {
     content: "Click to enlarge";
     display: block;
     position: absolute;
     margin: auto;
     left: 0;
     right: 0;
-    bottom: 10px;
-    padding: 6px 15px 7px 15px;
+    bottom: 0.5em;
+    padding: 0.3em 0.75em 0.35em 0.75em;
     font-size: 1rem;
     font-family: var(--SA-image-focus-sans-serif-font-stack);
     background-color: var(--SA-image-focus-image-hover-tooltip-background-color);
     color: var(--SA-image-focus-image-hover-tooltip-text-color);
-    border-radius: 5px;
+    border-radius: 0.25em;
     opacity: 0.0;
     transition: opacity 0.15s ease;
     pointer-events: none;
@@ -2709,7 +2709,7 @@ body.directory-index #disqus_thread {
     width: -moz-fit-content;
     width: fit-content;
 }
-.image-wrapper:hover::after {
+.image-wrapper.focusable:hover::after {
     opacity: 1.0;
 }
 
