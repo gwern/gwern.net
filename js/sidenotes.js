@@ -217,21 +217,14 @@ Sidenotes = {
 			*/
 		document.querySelectorAll(Sidenotes.potentiallyOverlappingElementsSelector).forEach(potentiallyOverlappingElement => {
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
-			console.log(potentiallyOverlappingElement);
 
-			if (!(elementBoundingRect.left > leftColumnBoundingRect.right || elementBoundingRect.right < leftColumnBoundingRect.left)) {
+			if (!(elementBoundingRect.left > leftColumnBoundingRect.right || elementBoundingRect.right < leftColumnBoundingRect.left))
 				proscribedVerticalRangesLeft.push({ top: elementBoundingRect.top - leftColumnBoundingRect.top,
 													bottom: elementBoundingRect.bottom - leftColumnBoundingRect.top });
-				let last = proscribedVerticalRangesLeft[proscribedVerticalRangesLeft.length - 1];
-				console.log(`Left: ${last.top}, ${last.bottom}`);
-			}
 
-			if (!(elementBoundingRect.left > rightColumnBoundingRect.right || elementBoundingRect.right < rightColumnBoundingRect.left)) {
+			if (!(elementBoundingRect.left > rightColumnBoundingRect.right || elementBoundingRect.right < rightColumnBoundingRect.left))
 				proscribedVerticalRangesRight.push({ top: elementBoundingRect.top - rightColumnBoundingRect.top,
 													 bottom: elementBoundingRect.bottom - rightColumnBoundingRect.top });
-				let last = proscribedVerticalRangesRight[proscribedVerticalRangesRight.length - 1];
-				console.log(`Right: ${last.top}, ${last.bottom}`);
-			}
 		});
 
 		/*  The bottom edges of each column are also “proscribed vertical ranges”.
@@ -472,7 +465,7 @@ Sidenotes = {
 			*/
 		Sidenotes.sidenoteDivs = [ ];
 		//  The footnote references (citations).
-		Sidenotes.citations = (...document.querySelectorAll("a.footnote-ref"));
+		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			//  Create the sidenote outer containing block...
 			let sidenote = document.createElement("div");
