@@ -497,11 +497,7 @@ Sidenotes = {
 		cancelDoWhenMatchMedia("Sidenotes.rewriteHashForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.rewriteCitationTargetsForCurrentMode");
 		cancelDoWhenMatchMedia("Sidenotes.bindOrUnbindEventListenersForCurrentMode");
-
-		/*	Deactivate notification handlers.
-			*/
-		GW.notificationCenter.removeHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
-		GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+		cancelDoWhenMatchMedia("Sidenotes.addOrRemoveEventHandlersForCurrentMode");
 
 		/*	Remove sidenotes & auxiliaries from HTML.
 			*/
@@ -597,6 +593,51 @@ Sidenotes = {
 			});
 		}, { once: true });
 
+		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
+			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
+				if (!mediaQuery.matches) {
+					/*  After the hash updates, properly highlight everything, if needed.
+						Also, if the hash points to a sidenote whose citation is in a 
+						collapse block, expand it and all collapse blocks enclosing it.
+						*/
+					GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate = (info) => {
+						if (location.hash.match(/#sn[0-9]/)) {
+							revealElement(document.querySelector("#fnref" + location.hash.substr(3)), false);
+							scrollElementIntoView(getHashTargetedElement(), (-1 * Sidenotes.sidenotePadding));
+						}
+
+						Sidenotes.updateTargetCounterpart();
+					});
+
+					/*	Add event handler to (asynchronously) recompute sidenote positioning 
+						when full-width blocks are expanded.
+						*/
+					GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks = () => {
+						requestAnimationFrame(Sidenotes.updateSidenotePositions);
+					});
+
+					/*	Add event handler to (asynchronously) recompute sidenote positioning
+						when collapse blocks are expanded/collapsed.
+						*/
+					GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = () => {
+						requestAnimationFrame(Sidenotes.updateSidenotePositions);
+					});
+				} else {
+					/*	Deactivate notification handlers.
+						*/
+					GW.notificationCenter.removeHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
+					GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+					GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
+				}
+			}, null, (mediaQuery) => {
+				/*	Deactivate notification handlers.
+					*/
+				GW.notificationCenter.removeHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
+				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
+				GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
+			});
+		}, { once: true });
+
 		/*	Once the sidenotes are constructed, lay them out.
 			*/
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
@@ -622,34 +663,8 @@ Sidenotes = {
 
 		/*  Construct the sidenotes as soon as the HTML content is fully loaded.
 			*/
-		doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
-
-		/*  After the hash updates, properly highlight everything, if needed.
-			Also, if the hash points to a sidenote whose citation is in a 
-			collapse block, expand it and all collapse blocks enclosing it.
-			*/
-		GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", (info) => {
-			if (location.hash.match(/#sn[0-9]/)) {
-				revealElement(document.querySelector("#fnref" + location.hash.substr(3)), false);
-				scrollElementIntoView(getHashTargetedElement(), (-1 * Sidenotes.sidenotePadding));
-			}
-
-			Sidenotes.updateTargetCounterpart();
-		});
-
-		/*	Add event handler to (asynchronously) recompute sidenote positioning 
-			when full-width blocks are expanded.
-			*/
-		GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks = () => {
-			requestAnimationFrame(Sidenotes.updateSidenotePositions);
-		});
-
-		/*	Add event handler to (asynchronously) recompute sidenote positioning
-			when collapse blocks are expanded/collapsed.
-			*/
-		GW.notificationCenter.addHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange = () => {
-			requestAnimationFrame(Sidenotes.updateSidenotePositions);
-		});
+		if (!GW.isMobile())
+			doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	}
