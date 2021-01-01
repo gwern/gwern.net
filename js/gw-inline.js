@@ -92,6 +92,15 @@ Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
     this.addEventListener("keyup", ael);
 }
 
+/*	Swap classes on the given element.
+	First argument is an array with two string elements (the classes).
+	Second argument is 0 or 1 (index of class to add; the other is removed).
+	*/
+Element.prototype.swapClasses = function (classes, whichToAdd) {
+	this.classList.add(classes[whichToAdd]);
+	this.classList.remove(classes[1 - whichToAdd]);
+};
+
 /*  Returns true if the given element intersects the viewport, false otherwise.
     */
 function isOnScreen (element) {

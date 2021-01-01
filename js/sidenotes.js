@@ -616,8 +616,7 @@ GW.notificationCenter.fireEvent("Sidenotes.didLoad");
 	to the appropriate element - footnote or sidenote). Add an active media 
 	query to rewrite the hash whenever the viewport width media query changes.
 	*/
-doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (event) => {
-	let mediaQuery = Sidenotes.mediaQueries.viewportWidthBreakpoint;
+doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
 	let regex = new RegExp(mediaQuery.matches ? "#sn[0-9]" : "#fn[0-9]");
 	let prefix = (mediaQuery.matches ? "#fn" : "#sn");
 
@@ -635,15 +634,9 @@ doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewr
 	when the viewport width changes.
 	*/
 doWhenPageLoaded (() => {
-	doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (event) => {
-		let mediaQuery = Sidenotes.mediaQueries.viewportWidthBreakpoint;
-		let classes = [ "inline", "sidenote" ];
-		let classToAdd = classes[mediaQuery.matches ? 0 : 1];
-		let classToRemove = classes[mediaQuery.matches ? 1 : 0];
-
+	doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (mediaQuery) => {
 		document.querySelectorAll(".marginnote").forEach(marginNote => {
-			marginNote.classList.add(classToAdd);
-			marginNote.classList.remove(classToRemove);
+			marginNote.swapClasses([ "inline", "sidenote" ], (mediaQuery.matches ? 0 : 1));
 		});
 	});
 });
