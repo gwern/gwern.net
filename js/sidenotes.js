@@ -23,7 +23,7 @@ Sidenotes = {
 	/*	Elements which occupy (partially or fully) the sidenote columns, and 
 		which can thus collide with sidenotes.
 		*/
-	potentiallyOverlappingElementsSelector: ".full-width img, .full-width table, .full-width pre, .marginnote",
+	potentiallyOverlappingElementsSelector: ".full-width img, .full-width video, .full-width table, .full-width pre, .marginnote",
 
 	/*  Media query objects (for checking and attaching listeners).
 		*/
@@ -435,6 +435,15 @@ Sidenotes = {
 	deconstructSidenotes: () => {
 		GWLog("Sidenotes.deconstructSidenotes", "sidenotes.js", 1);
 
+		Sidenotes.sidenoteDivs = null;
+		Sidenotes.citations = null;
+
+		Sidenotes.sidenoteColumnLeft.remove();
+		Sidenotes.sidenoteColumnLeft = null;
+		Sidenotes.sidenoteColumnRight.remove();
+		Sidenotes.sidenoteColumnRight = null;
+		Sidenotes.hiddenSidenoteStorage.remove();
+		Sidenotes.hiddenSidenoteStorage = null;
 	},
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
@@ -463,7 +472,7 @@ Sidenotes = {
 			*/
 		Sidenotes.sidenoteDivs = [ ];
 		//  The footnote references (citations).
-		Sidenotes.citations = Array.from(document.querySelectorAll("a.footnote-ref"));
+		Sidenotes.citations = (...document.querySelectorAll("a.footnote-ref"));
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			//  Create the sidenote outer containing block...
 			let sidenote = document.createElement("div");
