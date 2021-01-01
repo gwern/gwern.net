@@ -31,22 +31,6 @@ Sidenotes = {
 	sidenoteColumnRight: null,
 	hiddenSidenoteStorage: null,
 
-	/*  Set the display form of margin notes (margin vs. inline).
-		*/
-	updateMarginNoteStyle: () => {
-		GWLog("Sidenotes.updateMarginNoteStyle", "sidenotes.js", 1);
-
-		document.querySelectorAll(".marginnote").forEach(marginNote => {
-			if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches) {
-				marginNote.classList.add("inline");
-				marginNote.classList.remove("sidenote");
-			} else {
-				marginNote.classList.remove("inline");
-				marginNote.classList.add("sidenote");
-			}
-		});
-	},
-
 	/*  The “target counterpart” is the element associated with the target, i.e.:
 		if the URL hash targets a footnote reference, its counterpart is the
 		sidenote for that citation; and vice-versa, if the hash targets a sidenote,
@@ -135,22 +119,6 @@ Sidenotes = {
 			}
 		}
 	},
-
-	/*  If the page was loaded with a hash that points to a footnote, but
-		sidenotes are enabled (or vice-versa), rewrite the hash in accordance
-		with the current mode (this will also cause the page to end up scrolled
-		to the appropriate element - footnote or sidenote).
-		*/
-	rewriteHashForCurrentMode: () => {
-		GWLog("Sidenotes.rewriteHashForCurrentMode", "sidenotes.js", 1);
-		if (location.hash.match(/#sn[0-9]/) &&
-			Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == true) {
-			GW.hashRealignValue = "#fn" + location.hash.substr(3);
-		} else if (location.hash.match(/#fn[0-9]/) &&
-			Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
-			GW.hashRealignValue = "#sn" + location.hash.substr(3);
-		}
- 	},
 
 	/*  Bind or unbind sidenote-related event listeners, as appropriate to the
 		current viewport width.
@@ -636,23 +604,49 @@ Sidenotes = {
 			requestAnimationFrame(Sidenotes.updateSidenotePositions);
 		});
 
-		/*	Update the margin note style, and add event listener to re-update it
-			when the viewport width changes.
-			*/
-		doWhenPageLoaded (() => {
-			Sidenotes.updateMarginNoteStyle();
-			Sidenotes.mediaQueries.viewportWidthBreakpoint.addListener(Sidenotes.updateMarginNoteStyle);
-		});
-
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	}
 };
 
 GW.notificationCenter.fireEvent("Sidenotes.didLoad");
 
-/*	Do this regardless of whether we run setup.
+/*  If the page was loaded with a hash that points to a footnote, but
+	sidenotes are enabled (or vice-versa), rewrite the hash in accordance
+	with the current mode (this will also cause the page to end up scrolled
+	to the appropriate element - footnote or sidenote). Add an active media 
+	query to rewrite the hash whenever the viewport width media query changes.
 	*/
-Sidenotes.rewriteHashForCurrentMode();
+doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (event) => {
+	let mediaQuery = Sidenotes.mediaQueries.viewportWidthBreakpoint;
+	let regex = new RegExp(mediaQuery.matches ? "#sn[0-9]" : "#fn[0-9]");
+	let prefix = (mediaQuery.matches ? "#fn" : "#sn");
+
+	if (location.hash.match(regex)) {
+		GW.hashRealignValue = prefix + location.hash.substr(3);
+
+		if (document.readyState == "complete") {
+			history.replaceState(null, null, GW.hashRealignValue);
+			GW.hashRealignValue = null;
+		}
+	}
+});
+
+/*	Update the margin note style, and add event listener to re-update it
+	when the viewport width changes.
+	*/
+doWhenPageLoaded (() => {
+	doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.updateMarginNoteStyleForCurrentMode", (event) => {
+		let mediaQuery = Sidenotes.mediaQueries.viewportWidthBreakpoint;
+		let classes = [ "inline", "sidenote" ];
+		let classToAdd = classes[mediaQuery.matches ? 0 : 1];
+		let classToRemove = classes[mediaQuery.matches ? 1 : 0];
+
+		document.querySelectorAll(".marginnote").forEach(marginNote => {
+			marginNote.classList.add(classToAdd);
+			marginNote.classList.remove(classToRemove);
+		});
+	});
+});
 
 //  LET... THERE... BE... SIDENOTES!!!
 Sidenotes.setup();
