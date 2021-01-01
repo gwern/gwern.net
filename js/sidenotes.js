@@ -41,6 +41,15 @@ Sidenotes = {
 	sidenoteColumnRight: null,
 	hiddenSidenoteStorage: null,
 
+	noteNumberFromHash: () => {
+		if (location.hash.match(/#[sf]n[0-9]/))
+			return location.hash.substr(3);
+		else if (location.hash.match(/#fnref[0-9]/))
+			return location.hash.substr(6);
+		else
+			return "";
+	},
+
 	/*	Bind event listeners for mousing over citations and sidenotes.
 		*/
 	bindSidenoteMouseEvents: () => {
@@ -108,9 +117,9 @@ Sidenotes = {
 			*/
 		var counterpart;
 		if (location.hash.match(/#sn[0-9]/)) {
-			counterpart = document.querySelector("#fnref" + location.hash.substr(3));
+			counterpart = document.querySelector("#fnref" + Sidenotes.noteNumberFromHash());
 		} else if (location.hash.match(/#fnref[0-9]/) && Sidenotes.mediaQueries.viewportWidthBreakpoint.matches == false) {
-			counterpart = document.querySelector("#sn" + location.hash.substr(6));
+			counterpart = document.querySelector("#sn" + Sidenotes.noteNumberFromHash());
 		}
 		/*  If a target counterpart exists, mark it as such.
 			*/
@@ -241,7 +250,10 @@ Sidenotes = {
 			*/
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			let sidenote = Sidenotes.sidenoteDivs[i];
+			let sidenoteNumber = sidenote.id.substr(2);
+
 			let nextSidenote = sidenote.nextElementSibling;
+			let nextSidenoteNumber = nextSidenote ? nextSidenote.id.substr(2) : "";
 
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., within
 				a currently-collapsed collapse block)? If so, skip it.
@@ -321,7 +333,7 @@ Sidenotes = {
 				*/
 			var overlapWithCeiling = room.ceiling - sidenoteFootprint.top;
 			if (overlapWithCeiling > 0) {
-				GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its ceiling!`, "sidenotes.js", 2);
+				GWLog(`Sidenote ${sidenoteNumber} overlaps its ceiling!`, "sidenotes.js", 2);
 
 				sidenote.style.top = (parseInt(sidenote.style.top) + overlapWithCeiling) + "px";
 				sidenoteFootprint.top += overlapWithCeiling;
@@ -331,7 +343,7 @@ Sidenotes = {
 			//  Does this sidenote overlap its room’s floor?
 			var overlapWithFloor = sidenoteFootprint.bottom - room.floor;
 			if (overlapWithFloor > 0)
-				GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps its floor!`, "sidenotes.js", 2);
+				GWLog(`Sidenote ${sidenoteNumber} overlaps its floor!`, "sidenotes.js", 2);
 
 			/*  Is there a next sidenote, and if so, is there any overlap between
 				it and this one?
@@ -340,7 +352,7 @@ Sidenotes = {
 										  (sidenoteFootprint.bottom - nextSidenote.offsetTop) :
 										  -1;
 			if (overlapWithNextSidenote > 0)
-				GWLog(`Sidenote ${sidenote.id.substr(2)} overlaps sidenote ${nextSidenote.id.substr(2)}!`, "sidenotes.js", 2);
+				GWLog(`Sidenote ${sidenoteNumber} overlaps sidenote ${nextSidenoteNumber}!`, "sidenotes.js", 2);
 
 			/*  If the sidenote overlaps the next sidenote AND its room’s floor,
 				we want to know what it overlaps more.
@@ -365,12 +377,12 @@ Sidenotes = {
 
 			//  If we have enough headroom, simply move the sidenote up.
 			if (headroom >= overlapBelow) {
-				GWLog(`There is enough headroom. Moving sidenote ${sidenote.id.substr(2)} up.`, "sidenotes.js", 2);
+				GWLog(`There is enough headroom. Moving sidenote ${sidenoteNumber} up.`, "sidenotes.js", 2);
 				sidenote.style.top = (parseInt(sidenote.style.top) - overlapBelow) + "px";
 				continue;
 			} else {
 				//  We don’t have enough headroom!
-				GWLog(`There is not enough headroom to move sidenote ${sidenote.id.substr(2)} all the way up!`, "sidenotes.js", 2);
+				GWLog(`There is not enough headroom to move sidenote ${sidenoteNumber} all the way up!`, "sidenotes.js", 2);
 
 				/*  If there’s overlap with the room’s floor, and the headroom is
 					insufficient to clear that overlap, then we will have to move
@@ -396,14 +408,14 @@ Sidenotes = {
 					continue;
 
 				//  Move the sidenote up as much as we can...
-				GWLog(`Moving sidenote ${sidenote.id.substr(2)} up by ${headroom} pixels...`, "sidenotes.js", 2);
+				GWLog(`Moving sidenote ${sidenoteNumber} up by ${headroom} pixels...`, "sidenotes.js", 2);
 				sidenote.style.top = (parseInt(sidenote.style.top) - headroom) + "px";
 				//  Recompute overlap...
 				overlapWithNextSidenote -= headroom;
 				/*  And move the next sidenote down - possibly causing overlap.
 					(But this will be handled when we process the next sidenote.)
 					*/
-				GWLog(`... and moving sidenote ${nextSidenote.id.substr(2)} down by ${overlapWithNextSidenote} pixels.`, "sidenotes.js", 2);
+				GWLog(`... and moving sidenote ${nextSidenoteNumber} down by ${overlapWithNextSidenote} pixels.`, "sidenotes.js", 2);
 				nextSidenote.style.top = (parseInt(nextSidenote.style.top) + overlapWithNextSidenote) + "px";
 			}
 		}
@@ -453,9 +465,10 @@ Sidenotes = {
 			//  Create the sidenote outer containing block...
 			let sidenote = document.createElement("div");
 			sidenote.classList.add("sidenote");
-			sidenote.id = "sn" + (i + 1);
+			let sidenoteNumber = "" + (i + 1);
+			sidenote.id = "sn" + sidenoteNumber;
 			//  Wrap the contents of the footnote in two wrapper divs...
-			let referencedFootnote = document.querySelector("#fn" + Sidenotes.citations[i].hash.substr(3));
+			let referencedFootnote = document.querySelector("#fn" + sidenoteNumber);
 			sidenote.innerHTML = "<div class='sidenote-outer-wrapper'><div class='sidenote-inner-wrapper'>" +
 								 (referencedFootnote ? referencedFootnote.innerHTML : "Loading sidenote contents, please wait…")
 								 + "</div></div>";
@@ -536,7 +549,7 @@ Sidenotes = {
 			let prefix = (mediaQuery.matches ? "#fn" : "#sn");
 
 			if (location.hash.match(regex)) {
-				GW.hashRealignValue = prefix + location.hash.substr(3);
+				GW.hashRealignValue = prefix + Sidenotes.noteNumberFromHash();
 
 				if (document.readyState == "complete") {
 					history.replaceState(null, null, GW.hashRealignValue);
@@ -545,7 +558,7 @@ Sidenotes = {
 			}
 		}, null, (mediaQuery) => {
 			if (location.hash.match(/#sn[0-9]/)) {
-				GW.hashRealignValue = "#fn" + location.hash.substr(3);
+				GW.hashRealignValue = "#fn" + Sidenotes.noteNumberFromHash();
 
 				if (document.readyState == "complete") {
 					history.replaceState(null, null, GW.hashRealignValue);
@@ -602,7 +615,7 @@ Sidenotes = {
 						*/
 					GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate = (info) => {
 						if (location.hash.match(/#sn[0-9]/)) {
-							revealElement(document.querySelector("#fnref" + location.hash.substr(3)), false);
+							revealElement(document.querySelector("#fnref" + Sidenotes.noteNumberFromHash()), false);
 							scrollElementIntoView(getHashTargetedElement(), (-1 * Sidenotes.sidenotePadding));
 						}
 
