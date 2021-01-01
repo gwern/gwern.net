@@ -1142,9 +1142,9 @@ section.footnotes > hr:first-child::before {
     font-size: 0.85em;
 }
 #sidenote-column-left {
-    height: calc(100% - 20em);
+    height: calc(100% - 10rem);
     width: calc(50vw - (50% + 92px));
-    top: 20em;
+    top: 10rem;
     right: calc(100% + 64px);
 }
 #sidenote-column-right {

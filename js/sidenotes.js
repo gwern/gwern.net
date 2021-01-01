@@ -23,7 +23,7 @@ Sidenotes = {
 	/*	Elements which occupy (partially or fully) the sidenote columns, and 
 		which can thus collide with sidenotes.
 		*/
-	potentiallyOverlappingElementsSelector: ".marginnote, .full-width",
+	potentiallyOverlappingElementsSelector: ".full-width img, .full-width table, .full-width pre, .marginnote",
 
 	/*  Media query objects (for checking and attaching listeners).
 		*/
@@ -177,26 +177,6 @@ Sidenotes = {
 		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
 			return;
 
-		/*  Position left sidenote column so top is flush with top of first
-			full-width block (i.e., one that is not pushed right by the TOC).
-
-			NOTE: This doesn’t quite do what it says (due to overflow), but that’s
-			fine; nothing really breaks as a result...
-			*/
-		let markdownBody = document.querySelector("#markdownBody");
-		var firstFullWidthBlock;
-		for (var block of markdownBody.children) {
-			if (block.clientWidth == markdownBody.clientWidth) {
-				firstFullWidthBlock = block;
-				break;
-			}
-		}
-		let offset = firstFullWidthBlock.offsetTop || 0;
-		if (Sidenotes.sidenoteColumnLeft.offsetTop < firstFullWidthBlock.offsetTop) {
-			Sidenotes.sidenoteColumnLeft.style.top = offset + "px";
-			Sidenotes.sidenoteColumnLeft.style.height = `calc(100% - ${offset}px)`;
-		}
-
 		//  Update the disposition of sidenotes within collapse blocks.
 		Sidenotes.updateSidenotesInCollapseBlocks();
 
@@ -227,19 +207,40 @@ Sidenotes = {
 		/*  Determine proscribed vertical ranges (i.e., bands of the page from which
 			sidenotes are excluded, by the presence of, e.g., a full-width table).
 			*/
-		var proscribedVerticalRanges = [ ];
+		var proscribedVerticalRangesLeft = [ ];
+		var proscribedVerticalRangesRight = [ ];
+		let leftColumnBoundingRect = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
 		let rightColumnBoundingRect = Sidenotes.sidenoteColumnRight.getBoundingClientRect();
+
 		/*  Examine all potentially overlapping elements (i.e., non-sidenote
 			elements that may appear in, or extend into, the side columns).
 			*/
 		document.querySelectorAll(Sidenotes.potentiallyOverlappingElementsSelector).forEach(potentiallyOverlappingElement => {
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
-			proscribedVerticalRanges.push({ top: elementBoundingRect.top - rightColumnBoundingRect.top,
-											bottom: elementBoundingRect.bottom - rightColumnBoundingRect.top });
+			console.log(potentiallyOverlappingElement);
+
+			if (!(elementBoundingRect.left > leftColumnBoundingRect.right || elementBoundingRect.right < leftColumnBoundingRect.left)) {
+				proscribedVerticalRangesLeft.push({ top: elementBoundingRect.top - leftColumnBoundingRect.top,
+													bottom: elementBoundingRect.bottom - leftColumnBoundingRect.top });
+				let last = proscribedVerticalRangesLeft[proscribedVerticalRangesLeft.length - 1];
+				console.log(`Left: ${last.top}, ${last.bottom}`);
+			}
+
+			if (!(elementBoundingRect.left > rightColumnBoundingRect.right || elementBoundingRect.right < rightColumnBoundingRect.left)) {
+				proscribedVerticalRangesRight.push({ top: elementBoundingRect.top - rightColumnBoundingRect.top,
+													 bottom: elementBoundingRect.bottom - rightColumnBoundingRect.top });
+				let last = proscribedVerticalRangesRight[proscribedVerticalRangesRight.length - 1];
+				console.log(`Right: ${last.top}, ${last.bottom}`);
+			}
 		});
-		/*  The bottom of the right column is also a "proscribed vertical range".
+
+		/*  The bottom edges of each column are also “proscribed vertical ranges”.
 			*/
-		proscribedVerticalRanges.push({
+		proscribedVerticalRangesLeft.push({
+			top:    Sidenotes.sidenoteColumnLeft.clientHeight,
+			bottom: Sidenotes.sidenoteColumnLeft.clientHeight
+		});
+		proscribedVerticalRangesRight.push({
 			top:    Sidenotes.sidenoteColumnRight.clientHeight,
 			bottom: Sidenotes.sidenoteColumnRight.clientHeight
 		});
@@ -275,15 +276,17 @@ Sidenotes = {
 				bottom: sidenote.offsetTop + sidenote.clientHeight + Sidenotes.sidenoteSpacing
 			};
 			let sidenoteFootprintHalfwayPoint = (sidenoteFootprint.top + sidenoteFootprint.bottom) / 2;
+
 			/*  Simultaneously traverse the array of proscribed ranges up and down,
 				narrowing down the room we have to work with (in which to place this
 				sidenote) from both sides.
 				*/
+			let proscribedVerticalRanges = (i % 2) ? proscribedVerticalRangesLeft : proscribedVerticalRangesRight;
 			var nextProscribedRangeAfterSidenote = -1;
 			for (var j = 0; j < proscribedVerticalRanges.length; j++) {
 				let rangeCountingUp = {
-					top:            proscribedVerticalRanges[j].top - side.offsetTop,
-					bottom:         proscribedVerticalRanges[j].bottom - side.offsetTop,
+					top:            proscribedVerticalRanges[j].top,
+					bottom:         proscribedVerticalRanges[j].bottom,
 				};
 				rangeCountingUp.halfwayPoint = (rangeCountingUp.top + rangeCountingUp.bottom) / 2;
 				if (rangeCountingUp.halfwayPoint < sidenoteFootprintHalfwayPoint)
@@ -291,8 +294,8 @@ Sidenotes = {
 
 				let indexCountingDown = proscribedVerticalRanges.length - j - 1;
 				let rangeCountingDown = {
-					top:    proscribedVerticalRanges[indexCountingDown].top - side.offsetTop,
-					bottom: proscribedVerticalRanges[indexCountingDown].bottom - side.offsetTop
+					top:    proscribedVerticalRanges[indexCountingDown].top,
+					bottom: proscribedVerticalRanges[indexCountingDown].bottom
 				};
 				rangeCountingDown.halfwayPoint = (rangeCountingDown.top + rangeCountingDown.bottom) / 2;
 				if (rangeCountingDown.halfwayPoint > sidenoteFootprintHalfwayPoint) {
@@ -343,7 +346,7 @@ Sidenotes = {
 			//  Does this sidenote overlap its room’s floor?
 			var overlapWithFloor = sidenoteFootprint.bottom - room.floor;
 			if (overlapWithFloor > 0)
-				GWLog(`Sidenote ${sidenoteNumber} overlaps its floor!`, "sidenotes.js", 2);
+				GWLog(`Sidenote ${sidenoteNumber} overlaps its floor by ${overlapWithFloor} pixels!`, "sidenotes.js", 2);
 
 			/*  Is there a next sidenote, and if so, is there any overlap between
 				it and this one?
@@ -352,7 +355,7 @@ Sidenotes = {
 										  (sidenoteFootprint.bottom - nextSidenote.offsetTop) :
 										  -1;
 			if (overlapWithNextSidenote > 0)
-				GWLog(`Sidenote ${sidenoteNumber} overlaps sidenote ${nextSidenoteNumber}!`, "sidenotes.js", 2);
+				GWLog(`Sidenote ${sidenoteNumber} overlaps sidenote ${nextSidenoteNumber} by ${overlapWithNextSidenote} pixels!`, "sidenotes.js", 2);
 
 			/*  If the sidenote overlaps the next sidenote AND its room’s floor,
 				we want to know what it overlaps more.
@@ -661,8 +664,8 @@ Sidenotes = {
 			/*	If layout remains to be done, queue up another reposition for 
 				when all layout is complete.
 				*/
-			if (document.readyState != "complete")
-				doWhenPageLoaded(Sidenotes.updateSidenotePositions);
+// 			if (document.readyState != "complete")
+// 				doWhenPageLoaded(Sidenotes.updateSidenotePositions);
 
 			/*  Add a resize listener so that sidenote positions are recalculated when
 				the window is resized.
