@@ -279,11 +279,14 @@ GW.notificationCenter.fireEvent = function (eventName, eventInfo) {
     if (GW.notificationCenter[eventName] == null)
         return;
 
-    GW.notificationCenter[eventName].forEach(handler => {
+	for (var i = 0; i < GW.notificationCenter[eventName].length; i++) {
+		let handler = GW.notificationCenter[eventName][i];
         handler.f(eventInfo);
-        if (handler.options.once)
-            GW.notificationCenter.removeHandlerForEvent(eventName, handler.f);
-    });
+        if (handler.options.once) {
+        	GW.notificationCenter[eventName].splice(i, 1);
+        	i--;
+        }
+	}
 }
 
 /******************/
