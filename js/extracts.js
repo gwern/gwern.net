@@ -77,7 +77,7 @@ Extracts = {
 			Extracts.unannotatedTargetSelectors.join(", "),
 			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='${Extracts.siteBaseURL}'][href$='${ext}']`).join(", "),
 			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='${Extracts.siteBaseURL}'][href$='${ext}']`).join(", "),
-			Extracts.qualifyingForeignDomains.map(domain => Extracts.foreignSiteURLPrefixes.map(prefix => `a[href^='${prefix}${domain}']`).join(", ")).join(", ")
+// 			Extracts.qualifyingForeignDomains.map(domain => Extracts.foreignSiteURLPrefixes.map(prefix => `a[href^='${prefix}${domain}']`).join(", ")).join(", ")
 			].join(", "),
 		excludedElementsSelector: Extracts.excludedElementsSelector,
 		excludedContainerElementsSelector: [ 
