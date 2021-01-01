@@ -86,8 +86,22 @@ doWhenDOMContentLoaded(wrapFigures);
 	*/
 function markFullWidthFigures() {
 	let fullWidthClass = "full-width";
-    document.querySelectorAll(`img.${fullWidthClass}`).forEach(fullWidthImage => {
-        fullWidthImage.closest("figure").classList.toggle(fullWidthClass, true);
+
+	let allFullWidthMedia = document.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
+    allFullWidthMedia.forEach(fullWidthMedia => {
+        fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
+    });
+
+	/*  Add ‘load’ listener for lazy-loaded media (as it might cause re-layout
+		of e.g. sidenotes). Do this only after page loads, to avoid spurious
+		re-layout at initial page load.
+		*/
+    doWhenPageLoaded(() => {
+    	allFullWidthMedia.forEach(fullWidthMedia => {
+    		fullWidthMedia.addEventListener("load", (event) => {
+    			GW.notificationCenter.fireEvent("Rewrite.fullWidthMediaDidLoad");
+    		});
+    	});
     });
 }
 doWhenDOMContentLoaded(markFullWidthFigures);

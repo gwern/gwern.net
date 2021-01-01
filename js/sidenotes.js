@@ -270,11 +270,26 @@ Sidenotes = {
 			};
 			let sidenoteFootprintHalfwayPoint = (sidenoteFootprint.top + sidenoteFootprint.bottom) / 2;
 
+			var proscribedVerticalRanges = [...((i % 2) ? proscribedVerticalRangesLeft : proscribedVerticalRangesRight)];
+			if (i > 1) {
+				proscribedVerticalRanges.push({
+					/*  Not offsetTop but 0, because we want everything *up to*
+						the previous note to also be proscribed.
+						*/
+					top:    0,
+					bottom: Sidenotes.sidenoteDivs[i - 2].offsetTop + Sidenotes.sidenoteDivs[i - 2].offsetHeight
+				});
+			}
+			proscribedVerticalRanges.sort((a, b) => {
+				if (a.bottom < b.bottom) return -1;
+				if (a.bottom > b.bottom) return 1;
+				return 0;
+			});
+
 			/*  Simultaneously traverse the array of proscribed ranges up and down,
 				narrowing down the room we have to work with (in which to place this
 				sidenote) from both sides.
 				*/
-			let proscribedVerticalRanges = (i % 2) ? proscribedVerticalRangesLeft : proscribedVerticalRangesRight;
 			var nextProscribedRangeAfterSidenote = -1;
 			for (var j = 0; j < proscribedVerticalRanges.length; j++) {
 				let rangeCountingUp = {
@@ -539,10 +554,6 @@ Sidenotes = {
 	setup: () => {
 		GWLog("Sidenotes.setup", "sidenotes.js", 1);
 
-		//  TEMPORARY!
-		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
-			return;
-
 		/*  If the page was loaded with a hash that points to a footnote, but
 			sidenotes are enabled (or vice-versa), rewrite the hash in accordance
 			with the current mode (this will also cause the page to end up scrolled
@@ -634,6 +645,13 @@ Sidenotes = {
 						requestAnimationFrame(Sidenotes.updateSidenotePositions);
 					});
 
+					/*	Add event handler to (asynchronously) recompute sidenote positioning 
+						when full-width media lazy-loads.
+						*/
+					GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks = () => {
+						requestAnimationFrame(Sidenotes.updateSidenotePositions);
+					});
+
 					/*	Add event handler to (asynchronously) recompute sidenote positioning
 						when collapse blocks are expanded/collapsed.
 						*/
@@ -644,6 +662,7 @@ Sidenotes = {
 					/*	Deactivate notification handlers.
 						*/
 					GW.notificationCenter.removeHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
+					GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
 					GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 					GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
 				}
@@ -651,6 +670,7 @@ Sidenotes = {
 				/*	Deactivate notification handlers.
 					*/
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
+				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
 			});
