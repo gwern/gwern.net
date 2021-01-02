@@ -639,13 +639,6 @@ Sidenotes = {
 					});
 
 					/*	Add event handler to (asynchronously) recompute sidenote positioning 
-						when full-width blocks are expanded.
-						*/
-					GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks = () => {
-						requestAnimationFrame(Sidenotes.updateSidenotePositions);
-					});
-
-					/*	Add event handler to (asynchronously) recompute sidenote positioning 
 						when full-width media lazy-loads.
 						*/
 					GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks = () => {
@@ -661,7 +654,6 @@ Sidenotes = {
 				} else {
 					/*	Deactivate notification handlers.
 						*/
-					GW.notificationCenter.removeHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
 					GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
 					GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 					GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
@@ -669,7 +661,6 @@ Sidenotes = {
 			}, null, (mediaQuery) => {
 				/*	Deactivate notification handlers.
 					*/
-				GW.notificationCenter.removeHandlerForEvent("Rewrite.didExpandFullWidthBlocks", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
 				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
@@ -686,8 +677,11 @@ Sidenotes = {
 			/*	If layout remains to be done, queue up another reposition for 
 				when all layout is complete.
 				*/
-// 			if (document.readyState != "complete")
-// 				doWhenPageLoaded(Sidenotes.updateSidenotePositions);
+			if (!GW.pageLayoutComplete) {
+				GW.notificationCenter.addHandlerForEvent("Rewrite.pageLayoutDidComplete", () => {
+					requestAnimationFrame(Sidenotes.updateSidenotePositions);
+				}, { once: true });
+			}
 
 			/*  Add a resize listener so that sidenote positions are recalculated when
 				the window is resized.

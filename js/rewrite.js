@@ -228,6 +228,13 @@ function expandFullWidthBlocks() {
 
 	GW.notificationCenter.fireEvent("Rewrite.didExpandFullWidthBlocks");
 }
+GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", () => {
+	GW.notificationCenter.fireEvent("Rewrite.pageLayoutWillComplete");
+	requestAnimationFrame(() => {
+		GW.pageLayoutComplete = true;
+		GW.notificationCenter.fireEvent("Rewrite.pageLayoutDidComplete");
+	});
+}, { once: true });
 doWhenPageLoaded(expandFullWidthBlocks);
 
 /*********/
