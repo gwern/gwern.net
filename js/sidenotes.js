@@ -20,6 +20,10 @@ Sidenotes = {
 		*/
 	sidenotePadding: 13.0,
 
+	/*	Maximum height of a sidenote.
+		*/
+	sidenoteMaxHeight: 720.0,
+
 	/*	Elements which occupy (partially or fully) the sidenote columns, and 
 		which can thus collide with sidenotes.
 		*/
@@ -181,6 +185,9 @@ Sidenotes = {
 
 			//  What side is this sidenote on?
 			let side = (i % 2) ? Sidenotes.sidenoteColumnLeft : Sidenotes.sidenoteColumnRight;
+
+			//  Maximum height.
+			sidenote.firstElementChild.style.maxHeight = `${Sidenotes.sidenoteMaxHeight}px`;
 
 			//  Default position (vertically aligned with the footnote reference).
 			sidenote.style.top = Math.round(((Sidenotes.citations[i].getBoundingClientRect().top) - side.getBoundingClientRect().top) + 4) + "px";
@@ -474,9 +481,9 @@ Sidenotes = {
 			sidenote.id = "sn" + sidenoteNumber;
 			//  Wrap the contents of the footnote in two wrapper divs...
 			let referencedFootnote = document.querySelector("#fn" + sidenoteNumber);
-			sidenote.innerHTML = "<div class='sidenote-outer-wrapper'><div class='sidenote-inner-wrapper'>" +
+			sidenote.innerHTML = `<div class="sidenote-outer-wrapper"><div class="sidenote-inner-wrapper">` +
 								 (referencedFootnote ? referencedFootnote.innerHTML : "Loading sidenote contents, please wait…")
-								 + "</div></div>";
+								 + `</div></div>`;
 			//  Add the sidenote to the sidenotes array...
 			Sidenotes.sidenoteDivs.push(sidenote);
 			//  On which side should the sidenote go? Odd - right; even - left.

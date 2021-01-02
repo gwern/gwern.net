@@ -1216,7 +1216,7 @@ section.footnotes > hr:first-child::before {
 /*  Outer wrapper (scrolls).
     */
 .sidenote-outer-wrapper {
-    max-height: 720px;
+	/* max-height is set inline, in sidenotes.js */
     overflow: hidden;
     position: relative;
     z-index: 1;
