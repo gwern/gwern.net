@@ -189,6 +189,26 @@ function addUIElement(element_html) {
     return ui_elements_container.lastElementChild;
 }
 
+/*  Adds a scroll event listener to the page.
+    */
+function addScrollListener(fn, name) {
+    let wrapper = (event) => {
+        requestAnimationFrame(() => {
+            fn(event);
+            document.addEventListener("scroll", wrapper, { once: true, passive: true });
+        });
+    }
+    document.addEventListener("scroll", wrapper, { once: true, passive: true });
+
+    // Retain a reference to the scroll listener, if a name is provided.
+    if (typeof name != "undefined") {
+    	if (GW.scrollListeners == null)
+    		GW.scrollListeners = { };
+
+        GW.scrollListeners[name] = wrapper;
+    }
+}
+
 /************************/
 /* ACTIVE MEDIA QUERIES */
 /************************/
