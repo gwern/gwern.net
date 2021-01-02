@@ -39,7 +39,6 @@ Sidenotes = {
 
 	sidenoteColumnLeft: null,
 	sidenoteColumnRight: null,
-	hiddenSidenoteStorage: null,
 
 	noteNumberFromHash: () => {
 		if (location.hash.match(/#[sf]n[0-9]/))
@@ -139,31 +138,19 @@ Sidenotes = {
 			let citation = Sidenotes.citations[i];
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
-			//  If the enclosing collapse block is currently collapsed...
-			if (isWithinCollapsedBlock(citation)) {
-				//  Move the sidenote to the hidden sidenote storage.
-				Sidenotes.hiddenSidenoteStorage.appendChild(sidenote);
-				continue;
-			}
-
-			//  Otherwise, move the sidenote back into the correct sidenote column.
-			let side = (i % 2) ? Sidenotes.sidenoteColumnLeft : Sidenotes.sidenoteColumnRight;
-			//  What's the next sidenote?
-			var nextSidenoteIndex = i + 2;
-			while (nextSidenoteIndex < Sidenotes.citations.length &&
-				   Sidenotes.sidenoteDivs[nextSidenoteIndex].parentElement == Sidenotes.hiddenSidenoteStorage)
-				   nextSidenoteIndex += 2;
-			if (nextSidenoteIndex >= Sidenotes.citations.length) {
-			/*  If no subsequent sidenote is displayed, append the current sidenote
-				to the column.
-				*/
-				side.appendChild(sidenote);
-			} else {
-			/*  Otherwise, insert it before the next displayed sidenote.
-				*/
-				side.insertBefore(sidenote, Sidenotes.sidenoteDivs[nextSidenoteIndex]);
-			}
+			sidenote.classList.toggle("hidden", isWithinCollapsedBlock(citation));
 		}
+	},
+
+	getNextVisibleSidenote: (sidenote) => {
+		var nextSidenoteNumber;
+		for (nextSidenoteNumber = sidenote.id.substr(2) + 2;
+			 (nextSidenoteNumber <= Sidenotes.citations.length && Sidenotes.sidenoteDivs[nextSidenoteNumber - 1].classList.contains("hidden"));
+			 nextSidenoteNumber += 2)
+			 ;
+		return nextSidenoteNumber <= Sidenotes.citations.length
+			   ? Sidenotes.sidenoteDivs[nextSidenoteNumber - 1]
+			   : null;
 	},
 
 	/*  This function actually calculates and sets the positions of all sidenotes.
@@ -189,7 +176,7 @@ Sidenotes = {
 			/*  Check whether the sidenote is in the hidden sidenote storage (i.e.,
 				within a currently-collapsed collapse block. If so, skip it.
 				*/
-			if (sidenote.parentElement == Sidenotes.hiddenSidenoteStorage)
+			if (sidenote.classList.contains("hidden"))
 				continue;
 
 			//  What side is this sidenote on?
@@ -246,13 +233,13 @@ Sidenotes = {
 			let sidenote = Sidenotes.sidenoteDivs[i];
 			let sidenoteNumber = sidenote.id.substr(2);
 
-			let nextSidenote = sidenote.nextElementSibling;
+			let nextSidenote = Sidenotes.getNextVisibleSidenote(sidenote);
 			let nextSidenoteNumber = nextSidenote ? nextSidenote.id.substr(2) : "";
 
 			/*  Is this sidenote even displayed? Or is it hidden (i.e., within
 				a currently-collapsed collapse block)? If so, skip it.
 				*/
-			if (sidenote.parentElement == Sidenotes.hiddenSidenoteStorage) continue;
+			if (sidenote.classList.contains("hidden")) continue;
 
 			//  What side is this sidenote on?
 			let side = (i % 2) ? Sidenotes.sidenoteColumnLeft : Sidenotes.sidenoteColumnRight;
@@ -450,8 +437,6 @@ Sidenotes = {
 		Sidenotes.sidenoteColumnLeft = null;
 		Sidenotes.sidenoteColumnRight.remove();
 		Sidenotes.sidenoteColumnRight = null;
-		Sidenotes.hiddenSidenoteStorage.remove();
-		Sidenotes.hiddenSidenoteStorage = null;
 	},
 
 	/*  Constructs the HTML structure, and associated listeners and auxiliaries,
@@ -509,15 +494,6 @@ Sidenotes = {
 			sidenoteSelfLink.textContent = (i + 1);
 			Sidenotes.sidenoteDivs[i].appendChild(sidenoteSelfLink);
 		}
-
-		/*  Create & inject the hidden sidenote storage (for sidenotes within
-			currently-collapsed collapse blocks).
-			*/
-		if (Sidenotes.hiddenSidenoteStorage) Sidenotes.hiddenSidenoteStorage.remove();
-		Sidenotes.hiddenSidenoteStorage = document.createElement("div");
-		Sidenotes.hiddenSidenoteStorage.id = "hidden-sidenote-storage";
-		Sidenotes.hiddenSidenoteStorage.style.display = "none";
-		markdownBody.appendChild(Sidenotes.hiddenSidenoteStorage);
 
 		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidConstruct");
 	},

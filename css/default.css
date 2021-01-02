@@ -1174,6 +1174,9 @@ section.footnotes > hr:first-child::before {
     line-height: 1.5;
     padding: 2em 0 0 0;
 }
+.sidenote.hidden {
+	display: none;
+}
 .sidenote.highlighted,
 .sidenote:hover,
 .sidenote:target,
