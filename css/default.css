@@ -1419,11 +1419,12 @@ table {
 
 .table-wrapper.full-width {
     z-index: 1;
+    pointer-events: none;
 }
 .table-wrapper.full-width .full-width-table-inner-wrapper {
     background-color: var(--GW-table-full-width-background-color);
+    pointer-events: auto;
 }
-
 blockquote .table-wrapper.full-width {
     background-color: transparent;
 }
@@ -2257,30 +2258,6 @@ body.mead p > img {
 
 body.hafu .table-wrapper#hafu-list-table td:last-of-type {
     width: 50%;
-}
-
-/*=------------------=*/
-/*= /komm-susser-tod =*/
-/*=------------------=*/
-
-body.komm-susser-tod .table-wrapper#lyrics-table {
-    padding: 0 calc((100vw - 6.5ch - 105ch) / 2);
-}
-
-/*=----------------=*/
-/*= /Catnip-survey =*/
-/*=----------------=*/
-
-body.catnip-survey .table-wrapper#results-table {
-    padding: 0 calc((100vw - 6.5ch - 120ch) / 2);
-}
-
-/*=---------=*/
-/*= /Iodine =*/
-/*=---------=*/
-
-body.iodine .table-wrapper#data-table {
-    padding: 0 calc((100vw - 6.5ch - 105ch) / 2);
 }
 
 /*=--------------=*/
