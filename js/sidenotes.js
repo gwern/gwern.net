@@ -53,6 +53,28 @@ Sidenotes = {
 			return "";
 	},
 
+	bindSidenoteHighlightMouseEventsToCitation: (sidenote, citation) => {
+		GWLog("Sidenotes.bindSidenoteHighlightMouseEventsToCitation", "sidenotes.js", 2);
+
+		citation.addEventListener("mouseenter", citation.citationover = (event) => {
+			sidenote.classList.toggle("highlighted", true);
+		});
+		citation.addEventListener("mouseleave", citation.citationout = (event) => {
+			sidenote.classList.toggle("highlighted", false);
+		});
+	},
+
+	bindCitationHighlightMouseEventsToSidenote: (citation, sidenote) => {
+		GWLog("Sidenotes.bindCitationHighlightMouseEventsToSidenote", "sidenotes.js", 2);
+
+		sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
+			citation.classList.toggle("highlighted", true);
+		});
+		sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
+			citation.classList.toggle("highlighted", false);
+		});
+	},
+
 	/*	Bind event listeners for mousing over citations and sidenotes.
 		*/
 	bindSidenoteMouseEvents: () => {
@@ -62,18 +84,8 @@ Sidenotes = {
 			let citation = Sidenotes.citations[i];
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
-			citation.addEventListener("mouseenter", citation.citationover = (event) => {
-				sidenote.classList.toggle("highlighted", true);
-			});
-			citation.addEventListener("mouseleave", citation.citationout = (event) => {
-				sidenote.classList.toggle("highlighted", false);
-			});
-			sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
-				citation.classList.toggle("highlighted", true);
-			});
-			sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
-				citation.classList.toggle("highlighted", false);
-			});
+			Sidenotes.bindSidenoteHighlightMouseEventsToCitation(sidenote, citation);
+			Sidenotes.bindCitationHighlightMouseEventsToSidenote(citation, sidenote);
 		}
 	},
 
@@ -563,6 +575,12 @@ Sidenotes = {
 			}
 		});
 
+		/*	We do not bother to construct sidenotes on mobile clients, and so
+			the rest of this is also irrelevant.
+			*/
+		if (GW.isMobile())
+			return;
+
 		/*  In footnote mode (i.e., on viewports too narrow to support sidenotes),
 			footnote reference links (i.e., citations) should point down to footnotes
 			(this is the default state).
@@ -599,6 +617,12 @@ Sidenotes = {
 			}, null, (mediaQuery) => {
 				//  Unbind sidenote mouse events.
 				Sidenotes.unbindSidenoteMouseEvents();
+			});
+
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				info.popup.querySelectorAll("a[href^='#sn'].footnote-ref").forEach(citation => {
+					Sidenotes.bindSidenoteHighlightMouseEventsToCitation(Sidenotes.sidenoteDivs[parseInt(citation.hash.substr(3)) - 1], citation);
+				});
 			});
 		}, { once: true });
 
@@ -675,8 +699,7 @@ Sidenotes = {
 
 		/*  Construct the sidenotes as soon as the HTML content is fully loaded.
 			*/
-		if (!GW.isMobile())
-			doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
+		doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	}
