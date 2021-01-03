@@ -200,6 +200,7 @@ Sidenotes = {
 
 		/*  Determine proscribed vertical ranges (i.e., bands of the page from which
 			sidenotes are excluded, by the presence of, e.g., a full-width table).
+			NOTE: We assume that proscribed vertical ranges do NOT overlap.
 			*/
 		var proscribedVerticalRangesLeft = [ ];
 		var proscribedVerticalRangesRight = [ ];
@@ -264,16 +265,7 @@ Sidenotes = {
 			};
 			let sidenoteFootprintHalfwayPoint = (sidenoteFootprint.top + sidenoteFootprint.bottom) / 2;
 
-			var proscribedVerticalRanges = [...((i % 2) ? proscribedVerticalRangesLeft : proscribedVerticalRangesRight)];
-			if (i > 1) {
-				proscribedVerticalRanges.push({
-					/*  Not offsetTop but 0, because we want everything *up to*
-						the previous note to also be proscribed.
-						*/
-					top:    0,
-					bottom: Sidenotes.sidenoteDivs[i - 2].offsetTop + Sidenotes.sidenoteDivs[i - 2].offsetHeight
-				});
-			}
+			let proscribedVerticalRanges = [...((i % 2) ? proscribedVerticalRangesLeft : proscribedVerticalRangesRight)];
 			proscribedVerticalRanges.sort((a, b) => {
 				if (a.bottom < b.bottom) return -1;
 				if (a.bottom > b.bottom) return 1;
@@ -304,6 +296,11 @@ Sidenotes = {
 					room.floor = rangeCountingDown.top;
 					nextProscribedRangeAfterSidenote = indexCountingDown;
 				}
+			}
+			if (i > 1) {
+				let previousSidenoteBottom = Sidenotes.sidenoteDivs[i - 2].offsetTop + Sidenotes.sidenoteDivs[i - 2].offsetHeight;
+				if (previousSidenoteBottom > room.ceiling)
+					room.ceiling = previousSidenoteBottom;
 			}
 			GWLog(`Sidenote ${i + 1}’s room is: (${room.ceiling}, ${room.floor}).`, "sidenotes.js", 2);
 
