@@ -207,7 +207,7 @@ Sidenotes = {
 			/*  Mark sidenotes which are cut off vertically.
 				*/
 			let sidenoteOuterWrapper = sidenote.firstElementChild;
-			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.clientHeight + 2));
+			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
 		}
 
 		/*  Determine proscribed vertical ranges (i.e., bands of the page from which
@@ -273,7 +273,7 @@ Sidenotes = {
 			};
 			let sidenoteFootprint = {
 				top:    sidenote.offsetTop - Sidenotes.sidenoteSpacing,
-				bottom: sidenote.offsetTop + sidenote.clientHeight + Sidenotes.sidenoteSpacing
+				bottom: sidenote.offsetTop + sidenote.offsetHeight + Sidenotes.sidenoteSpacing
 			};
 			let sidenoteFootprintHalfwayPoint = (sidenoteFootprint.top + sidenoteFootprint.bottom) / 2;
 
@@ -385,7 +385,7 @@ Sidenotes = {
 			let previousSidenote = sidenote.previousElementSibling;
 			let maxHeadroom = sidenoteFootprint.top - room.ceiling;
 			let headroom = previousSidenote ?
-						   Math.min(maxHeadroom, (sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.clientHeight))) :
+						   Math.min(maxHeadroom, (sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.offsetHeight))) :
 						   maxHeadroom;
 			GWLog(`We have ${headroom}px of headroom.`, "sidenotes.js", 2);
 
@@ -417,7 +417,7 @@ Sidenotes = {
 					then that next sidenote will need to be moved to the next open
 					space, and the current sidenote need not be disturbed...
 					*/
-				if ((sidenoteFootprint.bottom + nextSidenote.clientHeight + Sidenotes.sidenoteSpacing - headroom) >
+				if ((sidenoteFootprint.bottom + nextSidenote.offsetHeight + Sidenotes.sidenoteSpacing - headroom) >
 					proscribedVerticalRanges[nextProscribedRangeAfterSidenote].top)
 					continue;
 
