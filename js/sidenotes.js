@@ -691,9 +691,11 @@ Sidenotes = {
 				the window is resized.
 				*/
 			window.addEventListener("resize", Sidenotes.windowResized = (event) => {
-				GWLog("Sidenotes.windowResized", "sidenotes.js");
+				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
-				Sidenotes.updateSidenotePositions();
+				requestAnimationFrame(() => {
+					Sidenotes.updateSidenotePositions();
+				});
 			});
 		}, { once: true });
 
