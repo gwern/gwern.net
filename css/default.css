@@ -2948,6 +2948,8 @@ body.directory-index #disqus_thread {
     */
 .extract-popup > div > figure.float-right {
     margin: 0.125em 0 0.125em 1.5em;
+    max-width: calc(50% - 1.5em);
+    float: right;
 }
 
 .extract-popup img {
