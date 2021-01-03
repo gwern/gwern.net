@@ -53,6 +53,28 @@ Sidenotes = {
 			return "";
 	},
 
+	bindSidenoteHighlightMouseEventsToCitation: (sidenote, citation) => {
+		GWLog("Sidenotes.bindSidenoteHighlightMouseEventsToCitation", "sidenotes.js", 2);
+
+		citation.addEventListener("mouseenter", citation.citationover = (event) => {
+			sidenote.classList.toggle("highlighted", true);
+		});
+		citation.addEventListener("mouseleave", citation.citationout = (event) => {
+			sidenote.classList.toggle("highlighted", false);
+		});
+	},
+
+	bindCitationHighlightMouseEventsToSidenote: (citation, sidenote) => {
+		GWLog("Sidenotes.bindCitationHighlightMouseEventsToSidenote", "sidenotes.js", 2);
+
+		sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
+			citation.classList.toggle("highlighted", true);
+		});
+		sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
+			citation.classList.toggle("highlighted", false);
+		});
+	},
+
 	/*	Bind event listeners for mousing over citations and sidenotes.
 		*/
 	bindSidenoteMouseEvents: () => {
@@ -62,18 +84,8 @@ Sidenotes = {
 			let citation = Sidenotes.citations[i];
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
-			citation.addEventListener("mouseenter", citation.citationover = (event) => {
-				sidenote.classList.toggle("highlighted", true);
-			});
-			citation.addEventListener("mouseleave", citation.citationout = (event) => {
-				sidenote.classList.toggle("highlighted", false);
-			});
-			sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
-				citation.classList.toggle("highlighted", true);
-			});
-			sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
-				citation.classList.toggle("highlighted", false);
-			});
+			Sidenotes.bindSidenoteHighlightMouseEventsToCitation(sidenote, citation);
+			Sidenotes.bindCitationHighlightMouseEventsToSidenote(citation, sidenote);
 		}
 	},
 
@@ -195,11 +207,12 @@ Sidenotes = {
 			/*  Mark sidenotes which are cut off vertically.
 				*/
 			let sidenoteOuterWrapper = sidenote.firstElementChild;
-			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.clientHeight + 2));
+			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
 		}
 
 		/*  Determine proscribed vertical ranges (i.e., bands of the page from which
 			sidenotes are excluded, by the presence of, e.g., a full-width table).
+			NOTE: We assume that proscribed vertical ranges do NOT overlap.
 			*/
 		var proscribedVerticalRangesLeft = [ ];
 		var proscribedVerticalRangesRight = [ ];
@@ -260,20 +273,11 @@ Sidenotes = {
 			};
 			let sidenoteFootprint = {
 				top:    sidenote.offsetTop - Sidenotes.sidenoteSpacing,
-				bottom: sidenote.offsetTop + sidenote.clientHeight + Sidenotes.sidenoteSpacing
+				bottom: sidenote.offsetTop + sidenote.offsetHeight + Sidenotes.sidenoteSpacing
 			};
 			let sidenoteFootprintHalfwayPoint = (sidenoteFootprint.top + sidenoteFootprint.bottom) / 2;
 
-			var proscribedVerticalRanges = [...((i % 2) ? proscribedVerticalRangesLeft : proscribedVerticalRangesRight)];
-			if (i > 1) {
-				proscribedVerticalRanges.push({
-					/*  Not offsetTop but 0, because we want everything *up to*
-						the previous note to also be proscribed.
-						*/
-					top:    0,
-					bottom: Sidenotes.sidenoteDivs[i - 2].offsetTop + Sidenotes.sidenoteDivs[i - 2].offsetHeight
-				});
-			}
+			let proscribedVerticalRanges = [...((i % 2) ? proscribedVerticalRangesLeft : proscribedVerticalRangesRight)];
 			proscribedVerticalRanges.sort((a, b) => {
 				if (a.bottom < b.bottom) return -1;
 				if (a.bottom > b.bottom) return 1;
@@ -304,6 +308,11 @@ Sidenotes = {
 					room.floor = rangeCountingDown.top;
 					nextProscribedRangeAfterSidenote = indexCountingDown;
 				}
+			}
+			if (i > 1) {
+				let previousSidenoteBottom = Sidenotes.sidenoteDivs[i - 2].offsetTop + Sidenotes.sidenoteDivs[i - 2].offsetHeight;
+				if (previousSidenoteBottom > room.ceiling)
+					room.ceiling = previousSidenoteBottom;
 			}
 			GWLog(`Sidenote ${i + 1}’s room is: (${room.ceiling}, ${room.floor}).`, "sidenotes.js", 2);
 
@@ -376,7 +385,7 @@ Sidenotes = {
 			let previousSidenote = sidenote.previousElementSibling;
 			let maxHeadroom = sidenoteFootprint.top - room.ceiling;
 			let headroom = previousSidenote ?
-						   Math.min(maxHeadroom, (sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.clientHeight))) :
+						   Math.min(maxHeadroom, (sidenoteFootprint.top - (previousSidenote.offsetTop + previousSidenote.offsetHeight))) :
 						   maxHeadroom;
 			GWLog(`We have ${headroom}px of headroom.`, "sidenotes.js", 2);
 
@@ -408,7 +417,7 @@ Sidenotes = {
 					then that next sidenote will need to be moved to the next open
 					space, and the current sidenote need not be disturbed...
 					*/
-				if ((sidenoteFootprint.bottom + nextSidenote.clientHeight + Sidenotes.sidenoteSpacing - headroom) >
+				if ((sidenoteFootprint.bottom + nextSidenote.offsetHeight + Sidenotes.sidenoteSpacing - headroom) >
 					proscribedVerticalRanges[nextProscribedRangeAfterSidenote].top)
 					continue;
 
@@ -566,6 +575,12 @@ Sidenotes = {
 			}
 		});
 
+		/*	We do not bother to construct sidenotes on mobile clients, and so
+			the rest of this is also irrelevant.
+			*/
+		if (GW.isMobile())
+			return;
+
 		/*  In footnote mode (i.e., on viewports too narrow to support sidenotes),
 			footnote reference links (i.e., citations) should point down to footnotes
 			(this is the default state).
@@ -602,6 +617,12 @@ Sidenotes = {
 			}, null, (mediaQuery) => {
 				//  Unbind sidenote mouse events.
 				Sidenotes.unbindSidenoteMouseEvents();
+			});
+
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				info.popup.querySelectorAll("a[href^='#sn'].footnote-ref").forEach(citation => {
+					Sidenotes.bindSidenoteHighlightMouseEventsToCitation(Sidenotes.sidenoteDivs[parseInt(citation.hash.substr(3)) - 1], citation);
+				});
 			});
 		}, { once: true });
 
@@ -670,16 +691,17 @@ Sidenotes = {
 				the window is resized.
 				*/
 			window.addEventListener("resize", Sidenotes.windowResized = (event) => {
-				GWLog("Sidenotes.windowResized", "sidenotes.js");
+				GWLog("Sidenotes.windowResized", "sidenotes.js", 2);
 
-				Sidenotes.updateSidenotePositions();
+				requestAnimationFrame(() => {
+					Sidenotes.updateSidenotePositions();
+				});
 			});
 		}, { once: true });
 
 		/*  Construct the sidenotes as soon as the HTML content is fully loaded.
 			*/
-		if (!GW.isMobile())
-			doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
+		doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	}

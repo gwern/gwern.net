@@ -343,6 +343,10 @@ body.index #markdownBody h1 {
 
 /*  Lists on the home page.
 	*/
+body.index #markdownBody li,
+body.index #markdownBody li p {
+    text-align: left;
+}
 body.index #markdownBody ul,
 body.tags #markdownBody ul {
 	margin: 1em 3em 0 0;
