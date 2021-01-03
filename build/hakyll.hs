@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-02 16:54:15 gwern"
+When: Time-stamp: "2021-01-02 22:08:14 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -38,9 +38,9 @@ import Control.Exception (onException)
 import Control.Monad (when, void)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nub, sort)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isNothing)
 import Data.Monoid ((<>))
-import Network.HTTP (urlEncode)
+import Network.HTTP (urlDecode, urlEncode)
 import qualified Data.Map as M (fromList, lookup, Map)
 import System.Directory (doesFileExist)
 import System.FilePath (takeExtension)
@@ -240,10 +240,11 @@ postCtx tags =
 -- pandocTransform md adb dict = walkM (\x -> annotateLink md x >>= localizeLink adb) . walk smallcapsfy . walk headerSelflink . annotateFirstDefinitions . walkInlineM (defineAbbreviations dict) . bottomUp mergeSpaces . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md adb p = do p' <- generateLinkBibliography md p
-                              let p'' = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate)) $ p'
-                              let p''' = walk headerSelflink p'' -- run headerSelflink after generateLinkBibliography to cover the generated '# Link Bibliography' sections
-                              walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) p'''
+pandocTransform md adb p = do let pw = walk convertInterwikiLinks p
+                              pb <- generateLinkBibliography md pw
+                              let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . addAmazonAffiliate)) $ pb
+                              let pbth = walk headerSelflink pbt -- run headerSelflink after generateLinkBibliography to cover the generated '# Link Bibliography' sections
+                              walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) pbth
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
@@ -251,7 +252,7 @@ pandocTransform md adb p = do p' <- generateLinkBibliography md p
 imageSrcset :: Inline -> IO Inline
 imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
   do let ext = takeExtension $ T.unpack target
-     let target' = T.unpack target
+     let target' = replace "%2F" "/" $ T.unpack target
      (_,w) <- imageMagickDimensions $ tail target'
      if (read w :: Int) <= 768 then return x else do
          let smallerPath = (tail target')++"-768px"++ext
@@ -306,26 +307,35 @@ addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, 
 
 
 {- example illustration:
- TagOpen "img" [("src","/images/201201-201207-traffic-history.png")
+ TagOpen "img" [("src","/images/traffic/201201-201207-traffic-history.png")
                 ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
  TagOpen "figcaption" [],TagText "Plot of page-hits (y-axis) versus date (x-axis)",
  TagClose "figcaption",TagText "\n",TagClose "figure" -}
 staticImg :: Tag String -> IO (Tag String)
-staticImg (TagOpen "img" xs) |
-  Nothing <- lookup "height" xs,
-  Nothing <- lookup "width" xs,
-  Just p <- lookup "src" xs,
-  "/" `isPrefixOf` p && (takeExtension p /= ".svg") && not ("data:image/" `isPrefixOf` p) = do
-    let p' = if head p == '/' then tail p else p
-    (height,width) <- imageMagickDimensions p' `onException` (putStrLn p)
-    -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
-    -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
-    -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
-    -- No images should be more than a screen in height either, so we'll set a maximum of 1400
-    let width' =  show ((read width::Int) `min` 1400)
-    let height' = show ((read height::Int) `min` 1400)
-    return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load all images
-                                   ("height", height'), ("width", width')]++xs)))
+staticImg x@(TagOpen "img" xs) = do
+  let h = lookup "height" xs
+  let w = lookup "width" xs
+  let lazy = lookup "loading" xs
+  let Just p = lookup "src" xs
+  if (isNothing h || isNothing w || isNothing lazy) &&
+     not ("//" `isPrefixOf` p || "http" `isPrefixOf` p) &&
+     ("/" `isPrefixOf` p && not ("data:image/" `isPrefixOf` p)) then
+    if (takeExtension p == ".svg") then
+      -- for SVGs, only set the lazy-loading attribute, since height/width is not necessarily meaningful for vector graphics
+            return (TagOpen "img" (uniq ([("loading", "lazy")]++xs)))
+    else
+       do
+         let p' = urlDecode $ if head p == '/' then tail p else p
+         (height,width) <- imageMagickDimensions p' `onException` (putStrLn p)
+         -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
+         -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
+         -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
+         -- No images should be more than a screen in height either, so we'll set a maximum of 1400
+         let width' =  show ((read width::Int) `min` 1400)
+         let height' = show ((read height::Int) `min` 1400)
+         return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load all images
+                                        ("height", height'), ("width", width')]++xs)))
+      else return x
   where uniq = nub . sort
 staticImg x = return x
 

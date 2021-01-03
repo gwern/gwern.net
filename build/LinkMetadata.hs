@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2020-12-29 23:38:40 gwern"
+When:  Time-stamp: "2021-01-02 17:44:32 gwern"
 License: CC-0
 -}
 
@@ -493,7 +493,7 @@ wikipedia p
                                                                                                         newThumbnail <- downloadWPThumbnail $ T.unpack href
                                                                                                         (color,h,w) <- invertImage newThumbnail
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
-                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ urlEncode newThumbnail ++ "\" alt=\"Wikipedia thumbnail image of '" ++ urlEncode wpTitle ++ "'\" /></figure> ")
+                                                                                                        return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (replace "%2F" "/" $ urlEncode newThumbnail) ++ "\" alt=\"Wikipedia thumbnail image of '" ++ urlEncode wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract' = cleanAbstractsHTML wpAbstract in
@@ -830,7 +830,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
                               let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (urlEncode thumbnail') ++ "\" alt=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (replace "%F" "/" $ urlEncode thumbnail') ++ "\" alt=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
 
                         let doi = ""
                         let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
