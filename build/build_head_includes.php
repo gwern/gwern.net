@@ -3,7 +3,7 @@
 /*
  Instructions:
  
- 	php build_includes.php
+ 	php build_head_includes.php
  
  In <head> of template or page:
  
