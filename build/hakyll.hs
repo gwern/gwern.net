@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-02 22:08:14 gwern"
+When: Time-stamp: "2021-01-04 10:16:06 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -124,6 +124,7 @@ main = hakyll $ do
                                      "static/css/**",
                                      "static/font/**",
                                      "static/img/**",
+                                     "static/includes/**",
                                      "static/nginx/**",
                                      "static/redirects/**",
                                      "static/templates/**",
@@ -153,6 +154,7 @@ main = hakyll $ do
 
              match "static/templates/*.html" $ compile templateCompiler
 
+             match "static/includes/inlined-foot.html" $ compile templateCompiler
              match "static/includes/inlined-head-escaped.html" $ compile templateCompiler
 
 -- https://kyle.marek-spartz.org/posts/2014-12-09-hakyll-css-template-compiler.html
