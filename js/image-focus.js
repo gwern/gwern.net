@@ -34,6 +34,7 @@ function imageFocusSetup() {
 			contentImagesSelector:	"#markdownBody img",
 			focusedImageSelector:	"#markdownBody img.focused",
 			shrinkRatio:			0.975,
+			hideUITimer:			null,
 			hideUITimerDuration:	1500,
 			hideUITimerExpired:		() => {
 				GWLog("GW.imageFocus.hideUITimerExpired", "image-focus.js", 3);
@@ -45,7 +46,8 @@ function imageFocusSetup() {
 					hideImageFocusUI();
 					cancelImageFocusHideUITimer();
 				}
-			}
+			},
+			overlay:				null
 		};
 
 	//  Create event listener for clicking on images to focus them.
@@ -342,13 +344,15 @@ function focusImage(imageToFocus) {
 		case "Down":
 		case "ArrowRight":
 		case "Right":
-			if (document.querySelector(GW.imageFocus.focusedImageSelector)) focusNextImage(true);
+			if (document.querySelector(GW.imageFocus.focusedImageSelector))
+				focusNextImage(true);
 			break;
 		case "ArrowUp":
 		case "Up":
 		case "ArrowLeft":
 		case "Left":
-			if (document.querySelector(GW.imageFocus.focusedImageSelector)) focusNextImage(false);
+			if (document.querySelector(GW.imageFocus.focusedImageSelector))
+				focusNextImage(false);
 			break;
 		}
 	});
@@ -380,6 +384,7 @@ function focusImage(imageToFocus) {
 	//  Moving mouse unhides image focus UI.
 	window.addEventListener("mousemove", GW.imageFocus.mouseMoved = (event) => {
 		GWLog("GW.imageFocus.mouseMoved", "image-focus.js", 3);
+
 		let currentDateTime = new Date();
 		if (!(event.target == GW.imageFocus.currentlyFocusedImage || event.target == GW.imageFocus.overlay)) {
 			cancelImageFocusHideUITimer();
