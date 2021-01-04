@@ -801,7 +801,7 @@ a[href*="rstudio.com"]::after {
 }
 
 /* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
-a[href*="haskell.org"]::after { /* primary user: hackage.haskell.org */
+a[href*="haskell.org"]:not([href$=".hs"])::after { /* primary user: hackage.haskell.org */
     content: "\1D6CC"; /* (𝛌) MATHEMATICAL BOLD SMALL LAMDA */
     font-size: 1em;
     opacity: 0.6;

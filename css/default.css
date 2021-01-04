@@ -1364,6 +1364,7 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 .marginnote {
     /* bolding turns out to be too obtrusive for users' liking; italicized both inline & popped-out */
     font-style: italic;
+    color: var(--GW-body-text-color);
 }
 .marginnote.sidenote {
     display: initial;
@@ -1722,8 +1723,8 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /* MISC */
 /********/
 
-/*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower) 
-    (borrowed from https://latex.now.sh/ ) 
+/*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower)
+    (borrowed from https://latex.now.sh/ )
     */
 .latex span:nth-child(1) {
     text-transform: uppercase;
@@ -1748,8 +1749,8 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     font-size: 1em;
 }
 
-/*  Prevent text-shadow of italics in links from creating visual glitches 
-    (also fixes occasional link icon overlaps, eg a WP link to 'MGS:V' where 
+/*  Prevent text-shadow of italics in links from creating visual glitches
+    (also fixes occasional link icon overlaps, eg a WP link to 'MGS:V' where
     the right-tilted 'V' would touch the WP 'W' link icon).
     */
 #markdownBody em {
@@ -3397,4 +3398,3 @@ body.directory-index #disqus_thread {
     text-shadow: none;
     background: var(--GW-sequential-nav-link-background-color);
 }
-
