@@ -166,8 +166,6 @@ function focusImage(imageToFocus) {
 
 		event.preventDefault();
 
-		//  TODO: save clonedImage in a GW.currentlyFocusedImage or something,
-		//  so that we don't have to querySelector this every time...
 		let image = GW.currentlyFocusedImage;
 
 		//  Remove the filter.
