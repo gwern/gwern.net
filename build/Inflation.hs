@@ -4,12 +4,12 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2020-12-29 10:33:20 gwern"
+-- When:  Time-stamp: "2021-01-02 16:50:10 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting https://en.wikipedia.org/wiki/Money_illusion by implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real price! (Misunderstanding of inflation may be getting worse over time: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008 )
 --
--- Years/dates are specified in a variant of my interwiki link syntax; for example: '[$50]($2000)' or '[₿0.5]($2017-01-01)'. Dollar amounts use year, and Bitcoins use full dates, as the greater temporal resolution is necessary. Inflation rates/exchange rates are specified in Inflation.hs and need to be manually updated every once in a while; if out of date, the last available rate is carried forward for future adjustments.
+-- Years/dates are specified in a variant of my interwiki link syntax; for example: '[$50]($2000)' or '[₿0.5](₿2017-01-01)'. Dollar amounts use year, and Bitcoins use full dates, as the greater temporal resolution is necessary. Inflation rates/exchange rates are specified in Inflation.hs and need to be manually updated every once in a while; if out of date, the last available rate is carried forward for future adjustments.
 -- Dollars are inflation-adjusted using the CPI from 1913 to 1958, then the Personal Consumption Expenditures (PCE) Index thereafter, which is recommended by the Federal Reserve and others as more accurately reflecting consumer behavior & welfare than the CPI.
 -- Bitcoins are exchange-rate-adjusted using a mix of Pizza Day, historical exchange rates, and Poloniex daily dumps, and their dollar-equivalent inflation-adjusted to the current year. Rates are linearly interpolated for missing in-between dates, and carried forwards/backwards when outside of the provided dataset of daily exchange rates.
 

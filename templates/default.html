@@ -17,6 +17,7 @@
     <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf" as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
     <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf"     as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf"        as="font" type="font/otf" crossorigin="anonymous">
     <!-- Full font CSS is loaded in footer. Here, inline only the minimal set of font CSS needed for initial screen, for speed: -->
     <style>
     @font-face {
@@ -129,8 +130,8 @@
     <title>$title$ · Gwern.net</title>
 
     <link href="https://old.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&amp;sort=new&amp;restrict_sr=on" type="application/atom+xml" rel="alternate" title="ATOM/RSS feed of Gwern.net additions/miscellaneous writings" />
-	<link rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small.png" />
-	<link rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch.png">
+    <link rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small.png" />
+    <link rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch.png">
   </head>
   <body class="$safeURL$ $cssExtension$">
 
@@ -191,16 +192,15 @@
 
     $partial("static/includes/inlined-foot.html")$
 
-    <!-- Async load Google Analytics  -->
-    <script id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" async></script>
+    $if(index)$ $else$
+
+    <script defer id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'UA-18912926-1');
     </script>
-
-    $if(index)$ $else$
 
     <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter, as tables are on only a very small subset of pages -->
     <div id="comments">
