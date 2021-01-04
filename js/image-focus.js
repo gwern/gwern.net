@@ -375,7 +375,8 @@ function focusImage(imageToFocus) {
 	GW.imageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
 
 	//  Replace the hash.
-	GW.imageFocus.savedHash = location.hash;
+	if (!location.hash.startsWith("#if_slide_"))
+	    GW.imageFocus.savedHash = location.hash;
 	history.replaceState(null, null, "#if_slide_" + (indexOfFocusedImage + 1));
 
 	//  Set the caption.
