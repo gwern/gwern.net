@@ -372,6 +372,7 @@ function focusImage(imageToFocus) {
 	document.querySelector("#image-focus-overlay .image-number").textContent = (indexOfFocusedImage + 1);
 
 	//  Replace the hash.
+	GW.imageFocus.savedHash = location.hash;
 	history.replaceState(null, null, "#if_slide_" + (indexOfFocusedImage + 1));
 
 	//  Set the caption.
@@ -460,8 +461,10 @@ function unfocusImageOverlay() {
 	});
 
 	//  Reset the hash, if needed.
-	if (location.hash.startsWith("#if_slide_"))
-		history.replaceState(null, null, "#");
+	if (location.hash.startsWith("#if_slide_")) {
+		history.replaceState(null, null, GW.imageFocus.savedHash || "#");
+		GW.imageFocus.savedHash = null;
+	}
 }
 
 function getIndexOfFocusedImage() {
