@@ -2490,7 +2490,7 @@ body.directory-index #disqus_thread {
     position: absolute;
     display: flex;
     flex-flow: column;
-    z-index: 2;
+    z-index: 3;
     font-family: var(--SA-image-focus-sans-serif-font-stack);
     font-size: 1.25rem;
     padding: 1em;
@@ -2500,6 +2500,7 @@ body.directory-index #disqus_thread {
     overflow: hidden;
     white-space: nowrap;
     color: transparent;
+    cursor: help;
     visibility: hidden;
     transition:
         visibility 1s ease,

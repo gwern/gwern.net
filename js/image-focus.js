@@ -520,7 +520,7 @@ function focusNextImage(next = true) {
 }
 
 function setImageFocusCaption() {
-	GWLog("setImageFocusCaption", "image-focus.js", 1);
+	GWLog("setImageFocusCaption", "image-focus.js", 2);
 
 	var T = { }; //  Temporary storage.
 
