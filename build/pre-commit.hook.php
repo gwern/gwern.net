@@ -16,4 +16,6 @@ if ($force || (`git diff-index --cached HEAD -- {$static_dir}/css/colors.css {$s
 	`git add {$static_dir}/includes/.`;
 }
 
+require_once("{$build_dir}/build_versioned_includes.php");
+
 ?>
