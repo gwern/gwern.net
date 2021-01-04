@@ -80,7 +80,7 @@ function imageFocusSetup() {
 	});
 
 	//  Create the image focus overlay.
-	let imageFocusOverlay = addUIElement(`<div id="image-focus-overlay">` +
+	GW.imageFocus.overlay = addUIElement(`<div id="image-focus-overlay">` +
 	`<div class="help-overlay">
 		<p class="slideshow-help-text"><strong>Arrow keys:</strong> Next/previous image</p>
 		<p><strong>Escape</strong> or <strong>click</strong>: Hide zoomed image</p>
@@ -112,10 +112,10 @@ function imageFocusSetup() {
 	(document.querySelector(GW.imageFocus.contentImagesSelector)||{}).accessKey = "l";
 
 	//  Count how many images there are in the post, and set the “… of X” label to that.
-	document.querySelector("#image-focus-overlay .image-number").dataset.numberOfImages = document.querySelectorAll(GW.imageFocus.contentImagesSelector).length;
+	GW.imageFocus.overlay.querySelector(".image-number").dataset.numberOfImages = document.querySelectorAll(GW.imageFocus.contentImagesSelector).length;
 
 	//  Add click listeners to the buttons.
-	imageFocusOverlay.querySelectorAll(".slideshow-button").forEach(button => {
+	GW.imageFocus.overlay.querySelectorAll(".slideshow-button").forEach(button => {
 		button.addActivateEvent(GW.imageFocus.slideshowButtonClicked = (event) => {
 			GWLog("GW.imageFocus.slideshowButtonClicked", "image-focus.js", 2);
 
@@ -142,7 +142,6 @@ function focusImage(imageToFocus) {
 
 	//  Create the focused version of the image.
 	imageToFocus.classList.toggle("focused", true);
-	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
 	let clonedImage = imageToFocus.cloneNode(true);
 	clonedImage.style = "";
 	clonedImage.removeAttribute("width");
@@ -150,8 +149,8 @@ function focusImage(imageToFocus) {
 	clonedImage.style.filter = imageToFocus.style.filter + GW.imageFocus.dropShadowFilterForImages;
 
 	//  Add the image to the overlay.
-	imageFocusOverlay.appendChild(clonedImage);
-	imageFocusOverlay.classList.toggle("engaged", true);
+	GW.imageFocus.overlay.appendChild(clonedImage);
+	GW.imageFocus.overlay.classList.toggle("engaged", true);
 
 	//  Save a reference to the image, so we don’t have to querySelector each time.
 	GW.currentlyFocusedImage = clonedImage;
@@ -325,7 +324,7 @@ function focusImage(imageToFocus) {
 
 		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Up", "Down", "Left", "Right" ];
 		if (   !allowedKeys.includes(event.key) 
-			|| getComputedStyle(document.querySelector("#image-focus-overlay")).display == "none")
+			|| getComputedStyle(GW.imageFocus.overlay).display == "none")
 			return;
 
 		event.preventDefault();
@@ -360,16 +359,16 @@ function focusImage(imageToFocus) {
 	});
 
 	//  Mark the overlay as being in slide show mode (to show buttons/count).
-	imageFocusOverlay.classList.add("slideshow");
+	GW.imageFocus.overlay.classList.add("slideshow");
 
 	//  Set state of next/previous buttons.
 	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
 	var indexOfFocusedImage = getIndexOfFocusedImage();
-	imageFocusOverlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
-	imageFocusOverlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
+	GW.imageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
+	GW.imageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
 
 	//  Set the image number.
-	document.querySelector("#image-focus-overlay .image-number").textContent = (indexOfFocusedImage + 1);
+	GW.imageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
 
 	//  Replace the hash.
 	GW.imageFocus.savedHash = location.hash;
@@ -382,7 +381,7 @@ function focusImage(imageToFocus) {
 	window.addEventListener("mousemove", GW.imageFocus.mouseMoved = (event) => {
 		GWLog("GW.imageFocus.mouseMoved", "image-focus.js", 3);
 		let currentDateTime = new Date();
-		if (!(event.target.tagName == "IMG" || event.target.id == "image-focus-overlay")) {
+		if (!(event.target == GW.imageFocus.currentlyFocusedImage || event.target == GW.imageFocus.overlay)) {
 			cancelImageFocusHideUITimer();
 		} else {
 			if (!GW.imageFocus.hideUITimer) {
@@ -447,8 +446,7 @@ function unfocusImageOverlay() {
 	}
 
 	//  Remove focused image and hide overlay.
-	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
-	imageFocusOverlay.classList.remove("engaged");
+	GW.imageFocus.overlay.classList.remove("engaged");
 	GW.currentlyFocusedImage.remove();
 	GW.currentlyFocusedImage = null;
 
@@ -494,22 +492,21 @@ function focusNextImage(next = true) {
 
 	//  Create the focused version of the image.
 	images[indexOfFocusedImage].classList.toggle("focused", true);
-	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
 	let clonedImage = images[indexOfFocusedImage].cloneNode(true);
 	clonedImage.style = "";
 	clonedImage.removeAttribute("width");
 	clonedImage.removeAttribute("height");
 	clonedImage.style.filter = images[indexOfFocusedImage].style.filter + GW.imageFocus.dropShadowFilterForImages;
-	imageFocusOverlay.appendChild(clonedImage);
+	GW.imageFocus.overlay.appendChild(clonedImage);
 	GW.currentlyFocusedImage = clonedImage;
-	imageFocusOverlay.classList.toggle("engaged", true);
+	GW.imageFocus.overlay.classList.toggle("engaged", true);
 	//  Set image to default size and position.
 	resetFocusedImagePosition();
 	//  Set state of next/previous buttons.
-	imageFocusOverlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
-	imageFocusOverlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
+	GW.imageFocus.overlay.querySelector(".slideshow-button.previous").disabled = (indexOfFocusedImage == 0);
+	GW.imageFocus.overlay.querySelector(".slideshow-button.next").disabled = (indexOfFocusedImage == images.length - 1);
 	//  Set the image number display.
-	document.querySelector("#image-focus-overlay .image-number").textContent = (indexOfFocusedImage + 1);
+	GW.imageFocus.overlay.querySelector(".image-number").textContent = (indexOfFocusedImage + 1);
 	//  Set the caption.
 	setImageFocusCaption();
 	//  Replace the hash.
@@ -522,7 +519,7 @@ function setImageFocusCaption() {
 	var T = { }; //  Temporary storage.
 
 	//  Clear existing caption, if any.
-	let captionContainer = document.querySelector("#image-focus-overlay .caption");
+	let captionContainer = GW.imageFocus.overlay.querySelector(".caption");
 	Array.from(captionContainer.children).forEach(child => { child.remove(); });
 
 	//  Determine caption.
@@ -543,8 +540,7 @@ function setImageFocusCaption() {
 function hideImageFocusUI() {
 	GWLog("hideImageFocusUI", "image-focus.js", 3);
 
-	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
-	imageFocusOverlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
+	GW.imageFocus.overlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
 		element.classList.toggle("hidden", true);
 	});
 }
@@ -552,8 +548,7 @@ function hideImageFocusUI() {
 function unhideImageFocusUI() {
 	GWLog("unhideImageFocusUI", "image-focus.js", 3);
 
-	let imageFocusOverlay = document.querySelector("#image-focus-overlay");
-	imageFocusOverlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
+	GW.imageFocus.overlay.querySelectorAll(".slideshow-button, .help-overlay, .image-number, .caption").forEach(element => {
 		element.classList.remove("hidden");
 	});
 }
