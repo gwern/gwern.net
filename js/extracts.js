@@ -755,6 +755,8 @@ Extracts = {
 			};
 		}
 		if (Extracts.isLocalImageLink(target)) {
+			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
+
 			popup.classList.toggle("loading", true);
 			popup.querySelector("img").onload = (event) => {
 				popup.classList.toggle("loading", false);
