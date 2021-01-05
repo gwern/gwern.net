@@ -26,7 +26,12 @@ Extracts = {
 		*/
     targets: {
 		targetElementsSelector: "a[href], span.defnMetadata", 
-		excludedElementsSelector: ".sidenote-self-link, .external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
+		excludedElementsSelector: [
+			".sidenote-self-link",
+			".external-section-embed-popup .footnote-ref",
+			".external-section-embed-popup .footnote-back",
+			".extract-popup .data-field.title a"
+			].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 		testTarget: (target) => {
 			let linkTypes = [
@@ -736,7 +741,8 @@ Extracts = {
 		}
 
 		//  Loading spinners.
-		if (   Extracts.isLocalDocumentLink(target)
+		if ((  !Extracts.isExtractLink(target)
+			 && Extracts.isLocalDocumentLink(target))
 			|| Extracts.isForeignSiteLink(target)
 			) {
 			popup.classList.toggle("loading", true);
