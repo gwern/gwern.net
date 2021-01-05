@@ -592,7 +592,7 @@ Extracts = {
 
 		//  Qualify internal links in extracts.
 		if (   Extracts.isExtractLink(target) 
-			&& target.getAttribute("href").startsWith("/"))
+			&& target.hostname == location.hostname)
 			Extracts.qualifyLinksInPopContent(popin, target);
 
 		return true;
