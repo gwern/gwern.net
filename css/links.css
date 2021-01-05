@@ -10,12 +10,16 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
+	a.docMetadata,
+	span.defnMetadata,
     .has-annotation,
     .has-content {
         margin: 0 0.05em;
         padding: 0 0 0 0.3em;
         position: relative;
     }
+	a.docMetadata::before,
+	span.defnMetadata::before,
     .has-annotation::before,
     .has-content::before {
         content: " ";
@@ -41,6 +45,8 @@
         bottom: 0.1em;
         width: 1px;
     }
+	a.docMetadata:hover::before,
+	span.defnMetadata:hover::before,
     .has-annotation:hover::before,
     .has-content:hover::before {
         background-image:
