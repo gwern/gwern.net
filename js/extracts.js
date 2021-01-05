@@ -41,7 +41,7 @@ Extracts = {
 				[ "isLocalImageLink", 		"has-content"		],
 				[ "isLocalCodeFileLink", 	"has-content"		],
 				[ "isLocalDocumentLink", 	"has-content"		],
-				[ "isExternalSectionLink", 	"has-content" 		],
+				[ "isExternalPageLink", 	"has-content" 		],
 				[ "isForeignSiteLink",	 	"has-content"		],
 				[ "isCitation", 			null 				],
 				[ "isCitationBackLink", 	null 				],
@@ -385,8 +385,8 @@ Extracts = {
 		return (target.closest("#TOC") != null);
 	},
 
-	//  Identified sections of another page on gwern.net.
-    isExternalSectionLink: (target) => {
+	//  Other pages on gwern.net.
+    isExternalPageLink: (target) => {
 		let url = Extracts.urlForTarget(target);
 		if (  !url
 			|| url.hostname != location.hostname
@@ -396,8 +396,8 @@ Extracts = {
 		return true;
     },
     cachedPages: { },
-    externalSectionEmbedForTarget: (target) => {
-		GWLog("Extracts.externalSectionEmbedForTarget", "extracts.js", 2);
+    externalPageEmbedForTarget: (target) => {
+		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
 
 		let fillPopup = (markdownBody) => {
 			GWLog("Filling popup...", "extracts.js", 2);
@@ -576,7 +576,7 @@ Extracts = {
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
-			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popin"			],
+			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popin"				],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							],
 			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
 			[ "isCitationBackLink", 	null, 								null					 				],
@@ -650,7 +650,7 @@ Extracts = {
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
-			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
+			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popup"				],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							],
 			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
 			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
