@@ -29,28 +29,28 @@ Extracts = {
 		excludedElementsSelector: ".sidenote-self-link, .external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 		testTarget: (target) => {
-			if (   Extracts.isExtractLink(target)
-				|| Extracts.isDefinitionLink(target)
-			    ) {
-				target.classList.toggle("has-annotation", true);
-				return true;
-			} else if (   Extracts.isVideoLink(target)
-					   || Extracts.isLocalImageLink(target)
-					   || Extracts.isLocalCodeFileLink(target)
-					   || Extracts.isLocalDocumentLink(target)
-					   || Extracts.isExternalSectionLink(target)
-					   || Extracts.isForeignSiteLink(target)
-					   ) {
-				target.classList.toggle("has-content", true);
-				return true;
-			} else if (   Extracts.isCitation(target)
-					   || Extracts.isCitationBackLink(target)
-					   || Extracts.isInternalSectionLink(target)
-					   ) {
-				return true;
-			} else {
-				return false;
+			let linkTypes = [
+				[ "isExtractLink", 			"has-annotation" 	],
+				[ "isDefinitionLink", 		"has-annotation" 	],
+				[ "isVideoLink", 			"has-content" 		],
+				[ "isLocalImageLink", 		"has-content"		],
+				[ "isLocalCodeFileLink", 	"has-content"		],
+				[ "isLocalDocumentLink", 	"has-content"		],
+				[ "isExternalSectionLink", 	"has-content" 		],
+				[ "isForeignSiteLink",	 	"has-content"		]
+				[ "isCitation", 			null 				],
+				[ "isCitationBackLink", 	null 				],
+				[ "isInternalSectionLink",	null				],
+			];
+
+			for ([ testMethodName, classes ] of linkTypes) {
+				if (Extracts[testMethodName](target)) {
+					if (classes) target.classList.add(...(classes.split(" ")));
+					return true;
+				}
 			}
+
+			return false;
 		}
     },
 
@@ -568,14 +568,14 @@ Extracts = {
 			[ "isExtractLink", 			"extractForTarget", 				null 										],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popin object-popin" 				],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
+			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popin"			],
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							],
 			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
 			[ "isCitationBackLink", 	null, 								null					 				],
-			[ "isInternalSectionLink",	null,					 			null				 					],
-			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popin"			],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
+			[ "isInternalSectionLink",	null,					 			null				 					]
 			]) == false)
 			return false;
 
@@ -642,14 +642,14 @@ Extracts = {
 			[ "isExtractLink", 			"extractForTarget", 				null 										],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
+			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							],
 			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
 			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
-			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
-			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
+			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					]
 			]) == false)
 			return false;
 
