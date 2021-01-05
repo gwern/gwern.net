@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2020-12-26 19:45:21 gwern"
+When:  Time-stamp: "2021-01-04 20:19:00 gwern"
 License: CC-0
 -}
 
@@ -763,5 +763,6 @@ whiteList url
       , "simplify.so" -- service
       , "old.reddit.com/r/IncreasinglyVerbose" -- service/updated
       , "ctan.org/pkg/" -- stable
+      , "magicemail.io" -- service
       ] = True
     | otherwise = False
