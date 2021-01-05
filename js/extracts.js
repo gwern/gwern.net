@@ -723,14 +723,6 @@ Extracts = {
 			}
 		}
 
-		//  Expand collapsed code blocks and then re-rectify heights.
-// 		popup.querySelectorAll("pre code").forEach(codeBlock => {
-// 			codeBlock.style.height = "";
-// 			requestAnimationFrame(() => {
-// 				rectifyCodeBlockHeight(codeBlock);
-// 			});
-// 		});
-
 		//  Rectify margin note style.
 		popup.querySelectorAll(".marginnote").forEach(marginNote => {
 			marginNote.classList.add("inline");
