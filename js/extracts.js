@@ -114,8 +114,6 @@ Extracts = {
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
-		Extracts.referenceElementContainer = document.querySelector(Extracts.referenceElementContainerSelector);
-
 		/*  Do not provide extracts for annotated links that are link
 			bibliography entries, as their annotations are right there below the
 			link itself.
@@ -219,9 +217,6 @@ Extracts = {
 		return (target.tagName == "A" ? new URL(target.href) : null);
 	},
 
-	//  Reference links, for extracts and definitions.
-	referenceElementContainer: null,
-
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
 		return target.classList.contains("docMetadata");
@@ -229,7 +224,13 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-		let referenceElement = Extracts.referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
+		/*  The target could be inside an external page embed, in which case
+			the relevant link bibliography will also be there.
+			*/
+		let containingExtract = target.closest(".external-page-embed-popup");
+		let referenceElementContainer = (containingExtract || document).querySelector(Extracts.referenceElementContainerSelector);
+
+		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
 								`a[href='${target.getAttribute("href")}']`);
 		let referenceListEntry = referenceElement.closest("li");
 
@@ -290,7 +291,13 @@ Extracts = {
     definitionForTarget: (target) => {
 		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-		let referenceElement = Extracts.referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
+		/*  The target could be inside an external page embed, in which case
+			the relevant link bibliography will also be there.
+			*/
+		let containingExtract = target.closest(".external-page-embed-popup");
+		let referenceElementContainer = (containingExtract || document).querySelector(Extracts.referenceElementContainerSelector);
+
+		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
 								`span[data-original-definition-id='${target.dataset.originalDefinitionId}']`);
 		let referenceListEntry = referenceElement.closest("li");
 
