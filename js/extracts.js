@@ -456,9 +456,10 @@ Extracts = {
 		return Extracts.qualifyingForeignDomains.includes(target.hostname);
 	},
 	foreignSiteForTarget: (target) => {
-		let url = Extracts.urlForTarget(target);
+		let url = new URL(target.href);
 
 		if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
+			url.protocol = "https:";
 			url.hostname = "www.greaterwrong.com";
 			url.search = "format=preview&theme=classic";
 		}
