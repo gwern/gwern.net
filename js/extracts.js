@@ -37,10 +37,10 @@ Extracts = {
 				[ "isLocalCodeFileLink", 	"has-content"		],
 				[ "isLocalDocumentLink", 	"has-content"		],
 				[ "isExternalSectionLink", 	"has-content" 		],
-				[ "isForeignSiteLink",	 	"has-content"		]
+				[ "isForeignSiteLink",	 	"has-content"		],
 				[ "isCitation", 			null 				],
 				[ "isCitationBackLink", 	null 				],
-				[ "isInternalSectionLink",	null				],
+				[ "isInternalSectionLink",	null				]
 			];
 
 			for ([ testMethodName, classes ] of linkTypes) {
