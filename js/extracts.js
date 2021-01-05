@@ -208,6 +208,17 @@ Extracts = {
 			return false;
 		}
 	},
+	originatingDocumentForTarget: (target) => {
+		let containingPopElement = target.closest(".extract-popup");
+		if (containingPopElement) {
+			if (containingPopElement.classList.contains("external-page-embed-popup"))
+				return containingPopElement;
+			else
+				return Extracts.originatingDocumentForTarget(containingPopElement.popupTarget);
+		} else {
+			return document;
+		}
+	},
 
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
@@ -216,12 +227,7 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-		/*  The target could be inside an external page embed, in which case
-			the relevant link bibliography will also be there.
-			*/
-		let containingExtract = target.closest(".external-page-embed-popup");
-		let referenceElementContainer = (containingExtract || document).querySelector(Extracts.referenceElementContainerSelector);
-
+		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
 		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
 								`a[href='${target.getAttribute("href")}']`);
 		let referenceListEntry = referenceElement.closest("li");
@@ -283,12 +289,7 @@ Extracts = {
     definitionForTarget: (target) => {
 		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-		/*  The target could be inside an external page embed, in which case
-			the relevant link bibliography will also be there.
-			*/
-		let containingExtract = target.closest(".external-page-embed-popup");
-		let referenceElementContainer = (containingExtract || document).querySelector(Extracts.referenceElementContainerSelector);
-
+		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
 		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
 								`span[data-original-definition-id='${target.dataset.originalDefinitionId}']`);
 		let referenceListEntry = referenceElement.closest("li");
@@ -368,12 +369,7 @@ Extracts = {
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
-		/*  The target could be inside an external page embed, in which case
-			the relevant section will also be there.
-			*/
-		let containingExtract = target.closest(".external-page-embed-popup");
-
-        let targetElement = (containingExtract || document).querySelector(target.hash);
+        let targetElement = Extracts.originatingDocumentForTarget(target).querySelector(target.hash);
         let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
 
 		//  Unwrap sections and {foot|side}notes from their containers.
@@ -657,7 +653,8 @@ Extracts = {
 			]) == false)
 			return false;
 
-		let containingDocument = target.closest(".external-page-embed-popup") || document;
+		//	Account for popups spawned from within an external page embed.
+		let containingDocument = Extracts.originatingDocumentForTarget(target);
 
 		if (Extracts.isCitation(target)) {
 			//  Do not spawn footnote popup if sidenote is visible.
