@@ -183,11 +183,8 @@ Extracts = {
 
 	//  Helper methods.
     qualifyLinksInPopContent: (popX, target) => {
-		let targetURL = new URL(target.href);
 		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
-	        let url = new URL(anchorLink.href);
-	        url.pathname = targetURL.pathname;
-		    anchorLink.href = url.href;
+		    anchorLink.pathname = target.pathname;
 		});
     },
     nearestBlockElement: (element) => {
@@ -212,9 +209,6 @@ Extracts = {
 			GWLog("Unable to fill popup ( " + (target.href || target.dataset.originalDefinitionId) + " )!", "extracts.js", 1);
 			return false;
 		}
-	},
-	urlForTarget: (target) => {
-		return (target.tagName == "A" ? new URL(target.href) : null);
 	},
 
 	//  Summaries of links to elsewhere.
@@ -328,10 +322,9 @@ Extracts = {
         }
     },
     isVideoLink: (target) => {
-		let url = Extracts.urlForTarget(target);
-		if (!url) return false;
+		if (!target.href) return false;
 
-		if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(url.hostname)) {
+		if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
 			return (Extracts.youtubeId(target.href) != null);
 		} else {
 			return false;
@@ -368,17 +361,21 @@ Extracts = {
 
 	//  Identified sections of the current page.
     isInternalSectionLink: (target) => {
-		let url = Extracts.urlForTarget(target);
-		if (!url) return false;
+		if (!target.href) return false;
 
-		return (   url.hostname == location.hostname
-				&& url.pathname == location.pathname
-				&& url.hash > "");
+		return (   target.hostname == location.hostname
+				&& target.pathname == location.pathname
+				&& target.hash > "");
 	},
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
-        let targetElement = document.querySelector(target.getAttribute('href'));
+		/*  The target could be inside an external page embed, in which case
+			the relevant section will also be there.
+			*/
+		let containingExtract = target.closest(".external-page-embed-popup");
+
+        let targetElement = (containingExtract || document).querySelector(target.hash);
         let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
 
 		//  Unwrap sections and {foot|side}notes from their containers.
@@ -396,10 +393,9 @@ Extracts = {
 
 	//  Other pages on gwern.net.
     isExternalPageLink: (target) => {
-		let url = Extracts.urlForTarget(target);
-		if (  !url
-			|| url.hostname != location.hostname
-			|| url.pathname == location.pathname)
+		if (  !target.href
+			|| target.hostname != location.hostname
+			|| target.pathname == location.pathname)
 			return false;
 
 		return true;
@@ -461,10 +457,9 @@ Extracts = {
 
 	//  Other websites.
 	isForeignSiteLink: (target) => {
-		let url = Extracts.urlForTarget(target);
-		if (!url) return false;
+		if (!target.href) return false;
 
-		return Extracts.qualifyingForeignDomains.includes(url.hostname);
+		return Extracts.qualifyingForeignDomains.includes(target.hostname);
 	},
 	foreignSiteForTarget: (target) => {
 		let url = Extracts.urlForTarget(target);
@@ -479,9 +474,8 @@ Extracts = {
 
 	//  Locally hosted images.
     isLocalImageLink: (target) => {
-		let url = Extracts.urlForTarget(target);
-		if (  !url
-			|| url.hostname != location.hostname)
+		if (  !target.href
+			|| target.hostname != location.hostname)
 			return false;
 
 		let imageFileURLRegExp = new RegExp(
@@ -489,7 +483,7 @@ Extracts = {
 			+ Extracts.imageFileExtensions.map(ext => `\\.${ext}`).join("|") 
 			+ ')$'
 		, 'i');
-		return (url.pathname.match(imageFileURLRegExp) != null);
+		return (target.pathname.match(imageFileURLRegExp) != null);
     },
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
@@ -500,14 +494,13 @@ Extracts = {
 
 	//  Locally hosted documents (html, pdf, etc.).
     isLocalDocumentLink: (target) => {
-		let url = Extracts.urlForTarget(target);
-		if (  !url
-			|| url.hostname != location.hostname)
+		if (  !target.href
+			|| target.hostname != location.hostname)
 			return false;
 
-	    return (   url.pathname.startsWith("/docs/www/")
-	    		|| (   url.pathname.startsWith("/docs/")
-	    			&& url.pathname.match(/\.(html|pdf)$/i) != null));
+	    return (   target.pathname.startsWith("/docs/www/")
+	            || (   target.pathname.startsWith("/docs/")
+	                && target.pathname.match(/\.(html|pdf)$/i) != null));
     },
     localDocumentForTarget: (target) => {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
@@ -521,9 +514,8 @@ Extracts = {
 
 	//  Locally hosted code files (css, js, hs, etc.).
     isLocalCodeFileLink: (target) => {
-		let url = Extracts.urlForTarget(target);
-		if (  !url
-			|| url.hostname != location.hostname)
+		if (  !target.href
+			|| target.hostname != location.hostname)
 			return false;
 
 		let codeFileURLRegExp = new RegExp(
@@ -531,7 +523,7 @@ Extracts = {
 			+ Extracts.codeFileExtensions.map(ext => `\\.${ext}`).join("|") 
 			+ ')$'
 		, 'i');
-		return (url.pathname.match(codeFileURLRegExp) != null);
+		return (target.pathname.match(codeFileURLRegExp) != null);
     },
     localCodeFileForTarget: (target) => {
 		GWLog("Extracts.localCodeFileForTarget", "extracts.js", 2);
@@ -667,9 +659,11 @@ Extracts = {
 			]) == false)
 			return false;
 
+		let containingDocument = target.closest(".external-page-embed-popup") || document;
+
 		if (Extracts.isCitation(target)) {
 			//  Do not spawn footnote popup if sidenote is visible.
-			if (isOnScreen(document.querySelector(target.hash)))
+			if (isOnScreen(containingDocument.querySelector(target.hash)))
 				return false;
 
 			/*  Add event listeners to highlight citation when its footnote
@@ -686,7 +680,7 @@ Extracts = {
 			});
 		} else if (Extracts.isCitationBackLink(target)) {
 			//  Do not spawn citation context popup if citation is visible.
-			if (isOnScreen(document.querySelector("#markdownBody " + target.getAttribute("href"))))
+			if (isOnScreen(containingDocument.querySelector(target.hash)))
 				return false;
 
 			//  Remove the .targeted class from a targeted citation (if any).
@@ -695,7 +689,7 @@ Extracts = {
 			});
 
 			//  Highlight citation in a citation context popup.
-			popup.querySelector(target.getAttribute("href")).classList.add("highlighted");
+			popup.querySelector(target.hash).classList.add("highlighted");
 		} else if (Extracts.isTOCLink(target)) {
 			popup.classList.add("toc-section-popup");
 
@@ -745,7 +739,7 @@ Extracts = {
 
 		//  Qualify internal links in extracts.
 		if (   Extracts.isExtractLink(target) 
-			&& target.getAttribute("href").startsWith("/")) {
+			&& target.hostname == location.hostname) {
 			Extracts.qualifyLinksInPopContent(popup, target);
 		}
 
