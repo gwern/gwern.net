@@ -185,9 +185,11 @@ Extracts = {
 
 	//  Helper methods.
     qualifyLinksInPopContent: (popX, target) => {
-		let targetHref = target.getAttribute("href");
+		let targetURL = new URL(target.href);
 		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
-			anchorLink.setAttribute("href", targetHref.match(/^([^#]+)/)[1] + anchorLink.hash);
+	        let url = new URL(anchorLink.href);
+	        url.pathname = targetURL.pathname;
+		    anchorLink.href = url.href;
 		});
     },
     nearestBlockElement: (element) => {
