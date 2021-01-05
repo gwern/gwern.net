@@ -472,7 +472,14 @@ Extracts = {
     		return false;
 
 		let targetHref = target.getAttribute("href");
-		let imageFileURLRegExp = new RegExp('^\\/.*(' + Extracts.imageFileExtensions.map(ext => `\\.${ext}`).join("|") + ')', 'i');
+		let imageFileURLRegExp = new RegExp(
+			  '^(\/|' 
+			+ Extracts.siteBaseURL
+			+ ')'
+			+ '.*(' 
+			+ Extracts.imageFileExtensions.map(ext => `\\.${ext}$`).join("|") 
+			+ ')'
+		, 'i');
 
 		return targetHref.startsWith("/images/") || (targetHref.match(imageFileURLRegExp) != null);
     },
@@ -508,7 +515,14 @@ Extracts = {
     		return false;
 
 		let targetHref = target.getAttribute("href");
-		let codeFileURLRegExp = new RegExp('^\\/.*(' + Extracts.codeFileExtensions.map(ext => `\\.${ext}`).join("|") + ')', 'i');
+		let codeFileURLRegExp = new RegExp(
+			  '^(\/|' 
+			+ Extracts.siteBaseURL
+			+ ')'
+			+ '.*(' 
+			+ Extracts.codeFileExtensions.map(ext => `\\.${ext}$`).join("|") 
+			+ ')'
+		, 'i');
 
 		return targetHref.match(codeFileURLRegExp) != null;
     },
