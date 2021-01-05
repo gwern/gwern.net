@@ -37,15 +37,15 @@ Extracts = {
 			let linkTypes = [
 				[ "isExtractLink", 			"has-annotation" 	],
 				[ "isDefinitionLink", 		"has-annotation" 	],
+				[ "isCitation", 			null 				],
+				[ "isCitationBackLink", 	null 				],
+				[ "isInternalSectionLink",	null				],
 				[ "isVideoLink", 			"has-content" 		],
 				[ "isLocalImageLink", 		"has-content"		],
 				[ "isLocalCodeFileLink", 	"has-content"		],
 				[ "isLocalDocumentLink", 	"has-content"		],
 				[ "isExternalPageLink", 	"has-content" 		],
-				[ "isForeignSiteLink",	 	"has-content"		],
-				[ "isCitation", 			null 				],
-				[ "isCitationBackLink", 	null 				],
-				[ "isInternalSectionLink",	null				]
+				[ "isForeignSiteLink",	 	"has-content"		]
 			];
 
 			for ([ testMethodName, classes ] of linkTypes) {
@@ -574,15 +574,15 @@ Extracts = {
 		if (Extracts.fillPopElement(popin, target, [
 			[ "isExtractLink", 			"extractForTarget", 				null 										],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
+			[ "isCitationBackLink", 	null, 								null					 				],
+			[ "isInternalSectionLink",	null,					 			null				 					],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popin object-popin" 				],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
 			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popin"				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							],
-			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
-			[ "isCitationBackLink", 	null, 								null					 				],
-			[ "isInternalSectionLink",	null,					 			null				 					]
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
 			]) == false)
 			return false;
 
@@ -648,15 +648,15 @@ Extracts = {
 		if (Extracts.fillPopElement(popup, target, [
 			[ "isExtractLink", 			"extractForTarget", 				null 										],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
+			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
 			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popup"				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							],
-			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
-			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					]
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
 			]) == false)
 			return false;
 
