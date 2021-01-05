@@ -13,11 +13,10 @@
 
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
-/*****************/
-/*	Configuration.
-	*/
 Extracts = {
-	siteBaseURL: "https://www.gwern.net/",
+	/*****************/
+	/*	Configuration.
+		*/
 
 	/*	Target containers.
 		*/
@@ -25,65 +24,52 @@ Extracts = {
 
 	/*	Targets.
 		*/
-	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
-	unannotatedTargetSelectors: [ 
-		"a[href*='youtube.com']",
-		"a[href*='youtu.be']",
-		"#TOC a",
-		"a[href^='#']",
-		"a[href^='/'][href*='#']",
-		"a[href^='/docs/']",
-		"a.footnote-ref",
-		"a.footnote-back" 
-		],
+    targets: {
+		targetElementsSelector: "a[href], span.defnMetadata", 
+		excludedElementsSelector: ".sidenote-self-link, .external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
+		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
+		testTarget: (target) => {
+			if (   Extracts.isExtractLink(target)
+				|| Extracts.isDefinitionLink(target)
+			    ) {
+				target.classList.toggle("has-annotation", true);
+				return true;
+			} else if (   Extracts.isVideoLink(target)
+					   || Extracts.isLocalImageLink(target)
+					   || Extracts.isLocalCodeFileLink(target)
+					   || Extracts.isLocalDocumentLink(target)
+					   || Extracts.isExternalSectionLink(target)
+					   || Extracts.isForeignSiteLink(target)
+					   ) {
+				target.classList.toggle("has-content", true);
+				return true;
+			} else if (   Extracts.isCitation(target)
+					   || Extracts.isCitationBackLink(target)
+					   || Extracts.isInternalSectionLink(target)
+					   ) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+    },
+
+	/*	Misc. configuration.
+		*/
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ],
-    qualifyingForeignDomains: [ "greaterwrong.com", "lesswrong.com" ],
-    foreignSiteURLPrefixes: [ "http://", "https://", "http://www.", "https://www." ],
-
-	/*	Exclusions.
-		*/
-	excludedElementsSelector: ".sidenote-self-link, .external-section-embed-popup .footnote-ref, .external-section-embed-popup .footnote-back",
-	excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
+    qualifyingForeignDomains: [ 
+    	"www.greaterwrong.com", 
+    	"greaterwrong.com", 
+    	"www.lesswrong.com",
+    	"lesswrong.com" 
+    	],
 
 	/*	Infrastructure.
 		*/
 	referenceElementContainerSelector: "#link-bibliography",
 	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p:first-child",
-};
-
-Extracts = {
-	/****************************/
-	/*	Configuration processing.
-		*/
-	siteBaseURL: Extracts.siteBaseURL,
-
-	contentContainersSelector: Extracts.contentContainersSelector,
-
-	annotatedTargetSelectors: Extracts.annotatedTargetSelectors,
-	unannotatedTargetSelectors: Extracts.unannotatedTargetSelectors,
-    imageFileExtensions: Extracts.imageFileExtensions,
-    codeFileExtensions: Extracts.codeFileExtensions,
-    qualifyingForeignDomains: Extracts.qualifyingForeignDomains,
-    foreignSiteURLPrefixes: Extracts.foreignSiteURLPrefixes,
-
-	referenceElementContainerSelector: Extracts.referenceElementContainerSelector,
-	referenceElementEntrySelectorPrefix: Extracts.referenceElementEntrySelectorPrefix,
-
-    targets: {
-		targetElementsSelector: [
-			Extracts.annotatedTargetSelectors.join(", "), 
-			Extracts.unannotatedTargetSelectors.join(", "),
-			Extracts.imageFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='${Extracts.siteBaseURL}'][href$='${ext}']`).join(", "),
-			Extracts.codeFileExtensions.map(ext => `a[href^='/'][href$='${ext}'], a[href^='${Extracts.siteBaseURL}'][href$='${ext}']`).join(", "),
-// 			Extracts.qualifyingForeignDomains.map(domain => Extracts.foreignSiteURLPrefixes.map(prefix => `a[href^='${prefix}${domain}']`).join(", ")).join(", ")
-			].join(", "),
-		excludedElementsSelector: Extracts.excludedElementsSelector,
-		excludedContainerElementsSelector: [ 
-			Extracts.excludedContainerElementsSelector, 
-			Extracts.annotatedTargetSelectors.map(selector => `${Extracts.referenceElementEntrySelectorPrefix} ${selector}`).join(", "),
-			].join(", ")
-    },
+	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
 
 	/***********/
 	/*	General.
@@ -93,8 +79,7 @@ Extracts = {
 
 		//  Target restore function (same for mobile and non-mobile).
 		let restoreTarget = (target) => {
-			target.classList.toggle("has-content", false);
-			target.classList.toggle("has-annotation", false);
+			target.classList.remove("has-content", "has-annotation");
 		};
 
 		if (GW.isMobile()) {
@@ -126,20 +111,14 @@ Extracts = {
 
 		Extracts.referenceElementContainer = document.querySelector(Extracts.referenceElementContainerSelector);
 
-		//  Shared target prepare function (for both mobile and non-mobile).
-		let sharedPrepareTarget = (target) => {
-			if (   !Extracts.isExtractLink(target)
-				&& (Extracts.isVideoLink(target)
-				 || Extracts.isLocalImageLink(target)
-				 || Extracts.isLocalDocumentLink(target)
-				 || Extracts.isLocalCodeFileLink(target)
-				 || Extracts.isExternalSectionLink(target)
-				 || Extracts.isForeignSiteLink(target)
-					)
-				) {
-				target.classList.toggle("has-content", true);
-			}
-		};
+		/*  Do not provide extracts for annotated links that are link
+			bibliography entries, as their annotations are right there below the
+			link itself.
+			*/
+		Extracts.targets.excludedElementsSelector = [ 
+			Extracts.targets.excludedElementsSelector, 
+			Extracts.annotatedTargetSelectors.map(selector => `${Extracts.referenceElementEntrySelectorPrefix} ${selector}`).join(", ")
+		].join(", ");
 
         if (GW.isMobile()) {
 			//  TEMPORARY!!
@@ -149,8 +128,6 @@ Extracts = {
 
 			//  Target prepare function.
 			Extracts.prepareTargetForPopins = (target) => {
-				sharedPrepareTarget(target);
-
 				//  Alter the title attribute.
 				target.title = "Click to reveal";
 			};
@@ -175,8 +152,6 @@ Extracts = {
 
 			//  Target prepare function.
 			Extracts.prepareTargetForPopups = (target) => {
-				sharedPrepareTarget(target);
-
 				//  Remove the title attribute.
 				target.removeAttribute("title");
 			};
@@ -232,6 +207,9 @@ Extracts = {
 			GWLog("Unable to fill popup ( " + (target.href || target.dataset.originalDefinitionId) + " )!", "extracts.js", 1);
 			return false;
 		}
+	},
+	urlForTarget: (target) => {
+		return (target.tagName == "A" ? new URL(target.href) : null);
 	},
 
 	//  Reference links, for extracts and definitions.
@@ -327,8 +305,8 @@ Extracts = {
     },
 
 	//  Videos (both local and remote).
-    youtubeId: (url) => {
-        let match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+    youtubeId: (href) => {
+        let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
         if (match && match[2].length == 11) {
             return match[2];
         } else {
@@ -336,8 +314,14 @@ Extracts = {
         }
     },
     isVideoLink: (target) => {
-		let videoId = (target.tagName == "A") ? Extracts.youtubeId(target.href) : null;
-		return (videoId != null);
+		let url = Extracts.urlForTarget(target);
+		if (!url) return false;
+
+		if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(url.hostname)) {
+			return (Extracts.youtubeId(target.href) != null);
+		} else {
+			return false;
+		}
     },
     videoForTarget: (target) => {
 		GWLog("Extracts.videoForTarget", "extracts.js", 2);
@@ -370,7 +354,12 @@ Extracts = {
 
 	//  Identified sections of the current page.
     isInternalSectionLink: (target) => {
-   		return (target.tagName == "A" && target.getAttribute("href").startsWith("#"));
+		let url = Extracts.urlForTarget(target);
+		if (!url) return false;
+
+		return (   url.hostname == location.hostname
+				&& url.pathname == location.pathname
+				&& url.hash > "");
 	},
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
@@ -393,11 +382,13 @@ Extracts = {
 
 	//  Identified sections of another page on gwern.net.
     isExternalSectionLink: (target) => {
-    	if (target.tagName != "A")
-    		return false;
+		let url = Extracts.urlForTarget(target);
+		if (  !url
+			|| url.hostname != location.hostname
+			|| url.pathname == location.pathname)
+			return false;
 
-		let targetHref = target.getAttribute("href");
-		return targetHref.match(/^\/[^\.]+?#.+$/) != null;
+		return true;
     },
     cachedPages: { },
     externalSectionEmbedForTarget: (target) => {
@@ -421,7 +412,8 @@ Extracts = {
 			Popups.addTargetsWithin(target.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
 
 			//  Scroll to the target.
-			target.popup.scrollTop = target.popup.querySelector(target.hash).getBoundingClientRect().top - target.popup.getBoundingClientRect().top;
+			if (target.hash > "")
+				target.popup.scrollTop = target.popup.querySelector(target.hash).getBoundingClientRect().top - target.popup.getBoundingClientRect().top;
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
@@ -455,33 +447,35 @@ Extracts = {
 
 	//  Other websites.
 	isForeignSiteLink: (target) => {
-    	if (target.tagName != "A")
-    		return false;
+		let url = Extracts.urlForTarget(target);
+		if (!url) return false;
 
-		return target.href.match(/^https?:\/\/(www\.)?(less|greater)wrong\.com\//) != null;
+		return Extracts.qualifyingForeignDomains.includes(url.hostname);
 	},
 	foreignSiteForTarget: (target) => {
-		let foreignSiteURL = target.href.replace('lesswrong.com', 'greaterwrong.com').replace('http:', 'https:');
+		let url = Extracts.urlForTarget(target);
 
-		return `<div><iframe src="${foreignSiteURL}?format=preview&theme=classic" frameborder="0" allowfullscreen sandbox></iframe></div>`;
+		if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
+			url.hostname = "www.greaterwrong.com";
+			url.search = "format=preview&theme=classic";
+		}
+
+		return `<div><iframe src="${url.href}" frameborder="0" allowfullscreen sandbox></iframe></div>`;
 	},
 
 	//  Locally hosted images.
     isLocalImageLink: (target) => {
-    	if (target.tagName != "A")
-    		return false;
+		let url = Extracts.urlForTarget(target);
+		if (  !url
+			|| url.hostname != location.hostname)
+			return false;
 
-		let targetHref = target.getAttribute("href");
 		let imageFileURLRegExp = new RegExp(
-			  '^(\/|' 
-			+ Extracts.siteBaseURL
-			+ ')'
-			+ '.*(' 
-			+ Extracts.imageFileExtensions.map(ext => `\\.${ext}$`).join("|") 
-			+ ')'
+			  '(' 
+			+ Extracts.imageFileExtensions.map(ext => `\\.${ext}`).join("|") 
+			+ ')$'
 		, 'i');
-
-		return targetHref.startsWith("/images/") || (targetHref.match(imageFileURLRegExp) != null);
+		return (url.pathname.match(imageFileURLRegExp) != null);
     },
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
@@ -492,12 +486,14 @@ Extracts = {
 
 	//  Locally hosted documents (html, pdf, etc.).
     isLocalDocumentLink: (target) => {
-	    return (   target.tagName == "A" 
-	    		&& !Extracts.isExtractLink(target)
-	    		&& (   target.getAttribute("href").startsWith("/docs/www/")
-	    			|| (target.getAttribute("href").startsWith("/docs/")
-	    			    && (   target.href.match(/\.html(#|$)/) != null
-	    			        || target.href.match(/\.pdf(#|$)/) != null))));
+		let url = Extracts.urlForTarget(target);
+		if (  !url
+			|| url.hostname != location.hostname)
+			return false;
+
+	    return (   url.pathname.startsWith("/docs/www/")
+	    		|| (   url.pathname.startsWith("/docs/")
+	    			&& url.pathname.match(/\.(html|pdf)$/i) != null));
     },
     localDocumentForTarget: (target) => {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
@@ -511,20 +507,17 @@ Extracts = {
 
 	//  Locally hosted code files (css, js, hs, etc.).
     isLocalCodeFileLink: (target) => {
-    	if (target.tagName != "A")
-    		return false;
+		let url = Extracts.urlForTarget(target);
+		if (  !url
+			|| url.hostname != location.hostname)
+			return false;
 
-		let targetHref = target.getAttribute("href");
 		let codeFileURLRegExp = new RegExp(
-			  '^(\/|' 
-			+ Extracts.siteBaseURL
-			+ ')'
-			+ '.*(' 
-			+ Extracts.codeFileExtensions.map(ext => `\\.${ext}$`).join("|") 
-			+ ')'
+			  '(' 
+			+ Extracts.codeFileExtensions.map(ext => `\\.${ext}`).join("|") 
+			+ ')$'
 		, 'i');
-
-		return targetHref.match(codeFileURLRegExp) != null;
+		return (url.pathname.match(codeFileURLRegExp) != null);
     },
     localCodeFileForTarget: (target) => {
 		GWLog("Extracts.localCodeFileForTarget", "extracts.js", 2);
@@ -572,14 +565,14 @@ Extracts = {
 
 		//	Inject the extract for the target into the popin.
 		if (Extracts.fillPopElement(popin, target, [
+			[ "isExtractLink", 			"extractForTarget", 				null 										],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popin object-popin" 				],
 			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
 			[ "isCitationBackLink", 	null, 								null					 				],
 			[ "isInternalSectionLink",	null,					 			null				 					],
 			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popin"			],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
-			[ "isExtractLink", 			"extractForTarget", 				null 										],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
@@ -646,14 +639,14 @@ Extracts = {
 
 		//	Inject the extract for the target into the popup.
 		if (Extracts.fillPopElement(popup, target, [
+			[ "isExtractLink", 			"extractForTarget", 				null 										],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
 			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
 			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
 			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
 			[ "isExternalSectionLink", 	"externalSectionEmbedForTarget", 	"external-section-embed-popup"			],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
-			[ "isExtractLink", 			"extractForTarget", 				null 										],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
