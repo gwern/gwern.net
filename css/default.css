@@ -1365,6 +1365,7 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     /* bolding turns out to be too obtrusive for users' liking; italicized both inline & popped-out */
     font-style: italic;
     color: var(--GW-body-text-color);
+    font-family: var(--GW-serif-font-stack);
 }
 .marginnote.sidenote {
     display: initial;
@@ -1391,6 +1392,13 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 /* make links in margin notes (somewhat unusual but should be supported simply because that's what one would expect) clickable/hover-able */
 .sidenote.marginnote::after {
     z-index: -1;
+}
+
+/*  Margin notes within admonitions need special layout.
+	This is based on the width of the admonition icon area.
+	*/
+.admonition .marginnote.sidenote {
+    width: calc(50vw - ((100% + (2.875em / (0.85/0.875)))/2 + 104px));
 }
 
 /**********/
