@@ -42,8 +42,8 @@ Extracts = {
 				[ "isInternalSectionLink",	null				],
 				[ "isVideoLink", 			"has-content" 		],
 				[ "isLocalImageLink", 		"has-content"		],
-				[ "isLocalCodeFileLink", 	"has-content"		],
 				[ "isLocalDocumentLink", 	"has-content"		],
+				[ "isLocalCodeFileLink", 	"has-content"		],
 				[ "isExternalPageLink", 	"has-content" 		],
 				[ "isForeignSiteLink",	 	"has-content"		]
 			];
@@ -586,8 +586,8 @@ Extracts = {
 			[ "isInternalSectionLink",	null,					 			null				 					],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popin object-popin" 				],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
 			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popin"				],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
 			]) == false)
@@ -660,8 +660,8 @@ Extracts = {
 			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
 			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
 			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
 			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
 			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popup"				],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
 			]) == false)
