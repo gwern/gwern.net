@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-04 10:16:06 gwern"
+When: Time-stamp: "2021-01-05 09:45:04 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -37,7 +37,7 @@ Explanations:
 import Control.Exception (onException)
 import Control.Monad (when, void)
 import Data.Char (toLower)
-import Data.List (isPrefixOf, nub, sort)
+import Data.List (isPrefixOf, nubBy, sort)
 import Data.Maybe (fromMaybe, isNothing)
 import Data.Monoid ((<>))
 import Network.HTTP (urlDecode, urlEncode)
@@ -338,7 +338,7 @@ staticImg x@(TagOpen "img" xs) = do
          return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load all images
                                         ("height", height'), ("width", width')]++xs)))
       else return x
-  where uniq = nub . sort
+  where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
 
 -- INTERWIKI PLUGIN
