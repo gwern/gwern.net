@@ -84,7 +84,7 @@ then
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
     staticCompileMathJax () {
-        if [[ $(fgrep --quiet '<span class="math inline"' "$@") ]]; then
+        if [[ $(fgrep '<span class="math inline"' "$@") ]]; then
             TARGET=$(mktemp /tmp/XXXXXXX.html)
             cat "$@" | ~/src/node_modules/mathjax-node-page/bin/mjpage --output CommonHTML | \
             ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,

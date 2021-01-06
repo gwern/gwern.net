@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-05 21:23:59 gwern"
+When:  Time-stamp: "2021-01-05 22:56:43 gwern"
 License: CC-0
 -}
 
@@ -71,20 +71,20 @@ readLinkMetadataOnce = do
              return firstVersion
 
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
-generateLinkBibliography md x@(Pandoc meta doc) = do let links = collectLinks doc
+generateLinkBibliography md x@(Pandoc meta doc) = do let links = nubOrd $ dedupe $ collectLinks doc
                                                      let bibContents = recurseList md links
                                                      -- now, annotate existing links with a class indicating if they can be popped up or not; but skip duplicate IDs while doing the link bibliography:
                                                      let doc' = walk (hasAnnotation md True) doc
                                                      let bibContents'' = walk (hasAnnotation md False) bibContents
-                                                     let finalDoc = Pandoc meta (doc'++bibContents'')
+                                                     let body = (doc'++bibContents'')
                                                      -- extract final full set of URLs, and run a pass
-                                                     let targets = nubOrd $ dedupe links
+                                                     let targets = nubOrd $ dedupe $ collectLinks body
                                                      changes <- mapM (annotateLink' md) targets
                                                      -- if we faulted in new URLs, our page is stale & missing an annotation, so rebuild until it's clean:
                                                      if or changes then do
                                                          md' <- readLinkMetadataOnce
                                                          generateLinkBibliography md' x
-                                                       else return finalDoc
+                                                       else return (Pandoc meta body)
 
 -- remove duplicates, taking into account canonicalization (that "https://www.gwern.net/x" == "/x")
 dedupe :: [String] -> [String]
@@ -188,7 +188,7 @@ rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 
 collectLinks :: [Block] -> [String]
-collectLinks p = nubOrd $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
+collectLinks p = nubOrd $ dedupe $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
   where
    collectLink :: Block -> [String]
    collectLink (RawBlock (Format "html") t) = if not ("href=" `T.isInfixOf` t) then [] else let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} t in
