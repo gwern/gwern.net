@@ -1076,6 +1076,7 @@ a[href*='archive.org'       ]::after,
 a[href*='archive-it.org'    ]::after,
 a[href*='archiveteam.org'   ]::after,
 a[href*='waybackmachine.org']::after,
+a.local-archive-link::after,
 a[href*="tumblr.com"]::after,
 a[href*="t.umblr.com"]::after,
 a[href*="#facebook"]::after,
@@ -1135,6 +1136,7 @@ a[href*='archive.org'       ]:hover::after,
 a[href*='archive-it.org'    ]:hover::after,
 a[href*='archiveteam.org'   ]:hover::after,
 a[href*='waybackmachine.org']:hover::after,
+a.local-archive-link:hover::after,
 a[href*="tumblr.com"]:hover::after,
 a[href*="t.umblr.com"]:hover::after,
 a[href*="#facebook"]:hover::after,
@@ -1542,12 +1544,22 @@ a[href*='mementoweb.org'    ]::after,
 a[href*='archive.org'       ]::after, /* primary user: web.archive.org */
 a[href*='archive-it.org'    ]::after,
 a[href*='archiveteam.org'   ]::after,
-a[href*='waybackmachine.org']::after { /* secondary user: replay.waybackmachine.org */
+a[href*='waybackmachine.org']::after,
+a.local-archive-link::after { /* secondary user: replay.waybackmachine.org */
     background-image: url('/static/img/icons/internetarchive.svg');
     height: 0.66em;
     width: 0.66em;
     margin: 0 0 2px 2px;
     opacity: 0.6;
+}
+a[href*='webcitation.org'   ]:hover::after,
+a[href*='mementoweb.org'    ]:hover::after,
+a[href*='archive.org'       ]:hover::after,
+a[href*='archive-it.org'    ]:hover::after,
+a[href*='archiveteam.org'   ]:hover::after,
+a[href*='waybackmachine.org']:hover::after,
+a.local-archive-link:hover::after {
+	opacity: 0.4;
 }
 /*  Archive link in extracts.
     */

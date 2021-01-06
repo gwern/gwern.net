@@ -2917,10 +2917,11 @@ body.directory-index #disqus_thread {
     font-style: italic;
 }
 .extract-popup .date-plus-cites {
-  display: inline-block;
+	display: inline-block;
 }
 .extract-popup .originalURL {
-  font-size: 0.75em;
+    font-variant-caps: small-caps;
+    margin: 0 0.5em 0 0;
 }
 .extract-popup .iaMirror {
     padding-right: 0.3em;

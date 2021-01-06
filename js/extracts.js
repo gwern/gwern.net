@@ -245,11 +245,11 @@ Extracts = {
         var archiveOrOriginalLinkHTML = "";
         if (   referenceElement.dataset.urlOriginal != undefined 
         	&& referenceElement.dataset.urlOriginal != target.href) {
-            archiveOrOriginalLinkHTML = (`<span class="originalURL"><code>` + "[" + 
+            archiveOrOriginalLinkHTML = (`<span class="originalURL">` + "[" + 
             		   `<a href="${referenceElement.dataset.urlOriginal}" target="_new" 
                        		title="Link to original URL for ‘${titleText}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
-                       "URL" + `</a>` + "]" + `</code></span>`);
+                       "original" + `</a>` + "]" + `</span>`);
         } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
 			archiveOrOriginalLinkHTML = (`<span class="iaMirror">` +
 					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${titleText}’)" 
@@ -258,7 +258,8 @@ Extracts = {
         }
 
 		//  Extract title/link.
-		let titleLinkHTML = `<a class="title-link" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${titleHTML}</a>`;
+		let titleLinkClass = (archiveOrOriginalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
+		let titleLinkHTML = `<a class="${titleLinkClass}" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${titleHTML}</a>`;
 
 		//	Author.
 		let authorElement = referenceListEntry.querySelector(".author");
