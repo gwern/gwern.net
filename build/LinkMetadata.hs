@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-04 21:57:10 gwern"
+When:  Time-stamp: "2021-01-05 21:23:59 gwern"
 License: CC-0
 -}
 
@@ -41,7 +41,7 @@ import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 import System.IO (stderr, hPutStrLn, hPrint)
-import Typography (invertImage) -- TODO: typographyTransform
+import Typography (invertImage) -- TODO: 'typographyTransform'. This is semi-intractable. When we read in the HTML, the hyphenation pass breaks much of the LaTeX. Adding in guards in the walk to avoid Spans doesn't work like it ought to.
 import Network.HTTP (urlDecode, urlEncode)
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -78,13 +78,20 @@ generateLinkBibliography md x@(Pandoc meta doc) = do let links = collectLinks do
                                                      let bibContents'' = walk (hasAnnotation md False) bibContents
                                                      let finalDoc = Pandoc meta (doc'++bibContents'')
                                                      -- extract final full set of URLs, and run a pass
-                                                     let targets = nubOrd links
+                                                     let targets = nubOrd $ dedupe links
                                                      changes <- mapM (annotateLink' md) targets
                                                      -- if we faulted in new URLs, our page is stale & missing an annotation, so rebuild until it's clean:
                                                      if or changes then do
                                                          md' <- readLinkMetadataOnce
                                                          generateLinkBibliography md' x
                                                        else return finalDoc
+
+-- remove duplicates, taking into account canonicalization (that "https://www.gwern.net/x" == "/x")
+dedupe :: [String] -> [String]
+dedupe [] = []
+dedupe (x:xs) = x : if "/" `isPrefixOf` x then (dedupe $ filter (\y -> y /= ("https://www.gwern.net"++x)) xs) else
+                      if "https://www.gwern.net" `isPrefixOf` x then (dedupe $ filter (\y -> y /= (replace "https://www.gwern.net" "" x)) xs)
+                      else dedupe xs
 
 annotateLink' :: Metadata -> String -> IO Bool
 annotateLink' md target =

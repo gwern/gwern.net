@@ -84,14 +84,18 @@ then
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
     staticCompileMathJax () {
-        fgrep --quiet '<span class="math inline"' "$@" && \
-            TARGET=$(mktemp /tmp/XXXXXXX.html) && \
+        if [[ $(fgrep --quiet '<span class="math inline"' "$@") ]]; then
+            TARGET=$(mktemp /tmp/XXXXXXX.html)
             cat "$@" | ~/src/node_modules/mathjax-node-page/bin/mjpage --output CommonHTML | \
-                ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,
-                ## but it potentially blocks rendering without a 'font-display: swap;' parameter (which is perfectly safe since the user won't see any math early on)
-                sed -e 's/^\@font-face {/\@font-face {font-display: swap; /' \
-                    >> "$TARGET" && \
-                    mv "$TARGET" "$@" && echo "$@ succeeded" # || echo $@ 'failed MathJax compilation!';
+            ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,
+            ## but it potentially blocks rendering without a 'font-display: swap;' parameter (which is perfectly safe since the user won't see any math early on)
+                sed -e 's/^\@font-face {/\@font-face {font-display: swap; /' >> "$TARGET";
+
+            if [[ -s "$TARGET" ]]; then
+                mv "$TARGET" "$@" && echo "$@ succeeded";
+            else echo -e "\e[41m$@ failed MathJax compilation\e[0m";
+            fi
+        fi
     }
     export -f staticCompileMathJax
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel staticCompileMathJax || true
