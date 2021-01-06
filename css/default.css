@@ -1079,6 +1079,7 @@ section.footnotes > ol {
 section.footnotes > ol > li {
     counter-increment: footnotes;
     min-height: calc(1.75em + 1px);
+    padding: 6px 0 0 0;
 }
 section.footnotes > ol > li::before {
     position: absolute;
@@ -1095,14 +1096,14 @@ section.footnotes > ol > li::before {
     justify-content: center;
     align-items: center;
     right: calc(100% + 0.75em);
-    top: calc(-0.125em - 1px);
+    top: calc(-0.125em + 5px);
 }
 section.footnotes > ol > li::after {
     content: "";
     position: absolute;
     border-right: 1px dotted var(--GW-footnote-border-color);
-    height: calc(100% + 0.125em + 2px);
-    top: calc(-0.125em - 1px);
+    height: calc(100% + 0.125em - 4px);
+    top: calc(-0.125em + 5px);
     left: calc(-0.75em - 1px);
 }
 
