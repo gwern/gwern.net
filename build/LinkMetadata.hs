@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-05 22:56:43 gwern"
+When:  Time-stamp: "2021-01-06 12:31:05 gwern"
 License: CC-0
 -}
 
@@ -389,6 +389,8 @@ downloadWPThumbnail href = do
   let ext = map toLower $ takeExtension f
   if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
                      void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [f]
+                     -- remove any transparency (dark mode issues)
+                     void $ runShellcommand "./" Nothing "mogrify" ["-background", "white", "-alpha", "remove", "-alpha", "off", f]
                    else if (ext == ".jpg") then
                         void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [f]
                         else when (ext == ".gif") $ void $ runShellCommand "./" Nothing "gifsicle" ["--optimize=3", "--colors=256", f, "--output", f]
