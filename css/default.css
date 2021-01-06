@@ -798,6 +798,16 @@ figure.full-width {
     max-width: calc(100% - 2px);
 }
 
+/*	Image alt-text.
+	*/
+img::before {
+	display: block;
+	font-family: var(--GW-sans-serif-font-stack);
+	padding: 0.5em 0.75em;
+	background-color: var(--GW-body-background-color);
+	text-align: left;
+}
+
 /***************/
 /* BLOCKQUOTES */
 /***************/
@@ -2950,6 +2960,9 @@ body.directory-index #disqus_thread {
     margin: 0.125em 0 0.125em 1.5em;
     max-width: calc(50% - 1.5em);
     float: right;
+}
+.extract-popup figure.float-right .image-wrapper {
+	max-width: 100%;
 }
 
 .extract-popup img {
