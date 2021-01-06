@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2020-12-24 09:59:35 gwern"
+# When:  Time-stamp: "2021-01-06 16:00:31 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -192,7 +192,7 @@ do
         wrap λ "image hotlinking deprecated; impolite, and slows page loads & site compiles"
 
         # Note links which need to be annotated (probably most of them...)
-        λ() { link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' | runhaskell -istatic/build/ static/build/link-prioritize.hs; }
+        λ() { link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e '#link-bibliography' | runhaskell -istatic/build/ static/build/link-prioritize.hs; }
         wrap λ "Link annotations required"
 
         # we use link annotations on URLs to warn readers about PDFs; if a URL ends in 'pdf', it gets a PDF icon. What about URLs which redirect to or serve PDF?

@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-06 15:54:46 gwern"
+When:  Time-stamp: "2021-01-06 16:52:26 gwern"
 License: CC-0
 -}
 
@@ -382,7 +382,7 @@ wikipedia p
 
 downloadWPThumbnail :: FilePath -> IO FilePath
 downloadWPThumbnail href = do
-  let f = "images/thumbnails/wikipedia/"++(filter (not . (\c -> c=='?' || c=='!' || c=='\'' || c=='"' || c=='&')) $ takeFileName (urlDecode href))
+  let f = "images/thumbnails/wikipedia/"++(replace "--" "-" $ filter (not . (\c -> c=='?' || c=='!' || c=='\'' || c=='"' || c=='&')) $ takeFileName (urlDecode href))
   filep <- doesFileExist f
   when (not filep ) $ void $
     runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
