@@ -2941,16 +2941,14 @@ body.directory-index #disqus_thread {
 /*  TODO: remove this once popups inherit from main body styles.
     */
 .extract-popup .data-field.popupAbstract p,
-.extract-popup.section-embed-popup p,
-.extract-popup.external-page-embed-popup p,
-.extract-popup.citation-context-popup p {
+.extract-popup.local-transclude p,
+.extract-popup.citation-context p {
     text-align: justify;
     hyphens: auto;
 }
 .extract-popup .data-field.popupAbstract p + p,
-.extract-popup.section-embed-popup p + p,
-.extract-popup.external-page-embed-popup p + p,
-.extract-popup.citation-context-popup p + p {
+.extract-popup.local-transclude p + p,
+.extract-popup.citation-context p + p {
     text-indent: 1em;
 }
 
@@ -2993,21 +2991,21 @@ body.directory-index #disqus_thread {
 
 /*  Popups for images.
     */
-.extract-popup.image-popup {
+.extract-popup.image {
     min-width: 64px;
     height: unset;
 }
-.popupdiv.image-popup.loading::before {
+.popupdiv.image.loading::before {
     height: 2em;
     width: 2em;
 }
 
 /*  Popups for videos.
     */
-.extract-popup.video-popup {
+.extract-popup.video {
     height: unset;
 }
-.extract-popup.video-popup iframe {
+.extract-popup.video iframe {
     width: 495px;
     height: 310px;
 }
@@ -3017,15 +3015,15 @@ body.directory-index #disqus_thread {
 
 /*  Popups for local code files.
     */
-.extract-popup.local-code-file-popup {
+.extract-popup.local-code-file {
     width: 640px;
     height: 480px;
 }
-.extract-popup.local-code-file-popup > div {
+.extract-popup.local-code-file > div {
     height: 100%;
     padding: 0;
 }
-.extract-popup.local-code-file-popup pre {
+.extract-popup.local-code-file pre {
     height: 100%;
     margin: 0;
     border: none;
@@ -3033,34 +3031,28 @@ body.directory-index #disqus_thread {
 
 /*  Section embeds.
     */
-.extract-popup.section-embed-popup > div,
-.extract-popup.citation-context-popup > div {
+.extract-popup.local-transclude > div,
+.extract-popup.citation-context > div {
     overflow-x: hidden;
 }
-.extract-popup.section-embed-popup > div > h1:first-child,
-.extract-popup.section-embed-popup > div > h2:first-child,
-.extract-popup.section-embed-popup > div > h3:first-child,
-.extract-popup.section-embed-popup > div > h4:first-child,
-.extract-popup.section-embed-popup > div > h5:first-child,
-.extract-popup.section-embed-popup > div > h6:first-child,
-.extract-popup.external-page-embed-popup > div > h1:first-child,
-.extract-popup.external-page-embed-popup > div > h2:first-child,
-.extract-popup.external-page-embed-popup > div > h3:first-child,
-.extract-popup.external-page-embed-popup > div > h4:first-child,
-.extract-popup.external-page-embed-popup > div > h5:first-child,
-.extract-popup.external-page-embed-popup > div > h6:first-child,
-.extract-popup.citation-context-popup > div > h1:first-child,
-.extract-popup.citation-context-popup > div > h2:first-child,
-.extract-popup.citation-context-popup > div > h3:first-child,
-.extract-popup.citation-context-popup > div > h4:first-child,
-.extract-popup.citation-context-popup > div > h5:first-child,
-.extract-popup.citation-context-popup > div > h6:first-child {
+.extract-popup.local-transclude > div > h1:first-child,
+.extract-popup.local-transclude > div > h2:first-child,
+.extract-popup.local-transclude > div > h3:first-child,
+.extract-popup.local-transclude > div > h4:first-child,
+.extract-popup.local-transclude > div > h5:first-child,
+.extract-popup.local-transclude > div > h6:first-child,
+.extract-popup.citation-context > div > h1:first-child,
+.extract-popup.citation-context > div > h2:first-child,
+.extract-popup.citation-context > div > h3:first-child,
+.extract-popup.citation-context > div > h4:first-child,
+.extract-popup.citation-context > div > h5:first-child,
+.extract-popup.citation-context > div > h6:first-child {
     margin-top: 0;
 }
 
 /*  External section embeds.
     */
-.extract-popup.external-page-embed-popup {
+.extract-popup.external-page-embed {
     width: 640px;
     height: 480px;
 }
@@ -3087,7 +3079,7 @@ body.directory-index #disqus_thread {
 /*=-----------------=*/
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
-.popupdiv.footnote-popup {
+.popupdiv.footnote {
     min-width: unset;
     max-width: 640px;
     max-height: 480px;
