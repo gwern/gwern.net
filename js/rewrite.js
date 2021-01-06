@@ -295,9 +295,16 @@ function realignHash() {
 	}
 
 	let hash = GW.hashRealignValue || location.hash;
-	history.replaceState(null, null, "#");
-	location.hash = hash;
-	GW.hashRealignValue = null;
+	if (hash > "") {
+		//  Strip hash.
+		history.replaceState(null, null, "#");
+
+		//  Reset hash.
+		location.hash = hash;
+
+		//  Prevent redundant realignment.
+		GW.hashRealignValue = null;
+	}
 }
 doWhenDOMContentLoaded(realignHash);
 /*  This is necessary to defeat a bug where if the page is loaded with the URL
