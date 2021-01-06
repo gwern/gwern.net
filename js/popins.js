@@ -33,7 +33,7 @@ Popins = {
 
 		GW.notificationCenter.fireEvent("Popins.setupDidComplete");
 	},
-	addTargetsWithin: (contentContainer, targetSelectors, prepareFunction, targetPrepareFunction = null) => {
+	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
@@ -41,9 +41,12 @@ Popins = {
 			return;
 
 		//	Get all targets.
-		contentContainer.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
-			if (   target.closest(targetSelectors.excludedElementsSelector) == target
-				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
+		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
+			if (   target.closest(targets.excludedElementsSelector) == target
+				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				return;
+
+			if (!targets.testTarget(target))
 				return;
 
 			//  Run any custom processing.
@@ -54,21 +57,24 @@ Popins = {
 			Popins.injectPopin(target, prepareFunction);
 		});
 	},
-	addTargets: (targetSelectors, prepareFunction, targetPrepareFunction = null) => {
+	addTargets: (targets, prepareFunction, targetPrepareFunction = null) => {
 		GWLog("Popins.addTargets", "popins.js", 1);
 
-		Popins.addTargetsWithin(document, targetSelectors, prepareFunction, targetPrepareFunction);
+		Popins.addTargetsWithin(document, targets, prepareFunction, targetPrepareFunction);
 	},
-	removeTargetsWithin: (contentContainer, targetSelectors, targetRestoreFunction = null) => {
+	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
 		if (contentContainer == null)
 			return;
 
-		contentContainer.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
-			if (   target.closest(targetSelectors.excludedElementsSelector) == target
-				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
+		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
+			if (   target.closest(targets.excludedElementsSelector) == target
+				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				return;
+
+			if (!targets.testTarget(target))
 				return;
 
 			//  Remove the popin.
@@ -79,10 +85,10 @@ Popins = {
 				targetRestoreFunction(target);
 		});
 	},
-	removeTargets: (targetSelectors, targetRestoreFunction = null) => {
+	removeTargets: (targets, targetRestoreFunction = null) => {
 		GWLog("Popins.removeTargets", "popins.js", 1);
 
-		Popins.removeTargetsWithin(document, targetSelectors, targetRestoreFunction);
+		Popins.removeTargetsWithin(document, targets, targetRestoreFunction);
 	},
 
 	injectPopin: (target, prepareFunction) => {

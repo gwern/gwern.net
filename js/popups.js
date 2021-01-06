@@ -73,7 +73,7 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
-	addTargetsWithin: (contentContainer, targetSelectors, prepareFunction, targetPrepareFunction = null) => {
+	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
@@ -81,9 +81,12 @@ Popups = {
 			return;
 
 		//	Get all targets.
-		contentContainer.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
-			if (   target.closest(targetSelectors.excludedElementsSelector) == target
-				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
+		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
+			if (   target.closest(targets.excludedElementsSelector) == target
+				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				return;
+
+			if (!targets.testTarget(target))
 				return;
 
 			//	Bind mouseenter/mouseleave events.
@@ -101,21 +104,24 @@ Popups = {
 			target.classList.toggle("spawns-popup", true);
 		});
 	},
-	addTargets: (targetSelectors, prepareFunction, targetPrepareFunction = null) => {
+	addTargets: (targets, prepareFunction, targetPrepareFunction = null) => {
 		GWLog("Popups.addTargets", "popups.js", 1);
 
-		Popups.addTargetsWithin(document, targetSelectors, prepareFunction, targetPrepareFunction);
+		Popups.addTargetsWithin(document, targets, prepareFunction, targetPrepareFunction);
 	},
-	removeTargetsWithin: (contentContainer, targetSelectors, targetRestoreFunction = null) => {
+	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
 		if (contentContainer == null)
 			return;
 
-		contentContainer.querySelectorAll(targetSelectors.targetElementsSelector).forEach(target => {
-			if (   target.closest(targetSelectors.excludedElementsSelector) == target
-				|| target.closest(targetSelectors.excludedContainerElementsSelector) != null)
+		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
+			if (   target.closest(targets.excludedElementsSelector) == target
+				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				return;
+
+			if (!targets.testTarget(target))
 				return;
 
 			//	Unbind existing mouseenter/mouseleave events, if any.
@@ -140,10 +146,10 @@ Popups = {
 				targetRestoreFunction(target);
 		});
 	},
-	removeTargets: (targetSelectors, targetRestoreFunction = null) => {
+	removeTargets: (targets, targetRestoreFunction = null) => {
 		GWLog("Popups.removeTargets", "popups.js", 1);
 
-		Popups.removeTargetsWithin(document, targetSelectors, targetRestoreFunction);
+		Popups.removeTargetsWithin(document, targets, targetRestoreFunction);
 	},
 
 	newPopup: () => {

@@ -10,18 +10,18 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 /* We exclude it for mobile because there is no pop-in support for annotations, and no point telling mobile users about something they can't access. */
 @media only screen and (min-width: 65ch) { /* TODO: remove once Tufte-CSS pop-in-style annotations are available for mobile */
-    a.docMetadata,
-    a.has-content,
-    a.has-annotation,
-    span.defnMetadata {
+	a.docMetadata,
+	span.defnMetadata,
+    .has-annotation,
+    .has-content {
         margin: 0 0.05em;
         padding: 0 0 0 0.3em;
         position: relative;
     }
-    a.docMetadata::before,
-    a.has-content::before,
-    a.has-annotation::before,
-    span.defnMetadata::before {
+	a.docMetadata::before,
+	span.defnMetadata::before,
+    .has-annotation::before,
+    .has-content::before {
         content: " ";
         position: absolute;
         width: 0.45em;
@@ -39,32 +39,32 @@
         left: 0;
         overflow: hidden;
     }
-    a.has-content::before {
+    .has-content::before {
         background-position: 100% 100%, 0 100%;
         top: unset;
         bottom: 0.1em;
         width: 1px;
     }
-    a.docMetadata:hover::before,
-    a.has-content:hover::before,
-    a.has-annotation:hover::before,
-    span.defnMetadata:hover::before {
+	a.docMetadata:hover::before,
+	span.defnMetadata:hover::before,
+    .has-annotation:hover::before,
+    .has-content:hover::before {
         background-image:
             linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
             linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
     }
-    body.index a.docMetadata,
-    body.index span.defnMetadata,
-    #link-bibliography li > p:first-child a.docMetadata,
-    #link-bibliography li > p:first-child span.defnMetadata {
+    #link-bibliography > ol > li > p:first-child a.docMetadata,
+    #link-bibliography > ol > li > p:first-child span.defnMetadata,
+    body.index .has-annotation,
+    body.index .has-content {
         margin: 0;
         padding: 0;
         position: static;
     }
-    body.index a.docMetadata::before,
-    body.index span.defnMetadata::before,
     #link-bibliography > ol > li > p:first-child a.docMetadata::before,
-    #link-bibliography > ol > li > p:first-child span.defnMetadata::before {
+    #link-bibliography > ol > li > p:first-child span.defnMetadata::before,
+    body.index .has-annotation::before,
+    body.index .has-content::before {
         content: none;
     }
 }
@@ -423,11 +423,13 @@ section > :not(:first-child) a[href^='#'][class^='identifier-link-']::after,
 p a[href^='#'][class^='identifier-link-']::after,
 li a[href^='#'][class^='identifier-link-']::after {
     content: "";
-    bottom: 0.2em;
-    width: 1em;
     display: inline-block;
+    width: 1em;
     height: 1em;
+    margin: 0 0 0 4px;
+    bottom: 0.15em;
     background-repeat: no-repeat;
+    opacity: 0.65;
 }
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
 p a[href^='#'].identifier-link-up::after,
@@ -437,13 +439,12 @@ li a[href^='#'].identifier-link-up::after {
 section > :not(:first-child) a[href^='#'].identifier-link-down::after,
 p a[href^='#'].identifier-link-down::after,
 li a[href^='#'].identifier-link-down::after {
-    background-image: url('/static/img/icons/arrow-up.svg');
-    transform: rotate(180deg);
+    background-image: url('/static/img/icons/arrow-down.svg');
 }
 section > :not(:first-child) a[href^='#'][class^='identifier-link-']:hover::after,
 p a[href^='#'][class^='identifier-link-']:hover::after,
 li a[href^='#'][class^='identifier-link-']:hover::after {
-    opacity: 0.3;
+    opacity: 0.4;
 }
 
 /*=------------------------------=*/

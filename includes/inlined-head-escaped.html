@@ -1895,6 +1895,15 @@ String.prototype.startsWithAnyOf = function (prefixes) {
     return false;
 }
 
+/*  Returns true if the string ends with any of the given suffixes.
+    */
+String.prototype.endsWithAnyOf = function (suffixes) {
+    for (suffix of suffixes)
+        if (this.endsWith(suffix))
+            return true;
+    return false;
+}
+
 /*  Returns true if the string includes any of the given substrings.
     */
 String.prototype.includesAnyOf = function (substrings) {

@@ -2889,7 +2889,7 @@ body.directory-index #disqus_thread {
 .popupdiv a:hover {
     color: var(--GW-popups-popup-link-hover-color);
 }
-.external-section-embed-popup a.footnote-back {
+.external-page-embed-popup a.footnote-back {
     text-decoration: none;
     z-index: 1;
 }
@@ -2942,14 +2942,14 @@ body.directory-index #disqus_thread {
     */
 .extract-popup .data-field.popupAbstract p,
 .extract-popup.section-embed-popup p,
-.extract-popup.external-section-embed-popup p,
+.extract-popup.external-page-embed-popup p,
 .extract-popup.citation-context-popup p {
     text-align: justify;
     hyphens: auto;
 }
 .extract-popup .data-field.popupAbstract p + p,
 .extract-popup.section-embed-popup p + p,
-.extract-popup.external-section-embed-popup p + p,
+.extract-popup.external-page-embed-popup p + p,
 .extract-popup.citation-context-popup p + p {
     text-indent: 1em;
 }
@@ -3043,12 +3043,12 @@ body.directory-index #disqus_thread {
 .extract-popup.section-embed-popup > div > h4:first-child,
 .extract-popup.section-embed-popup > div > h5:first-child,
 .extract-popup.section-embed-popup > div > h6:first-child,
-.extract-popup.external-section-embed-popup > div > h1:first-child,
-.extract-popup.external-section-embed-popup > div > h2:first-child,
-.extract-popup.external-section-embed-popup > div > h3:first-child,
-.extract-popup.external-section-embed-popup > div > h4:first-child,
-.extract-popup.external-section-embed-popup > div > h5:first-child,
-.extract-popup.external-section-embed-popup > div > h6:first-child,
+.extract-popup.external-page-embed-popup > div > h1:first-child,
+.extract-popup.external-page-embed-popup > div > h2:first-child,
+.extract-popup.external-page-embed-popup > div > h3:first-child,
+.extract-popup.external-page-embed-popup > div > h4:first-child,
+.extract-popup.external-page-embed-popup > div > h5:first-child,
+.extract-popup.external-page-embed-popup > div > h6:first-child,
 .extract-popup.citation-context-popup > div > h1:first-child,
 .extract-popup.citation-context-popup > div > h2:first-child,
 .extract-popup.citation-context-popup > div > h3:first-child,
@@ -3060,7 +3060,7 @@ body.directory-index #disqus_thread {
 
 /*  External section embeds.
     */
-.extract-popup.external-section-embed-popup {
+.extract-popup.external-page-embed-popup {
     width: 640px;
     height: 480px;
 }
