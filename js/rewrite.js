@@ -241,6 +241,18 @@ doWhenPageLoaded(expandFullWidthBlocks);
 /* MISC. */
 /*********/
 
+/*	Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
+	right? Yeah, right...)
+	*/
+function cleanUpImageAltText() {
+	GWLog("cleanUpImageAltText", "rewrite.js", 1);
+
+	document.querySelectorAll("img[alt]").forEach(image => {
+		image.alt = decodeURIComponent(image.alt);
+	});
+}
+doWhenDOMContentLoaded(cleanUpImageAltText);
+
 /*	Directional navigation links on self-links: for each self-link like “see [later](#later-identifier)”, find the linked identifier, whether it’s before or after, and if it is before/previously, annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a backwards link to a identifier already read, or an unread identifier.
 	*/
 function directionalizeAnchorLinks() {
