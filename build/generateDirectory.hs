@@ -14,14 +14,14 @@ import qualified Data.Map as M (lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
 
-import LinkMetadata (readLinkMetadataOnce, Metadata, MetadataItem)
+import LinkMetadata (readLinkMetadata, Metadata, MetadataItem)
 
 main :: IO ()
 main = do dirs <- getArgs
           let dirs' = map (\dir -> if "./" `isPrefixOf` dir then drop 2 dir else dir) dirs
 
           today <- fmap (take 10 . show) Data.Time.getCurrentTime
-          meta <- readLinkMetadataOnce
+          meta <- readLinkMetadata
 
           mapM_ (generateDirectory meta today) dirs'
 

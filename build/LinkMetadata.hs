@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-06 12:31:05 gwern"
+When:  Time-stamp: "2021-01-06 15:54:46 gwern"
 License: CC-0
 -}
 
@@ -47,8 +47,8 @@ import Network.HTTP (urlDecode, urlEncode)
 -------------------------------------------------------------------------------------------------------------------------------
 -- Prototype flat annotation implementation
 
-readLinkMetadataOnce :: IO Metadata
-readLinkMetadataOnce = do
+readLinkMetadata :: IO Metadata
+readLinkMetadata = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
              custom <- readYaml "metadata/custom.yaml"
 
@@ -82,7 +82,7 @@ generateLinkBibliography md x@(Pandoc meta doc) = do let links = nubOrd $ dedupe
                                                      changes <- mapM (annotateLink' md) targets
                                                      -- if we faulted in new URLs, our page is stale & missing an annotation, so rebuild until it's clean:
                                                      if or changes then do
-                                                         md' <- readLinkMetadataOnce
+                                                         md' <- readLinkMetadata
                                                          generateLinkBibliography md' x
                                                        else return (Pandoc meta body)
 
@@ -387,10 +387,10 @@ downloadWPThumbnail href = do
   when (not filep ) $ void $
     runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
   let ext = map toLower $ takeExtension f
-  if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
+  if ext == ".png" then do -- lossily optimize using my pngnq/mozjpeg scripts:
                      void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [f]
                      -- remove any transparency (dark mode issues)
-                     void $ runShellcommand "./" Nothing "mogrify" ["-background", "white", "-alpha", "remove", "-alpha", "off", f]
+                     void $ runShellCommand "./" Nothing "mogrify" ["-background", "white", "-alpha", "remove", "-alpha", "off", f]
                    else if (ext == ".jpg") then
                         void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [f]
                         else when (ext == ".gif") $ void $ runShellCommand "./" Nothing "gifsicle" ["--optimize=3", "--colors=256", f, "--output", f]

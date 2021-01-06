@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-05 09:45:04 gwern"
+When: Time-stamp: "2021-01-06 15:56:03 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -68,9 +68,9 @@ import qualified Data.Text as T
 -- local custom modules:
 -- import Definition -- (dictionary)
 import Inflation (nominalToRealInflationAdjuster)
-import LinkMetadata -- (readLinkMetadata, annotateLink, Metadata)
+import LinkMetadata (generateLinkBibliography, readLinkMetadata, Metadata)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
-import Typography
+import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 
 main :: IO ()
 main = hakyll $ do
@@ -78,7 +78,7 @@ main = hakyll $ do
 
              -- popup metadata:
              preprocess $ print ("Popups parsing..." :: String)
-             meta <- preprocess readLinkMetadataOnce
+             meta <- preprocess readLinkMetadata
 
              preprocess $ print ("Local archives parsing..." :: String)
              archive <- preprocess readArchiveMetadata
