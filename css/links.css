@@ -423,11 +423,13 @@ section > :not(:first-child) a[href^='#'][class^='identifier-link-']::after,
 p a[href^='#'][class^='identifier-link-']::after,
 li a[href^='#'][class^='identifier-link-']::after {
     content: "";
-    bottom: 0.2em;
-    width: 1em;
     display: inline-block;
+    width: 1em;
     height: 1em;
+    margin: 0 0 0 4px;
+    bottom: 0.15em;
     background-repeat: no-repeat;
+    opacity: 0.65;
 }
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
 p a[href^='#'].identifier-link-up::after,
@@ -437,13 +439,12 @@ li a[href^='#'].identifier-link-up::after {
 section > :not(:first-child) a[href^='#'].identifier-link-down::after,
 p a[href^='#'].identifier-link-down::after,
 li a[href^='#'].identifier-link-down::after {
-    background-image: url('/static/img/icons/arrow-up.svg');
-    transform: rotate(180deg);
+    background-image: url('/static/img/icons/arrow-down.svg');
 }
 section > :not(:first-child) a[href^='#'][class^='identifier-link-']:hover::after,
 p a[href^='#'][class^='identifier-link-']:hover::after,
 li a[href^='#'][class^='identifier-link-']:hover::after {
-    opacity: 0.3;
+    opacity: 0.4;
 }
 
 /*=------------------------------=*/
