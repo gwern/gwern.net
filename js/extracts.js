@@ -37,12 +37,11 @@ Extracts = {
 				[ "isDefinitionLink", 		"has-annotation" 	],
 				[ "isCitation", 			null 				],
 				[ "isCitationBackLink", 	null 				],
-				[ "isInternalSectionLink",	null				],
 				[ "isVideoLink", 			"has-content" 		],
 				[ "isLocalImageLink", 		"has-content"		],
 				[ "isLocalDocumentLink", 	"has-content"		],
 				[ "isLocalCodeFileLink", 	"has-content"		],
-				[ "isExternalPageLink", 	"has-content" 		],
+				[ "isLocalPageLink",	 	"has-content" 		],
 				[ "isForeignSiteLink",	 	"has-content"		]
 			];
 
@@ -131,6 +130,9 @@ Extracts = {
 			Extracts.prepareTargetForPopins = (target) => {
 				//  Alter the title attribute.
 				target.title = "Click to reveal";
+
+				if (Extracts.isTOCLink(target))
+					target.classList.remove("has-content");
 			};
 
 			//  Prepare to recursively inject popins within newly-injected popins.
@@ -155,6 +157,9 @@ Extracts = {
 			Extracts.prepareTargetForPopups = (target) => {
 				//  Remove the title attribute.
 				target.removeAttribute("title");
+
+				if (Extracts.isTOCLink(target))
+					target.classList.remove("has-content");
 			};
 
 			//  Set up targets.
@@ -211,7 +216,7 @@ Extracts = {
 	originatingDocumentForTarget: (target) => {
 		let containingPopElement = target.closest(".extract-popup");
 		if (containingPopElement) {
-			if (containingPopElement.classList.contains("external-page-embed-popup"))
+			if (containingPopElement.classList.contains("external-page-embed"))
 				return containingPopElement;
 			else
 				return Extracts.originatingDocumentForTarget(containingPopElement.popupTarget);
@@ -358,14 +363,30 @@ Extracts = {
 	    return target.classList.contains("footnote-back");
     },
 
-	//  Identified sections of the current page.
-    isInternalSectionLink: (target) => {
+	//  Local links (to sections of the current page, or other site pages).
+    isLocalPageLink: (target) => {
 		if (!target.href) return false;
 
-		return (   target.hostname == location.hostname
-				&& target.pathname == location.pathname
-				&& target.hash > "");
+		return (target.hostname == location.hostname);
 	},
+    localTranscludeForTarget: (target) => {
+		GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
+
+		/*	Check to see if the target location matches an already-displayed 
+			page (which can be the root page of the window).
+			*/
+		if (   target.pathname == location.pathname
+			|| Array.from(Popups.popupContainer.children).findIndex(popup => popup.classList.contains("external-page-embed") && popup.popupTarget.pathname == target.pathname) != -1) {
+			//  If it does, display the section (if an anchorlink) or nothing.
+			return (target.hash > "" ? Extracts.sectionEmbedForTarget(target) : null);
+		} else {
+			//  Otherwise, display the entire linked page.
+			target.popup.classList.add("external-page-embed");
+			return Extracts.externalPageEmbedForTarget(target);
+		}
+	},
+
+	//  Sections of the current page.
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
@@ -385,15 +406,7 @@ Extracts = {
 		return (target.closest("#TOC") != null);
 	},
 
-	//  Other pages on gwern.net.
-    isExternalPageLink: (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname
-			|| target.pathname == location.pathname)
-			return false;
-
-		return true;
-    },
+	//  Other site pages.
     cachedPages: { },
     externalPageEmbedForTarget: (target) => {
 		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
@@ -566,17 +579,16 @@ Extracts = {
 
 		//	Inject the extract for the target into the popin.
 		if (Extracts.fillPopElement(popin, target, [
-			[ "isExtractLink", 			"extractForTarget", 				null 										],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popin" 						],
-			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popin" 						],
-			[ "isCitationBackLink", 	null, 								null					 				],
-			[ "isInternalSectionLink",	null,					 			null				 					],
-			[ "isVideoLink", 			"videoForTarget", 					"video-popin object-popin" 				],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popin object-popin" 				],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popin object-popin" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popin" 				],
-			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popin"				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popin object-popin" 							]
+			[ "isExtractLink", 			"extractForTarget", 				null 							],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition" 					],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote"	 					],
+			[ "isCitationBackLink", 	null, 								null					 		],
+			[ "isVideoLink", 			"videoForTarget", 					"video object-popin" 			],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image object-popin" 			],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document object-popin" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file" 				],
+			[ "isLocalPageLink", 		"localTranscludeForTarget", 		"local-transclude"				],
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site object-popin" 	]
 			]) == false)
 			return false;
 
@@ -640,17 +652,16 @@ Extracts = {
 
 		//	Inject the extract for the target into the popup.
 		if (Extracts.fillPopElement(popup, target, [
-			[ "isExtractLink", 			"extractForTarget", 				null 										],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition-popup" 						],
-			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote-popup" 						],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context-popup" 				],
-			[ "isInternalSectionLink",	"sectionEmbedForTarget", 			"section-embed-popup" 					],
-			[ "isVideoLink", 			"videoForTarget", 					"video-popup object-popup" 				],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image-popup object-popup" 				],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document-popup object-popup" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file-popup" 				],
-			[ "isExternalPageLink", 	"externalPageEmbedForTarget", 		"external-page-embed-popup"				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site-popup object-popup" 							]
+			[ "isExtractLink", 			"extractForTarget", 				null 							],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition" 					],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote" 						],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context" 				],
+			[ "isVideoLink", 			"videoForTarget", 					"video object-popup" 			],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image object-popup" 			],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document object-popup" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file" 				],
+			[ "isLocalPageLink",		"localTranscludeForTarget", 		"local-transclude" 				],
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site object-popup" 	]
 			]) == false)
 			return false;
 

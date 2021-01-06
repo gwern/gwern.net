@@ -3076,7 +3076,7 @@ body.directory-index #disqus_thread {
     max-height: 480px;
 }
 
-.footnote-popup a.footnote-back {
+.popupdiv.footnote a.footnote-back {
     display: none;
 }
 
@@ -3087,16 +3087,16 @@ body.directory-index #disqus_thread {
     code makes everything consistent regardless of which case applies.
     —Obormot (2019-02-17)
     */
-.footnote-popup > div > blockquote:nth-last-child(2),
-.footnote-popup .sidenote-inner-wrapper blockquote:nth-last-child(2) {
+.popupdiv.footnote > div > blockquote:nth-last-child(2),
+.popupdiv.footnote .sidenote-inner-wrapper blockquote:nth-last-child(2) {
     margin-bottom: calc(1em/9);
 }
-.footnote-popup > div > blockquote:nth-last-child(2) + p,
-.footnote-popup .sidenote-inner-wrapper blockquote:nth-last-child(2) + p {
+.popupdiv.footnote > div > blockquote:nth-last-child(2) + p,
+.popupdiv.footnote .sidenote-inner-wrapper blockquote:nth-last-child(2) + p {
     margin-top: 1em;
 }
 
-.footnote-popup .sidenote-outer-wrapper {
+.popupdiv.footnote .sidenote-outer-wrapper {
     max-height: unset;
 }
 
