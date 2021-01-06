@@ -280,6 +280,8 @@ function identifyFootnotesSection() {
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
 
+/*	Hash realignment.
+	*/
 function realignHash() {
 	GWLog("realignHash", "rewrite.js", 1);
 
