@@ -79,7 +79,9 @@ Typography = {
 			[/([a-z]) -(\u201d)/ig, '$1\u2014$2'],
 			[/(\u201c)- ([a-z])/ig, '$1\u2014$2'],
 			// turn a double or triple hyphen, optionally surrounded by spaces, between words, or at the start of a line, into an em-dash
-			[/([a-z"'“”‘’]|\n) ?---? ?([a-z"'“”‘’])/ig, '$1\u2014$2']
+			[/([a-z"'“”‘’]|\n) ?---? ?([a-z"'“”‘’])/ig, '$1\u2014$2'],
+			// turn a hyphen surrounded by spaces, between decimal digits, into an en-dash
+			[/([0-9]) - ([0-9])/g, '$1\u2013$2' ]
 		],
 		ellipses: [
 			// ellipsis rectification

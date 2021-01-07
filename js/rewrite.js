@@ -302,7 +302,11 @@ function rectifyTypographyInLinkBibliographyEntries() {
 	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
 
 	document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
-		Typography.processElement(linkBibliographyEntryContent, Typography.replacementTypes.QUOTES|Typography.replacementTypes.WORDBREAKS|Typography.replacementTypes.ELLIPSES);
+		Typography.processElement(linkBibliographyEntryContent, 
+			  Typography.replacementTypes.QUOTES 
+			| Typography.replacementTypes.WORDBREAKS 
+			| Typography.replacementTypes.ELLIPSES 
+		);
 
 		//	Educate quotes in image alt-text.
 		linkBibliographyEntryContent.querySelectorAll("img").forEach(image => {
