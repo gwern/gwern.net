@@ -296,6 +296,22 @@ function injectLinkBibliographyItemSelfLinks() {
 }
 doWhenDOMContentLoaded(injectLinkBibliographyItemSelfLinks);
 
+/*	Requires typography.js to be loaded prior to this file.
+	*/
+function educateQuotesInLinkBibliographyEntries() {
+	GWLog("educateQuotesInLinkBibliographyEntries", "rewrite.js", 1);
+
+	document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
+		Typography.processElement(linkBibliographyEntryContent);
+
+		//	Educate quotes in image alt-text as well.
+		linkBibliographyEntryContent.querySelectorAll("img").forEach(image => {
+			image.alt = Typography.processString(image.alt);
+		});
+	});
+}
+doWhenDOMContentLoaded(educateQuotesInLinkBibliographyEntries);
+
 /*	Hash realignment.
 	*/
 function realignHash() {
