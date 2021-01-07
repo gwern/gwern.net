@@ -321,6 +321,9 @@ then
     λ(){ find ./ -type f -name "*.png" | parallel file | fgrep --invert-match 'PNG image data'; }
     wrap λ "Corrupted PNGs"
 
+    λ(){  find ./ -name "*.png" | fgrep -v '/static/img/' | sort | xargs identify -format '%F %[opaque]\n' | fgrep ' false'; }
+    wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
+
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
     λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
                                                 -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
