@@ -71,7 +71,7 @@ Extracts = {
 	/*	Infrastructure.
 		*/
 	referenceElementContainerSelector: "#link-bibliography",
-	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p:first-child",
+	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p",
 	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
 
 	/***********/
