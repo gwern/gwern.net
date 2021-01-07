@@ -55,7 +55,9 @@
     }
     #link-bibliography > ol > li > p a.docMetadata,
     #link-bibliography > ol > li > p span.defnMetadata,
-    body.index .has-annotation,
+    li[id^='link-bibliography-entry-'] > p a.docMetadata,
+    li[id^='link-bibliography-entry-'] > p span.defnMetadata,
+	body.index .has-annotation,
     body.index .has-content {
         margin: 0;
         padding: 0;
@@ -63,6 +65,8 @@
     }
     #link-bibliography > ol > li > p a.docMetadata::before,
     #link-bibliography > ol > li > p span.defnMetadata::before,
+    li[id^='link-bibliography-entry-'] > p a.docMetadata::before,
+    li[id^='link-bibliography-entry-'] > p span.defnMetadata::before,
     body.index .has-annotation::before,
     body.index .has-content::before {
         content: none;

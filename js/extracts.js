@@ -29,8 +29,17 @@ Extracts = {
 		excludedElementsSelector: [
 			".sidenote-self-link",
 			".link-bibliography-item-self-link",
-			".extract-popup .data-field.title a"
-			].join(", "),
+			".extract-popup .data-field.title a",
+			/*  Do not provide extracts for annotated links that are link
+				bibliography entries, as their annotations are right there below the
+				link itself.
+				*/
+			[ "a.docMetadata", "span.defnMetadata" ].map(annotatedTargetSelector => 
+				[ "#link-bibliography > ol > li > p", "li[id^='link-bibliography-entry-'] > p" ].map(referenceElementContainerSelector =>
+					`${referenceElementContainerSelector} ${annotatedTargetSelector}`
+				).join(", ")
+			).join(", "),
+		].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 		testTarget: (target) => {
 			let linkTypes = [
@@ -72,7 +81,6 @@ Extracts = {
 		*/
 	referenceElementContainerSelector: "#link-bibliography",
 	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p",
-	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
 
 	/***********/
 	/*	General.
@@ -111,15 +119,6 @@ Extracts = {
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
-
-		/*  Do not provide extracts for annotated links that are link
-			bibliography entries, as their annotations are right there below the
-			link itself.
-			*/
-		Extracts.targets.excludedElementsSelector = [ 
-			Extracts.targets.excludedElementsSelector, 
-			Extracts.annotatedTargetSelectors.map(selector => `${Extracts.referenceElementEntrySelectorPrefix} ${selector}`).join(", ")
-		].join(", ");
 
         if (GW.isMobile()) {
 			//  TEMPORARY!!
