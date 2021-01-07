@@ -3359,16 +3359,18 @@ body.directory-index #disqus_thread {
 
 /*  Link bibliography self-links.
     */
-article > :not(#TOC) a.link-bibliography-item-self-link:link {
-    background-image: none;
+.link-bibliography-item-self-link {
+    display: none;
 }
 #link-bibliography > ol > li > .link-bibliography-item-self-link {
+    display: block;
     position: absolute;
     width: 2em;
     height: 1.75em;
     top: 0;
     left: -2.25em;
     box-shadow: none;
+    background-image: none;
     opacity: 0;
     z-index: 1;
     transition: 
@@ -3379,9 +3381,6 @@ article > :not(#TOC) a.link-bibliography-item-self-link:link {
         height 0.1s ease,
         top 0.1s ease,
         left 0.1s ease;
-}
-.link-bibliography-item-self-link::after {
-    display: none;
 }
 #link-bibliography > ol > li > .link-bibliography-item-self-link:hover,
 #link-bibliography > ol > li:target > .link-bibliography-item-self-link {
@@ -3404,6 +3403,21 @@ article > :not(#TOC) a.link-bibliography-item-self-link:link {
     background-color: transparent;
     border: 1px solid var(--GW-body-link-color);
     pointer-events: none;
+}
+
+#link-bibliography > ol > li > .link-bibliography-item-self-link::after {
+    display: none;
+}
+#link-bibliography > ol > li:target > .link-bibliography-item-self-link::after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 100%;
+    width: 2.75em;
+    top: 0;
+    left: 0;
+    margin: 0;
+    pointer-events: auto;
 }
 
 /**********/
