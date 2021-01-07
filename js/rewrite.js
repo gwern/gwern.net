@@ -302,11 +302,11 @@ function educateQuotesInLinkBibliographyEntries() {
 	GWLog("educateQuotesInLinkBibliographyEntries", "rewrite.js", 1);
 
 	document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
-		Typography.processElement(linkBibliographyEntryContent);
+		Typography.processElement(linkBibliographyEntryContent, Typography.replacementTypes.QUOTES);
 
 		//	Educate quotes in image alt-text as well.
 		linkBibliographyEntryContent.querySelectorAll("img").forEach(image => {
-			image.alt = Typography.processString(image.alt);
+			image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
 		});
 	});
 }
