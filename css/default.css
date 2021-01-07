@@ -2772,6 +2772,15 @@ body.directory-index #disqus_thread {
     100% { transform: rotate(360deg); }
 }
 
+.popupdiv.image.loading,
+.popupdiv.image.loading-failed {
+	background-color: var(--GW-body-background-color);
+}
+.popupdiv.image.loading img,
+.popupdiv.image.loading-failed img {
+	visibility: hidden;
+}
+
 .popupdiv > div {
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;

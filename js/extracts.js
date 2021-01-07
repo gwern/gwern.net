@@ -777,6 +777,7 @@ Extracts = {
 			};
 			popup.querySelector("iframe, object").onerror = (event) => {
 				popup.classList.toggle("loading", false);
+				popup.classList.toggle("loading-failed", true);
 				//  TODO: do some sort of "loading failed" message
 			};
 		}
@@ -789,6 +790,7 @@ Extracts = {
 			};
 			popup.querySelector("img").onerror = (event) => {
 				popup.classList.toggle("loading", false);
+				popup.classList.toggle("loading-failed", true);
 				//  TODO: do some sort of "loading failed" message
 			};
 		}
