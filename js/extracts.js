@@ -77,6 +77,9 @@ Extracts = {
     	"lesswrong.com" 
     	],
 
+	imageMaxWidth: 634.0,
+	imageMaxHeight: 474.0,
+
 	/*	Infrastructure.
 		*/
 	referenceElementContainerSelector: "#link-bibliography",
@@ -497,8 +500,20 @@ Extracts = {
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
+		var width = target.dataset.imageWidth;
+		var height = target.dataset.imageHeight;
+
+		if (width > Extracts.imageMaxWidth) {
+			height *= Extracts.imageMaxWidth / width;
+			width = Extracts.imageMaxWidth;
+		}
+		if (height > Extracts.imageMaxHeight) {
+			width *= Extracts.imageMaxHeight / height;
+			height = Extracts.imageMaxHeight;
+		}
+
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-        return `<div><img class="${target.classList}" src="${target.href}" loading="lazy"></div>`;
+        return `<div><img style="width: ${width}px; height: ${height}px;" class="${target.classList}" src="${target.href}" loading="lazy"></div>`;
     },
 
 	//  Locally hosted documents (html, pdf, etc.).
