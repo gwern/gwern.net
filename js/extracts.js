@@ -28,6 +28,7 @@ Extracts = {
 		targetElementsSelector: "a[href], span.defnMetadata", 
 		excludedElementsSelector: [
 			".sidenote-self-link",
+			".link-bibliography-item-self-link",
 			".extract-popup .data-field.title a"
 			].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
