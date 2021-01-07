@@ -3391,17 +3391,16 @@ article > :not(#TOC) a.link-bibliography-item-self-link:link {
     top: -0.25em;
 }
 #link-bibliography > ol > li > .link-bibliography-item-self-link:hover {
-    opacity: 0.55;
+    opacity: 0.45;
     background-color: var(--GW-body-background-color);
-    border: 1px dotted #777;
+    border: 1px dotted var(--GW-body-text-color);
 }
 #link-bibliography > ol > li:target > .link-bibliography-item-self-link {
     opacity: 0.75;
     background-color: transparent;
-    border: 1px solid #777;
+    border: 1px solid var(--GW-body-link-color);
     pointer-events: none;
 }
-
 
 /**********/
 /* POPINS */
