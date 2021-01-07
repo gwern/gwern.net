@@ -83,8 +83,8 @@ Typography = {
 		],
 		ellipses: [
 			// ellipsis rectification
-			[/(\s)\.\.\./g, '$1…'],
-			[/\.\.\.(\s)/g, '…$1']
+			[/(^|\s)\.\.\./g, '$1…'],
+			[/\.\.\.(\s|$)/g, '…$1']
 		],
 		arrows: [
 			// Arrows
