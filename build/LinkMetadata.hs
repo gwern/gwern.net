@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-06 16:52:26 gwern"
+When:  Time-stamp: "2021-01-06 21:18:52 gwern"
 License: CC-0
 -}
 
@@ -137,7 +137,7 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
                                                         case M.lookup (linkCanonicalize $ T.unpack f) mdb of
                                                           Nothing               -> y
                                                           Just (_, _, _, _, "") -> y
-                                                          Just _ -> let a' = if idBool then a else "" in -- erase link ID?
+                                                          Just (tle,aut,dt,doi,abst) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
                                                             if T.head f == '?' then
                                                             Span (a', nubOrd (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
                                                             Link (a', nubOrd (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
@@ -160,7 +160,7 @@ generateListItems :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateListItems (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
-                              Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID `T.append` T.pack("-" ++ (filter (=='.') $ last $ splitPath f)) in
+                              Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID in
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Str "(", Span ("", ["date"], []) [Str (T.pack dt)], Str ")"] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
@@ -271,13 +271,14 @@ generateID url author date
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
                                  -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
                                  let suffix = (let s = take 1 $ reverse $ takeBaseName url in if not (s=="") && isNumber (head s) then "-" ++ s else "") in
-                                 filter (=='.') $ map toLower $ if authorCount >= 3 then
-                                                 firstAuthorSurname ++ "-et-al-" ++ year ++ suffix else
+                                   let suffix' = if suffix == "-1" then "" else suffix in
+                                 filter (/='.') $ map toLower $ if authorCount >= 3 then
+                                                 firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
                                                    if authorCount == 2 then
                                                      let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ (authors !! 1) in
-                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix
+                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix'
                                                    else
-                                                     firstAuthorSurname ++ "-" ++ year ++ suffix
+                                                     firstAuthorSurname ++ "-" ++ year ++ suffix'
 
 linkDispatcher, wikipedia, gwern, arxiv, biorxiv, pubmed :: Path -> IO (Maybe (Path, MetadataItem))
 linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
