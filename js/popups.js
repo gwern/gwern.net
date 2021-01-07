@@ -83,11 +83,15 @@ Popups = {
 		//	Get all targets.
 		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
 			if (   target.closest(targets.excludedElementsSelector) == target
-				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				|| target.closest(targets.excludedContainerElementsSelector) != null) {
+				target.classList.toggle("no-popup", true);
 				return;
+			}
 
-			if (!targets.testTarget(target))
+			if (!targets.testTarget(target)) {
+				target.classList.toggle("no-popup", true);
 				return;
+			}
 
 			//	Bind mouseenter/mouseleave events.
 			target.addEventListener("mouseenter", Popups.targetMouseenter);
@@ -118,11 +122,15 @@ Popups = {
 
 		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
 			if (   target.closest(targets.excludedElementsSelector) == target
-				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				|| target.closest(targets.excludedContainerElementsSelector) != null) {
+				target.classList.toggle("no-popup", false);
 				return;
+			}
 
-			if (!targets.testTarget(target))
+			if (!targets.testTarget(target)) {
+				target.classList.toggle("no-popup", false);
 				return;
+			}
 
 			//	Unbind existing mouseenter/mouseleave events, if any.
 			target.removeEventListener("mouseenter", Popups.targetMouseenter);

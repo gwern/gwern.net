@@ -53,20 +53,16 @@
             linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
             linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
     }
-    #link-bibliography > ol > li > p a.docMetadata,
-    #link-bibliography > ol > li > p span.defnMetadata,
-    li[id^='link-bibliography-entry-'] > p a.docMetadata,
-    li[id^='link-bibliography-entry-'] > p span.defnMetadata,
+    a.no-popup,
+    a.no-popin,
 	body.index .has-annotation,
     body.index .has-content {
         margin: 0;
         padding: 0;
         position: static;
     }
-    #link-bibliography > ol > li > p a.docMetadata::before,
-    #link-bibliography > ol > li > p span.defnMetadata::before,
-    li[id^='link-bibliography-entry-'] > p a.docMetadata::before,
-    li[id^='link-bibliography-entry-'] > p span.defnMetadata::before,
+    a.no-popup::before,
+    a.no-popin::before,
     body.index .has-annotation::before,
     body.index .has-content::before {
         content: none;

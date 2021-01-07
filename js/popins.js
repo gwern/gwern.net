@@ -43,11 +43,15 @@ Popins = {
 		//	Get all targets.
 		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
 			if (   target.closest(targets.excludedElementsSelector) == target
-				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				|| target.closest(targets.excludedContainerElementsSelector) != null) {
+				target.classList.toggle("no-popin", true);
 				return;
+			}
 
-			if (!targets.testTarget(target))
+			if (!targets.testTarget(target)) {
+				target.classList.toggle("no-popin", true);
 				return;
+			}
 
 			//  Run any custom processing.
 			if (targetPrepareFunction)
@@ -71,11 +75,15 @@ Popins = {
 
 		contentContainer.querySelectorAll(targets.targetElementsSelector).forEach(target => {
 			if (   target.closest(targets.excludedElementsSelector) == target
-				|| target.closest(targets.excludedContainerElementsSelector) != null)
+				|| target.closest(targets.excludedContainerElementsSelector) != null) {
+				target.classList.toggle("no-popin", false);
 				return;
+			}
 
-			if (!targets.testTarget(target))
+			if (!targets.testTarget(target)) {
+				target.classList.toggle("no-popin", false);
 				return;
+			}
 
 			//  Remove the popin.
 			Popins.removePopin(target);
