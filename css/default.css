@@ -3389,6 +3389,10 @@ article > :not(#TOC) a.link-bibliography-item-self-link:link {
     height: calc(100% + 0.5em);
     left: -2.25em;
     top: -0.25em;
+    transition: 
+        background-color 0.1s ease,
+        border 0.1s ease,
+        opacity 0.1s ease;
 }
 #link-bibliography > ol > li > .link-bibliography-item-self-link:hover {
     opacity: 0.45;
