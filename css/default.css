@@ -23,7 +23,7 @@
 /*******************/
 
 :root {
-	--GW-sidenotes-max-width: 550px;
+    --GW-sidenotes-max-width: 550px;
 }
 
 /*********************/
@@ -798,14 +798,14 @@ figure.full-width {
     max-width: calc(100% - 2px);
 }
 
-/*	Image alt-text.
-	*/
+/*  Image alt-text.
+    */
 img::before {
-	display: block;
-	font-family: var(--GW-sans-serif-font-stack);
-	padding: 0.5em 0.75em;
-	background-color: var(--GW-body-background-color);
-	text-align: left;
+    display: block;
+    font-family: var(--GW-sans-serif-font-stack);
+    padding: 0.5em 0.75em;
+    background-color: var(--GW-body-background-color);
+    text-align: left;
 }
 
 /***************/
@@ -1186,7 +1186,7 @@ section.footnotes > hr:first-child::before {
     padding: 2em 0 0 0;
 }
 .sidenote.hidden {
-	display: none;
+    display: none;
 }
 .sidenote.highlighted,
 .sidenote:hover,
@@ -1227,7 +1227,7 @@ section.footnotes > hr:first-child::before {
 /*  Outer wrapper (scrolls).
     */
 .sidenote-outer-wrapper {
-	/* max-height is set inline, in sidenotes.js */
+    /* max-height is set inline, in sidenotes.js */
     overflow: hidden;
     position: relative;
     z-index: 1;
@@ -1406,8 +1406,8 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
 }
 
 /*  Margin notes within admonitions need special layout.
-	This is based on the width of the admonition icon area.
-	*/
+    This is based on the width of the admonition icon area.
+    */
 .admonition .marginnote.sidenote {
     width: calc(50vw - ((100% + (2.875em / (0.85/0.875)))/2 + 104px));
 }
@@ -1796,7 +1796,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /*  Make sure that adjusted prices move as a block: no breaking in the middle between the price & sup/sub; this works better than trying to use no-break Unicode entities
     */
 span.inflationAdjusted {
-	white-space: nowrap;
+    white-space: nowrap;
 }
 
 /*************/
@@ -2747,21 +2747,21 @@ body.directory-index #disqus_thread {
 /*  Loading spinner.
     */
 .popupdiv.loading::before {
-	content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
-	position: absolute;
-	width: 3em;
-	height: 6em;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	margin: auto;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	overflow: hidden;
-	opacity: 0.2;
-	animation: fa-spin 2s infinite linear;
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
+    position: absolute;
+    width: 3em;
+    height: 6em;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    opacity: 0.2;
+    animation: fa-spin 2s infinite linear;
 }
 @-webkit-keyframes fa-spin {
     0% { transform: rotate(0deg); }
@@ -2928,7 +2928,7 @@ body.directory-index #disqus_thread {
     font-style: italic;
 }
 .extract-popup .date-plus-cites {
-	display: inline-block;
+    display: inline-block;
 }
 .extract-popup .originalURL {
     font-variant-caps: small-caps;
@@ -2963,7 +2963,7 @@ body.directory-index #disqus_thread {
     float: right;
 }
 .extract-popup figure.float-right .image-wrapper {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 .extract-popup img {
@@ -3300,7 +3300,7 @@ body.directory-index #disqus_thread {
 /*********************/
 
 #link-bibliography {
-	padding: 0 0 2.5rem 1em;
+    padding: 0 0 2.5rem 1em;
 }
 
 #link-bibliography .collapseSummary {
@@ -3355,6 +3355,55 @@ body.directory-index #disqus_thread {
      #link-bibliography > ol > li:nth-of-type(n+2) {
         margin-top: 1em;
     }
+}
+
+/*  Link bibliography self-links.
+    */
+article > :not(#TOC) a.link-bibliography-item-self-link:link {
+    background-image: none;
+}
+#link-bibliography > ol > li > .link-bibliography-item-self-link {
+    position: absolute;
+    width: 2em;
+    height: 1.75em;
+    top: 0;
+    left: -2.25em;
+    box-shadow: none;
+    opacity: 0;
+    z-index: 1;
+    transition: 
+        background-color 0.1s ease,
+        border 0.1s ease,
+        opacity 0.1s ease,
+        width 0.1s ease,
+        height 0.1s ease,
+        top 0.1s ease,
+        left 0.1s ease;
+}
+#link-bibliography > ol > li > .link-bibliography-item-self-link::after {
+    display: none;
+}
+#link-bibliography > ol > li > .link-bibliography-item-self-link:hover,
+#link-bibliography > ol > li:target > .link-bibliography-item-self-link {
+    width: calc(100% + 2.5em);
+    height: calc(100% + 0.5em);
+    left: -2.25em;
+    top: -0.25em;
+    transition: 
+        background-color 0.1s ease,
+        border 0.1s ease,
+        opacity 0.1s ease;
+}
+#link-bibliography > ol > li > .link-bibliography-item-self-link:hover {
+    opacity: 0.45;
+    background-color: var(--GW-body-background-color);
+    border: 1px dotted var(--GW-body-text-color);
+}
+#link-bibliography > ol > li:target > .link-bibliography-item-self-link {
+    opacity: 0.75;
+    background-color: transparent;
+    border: 1px solid var(--GW-body-link-color);
+    pointer-events: none;
 }
 
 /**********/

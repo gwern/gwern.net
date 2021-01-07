@@ -28,6 +28,7 @@ Extracts = {
 		targetElementsSelector: "a[href], span.defnMetadata", 
 		excludedElementsSelector: [
 			".sidenote-self-link",
+			".link-bibliography-item-self-link",
 			".extract-popup .data-field.title a"
 			].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
@@ -70,7 +71,7 @@ Extracts = {
 	/*	Infrastructure.
 		*/
 	referenceElementContainerSelector: "#link-bibliography",
-	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p:first-child",
+	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p",
 	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
 
 	/***********/
