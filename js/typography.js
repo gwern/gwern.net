@@ -17,21 +17,30 @@
 
 Typography = {
 	replacements: (types) => {
-		switch (types) {
-			case Typography.replacementTypes.QUOTES:
-				return Typography.replacementDefinitionGroups.quotes;
-			case Typography.replacementTypes.ALL:
-			default:
-				let allReplacements = [ ];
-				for (group in Typography.replacementDefinitionGroups)
-					for (replacement of Typography.replacementDefinitionGroups[group])
-						allReplacements.push(replacement);
-				return allReplacements;
+		let allReplacements = [ ];
+		let replacementTypeDefinitions = [
+			[ Typography.replacementTypes.QUOTES,		Typography.replacementDefinitionGroups.quotes		],
+			[ Typography.replacementTypes.HYPHENS,		Typography.replacementDefinitionGroups.hyphens		],
+			[ Typography.replacementTypes.ELLIPSES,		Typography.replacementDefinitionGroups.ellipses		],
+			[ Typography.replacementTypes.ARROWS,		Typography.replacementDefinitionGroups.arrows		],
+			[ Typography.replacementTypes.WORDBREAKS,	Typography.replacementDefinitionGroups.wordbreaks	],
+			[ Typography.replacementTypes.MISC,			Typography.replacementDefinitionGroups.misc			]
+		];
+		for ([ replacementTypeCode, replacementGroup ] of replacementTypeDefinitions) {
+			if (types & replacementTypeCode)
+				for (replacement of replacementGroup)
+					allReplacements.push(replacement);
 		}
+		return allReplacements;
 	},
 	replacementTypes: {
-		ALL: 1,
-		QUOTES: 2
+		QUOTES:		0x0001,
+		HYPHENS:	0x0002,
+		ELLIPSES:	0x0004,
+		ARROWS:		0x0008,
+		WORDBREAKS:	0x0010,
+		MISC:		0x0020,
+		ALL: 		(0x0001 + 0x0002 + 0x0004 + 0x0008 + 0x0010 + 0x0020)
 	},
 	replacementDefinitionGroups: {
 		quotes: [
@@ -85,11 +94,13 @@ Typography = {
 			[/(\s)<=(\s)/g, '$1\u21d0$2'],
 			[/(\s)<=>(\s)/g, '$1\u21d4$2']
 		],
+		wordbreaks: [
+			// word-breaks after slashes (for long URLs etc.)
+			[/\/+/g, '$&\u200b'],
+		],
 		misc: [
 			// convert nbsp to regular space
 			[/\xa0/g, ' '],
-			// line-breaks after slashes (for long URLs etc.)
-			[/\/+/g, '$&\u200b'],
 			// Two spaces after a period is INCORRECT.
 			[ /(\w[\.\?\!])[ \u00a0]{2}(\w)/g, '$1 $2'],
 			// Hyphen followed by a numeral (with an optional space first), becomes an actual minus sign
