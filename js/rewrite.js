@@ -280,6 +280,22 @@ function identifyFootnotesSection() {
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
 
+/*	Enable hovering over a link bibliography entry number to link to it, much
+	like the self-links on section headings.
+	*/
+function injectLinkBibliographyItemSelfLinks() {
+	GWLog("injectLinkBibliographyItemSelfLinks", "rewrite.js", 1);
+
+	let linkBibliographyListItems = Array.from(document.querySelector("#link-bibliography > ol").children);
+
+	for (var i = 0; i < linkBibliographyListItems.length; i++) {
+		let id = `link-bibliography-entry-${i + 1}`;
+		linkBibliographyListItems[i].id = id;
+		linkBibliographyListItems[i].insertAdjacentHTML("afterbegin", `<a href="#${id}" class="link-bibliography-item-self-link">&nbsp;</a>`);
+	}
+}
+doWhenDOMContentLoaded(injectLinkBibliographyItemSelfLinks);
+
 /*	Hash realignment.
 	*/
 function realignHash() {
