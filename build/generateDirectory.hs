@@ -3,18 +3,20 @@ module Main where
 
 -- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but, because of the flattened-annotation pass in hakyll.hs, it has a 'Link Bibliography' which provides an automatically-annotated directory interface! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
+import Control.Monad (when)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import Data.Time (getCurrentTime)
-import System.Directory (listDirectory)
+import System.Directory (listDirectory, doesFileExist, renameFile)
 import System.Environment (getArgs)
 import System.FilePath (takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BlockQuote, BulletList, RawBlock, Para), Format(..), Inline(Space, Str, Code, Link, RawInline), Pandoc(Pandoc))
+                    Block(BulletList, Para), Inline(Code, Link), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
+import System.IO.Temp (writeSystemTempFile)
 
-import LinkMetadata (readLinkMetadata, Metadata, MetadataItem)
+import LinkMetadata (readLinkMetadata, Metadata)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -36,7 +38,18 @@ generateDirectory mta tdy dir'' = do
 
   case p of
     Left e   -> hPrint stderr e
-    Right p' -> writeFile (dir'' ++ "index.page") $ header ++ (T.unpack p') ++ generateYAMLFooter
+    -- compare with the old version, and update if there are any differences:
+    Right p' -> do let contentsNew = header ++ (T.unpack p') ++ generateYAMLFooter
+                   t <- writeSystemTempFile "index" contentsNew
+
+                   let target = dir'' ++ "index.page"
+                   existsOld <- doesFileExist target
+
+                   if not existsOld then
+                     writeFile target contentsNew
+                     else
+                     do contentsOld <- readFile target
+                        when (contentsNew /= contentsOld) $ renameFile t target
 
 generateYAMLHeader :: FilePath -> String -> String
 generateYAMLHeader d tdy = "---\n" ++
@@ -73,7 +86,7 @@ lookupFallback :: Metadata -> String -> FilePath
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
                        Just ("","","","","") -> tryPrefix
-                       Just i -> u
+                       Just _ -> u
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
                                            if M.size possibles > 0 then fst $ head $ M.toList possibles else u
 
