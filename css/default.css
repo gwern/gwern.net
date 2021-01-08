@@ -2804,6 +2804,7 @@ body.directory-index #disqus_thread {
 	font-family: var(--GW-sans-serif-font-stack);
 	font-weight: bold;
 	text-transform: uppercase;
+	opacity: 0.35;
 }
 .popupdiv.image.loading-failed::after {
 	content: "Image not found."; 

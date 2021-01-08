@@ -130,6 +130,12 @@ img.invertible-auto:hover {
 	opacity: 0.4;
 }
 
+/*	“Loading failed” messages for object popups.
+	*/
+.popupdiv.loading-failed::after {
+	opacity: 0.4;
+}
+
 /*	The mode selector is adjusted to be better visible in dark mode, and its
 	button icons inverted.
 	*/
