@@ -30,7 +30,7 @@ GW.modeOptions = [
 /******************/
 
 function injectModeSelector() {
-    GWLog("injectModeSelector", "darkmode.js");
+    GWLog("injectModeSelector", "darkmode.js", 1);
 
     // Inject the mode selector widget and activate buttons.
     let modeSelector = addUIElement(
@@ -44,7 +44,7 @@ function injectModeSelector() {
 
     modeSelector.querySelectorAll("button").forEach(button => {
         button.addActivateEvent(GW.modeSelectButtonClicked = (event) => {
-            GWLog("GW.modeSelectButtonClicked", "darkmode.js");
+            GWLog("GW.modeSelectButtonClicked", "darkmode.js", 2);
 
             // Determine which setting was chosen (i.e., which button was clicked).
             let selectedMode = event.target.dataset.name;
@@ -259,6 +259,8 @@ function showModeSelector() {
 /*  Update the states of the mode selector buttons.
     */
 function updateModeSelectorState() {
+    GWLog("updateModeSelectorState", "darkmode.js", 2);
+
     // Get saved mode setting (or default).
     let currentMode = localStorage.getItem("selected-mode") || 'auto';
 
@@ -267,7 +269,7 @@ function updateModeSelectorState() {
     if (modeSelector == null) return;
 
     // Clear current buttons state.
-    modeSelector.childNodes.forEach(button => {
+    modeSelector.querySelectorAll("button").forEach(button => {
         button.classList.remove("active", "selected");
         button.disabled = false;
     });

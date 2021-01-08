@@ -15,7 +15,7 @@
 /*  Set specified color mode (auto, light, dark).
     */
 function setMode(modeOption) {
-    GWLog("setMode", "darkmode.js");
+    GWLog("setMode", "darkmode.js", 1);
 
     // Inject the appropriate styles.
     let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");
