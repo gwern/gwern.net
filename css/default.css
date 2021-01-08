@@ -2775,12 +2775,13 @@ body.directory-index #disqus_thread {
     100% { transform: rotate(360deg); }
 }
 
-.popupdiv.image.loading,
-.popupdiv.image.loading-failed {
+.popupdiv.loading,
+.popupdiv.loading-failed {
 	background-color: var(--GW-body-background-color);
 }
 .popupdiv.image.loading img,
-.popupdiv.image.loading-failed img {
+.popupdiv.image.loading-failed img,
+.popupdiv.object-popup.loading-failed iframe {
 	visibility: hidden;
 }
 

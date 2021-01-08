@@ -75,10 +75,14 @@ Extracts = {
     	"greaterwrong.com", 
     	"www.lesswrong.com",
     	"lesswrong.com" 
-    	],
+    ],
 
 	imageMaxWidth: 634.0,
 	imageMaxHeight: 474.0,
+
+	server404PageTitles: [
+		"404 Not Found"
+	],
 
 	/*	Infrastructure.
 		*/
@@ -533,7 +537,7 @@ Extracts = {
 		if (target.href.match(/\.pdf(#|$)/) != null) {
 			return `<div><object data="${target.href}"></object></div>`;
 		} else {
-			return `<div><iframe src="${target.href}" frameborder="0" allowfullscreen sandbox></iframe></div>`;
+			return `<div><iframe src="${target.href}" frameborder="0" allowfullscreen sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe></div>`;
 		}
     },
 
@@ -768,17 +772,31 @@ Extracts = {
 		}
 
 		//  Loading spinners.
-		if (   Extracts.isLocalDocumentLink(target))
+		if (   Extracts.isLocalDocumentLink(target)
 			|| Extracts.isForeignSiteLink(target)
 			) {
 			popup.classList.toggle("loading", true);
-			popup.querySelector("iframe, object").onload = (event) => {
-				popup.classList.toggle("loading", false);
-			};
-			popup.querySelector("iframe, object").onerror = (event) => {
+
+			//  When loading ends (in success or failure)...
+			let iframeOrObject = popup.querySelector("iframe, object");
+			if (iframeOrObject.tagName == "OBJECT") {
+				//  Objects fire ‘error’ on server error or load fail.
+				iframeOrObject.onload = (event) => {
+					popup.classList.toggle("loading", false);
+				}
+			} else {
+				//  Iframes do not fire ‘error’ on server error.
+				iframeOrObject.onload = (event) => {
+					popup.classList.toggle("loading", false);
+
+					if (Extracts.server404PageTitles.includes(iframeOrObject.contentDocument.title))
+						popup.classList.toggle("loading-failed", true);
+				}
+			}
+			iframeOrObject.onerror = (event) => {
 				popup.classList.toggle("loading", false);
 				popup.classList.toggle("loading-failed", true);
-			};
+			}
 		}
 		if (Extracts.isLocalImageLink(target)) {
 			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
