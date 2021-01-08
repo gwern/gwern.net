@@ -369,7 +369,8 @@ Extracts = {
 
 	//  Local links (to sections of the current page, or other site pages).
     isLocalPageLink: (target) => {
-		if (!target.href) return false;
+		if (  !target.href
+			|| Extracts.isExtractLink(target)) return false;
 
 		return (target.hostname == location.hostname);
 	},
@@ -518,7 +519,8 @@ Extracts = {
 	//  Locally hosted documents (html, pdf, etc.).
     isLocalDocumentLink: (target) => {
 		if (  !target.href
-			|| target.hostname != location.hostname)
+			|| target.hostname != location.hostname
+			|| Extracts.isExtractLink(target))
 			return false;
 
 	    return (   target.pathname.startsWith("/docs/www/")
@@ -766,8 +768,7 @@ Extracts = {
 		}
 
 		//  Loading spinners.
-		if ((  !Extracts.isExtractLink(target)
-			 && Extracts.isLocalDocumentLink(target))
+		if (   Extracts.isLocalDocumentLink(target))
 			|| Extracts.isForeignSiteLink(target)
 			) {
 			popup.classList.toggle("loading", true);
