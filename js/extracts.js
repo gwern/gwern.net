@@ -457,8 +457,7 @@ Extracts = {
 				},
 				onFailure: (event) => {
 					target.popup.classList.toggle("loading", false);
-
-					//  TODO: Inject some sort of "not found" message
+					target.popup.classList.toggle("loading-failed", true);
 				}
 			});
 		}
@@ -575,7 +574,7 @@ Extracts = {
 					},
 					onFailure: (event) => {
 						target.popup.classList.toggle("loading", false);
-						//  TODO: Inject some sort of "not found" message
+						target.popup.classList.toggle("loading-failed", true);
 					}
 				});
 			}
@@ -778,7 +777,6 @@ Extracts = {
 			popup.querySelector("iframe, object").onerror = (event) => {
 				popup.classList.toggle("loading", false);
 				popup.classList.toggle("loading-failed", true);
-				//  TODO: do some sort of "loading failed" message
 			};
 		}
 		if (Extracts.isLocalImageLink(target)) {
@@ -789,9 +787,8 @@ Extracts = {
 				popup.classList.toggle("loading", false);
 			};
 			popup.querySelector("img").onerror = (event) => {
-// 				popup.classList.toggle("loading", false);
+				popup.classList.toggle("loading", false);
 				popup.classList.toggle("loading-failed", true);
-				//  TODO: do some sort of "loading failed" message
 			};
 		}
 
