@@ -2318,6 +2318,9 @@ body.otaku #link-bibliography > ol {
 body.otaku #link-bibliography > ol > li > * {
     box-shadow: -2.5rem 0 0 .5rem var(--GW-body-background-color)
 }
+body.otaku #link-bibliography > ol > li > .link-bibliography-item-self-link {
+    width: 2.75em;
+}
 
 /****************************/
 /* DIRECTORY INDEX LISTINGS */
@@ -3359,6 +3362,10 @@ body.directory-index #disqus_thread {
     overflow: visible;
 }
 
+#link-bibliography > ol > li {
+    margin-bottom: 0.75em;
+}
+
 #link-bibliography > ol > li > * {
     box-shadow: -1.75rem 0 0 0.5rem var(--GW-body-background-color);
 }
@@ -3403,8 +3410,8 @@ body.directory-index #disqus_thread {
     display: block;
     position: absolute;
     width: 2em;
-    height: 1.75em;
-    top: 0;
+    height: 2.125em;
+    top: -0.25em;
     left: -2.25em;
     box-shadow: none;
     background-image: none;
@@ -3424,7 +3431,6 @@ body.directory-index #disqus_thread {
     width: calc(100% + 2.5em);
     height: calc(100% + 0.5em);
     left: -2.25em;
-    top: -0.25em;
     transition: 
         background-color 0.1s ease,
         border 0.1s ease,
