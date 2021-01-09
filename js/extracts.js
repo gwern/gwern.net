@@ -799,7 +799,14 @@ Extracts = {
 				iframeOrObject.onload = (event) => {
 					popup.classList.toggle("loading", false);
 
-					if (Extracts.server404PageTitles.includes(iframeOrObject.contentDocument.title))
+					/*	We do this for local documents only. Cross-origin 
+						protections prevent us from accessing the content of
+						an iframe with a foreign site, so we do nothing special
+						and simply let the foreign site’s server show its usual
+						404 page (or whatever) if the linked page is not found.
+						*/
+					if (   target.hostname == location.hostname
+						&& Extracts.server404PageTitles.includes(iframeOrObject.contentDocument.title))
 						popup.classList.toggle("loading-failed", true);
 				}
 			}
