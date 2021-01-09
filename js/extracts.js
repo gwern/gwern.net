@@ -179,7 +179,7 @@ Extracts = {
 				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
 
 				//  Remove click listener from code popups, to allow selection.
-				if (info.popup.classList.contains("local-code-file-popup"))
+				if (Extracts.isLocalCodeFileLink(info.popup.popupTarget))
 					info.popup.removeEventListener("click", Popups.popupClicked);
 			});
         }
