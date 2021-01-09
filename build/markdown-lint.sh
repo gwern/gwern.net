@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-01-06 16:00:31 gwern"
+# When:  Time-stamp: "2021-01-09 10:55:34 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -22,7 +22,7 @@ do
         wrap λ "Not text, perhaps due to bad copy-paste"
 
         λ(){ egp '[^[:print:]]' "$PAGE"; }
-        wrap λ "File contains unprintable characters."
+        wrap λ "File contains unprintable characters"
 
         λ(){ fgp -e 'http://dl.dropbox' -e 'http://news.ycombinator.com' -e 'http://github.com' \
                  -e 'http://www.coursera.org' -e '.wiley.com/doi/abs/' -e 'http://www.ncbi.nlm.nih.gov/pubmed/' \
@@ -52,7 +52,7 @@ do
 
         ## ban articles written by John Hewitt; he endorses the pig-human pseudoscience, lies about research (eg claiming platypus genome proven to be a bird hybrid), and makes bad arguments (eg his criticism of senolytics because senescent cells do not have a single unique universal signature):
         λ(){ fgrep -e 'phys.org' -- "$PAGE" | fgp -v -e '2019-07-cat-science.html' -e '2017-08-cavemen-genetic-checkup.html' -e'2019-12-mouse-pups-born-eggs-derived.html'; }
-        wrap λ "Phys.org link detected: make sure John Hewitt didn't write it."
+        wrap λ "Phys.org link detected: make sure John Hewitt didn't write it"
 
         λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
         wrap λ "check for aggregator-hosted PDFs and host them on gwern.net to make them visible to Google Scholar/provide backups"
@@ -78,10 +78,10 @@ do
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a long-term div ID)"
 
         λ() { grep --perl-regexp --null-data --only-matching '(?s)\n\<\/div\>\n\n\^\[\!Margin: .....' -- "$PAGE"; }
-        wrap λ "Margin note possibly breaks drop caps by being first item on the first line after an abstract."
+        wrap λ "Margin note possibly breaks drop caps by being first item on the first line after an abstract"
 
         λ() { grep -P -e '[\x{0590}-\x{05FF}]|[\x{0600}-\x{06FF}]'  -- "$PAGE"; }
-        wrap λ "Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide."
+        wrap λ "Check that bidirectional scripts (Hebrew, Arabic) are not displayed; can cause Firefox Mac rendering bugs page-wide"
 
         λ(){ fgrep '~~~{.' -- "$PAGE" | tr -d '{}~' | tr ' ' '\n' | \
                  fgrep -v -e '.R' -e '.collapse' -e '.Haskell' -e '.Bash' -e '.Diff' -e '.Javascript' -e '.numberLines' \
@@ -108,6 +108,9 @@ do
         λ(){ egp '^[^$]* [^\"]\$[^$]*$' -- "$PAGE"; }
         wrap λ "look for unescaped single dollar-signs (risk of future breakage)"
 
+        λ(){ egp -e '[a-zA-Z]- '  -- "$PAGE"; }
+        wrap λ "Write out shortcuts"
+
         λ(){ fgp -e '= ~' -- "$PAGE" | fgp --invert-match ' mods'; }
         wrap λ "Unicodify: instead of writing 'x = ~y', unicode as '≈'"
         λ(){ fgp -e '?!' -e '!?' -e '<->' -e '~>' -- "$PAGE"; }
@@ -118,11 +121,11 @@ do
                  -e '\$\\sqrt{[[:digit:]]}\$' -- "$PAGE"; }
         wrap λ "LaTeX: simplify to Unicode/Markdown"
         λ(){ egp -e '\$\\frac{[0-9]\+}{[0-9]\+}' -- "$PAGE"; }
-        wrap λ "Unicodify: LaTeX for simple numerical fractions is overkill; use '⁄' FRACTION SLASH instead."
+        wrap λ "Unicodify: LaTeX for simple numerical fractions is overkill; use '⁄' FRACTION SLASH instead"
         λ(){ fgrep ' \\times ' -- "$PAGE"; }
         wrap λ "LaTeX: \\cdot is nicer"
         λ(){ fgrep '$$E(' -- "$PAGE"; }
-        wrap λ "LaTeX: use \\mathbb for expectations."
+        wrap λ "LaTeX: use \\mathbb for expectations"
 
         λ(){ fgp -i -e '<div class="admonition-warning">' -e '<div class="admonition-note">' -e '<div class="admonition-error">' \
                  -e '**Warn' -e '**Note' -e '**Error' -- "$PAGE"; }
@@ -158,7 +161,7 @@ do
         wrap λ "HTML validation problems"
 
         λ() { cat "$HTML" | elinks -dump --force-html | egrep 'file:///dev/stdin#.*\..*'; }
-        wrap λ "Header problem: period present (valid HTML but breaks CSS/JS!). Override default Pandoc link fragment with '{#header-without-period}'."
+        wrap λ "Header problem: period present (valid HTML but breaks CSS/JS!). Override default Pandoc link fragment with '{#header-without-period}'"
 
         λ() {  COLLAPSED=$(cat "$HTML" | egrep --after-context=3 '<h[0-7] class="collapse"')
                COLLAPSED_SECTION_COUNT=$(echo "$COLLAPSED" | egrep '<h[0-7] class="collapse"' | wc --lines)
@@ -169,7 +172,7 @@ do
                     echo "Sections: $COLLAPSED_SECTION_COUNT ; summaries: $COLLAPSED_SUMMARY_COUNT"
                     echo "Hits: $COLLAPSED"
                fi; }
-        wrap λ "Missing collapse summaries."
+        wrap λ "Missing collapse summaries"
 
         λ() {  fgp -e "<""del"">" "$HTML";
                elinks -dump --force-html "$HTML" \

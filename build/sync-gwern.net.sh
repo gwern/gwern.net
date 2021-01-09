@@ -35,7 +35,7 @@ then
                docs/sr/ docs/statistics/ docs/statistics/bayes/ docs/statistics/bias/ docs/statistics/causality/ \
                docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
                docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
-               docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/
+               docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ &
 
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/
@@ -77,7 +77,7 @@ then
     export -f syntaxHighlight
     set +e
     find _site/static/ -type f,l -name "*.html" | sort | parallel syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" | sort | fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' | parallel syntaxHighlight
+    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" | sort | fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' | parallel syntaxHighlight &
         # Pandoc fails on embedded Unicode/regexps in JQuery
     set -e
 
@@ -143,7 +143,7 @@ then
     λ(){ egrep '<div class="admonition .*">[^$]' **/*.page; }
     wrap λ "Broken admonition paragraph."
 
-    λ(){ egrep -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e '<p><p>' -e '</p></p>' -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<figure-inline' -e '<small></small>' -e '\]\(/' -- ./metadata/*.yaml; }
+    λ(){ egrep --color -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e '<p><p>' -e '</p></p>' -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<figure-inline' -e '<small></small>' -e '\]\(/' -e '-, ' -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
 
     λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
@@ -368,10 +368,26 @@ then
         c() { curl --compressed --silent --output /dev/null --head "$@"; }
         for PAGE in $PAGES; do
             MIME=$(c --max-redirs 0 --write-out '%{content_type}' "https://www.gwern.net/$PAGE")
-            if [ "$MIME" != "text/html; charset=utf-8" ]; then echo "$PAGE: $MIME"; exit 2; fi
+            if [ "$MIME" != "text/html; charset=utf-8" ]; then echo "\e[41m$PAGE\e[0m: $MIME"; exit 2; fi
 
             SIZE=$(curl --max-redirs 0 --compressed --silent "https://www.gwern.net/$PAGE" | wc --bytes)
-            if [ "$SIZE" -lt 7500 ]; then echo "$PAGE : $SIZE : $MIME" && exit 2; fi
+            if [ "$SIZE" -lt 7500 ]; then echo "\e[41m$PAGE\e[0m : $SIZE : $MIME" && exit 2; fi
+        done
+    fi
+
+    # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
+    if [ $(date +"%j") == "002" ]; then
+        for URL in $(find . -name "*.page" | parallel runhaskell -istatic/build/ static/build/link-extractor.hs | \
+                         egrep -e '^/' | sort -u); do
+            echo "$URL"
+            MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://www.gwern.net$URL");
+            if [[ "$MIME" == "" ]]; then echo "\e[41mredirect!\e[0m $URL"; fi;
+        done
+
+        for URL in $(find . -name "*.page" | parallel runhaskell -istatic/build/ static/build/link-extractor.hs | \
+                         egrep -e '^https://www.gwern.net' | sort -u); do
+            MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
+            if [[ "$MIME" == "" ]]; then echo "\e[41mredirect!\e[0m $URL"; fi;
         done
     fi
 
