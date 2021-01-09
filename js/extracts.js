@@ -690,13 +690,21 @@ Extracts = {
 		let containingDocument = Extracts.originatingDocumentForTarget(target);
 
 		/*  Situationally prevent spawning of citation and citation-context 
-			links, and highlight citations and notes appropriately.
+			links: do not spawn footnote popup if the {side|foot}note it points 
+			to is visible, and do not spawn citation context popup if citation 
+			is visible.
+			*/
+		if (Extracts.isCitation(target)
+			|| Extracts.isCitationBackLink(target)) {
+			let targetElement = containingDocument.querySelector(target.hash);
+			if (   (containingDocument == document && isOnScreen(targetElement))
+				|| (containingDocument != document && isWithinRect(targetElement, containingDocument.getBoundingClientRect())))
+				return false;
+		}
+
+		/*  Highlight citations and notes appropriately.
 			*/
 		if (Extracts.isCitation(target)) {
-			//  Do not spawn footnote popup if sidenote is visible.
-			if (isOnScreen(containingDocument.querySelector(target.hash)))
-				return false;
-
 			/*  Add event listeners to highlight citation when its footnote
 				popup is spawned.
 				*/
@@ -709,11 +717,8 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", Extracts.footnotePopupDespawnHandler = (info) => {
 				target.classList.toggle("highlighted", false);
 			});
-		} else if (Extracts.isCitationBackLink(target)) {
-			//  Do not spawn citation context popup if citation is visible.
-			if (isOnScreen(containingDocument.querySelector(target.hash)))
-				return false;
-
+		}
+		if (Extracts.isCitationBackLink(target)) {
 			/*  Remove the .targeted class from a targeted citation (if any)
 				inside the popup (to prevent confusion with the citation that
 				the spawning link points to, which will be highlighted).

@@ -1902,14 +1902,26 @@ Element.prototype.swapClasses = function (classes, whichToAdd) {
 	this.classList.remove(classes[1 - whichToAdd]);
 };
 
+/*	Returns true if the given rects intersect, false otherwise.
+	*/
+function doRectsIntersect(rectA, rectB) {
+    return (rectA.top < rectB.bottom &&
+            rectA.bottom > rectB.top &&
+            rectA.left < rectB.right &&
+            rectA.right > rectB.left);
+}
+
+/*  Returns true if the given element intersects the given rect, 
+	false otherwise.
+    */
+function isWithinRect(element, rect) {
+	return doRectsIntersect(element.getBoundingClientRect(), rect);
+}
+
 /*  Returns true if the given element intersects the viewport, false otherwise.
     */
 function isOnScreen (element) {
-    let rect = element.getBoundingClientRect();
-    return (rect.top < window.innerHeight &&
-            rect.bottom > 0 &&
-            rect.left < window.innerWidth &&
-            rect.right > 0);
+    return isWithinRect(element, new DOMRect(0, 0, window.innerWidth, window.innerHeight));
 }
 
 /*	Returns the string trimmed of opening/closing quotes.
