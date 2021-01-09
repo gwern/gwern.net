@@ -689,6 +689,9 @@ Extracts = {
 		//	Account for popups spawned from within an external page embed.
 		let containingDocument = Extracts.originatingDocumentForTarget(target);
 
+		/*  Situationally prevent spawning of citation and citation-context 
+			links, and highlight citations and notes appropriately.
+			*/
 		if (Extracts.isCitation(target)) {
 			//  Do not spawn footnote popup if sidenote is visible.
 			if (isOnScreen(containingDocument.querySelector(target.hash)))
@@ -711,17 +714,24 @@ Extracts = {
 			if (isOnScreen(containingDocument.querySelector(target.hash)))
 				return false;
 
-			//  Remove the .targeted class from a targeted citation (if any).
+			/*  Remove the .targeted class from a targeted citation (if any)
+				inside the popup (to prevent confusion with the citation that
+				the spawning link points to, which will be highlighted).
+				*/
 			popup.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
 				targetedCitation.classList.remove("targeted");
 			});
 
-			//  Highlight citation in a citation context popup.
+			/*  In the popup, highlight the citation for which context is being
+				shown.
+				*/
 			popup.querySelector(target.hash).classList.add("highlighted");
-		} else if (Extracts.isTOCLink(target)) {
+		}
+
+		//  Special positioning for section links spawned by the TOC.
+		if (Extracts.isTOCLink(target)) {
 			popup.classList.add("toc-section-popup");
 
-			//  Special positioning for section links spawned by the TOC.
 			target.popupSpecialPositioningFunction = (preparedPopup, popupTarget, mouseEvent) => {
 				let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 				let mouseEnterEventPositionInPopupContainer = {
