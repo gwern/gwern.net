@@ -76,7 +76,7 @@ span.defnMetadata {
     background-size: 2px 1px;
 }
 span.defnMetadata:hover {
-    color: var(--GW-link-hover-color);
+    color: var(--GW-body-link-hover-color);
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
 

@@ -569,10 +569,10 @@ table, code, pre, a, h1, h2, h3, h4, h5, h6 { /* Skip old-style figures in eleme
 /* LINKS */
 /*********/
 
-article > :not(#TOC) a:hover,
+a:hover,
 #footer a:hover,
 #sidebar a:hover {
-    color: var(--GW-link-hover-color);
+    color: var(--GW-body-link-hover-color);
 }
 
 /*=-----------------------------------------=*/
@@ -1378,6 +1378,9 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     color: var(--GW-body-text-color);
     font-family: var(--GW-serif-font-stack);
 }
+.marginnote.inline {
+    color: inherit;
+}
 .marginnote.sidenote {
     display: initial;
     width: calc(50vw - (50% + 104px));
@@ -2119,6 +2122,35 @@ span.inflationAdjusted {
     border: none;
     padding-left: 0;
     font-size: unset;
+}
+
+.admonition .footnote-ref {
+	text-shadow: none;
+}
+
+.admonition.warn,
+.admonition.warning,
+.admonition.error {
+    --GW-link-underline-gradient-line-color: var(--GW-admonition-reversed-link-underline-gradient-line-color);
+    --GW-link-underline-gradient-line-color-hover: var(--GW-admonition-reversed-link-underline-gradient-line-color-hover);
+    --GW-footnote-ref-highlight-background-color: var(--GW-admonition-reversed-footnote-ref-highlight-background-color);
+}
+.admonition.warn,
+.admonition.warning {
+    --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMZqamv///ywAAAAABAACAAACBEwAhgUAOw==');
+}
+.admonition.error {
+    --GW-dotted-underline-background-image: url('data:image/gif;base64,R0lGODlhBAACAPAAMVpaWv///ywAAAAABAACAAACBEwAhgUAOw==');
+}
+.admonition.warn a,
+.admonition.warning a,
+.admonition.error a {
+	color: var(--GW-admonition-reversed-link-color);
+}
+.admonition.warn a:hover,
+.admonition.warning a:hover,
+.admonition.error a:hover {
+	color: var(--GW-admonition-reversed-link-color-hover);
 }
 
 /*******************************/

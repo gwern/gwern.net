@@ -4,7 +4,7 @@
     --GW-body-background-color: #fff;
     --GW-body-text-color: #000;
     --GW-body-link-color: #272727;
-    --GW-link-hover-color: #888;
+    --GW-body-link-hover-color: #888;
 
     /*  Selection.
         */
@@ -192,6 +192,11 @@
     --GW-admonition-error-text-color: #fff;
     --GW-admonition-error-title-background-color: #2d2d2d;
     --GW-admonition-error-icon-color: #fff;
+    --GW-admonition-reversed-link-color: #ddd;
+    --GW-admonition-reversed-link-color-hover: #ccc;
+    --GW-admonition-reversed-link-underline-gradient-line-color: #ccc;
+    --GW-admonition-reversed-link-underline-gradient-line-color-hover: #bbb;
+    --GW-admonition-reversed-footnote-ref-highlight-background-color: rgba(90,90,90,0.75);
 
     /*  Sequential nav UI.
         */
@@ -211,7 +216,7 @@
     --GW-popups-popup-background-color: var(--GW-body-background-color);
     --GW-popups-popup-border-color: #aaa;
     --GW-popups-box-shadow-color: #aaa;
-    --GW-popups-popup-link-hover-color: var(--GW-link-hover-color);
+    --GW-popups-popup-link-hover-color: var(--GW-body-link-hover-color);
     --GW-popups-popup-scrollbar-thumb-color: #ccc;
     --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
     --GW-popups-popup-scrollbar-thumb-hover-color: #999;
