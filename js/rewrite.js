@@ -237,6 +237,65 @@ GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", () 
 }, { once: true });
 doWhenPageLoaded(expandFullWidthBlocks);
 
+/*********************/
+/* LINK BIBLIOGRAPHY */
+/*********************/
+
+function injectLinkBibliography() {
+	GWLog("injectLinkBibliography", "rewrite.js", 1);
+
+	let linkBibliographyURL = new URL(location);
+	linkBibliographyURL.pathname = location.pathname + "-link-bibliography";
+
+	doAjax({
+		location: linkBibliographyURL.href,
+		onSuccess: (event) => {
+			let linkBibliography = document.querySelector("#link-bibliography");
+			linkBibliography.innerHTML = `${event.target.responseText}`;
+			GW.notificationCenter.fireEvent("Rewrite.linkBibliographyDidLoad", { linkBibliography: linkBibliography });
+		},
+		onFailure: (event) => {
+			//  TODO: Inject some sort of "not found" message
+		}
+	});
+}
+doWhenDOMContentLoaded(injectLinkBibliography);
+GW.notificationCenter.addHandlerForEvent("Rewrite.linkBibliographyDidLoad", (info) => {
+	/*	Add .collapse class to the link bibliography section.
+		*/
+	info.linkBibliography.classList.toggle("collapse", true);
+
+	/*	Enable hovering over a link bibliography entry number to link to it, much
+		like the self-links on section headings.
+		*/
+	GWLog("injectLinkBibliographyItemSelfLinks", "rewrite.js", 1);
+
+	let linkBibliographyListItems = Array.from(document.querySelector("#link-bibliography > ol").children);
+
+	for (var i = 0; i < linkBibliographyListItems.length; i++) {
+		let id = `link-bibliography-entry-${i + 1}`;
+		linkBibliographyListItems[i].id = id;
+		linkBibliographyListItems[i].insertAdjacentHTML("afterbegin", `<a href="#${id}" class="link-bibliography-item-self-link">&nbsp;</a>`);
+	}
+
+	/*	Requires typography.js to be loaded prior to this file.
+		*/
+	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
+
+	document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
+		Typography.processElement(linkBibliographyEntryContent, 
+			  Typography.replacementTypes.QUOTES 
+			| Typography.replacementTypes.WORDBREAKS 
+			| Typography.replacementTypes.ELLIPSES 
+		);
+
+		//	Educate quotes in image alt-text.
+		linkBibliographyEntryContent.querySelectorAll("img").forEach(image => {
+			image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
+		});
+	});
+});
+
 /*********/
 /* MISC. */
 /*********/
@@ -279,42 +338,6 @@ function identifyFootnotesSection() {
 		footnotesSection.id = "footnotes";
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
-
-/*	Enable hovering over a link bibliography entry number to link to it, much
-	like the self-links on section headings.
-	*/
-function injectLinkBibliographyItemSelfLinks() {
-	GWLog("injectLinkBibliographyItemSelfLinks", "rewrite.js", 1);
-
-	let linkBibliographyListItems = Array.from(document.querySelector("#link-bibliography > ol").children);
-
-	for (var i = 0; i < linkBibliographyListItems.length; i++) {
-		let id = `link-bibliography-entry-${i + 1}`;
-		linkBibliographyListItems[i].id = id;
-		linkBibliographyListItems[i].insertAdjacentHTML("afterbegin", `<a href="#${id}" class="link-bibliography-item-self-link">&nbsp;</a>`);
-	}
-}
-doWhenDOMContentLoaded(injectLinkBibliographyItemSelfLinks);
-
-/*	Requires typography.js to be loaded prior to this file.
-	*/
-function rectifyTypographyInLinkBibliographyEntries() {
-	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
-
-	document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
-		Typography.processElement(linkBibliographyEntryContent, 
-			  Typography.replacementTypes.QUOTES 
-			| Typography.replacementTypes.WORDBREAKS 
-			| Typography.replacementTypes.ELLIPSES 
-		);
-
-		//	Educate quotes in image alt-text.
-		linkBibliographyEntryContent.querySelectorAll("img").forEach(image => {
-			image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
-		});
-	});
-}
-doWhenDOMContentLoaded(rectifyTypographyInLinkBibliographyEntries);
 
 /*	Hash realignment.
 	*/
