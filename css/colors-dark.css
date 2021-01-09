@@ -196,6 +196,7 @@
     --GW-admonition-reversed-link-color-hover: #5c5c5c;
     --GW-admonition-reversed-link-underline-gradient-line-color: #5c5c5c;
     --GW-admonition-reversed-link-underline-gradient-line-color-hover: #6c6c6c;
+    --GW-admonition-reversed-footnote-ref-highlight-background-color: rgba(189, 189, 189, 0.75);
 
     /*  Sequential nav UI.
         */

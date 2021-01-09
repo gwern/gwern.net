@@ -2124,11 +2124,16 @@ span.inflationAdjusted {
     font-size: unset;
 }
 
+.admonition .footnote-ref {
+	text-shadow: none;
+}
+
 .admonition.warn,
 .admonition.warning,
 .admonition.error {
     --GW-link-underline-gradient-line-color: var(--GW-admonition-reversed-link-underline-gradient-line-color);
     --GW-link-underline-gradient-line-color-hover: var(--GW-admonition-reversed-link-underline-gradient-line-color-hover);
+    --GW-footnote-ref-highlight-background-color: var(--GW-admonition-reversed-footnote-ref-highlight-background-color);
 }
 .admonition.warn,
 .admonition.warning {
@@ -2147,7 +2152,6 @@ span.inflationAdjusted {
 .admonition.error a:hover {
 	color: var(--GW-admonition-reversed-link-color-hover);
 }
-
 /*******************************/
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
