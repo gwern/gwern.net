@@ -784,19 +784,15 @@ Extracts = {
 		//  Loading spinners.
 		if (   Extracts.isLocalDocumentLink(target)
 			|| Extracts.isForeignSiteLink(target)
+			|| Extracts.isLocalImageLink(target)
 			) {
 			popup.classList.toggle("loading", true);
 
 			//  When loading ends (in success or failure)...
-			let iframeOrObject = popup.querySelector("iframe, object");
-			if (iframeOrObject.tagName == "OBJECT") {
-				//  Objects fire ‘error’ on server error or load fail.
-				iframeOrObject.onload = (event) => {
-					popup.classList.toggle("loading", false);
-				}
-			} else {
+			let objectOfSomeSort = popup.querySelector("iframe, object, img");
+			if (objectOfSomeSort.tagName == "IFRAME") {
 				//  Iframes do not fire ‘error’ on server error.
-				iframeOrObject.onload = (event) => {
+				objectOfSomeSort.onload = (event) => {
 					popup.classList.toggle("loading", false);
 
 					/*	We do this for local documents only. Cross-origin 
@@ -806,26 +802,27 @@ Extracts = {
 						404 page (or whatever) if the linked page is not found.
 						*/
 					if (   target.hostname == location.hostname
-						&& Extracts.server404PageTitles.includes(iframeOrObject.contentDocument.title))
+						&& Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title))
 						popup.classList.toggle("loading-failed", true);
-				}
+				};
+			} else {
+				//  Objects & images fire ‘error’ on server error or load fail.
+				objectOfSomeSort.onload = (event) => {
+					popup.classList.toggle("loading", false);
+				};
 			}
-			iframeOrObject.onerror = (event) => {
+			/*  We set an ‘error’ handler for *all* types of entity, even 
+				iframes, just in case.
+				*/
+			objectOfSomeSort.onerror = (event) => {
 				popup.classList.toggle("loading", false);
 				popup.classList.toggle("loading-failed", true);
-			}
+			};
 		}
+
+		//  Remove extraneous classes from images in image popups.
 		if (Extracts.isLocalImageLink(target)) {
 			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
-
-			popup.classList.toggle("loading", true);
-			popup.querySelector("img").onload = (event) => {
-				popup.classList.toggle("loading", false);
-			};
-			popup.querySelector("img").onerror = (event) => {
-				popup.classList.toggle("loading", false);
-				popup.classList.toggle("loading-failed", true);
-			};
 		}
 
 		return true;
