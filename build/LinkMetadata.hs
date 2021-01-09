@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-09 16:54:31 gwern"
+When:  Time-stamp: "2021-01-09 17:08:07 gwern"
 License: CC-0
 -}
 
@@ -33,7 +33,7 @@ import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
 import System.Directory (doesFileExist)
-import System.FilePath (takeBaseName, takeFileName, takeExtension, splitPath)
+import System.FilePath (takeBaseName, takeFileName, takeExtension)
 import Data.List.Utils (replace, split, uniq)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
@@ -137,7 +137,7 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
                                                         case M.lookup (linkCanonicalize $ T.unpack f) mdb of
                                                           Nothing               -> y
                                                           Just (_, _, _, _, "") -> y
-                                                          Just (tle,aut,dt,doi,abst) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
+                                                          Just (_,aut,dt,_,_) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
                                                             if T.head f == '?' then
                                                             Span (a', nubOrd (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
                                                             Link (a', nubOrd (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
