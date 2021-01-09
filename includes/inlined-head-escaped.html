@@ -1552,6 +1552,12 @@ body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
     filter: invert(1);
 }
 
+div.admonition.warn,
+div.admonition.warning,
+div.admonition.error {
+    --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
+}
+
 /*	List bullets are SVGs and have to be inverted.
 	*/
 ul > li::before {
