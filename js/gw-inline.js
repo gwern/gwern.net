@@ -181,7 +181,7 @@ function doWhenPageLoaded(f) {
     if (document.readyState == "complete")
         f();
     else
-        window.addEventListener("load", f);
+        window.addEventListener("load", () => { f(); });
 }
 
 /*  Run the given function immediately if the page content has already loaded
@@ -192,7 +192,7 @@ function doWhenDOMContentLoaded(f) {
     if (GW.DOMContentLoaded == true)
         f();
     else
-        window.addEventListener("DOMContentLoaded", f);
+        window.addEventListener("DOMContentLoaded", () => { f(); });
 }
 
 /*  Given an HTML string, creates an element from that HTML, adds it to
