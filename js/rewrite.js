@@ -322,12 +322,27 @@ function rectifyTypographyInLinkBibliographyEntries(containingDocument = documen
 }
 doWhenDOMContentLoaded(rectifyTypographyInLinkBibliographyEntries);
 
+/*	Sets, in CSS, the image dimensions that are specified in HTML.
+	*/
+function setImageDimensionsInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
+	GWLog("setImageDimensionsInLinkBibliographyEntries", "rewrite.js", 1);
+
+	containingDocument.querySelectorAll("#link-bibliography figure img").forEach(image => {
+		if (image.width && image.height) {
+			image.style.width = image.getAttribute("width") + "px";
+			image.style.height = image.getAttribute("height") + "px";
+		}
+	});
+}
+doWhenDOMContentLoaded(setImageDimensionsInLinkBibliographyEntries);
+
 /*	Add handler for link bibliography in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
 	if (info.fullPage) {
 		injectLinkBibliographyItemSelfLinks(info.document);
 		rectifyTypographyInLinkBibliographyEntries(info.document);
+		setImageDimensionsInLinkBibliographyEntries(info.document);
 	}
 });
 
