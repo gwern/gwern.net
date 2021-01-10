@@ -354,7 +354,7 @@ function directionalizeAnchorLinks(containingDocument = document.firstElementChi
 
 	containingDocument.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
 		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
-			|| identifierLink.closest(".footnote-ref, .footnote-back, .sidenote-self-link"))
+			|| identifierLink.closest(".footnote-ref, .footnote-back, .sidenote-self-link, .link-bibliography-item-self-link"))
 			return;
 		target = containingDocument.querySelector(identifierLink.getAttribute("href"));
 		if (!target) return;
