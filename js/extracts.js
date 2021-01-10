@@ -399,7 +399,7 @@ Extracts = {
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
-        let targetElement = Extracts.originatingDocumentForTarget(target).querySelector(target.hash);
+        let targetElement = Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash));
         let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
 
 		//  Unwrap sections and {foot|side}notes from their containers.
@@ -442,7 +442,7 @@ Extracts = {
 
 			//  Scroll to the target.
 			if (target.hash > "")
-				target.popup.scrollTop = target.popup.querySelector(target.hash).getBoundingClientRect().top - target.popup.getBoundingClientRect().top;
+				target.popup.scrollTop = target.popup.querySelector(decodeURIComponent(target.hash)).getBoundingClientRect().top - target.popup.getBoundingClientRect().top;
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
@@ -697,7 +697,7 @@ Extracts = {
 			*/
 		if (Extracts.isCitation(target)
 			|| Extracts.isCitationBackLink(target)) {
-			let targetElement = containingDocument.querySelector(target.hash);
+			let targetElement = containingDocument.querySelector(decodeURIComponent(target.hash));
 			if (   (isMainDocument(containingDocument) && isOnScreen(targetElement))
 				|| (!isMainDocument(containingDocument) && isWithinRect(targetElement, containingDocument.getBoundingClientRect())))
 				return false;
@@ -731,7 +731,7 @@ Extracts = {
 			/*  In the popup, highlight the citation for which context is being
 				shown.
 				*/
-			popup.querySelector(target.hash).classList.add("highlighted");
+			popup.querySelector(decodeURIComponent(target.hash)).classList.add("highlighted");
 		}
 
 		//  Special positioning for section links spawned by the TOC.
