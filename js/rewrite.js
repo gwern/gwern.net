@@ -55,6 +55,9 @@ doWhenDOMContentLoaded(wrapFullWidthTables);
 /*	Add handler for tables in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processTablesInInjectedContent = (info) => {
+	if (!info.needsRewrite)
+		return;
+
 	wrapTables(info.document);
 	if (info.fullWidthPossible)
 		wrapFullWidthTables(info.document);
@@ -132,6 +135,9 @@ doWhenDOMContentLoaded(markFullWidthFigures);
 /*	Add handler for figures in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFiguresInInjectedContent = (info) => {
+	if (!info.needsRewrite)
+		return;
+
 	wrapFigures(info.document);
 	if (info.fullWidthPossible)
 		markFullWidthFigures(info.document);
@@ -163,6 +169,9 @@ doWhenDOMContentLoaded(wrapFullWidthPreBlocks);
 /*	Add handler for code blocks in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processCodeBlocksInInjectedContent = (info) => {
+	if (!info.needsRewrite)
+		return;
+
 	if (info.fullWidthPossible)
 		wrapFullWidthPreBlocks(info.document);
 });
@@ -278,6 +287,9 @@ doWhenPageLoaded(setMarginsOnFullWidthBlocks);
 /*	Add handler for full-width blocks in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFullWidthBlocksInInjectedContent = (info) => {
+	if (!info.needsRewrite)
+		return;
+
 	if (info.fullWidthPossible)
 		setMarginsOnFullWidthBlocks(info.document);
 });
@@ -347,6 +359,9 @@ doWhenDOMContentLoaded(fullyQualifyLinksInLinkBibliographyEntries);
 /*	Add handler for link bibliography in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
+	if (!info.needsRewrite)
+		return;
+
 	if (info.fullPage) {
 		injectLinkBibliographyItemSelfLinks(info.document);
 		rectifyTypographyInLinkBibliographyEntries(info.document);
@@ -401,6 +416,9 @@ doWhenDOMContentLoaded(identifyFootnotesSection);
 /*	Add handler for miscellaneous rewriting in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processMiscellaneousRewritesInInjectedContent = (info) => {
+	if (!info.needsRewrite)
+		return;
+
 	cleanUpImageAltText(info.document);
 	directionalizeAnchorLinks(info.document);
 	if (info.fullPage)
