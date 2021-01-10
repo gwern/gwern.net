@@ -461,8 +461,7 @@ Extracts = {
 					fillPopup(Extracts.cachedPages[target.pathname]);
 				},
 				onFailure: (event) => {
-					target.popup.classList.toggle("loading", false);
-					target.popup.classList.toggle("loading-failed", true);
+					target.popup.swapClasses([ "loading", "loading-failed" ], 1);
 				}
 			});
 		}
@@ -579,8 +578,7 @@ Extracts = {
 						target.popup.innerHTML = `<div><pre><code>${htmlEncodedResponse}</code></pre></div>`;
 					},
 					onFailure: (event) => {
-						target.popup.classList.toggle("loading", false);
-						target.popup.classList.toggle("loading-failed", true);
+						target.popup.swapClasses([ "loading", "loading-failed" ], 1);
 					}
 				});
 			}
@@ -820,8 +818,7 @@ Extracts = {
 				iframes, just in case.
 				*/
 			objectOfSomeSort.onerror = (event) => {
-				popup.classList.toggle("loading", false);
-				popup.classList.toggle("loading-failed", true);
+				popup.swapClasses([ "loading", "loading-failed" ], 1);
 			};
 		}
 
