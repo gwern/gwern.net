@@ -645,7 +645,7 @@ Sidenotes = {
 					/*	Add event handler to (asynchronously) recompute sidenote positioning 
 						when full-width media lazy-loads.
 						*/
-					GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks = () => {
+					GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = () => {
 						requestAnimationFrame(Sidenotes.updateSidenotePositions);
 					});
 
@@ -658,14 +658,14 @@ Sidenotes = {
 				} else {
 					/*	Deactivate notification handlers.
 						*/
-					GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
+					GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 					GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 					GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
 				}
 			}, null, (mediaQuery) => {
 				/*	Deactivate notification handlers.
 					*/
-				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterDidExpandFullWidthBlocks);
+				GW.notificationCenter.removeHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.collapseStateDidChange", Sidenotes.updateSidenotePositionsAfterCollapseStateDidChange);
 				GW.notificationCenter.removeHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate);
 			});

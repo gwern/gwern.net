@@ -8,11 +8,11 @@
 
 /*  Wrap each table in a div.table-wrapper (for layout purposes).
     */
-function wrapTables() {
+function wrapTables(containingDocument = document) {
 	GWLog("wrapTables", "rewrite.js", 1);
 
 	let wrapperClass = "table-wrapper";
-	document.querySelectorAll("table").forEach(table => {
+	containingDocument.querySelectorAll("table").forEach(table => {
 		if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
 			table.parentElement.classList.toggle(wrapperClass, true);
 		else
@@ -25,10 +25,12 @@ doWhenDOMContentLoaded(wrapTables);
 	the .collapse class (if any) from the outer wrapper to the table (for
 	consistency).
 	*/
-function wrapFullWidthTables() {
+function wrapFullWidthTables(containingDocument = document) {
+	GWLog("wrapFullWidthTables", "rewrite.js", 1);
+
 	let fullWidthClass = "full-width";
 	let fullWidthInnerWrapperClass = "full-width-table-inner-wrapper";
-	document.querySelectorAll(`.table-wrapper.${fullWidthClass}`).forEach(fullWidthTableWrapper => {
+	containingDocument.querySelectorAll(`.table-wrapper.${fullWidthClass}`).forEach(fullWidthTableWrapper => {
 		if (fullWidthTableWrapper.classList.contains("collapse")) {
 			fullWidthTableWrapper.classList.remove("collapse");
 			fullWidthTableWrapper.firstElementChild.classList.add("collapse");
@@ -45,10 +47,10 @@ doWhenDOMContentLoaded(wrapFullWidthTables);
 
 /*  Inject wrappers into figures.
     */
-function wrapFigures() {
+function wrapFigures(containingDocument = document) {
 	GWLog("wrapFigures", "rewrite.js", 1);
 
-	document.querySelectorAll("figure").forEach(figure => {
+	containingDocument.querySelectorAll("figure").forEach(figure => {
 		let media = figure.querySelector("img, audio, video");
 		let caption = figure.querySelector("figcaption");
 
@@ -84,10 +86,12 @@ doWhenDOMContentLoaded(wrapFigures);
 
 /*	Designate full-width figures as such (with a ‘full-width’ class).
 	*/
-function markFullWidthFigures() {
+function markFullWidthFigures(containingDocument = document) {
+	GWLog("markFullWidthFigures", "rewrite.js", 1);
+
 	let fullWidthClass = "full-width";
 
-	let allFullWidthMedia = document.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
+	let allFullWidthMedia = containingDocument.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
     allFullWidthMedia.forEach(fullWidthMedia => {
         fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
     });
@@ -113,12 +117,12 @@ doWhenDOMContentLoaded(markFullWidthFigures);
 /*  Wrap each pre.full-width in a div.full-width and a 
 	div.full-width-code-block-wrapper (for layout purposes).
     */
-function wrapFullWidthPreBlocks() {
+function wrapFullWidthPreBlocks(containingDocument = document) {
 	GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
 	let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
-	document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
+	containingDocument.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
 		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
 			fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
 		else
@@ -160,15 +164,8 @@ window.addEventListener("copy", GW.textCopied = (event) => {
     ‘full-width’, and all figures marked with class ‘full-width’, to span the 
     viewport (minus a specified margin on both sides).
     */
-function expandFullWidthBlocks() {
-	GWLog("expandFullWidthBlocks", "rewrite.js", 1);
-
-	//  TODO: active media queries to switch between mobile and non-mobile
-
-	/*	On narrow (“mobile”) viewports, do no layout (figures on mobile are
-		already as “full-width” as they’re going to get).
-		*/
-	if (GW.mediaQueries.mobileWidth.matches) return;
+function createFullWidthBlockLayoutStyles() {
+	GWLog("createFullWidthBlockLayoutStyles", "rewrite.js", 1);
 
 	/*	Configuration and dynamic value storage.
 		*/
@@ -193,14 +190,6 @@ function expandFullWidthBlocks() {
 	let updateFullWidthBlockLayoutStyles = () => {
 		GWLog("updateFullWidthBlockLayoutStyles", "rewrite.js", 2);
 
-		if (GW.mediaQueries.mobileWidth.matches) {
-			document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
-				fullWidthBlock.style.marginLeft = "";
-				fullWidthBlock.style.marginRight = "";
-			});
-			return;
-		}
-
 		GW.fullWidthBlockLayout.pageWidth = rootElement.offsetWidth;
 
 		let markdownBodyRect = markdownBody.getBoundingClientRect();
@@ -215,27 +204,42 @@ function expandFullWidthBlocks() {
 	};
 	updateFullWidthBlockLayoutStyles();
 
-	/*	Set margins of full-width blocks.
-		*/
-    document.querySelectorAll("div.full-width, figure.full-width").forEach(fullWidthBlock => {
-		fullWidthBlock.style.marginLeft = `calc((-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0)) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
-		fullWidthBlock.style.marginRight = `calc((var(--GW-full-width-block-layout-left-adjustment) / 2.0) + var(--GW-full-width-block-layout-side-margin) - (var(--GW-full-width-block-layout-page-width) - 100%)/2)`;
-    });
-
 	/*	Add listener to update layout variables on window resize.
 		*/
 	window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
-
-	GW.notificationCenter.fireEvent("Rewrite.didExpandFullWidthBlocks");
 }
-GW.notificationCenter.addHandlerForEvent("Rewrite.didExpandFullWidthBlocks", () => {
-	GW.notificationCenter.fireEvent("Rewrite.pageLayoutWillComplete");
-	requestAnimationFrame(() => {
-		GW.pageLayoutComplete = true;
-		GW.notificationCenter.fireEvent("Rewrite.pageLayoutDidComplete");
+doWhenPageLoaded(createFullWidthBlockLayoutStyles);
+
+/*	Set margins of full-width blocks.
+	*/
+function setMarginsOnFullWidthBlocks(containingDocument = document) {
+	GWLog("setMarginsOnFullWidthBlocks", "rewrite.js", 1);
+
+	//  Get all full-width blocks in the given document.
+	let allFullWidthBlocks = containingDocument.querySelectorAll("div.full-width, figure.full-width");
+
+	//  Un-expand when mobile width, expand otherwise.
+	doWhenMatchMedia(GW.mediaQueries.mobileWidth, "updateFullWidthBlockExpansionForCurrentWidthClass", () => {
+		allFullWidthBlocks.forEach(fullWidthBlock => {
+			fullWidthBlock.style.marginLeft = "";
+			fullWidthBlock.style.marginRight = "";
+		});
+	}, () => {
+		allFullWidthBlocks.forEach(fullWidthBlock => {
+			fullWidthBlock.style.marginLeft = `calc(
+													(-1 * (var(--GW-full-width-block-layout-left-adjustment) / 2.0)) 
+												  + (var(--GW-full-width-block-layout-side-margin))
+												  - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+												)`;
+			fullWidthBlock.style.marginRight = `calc(
+													 (var(--GW-full-width-block-layout-left-adjustment) / 2.0) 
+												   + (var(--GW-full-width-block-layout-side-margin))
+												   - ((var(--GW-full-width-block-layout-page-width) - 100%) / 2.0)
+												)`;
+		});
 	});
-}, { once: true });
-doWhenPageLoaded(expandFullWidthBlocks);
+}
+doWhenPageLoaded(setMarginsOnFullWidthBlocks);
 
 /*********************/
 /* LINK BIBLIOGRAPHY */
@@ -244,10 +248,10 @@ doWhenPageLoaded(expandFullWidthBlocks);
 /*	Enable hovering over a link bibliography entry number to link to it, much
 	like the self-links on section headings.
 	*/
-function injectLinkBibliographyItemSelfLinks() {
+function injectLinkBibliographyItemSelfLinks(containingDocument = document) {
 	GWLog("injectLinkBibliographyItemSelfLinks", "rewrite.js", 1);
 
-	let linkBibliographyListItems = Array.from(document.querySelector("#link-bibliography > ol").children);
+	let linkBibliographyListItems = Array.from(containingDocument.querySelector("#link-bibliography > ol").children);
 
 	for (var i = 0; i < linkBibliographyListItems.length; i++) {
 		let id = `link-bibliography-entry-${i + 1}`;
@@ -259,10 +263,10 @@ doWhenDOMContentLoaded(injectLinkBibliographyItemSelfLinks);
 
 /*	Requires typography.js to be loaded prior to this file.
 	*/
-function rectifyTypographyInLinkBibliographyEntries() {
+function rectifyTypographyInLinkBibliographyEntries(containingDocument = document) {
 	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
 
-	document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
+	containingDocument.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
 		Typography.processElement(linkBibliographyEntryContent, 
 			  Typography.replacementTypes.QUOTES 
 			| Typography.replacementTypes.WORDBREAKS 
@@ -284,10 +288,10 @@ doWhenDOMContentLoaded(rectifyTypographyInLinkBibliographyEntries);
 /*	Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
 	right? Yeah, right...)
 	*/
-function cleanUpImageAltText() {
+function cleanUpImageAltText(containingDocument = document) {
 	GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
-	document.querySelectorAll("img[alt]").forEach(image => {
+	containingDocument.querySelectorAll("img[alt]").forEach(image => {
 		image.alt = decodeURIComponent(image.alt);
 	});
 }
@@ -295,14 +299,14 @@ doWhenDOMContentLoaded(cleanUpImageAltText);
 
 /*	Directional navigation links on self-links: for each self-link like “see [later](#later-identifier)”, find the linked identifier, whether it’s before or after, and if it is before/previously, annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a backwards link to a identifier already read, or an unread identifier.
 	*/
-function directionalizeAnchorLinks() {
+function directionalizeAnchorLinks(containingDocument = document) {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
-	document.body.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
+	containingDocument.body.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
 		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
 			|| identifierLink.closest(".footnote-ref, .footnote-back, .sidenote-self-link"))
 			return;
-		target = document.body.querySelector(identifierLink.getAttribute("href"));
+		target = containingDocument.body.querySelector(identifierLink.getAttribute("href"));
 		if (!target) return;
 		identifierLink.classList.add((identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 	});
@@ -311,16 +315,34 @@ doWhenDOMContentLoaded(directionalizeAnchorLinks);
 
 /*	The footnotes section has no ID because Pandoc is weird. Give it one.
 	*/
-function identifyFootnotesSection() {
+function identifyFootnotesSection(containingDocument = document) {
 	GWLog("identifyFootnotesSection", "rewrite.js", 1);
 
-	let footnotesSection = document.querySelector("section.footnotes");
+	let footnotesSection = containingDocument.querySelector("section.footnotes");
 	if (footnotesSection)
 		footnotesSection.id = "footnotes";
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
 
-/*	Hash realignment.
+/*****************/
+/* END OF LAYOUT */
+/*****************/
+
+doWhenPageLoaded(() => {
+	GW.notificationCenter.fireEvent("Rewrite.pageLayoutWillComplete");
+	requestAnimationFrame(() => {
+		GW.pageLayoutComplete = true;
+		GW.notificationCenter.fireEvent("Rewrite.pageLayoutDidComplete");
+	});
+}, { once: true });
+
+/********************/
+/* HASH REALIGNMENT */
+/********************/
+
+/*  This is necessary to defeat a bug where if the page is loaded with the URL
+	hash targeting some element, the element does not match the :target CSS
+	pseudo-class.
 	*/
 function realignHash() {
 	GWLog("realignHash", "rewrite.js", 1);
@@ -347,10 +369,6 @@ function realignHash() {
 	}
 }
 doWhenDOMContentLoaded(realignHash);
-/*  This is necessary to defeat a bug where if the page is loaded with the URL
-	hash targeting some element, the element does not match the :target CSS
-	pseudo-class.
-	*/
 doWhenPageLoaded(() => {
 	requestAnimationFrame(realignHash);
 });
