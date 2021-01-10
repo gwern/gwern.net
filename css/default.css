@@ -2704,6 +2704,7 @@ body.directory-index #disqus_thread {
     position: relative;
     display: block;
     margin: auto;
+    max-width: 100%;
 }
 .image-wrapper.focusable::after {
     content: "Click to enlarge";
