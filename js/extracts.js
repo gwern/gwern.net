@@ -241,7 +241,7 @@ Extracts = {
 
 		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
 		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
-								`a[href='${target.getAttribute("href")}']`);
+								`a[href='${target.href}']`);
 		let referenceListEntry = referenceElement.closest("li");
 
 		let titleHTML = referenceElement.innerHTML.trimQuotes();

@@ -336,6 +336,17 @@ function setImageDimensionsInLinkBibliographyEntries(containingDocument = docume
 }
 doWhenDOMContentLoaded(setImageDimensionsInLinkBibliographyEntries);
 
+/*	Ensure all link bibliography entries are fully qualified.
+	*/
+function fullyQualifyLinksInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
+	GWLog("fullyQualifyLinksInLinkBibliographyEntries", "rewrite.js", 1);
+
+	containingDocument.querySelectorAll("#link-bibliography > ol > li > p a").forEach(link => {
+		link.href = link.href;
+	});
+}
+doWhenDOMContentLoaded(fullyQualifyLinksInLinkBibliographyEntries);
+
 /*	Add handler for link bibliography in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
@@ -343,6 +354,7 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 		injectLinkBibliographyItemSelfLinks(info.document);
 		rectifyTypographyInLinkBibliographyEntries(info.document);
 		setImageDimensionsInLinkBibliographyEntries(info.document);
+		fullyQualifyLinksInLinkBibliographyEntries(info.document);
 	}
 });
 
