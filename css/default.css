@@ -70,6 +70,9 @@
     position: relative;
     z-index: 1;
 }
+.collapseSummary.abstract {
+    margin-left: calc(-0.5em - 2px);
+}
 .collapseSummary:not(.abstract) {
     margin: 1.5em 0 0.25em 0;
 }
@@ -86,36 +89,6 @@
 }
 .collapse:not(.expanded) > .disclosure-button:hover + .collapseSummary blockquote {
     background-color: var(--GW-collapse-summary-blockquote-hover-color);
-}
-
-/*  Special-case formatting within collapses.
-    */
-.collapse p,
-.collapse .caption-wrapper,
-.collapse .epigraph,
-.collapse table,
-.collapse table caption,
-.collapse hr,
-.collapse > .disclosure-button ~ .collapseSummary *[class*='drop-cap-'] > p::first-letter {
-    background-color: var(--GW-body-background-color);
-}
-.collapse blockquote p {
-    background-color: inherit;
-}
-.collapse.expanded > .disclosure-button ~ *:not(section):not(.collapseSummary),
-.collapseSummary:not(.abstract),
-.collapse.expanded > .disclosure-button ~ figure.full-width .figure-inner-wrapper {
-    box-shadow:
-        -0.125rem 0 0 0.375rem var(--GW-body-background-color);
-    position: relative;
-    z-index: 1;
-}
-.collapse.expanded > .disclosure-button ~ figure.full-width,
-.collapse.expanded > .disclosure-button ~ pre:last-child {
-    box-shadow: none;
-}
-.collapse div[class^='horizontalRule'] {
-    filter: none;
 }
 
 /*  Disclosure button.
@@ -135,13 +108,14 @@
     font-size: 0.875em;
     font-family: var(--GW-sans-serif-font-stack);
     box-shadow:
-        3em 0 0 0 var(--GW-collapse-disclosure-button-color) inset;
+        0.5em 0 0 0 var(--GW-collapse-disclosure-button-color) inset;
     transition:
         box-shadow 0.1s ease;
 }
 .disclosure-button:hover {
+    z-index: 1;
     box-shadow:
-        3em 0 0 0 var(--GW-collapse-disclosure-button-hover-color) inset;
+        0.5em 0 0 0 var(--GW-collapse-disclosure-button-hover-color) inset;
 }
 .disclosure-button:checked {
     pointer-events: none;
@@ -256,19 +230,14 @@ section.collapse > :first-child > a {
 
 /*  Collapsible non-section blocks.
     */
+:not(section).collapse {
+    margin-left: -1em;
+}
 :not(section).collapse:not(.expanded) {
-    padding: 0;
-}
-:not(section).collapse > .disclosure-button {
-    box-shadow: none;
-}
-:not(section).collapse.expanded > .disclosure-button {
-    background-color: var(--GW-body-background-color);
-    z-index: 1;
+    padding: 0 0 0 1em;
 }
 :not(section).collapse:not(.expanded) > .disclosure-button::before,
 :not(section).collapse:not(.expanded) > .disclosure-button::after {
-    z-index: 2;
     opacity: 0.95;
 }
 :not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.collapseSummary) {
@@ -277,6 +246,7 @@ section.collapse > :first-child > a {
 :not(section).collapse.expanded {
     padding-top: 3.5rem;
     padding-bottom: 2.5rem;
+    padding: 3.5rem 0 2.5rem 1em;
 }
 
 /*  Collapsible code blocks.
