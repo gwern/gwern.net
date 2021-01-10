@@ -686,6 +686,10 @@ figure + figure {
     width: fit-content;
 }
 
+figure img {
+  background-color: var(--GW-body-background-color);
+}
+
 figure img,
 figure video,
 figure audio {
