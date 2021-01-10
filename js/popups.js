@@ -13,8 +13,8 @@ Popups = {
     popupContainerParentSelector: "html",
     popupContainerZIndex: "10001",
 
-    popupBreathingRoomX: 24.0,
-    popupBreathingRoomY: 16.0,
+    popupBreathingRoomX: 12.0,
+    popupBreathingRoomY: 8.0,
 
     popupTriggerDelay: 200,
     popupFadeoutDelay: 50,
@@ -195,11 +195,23 @@ Popups = {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
 		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
+
 		let targetViewportRect = target.getBoundingClientRect();
-		let targetOriginInPopupContainer = {
+		var targetRectInPopupContainer = {
 			x: (targetViewportRect.left - popupContainerViewportRect.left),
 			y: (targetViewportRect.top - popupContainerViewportRect.top)
 		};
+		targetRectInPopupContainer = {
+			x: 		targetRectInPopupContainer.x,
+			y: 		targetRectInPopupContainer.y,
+			width: 	targetViewportRect.width,
+			height: targetViewportRect.height,
+			left: 	targetRectInPopupContainer.x,
+			top: 	targetRectInPopupContainer.y,
+			right: 	targetRectInPopupContainer.x + targetViewportRect.width,
+			bottom: targetRectInPopupContainer.y + targetViewportRect.height
+		};
+
 		let mouseEnterEventPositionInPopupContainer = {
 			x: (event.clientX - popupContainerViewportRect.left),
 			y: (event.clientY - popupContainerViewportRect.top)
@@ -236,14 +248,17 @@ Popups = {
 				/*  Can the popup fit above the target? If so, put it there.
 					Failing that, can it fit below the target? If so, put it there.
 					*/
-				var popupSpawnYOriginForSpawnAbove = Math.min(mouseEnterEventPositionInPopupContainer.y - popupBreathingRoom.y,
-															  targetOriginInPopupContainer.y + targetViewportRect.height - (popupBreathingRoom.y * 2.0));
-				var popupSpawnYOriginForSpawnBelow = Math.max(mouseEnterEventPositionInPopupContainer.y + popupBreathingRoom.y,
-															  targetOriginInPopupContainer.y + (popupBreathingRoom.y * 2.0));
-				if (  popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight >= popupContainerViewportRect.y * -1) {
+				var popupSpawnYOriginForSpawnAbove = targetRectInPopupContainer.top - popupBreathingRoom.y;
+				var popupSpawnYOriginForSpawnBelow = targetRectInPopupContainer.bottom + popupBreathingRoom.y;
+				if (target.closest(".popupdiv")) {
+					/*  The popup is a nested popup. We prefer to put it off to 
+						the left or right.
+						*/
+					offToTheSide = true;
+				} else if ((popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight) >= (popupContainerViewportRect.y * -1)) {
 					//  Above.
 					provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
-				} else if (popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight <= (popupContainerViewportRect.y * -1) + window.innerHeight) {
+				} else if ((popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight) <= ((popupContainerViewportRect.y * -1) + window.innerHeight)) {
 					//  Below.
 					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
 				} else {
@@ -254,27 +269,26 @@ Popups = {
 				}
 
 				if (offToTheSide) {
-					popupBreathingRoom.x *= 2.0;
 					provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
 					if (provisionalPopupYPosition - popupContainerViewportRect.y < 0)
 						provisionalPopupYPosition = 0.0;
 
 					//  Determine whether to put the popup off to the right, or left.
-					if (  mouseEnterEventPositionInPopupContainer.x
+					if (  targetRectInPopupContainer.right
 						+ popupBreathingRoom.x
 						+ popupIntrinsicWidth
 						  <=
 						  popupContainerViewportRect.x * -1
 						+ window.innerWidth) {
 						//  Off to the right.
-						provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x + popupBreathingRoom.x;
-					} else if (  mouseEnterEventPositionInPopupContainer.x
+						provisionalPopupXPosition = targetRectInPopupContainer.right + popupBreathingRoom.x;
+					} else if (  targetRectInPopupContainer.left
 							   - popupBreathingRoom.x
 							   - popupIntrinsicWidth
 								 >=
 								 popupContainerViewportRect.x * -1) {
 						//  Off to the left.
-						provisionalPopupXPosition = mouseEnterEventPositionInPopupContainer.x - popupIntrinsicWidth - popupBreathingRoom.x;
+						provisionalPopupXPosition = targetRectInPopupContainer.left - popupIntrinsicWidth - popupBreathingRoom.x;
 					}
 				} else {
 					/*  Place popup off to the right (and either above or below),
@@ -286,7 +300,7 @@ Popups = {
 
 			/*  Does the popup extend past the right edge of the container?
 				If so, move it left, until its right edge is flush with
-				the container's right edge.
+				the container’s right edge.
 				*/
 			if (provisionalPopupXPosition + popupIntrinsicWidth > popupContainerViewportRect.width) {
 				//  We add 1.0 here to prevent wrapping due to rounding.
