@@ -327,11 +327,8 @@ doWhenDOMContentLoaded(rectifyTypographyInLinkBibliographyEntries);
 function setImageDimensionsInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
 	GWLog("setImageDimensionsInLinkBibliographyEntries", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll("#link-bibliography figure img").forEach(image => {
-		if (image.hasAttribute("width") && image.hasAttribute("height")) {
-			image.style.width = image.getAttribute("width") + "px";
-			image.style.height = image.getAttribute("height") + "px";
-		}
+	containingDocument.querySelectorAll("#link-bibliography figure img[width]").forEach(image => {
+		image.style.width = image.getAttribute("width") + "px";
 	});
 }
 doWhenDOMContentLoaded(setImageDimensionsInLinkBibliographyEntries);
