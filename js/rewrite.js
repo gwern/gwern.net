@@ -1,6 +1,10 @@
 /* Miscellaneous JS functions which run after the page loads to rewrite or adjust parts of the page. */
 /* author: Said Achmiz */
-/* license: MIT (derivative of footnotes.js, which is PD) */
+/* license: MIT
+
+/***********/
+/* HELPERS */
+/***********/
 
 /*	Returns true if the given document element is the main page’s <html> 
 	element, false otherwise.
@@ -47,6 +51,14 @@ function wrapFullWidthTables(containingDocument = document.firstElementChild) {
 	});
 }
 doWhenDOMContentLoaded(wrapFullWidthTables);
+
+/*	Add handler for tables in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processTablesInInjectedContent = (info) => {
+	wrapTables(info.document);
+	if (info.fullWidthPossible)
+		wrapFullWidthTables(info.document);
+});
 
 /***********/
 /* FIGURES */
@@ -117,6 +129,14 @@ function markFullWidthFigures(containingDocument = document.firstElementChild) {
 }
 doWhenDOMContentLoaded(markFullWidthFigures);
 
+/*	Add handler for figures in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFiguresInInjectedContent = (info) => {
+	wrapFigures(info.document);
+	if (info.fullWidthPossible)
+		markFullWidthFigures(info.document);
+});
+
 /***************/
 /* CODE BLOCKS */
 /***************/
@@ -139,6 +159,13 @@ function wrapFullWidthPreBlocks(containingDocument = document.firstElementChild)
 	});
 }
 doWhenDOMContentLoaded(wrapFullWidthPreBlocks);
+
+/*	Add handler for code blocks in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processCodeBlocksInInjectedContent = (info) => {
+	if (info.fullWidthPossible)
+		wrapFullWidthPreBlocks(info.document);
+});
 
 /**************/
 /* TYPOGRAPHY */
@@ -248,6 +275,13 @@ function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementC
 }
 doWhenPageLoaded(setMarginsOnFullWidthBlocks);
 
+/*	Add handler for full-width blocks in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFullWidthBlocksInInjectedContent = (info) => {
+	if (info.fullWidthPossible)
+		setMarginsOnFullWidthBlocks(info.document);
+});
+
 /*********************/
 /* LINK BIBLIOGRAPHY */
 /*********************/
@@ -287,6 +321,15 @@ function rectifyTypographyInLinkBibliographyEntries(containingDocument = documen
 	});
 }
 doWhenDOMContentLoaded(rectifyTypographyInLinkBibliographyEntries);
+
+/*	Add handler for link bibliography in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
+	if (info.fullPage) {
+		injectLinkBibliographyItemSelfLinks(info.document);
+		rectifyTypographyInLinkBibliographyEntries(info.document);
+	}
+});
 
 /*********/
 /* MISC. */
@@ -330,6 +373,15 @@ function identifyFootnotesSection(containingDocument = document.firstElementChil
 		footnotesSection.id = "footnotes";
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
+
+/*	Add handler for miscellaneous rewriting in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processMiscellaneousRewritesInInjectedContent = (info) => {
+	cleanUpImageAltText(info.document);
+	directionalizeAnchorLinks(info.document);
+	if (info.fullPage)
+		identifyFootnotesSection(info.document);
+});
 
 /*****************/
 /* END OF LAYOUT */
