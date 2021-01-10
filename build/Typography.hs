@@ -226,7 +226,11 @@ imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "conver
 -- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
 -- most cases will all be the same, so we take the first line of whatever dimensions 'identify' returns.
 imageMagickDimensions :: FilePath -> IO (String,String)
-imageMagickDimensions f = do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f]
+imageMagickDimensions f =
+  let f' = if "/" `isPrefixOf` f then tail f else
+             if "https://www.gwern.net/" `isPrefixOf` f then drop 22 f
+             else f in
+                          do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
                              case status of
                                ExitFailure _ -> error f
                                _ -> do let [height, width] = words $ head $ lines $ (B8.unpack bs)
