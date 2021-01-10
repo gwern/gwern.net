@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-10 10:08:03 gwern"
+When: Time-stamp: "2021-01-10 10:23:19 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -272,7 +272,8 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
          return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
                         inlines (target, title)
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
-imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then
+imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) &&
+                                                          ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
                                                          do (h,w) <- imageMagickDimensions $ T.unpack p
                                                             return (Link (htmlid, classes,
                                                                             kvs++[("image-height",(T.pack h)),("image-width",(T.pack w))])

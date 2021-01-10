@@ -227,7 +227,7 @@ imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "conver
 -- most cases will all be the same, so we take the first line of whatever dimensions 'identify' returns.
 imageMagickDimensions :: FilePath -> IO (String,String)
 imageMagickDimensions f =
-  let f' = if "/" `isPrefixOf` f then tail f else
+  let f' = if "/" `isPrefixOf` f && not ("/tmp" `isPrefixOf` f) then tail f else
              if "https://www.gwern.net/" `isPrefixOf` f then drop 22 f
              else f in
                           do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
