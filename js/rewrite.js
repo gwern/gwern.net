@@ -328,7 +328,7 @@ function setImageDimensionsInLinkBibliographyEntries(containingDocument = docume
 	GWLog("setImageDimensionsInLinkBibliographyEntries", "rewrite.js", 1);
 
 	containingDocument.querySelectorAll("#link-bibliography figure img").forEach(image => {
-		if (image.width && image.height) {
+		if (image.hasAttribute("width") && image.hasAttribute("height")) {
 			image.style.width = image.getAttribute("width") + "px";
 			image.style.height = image.getAttribute("height") + "px";
 		}

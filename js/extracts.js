@@ -431,6 +431,9 @@ Extracts = {
 			//  First, qualify internal links in the popup.
 			Extracts.qualifyLinksInPopContent(target.popup, target);
 
+			//  Then, trigger the rewrite pass by firing the requisite event.
+			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: target.popup, clickable: false, fullPage: true, fullWidthPossible: false });
+
 			/*  Because the Popups.popupDidSpawn event has already fired,
 				we must process the newly-constructed popup manually,
 				to enable recursive popups within.
