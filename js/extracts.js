@@ -777,8 +777,7 @@ Extracts = {
 
 		//  Rectify margin note style.
 		popup.querySelectorAll(".marginnote").forEach(marginNote => {
-			marginNote.classList.add("inline");
-			marginNote.classList.remove("sidenote");
+			marginNote.swapClasses([ "inline", "sidenote" ], 0);
 		});
 
 		//  Qualify internal links in extracts.
