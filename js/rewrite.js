@@ -2,13 +2,20 @@
 /* author: Said Achmiz */
 /* license: MIT (derivative of footnotes.js, which is PD) */
 
+/*	Returns true if the given document element is the main page’s <html> 
+	element, false otherwise.
+	*/
+function isMainDocument(documentElement) {
+	return documentElement == document.firstElementChild;
+}
+
 /**********/
 /* TABLES */
 /**********/
 
 /*  Wrap each table in a div.table-wrapper (for layout purposes).
     */
-function wrapTables(containingDocument = document) {
+function wrapTables(containingDocument = document.firstElementChild) {
 	GWLog("wrapTables", "rewrite.js", 1);
 
 	let wrapperClass = "table-wrapper";
@@ -25,7 +32,7 @@ doWhenDOMContentLoaded(wrapTables);
 	the .collapse class (if any) from the outer wrapper to the table (for
 	consistency).
 	*/
-function wrapFullWidthTables(containingDocument = document) {
+function wrapFullWidthTables(containingDocument = document.firstElementChild) {
 	GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
@@ -47,7 +54,7 @@ doWhenDOMContentLoaded(wrapFullWidthTables);
 
 /*  Inject wrappers into figures.
     */
-function wrapFigures(containingDocument = document) {
+function wrapFigures(containingDocument = document.firstElementChild) {
 	GWLog("wrapFigures", "rewrite.js", 1);
 
 	containingDocument.querySelectorAll("figure").forEach(figure => {
@@ -86,7 +93,7 @@ doWhenDOMContentLoaded(wrapFigures);
 
 /*	Designate full-width figures as such (with a ‘full-width’ class).
 	*/
-function markFullWidthFigures(containingDocument = document) {
+function markFullWidthFigures(containingDocument = document.firstElementChild) {
 	GWLog("markFullWidthFigures", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
@@ -117,7 +124,7 @@ doWhenDOMContentLoaded(markFullWidthFigures);
 /*  Wrap each pre.full-width in a div.full-width and a 
 	div.full-width-code-block-wrapper (for layout purposes).
     */
-function wrapFullWidthPreBlocks(containingDocument = document) {
+function wrapFullWidthPreBlocks(containingDocument = document.firstElementChild) {
 	GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
@@ -212,7 +219,7 @@ doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 
 /*	Set margins of full-width blocks.
 	*/
-function setMarginsOnFullWidthBlocks(containingDocument = document) {
+function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementChild) {
 	GWLog("setMarginsOnFullWidthBlocks", "rewrite.js", 1);
 
 	//  Get all full-width blocks in the given document.
@@ -248,7 +255,7 @@ doWhenPageLoaded(setMarginsOnFullWidthBlocks);
 /*	Enable hovering over a link bibliography entry number to link to it, much
 	like the self-links on section headings.
 	*/
-function injectLinkBibliographyItemSelfLinks(containingDocument = document) {
+function injectLinkBibliographyItemSelfLinks(containingDocument = document.firstElementChild) {
 	GWLog("injectLinkBibliographyItemSelfLinks", "rewrite.js", 1);
 
 	let linkBibliographyListItems = Array.from(containingDocument.querySelector("#link-bibliography > ol").children);
@@ -263,7 +270,7 @@ doWhenDOMContentLoaded(injectLinkBibliographyItemSelfLinks);
 
 /*	Requires typography.js to be loaded prior to this file.
 	*/
-function rectifyTypographyInLinkBibliographyEntries(containingDocument = document) {
+function rectifyTypographyInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
 	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
 
 	containingDocument.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
@@ -288,7 +295,7 @@ doWhenDOMContentLoaded(rectifyTypographyInLinkBibliographyEntries);
 /*	Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
 	right? Yeah, right...)
 	*/
-function cleanUpImageAltText(containingDocument = document) {
+function cleanUpImageAltText(containingDocument = document.firstElementChild) {
 	GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
 	containingDocument.querySelectorAll("img[alt]").forEach(image => {
@@ -299,14 +306,14 @@ doWhenDOMContentLoaded(cleanUpImageAltText);
 
 /*	Directional navigation links on self-links: for each self-link like “see [later](#later-identifier)”, find the linked identifier, whether it’s before or after, and if it is before/previously, annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a backwards link to a identifier already read, or an unread identifier.
 	*/
-function directionalizeAnchorLinks(containingDocument = document) {
+function directionalizeAnchorLinks(containingDocument = document.firstElementChild) {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
-	containingDocument.body.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
+	containingDocument.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
 		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
 			|| identifierLink.closest(".footnote-ref, .footnote-back, .sidenote-self-link"))
 			return;
-		target = containingDocument.body.querySelector(identifierLink.getAttribute("href"));
+		target = containingDocument.querySelector(identifierLink.getAttribute("href"));
 		if (!target) return;
 		identifierLink.classList.add((identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 	});
@@ -315,7 +322,7 @@ doWhenDOMContentLoaded(directionalizeAnchorLinks);
 
 /*	The footnotes section has no ID because Pandoc is weird. Give it one.
 	*/
-function identifyFootnotesSection(containingDocument = document) {
+function identifyFootnotesSection(containingDocument = document.firstElementChild) {
 	GWLog("identifyFootnotesSection", "rewrite.js", 1);
 
 	let footnotesSection = containingDocument.querySelector("section.footnotes");

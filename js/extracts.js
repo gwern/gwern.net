@@ -228,7 +228,7 @@ Extracts = {
 			else
 				return Extracts.originatingDocumentForTarget(containingPopElement.popupTarget);
 		} else {
-			return document;
+			return document.firstElementChild;
 		}
 	},
 
@@ -697,8 +697,8 @@ Extracts = {
 		if (Extracts.isCitation(target)
 			|| Extracts.isCitationBackLink(target)) {
 			let targetElement = containingDocument.querySelector(target.hash);
-			if (   (containingDocument == document && isOnScreen(targetElement))
-				|| (containingDocument != document && isWithinRect(targetElement, containingDocument.getBoundingClientRect())))
+			if (   (isMainDocument(containingDocument) && isOnScreen(targetElement))
+				|| (!isMainDocument(containingDocument) && isWithinRect(targetElement, containingDocument.getBoundingClientRect())))
 				return false;
 		}
 
