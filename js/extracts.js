@@ -854,10 +854,17 @@ Extracts = {
 				targetedCitation.classList.remove("targeted");
 			});
 
-			/*  In the popup, highlight the citation for which context is being
-				shown.
-				*/
-			popup.querySelector(decodeURIComponent(target.hash)).classList.add("highlighted");
+			//  In the popup, the citation for which context is being shown.
+			let citationInPopup = popup.querySelector(decodeURIComponent(target.hash));
+
+			//  Highlight the citation.
+			citationInPopup.classList.add("highlighted");
+
+			//  Scroll to the citation.
+			requestAnimationFrame(() => {
+				popup.scrollTop = citationInPopup.getBoundingClientRect().top 
+								- popup.getBoundingClientRect().top;
+			});
 		}
 
 		//  Special positioning for section links spawned by the TOC.
