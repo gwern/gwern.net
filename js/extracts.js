@@ -153,7 +153,7 @@ Extracts = {
 			});
 
 			//  Set up targets in other (non-popup) injected content.
-			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", (info) => {
+			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopinTargetsInInjectedContent = (info) => {
 				if (info.document.classList.contains("popindiv"))
 					return;
 
@@ -188,7 +188,7 @@ Extracts = {
 			});
 
 			//  Set up targets in other (non-popup) injected content.
-			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", (info) => {
+			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopupTargetsInInjectedContent = (info) => {
 				if (info.document.classList.contains("popupdiv"))
 					return;
 
