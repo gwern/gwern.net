@@ -374,7 +374,15 @@ Extracts = {
 	//  Local links (to sections of the current page, or other site pages).
     isLocalPageLink: (target) => {
 		if (  !target.href
-			|| Extracts.isExtractLink(target)) return false;
+			|| Extracts.isExtractLink(target))
+			return false;
+
+		/*  If it has a period in it, it’s not a page, but is something else,
+			like a file of some sort, or a locally archived document (accounted
+			for in the other test functions, if need be).
+			*/
+		if (target.pathname.match(/\./))
+			return false;
 
 		return (target.hostname == location.hostname);
 	},
