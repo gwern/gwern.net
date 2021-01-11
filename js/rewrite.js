@@ -298,6 +298,37 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /* LINK BIBLIOGRAPHY */
 /*********************/
 
+function injectLinkBibliography(containingDocument = document.firstElementChild) {
+	GWLog("injectLinkBibliography", "rewrite.js", 1);
+
+	let linkBibliographyURL = new URL(location);
+	linkBibliographyURL.pathname = location.pathname + "-link-bibliography";
+
+	let linkBibliography = containingDocument.querySelector("#link-bibliography");
+	if (!linkBibliography || linkBibliography.firstElementChild != null)
+		return;
+
+	doAjax({
+		location: linkBibliographyURL.href,
+		onSuccess: (event) => {
+			linkBibliography.innerHTML = `${event.target.responseText}`;
+			linkBibliography.classList.toggle("collapse", true);
+			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
+				document: linkBibliography, 
+				needsRewrite: true, 
+				clickable: true, 
+				collapseAllowed: true, 
+				isCollapseBlock: true,
+				fullWidthPossible: true
+			});
+		},
+		onFailure: (event) => {
+			//  TODO: Inject some sort of "not found" message
+		}
+	});
+}
+doWhenDOMContentLoaded(injectLinkBibliography);
+
 /*	Enable hovering over a link bibliography entry number to link to it, much
 	like the self-links on section headings.
 	*/
@@ -312,7 +343,6 @@ function injectLinkBibliographyItemSelfLinks(containingDocument = document.first
 		linkBibliographyListItems[i].insertAdjacentHTML("afterbegin", `<a href="#${id}" class="link-bibliography-item-self-link">&nbsp;</a>`);
 	}
 }
-doWhenDOMContentLoaded(injectLinkBibliographyItemSelfLinks);
 
 /*	Requires typography.js to be loaded prior to this file.
 	*/
@@ -332,7 +362,6 @@ function rectifyTypographyInLinkBibliographyEntries(containingDocument = documen
 		});
 	});
 }
-doWhenDOMContentLoaded(rectifyTypographyInLinkBibliographyEntries);
 
 /*	Sets, in CSS, the image dimensions that are specified in HTML.
 	*/
@@ -343,7 +372,6 @@ function setImageDimensionsInLinkBibliographyEntries(containingDocument = docume
 		image.style.width = image.getAttribute("width") + "px";
 	});
 }
-doWhenDOMContentLoaded(setImageDimensionsInLinkBibliographyEntries);
 
 /*	Ensure all link bibliography entries are fully qualified.
 	*/
@@ -354,15 +382,28 @@ function fullyQualifyLinksInLinkBibliographyEntries(containingDocument = documen
 		link.href = link.href;
 	});
 }
-doWhenDOMContentLoaded(fullyQualifyLinksInLinkBibliographyEntries);
 
-/*	Add handler for link bibliography in injected content.
+/*	Process link bibliography, if loaded.
+	*/
+doWhenDOMContentLoaded(() => {
+	let linkBibliography = document.querySelector("#link-bibliography");
+	if (   linkBibliography == null
+		|| linkBibliography.firstElementChild == null) 
+		return;
+
+	injectLinkBibliographyItemSelfLinks();
+	rectifyTypographyInLinkBibliographyEntries();
+	setImageDimensionsInLinkBibliographyEntries();
+	fullyQualifyLinksInLinkBibliographyEntries();
+});
+
+/*	Add handler for processing link bibliography in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
 	if (!info.needsRewrite)
 		return;
 
-	if (info.fullPage) {
+	if (info.fullPage || info.document.id == "link-bibliography") {
 		injectLinkBibliographyItemSelfLinks(info.document);
 		rectifyTypographyInLinkBibliographyEntries(info.document);
 		setImageDimensionsInLinkBibliographyEntries(info.document);

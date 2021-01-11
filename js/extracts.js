@@ -151,6 +151,14 @@ Extracts = {
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 				Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
 			});
+
+			//  Set up targets in other (non-popup) injected content.
+			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", (info) => {
+				if (info.document.classList.contains("popindiv"))
+					return;
+
+				Popins.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
+			});
         } else {
             GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
 
@@ -177,6 +185,14 @@ Extracts = {
 			//  Recursively set up targets within newly-spawned popups as well.
 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
 				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
+			});
+
+			//  Set up targets in other (non-popup) injected content.
+			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", (info) => {
+				if (info.document.classList.contains("popupdiv"))
+					return;
+
+				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
 			});
         }
 
@@ -536,10 +552,7 @@ Extracts = {
 			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
 				document: target.popup, 
 				needsRewrite: true, 
-				clickable: false, 
-				collapseAllowed: false, 
-				fullPage: true, 
-				fullWidthPossible: false
+				fullPage: true
 			});
 
 			/*  Because the Popups.popupDidSpawn event has already fired,
@@ -922,14 +935,7 @@ Extracts = {
 
 		//  Trigger a rewrite pass by firing the requisite event.
 		if (Extracts.isLocalPageLink(target)) {
-			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
-				document: popup, 
-				needsRewrite: false, 
-				clickable: false, 
-				collapseAllowed: false, 
-				fullPage: false, 
-				fullWidthPossible: false
-			});
+			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: popup });
 		}
 
 		//  Loading spinners.

@@ -76,11 +76,11 @@ function isWithinCollapsedBlock(element) {
 
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
-function prepareCollapseBlocks(containingDocument = document.firstElementChild) {
+function prepareCollapseBlocks(containingDocument = document.firstElementChild, includeContainingDocument = false) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
 	let hashTarget = getHashTargetedElement();
-	containingDocument.querySelectorAll(".collapse").forEach(collapseBlock => {
+	let prepareCollapseBlock = (collapseBlock) => {
 		let checked = collapseBlock.contains(hashTarget) ? " checked='checked'" : "";
 		let disclosureButtonHTML = `<input type='checkbox' class='disclosure-button' aria-label='Open/close collapsed section'${checked}>`;
 		if (collapseBlock.tagName == "SECTION") {
@@ -111,7 +111,14 @@ function prepareCollapseBlocks(containingDocument = document.firstElementChild) 
 			collapseBlock.classList.remove("collapse");
 			realCollapseBlock.appendChild(collapseBlock);
 		}
-	});
+	};
+
+	//  Expand the containing document itself, if it’s also a collapse block.
+	if (includeContainingDocument)
+		prepareCollapseBlock(containingDocument);
+
+	//  Expand all collapse blocks in the containing document.
+	containingDocument.querySelectorAll(".collapse").forEach(prepareCollapseBlock);
 
     /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
@@ -165,7 +172,7 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 	if (!info.collapseAllowed) {
 		expandLockCollapseBlocks(info.document);
 	} else if (info.needsRewrite) {
-		prepareCollapseBlocks(info.document);
+		prepareCollapseBlocks(info.document, info.isCollapseBlock);
 	}
 });
 
