@@ -60,6 +60,13 @@ GW.setLogLevel = (level, permanently = false) => {
 /*	Helper function for AJAX, by kronusaturn
 	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
 	*/
+function urlEncodeQuery(params) {
+	return (Object.keys(params)).map(x => (`${x}=${encodeURIComponent(params[x])}`)).join("&");
+}
+
+/*	Helper function for AJAX, by kronusaturn
+	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
+	*/
 function doAjax(options) {
 	let req = new XMLHttpRequest();
 	req.addEventListener("load", (event) => {
@@ -69,7 +76,9 @@ function doAjax(options) {
 			if (options["onFailure"]) options.onFailure(event);
 		}
 	});
-	req.open((options["method"] || "GET"), (options.location || document.location) + (options.params ? "?" + urlEncodeQuery(options.params) : ""));
+	let method = (options["method"] || "GET");
+	let location = (options.location || document.location) + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
+	req.open(method, location);
 	if (options["method"] == "POST") {
 		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		req.send(urlEncodeQuery(options.params));
