@@ -222,7 +222,7 @@ Extracts = {
 		so, it uses a provided array of testing/filling function pairs. The
 		testing functions are called in order until a match is found, at which 
 		point the filling function of the pair is called. Provided classes, if 
-		any, are then added to the pop-element.
+		any, are then added to the pop-element. (Details follow.)
 
 		In addition to the pop-element and the target, fillPopElement() takes a
 		‘possiblePopTypes’ array, which must have the following structure:
