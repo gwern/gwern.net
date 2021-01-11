@@ -3083,6 +3083,43 @@ body.directory-index #disqus_thread {
     border: none;
 }
 
+.popupdiv.local-code-file pre.raw-code {
+	white-space: pre-wrap;
+}
+.popupdiv.local-code-file pre.raw-code code {
+	word-break: break-word;  
+}
+.popupdiv.local-code-file pre.raw-code .line {
+	counter-increment: code-line;
+	display: inline-block;
+	width: 100%;
+	position: relative;
+	padding: 0 0 0.25em 4em;
+	box-sizing: border-box;
+}
+.popupdiv.local-code-file pre.raw-code .line:hover {
+	background-color: var(--GW-raw-code-popup-line-highlight-background-color);
+	box-shadow: 
+	0  1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color),
+	0 -1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color);
+}
+.popupdiv.local-code-file pre.raw-code .line::before {
+	content: counter(code-line);
+	position: absolute;
+	width: 3.5em;
+	height: 100%;
+	left: 0;
+	top: 0;
+	text-align: right;
+	color: var(--GW-raw-code-popup-line-number-color);
+	font-size: 0.8em;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+	padding: 0.25em 0.5em 0 0;
+	border-right: 1px solid var(--GW-raw-code-popup-line-number-divider-color);
+}
+
 /*  Section embeds.
     */
 .extract-popup.local-transclude > div,

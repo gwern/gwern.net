@@ -691,8 +691,12 @@ Extracts = {
 							return;
 
 						target.popup.classList.toggle("loading", false);
+
 						let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
-						target.popup.innerHTML = `<div><pre><code>${htmlEncodedResponse}</code></pre></div>`;
+						let lines = htmlEncodedResponse.split("\n");
+						htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
+
+						target.popup.innerHTML = `<div><pre class="raw-code"><code>${htmlEncodedResponse}</code></pre></div>`;
 					},
 					onFailure: (event) => {
 						target.popup.swapClasses([ "loading", "loading-failed" ], 1);
