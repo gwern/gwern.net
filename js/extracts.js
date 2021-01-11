@@ -600,7 +600,7 @@ Extracts = {
 			url.search = "format=preview&theme=classic";
 		}
 
-		return `<div><iframe src="${url.href}" frameborder="0" allowfullscreen sandbox></iframe></div>`;
+		return `<div><iframe src="${url.href}" frameborder="0" sandbox></iframe></div>`;
 	},
 
 	//  Locally hosted images.
@@ -652,7 +652,7 @@ Extracts = {
 		if (target.href.match(/\.pdf(#|$)/) != null) {
 			return `<div><object data="${target.href}"></object></div>`;
 		} else {
-			return `<div><iframe src="${target.href}" frameborder="0" allowfullscreen sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe></div>`;
+			return `<div><iframe src="${target.href}" frameborder="0" sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe></div>`;
 		}
     },
 
