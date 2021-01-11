@@ -359,7 +359,10 @@ Extracts = {
 
 		//	Author.
 		let authorElement = referenceListEntry.querySelector(".author");
-		let authorHTML = (authorElement ? `<span class="data-field author">${(authorElement.textContent || "")}</span>` : ``);
+		let authorList = (authorElement.textContent || "").split(", ").slice(0, 3).join(", ");
+		if (authorList.length < authorElement.textContent.length)
+			authorList += " et al";
+		let authorHTML = (authorElement ? `<span class="data-field author">${authorList}</span>` : ``);
 
 		//  Link to citations on Google Scholar, or link to search for links on Google.
         var citationsOrLinks = "";
@@ -401,7 +404,10 @@ Extracts = {
 		let abstractHTML = referenceListEntry.querySelector("blockquote").innerHTML;
 
 		let authorElement = referenceListEntry.querySelector(".author");
-		let authorHTML = (authorElement ? `<span class="data-field author">${(authorElement.textContent || "")}</span>` : ``);
+		let authorList = (authorElement.textContent || "").split(", ").slice(0, 3).join(", ");
+		if (authorList.length < authorElement.textContent.length)
+			authorList += " et al";
+		let authorHTML = (authorElement ? `<span class="data-field author">${authorList}</span>` : ``);
 
 		let dateElement = referenceListEntry.querySelector(".date");
 		let dateHTML = (dateElement ? ` (${dateElement.textContent})` : ``);
