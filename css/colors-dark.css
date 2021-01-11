@@ -248,4 +248,9 @@
     --GW-mode-selector-border-hover-color: #7c7c7c;
     --GW-mode-selector-button-text-color: #a6a6a6;
     --GW-mode-selector-button-hover-text-color: #fff;
+
+	/*	“Back to top” link.
+		*/
+	--GW-back-to-top-link-color: #5c5c5c;
+	--GW-back-to-top-link-hover-color: #8b8b8b;
 }

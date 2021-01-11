@@ -3555,3 +3555,48 @@ body.directory-index #disqus_thread {
     text-shadow: none;
     background: var(--GW-sequential-nav-link-background-color);
 }
+
+/********************/
+/* BACK-TO-TOP LINK */
+/********************/
+
+#back-to-top {
+	position: absolute;
+	bottom: 0.75rem;
+}
+@media only screen and (max-width: 1184px) {
+    #back-to-top {
+        left: 4rem;
+    }
+}
+@media only screen and (min-width: 1185px) {
+	#back-to-top {
+		right: 1rem;
+	}
+}
+@media only screen and (min-width: 1760px) {
+	#back-to-top {
+		right: calc(60px + (100% - 1185px) / 2);
+	}
+}
+@media only screen and (max-width: 650px) {
+    #back-to-top {
+        display: none;
+    }
+}
+#back-to-top a {
+	display: block;
+	width: 1.25em;
+    color: var(--GW-back-to-top-link-color);
+    filter:
+        drop-shadow(0 0 1px var(--GW-body-background-color))
+        drop-shadow(0 0 1px var(--GW-body-background-color))
+        drop-shadow(0 0 1px var(--GW-body-background-color));
+}
+#back-to-top a:hover {
+    color: var(--GW-back-to-top-link-hover-color);
+}
+#back-to-top svg {
+	display: block;
+	width: 100%;
+}

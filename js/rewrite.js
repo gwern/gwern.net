@@ -466,6 +466,23 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 		identifyFootnotesSection(info.document);
 });
 
+/*	Injects the “back to top” link. (Called only for the main page.)
+	*/
+function injectBackToTopLink() {
+	GWLog("injectBackToTopLink", "rewrite.js", 1);
+
+	let backTopTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
+		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>` 
+		+ `</a></div>`);
+
+	backTopTop.firstElementChild.addActivateEvent((event) => {
+		requestAnimationFrame(() => {
+			history.replaceState("", null, location.pathname);
+		});
+	});
+}
+doWhenDOMContentLoaded(injectBackToTopLink);
+
 /*****************/
 /* END OF LAYOUT */
 /*****************/
