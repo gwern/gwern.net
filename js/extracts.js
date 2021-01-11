@@ -321,9 +321,12 @@ Extracts = {
 
 		//  Author list.
 		let authorElement = referenceListEntry.querySelector(".author");
-		let authorList = (authorElement.textContent || "").split(", ").slice(0, 3).join(", ");
-		if (authorList.length < authorElement.textContent.length)
-			authorList += " et al";
+		var authorList;
+		if (authorElement) {
+			authorList = authorElement.textContent.split(", ").slice(0, 3).join(", ");
+			if (authorList.length < authorElement.textContent.length)
+				authorList += " et al";
+		}
 
 		//  Date.
 		let dateElement = referenceListEntry.querySelector(".date");
