@@ -381,10 +381,11 @@ Extracts = {
         if (   referenceData.element.dataset.urlOriginal != undefined 
         	&& referenceData.element.dataset.urlOriginal != target.href) {
             archiveOrOriginalLinkHTML = `<span class="originalURL">[<a 
+                       		title="Link to original URL for ‘${referenceData.titleText}’" 
             				href="${referenceData.element.dataset.urlOriginal}"
             				target="_new" 
-                       		title="Link to original URL for ‘${referenceData.titleText}’" 
                        		alt="Original URL for this archived link; may be broken."
+                       		ping="https://api.obormot.net/gwern/analytics.php"
                        			>original</a>]</span>`;
         } else if (![ "www.gwern.net", 
         			  "en.wikipedia.org", 
@@ -395,6 +396,7 @@ Extracts = {
 							title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${referenceData.titleText}’)" 
 					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" 
 					   		target="_new"
+                       		ping="https://api.obormot.net/gwern/analytics.php"
 					   			></a></span>`;
         }
 
@@ -412,9 +414,9 @@ Extracts = {
         if (referenceData.element.dataset.doi != undefined) {
             citationsOrLinksHTML = `; <a  
             				class="cites"
+            				title="Reverse citations of this paper (‘${referenceData.titleText}’), with DOI ‘${referenceData.element.dataset.doi}’, in Google Scholar"
             				href="https://scholar.google.com/scholar?q=%22${referenceData.element.dataset.doi}%22+OR+%22${referenceData.titleText}%22" 
             				target="_new" 
-            				title="Reverse citations of this paper (‘${referenceData.titleText}’), with DOI ‘${referenceData.element.dataset.doi}’, in Google Scholar"
             					>cites</a>`;
         } else if ([ "arxiv.org", 
         			 "openreview.net", 
@@ -430,16 +432,16 @@ Extracts = {
             //  Not all scholarly papers come with DOIs; eg it’s the policy of Arxiv to *not* provide DOIs. ;_;
             citationsOrLinksHTML = `; <a  
             				class="cites"
+            				title="Reverse citations of this paper (‘${referenceData.titleText}’) in Google Scholar"
             				href="https://scholar.google.com/scholar?q=%22${referenceData.titleText}%22" 
             				target="_new" 
-            				title="Reverse citations of this paper (‘${referenceData.titleText}’) in Google Scholar"
             					>cites</a>`;
         } else if (target.hostname != "en.wikipedia.org") {
             citationsOrLinksHTML = `; <a 
             				class="cites" 
+            				title="Links to this page (‘${referenceData.titleText}’) in Google"
             				href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${referenceData.titleText}%22" 
             				target="_new" 
-            				title="Links to this page (‘${referenceData.titleText}’) in Google"
             					>links</a>`;
         }
 
@@ -1025,6 +1027,19 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
 				popup.removeEventListener("click", Popups.popupClicked);
 			}, { once: true });
+		}
+
+		//  Add click analytics.
+		if (Extracts.isExtractLink(target)) {
+			popup.querySelectorAll(".iaMirror a, .originalURL a, a.cites").forEach(link => {
+				link.addActivateEvent((event) => {
+					doAjax({
+						location: "https://api.obormot.net/gwern/analytics.php",
+						method: "POST",
+						params: { url: link.href }
+					});
+				});
+			});
 		}
 
 		return true;
