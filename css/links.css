@@ -424,12 +424,13 @@ p a[href^='#'][class^='identifier-link-']::after,
 li a[href^='#'][class^='identifier-link-']::after {
     content: "";
     display: inline-block;
-    width: 1em;
-    height: 1em;
+    font-size: 1em;
+    width: 0.8em;
+    height: 0.8em;
     margin: 0 0 0 4px;
     bottom: 0.15em;
     background-repeat: no-repeat;
-    opacity: 0.65;
+    opacity: 0.6;
 }
 section > :not(:first-child) a[href^='#'].identifier-link-up::after,
 p a[href^='#'].identifier-link-up::after,
