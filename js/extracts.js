@@ -222,7 +222,7 @@ Extracts = {
 		so, it uses a provided array of testing/filling function pairs. The
 		testing functions are called in order until a match is found, at which 
 		point the filling function of the pair is called. Provided classes, if 
-		any, are then added to the pop-element.
+		any, are then added to the pop-element. (Details follow.)
 
 		In addition to the pop-element and the target, fillPopElement() takes a
 		‘possiblePopTypes’ array, which must have the following structure:
@@ -380,31 +380,67 @@ Extracts = {
         var archiveOrOriginalLinkHTML = "";
         if (   referenceData.element.dataset.urlOriginal != undefined 
         	&& referenceData.element.dataset.urlOriginal != target.href) {
-            archiveOrOriginalLinkHTML = (`<span class="originalURL">` + "[" + 
-            		   `<a href="${referenceData.element.dataset.urlOriginal}" target="_new" 
+            archiveOrOriginalLinkHTML = `<span class="originalURL">[<a 
+            				href="${referenceData.element.dataset.urlOriginal}"
+            				target="_new" 
                        		title="Link to original URL for ‘${referenceData.titleText}’" 
-                       		alt="Original URL for this archived link; may be broken.">` + 
-                       "original" + `</a>` + "]" + `</span>`);
-        } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
-			archiveOrOriginalLinkHTML = (`<span class="iaMirror">` +
-					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${referenceData.titleText}’)" 
-					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" target="_new">` +
-					   `</a></span>`);
+                       		alt="Original URL for this archived link; may be broken."
+                       			>original</a>]</span>`;
+        } else if (![ "www.gwern.net", 
+        			  "en.wikipedia.org", 
+        			  "archive.org", 
+        			  "www.biorxiv.org", 
+        			  "arxiv.org" ].includes(target.hostname)) {
+			archiveOrOriginalLinkHTML = `<span class="iaMirror"><a 
+							title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${referenceData.titleText}’)" 
+					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" 
+					   		target="_new"
+					   			></a></span>`;
         }
 
 		//  Extract title/link.
 		let titleLinkClass = (archiveOrOriginalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
-		let titleLinkHTML = `<a class="${titleLinkClass}" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${referenceData.titleHTML}</a>`;
+		let titleLinkHTML = `<a 
+								class="${titleLinkClass}" 
+								target="_new" 
+								href="${target.href}" 
+								title="Open ${target.href} in a new window"
+									>${referenceData.titleHTML}</a>`;
 
 		//  Link to citations on Google Scholar, or link to search for links on Google.
         var citationsOrLinksHTML = "";
         if (referenceData.element.dataset.doi != undefined) {
-            citationsOrLinksHTML = `; <a href="https://scholar.google.com/scholar?q=%22${referenceData.element.dataset.doi}%22+OR+%22${referenceData.titleText}%22" target="_new" title="Reverse citations of this paper (‘${referenceData.titleText}’), with DOI ‘${referenceData.element.dataset.doi}’, in Google Scholar">` + "cites" + `</a>`;
-        } else if (target.href.includesAnyOf([ "pdf", "https://arxiv.org", "https://openreview.net", "ieee.org", "rand.org", "dspace.mit.edu", "thegradient.pub", "inkandswitch.com", "nature.com", "sciencemag.org" ])) {
-            /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
-            citationsOrLinksHTML = `; <a href="https://scholar.google.com/scholar?q=%22${referenceData.titleText}%22" target='_new' title="Reverse citations of this paper (‘${referenceData.titleText}’) in Google Scholar">` + "cites" + `</a>`;
-        } else if (!target.href.startsWith("https://en.wikipedia.org")) {
-            citationsOrLinksHTML = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${referenceData.titleText}%22" target="_new" title="Links to this page (‘${referenceData.titleText}’) in Google">` + "links" + `</a>`;
+            citationsOrLinksHTML = `; <a  
+            				class="cites"
+            				href="https://scholar.google.com/scholar?q=%22${referenceData.element.dataset.doi}%22+OR+%22${referenceData.titleText}%22" 
+            				target="_new" 
+            				title="Reverse citations of this paper (‘${referenceData.titleText}’), with DOI ‘${referenceData.element.dataset.doi}’, in Google Scholar"
+            					>cites</a>`;
+        } else if ([ "arxiv.org", 
+        			 "openreview.net", 
+        			 "ieee.org", 
+        			 "rand.org", 
+        			 "dspace.mit.edu", 
+        			 "thegradient.pub", 
+        			 "inkandswitch.com", 
+        			 "nature.com", 
+        			 "sciencemag.org" 
+        			].includes(target.hostname) 
+        		   || target.pathname.match(/\.pdf$/)) {
+            //  Not all scholarly papers come with DOIs; eg it’s the policy of Arxiv to *not* provide DOIs. ;_;
+            citationsOrLinksHTML = `; <a  
+            				class="cites"
+            				href="https://scholar.google.com/scholar?q=%22${referenceData.titleText}%22" 
+            				target="_new" 
+            				title="Reverse citations of this paper (‘${referenceData.titleText}’) in Google Scholar"
+            					>cites</a>`;
+        } else if (target.hostname != "en.wikipedia.org") {
+            citationsOrLinksHTML = `; <a 
+            				class="cites" 
+            				href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${referenceData.titleText}%22" 
+            				target="_new" 
+            				title="Links to this page (‘${referenceData.titleText}’) in Google"
+            					>links</a>`;
         }
 
         //  Date; citations/links.
