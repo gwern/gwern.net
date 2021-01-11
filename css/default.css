@@ -2985,19 +2985,19 @@ body.directory-index #disqus_thread {
 .extract-popup .iaMirror {
     padding-right: 0.3em;
 }
-.extract-popup .data-field.popupAbstract {
+.extract-popup .data-field.extract-abstract {
     margin-top: 0.5em;
 }
 
 /*  TODO: remove this once popups inherit from main body styles.
     */
-.extract-popup .data-field.popupAbstract p,
+.extract-popup .data-field.extract-abstract p,
 .extract-popup.local-transclude p,
 .extract-popup.citation-context p {
     text-align: justify;
     hyphens: auto;
 }
-.extract-popup .data-field.popupAbstract p + p,
+.extract-popup .data-field.extract-abstract p + p,
 .extract-popup.local-transclude p + p,
 .extract-popup.citation-context p + p {
     text-indent: 1em;

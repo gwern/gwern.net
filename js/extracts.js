@@ -14,9 +14,9 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 Extracts = {
-	/*****************/
-	/*	Configuration.
-		*/
+    /*****************/
+    /*  Configuration.
+        */
 
 	/*	Target containers.
 		*/
@@ -297,6 +297,37 @@ Extracts = {
 		}
 	},
 
+	/*	Used to generate extract and definition pop-elements.
+		*/
+	referenceDataForTarget: (target, link = true) => {
+		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
+		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` 
+							   + (link 
+							   	  ? `a[href='${target.href}']` 
+							   	  : `span[data-original-definition-id='${target.dataset.originalDefinitionId}']`));
+		let referenceListEntry = referenceElement.closest("li");
+
+		//  Author list.
+		let authorElement = referenceListEntry.querySelector(".author");
+		let authorList = (authorElement.textContent || "").split(", ").slice(0, 3).join(", ");
+		if (authorList.length < authorElement.textContent.length)
+			authorList += " et al";
+
+		//  Date.
+		let dateElement = referenceListEntry.querySelector(".date");
+
+		return {
+			element: 		referenceElement,
+			listEntry: 		referenceListEntry,
+
+			titleText: 		referenceElement.textContent,
+			titleHTML: 		referenceElement.innerHTML.trimQuotes(),
+			authorHTML:		(authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
+			dateHTML:		(dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
+			abstractHTML:	referenceListEntry.querySelector("blockquote").innerHTML,
+		};
+	},
+
 	/***************************************************************************/
 	/*  The target-testing and pop-element-filling functions in this section
 		come in sets, which define and implement classes of pop-elements 
@@ -328,98 +359,69 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
-		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
-		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
-								`a[href='${target.href}']`);
-		let referenceListEntry = referenceElement.closest("li");
-
-		let titleHTML = referenceElement.innerHTML.trimQuotes();
-		let titleText = referenceElement.textContent;
-		let abstractHTML = referenceListEntry.querySelector("blockquote").innerHTML;
+		let referenceData = Extracts.referenceDataForTarget(target);
 
 		//  Link to original URL (for archive links) or link to archive (for live links).
         var archiveOrOriginalLinkHTML = "";
-        if (   referenceElement.dataset.urlOriginal != undefined 
-        	&& referenceElement.dataset.urlOriginal != target.href) {
+        if (   referenceData.element.dataset.urlOriginal != undefined 
+        	&& referenceData.element.dataset.urlOriginal != target.href) {
             archiveOrOriginalLinkHTML = (`<span class="originalURL">` + "[" + 
-            		   `<a href="${referenceElement.dataset.urlOriginal}" target="_new" 
-                       		title="Link to original URL for ‘${titleText}’" 
+            		   `<a href="${referenceData.element.dataset.urlOriginal}" target="_new" 
+                       		title="Link to original URL for ‘${referenceData.titleText}’" 
                        		alt="Original URL for this archived link; may be broken.">` + 
                        "original" + `</a>` + "]" + `</span>`);
         } else if (!target.href.startsWithAnyOf([ "https://www.gwern.net", "https://en.wikipedia.org", "https://archive.org", "https://www.biorxiv.org", "https://arxiv.org" ])) {
 			archiveOrOriginalLinkHTML = (`<span class="iaMirror">` +
-					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${titleText}’)" 
+					   `<a title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${referenceData.titleText}’)" 
 					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" target="_new">` +
 					   `</a></span>`);
         }
 
 		//  Extract title/link.
 		let titleLinkClass = (archiveOrOriginalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
-		let titleLinkHTML = `<a class="${titleLinkClass}" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${titleHTML}</a>`;
-
-		//	Author.
-		let authorElement = referenceListEntry.querySelector(".author");
-		let authorList = (authorElement.textContent || "").split(", ").slice(0, 3).join(", ");
-		if (authorList.length < authorElement.textContent.length)
-			authorList += " et al";
-		let authorHTML = (authorElement ? `<span class="data-field author">${authorList}</span>` : ``);
+		let titleLinkHTML = `<a class="${titleLinkClass}" target="_new" href="${target.href}" title="Open ${target.href} in a new window">${referenceData.titleHTML}</a>`;
 
 		//  Link to citations on Google Scholar, or link to search for links on Google.
-        var citationsOrLinks = "";
-        if (referenceElement.dataset.doi != undefined) {
-            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${referenceElement.dataset.doi}%22+OR+%22${titleText}%22" target="_new" title="Reverse citations of this paper (‘${titleText}’), with DOI ‘${referenceElement.dataset.doi}’, in Google Scholar">` + "cites" + `</a>`;
+        var citationsOrLinksHTML = "";
+        if (referenceData.element.dataset.doi != undefined) {
+            citationsOrLinksHTML = `; <a href="https://scholar.google.com/scholar?q=%22${referenceData.element.dataset.doi}%22+OR+%22${referenceData.titleText}%22" target="_new" title="Reverse citations of this paper (‘${referenceData.titleText}’), with DOI ‘${referenceData.element.dataset.doi}’, in Google Scholar">` + "cites" + `</a>`;
         } else if (target.href.includesAnyOf([ "pdf", "https://arxiv.org", "https://openreview.net", "ieee.org", "rand.org", "dspace.mit.edu", "thegradient.pub", "inkandswitch.com", "nature.com", "sciencemag.org" ])) {
             /* Not all scholarly papers come with DOIs; eg it's the policy of Arxiv to *not* provide DOIs. ;_; */
-            citationsOrLinks = `; <a href="https://scholar.google.com/scholar?q=%22${titleText}%22" target='_new' title="Reverse citations of this paper (‘${titleText}’) in Google Scholar">` + "cites" + `</a>`;
+            citationsOrLinksHTML = `; <a href="https://scholar.google.com/scholar?q=%22${referenceData.titleText}%22" target='_new' title="Reverse citations of this paper (‘${referenceData.titleText}’) in Google Scholar">` + "cites" + `</a>`;
         } else if (!target.href.startsWith("https://en.wikipedia.org")) {
-            citationsOrLinks = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${titleText}%22" target="_new" title="Links to this page (‘${titleText}’) in Google">` + "links" + `</a>`;
+            citationsOrLinksHTML = `; <a class="cites" href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${referenceData.titleText}%22" target="_new" title="Links to this page (‘${referenceData.titleText}’) in Google">` + "links" + `</a>`;
         }
 
-		//	Date; citations/links.
-		let dateElement = referenceListEntry.querySelector(".date");
-		let dateAndCitationsOrLinksHTML = (dateElement ? ` <span class="date-plus-cites">(<span class="data-field date">${dateElement.textContent}</span>${citationsOrLinks})</span>` : ``);
+        //  Date; citations/links.
+        let dateAndCitationsOrLinksHTML = (referenceData.dateHTML || citationsOrLinksHTML) 
+                                          ? ` <span class="date-plus-cites">${referenceData.dateHTML}${citationsOrLinksHTML}</span>` 
+                                          : ``;
 
-		//  The fully constructed extract popup contents.
+        //  The fully constructed extract popup contents.
         return `<div>` +
                    `<p class="data-field title">${archiveOrOriginalLinkHTML}${titleLinkHTML}</p>` +
-                   `<p class="data-field author-plus-date">${authorHTML}${dateAndCitationsOrLinksHTML}</p>` +
-                   `<div class="data-field popupAbstract">${abstractHTML}</div>` +
+                   `<p class="data-field author-plus-date">${referenceData.authorHTML}${dateAndCitationsOrLinksHTML}</p>` +
+                   `<div class="data-field extract-abstract">${referenceData.abstractHTML}</div>` +
                `</div>`;
     },
 
-	//  Definitions.
+    //  Definitions.
     isDefinitionLink: (target) => {
-		return target.classList.contains("defnMetadata");
-	},
+        return target.classList.contains("defnMetadata");
+    },
     definitionForTarget: (target) => {
-		GWLog("Extracts.definitionForTarget", "extracts.js", 2);
+        GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
-		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` + 
-								`span[data-original-definition-id='${target.dataset.originalDefinitionId}']`);
-		let referenceListEntry = referenceElement.closest("li");
-
-		let titleHTML = referenceElement.innerHTML.trimQuotes();
-		let titleText = referenceElement.textContent;
-		let abstractHTML = referenceListEntry.querySelector("blockquote").innerHTML;
-
-		let authorElement = referenceListEntry.querySelector(".author");
-		let authorList = (authorElement.textContent || "").split(", ").slice(0, 3).join(", ");
-		if (authorList.length < authorElement.textContent.length)
-			authorList += " et al";
-		let authorHTML = (authorElement ? `<span class="data-field author">${authorList}</span>` : ``);
-
-		let dateElement = referenceListEntry.querySelector(".date");
-		let dateHTML = (dateElement ? ` (${dateElement.textContent})` : ``);
+        let referenceData = Extracts.referenceDataForTarget(target, false);
 
         return `<div>` +
-        		   `<p class="data-field title">${titleHTML}</p>` +
-        		   `<p class="data-field author-plus-date">${authorHTML}${dateHTML}</p>` +
-        		   `<div class="data-field popupAbstract">${abstractHTML}</div>` +
-        	   `</div>`;
+                   `<p class="data-field title">${referenceData.titleHTML}</p>` +
+                   `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` +
+                   `<div class="data-field extract-abstract">${referenceData.abstractHTML}</div>` +
+               `</div>`;
     },
 
-	//  Videos (both local and remote).
+    //  Videos (both local and remote).
     youtubeId: (href) => {
         let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
         if (match && match[2].length == 11) {
@@ -429,34 +431,34 @@ Extracts = {
         }
     },
     isVideoLink: (target) => {
-		if (!target.href) return false;
+        if (!target.href) return false;
 
-		if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
-			return (Extracts.youtubeId(target.href) != null);
-		} else {
-			return false;
-		}
+        if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
+            return (Extracts.youtubeId(target.href) != null);
+        } else {
+            return false;
+        }
     },
     videoForTarget: (target) => {
-		GWLog("Extracts.videoForTarget", "extracts.js", 2);
+        GWLog("Extracts.videoForTarget", "extracts.js", 2);
 
-		let videoId = Extracts.youtubeId(target.href);
-		let videoEmbedURL = `https://www.youtube.com/embed/${videoId}`;
-		let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-		let srcdocStyles = `<style>` + 
-			`* { padding: 0; margin: 0; overflow: hidden; }` + 
-			`html, body { height: 100%; } ` + 
-			`img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } ` + 
-			`span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` + 
-			`</style>`;
-		let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
-		let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
+        let videoId = Extracts.youtubeId(target.href);
+        let videoEmbedURL = `https://www.youtube.com/embed/${videoId}`;
+        let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        let srcdocStyles = `<style>` + 
+            `* { padding: 0; margin: 0; overflow: hidden; }` + 
+            `html, body { height: 100%; } ` + 
+            `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } ` + 
+            `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` + 
+            `</style>`;
+        let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
+        let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
-		//  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
+        //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
         return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe></div>`;
     },
 
-	//  Citations.
+    //  Citations.
     isCitation: (target) => {
 		return target.classList.contains("footnote-ref");
 	},
@@ -893,7 +895,7 @@ Extracts = {
 		//  Allow for floated figures at the start of abstract.
 		if (   Extracts.isExtractLink(target)
 			|| Extracts.isDefinitionLink(target)) {
-			let initialFigure = popup.querySelector(".popupAbstract > figure.float-right:first-child");
+			let initialFigure = popup.querySelector(".extract-abstract > figure.float-right:first-child");
 			if (initialFigure) {
 				let popupdiv = popup.firstElementChild;
 				popupdiv.insertBefore(initialFigure, popupdiv.firstElementChild);
