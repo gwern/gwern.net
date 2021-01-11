@@ -143,7 +143,7 @@ then
     λ(){ egrep '<div class="admonition .*">[^$]' **/*.page; }
     wrap λ "Broken admonition paragraph."
 
-    λ(){ egrep --color -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e '<p><p>' -e '</p></p>' -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<figure-inline' -e '<small></small>' -e '\]\(/' -e '-, ' -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -- ./metadata/*.yaml; }
+    λ(){ egrep --color=always -e '/home/gwern/' -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e '<p><p>' -e '</p></p>' -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<figure-inline' -e '<small></small>' -e '\]\(/' -e '-, ' -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
 
     λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
