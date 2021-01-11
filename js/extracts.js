@@ -177,10 +177,6 @@ Extracts = {
 			//  Recursively set up targets within newly-spawned popups as well.
 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
 				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
-
-				//  Remove click listener from code popups, to allow selection.
-				if (Extracts.isLocalCodeFileLink(info.popup.popupTarget))
-					info.popup.removeEventListener("click", Popups.popupClicked);
 			});
         }
 
@@ -973,6 +969,13 @@ Extracts = {
 		//  Remove extraneous classes from images in image popups.
 		if (Extracts.isLocalImageLink(target)) {
 			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
+		}
+
+		//  Remove click listener from code popups, to allow selection.
+		if (Extracts.isLocalCodeFileLink(target)) {
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				popup.removeEventListener("click", Popups.popupClicked);
+			}, { once: true });
 		}
 
 		return true;
