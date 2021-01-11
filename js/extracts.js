@@ -191,7 +191,12 @@ Extracts = {
 	/*	Content.
 		*/
 
-	//  Helper methods.
+	/*	This function qualifies anchorlinks in transcluded content (i.e., other
+		pages on the site, as well as extracts describing other pages on the 
+		site), by rewriting their href attributes to include the path of the 
+		target (link) that spawned the pop-element that contains the transcluded 
+		content.
+		*/
     qualifyLinksInPopContent: (popX, target) => {
 		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
 		    anchorLink.pathname = target.pathname;
@@ -200,6 +205,41 @@ Extracts = {
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
+
+	/*	This function fills a pop-element for a given target with content. To do
+		so, it uses a provided array of testing/filling function pairs. The
+		testing functions are called in order until a match is found, at which 
+		point the filling function of the pair is called. Provided classes, if 
+		any, are then added to the pop-element.
+
+		In addition to the pop-element and the target, fillPopElement() takes a
+		‘possiblePopTypes’ array, which must have the following structure:
+
+		[ [ testMethodName1, fillMethodName1|null, classString1|null ],
+		  [ testMethodName2, fillMethodName2|null, classString2|null ],
+		  … ]
+
+		NOTES:
+
+		- fillPopElement() looks for methods of the given names in the Extracts 
+		  object
+		- classString must be space-delimited
+
+		The entries will be processed IN ARRAY ORDER. For each entry:
+
+		1. If a fill method of the given name exists, the test method of the 
+		   given name will be called with the target as argument.
+		2. If the test method returns true, then the pop-element will be filled 
+		   by the given fill method.
+		3. If there’s a non-empty class string, the classes in the string will 
+		   be added to the pop-element.
+
+		No further array entries will be processed once a match (i.e., test 
+		method that returns true for the given target) is found.
+
+		The function then returns true if a filling method was found (i.e., the
+		pop-element successfully filled), false otherwise.
+		*/
 	fillPopElement: (popElement, target, possiblePopTypes) => {
 		GWLog("Extracts.fillPopElement", "extracts.js", 2);
 
@@ -220,6 +260,31 @@ Extracts = {
 			return false;
 		}
 	},
+
+	/*	This function’s purpose is to allow for the transclusion of entire pages
+		on the same website (displayed to the user in popups, or injected in 
+		block flow as popins), and the (almost-)seamless handling of links (or
+		other target elements) in such transcluded content in the same way that
+		they’re handled in the root document (i.e., the actual page loaded in
+		the browser window). This permits us to have truly recursive popups
+		with unlimited recursion depth and no loss of functionality.
+
+		For any given target element, originatingDocumentForTarget() asks: where
+		(that is, in what *page*, a.k.a. ‘document’) was this element *defined*?
+
+		Was it defined in the root document, or in some extract for a target in 
+		the root document, at some remove (even if the target is actually within 
+		an extract popup spawned by a section embed popup spawned by a footnote 
+		popup)? If so, the root element of the root document (i.e., the <html> 
+		element of the page) is returned.
+
+		OR, was the target defined in an entire other page that was transcluded 
+		wholesale and embedded as a pop-element? In that case, the pop-element 
+		where said other page is embedded is returns (again, even if the given
+		target is actually in a popup several levels down from that full-page
+		embed popup, having been spawned by a definition which spawned a section
+		link which spawned… etc.).
+		*/
 	originatingDocumentForTarget: (target) => {
 		let containingPopElement = target.closest(".extract-popup");
 		if (containingPopElement) {
@@ -231,6 +296,30 @@ Extracts = {
 			return document.firstElementChild;
 		}
 	},
+
+	/***************************************************************************/
+	/*  The target-testing and pop-element-filling functions in this section
+		come in sets, which define and implement classes of pop-elements 
+		(whether those be popups, or popins, etc.). (These classes are things 
+		like “a link that has a statically generated extract provided for it”,
+		“a link to a locally archived web page”, “an anchorlink to a section of
+		the current page”, and so on.)
+
+		Each set contains a testing function, which is called by 
+		testTarget() to determine if the target (link, etc.) is eligible for 
+		processing, and is also called by fillPopElement() to find the 
+		appropriate filling function for a pop-element spawned by a given 
+		target. The testing function takes a target element and examines its
+		href or other properties, and returns true if the target is a member of
+		that class of targets, false otherwise.
+
+		Each set also contains the corresponding filling function, which
+		is called by fillPopElement() (chosen on the basis of the return values 
+		of the testing functions, and the specified order in which they’re 
+		called). The filling function takes a target element and returns a 
+		string which comprises the HTML contents that should be injected into
+		the pop-element spawned by the given target.
+		*/
 
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
@@ -457,7 +546,8 @@ Extracts = {
 
 			//  Scroll to the target.
 			if (target.hash > "")
-				target.popup.scrollTop = target.popup.querySelector(decodeURIComponent(target.hash)).getBoundingClientRect().top - target.popup.getBoundingClientRect().top;
+				target.popup.scrollTop = target.popup.querySelector(decodeURIComponent(target.hash)).getBoundingClientRect().top 
+									   - target.popup.getBoundingClientRect().top;
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
@@ -571,6 +661,11 @@ Extracts = {
 		, 'i');
 		return (target.pathname.match(codeFileURLRegExp) != null);
     },
+	/*  We first try to retrieve a syntax-highlighted version of the given code 
+		file, stored on the server as an HTML fragment. If present, we embed 
+		that. If there’s no such fragment, then we just embed the contents of 
+		the actual code file, in a <pre>-wrapped <code> element.
+		*/
     localCodeFileForTarget: (target) => {
 		GWLog("Extracts.localCodeFileForTarget", "extracts.js", 2);
 
@@ -679,6 +774,12 @@ Extracts = {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	},
+
+	/*	Called by popups.js just before spawning (injecting and positioning) the
+		popup. This is our chance to fill the popup with content, and rewrite
+		that content in whatever ways necessary. After this function exits, the
+		popup will appear on the screen.
+		*/
     preparePopup: (popup, target) => {
 		GWLog("Extracts.preparePopup", "extracts.js", 2);
 
@@ -687,7 +788,9 @@ Extracts = {
 		//  We then remove some of the imported classes.
 		popup.classList.remove("has-annotation", "has-content", "spawns-popup");
 
-		//	Inject the extract for the target into the popup.
+		/*	Inject the extract for the target into the popup. (See the comment
+			for fillPopElement() for a description of what this array does.)
+			*/
 		if (Extracts.fillPopElement(popup, target, [
 			[ "isExtractLink", 			"extractForTarget", 				null 							],
 			[ "isDefinitionLink", 		"definitionForTarget", 				"definition" 					],
