@@ -440,7 +440,14 @@ Extracts = {
 			Extracts.qualifyLinksInPopContent(target.popup, target);
 
 			//  Then, trigger the rewrite pass by firing the requisite event.
-			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: target.popup, needsRewrite: true, clickable: false, fullPage: true, fullWidthPossible: false });
+			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
+				document: target.popup, 
+				needsRewrite: true, 
+				clickable: false, 
+				collapseAllowed: false, 
+				fullPage: true, 
+				fullWidthPossible: false
+			});
 
 			/*  Because the Popups.popupDidSpawn event has already fired,
 				we must process the newly-constructed popup manually,
@@ -797,7 +804,14 @@ Extracts = {
 
 		//  Trigger a rewrite pass by firing the requisite event.
 		if (Extracts.isLocalPageLink(target)) {
-			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: popup, needsRewrite: false, clickable: false, fullPage: false, fullWidthPossible: false });
+			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
+				document: popup, 
+				needsRewrite: false, 
+				clickable: false, 
+				collapseAllowed: false, 
+				fullPage: false, 
+				fullWidthPossible: false
+			});
 		}
 
 		//  Loading spinners.

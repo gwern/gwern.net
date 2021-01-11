@@ -76,11 +76,11 @@ function isWithinCollapsedBlock(element) {
 
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
-function prepareCollapseBlocks() {
+function prepareCollapseBlocks(containingDocument = document.firstElementChild) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
 	let hashTarget = getHashTargetedElement();
-	document.querySelectorAll(".collapse").forEach(collapseBlock => {
+	containingDocument.querySelectorAll(".collapse").forEach(collapseBlock => {
 		let checked = collapseBlock.contains(hashTarget) ? " checked='checked'" : "";
 		let disclosureButtonHTML = `<input type='checkbox' class='disclosure-button' aria-label='Open/close collapsed section'${checked}>`;
 		if (collapseBlock.tagName == "SECTION") {
@@ -115,7 +115,7 @@ function prepareCollapseBlocks() {
 
     /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
-	document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+	containingDocument.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		updateDisclosureButtonTitle(disclosureButton);
 
 		let collapseBlock = disclosureButton.closest(".collapse");
@@ -142,6 +142,32 @@ function prepareCollapseBlocks() {
 	});
 }
 doWhenDOMContentLoaded(prepareCollapseBlocks);
+
+/*	Removes disclosure buttons and expands collapse blocks.
+	*/
+function expandLockCollapseBlocks(containingDocument = document.firstElementChild) {
+	GWLog("expandLockCollapseBlocks", "collapse.js", 2);
+
+	//  Remove disclosure buttons.
+	containingDocument.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+		disclosureButton.remove();
+	});
+
+	//  Expand collapse blocks.
+	containingDocument.querySelectorAll(".collapse").forEach(collapseBlock => {
+		collapseBlock.classList.toggle("expanded", true);
+	});
+}
+
+/*	Add handler for processing collapse blocks in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processCollapseBlocksInInjectedContent = (info) => {
+	if (!info.collapseAllowed) {
+		expandLockCollapseBlocks(info.document);
+	} else if (info.needsRewrite) {
+		prepareCollapseBlocks(info.document);
+	}
+});
 
 /*	Ensure that the given element is scrolled into view when layout is complete.
 	*/
