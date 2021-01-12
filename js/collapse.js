@@ -244,6 +244,13 @@ window.addEventListener("hashchange", GW.hashUpdated = () => {
 	GWLog("GW.hashUpdated", "collapse.js", 1);
 
 	revealTarget();
+
+	//	Clean URL hash.
+	if (   location.hash == "#top"
+		|| (   location.hash == "" 
+			&& location.href.endsWith("#"))) {
+		history.replaceState("", null, location.pathname);
+	}
 });
 
 /*	What happens when a user C-fs on a page and there is a hit *inside* a collapse block? Just navigating to the collapsed section is not useful, especially when there may be multiple collapses inside a frame. So we must specially handle searches and pop open collapse sections with matches. We do this by watching for selection changes. (We don’t bother checking for window focus/blur because that is unreliable and in any case doesn’t work for “Search Again” key command.

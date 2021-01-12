@@ -604,8 +604,7 @@ Extracts = {
 
 			//  Scroll to the target.
 			if (target.hash > "")
-				target.popup.scrollTop = target.popup.querySelector(decodeURIComponent(target.hash)).getBoundingClientRect().top 
-									   - target.popup.getBoundingClientRect().top;
+				Extracts.scrollElementIntoViewInPopup(target.popup.querySelector(decodeURIComponent(target.hash)), target.popup);
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
@@ -837,6 +836,11 @@ Extracts = {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	},
 
+	scrollElementIntoViewInPopup: (element, popup) => {
+		let innerDiv = popup.firstElementChild;
+		innerDiv.scrollTop = element.getBoundingClientRect().top - innerDiv.getBoundingClientRect().top;
+	},
+
 	/*	Called by popups.js just before spawning (injecting and positioning) the
 		popup. This is our chance to fill the popup with content, and rewrite
 		that content in whatever ways necessary. After this function exits, the
@@ -916,8 +920,7 @@ Extracts = {
 
 			//  Scroll to the citation.
 			requestAnimationFrame(() => {
-				popup.scrollTop = citationInPopup.getBoundingClientRect().top 
-								- popup.getBoundingClientRect().top;
+				Extracts.scrollElementIntoViewInPopup(citationInPopup, popup);
 			});
 		}
 

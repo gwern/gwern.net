@@ -340,6 +340,30 @@ GW.notificationCenter.fireEvent = function (eventName, eventInfo) {
 	}
 }
 
+/****************/
+/* SCROLL STATE */
+/****************/
+
+GW.scrollState = {
+	lastScrollTop:				window.pageYOffset || document.documentElement.scrollTop,
+	unbrokenDownScrollDistance:	0,
+	unbrokenUpScrollDistance:	0
+};
+
+function updateScrollState(event) {
+    GWLog("updateScrollState", "darkmode.js", 3);
+
+    let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop) 
+    	? (GW.scrollState.unbrokenDownScrollDistance + newScrollTop - GW.scrollState.lastScrollTop) 
+    	: 0;
+    GW.scrollState.unbrokenUpScrollDistance = (newScrollTop < GW.scrollState.lastScrollTop) 
+    	? (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - newScrollTop) 
+    	: 0;
+    GW.scrollState.lastScrollTop = newScrollTop;
+}
+addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+
 /******************/
 /* BROWSER EVENTS */
 /******************/
