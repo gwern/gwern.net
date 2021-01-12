@@ -2970,6 +2970,9 @@ body.directory-index #disqus_thread {
 .popupdiv.extract-popup:not(.toc-section-popup) {
     max-height: 480px;
 }
+.popupdiv.extract-popup:not(.toc-section-popup) > div {
+    max-height: 474px;
+}
 
 /*  Data fields.
     */
