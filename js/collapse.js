@@ -245,12 +245,11 @@ window.addEventListener("hashchange", GW.hashUpdated = () => {
 
 	revealTarget();
 
+	//	Clean URL hash.
 	if (   location.hash == "#top"
 		|| (   location.hash == "" 
 			&& location.href.endsWith("#"))) {
-		requestAnimationFrame(() => {
-			history.replaceState("", null, location.pathname);
-		});
+		history.replaceState("", null, location.pathname);
 	}
 });
 
