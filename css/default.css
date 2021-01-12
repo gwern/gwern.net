@@ -2797,6 +2797,8 @@ body.directory-index #disqus_thread {
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     line-height: 1.45;
     overflow: auto;
+    box-sizing: border-box;
+    height: 100%;
 }
 
 /*	“Loading failed” messages (for object popups).

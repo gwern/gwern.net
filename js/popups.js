@@ -461,7 +461,7 @@ Popups.stylesHTML = `<style id='${Popups.stylesID}'>
 }
 .popupdiv {
     position: absolute;
-    overflow: auto;
+    overflow: visible;
     overscroll-behavior: none;
 }
 </style>`;
