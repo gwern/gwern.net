@@ -344,7 +344,12 @@ function injectLinkBibliography(containingDocument = document.firstElementChild)
 			});
 		},
 		onFailure: (event) => {
-			//  TODO: Inject some sort of "not found" message
+			linkBibliography.innerHTML = `<h1><a 
+				href="#link-bibliography" 
+				title="Link to section: § ‘Link Bibliography’"
+					>Link Bibliography</a></h1>` + 
+				`<p><strong>Failed to load link bibliography! Extract/definition popups are not available.</strong></p>`;
+			linkBibliography.classList.toggle("loading-failed", true);
 		}
 	});
 }
