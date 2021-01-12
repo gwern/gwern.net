@@ -3563,7 +3563,33 @@ body.directory-index #disqus_thread {
 #back-to-top {
 	position: absolute;
 	bottom: 0.75rem;
+	opacity: 1.0;
+	visibility: visible;
+	transition:
+		opacity 2s ease,
+		visibility 2s ease;
 }
+#back-to-top.hidden {
+	opacity: 0;
+	visibility: hidden;
+}
+#back-to-top a {
+	display: block;
+	width: 1.25em;
+    color: var(--GW-back-to-top-link-color);
+    filter:
+        drop-shadow(0 0 1px var(--GW-body-background-color))
+        drop-shadow(0 0 1px var(--GW-body-background-color))
+        drop-shadow(0 0 1px var(--GW-body-background-color));
+}
+#back-to-top a:hover {
+    color: var(--GW-back-to-top-link-hover-color);
+}
+#back-to-top svg {
+	display: block;
+	width: 100%;
+}
+
 @media only screen and (max-width: 1184px) {
     #back-to-top {
         left: 4rem;
@@ -3581,22 +3607,14 @@ body.directory-index #disqus_thread {
 }
 @media only screen and (max-width: 650px) {
     #back-to-top {
-        display: none;
+        left: unset;
+        right: 1rem;
+        bottom: 1rem;
     }
-}
-#back-to-top a {
-	display: block;
-	width: 1.25em;
-    color: var(--GW-back-to-top-link-color);
-    filter:
-        drop-shadow(0 0 1px var(--GW-body-background-color))
-        drop-shadow(0 0 1px var(--GW-body-background-color))
-        drop-shadow(0 0 1px var(--GW-body-background-color));
-}
-#back-to-top a:hover {
-    color: var(--GW-back-to-top-link-hover-color);
-}
-#back-to-top svg {
-	display: block;
-	width: 100%;
+    #back-to-top a {
+        width: 1.5em;
+        border: 2px solid currentColor;
+        background-color: var(--GW-body-background-color);
+        padding: 0.125em 0.25em;
+    }
 }

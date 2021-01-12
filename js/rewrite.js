@@ -6,6 +6,7 @@
 /* HELPERS */
 /***********/
 
+/***********************************************************************/
 /*	Returns true if the given document element is the main page’s <html> 
 	element, false otherwise.
 	*/
@@ -17,6 +18,7 @@ function isMainDocument(documentElement) {
 /* TABLES */
 /**********/
 
+/****************************************************************/
 /*  Wrap each table in a div.table-wrapper (for layout purposes).
     */
 function wrapTables(containingDocument = document.firstElementChild) {
@@ -32,6 +34,7 @@ function wrapTables(containingDocument = document.firstElementChild) {
 }
 doWhenDOMContentLoaded(wrapTables);
 
+/******************************************************************************/
 /*	Wrap each full-width table in a div.full-width-table-wrapper, and also move
 	the .collapse class (if any) from the outer wrapper to the table (for
 	consistency).
@@ -52,6 +55,7 @@ function wrapFullWidthTables(containingDocument = document.firstElementChild) {
 }
 doWhenDOMContentLoaded(wrapFullWidthTables);
 
+/**********************************************/
 /*	Add handler for tables in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processTablesInInjectedContent = (info) => {
@@ -67,6 +71,7 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /* FIGURES */
 /***********/
 
+/********************************/
 /*  Inject wrappers into figures.
     */
 function wrapFigures(containingDocument = document.firstElementChild) {
@@ -106,6 +111,7 @@ function wrapFigures(containingDocument = document.firstElementChild) {
 }
 doWhenDOMContentLoaded(wrapFigures);
 
+/********************************************************************/
 /*	Designate full-width figures as such (with a ‘full-width’ class).
 	*/
 function markFullWidthFigures(containingDocument = document.firstElementChild) {
@@ -132,6 +138,7 @@ function markFullWidthFigures(containingDocument = document.firstElementChild) {
 }
 doWhenDOMContentLoaded(markFullWidthFigures);
 
+/***********************************************/
 /*	Add handler for figures in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFiguresInInjectedContent = (info) => {
@@ -147,6 +154,7 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /* CODE BLOCKS */
 /***************/
 
+/***********************************************************/
 /*  Wrap each pre.full-width in a div.full-width and a 
 	div.full-width-code-block-wrapper (for layout purposes).
     */
@@ -166,6 +174,7 @@ function wrapFullWidthPreBlocks(containingDocument = document.firstElementChild)
 }
 doWhenDOMContentLoaded(wrapFullWidthPreBlocks);
 
+/***************************************************/
 /*	Add handler for code blocks in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processCodeBlocksInInjectedContent = (info) => {
@@ -180,14 +189,20 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /* TYPOGRAPHY */
 /**************/
 
-/*	HYPHENS
-	Add copy listener to strip soft hyphens from copy-pasted text (inserted by compile-time hyphenator).
+/*****************************************/
+/*	Returns the current selection as HTML.
 	*/
 function getSelectionHTML() {
     var container = document.createElement("div");
     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
     return container.innerHTML;
 }
+
+/****************************************************************/
+/*	HYPHENS
+	Add copy listener to strip soft hyphens from copy-pasted text 
+	(inserted by compile-time hyphenator).
+	*/
 window.addEventListener("copy", GW.textCopied = (event) => {
 	GWLog("GW.textCopied", "rewrite.js", 2);
 
@@ -203,6 +218,7 @@ window.addEventListener("copy", GW.textCopied = (event) => {
 /* FULL-WIDTH BLOCKS */
 /*********************/
 
+/*******************************************************************************/
 /*  Expands all tables (& other blocks) whose wrapper block is marked with class
     ‘full-width’, and all figures marked with class ‘full-width’, to span the 
     viewport (minus a specified margin on both sides).
@@ -247,12 +263,12 @@ function createFullWidthBlockLayoutStyles() {
 	};
 	updateFullWidthBlockLayoutStyles();
 
-	/*	Add listener to update layout variables on window resize.
-		*/
+	//	Add listener to update layout variables on window resize.
 	window.addEventListener("resize", updateFullWidthBlockLayoutStyles);
 }
 doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 
+/************************************/
 /*	Set margins of full-width blocks.
 	*/
 function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementChild) {
@@ -284,6 +300,7 @@ function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementC
 }
 doWhenPageLoaded(setMarginsOnFullWidthBlocks);
 
+/*********************************************************/
 /*	Add handler for full-width blocks in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFullWidthBlocksInInjectedContent = (info) => {
@@ -298,6 +315,10 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /* LINK BIBLIOGRAPHY */
 /*********************/
 
+/***********************************************************************/
+/*	Inject the link bibliography (located at 
+	`<url for current page>-link-bibliography`), if not already inlined.
+	*/
 function injectLinkBibliography(containingDocument = document.firstElementChild) {
 	GWLog("injectLinkBibliography", "rewrite.js", 1);
 
@@ -329,6 +350,7 @@ function injectLinkBibliography(containingDocument = document.firstElementChild)
 }
 doWhenDOMContentLoaded(injectLinkBibliography);
 
+/****************************************************************************/
 /*	Enable hovering over a link bibliography entry number to link to it, much
 	like the self-links on section headings.
 	*/
@@ -344,7 +366,11 @@ function injectLinkBibliographyItemSelfLinks(containingDocument = document.first
 	}
 }
 
-/*	Requires typography.js to be loaded prior to this file.
+/*******************************************************************************/
+/*	Apply various typographic fixes (educate quotes, inject <wbr> elements after
+	certain problematic characters, etc.).
+
+	Requires typography.js to be loaded prior to this file.
 	*/
 function rectifyTypographyInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
 	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
@@ -363,7 +389,10 @@ function rectifyTypographyInLinkBibliographyEntries(containingDocument = documen
 	});
 }
 
+/*****************************************************************************/
 /*	Sets, in CSS, the image dimensions that are specified in HTML.
+	(This is to ensure no reflow when popups for link bibliography entries are
+	 spawned.)
 	*/
 function setImageDimensionsInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
 	GWLog("setImageDimensionsInLinkBibliographyEntries", "rewrite.js", 1);
@@ -373,7 +402,8 @@ function setImageDimensionsInLinkBibliographyEntries(containingDocument = docume
 	});
 }
 
-/*	Ensure all link bibliography entries are fully qualified.
+/******************************************************************/
+/*	Ensure all link bibliography entries are fully qualified links.
 	*/
 function fullyQualifyLinksInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
 	GWLog("fullyQualifyLinksInLinkBibliographyEntries", "rewrite.js", 1);
@@ -383,6 +413,7 @@ function fullyQualifyLinksInLinkBibliographyEntries(containingDocument = documen
 	});
 }
 
+/*****************************************/
 /*	Process link bibliography, if loaded.
 	*/
 doWhenDOMContentLoaded(() => {
@@ -397,6 +428,7 @@ doWhenDOMContentLoaded(() => {
 	fullyQualifyLinksInLinkBibliographyEntries();
 });
 
+/********************************************************************/
 /*	Add handler for processing link bibliography in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
@@ -415,6 +447,7 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /* MISC. */
 /*********/
 
+/***************************************************************************/
 /*	Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
 	right? Yeah, right...)
 	*/
@@ -427,7 +460,12 @@ function cleanUpImageAltText(containingDocument = document.firstElementChild) {
 }
 doWhenDOMContentLoaded(cleanUpImageAltText);
 
-/*	Directional navigation links on self-links: for each self-link like “see [later](#later-identifier)”, find the linked identifier, whether it’s before or after, and if it is before/previously, annotate the self-link with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a backwards link to a identifier already read, or an unread identifier.
+/*****************************************************************************/
+/*	Directional navigation links on self-links: for each self-link like 
+	“see [later](#later-identifier)”, find the linked identifier, whether it’s 
+	before or after, and if it is before/previously, annotate the self-link 
+	with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a 
+	backwards link to a identifier already read, or an unread identifier.
 	*/
 function directionalizeAnchorLinks(containingDocument = document.firstElementChild) {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
@@ -443,6 +481,7 @@ function directionalizeAnchorLinks(containingDocument = document.firstElementChi
 }
 doWhenDOMContentLoaded(directionalizeAnchorLinks);
 
+/************************************************************************/
 /*	The footnotes section has no ID because Pandoc is weird. Give it one.
 	*/
 function identifyFootnotesSection(containingDocument = document.firstElementChild) {
@@ -454,6 +493,7 @@ function identifyFootnotesSection(containingDocument = document.firstElementChil
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
 
+/***************************************************************/
 /*	Add handler for miscellaneous rewriting in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processMiscellaneousRewritesInInjectedContent = (info) => {
@@ -466,22 +506,49 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 		identifyFootnotesSection(info.document);
 });
 
+/********************/
+/* BACK TO TOP LINK */
+/********************/
+
+/*******************************************************************/
 /*	Injects the “back to top” link. (Called only for the main page.)
 	*/
 function injectBackToTopLink() {
 	GWLog("injectBackToTopLink", "rewrite.js", 1);
 
-	let backTopTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
+	GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
 		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M6.1 422.3l209.4-209.4c4.7-4.7 12.3-4.7 17 0l209.4 209.4c4.7 4.7 4.7 12.3 0 17l-19.8 19.8c-4.7 4.7-12.3 4.7-17 0L224 278.4 42.9 459.1c-4.7 4.7-12.3 4.7-17 0L6.1 439.3c-4.7-4.7-4.7-12.3 0-17zm0-143l19.8 19.8c4.7 4.7 12.3 4.7 17 0L224 118.4l181.1 180.7c4.7 4.7 12.3 4.7 17 0l19.8-19.8c4.7-4.7 4.7-12.3 0-17L232.5 52.9c-4.7-4.7-12.3-4.7-17 0L6.1 262.3c-4.7 4.7-4.7 12.3 0 17z"/></svg>` 
 		+ `</a></div>`);
 
-	backTopTop.firstElementChild.addActivateEvent((event) => {
+	GW.backToTop.firstElementChild.addActivateEvent((event) => {
 		requestAnimationFrame(() => {
 			history.replaceState("", null, location.pathname);
 		});
 	});
+
+	//	On mobile, show/hide the back-to-top link on scroll up/down.
+	if (GW.isMobile())
+		addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener");
 }
 doWhenDOMContentLoaded(injectBackToTopLink);
+
+/***********************************************************/
+/*  Show/hide the back-to-top link in response to scrolling.
+
+    Called by the ‘updateBackToTopLinkVisibilityScrollListener’ scroll listener.
+    */
+function updateBackToTopLinkVisibility(event) {
+    GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
+
+    // Hide back-to-top link when scrolling a full page down.
+    if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight) {
+        GW.backToTop.classList.toggle("hidden", true);
+    }
+
+    // Show back-to-top link on ANY scroll up.
+	if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)
+		GW.backToTop.classList.toggle("hidden", false);
+}
 
 /*****************/
 /* END OF LAYOUT */
