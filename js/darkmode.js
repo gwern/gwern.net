@@ -200,14 +200,11 @@ function injectModeSelector() {
 
     // We pre-query the relevant elements, so we don’t have to run 
     // querySelectorAll on every firing of the scroll listener.
-    GW.scrollState = {
-        "lastScrollTop":                    window.pageYOffset || document.documentElement.scrollTop,
-        "unbrokenDownScrollDistance":       0,
-        "unbrokenUpScrollDistance":         0,
-        "modeSelector":                     document.querySelectorAll("#mode-selector"),
+    GW.darkMode = {
+    	modeSelector: document.querySelectorAll("#mode-selector")[0]
     };
     addScrollListener(updateModeSelectorVisibility, "updateModeSelectorVisibilityScrollListener");
-    GW.scrollState.modeSelector[0].addEventListener("mouseover", () => { showModeSelector(); });
+    GW.darkMode.modeSelector.addEventListener("mouseover", () => { showModeSelector(); });
     doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "updateModeSelectorStateForSystemDarkMode", () => { updateModeSelectorState(); });
 }
 
@@ -218,15 +215,6 @@ function injectModeSelector() {
 function updateModeSelectorVisibility(event) {
     GWLog("updateModeSelectorVisibility", "darkmode.js", 3);
 
-    let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop) ?
-                                                        (GW.scrollState.unbrokenDownScrollDistance + newScrollTop - GW.scrollState.lastScrollTop) :
-                                                        0;
-    GW.scrollState.unbrokenUpScrollDistance = (newScrollTop < GW.scrollState.lastScrollTop) ?
-                                                     (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - newScrollTop) :
-                                                     0;
-    GW.scrollState.lastScrollTop = newScrollTop;
-
     // Hide mode selector when scrolling a full page down.
     if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight) {
         hideModeSelector();
@@ -235,7 +223,7 @@ function updateModeSelectorVisibility(event) {
     // On desktop, show mode selector when scrolling to top of page,
     // or a full page up.
     // On mobile, show mode selector on ANY scroll up.
-    if (GW.mediaQueries.mobileWidth.matches) {
+    if (GW.isMobile()) {
         if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)
             showModeSelector();
     } else if (   GW.scrollState.unbrokenUpScrollDistance > window.innerHeight
@@ -247,13 +235,13 @@ function updateModeSelectorVisibility(event) {
 function hideModeSelector() {
     GWLog("hideModeSelector", "darkmode.js", 3);
 
-    GW.scrollState.modeSelector[0].classList.add("hidden");
+    GW.darkMode.modeSelector.classList.toggle("hidden", true);
 }
 
 function showModeSelector() {
     GWLog("showModeSelector", "darkmode.js", 3);
 
-    GW.scrollState.modeSelector[0].classList.remove("hidden");
+    GW.darkMode.modeSelector.classList.toggle("hidden", false);
 }
 
 /*  Update the states of the mode selector buttons.
