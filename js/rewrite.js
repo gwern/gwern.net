@@ -554,9 +554,6 @@ function setUpOutboundClickTracking(containingDocument = document.firstElementCh
 		});
 	});
 }
-document.querySelector("script#googleAnalytics").addEventListener("load", () => {
-	GW.googleAnalyticsLoaded = true;
-});
 doWhenDOMContentLoaded(setUpOutboundClickTracking);
 
 /*******************************************************************************/
