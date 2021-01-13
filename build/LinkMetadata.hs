@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-09 17:08:07 gwern"
+When:  Time-stamp: "2021-01-11 18:38:46 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 module LinkMetadata where
 
 import Control.Monad (when, void)
-import qualified Data.ByteString as B (appendFile)
+import qualified Data.ByteString as B (appendFile, readFile, isInfixOf)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
@@ -40,6 +40,7 @@ import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
+import Data.Text.IO as TIO (readFile)
 import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (invertImage) -- TODO: 'typographyTransform'. This is semi-intractable. When we read in the HTML, the hyphenation pass breaks much of the LaTeX. Adding in guards in the walk to avoid Spans doesn't work like it ought to.
 import Network.HTTP (urlDecode, urlEncode)
@@ -222,11 +223,13 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 
 -- append a new automatic annotation if its Path is not already in the auto database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,abst) = do -- auto <- readYaml "metadata/auto.yaml"
-                                           -- when (not (l `elem` (map fst auto))) $ do
-                                             hPrint stderr i
-                                             let newYaml = Y.encode [(l,t,a,d,di,abst)]
-                                             B.appendFile "metadata/auto.yaml" newYaml
+writeLinkMetadata l i@(t,a,d,di,abst) = do hPrint stderr (l ++ show i)
+                                           -- check very quickly whether the path/key is already in newest on-disk version, to avoid potential duplicate instances
+                                           -- (duplicates do not cause errors, but they make it harder to lint & edit)
+                                           newest <- TIO.readFile "metadata/auto.yaml"
+                                           when (not $ T.pack ("\n- - " ++ l ++ "\n") `T.isInfixOf` newest) $
+                                              do let newYaml = Y.encode [(l,t,a,d,di,abst)]
+                                                 B.appendFile "metadata/auto.yaml" newYaml
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
 restoreFloatRight :: String -> String -> String
@@ -481,6 +484,7 @@ cleanAbstractsHTML t = trim $
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
     , ("<br/><h3>", "<h3>")
+    , ("</p><p>", "</p> <p>")
     , ("<strong>ABSTRACT</strong><br/>              <p>", "<p>")
     , ("</strong><p>", "</strong>: <p>")
     , ("<strong>Abstract</strong>:        ", "")

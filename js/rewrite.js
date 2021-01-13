@@ -511,6 +511,56 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 		identifyFootnotesSection(info.document);
 });
 
+/*************/
+/* ANALYTICS */
+/*************/
+
+/********************************************************/
+/*	Set up outbound click tracking with Google Analytics.
+	*/
+function setUpOutboundClickTracking(containingDocument = document.firstElementChild) {
+	GWLog("setUpOutboundClickTracking", "rewrite.js", 1);
+
+	if (!GW.googleAnalyticsLoaded)
+		return;
+
+	containingDocument.querySelectorAll("a[href]").forEach(link => {
+		if (link.hostname == location.hostname)
+			return;
+
+		link.addActivateEvent((event) => {
+			event.preventDefault();
+
+			/*	Setting the transport method to ‘beacon’ lets the hit be sent
+				using ‘navigator.sendBeacon’ in browsers that support it.
+				*/
+			gtag("event", "click", {
+				"event_category": "outbound",
+				"event_label": link.href,
+				"transport_type": "beacon",
+				"event_callback": () => { document.location = link.href; }
+			});
+
+			return true;
+		});
+	});
+}
+document.querySelector("script#googleAnalytics").addEventListener("load", () => {
+	GW.googleAnalyticsLoaded = true;
+});
+doWhenDOMContentLoaded(setUpOutboundClickTracking);
+
+/*******************************************************************************/
+/*	Add handlers to set up outbound click tracking in injected content, popups,
+	etc.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.setUpOutboundClickTrackingInInjectedContent = (info) => {
+	setUpOutboundClickTracking(info.document);
+});
+GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.setUpOutboundClickTrackingInPopup = (info) => {
+	setUpOutboundClickTracking(info.popup);
+});
+
 /********************/
 /* BACK TO TOP LINK */
 /********************/
