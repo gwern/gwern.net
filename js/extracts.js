@@ -798,16 +798,16 @@ Extracts = {
 			for fillPopFrame() for a description of what this array does.)
 			*/
 		if (Extracts.fillPopFrame(popup, [
-			[ "isExtractLink", 			"extractForTarget", 				"extract annotation"		],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition annotation" 	],
-			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote" 					],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context" 			],
-			[ "isVideoLink", 			"videoForTarget", 					"video object" 				],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image object" 				],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document object" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file" 			],
-			[ "isLocalPageLink",		"localTranscludeForTarget", 		"local-transclude" 			],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site object" 		]
+			[ "isExtractLink", 			"extractForTarget", 			"extract annotation"		],
+			[ "isDefinitionLink", 		"definitionForTarget", 			"definition annotation" 	],
+			[ "isCitation", 			"sectionEmbedForTarget", 		"footnote" 					],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 		"citation-context" 			],
+			[ "isVideoLink", 			"videoForTarget", 				"video object" 				],
+			[ "isLocalImageLink", 		"localImageForTarget", 			"image object" 				],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 		"local-document object" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 		"local-code-file" 			],
+			[ "isLocalPageLink",		"localTranscludeForTarget", 	"local-transclude" 			],
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 		"foreign-site object" 		]
 			]) == false)
 			return false;
 
@@ -867,22 +867,7 @@ Extracts = {
 
 		//  Special positioning for section links spawned by the TOC.
 		if (Extracts.isTOCLink(target)) {
-			popup.classList.add("toc-section-popup");
-
-			target.popupSpecialPositioningFunction = (preparedPopup, spawningTarget, mouseEvent) => {
-				let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
-				let mouseEnterEventPositionInPopupContainer = {
-					x: (mouseEvent.clientX - popupContainerViewportRect.left),
-					y: (mouseEvent.clientY - popupContainerViewportRect.top)
-				};
-
-				var popupIntrinsicHeight = preparedPopup.offsetHeight;
-
-				let provisionalPopupXPosition = document.querySelector("#TOC").getBoundingClientRect().right + 1.0 - popupContainerViewportRect.left;
-				let provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((mouseEvent.clientY / window.innerHeight) * popupIntrinsicHeight);
-
-				return [ provisionalPopupXPosition, provisionalPopupYPosition ];
-			}
+			popup.classList.add("toc-section");
 		}
 
 		//  Remove extraneous classes from images in image popups.

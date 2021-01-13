@@ -3213,7 +3213,7 @@ body.directory-index #disqus_thread {
 
 /*	Table of contents popups.
 	*/
-.popup.local-transclude.toc-section-popup .popup-scroll-view {
+.popup.local-transclude.toc-section .popup-scroll-view {
     max-height: calc(100vh - 6px);
 }
 
