@@ -2947,7 +2947,7 @@ body.directory-index #disqus_thread {
 /*└──────────────────────────────┘*/
 
 .popup.annotation {
-    min-width: var(--GW-popups-annotation-popup-min-width);\
+    min-width: var(--GW-popups-annotation-popup-min-width);
 }
 
 /*  Data fields.
