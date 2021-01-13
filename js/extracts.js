@@ -865,7 +865,7 @@ Extracts = {
 			});
 		}
 
-		//  Special positioning for section links spawned by the TOC.
+		//  Designate section links spawned by the TOC (for special styling).
 		if (Extracts.isTOCLink(target))
 			popup.classList.add("toc-section");
 
