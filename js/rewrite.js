@@ -538,17 +538,15 @@ function setUpOutboundClickTracking(containingDocument = document.firstElementCh
 				"event_category": "outbound",
 				"event_label": link.href,
 				"transport_type": "beacon",
-				"event_callback": () => { document.location = href; }
+				"event_callback": () => { document.location = link.href; }
 			});
 
 			return true;
 		});
 	});
 }
-doWhenDOMContentLoaded(() => {
-	document.querySelector("script#googleAnalytics").addEventListener("load", () => {
-		GW.googleAnalyticsLoaded = true;
-	});
+document.querySelector("script#googleAnalytics").addEventListener("load", () => {
+	GW.googleAnalyticsLoaded = true;
 });
 doWhenDOMContentLoaded(setUpOutboundClickTracking);
 
