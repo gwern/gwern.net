@@ -151,7 +151,7 @@ Extracts = {
 				newly-spawned popups; this allows for popup recursion).
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopupTargetsInInjectedContent = (info) => {
-				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, targetPrepareFunction);
+				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, prepareTarget);
 			});
         }
 
