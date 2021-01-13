@@ -2806,7 +2806,7 @@ body.directory-index #disqus_thread {
 }
 
 .popup {
-    --popup-title-bar-height: 0;
+    --popup-title-bar-height: 0px;
 }
 .popup.has-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
