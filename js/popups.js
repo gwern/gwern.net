@@ -174,6 +174,7 @@ Popups = {
 		popup.innerHTML = `<div class="popup-scroll-view"><div class="popup-content-view"></div></div>`;
 		popup.scrollView = popup.querySelector(".popup-scroll-view");
 		popup.contentView = popup.querySelector(".popup-content-view");
+		popup.titleBarContents = [ ];
 		return popup;
 	},
 	setPopFrameContent: (popup, contentHTML) => {
@@ -182,6 +183,25 @@ Popups = {
 	},
 	spawnPopup: (popup, event) => {
 		GWLog("Popups.spawnPopup", "popups.js", 2);
+
+		/*  If title bar contents are provided, create and inject the popup
+			title bar, and set class `has-title-bar` on the popup.
+			*/
+		if (popup.titleBarContents.length > 0) {
+			popup.classList.add("has-title-bar");
+
+			popup.titleBar = document.createElement("div");
+			popup.titleBar.classList.add("popup-title-bar");
+			popup.insertBefore(popup.titleBar, popup.firstElementChild);
+
+			popup.titleBarContents.forEach(elementOrHTML => {
+				if (typeof elementOrHTML == "string") {
+					popup.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
+				} else {
+					popup.titleBar.appendChild(elementOrHTML);
+				}
+			});
+		}
 
 		//	Inject the popup into the page.
 		Popups.injectPopup(popup);

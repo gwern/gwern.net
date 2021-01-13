@@ -902,6 +902,21 @@ Extracts = {
 		//  Trigger a rewrite pass by firing the requisite event.
 		GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: popup.contentView });
 
+		//  Add popup title bar contents.
+		var popupTitle;
+		if (Extracts.isDefinitionLink(target)) {
+			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
+		} else if (!Extracts.isLocalImageLink(target)) {
+			popupTitle = `<a 
+				class="popup-title"
+				href="${target.href}"
+				title="Open ${target.href} in a new window"
+				target="_blank"
+					>${(target.href || "")}</a>`
+		}
+		//  NOTE: TEMPORARILY DISABLED!
+// 		if (popupTitle) popup.titleBarContents.push(popupTitle);
+
 		//  Loading spinners.
 		if (   Extracts.isLocalDocumentLink(target)
 			|| Extracts.isForeignSiteLink(target)

@@ -29,7 +29,8 @@
 	--GW-popups-annotation-popup-min-width: 360px;
 	--GW-popups-popup-max-height: 480px;
 	--GW-popups-popup-border-width: 3px;
-	--GW-popups-video-iframe-width; 495px
+    --GW-popups-popup-title-bar-height: 1.5rem;
+	--GW-popups-video-iframe-width: 495px;
 	--GW-popups-video-iframe-height: 310px;
 }
 
@@ -2770,7 +2771,8 @@ body.directory-index #disqus_thread {
 	*/
 .popup,
 .popup-scroll-view,
-.popup-content-view {
+.popup-content-view,
+.popup-title-bar {
 	box-sizing: border-box;
 }
 
@@ -2790,17 +2792,39 @@ body.directory-index #disqus_thread {
     background-color: var(--GW-popups-popup-background-color);
 }
 
-/*	Popup title bars.
+/*	Popup title bar.
 	*/
 .popup-title-bar {
-	  position: absolute;
-	  width: 100%;
-	  height: 1.5em;
-	  left: -3px;
-	  top: calc(-1.5em - 4px);
-	  border: 3px double var(--GW-popups-popup-border-color);
-	  border-bottom-width: 0;
-	  background-color: var(--GW-popups-popup-title-bar-background-color);
+	position: absolute;
+	height: var(--GW-popups-popup-title-bar-height);
+	border-bottom: 1px solid var(--GW-popups-popup-border-color);
+	background-color: var(--GW-popups-popup-title-bar-background-color);
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    width: 100%;
+}
+
+.popup {
+    --popup-title-bar-height: 0;
+}
+.popup.has-title-bar {
+    --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
+}
+
+/*  Popup title.
+	*/
+.popup .popup-title {
+    font-family: var(--GW-sans-serif-font-stack);
+    font-size: 0.8rem;
+    padding: 0 0.25em 0 0.375em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+}
+.popup .popup-title::after {
+    display: none;
 }
 
 /*┌────────────────────┐*/
@@ -2810,7 +2834,8 @@ body.directory-index #disqus_thread {
 .popup-scroll-view {
     overflow-y: auto;
     overscroll-behavior: none;
-    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width));
+    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
+    margin-top: var(--popup-title-bar-height);
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
@@ -3108,7 +3133,7 @@ body.directory-index #disqus_thread {
 .popup.object iframe,
 .popup.object object {
     width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
-    height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width));
+    height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
 
 /*┌───────────────┐*/
