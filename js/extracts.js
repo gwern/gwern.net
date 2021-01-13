@@ -650,8 +650,8 @@ Extracts = {
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
-		var width = target.dataset.imageWidth;
-		var height = target.dataset.imageHeight;
+		var width = target.dataset.imageWidth || 0;
+		var height = target.dataset.imageHeight || 0;
 
 		if (width > Extracts.imageMaxWidth) {
 			height *= Extracts.imageMaxWidth / width;
@@ -662,8 +662,13 @@ Extracts = {
 			height = Extracts.imageMaxHeight;
 		}
 
+		var styles = ``;
+		if (width > 0 && height > 0) {
+			styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
+		}
+
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-        return `<img style="width: ${width}px; height: ${height}px;" class="${target.classList}" src="${target.href}" loading="lazy">`;
+        return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
     },
 
 	//  Locally hosted documents (html, pdf, etc.).
@@ -839,9 +844,13 @@ Extracts = {
 		if (Extracts.isTOCLink(target))
 			popup.classList.add("toc-section");
 
-		//  Remove extraneous classes from images in image popups.
-		if (Extracts.isLocalImageLink(target))
+		if (Extracts.isLocalImageLink(target)) {
+			//  Remove extraneous classes from images in image popups.
 			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
+
+			if (popup.querySelector("img[width][height]"))
+				popup.classList.add("dimensions-specified");
+		}
 
 		//  Ensure no reflow due to figures.
 		popup.querySelectorAll("img[width]").forEach(img => {
