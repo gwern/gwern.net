@@ -104,7 +104,9 @@ Extracts = {
 			return;
 		} else {
 			//  Remove “popups disabled” icon/button, if present.
-			Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
+			if (Extracts.popupOptionsEnabled) {
+				Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
+			}
 
 			//  Unbind event listeners, restore targets, and remove popups.
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
@@ -123,10 +125,12 @@ Extracts = {
         } else {
             GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
 
-			if (localStorage.getItem("extract-popups-disabled") == "true") {
-				//  Inject “popups disabled” icon/button.
-				Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
-				return;
+			if (Extracts.popupOptionsEnabled) {
+				if (localStorage.getItem("extract-popups-disabled") == "true") {
+					//  Inject “popups disabled” icon/button.
+					Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
+					return;
+				}
 			}
 
 			//  Target prepare function.
@@ -744,40 +748,6 @@ Extracts = {
 	/**********/
 	/*	Popups.
 		*/
-	popupsDisabledShowPopupOptionsDialogButton: null,
-	injectPopupsDisabledShowPopupOptionsDialogButton: () => {
-		GWLog("Extracts.injectPopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
-
-		if (Extracts.popupsDisabledShowPopupOptionsDialogButton != null)
-			return;
-
-		//  Create and inject the button.
-		Extracts.popupsDisabledShowPopupOptionsDialogButton = addUIElement(`<div id="popups-disabled-show-popup-options-dialog-button">` + 
-			`<button type="button" title="Show options for link popups. (Popups are currently disabled.)"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M64 352c0 35.3 28.7 64 64 64h96v84c0 9.8 11.2 15.5 19.1 9.7L368 416h2L64 179.5V352zm569.8 106.1l-77.6-60c12.1-11.6 19.8-28 19.8-46.1V64c0-35.3-28.7-64-64-64H128c-21.5 0-40.4 10.7-52 27L45.5 3.4C38.5-2 28.5-.8 23 6.2L3.4 31.4c-5.4 7-4.2 17 2.8 22.4l588.4 454.7c7 5.4 17 4.2 22.5-2.8l19.6-25.3c5.4-6.8 4.1-16.9-2.9-22.3z"/></svg></button>` + `</div>`);
-
-		//  Add event listener.
-		requestAnimationFrame(() => {
-			Extracts.popupsDisabledShowPopupOptionsDialogButton.addActivateEvent(Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked = (event) => {
-				GWLog("Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked", "extracts.js", 2);
-
-				event.stopPropagation();
-				if (Extracts.showPopupOptionsDialog) {
-					Extracts.showPopupOptionsDialog();
-				} else {
-					GWLog("Script not loaded: extracts-options.js", "extracts.js", 1);
-				}
-			});
-		});
-	},
-	removePopupsDisabledShowPopupOptionsDialogButton: () => {
-		GWLog("Extracts.removePopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
-
-		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
-			return;
-
-		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
-		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
-	},
 
 	/*	Called by popups.js just before spawning (injecting and positioning) the
 		popup. This is our chance to fill the popup with content, and rewrite
