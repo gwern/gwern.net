@@ -365,7 +365,6 @@ Extracts = {
             				href="${referenceData.element.dataset.urlOriginal}"
             				target="_new" 
                        		alt="Original URL for this archived link; may be broken."
-                       		ping="https://api.obormot.net/gwern/analytics.php"
                        			>original</a>]</span>`;
         } else if (![ "www.gwern.net", 
         			  "en.wikipedia.org", 
@@ -376,7 +375,6 @@ Extracts = {
 							title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${referenceData.titleText}’)" 
 					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" 
 					   		target="_new"
-                       		ping="https://api.obormot.net/gwern/analytics.php"
 					   			></a></span>`;
         }
 
@@ -939,19 +937,6 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
 				popup.removeEventListener("click", Popups.popupClicked);
 			}, { once: true });
-		}
-
-		//  Add click analytics.
-		if (Extracts.isExtractLink(target)) {
-			popup.querySelectorAll(".iaMirror a, .originalURL a, a.cites").forEach(link => {
-				link.addActivateEvent((event) => {
-					doAjax({
-						location: "https://api.obormot.net/gwern/analytics.php",
-						method: "POST",
-						params: { url: link.href }
-					});
-				});
-			});
 		}
 
 		return true;
