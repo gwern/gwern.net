@@ -134,7 +134,7 @@ Extracts = {
 			}
 
 			//  Target prepare function.
-			let targetPrepareFunction = (target) => {
+			let prepareTarget = (target) => {
 				//  Remove the title attribute.
 				target.removeAttribute("title");
 
@@ -144,7 +144,7 @@ Extracts = {
 
 			//  Set up targets.
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, targetPrepareFunction);
+				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
 			});
 
 			/*  Add handler to set up targets in injected content (including 
