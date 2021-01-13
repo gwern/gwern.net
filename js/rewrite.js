@@ -271,18 +271,27 @@ doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 /************************************/
 /*	Set margins of full-width blocks.
 	*/
-function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementChild) {
+function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementChild, forceRemove = false) {
 	GWLog("setMarginsOnFullWidthBlocks", "rewrite.js", 1);
 
 	//  Get all full-width blocks in the given document.
 	let allFullWidthBlocks = containingDocument.querySelectorAll("div.full-width, figure.full-width");
 
-	//  Un-expand when mobile width, expand otherwise.
-	doWhenMatchMedia(GW.mediaQueries.mobileWidth, "updateFullWidthBlockExpansionForCurrentWidthClass", () => {
+	let removeFullWidthBlockMargins = () => {
 		allFullWidthBlocks.forEach(fullWidthBlock => {
 			fullWidthBlock.style.marginLeft = "";
 			fullWidthBlock.style.marginRight = "";
 		});
+	};
+
+	if (forceRemove) {
+		removeFullWidthBlockMargins();
+		return;
+	}
+
+	//  Un-expand when mobile width, expand otherwise.
+	doWhenMatchMedia(GW.mediaQueries.mobileWidth, "updateFullWidthBlockExpansionForCurrentWidthClass", () => {
+		removeFullWidthBlockMargins();
 	}, () => {
 		allFullWidthBlocks.forEach(fullWidthBlock => {
 			fullWidthBlock.style.marginLeft = `calc(
@@ -304,11 +313,11 @@ doWhenPageLoaded(setMarginsOnFullWidthBlocks);
 /*	Add handler for full-width blocks in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFullWidthBlocksInInjectedContent = (info) => {
-	if (!info.needsRewrite)
-		return;
-
-	if (info.fullWidthPossible)
+	if (info.fullWidthPossible) {
 		setMarginsOnFullWidthBlocks(info.document);
+	} else {
+		setMarginsOnFullWidthBlocks(info.document, true);
+	}
 });
 
 /*********************/

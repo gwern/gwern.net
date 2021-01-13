@@ -866,20 +866,12 @@ Extracts = {
 		}
 
 		//  Special positioning for section links spawned by the TOC.
-		if (Extracts.isTOCLink(target)) {
+		if (Extracts.isTOCLink(target))
 			popup.classList.add("toc-section");
-		}
 
 		//  Remove extraneous classes from images in image popups.
-		if (Extracts.isLocalImageLink(target)) {
+		if (Extracts.isLocalImageLink(target))
 			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
-		}
-
-		//  Fix full-width figures.
-		popup.querySelectorAll(".full-width").forEach(fullWidthBlock => {
-			fullWidthBlock.style.marginLeft = "";
-			fullWidthBlock.style.marginRight = "";
-		});
 
 		//  Ensure no reflow due to figures.
 		popup.querySelectorAll("img[width]").forEach(img => {
