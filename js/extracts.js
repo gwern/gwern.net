@@ -29,7 +29,7 @@ Extracts = {
 		excludedElementsSelector: [
 			".sidenote-self-link",
 			".link-bibliography-item-self-link",
-			".extract-popup .data-field.title a",
+			".extract .data-field.title a",
 			/*  Do not provide extracts for annotated links that are link
 				bibliography entries, as their annotations are right there below the
 				link itself.
@@ -101,16 +101,7 @@ Extracts = {
 		};
 
 		if (GW.isMobile()) {
-			//  TEMPORARY!!
 			return;
-
-			//  Restore targets and remove popins.
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popins.removeTargetsWithin(container, Extracts.targets, restoreTarget);
-			});
-
-			//  Remove event handler for newly-spawned popups.
-			GW.notificationCenter.removeHandlerForEvent("Popups.popinDidInject", Extracts.popinInjectHandler);
 		} else {
 			//  Remove “popups disabled” icon/button, if present.
 			Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
@@ -120,45 +111,15 @@ Extracts = {
 				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
 			});
 
-			//  Remove event handler for newly-spawned popups.
-			GW.notificationCenter.removeHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler);
+			//  Remove event handler for injected content loads.
+			GW.notificationCenter.removeHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopupTargetsInInjectedContent);
 		}
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
         if (GW.isMobile()) {
-			//  TEMPORARY!!
 			return;
-
-            GWLog("Mobile client detected. Injecting pop-ins.", "extracts.js", 1);
-
-			//  Target prepare function.
-			Extracts.prepareTargetForPopins = (target) => {
-				//  Alter the title attribute.
-				target.title = "Click to reveal";
-
-				if (Extracts.isTOCLink(target))
-					target.classList.remove("has-content");
-			};
-
-			//  Prepare to recursively inject popins within newly-injected popins.
-			GW.notificationCenter.addHandlerForEvent("Popins.popinDidInject", Extracts.popinInjectHandler = (info) => {
-				Popins.addTargetsWithin(info.popin, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
-			});
-
-			//  Inject popins.
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
-			});
-
-			//  Set up targets in other (non-popup) injected content.
-			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopinTargetsInInjectedContent = (info) => {
-				if (info.document.classList.contains("popindiv"))
-					return;
-
-				Popins.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopin, Extracts.prepareTargetForPopins);
-			});
         } else {
             GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
 
@@ -169,7 +130,7 @@ Extracts = {
 			}
 
 			//  Target prepare function.
-			Extracts.prepareTargetForPopups = (target) => {
+			let targetPrepareFunction = (target) => {
 				//  Remove the title attribute.
 				target.removeAttribute("title");
 
@@ -179,20 +140,14 @@ Extracts = {
 
 			//  Set up targets.
 			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
+				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, targetPrepareFunction);
 			});
 
-			//  Recursively set up targets within newly-spawned popups as well.
-			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", Extracts.popupSpawnHandler = (info) => {
-				Popups.addTargetsWithin(info.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
-			});
-
-			//  Set up targets in other (non-popup) injected content.
+			/*  Add handler to set up targets in injected content (including 
+				newly-spawned popups; this allows for popup recursion).
+				*/
 			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopupTargetsInInjectedContent = (info) => {
-				if (info.document.classList.contains("popupdiv"))
-					return;
-
-				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
+				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, targetPrepareFunction);
 			});
         }
 
@@ -206,25 +161,25 @@ Extracts = {
 	/*	This function qualifies anchorlinks in transcluded content (i.e., other
 		pages on the site, as well as extracts describing other pages on the 
 		site), by rewriting their href attributes to include the path of the 
-		target (link) that spawned the pop-element that contains the transcluded 
+		target (link) that spawned the pop-frame that contains the transcluded 
 		content.
 		*/
-    qualifyLinksInPopContent: (popX, target) => {
-		popX.querySelectorAll("a[href^='#']").forEach(anchorLink => {
-		    anchorLink.pathname = target.pathname;
+    qualifyLinksInPopFrame: (popFrame) => {
+		popFrame.querySelectorAll("a[href^='#']").forEach(anchorLink => {
+		    anchorLink.pathname = popFrame.spawningTarget.pathname;
 		});
     },
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
 
-	/*	This function fills a pop-element for a given target with content. To do
+	/*	This function fills a pop-frame for a given target with content. To do
 		so, it uses a provided array of testing/filling function pairs. The
 		testing functions are called in order until a match is found, at which 
 		point the filling function of the pair is called. Provided classes, if 
-		any, are then added to the pop-element. (Details follow.)
+		any, are then added to the pop-frame. (Details follow.)
 
-		In addition to the pop-element and the target, fillPopElement() takes a
+		In addition to the pop-frame and the target, fillPopFrame() takes a
 		‘possiblePopTypes’ array, which must have the following structure:
 
 		[ [ testMethodName1, fillMethodName1|null, classString1|null ],
@@ -233,7 +188,7 @@ Extracts = {
 
 		NOTES:
 
-		- fillPopElement() looks for methods of the given names in the Extracts 
+		- fillPopFrame() looks for methods of the given names in the Extracts 
 		  object
 		- classString must be space-delimited
 
@@ -241,34 +196,38 @@ Extracts = {
 
 		1. If a fill method of the given name exists, the test method of the 
 		   given name will be called with the target as argument.
-		2. If the test method returns true, then the pop-element will be filled 
+		2. If the test method returns true, then the pop-frame will be filled 
 		   by the given fill method.
 		3. If there’s a non-empty class string, the classes in the string will 
-		   be added to the pop-element.
+		   be added to the pop-frame.
 
 		No further array entries will be processed once a match (i.e., test 
 		method that returns true for the given target) is found.
 
 		The function then returns true if a filling method was found (i.e., the
-		pop-element successfully filled), false otherwise.
+		pop-frame successfully filled), false otherwise.
 		*/
-	fillPopElement: (popElement, target, possiblePopTypes) => {
-		GWLog("Extracts.fillPopElement", "extracts.js", 2);
+	fillPopFrame: (popFrame, possiblePopTypes) => {
+		GWLog("Extracts.fillPopFrame", "extracts.js", 2);
 
+		let target = popFrame.spawningTarget;
+
+		var didFill = false;
+		let setPopFrameContent = Popups.setPopFrameContent;
 		for ([ testMethodName, fillMethodName, classes ] of possiblePopTypes) {
 			if (   Extracts[fillMethodName] != null
 				&& Extracts[testMethodName](target)) {
-				popElement.innerHTML = Extracts[fillMethodName](target);
+				didFill = setPopFrameContent(popFrame, Extracts[fillMethodName](target));
 				if (classes)
-					popElement.classList.add(...(classes.split(" ")));
+					popFrame.classList.add(...(classes.split(" ")));
 				break;
 			}
 		}
 
-		if (popElement.childElementCount != 0) {
+		if (didFill) {
 			return true;
 		} else {
-			GWLog("Unable to fill popup ( " + (target.href || target.dataset.originalDefinitionId) + " )!", "extracts.js", 1);
+			GWLog(`Unable to fill pop-frame (${(target.href || target.dataset.originalDefinitionId)})!`, "extracts.js", 1);
 			return false;
 		}
 	},
@@ -291,25 +250,42 @@ Extracts = {
 		element of the page) is returned.
 
 		OR, was the target defined in an entire other page that was transcluded 
-		wholesale and embedded as a pop-element? In that case, the pop-element 
+		wholesale and embedded as a pop-frame? In that case, the pop-frame 
 		where said other page is embedded is returns (again, even if the given
 		target is actually in a popup several levels down from that full-page
 		embed popup, having been spawned by a definition which spawned a section
 		link which spawned… etc.).
 		*/
 	originatingDocumentForTarget: (target) => {
-		let containingPopElement = target.closest(".extract-popup");
-		if (containingPopElement) {
-			if (containingPopElement.classList.contains("external-page-embed"))
-				return containingPopElement;
+		let containingPopFrame = target.closest(".popframe");
+		if (containingPopFrame) {
+			if (containingPopFrame.classList.contains("external-page-embed"))
+				return containingPopFrame;
 			else
-				return Extracts.originatingDocumentForTarget(containingPopElement.popupTarget);
+				return Extracts.originatingDocumentForTarget(containingPopFrame.spawningTarget);
 		} else {
 			return document.firstElementChild;
 		}
 	},
 
-	/*	Used to generate extract and definition pop-elements.
+	/*	Returns true if the target location matches an already-displayed page 
+		(which can be the root page of the window).
+		*/
+	documentIsDisplayed: (target) => {
+		if (target.pathname == location.pathname)
+			return true;
+
+		if (GW.isMobile()) {
+			return false;
+		} else {
+			return (Array.from(Popups.popupContainer.children).findIndex(popup => (
+						   popup.classList.contains("external-page-embed") 
+						&& popup.spawningTarget.pathname == target.pathname
+						)) != -1);
+		}
+	},
+
+	/*	Used to generate extract and definition pop-frames.
 		*/
 	referenceDataForTarget: (target, link = true) => {
 		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
@@ -344,8 +320,8 @@ Extracts = {
 	},
 
 	/***************************************************************************/
-	/*  The target-testing and pop-element-filling functions in this section
-		come in sets, which define and implement classes of pop-elements 
+	/*  The target-testing and pop-frame-filling functions in this section
+		come in sets, which define and implement classes of pop-frames 
 		(whether those be popups, or popins, etc.). (These classes are things 
 		like “a link that has a statically generated extract provided for it”,
 		“a link to a locally archived web page”, “an anchorlink to a section of
@@ -353,18 +329,18 @@ Extracts = {
 
 		Each set contains a testing function, which is called by 
 		testTarget() to determine if the target (link, etc.) is eligible for 
-		processing, and is also called by fillPopElement() to find the 
-		appropriate filling function for a pop-element spawned by a given 
+		processing, and is also called by fillPopFrame() to find the 
+		appropriate filling function for a pop-frame spawned by a given 
 		target. The testing function takes a target element and examines its
 		href or other properties, and returns true if the target is a member of
 		that class of targets, false otherwise.
 
 		Each set also contains the corresponding filling function, which
-		is called by fillPopElement() (chosen on the basis of the return values 
+		is called by fillPopFrame() (chosen on the basis of the return values 
 		of the testing functions, and the specified order in which they’re 
 		called). The filling function takes a target element and returns a 
 		string which comprises the HTML contents that should be injected into
-		the pop-element spawned by the given target.
+		the pop-frame spawned by the given target.
 		*/
 
 	//  Summaries of links to elsewhere.
@@ -450,12 +426,10 @@ Extracts = {
                                           ? ` <span class="date-plus-cites">${referenceData.dateHTML}${citationsOrLinksHTML}</span>` 
                                           : ``;
 
-        //  The fully constructed extract popup contents.
-        return `<div>` +
-                   `<p class="data-field title">${archiveOrOriginalLinkHTML}${titleLinkHTML}</p>` +
-                   `<p class="data-field author-plus-date">${referenceData.authorHTML}${dateAndCitationsOrLinksHTML}</p>` +
-                   `<div class="data-field extract-abstract">${referenceData.abstractHTML}</div>` +
-               `</div>`;
+        //  The fully constructed extract pop-frame contents.
+        return `<p class="data-field title">${archiveOrOriginalLinkHTML}${titleLinkHTML}</p>` 
+        	 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${dateAndCitationsOrLinksHTML}</p>` 
+        	 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
     },
 
     //  Definitions.
@@ -467,11 +441,9 @@ Extracts = {
 
         let referenceData = Extracts.referenceDataForTarget(target, false);
 
-        return `<div>` +
-                   `<p class="data-field title">${referenceData.titleHTML}</p>` +
-                   `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` +
-                   `<div class="data-field extract-abstract">${referenceData.abstractHTML}</div>` +
-               `</div>`;
+        return `<p class="data-field title">${referenceData.titleHTML}</p>` 
+        	 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
+        	 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
     },
 
     //  Videos (both local and remote).
@@ -508,7 +480,7 @@ Extracts = {
         let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
         //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-        return `<div><iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe></div>`;
+        return `<iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>`;
     },
 
     //  Citations.
@@ -536,19 +508,19 @@ Extracts = {
 
 		return (target.hostname == location.hostname);
 	},
+
     localTranscludeForTarget: (target) => {
 		GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
 		/*	Check to see if the target location matches an already-displayed 
 			page (which can be the root page of the window).
 			*/
-		if (   target.pathname == location.pathname
-			|| Array.from(Popups.popupContainer.children).findIndex(popup => popup.classList.contains("external-page-embed") && popup.popupTarget.pathname == target.pathname) != -1) {
+		if (Extracts.documentIsDisplayed(target)) {
 			//  If it does, display the section (if an anchorlink) or nothing.
 			return (target.hash > "" ? Extracts.sectionEmbedForTarget(target) : null);
 		} else {
 			//  Otherwise, display the entire linked page.
-			target.popup.classList.add("external-page-embed");
+			target.popFrame.classList.add("external-page-embed");
 			return Extracts.externalPageEmbedForTarget(target);
 		}
 	},
@@ -557,15 +529,20 @@ Extracts = {
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
-        let targetElement = Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash));
-        let nearestBlockElement = Extracts.nearestBlockElement(targetElement);
+        let nearestBlockElement = Extracts.nearestBlockElement(Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash)));
 
 		//  Unwrap sections and {foot|side}notes from their containers.
-		let sectionEmbedHTML = (nearestBlockElement.tagName == "SECTION" || target.classList.contains("footnote-ref")) 
-								? nearestBlockElement.innerHTML 
-								: nearestBlockElement.outerHTML;
-
-        return `<div>${sectionEmbedHTML}</div>`;
+		if (nearestBlockElement.tagName == "SECTION") {
+			return nearestBlockElement.innerHTML;
+		} else if (Extracts.isCitation(target)) {
+			if (target.hash.startsWith("#sn")) {
+				return nearestBlockElement.querySelector(".sidenote-inner-wrapper").innerHTML;
+			} else {
+				return nearestBlockElement.innerHTML;
+			}
+		} else {
+			return nearestBlockElement.outerHTML;
+		}
     },
 
 	//  TOC links.
@@ -578,60 +555,60 @@ Extracts = {
     externalPageEmbedForTarget: (target) => {
 		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
 
-		let fillPopup = (markdownBody) => {
-			GWLog("Filling popup...", "extracts.js", 2);
+		let setPopFrameContent = Popups.setPopFrameContent;
 
-			target.popup.innerHTML = `<div>${markdownBody.innerHTML}</div>`;
+		let fillPopFrame = (markdownBody) => {
+			GWLog("Filling pop-frame...", "extracts.js", 2);
 
-			//  Give the popup inner div an identifying class.
-			target.popup.firstElementChild.classList.toggle("page-" + target.pathname.substring(1), true);
+			setPopFrameContent(target.popFrame, markdownBody.innerHTML);
 
-			//  First, qualify internal links in the popup.
-			Extracts.qualifyLinksInPopContent(target.popup, target);
+			//  Give the pop-frame an identifying class.
+			target.popFrame.classList.toggle("page-" + target.pathname.substring(1), true);
 
-			//  Then, trigger the rewrite pass by firing the requisite event.
+			//  First, qualify internal links in the pop-frame.
+			Extracts.qualifyLinksInPopFrame(target.popFrame);
+
+			/*  Then, trigger the rewrite pass by firing the requisite event.
+				(This will also activate spawning targets in the embedded page.)
+				*/
 			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
-				document: target.popup, 
+				document: target.popFrame.contentView, 
 				needsRewrite: true, 
 				fullPage: true
 			});
 
-			/*  Because the Popups.popupDidSpawn event has already fired,
-				we must process the newly-constructed popup manually,
-				to enable recursive popups within.
-				*/
-			Popups.addTargetsWithin(target.popup, Extracts.targets, Extracts.preparePopup, Extracts.prepareTargetForPopups);
-
 			//  Scroll to the target.
-			if (target.hash > "")
-				Extracts.scrollElementIntoViewInPopup(target.popup.querySelector(decodeURIComponent(target.hash)), target.popup);
+			if (target.hash > "") {
+				let scrollElementIntoViewInPopFrame = Popups.scrollElementIntoViewInPopup;
+				scrollElementIntoViewInPopFrame(target.popFrame.querySelector(decodeURIComponent(target.hash)));
+			}
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
 			requestAnimationFrame(() => {
-				fillPopup(Extracts.cachedPages[target.pathname]);
+				fillPopFrame(Extracts.cachedPages[target.pathname]);
 			});
 		} else {
-			target.popup.classList.toggle("loading", true);
+			target.popFrame.classList.toggle("loading", true);
 			doAjax({
 				location: target.href,
 				onSuccess: (event) => {
-					if (!target.popup)
+					if (!target.popFrame)
 						return;
 
-					target.popup.classList.toggle("loading", false);
+					target.popFrame.classList.toggle("loading", false);
 
-					target.popup.innerHTML = `<div>${event.target.responseText}</div>`;
-					Extracts.cachedPages[target.pathname] = target.popup.querySelector("#markdownBody");
-					fillPopup(Extracts.cachedPages[target.pathname]);
+					setPopFrameContent(target.popFrame, event.target.responseText);
+					Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
+					fillPopFrame(Extracts.cachedPages[target.pathname]);
 				},
 				onFailure: (event) => {
-					target.popup.swapClasses([ "loading", "loading-failed" ], 1);
+					target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
 				}
 			});
 		}
 
-		return `<div></div>`;
+		return `&nbsp;`;
     },
 
 	//  Other websites.
@@ -649,7 +626,7 @@ Extracts = {
 			url.search = "format=preview&theme=classic";
 		}
 
-		return `<div><iframe src="${url.href}" frameborder="0" sandbox></iframe></div>`;
+		return `<iframe src="${url.href}" frameborder="0" sandbox></iframe>`;
 	},
 
 	//  Locally hosted images.
@@ -681,7 +658,7 @@ Extracts = {
 		}
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-        return `<div><img style="width: ${width}px; height: ${height}px;" class="${target.classList}" src="${target.href}" loading="lazy"></div>`;
+        return `<img style="width: ${width}px; height: ${height}px;" class="${target.classList}" src="${target.href}" loading="lazy">`;
     },
 
 	//  Locally hosted documents (html, pdf, etc.).
@@ -699,9 +676,9 @@ Extracts = {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
 
 		if (target.href.match(/\.pdf(#|$)/) != null) {
-			return `<div><object data="${target.href}"></object></div>`;
+			return `<object data="${target.href}"></object>`;
 		} else {
-			return `<div><iframe src="${target.href}" frameborder="0" sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe></div>`;
+			return `<iframe src="${target.href}" frameborder="0" sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe>`;
 		}
     },
 
@@ -726,77 +703,42 @@ Extracts = {
     localCodeFileForTarget: (target) => {
 		GWLog("Extracts.localCodeFileForTarget", "extracts.js", 2);
 
-		target.popup.classList.toggle("loading", true);
+		let setPopFrameContent = Popups.setPopFrameContent;
+
+		target.popFrame.classList.toggle("loading", true);
 		doAjax({
 			location: target.href + ".html",
 			onSuccess: (event) => {
-				if (!target.popup)
+				if (!target.popFrame)
 					return;
 
-				target.popup.classList.toggle("loading", false);
-				target.popup.innerHTML = event.target.responseText;
+				target.popFrame.classList.toggle("loading", false);
+				setPopFrameContent(target.popFrame, event.target.responseText);
 			},
 			onFailure: (event) => {
 				doAjax({
 					location: target.href,
 					onSuccess: (event) => {
-						if (!target.popup)
+						if (!target.popFrame)
 							return;
 
-						target.popup.classList.toggle("loading", false);
+						target.popFrame.classList.toggle("loading", false);
 
 						let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
 						let lines = htmlEncodedResponse.split("\n");
 						htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
 
-						target.popup.innerHTML = `<div><pre class="raw-code"><code>${htmlEncodedResponse}</code></pre></div>`;
+						setPopFrameContent(target.popFrame, `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`);
 					},
 					onFailure: (event) => {
-						target.popup.swapClasses([ "loading", "loading-failed" ], 1);
+						target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
 					}
 				});
 			}
 		});
 
-		return `<div></div>`;
+		return `&nbsp;`;
     },	
-
-	/**********/
-	/*	Popins.
-		*/
-    preparePopin: (popin, target) => {
-		GWLog("Extracts.preparePopin", "extracts.js", 2);
-
-		//  Import the class(es) of the target, and add some others.
-		popin.classList.add(...target.classList, "extract-popin");
-
-		//	Inject the extract for the target into the popin.
-		if (Extracts.fillPopElement(popin, target, [
-			[ "isExtractLink", 			"extractForTarget", 				null 							],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition" 					],
-			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote"	 					],
-			[ "isCitationBackLink", 	null, 								null					 		],
-			[ "isVideoLink", 			"videoForTarget", 					"video object-popin" 			],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image object-popin" 			],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document object-popin" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file" 				],
-			[ "isLocalPageLink", 		"localTranscludeForTarget", 		"local-transclude"				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site object-popin" 	]
-			]) == false)
-			return false;
-
-		//  Ensure no reflow due to figures.
-		popup.querySelectorAll("img[width]").forEach(img => {
-			img.style.width = img.width + "px";
-		});
-
-		//  Qualify internal links in extracts.
-		if (   Extracts.isExtractLink(target) 
-			&& target.hostname == location.hostname)
-			Extracts.qualifyLinksInPopContent(popin, target);
-
-		return true;
-    },
 
 	/**********/
 	/*	Popups.
@@ -836,38 +778,35 @@ Extracts = {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	},
 
-	scrollElementIntoViewInPopup: (element, popup) => {
-		let innerDiv = popup.firstElementChild;
-		innerDiv.scrollTop = element.getBoundingClientRect().top - innerDiv.getBoundingClientRect().top;
-	},
-
 	/*	Called by popups.js just before spawning (injecting and positioning) the
 		popup. This is our chance to fill the popup with content, and rewrite
 		that content in whatever ways necessary. After this function exits, the
 		popup will appear on the screen.
 		*/
-    preparePopup: (popup, target) => {
+    preparePopup: (popup) => {
 		GWLog("Extracts.preparePopup", "extracts.js", 2);
 
+		let target = popup.spawningTarget;
+
 		//  Import the class(es) of the target, and add some others.
-		popup.classList.add(...target.classList, "extract-popup", "markdownBody");
+		popup.classList.add(...target.classList, "markdownBody");
 		//  We then remove some of the imported classes.
 		popup.classList.remove("has-annotation", "has-content", "spawns-popup");
 
 		/*	Inject the extract for the target into the popup. (See the comment
-			for fillPopElement() for a description of what this array does.)
+			for fillPopFrame() for a description of what this array does.)
 			*/
-		if (Extracts.fillPopElement(popup, target, [
-			[ "isExtractLink", 			"extractForTarget", 				null 							],
-			[ "isDefinitionLink", 		"definitionForTarget", 				"definition" 					],
-			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote" 						],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context" 				],
-			[ "isVideoLink", 			"videoForTarget", 					"video object-popup" 			],
-			[ "isLocalImageLink", 		"localImageForTarget", 				"image object-popup" 			],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document object-popup" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file" 				],
-			[ "isLocalPageLink",		"localTranscludeForTarget", 		"local-transclude" 				],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site object-popup" 	]
+		if (Extracts.fillPopFrame(popup, [
+			[ "isExtractLink", 			"extractForTarget", 				"extract annotation"		],
+			[ "isDefinitionLink", 		"definitionForTarget", 				"definition annotation" 	],
+			[ "isCitation", 			"sectionEmbedForTarget", 			"footnote" 					],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 			"citation-context" 			],
+			[ "isVideoLink", 			"videoForTarget", 					"video object" 				],
+			[ "isLocalImageLink", 		"localImageForTarget", 				"image object" 				],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 			"local-document object" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 			"local-code-file" 			],
+			[ "isLocalPageLink",		"localTranscludeForTarget", 		"local-transclude" 			],
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 			"foreign-site object" 		]
 			]) == false)
 			return false;
 
@@ -879,7 +818,7 @@ Extracts = {
 			to is visible, and do not spawn citation context popup if citation 
 			is visible.
 			*/
-		if (Extracts.isCitation(target)
+		if (   Extracts.isCitation(target)
 			|| Extracts.isCitationBackLink(target)) {
 			let targetElement = containingDocument.querySelector(decodeURIComponent(target.hash));
 			if (   (isMainDocument(containingDocument) && isOnScreen(targetElement))
@@ -920,7 +859,8 @@ Extracts = {
 
 			//  Scroll to the citation.
 			requestAnimationFrame(() => {
-				Extracts.scrollElementIntoViewInPopup(citationInPopup, popup);
+				let scrollElementIntoViewInPopFrame = Popups.scrollElementIntoViewInPopup;
+				scrollElementIntoViewInPopFrame(citationInPopup, popup);
 			});
 		}
 
@@ -928,7 +868,7 @@ Extracts = {
 		if (Extracts.isTOCLink(target)) {
 			popup.classList.add("toc-section-popup");
 
-			target.popupSpecialPositioningFunction = (preparedPopup, popupTarget, mouseEvent) => {
+			target.popupSpecialPositioningFunction = (preparedPopup, spawningTarget, mouseEvent) => {
 				let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 				let mouseEnterEventPositionInPopupContainer = {
 					x: (mouseEvent.clientX - popupContainerViewportRect.left),
@@ -942,6 +882,11 @@ Extracts = {
 
 				return [ provisionalPopupXPosition, provisionalPopupYPosition ];
 			}
+		}
+
+		//  Remove extraneous classes from images in image popups.
+		if (Extracts.isLocalImageLink(target)) {
+			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
 		}
 
 		//  Fix full-width figures.
@@ -959,10 +904,9 @@ Extracts = {
 		//  Allow for floated figures at the start of abstract.
 		if (   Extracts.isExtractLink(target)
 			|| Extracts.isDefinitionLink(target)) {
-			let initialFigure = popup.querySelector(".extract-abstract > figure.float-right:first-child");
+			let initialFigure = popup.querySelector(".annotation-abstract > figure.float-right:first-child");
 			if (initialFigure) {
-				let popupdiv = popup.firstElementChild;
-				popupdiv.insertBefore(initialFigure, popupdiv.firstElementChild);
+				popup.contentView.insertBefore(initialFigure, popup.contentView.firstElementChild);
 			}
 		}
 
@@ -974,13 +918,11 @@ Extracts = {
 		//  Qualify internal links in extracts.
 		if (   Extracts.isExtractLink(target) 
 			&& target.hostname == location.hostname) {
-			Extracts.qualifyLinksInPopContent(popup, target);
+			Extracts.qualifyLinksInPopFrame(target.popFrame);
 		}
 
 		//  Trigger a rewrite pass by firing the requisite event.
-		if (Extracts.isLocalPageLink(target)) {
-			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: popup });
-		}
+		GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: popup.contentView });
 
 		//  Loading spinners.
 		if (   Extracts.isLocalDocumentLink(target)
@@ -1018,11 +960,6 @@ Extracts = {
 			objectOfSomeSort.onerror = (event) => {
 				popup.swapClasses([ "loading", "loading-failed" ], 1);
 			};
-		}
-
-		//  Remove extraneous classes from images in image popups.
-		if (Extracts.isLocalImageLink(target)) {
-			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
 		}
 
 		//  Remove click listener from code popups, to allow selection.

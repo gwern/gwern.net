@@ -2737,18 +2737,119 @@ body.directory-index #disqus_thread {
 /* POPUPS */
 /**********/
 
-.popupdiv {
-    box-sizing: border-box;
+/*=----------------------=*/
+/*= GENERAL POPUP STYLES =*/
+/*=----------------------=*/
+
+/*	Overlay that holds all popups as immediate children.
+	*/
+.popup-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    pointer-events: none;
+}
+.popup-container > * {
+    pointer-events: auto;
+}
+
+/*	The three nested boxes that make up a popup:
+	1. Outer frame (positioned within the popup container)
+	2. Scroll view
+	3. Content view
+
+	The content view contains the actual contents of a popup.
+	*/
+.popup,
+.popup-scroll-view,
+.popup-content-view {
+	box-sizing: border-box;
+}
+
+/*	Popup outer frame.
+	*/
+.popup {
+	/*  Layout. */
+    position: absolute;
+    overflow: visible;
     max-width: 100vw;
     max-height: 100vh;
-    background-color: var(--GW-popups-popup-background-color);
+    z-index: 1;
+
+	/*  Styling. */
     border: 3px double var(--GW-popups-popup-border-color);
     box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
+    background-color: var(--GW-popups-popup-background-color);
+}
+
+/*	Popup title bars.
+	*/
+.popup-title-bar {
+	  position: absolute;
+	  width: 100%;
+	  height: 1.5em;
+	  left: -3px;
+	  top: calc(-1.5em - 4px);
+	  border: 3px double var(--GW-popups-popup-border-color);
+	  border-bottom-width: 0;
+	  background-color: var(--GW-popups-popup-title-bar-background-color);
+}
+
+/*┌────────────────────┐*/
+/*│ Popup scroll view. │*/
+/*└────────────────────┘*/
+
+.popup-scroll-view {
+    overflow-y: auto;
+    overscroll-behavior: none;
+}
+
+/*  Scroll bar styles (for WebKit/Blink).
+    */
+.popup-scroll-view::-webkit-scrollbar {
+    width: 14px;
+}
+.popup-scroll-view::-webkit-scrollbar-thumb {
+    background-color: var(--GW-popups-popup-scrollbar-thumb-color);
+    box-shadow:
+        0 0 0 3px var(--GW-popups-popup-scrollbar-track-color) inset;
+}
+.popup-scroll-view::-webkit-scrollbar-thumb:hover {
+    background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
+}
+
+/*  Scroll bar styles (for Firefox).
+    */
+.popup-scroll-view {
+    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--GW-popups-popup-scrollbar-track-color);
+}
+.popup-scroll-view:hover {
+    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
+}
+
+/*┌─────────────────────┐*/
+/*│ Popup content view. │*/
+/*└─────────────────────┘*/
+
+.popup-content-view {
+    background-color: var(--GW-popups-popup-background-color);
+    font-size: 0.9em;
+    padding: calc(7em/9) 1em calc(8em/9) 1em;
+    line-height: 1.45;
+}
+
+/*┌───────────────────────────┐*/
+/*│ Transitional UI elements. │*/
+/*└───────────────────────────┘*/
+
+/*  Animated spawn/despawn.
+	*/
+.popup {
     opacity: 1.0;
     transition: none;
-    z-index: 1;
 }
-.popupdiv.fading {
+.popup.fading {
     opacity: 0.0;
     transition:
         opacity 0.25s ease-in 0.1s;
@@ -2756,7 +2857,7 @@ body.directory-index #disqus_thread {
 
 /*  Loading spinner (for object popups).
     */
-.popupdiv.loading::before {
+.popup.loading::before {
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
     position: absolute;
     width: 3em;
@@ -2773,50 +2874,20 @@ body.directory-index #disqus_thread {
     opacity: 0.2;
     animation: fa-spin 2s infinite linear;
 }
-@-webkit-keyframes fa-spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
 @keyframes fa-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-.popupdiv.loading,
-.popupdiv.loading-failed {
-	background-color: var(--GW-body-background-color);
-}
-.popupdiv.image.loading img,
-.popupdiv.image.loading-failed img,
-.popupdiv.object-popup.loading-failed iframe {
+.popup.image.loading img,
+.popup.image.loading-failed img,
+.popup.object.loading-failed iframe {
 	visibility: hidden;
-}
-
-.popupdiv > div {
-    font-size: 0.9em;
-    padding: calc(7em/9) 1em calc(8em/9) 1em;
-    line-height: 1.45;
-    overflow: auto;
-    box-sizing: border-box;
-    height: 100%;
-}
-
-/*	Popup title bars.
-	*/
-.popup-title-bar {
-	  position: absolute;
-	  width: 100%;
-	  height: 1.5em;
-	  left: -3px;
-	  top: calc(-1.5em - 4px);
-	  border: 3px double var(--GW-popups-popup-border-color);
-	  border-bottom-width: 0;
-	  background-color: var(--GW-popups-popup-title-bar-background-color);
 }
 
 /*	“Loading failed” messages (for object popups).
 	*/
-.popupdiv.loading-failed::after {
+.popup.loading-failed::after {
 	content: "Loading failed.";
 	position: absolute;
 	left: 0;
@@ -2832,282 +2903,171 @@ body.directory-index #disqus_thread {
 	text-transform: uppercase;
 	opacity: 0.35;
 }
-.popupdiv.image.loading-failed::after {
-	content: "Image not found."; 
-}
-.popupdiv.video.loading-failed::after {
-	content: "Video not found."; 
-}
-.popupdiv.local-code-file.loading-failed::after,
-.popupdiv.local-document.loading-failed::after {
-	content: "File not found.";
-}
-/*  Adjustments for styles in popups.
-    */
-.popupdiv p + ul,
-.popupdiv p + ol {
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-}
-.popupdiv h1,
-.popupdiv h2,
-.popupdiv h3,
-.popupdiv h4,
-.popupdiv h5,
-.popupdiv h6 {
-    margin-left: 0;
-}
-.popupdiv h1 a,
-.popupdiv h2 a,
-.popupdiv h3 a,
-.popupdiv h4 a,
-.popupdiv h5 a,
-.popupdiv h6 a {
-    text-decoration: none;
-}
-.popupdiv blockquote {
-    margin: 1em 0;
-}
-.popupdiv .image-wrapper::after {
-    content: none;
-}
 
-/*  Drop caps in popups.
-    */
-.popupdiv.markdownBody .drop-cap-goudy > p,
-.popupdiv.markdownBody .drop-cap-yinit > p,
-.popupdiv.markdownBody .drop-cap-de-zs > p,
-.popupdiv.markdownBody .drop-cap-cheshire > p,
-.popupdiv.markdownBody .drop-cap-kanzlei > p {
-    text-indent: 0;
-}
-.popupdiv.markdownBody .drop-cap-goudy > p::first-letter {
-    font-size: 6.5em;
-}
-.popupdiv.markdownBody .drop-cap-yinit > p::first-letter {
-    font-size: 5.125em;
-}
-.popupdiv.markdownBody .drop-cap-de-zs > p::first-letter {
-    font-size: 6.375em;
-}
-.popupdiv.markdownBody .drop-cap-cheshire > p::first-letter {
-    font-size: 6.375em;
-}
-.popupdiv.markdownBody .drop-cap-kanzlei > p::first-letter {
-    font-size: 6.625em;
-}
+/*=-------------=*/
+/*= POPUP TYPES =*/
+/*=-------------=*/
 
-/*  Collapse blocks within popups.
-    */
-.popupdiv .disclosure-button {
-    display: none;
-}
-.popupdiv :not(section).collapse > .disclosure-button:not(:checked) + * > :first-child:not(.collapseSummary) {
-    max-height: unset;
-}
+/*┌──────────────────────────────┐*/
+/*│ Extract & definition popups. │*/
+/*└──────────────────────────────┘*/
 
-/*  Margin notes in popups.
-    */
-.popupdiv .marginnote {
-    display: initial;
-}
-
-/*  Sidenote popups.
-    */
-.popupdiv .sidenote-self-link {
-    display: none;
-}
-.popupdiv .sidenote-inner-wrapper {
-    margin: 0;
-}
-.popupdiv .sidenote-outer-wrapper {
-    border: none;
-}
-
-/*  Scroll bar styles (for WebKit/Blink).
-    */
-.popupdiv::-webkit-scrollbar {
-    width: 14px;
-}
-.popupdiv::-webkit-scrollbar-thumb {
-    background-color: var(--GW-popups-popup-scrollbar-thumb-color);
-    box-shadow:
-        0 0 0 3px var(--GW-popups-popup-scrollbar-track-color) inset;
-}
-.popupdiv::-webkit-scrollbar-thumb:hover {
-    background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
-}
-
-/*  Scroll bar styles (for Firefox).
-    */
-.popupdiv {
-    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--GW-popups-popup-scrollbar-track-color);
-}
-.popupdiv:hover {
-    scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
-}
-
-/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
-.popupdiv a {
-    text-decoration: underline;
-}
-.popupdiv a:hover {
-    color: var(--GW-popups-popup-link-hover-color);
-}
-.external-page-embed-popup a.footnote-back {
-    text-decoration: none;
-    z-index: 1;
-}
-
-/*=----------=*/
-/*= EXTRACTS =*/
-/*=----------=*/
-
-.popupdiv.extract-popup {
+.popup.annotation {
     min-width: 360px;
     max-width: 640px;
 }
-.popupdiv.extract-popup:not(.toc-section-popup) {
-    max-height: 480px;
-}
-.popupdiv.extract-popup:not(.toc-section-popup) > div {
+.popup.annotation .popup-scroll-view {
     max-height: 474px;
 }
 
 /*  Data fields.
     */
-.extract-popup .data-field {
+.popup.annotation .data-field {
     text-align: left;
     text-indent: 0;
 }
-.extract-popup .data-field + .data-field {
+.popup.annotation .data-field + .data-field {
     margin-top: 0.25em;
 }
-.extract-popup .data-field:empty {
-    display: none;
-}
-.extract-popup .data-field.title {
+
+.popup.annotation .data-field.title {
     font-weight: bold;
     font-size: 1.125em;
 }
-.extract-popup .data-field.author {
+.popup.annotation .data-field.author {
     font-style: italic;
 }
-.extract-popup .date-plus-cites {
+.popup.annotation .date-plus-cites {
     display: inline-block;
 }
-.extract-popup .originalURL {
+.popup.annotation .originalURL {
     font-variant-caps: small-caps;
     margin: 0 0.5em 0 0;
 }
-.extract-popup .iaMirror {
+.popup.annotation .iaMirror {
     padding-right: 0.3em;
 }
-.extract-popup .data-field.extract-abstract {
+.popup.annotation .data-field.annotation-abstract {
     margin-top: 0.5em;
 }
 
-/*  TODO: remove this once popups inherit from main body styles.
+/*  Images (such as the ones in Wikipedia popups).
     */
-.extract-popup .data-field.extract-abstract p,
-.extract-popup.local-transclude p,
-.extract-popup.citation-context p {
-    text-align: justify;
-    hyphens: auto;
-}
-.extract-popup .data-field.extract-abstract p + p,
-.extract-popup.local-transclude p + p,
-.extract-popup.citation-context p + p {
-    text-indent: 1em;
-}
-
-/*  Images such as the ones in Wikipedia popups.
-    */
-.extract-popup > div > figure.float-right {
+.popup.annotation .popup-content-view > figure.float-right {
     margin: 0.125em 0 0.125em 1.5em;
     max-width: calc(50% - 1.5em);
     float: right;
 }
-.extract-popup figure.float-right .image-wrapper {
+.popup.annotation figure.float-left .image-wrapper,
+.popup.annotation figure.float-right .image-wrapper {
     max-width: 100%;
 }
-
-.extract-popup img {
+.popup.annotation figure img {
     width: 100%;
 }
 
-.extract-popup blockquote:last-child,
-.extract-popup .table-wrapper:last-child {
+/*	Miscellaneous adjustments.
+	*/
+.popup.annotation blockquote:last-child,
+.popup.annotation .table-wrapper:last-child {
     margin-bottom: calc(1em/9);
 }
 
-/*  “Object popups”: videos, images, PDFs, archived web pages, etc.
+/*  Special case for inline math in Wikipedia popups.
     */
-.extract-popup.object-popup {
-    height: 480px;
-    background-color: var(--GW-object-popup-background-color);
-}
-.extract-popup.object-popup > div {
+.popup.annotation .mwe-math-element {
+    display: inline-block;
+    height: 1.25em;
+    line-height: 1;
+    margin: 0;
+    vertical-align: bottom;
     padding: 0;
+    text-indent: 0;
 }
-.extract-popup.object-popup img,
-.extract-popup.object-popup iframe,
-.extract-popup.object-popup object {
-    display: block;
-}
-.extract-popup.object-popup iframe,
-.extract-popup.object-popup object {
-    width: 632px;
-    height: 474px;
-}
-
-/*  Popups for images.
-    */
-.extract-popup.image {
-    min-width: 64px;
-    height: unset;
-}
-.popupdiv.image.loading::before {
-    height: 2em;
-    width: 2em;
-}
-
-/*  Popups for videos.
-    */
-.extract-popup.video {
-    height: unset;
-}
-.extract-popup.video iframe {
-    width: 495px;
-    height: 310px;
-}
-
-/*  Popups for local documents.
-    */
-
-/*  Popups for local code files.
-    */
-.extract-popup.local-code-file {
-    width: 640px;
-    height: 480px;
-}
-.extract-popup.local-code-file > div {
+.popup.annotation .mwe-math-element img {
+    display: inline-block;
     height: 100%;
+}
+
+/*┌──────────────────┐*/
+/*│ Footnote popups. │*/
+/*└──────────────────┘*/
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
+
+.popup.footnote {
+    max-width: 640px;
+}
+.popup.footnote .popup-scroll-view {
+    max-height: 474px;
+}
+
+.popup.footnote a.footnote-back {
+    display: none;
+}
+
+/*  The following compensates for the variable edge case where the last
+    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
+    back-to-citation link after it (which is not shown, if present, but makes it
+    uncertain whether the blockquote is the last child of the popup or not. This
+    code makes everything consistent regardless of which case applies.
+    —Obormot (2019-02-17)
+    */
+.popup.footnote .popup-content-view > blockquote:nth-last-child(2) {
+    margin-bottom: calc(1em/9);
+}
+.popup.footnote .popup-content-view > blockquote:nth-last-child(2) + p {
+    margin-top: 1em;
+}
+
+/*┌──────────────────────────┐*/
+/*│ Citation context popups. │*/
+/*└──────────────────────────┘*/
+
+.popup.citation-context {
+    max-width: 640px;
+}
+.popup.citation-context .popup-scroll-view {
+    max-height: 474px;
+}
+
+/*┌──────────────┐*/
+/*│ Code popups. │*/
+/*└──────────────┘*/
+
+.popup.local-code-file {
+    width: 640px;
+	height: 480px;
+}
+.popup.local-code-file .popup-scroll-view {
+    max-height: 474px;
+}
+.popup.local-code-file .popup-content-view {
     padding: 0;
 }
-.extract-popup.local-code-file pre {
+.popup.local-code-file pre {
     height: 100%;
     margin: 0;
     border: none;
+    max-height: unset;
 }
 
-.popupdiv.local-code-file pre.raw-code {
+/*	“Loading failed” message.
+	*/
+.popup.local-code-file.loading-failed::after {
+	content: "File not found.";
+}
+
+/*	“Raw code” popups.
+	*/
+.popup.local-code-file pre.raw-code {
 	white-space: pre-wrap;
 }
-.popupdiv.local-code-file pre.raw-code code {
+.popup.local-code-file pre.raw-code code {
 	word-break: break-word;  
+    padding-left: 2px;
+    padding-right: 2px;
 }
-.popupdiv.local-code-file pre.raw-code .line {
+.popup.local-code-file pre.raw-code .line {
 	counter-increment: code-line;
 	display: inline-block;
 	width: 100%;
@@ -3115,13 +3075,13 @@ body.directory-index #disqus_thread {
 	padding: 0 0 0.25em 4em;
 	box-sizing: border-box;
 }
-.popupdiv.local-code-file pre.raw-code .line:hover {
+.popup.local-code-file pre.raw-code .line:hover {
 	background-color: var(--GW-raw-code-popup-line-highlight-background-color);
 	box-shadow: 
 	0  1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color),
 	0 -1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color);
 }
-.popupdiv.local-code-file pre.raw-code .line::before {
+.popup.local-code-file pre.raw-code .line::before {
 	content: counter(code-line);
 	position: absolute;
 	width: 3.5em;
@@ -3138,84 +3098,227 @@ body.directory-index #disqus_thread {
 	border-right: 1px solid var(--GW-raw-code-popup-line-number-divider-color);
 }
 
-/*  Section embeds.
-    */
-.extract-popup.local-transclude > div,
-.extract-popup.citation-context > div {
-    overflow-x: hidden;
-}
-.extract-popup.local-transclude > div > h1:first-child,
-.extract-popup.local-transclude > div > h2:first-child,
-.extract-popup.local-transclude > div > h3:first-child,
-.extract-popup.local-transclude > div > h4:first-child,
-.extract-popup.local-transclude > div > h5:first-child,
-.extract-popup.local-transclude > div > h6:first-child,
-.extract-popup.citation-context > div > h1:first-child,
-.extract-popup.citation-context > div > h2:first-child,
-.extract-popup.citation-context > div > h3:first-child,
-.extract-popup.citation-context > div > h4:first-child,
-.extract-popup.citation-context > div > h5:first-child,
-.extract-popup.citation-context > div > h6:first-child {
-    margin-top: 0;
-}
+/*┌────────────────┐*/
+/*│ Object popups. │*/
+/*└────────────────┘*/
 
-/*  External section embeds.
+/*  “Object popups”: videos, images, PDFs, archived web pages, etc.
     */
-.extract-popup.external-page-embed {
+.popup.object {
     width: 640px;
     height: 480px;
 }
-
-/*  Special case for inline math in Wikipedia popups.
-    */
-.extract-popup .mwe-math-element {
-    display: inline-block;
-    height: 1.25em;
-    line-height: 1;
-    margin: 0;
-    vertical-align: bottom;
+.popup.object .popup-content-view {
+    background-color: var(--GW-object-popup-background-color);
     padding: 0;
+}
+
+.popup.object img,
+.popup.object iframe,
+.popup.object object {
+    display: block;
+}
+.popup.object iframe,
+.popup.object object {
+    width: 632px;
+    height: 474px;
+}
+
+/*┌───────────────┐*/
+/*│ Image popups. │*/
+/*└───────────────┘*/
+
+.popup.image {
+    min-width: 64px;
+    height: unset;
+}
+
+/*	Loading spinner.
+	*/
+.popup.image.loading::before {
+    height: 2em;
+    width: 2em;
+}
+
+/*	“Loading failed” message.
+	*/
+.popup.image.loading-failed::after {
+	content: "Image not found."; 
+}
+
+/*┌───────────────┐*/
+/*│ Video popups. │*/
+/*└───────────────┘*/
+
+/*  Popups for videos.
+    */
+.popup.video {
+	width: unset;
+    height: unset;
+}
+.popup.video iframe {
+    width: 495px;
+    height: 310px;
+}
+
+/*	“Loading failed” message.
+	*/
+.popup.video.loading-failed::after {
+	content: "Video not found."; 
+}
+
+/*┌───────────────┐*/
+/*│ Audio popups. │*/
+/*└───────────────┘*/
+
+/*	“Loading failed” message.
+	*/
+.popup.video.loading-failed::after {
+	content: "Audio file not found."; 
+}
+
+/*┌────────────────────────┐*/
+/*│ Local document popups. │*/
+/*└────────────────────────┘*/
+
+/*	“Loading failed” message.
+	*/
+.popup.local-document.loading-failed::after {
+	content: "File not found.";
+}
+
+/*┌──────────────────────────┐*/
+/*│ Local transclude popups. │*/
+/*└──────────────────────────┘*/
+
+.popup.local-transclude {
+    max-width: 640px;
+}
+.popup.local-transclude .popup-scroll-view {
+    max-height: 474px;
+}
+
+.popup.local-transclude .popup-content-view {
+	overflow-x: hidden;
+}
+
+.popup.local-transclude .popup-content-view > h1:first-child,
+.popup.local-transclude .popup-content-view > h2:first-child,
+.popup.local-transclude .popup-content-view > h3:first-child,
+.popup.local-transclude .popup-content-view > h4:first-child,
+.popup.local-transclude .popup-content-view > h5:first-child,
+.popup.local-transclude .popup-content-view > h6:first-child {
+    margin-top: 0;
+}
+
+/*	Table of contents popups.
+	*/
+.popup.local-transclude.toc-section-popup .popup-scroll-view {
+    max-height: calc(100vh - 6px);
+}
+
+/*	External page embeds popups.
+	*/
+.popup.external-page-embed {
+	width: 640px;
+	height: 480px;
+}
+
+/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
+.popup.external-page-embed a.footnote-back {
+    text-decoration: none;
+    z-index: 1;
+}
+
+/*=---------------=*/
+/*= POPUP CONTENT =*/
+/*=---------------=*/
+
+/*  Adjustments for styles in popups.
+    */
+/*  TODO: remove this once popups inherit from main body styles.
+    */
+.popup p {
+    text-align: justify;
+    hyphens: auto;
+}
+.popup p + p {
+    text-indent: 1em;
+}
+
+.popup p + ul,
+.popup p + ol {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+.popup h1,
+.popup h2,
+.popup h3,
+.popup h4,
+.popup h5,
+.popup h6 {
+    margin-left: 0;
+}
+.popup h1 a,
+.popup h2 a,
+.popup h3 a,
+.popup h4 a,
+.popup h5 a,
+.popup h6 a {
+    text-decoration: none;
+}
+
+.popup blockquote {
+    margin: 1em 0;
+}
+
+.popup .popup-content-view > figure:only-child {
+	margin: 0;
+    max-width: unset;
+}
+
+.popup .popup-content-view .image-wrapper::after {
+	display: none;
+}
+
+/*  Drop caps in popups.
+    */
+.popup.markdownBody .drop-cap-goudy > p,
+.popup.markdownBody .drop-cap-yinit > p,
+.popup.markdownBody .drop-cap-de-zs > p,
+.popup.markdownBody .drop-cap-cheshire > p,
+.popup.markdownBody .drop-cap-kanzlei > p {
     text-indent: 0;
 }
-.extract-popup .mwe-math-element img {
-    display: inline-block;
-    height: 100%;
+.popup.markdownBody .drop-cap-goudy > p::first-letter {
+    font-size: 6.5em;
+}
+.popup.markdownBody .drop-cap-yinit > p::first-letter {
+    font-size: 5.125em;
+}
+.popup.markdownBody .drop-cap-de-zs > p::first-letter {
+    font-size: 6.375em;
+}
+.popup.markdownBody .drop-cap-cheshire > p::first-letter {
+    font-size: 6.375em;
+}
+.popup.markdownBody .drop-cap-kanzlei > p::first-letter {
+    font-size: 6.625em;
 }
 
-
-/*=-----------------=*/
-/*= FOOTNOTE POPUPS =*/
-/*=-----------------=*/
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
-
-.popupdiv.footnote {
-    min-width: unset;
-    max-width: 640px;
-    max-height: 480px;
-}
-
-.popupdiv.footnote a.footnote-back {
-    display: none;
-}
-
-/*  The following compensates for the variable edge case where the last
-    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
-    back-to-citation link after it (which is not shown, if present, but makes it
-    uncertain whether the blockquote is the last child of the popup or not. This
-    code makes everything consistent regardless of which case applies.
-    —Obormot (2019-02-17)
+/*  Margin notes in popups.
     */
-.popupdiv.footnote > div > blockquote:nth-last-child(2),
-.popupdiv.footnote .sidenote-inner-wrapper blockquote:nth-last-child(2) {
-    margin-bottom: calc(1em/9);
-}
-.popupdiv.footnote > div > blockquote:nth-last-child(2) + p,
-.popupdiv.footnote .sidenote-inner-wrapper blockquote:nth-last-child(2) + p {
-    margin-top: 1em;
+.popup .marginnote {
+    display: initial;
 }
 
-.popupdiv.footnote .sidenote-outer-wrapper {
-    max-height: unset;
+/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
+.popup a {
+    text-decoration: underline;
+}
+.popup a:hover {
+    color: var(--GW-popups-popup-link-hover-color);
 }
 
 /*=-----------------------=*/

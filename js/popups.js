@@ -32,7 +32,7 @@ Popups = {
 		GWLog("Popups.cleanup", "popups.js", 1);
 
         //  Remove popups container and injected styles.
-        document.querySelectorAll(`#${Popups.stylesID}, #${Popups.popupContainerID}`).forEach(element => element.remove());
+        document.querySelectorAll(`#${Popups.popupContainerID}`).forEach(element => element.remove());
 
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popups.keyUp);
@@ -43,16 +43,17 @@ Popups = {
         //  Run cleanup.
         Popups.cleanup();
 
-        //  Inject styles.
-        document.querySelector("head").insertAdjacentHTML("beforeend", Popups.stylesHTML);
-
         //  Inject popups container.
         let popupContainerParent = document.querySelector(Popups.popupContainerParentSelector);
         if (!popupContainerParent) {
             GWLog("Popup container parent element not found. Exiting.", "popups.js", 1);
             return;
         }
-        popupContainerParent.insertAdjacentHTML("beforeend", `<div id='${Popups.popupContainerID}'></div>`);
+        popupContainerParent.insertAdjacentHTML("beforeend", `<div 
+        	id="${Popups.popupContainerID}" 
+        	class="popup-container" 
+        	style="z-index: ${Popups.popupContainerZIndex};"
+        		></div>`);
         requestAnimationFrame(() => {
             Popups.popupContainer = document.querySelector(`#${Popups.popupContainerID}`);
         });
@@ -160,24 +161,36 @@ Popups = {
 		Popups.removeTargetsWithin(document, targets, targetRestoreFunction);
 	},
 
+	scrollElementIntoViewInPopup: (element) => {
+		let popup = element.closest(".popup");
+		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.scrollView.getBoundingClientRect().top;
+	},
+
 	newPopup: () => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
 		let popup = document.createElement("div");
-		popup.classList.add("popupdiv");
+		popup.classList.add("popup", "popframe");
+		popup.innerHTML = `<div class="popup-scroll-view"><div class="popup-content-view"></div></div>`;
+		popup.scrollView = popup.querySelector(".popup-scroll-view");
+		popup.contentView = popup.querySelector(".popup-content-view");
 		return popup;
 	},
-	spawnPopup: (popup, target, event) => {
+	setPopFrameContent: (popup, contentHTML) => {
+		popup.querySelector(".popup-content-view").innerHTML = contentHTML;
+		return (contentHTML > "");
+	},
+	spawnPopup: (popup, event) => {
 		GWLog("Popups.spawnPopup", "popups.js", 2);
 
 		//	Inject the popup into the page.
 		Popups.injectPopup(popup);
 
 		//  Position the popup appropriately with respect to the target.
-		Popups.positionPopup(popup, target, event);
+		Popups.positionPopup(popup, event);
 
 		//  Mark target as having an active popup associated with it.
-		target.classList.add("popup-open");
+		popup.spawningTarget.classList.add("popup-open");
 
 		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: popup });
 	},
@@ -191,8 +204,10 @@ Popups = {
 		popup.addEventListener("mouseenter", Popups.popupMouseenter);
 		popup.addEventListener("mouseleave", Popups.popupMouseleave);
 	},
-	positionPopup: (popup, target, event) => {
+	positionPopup: (popup, event) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
+
+		let target = popup.spawningTarget;
 
 		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 
@@ -250,7 +265,7 @@ Popups = {
 					*/
 				var popupSpawnYOriginForSpawnAbove = targetRectInPopupContainer.top - popupBreathingRoom.y;
 				var popupSpawnYOriginForSpawnBelow = targetRectInPopupContainer.bottom + popupBreathingRoom.y;
-				if (target.closest(".popupdiv")) {
+				if (target.closest(".popup")) {
 					/*  The popup is a nested popup. We prefer to put it off to 
 						the left or right.
 						*/
@@ -331,14 +346,14 @@ Popups = {
 
 	    popup.classList.remove("fading");
         popup.remove();
-        popup.popupTarget.classList.remove("popup-open");
-        popup.popupTarget.popup = null;
+        popup.spawningTarget.classList.remove("popup-open");
+        popup.spawningTarget.popup = null;
         document.activeElement.blur();
     },
 
 	getPopupAncestorStack: (popup) => {
 		var popupAndAncestors = [ ];
-		for (popupInStack = popup; popupInStack != null; popupInStack = popupInStack.popupTarget.closest(".popupdiv"))
+		for (popupInStack = popup; popupInStack != null; popupInStack = popupInStack.spawningTarget.closest(".popup"))
 			popupAndAncestors.splice(0, 0, popupInStack);
 		return popupAndAncestors;
 	},
@@ -365,16 +380,17 @@ Popups = {
 
 			//  Create the new popup.
 			target.popup = Popups.newPopup();
+			target.popFrame = target.popup;
 
 			//  Give the popup a reference to the target.
-			target.popup.popupTarget = target;
+			target.popup.spawningTarget = target;
 
 			// Prepare the newly created popup for spawning.
-			if (prepareFunction(target.popup, target) == false)
+			if (prepareFunction(target.popup) == false)
 				return;
 
 			// Spawn the prepared popup.
-			Popups.spawnPopup(target.popup, target, event);
+			Popups.spawnPopup(target.popup, event);
 		}, Popups.popupTriggerDelay);
 	},
     setPopupFadeTimer: (target) => {
@@ -400,10 +416,11 @@ Popups = {
     //	The “user moved mouse out of popup” mouseleave event.
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
+		return;
 
 		Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
-			Popups.clearPopupTimers(popupInStack.popupTarget);
-			Popups.setPopupFadeTimer(popupInStack.popupTarget);
+			Popups.clearPopupTimers(popupInStack.spawningTarget);
+			Popups.setPopupFadeTimer(popupInStack.spawningTarget);
 		});
 	},
 	//	The “user moved mouse back into popup” mouseenter event.
@@ -411,16 +428,16 @@ Popups = {
 		GWLog("Popups.popupMouseenter", "popups.js", 2);
 
 		Popups.getPopupAncestorStack(event.target).forEach(popupInStack => {
-			Popups.clearPopupTimers(popupInStack.popupTarget);
+			Popups.clearPopupTimers(popupInStack.spawningTarget);
 		});
 	},
     popupClicked: (event) => {
 		GWLog("Popups.popupClicked", "popups.js", 2);
 
-		let popup = event.target.closest(".popupdiv");
+		let popup = event.target.closest(".popup");
 
 		event.stopPropagation();
-		Popups.clearPopupTimers(popup.popupTarget);
+		Popups.clearPopupTimers(popup.spawningTarget);
 		Popups.despawnPopup(popup);
     },
 	//	The mouseenter event.
@@ -443,28 +460,6 @@ Popups = {
 			Popups.setPopupFadeTimer(event.target);
 	}
 };
-
-/********************/
-/*	Essential styles.
-	*/
-Popups.stylesHTML = `<style id='${Popups.stylesID}'>
-#${Popups.popupContainerID} {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    pointer-events: none;
-    z-index: ${Popups.popupContainerZIndex};
-}
-#${Popups.popupContainerID} > * {
-    pointer-events: auto;
-}
-.popupdiv {
-    position: absolute;
-    overflow: visible;
-    overscroll-behavior: none;
-}
-</style>`;
 
 GW.notificationCenter.fireEvent("Popups.didLoad");
 
