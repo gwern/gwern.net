@@ -24,6 +24,13 @@
 
 :root {
     --GW-sidenotes-max-width: 550px;
+
+	--GW-popups-popup-max-width: 640px;
+	--GW-popups-annotation-popup-min-width: 360px;
+	--GW-popups-popup-max-height: 480px;
+	--GW-popups-popup-border-width: 3px;
+	--GW-popups-video-iframe-width; 495px
+	--GW-popups-video-iframe-height: 310px;
 }
 
 /*********************/
@@ -2773,12 +2780,12 @@ body.directory-index #disqus_thread {
 	/*  Layout. */
     position: absolute;
     overflow: visible;
-    max-width: 100vw;
+    max-width: var(--GW-popups-popup-max-width);
     max-height: 100vh;
     z-index: 1;
 
 	/*  Styling. */
-    border: 3px double var(--GW-popups-popup-border-color);
+    border: var(--GW-popups-popup-border-width) double var(--GW-popups-popup-border-color);
     box-shadow: 1px 2px 8px 0 var(--GW-popups-box-shadow-color);
     background-color: var(--GW-popups-popup-background-color);
 }
@@ -2803,6 +2810,7 @@ body.directory-index #disqus_thread {
 .popup-scroll-view {
     overflow-y: auto;
     overscroll-behavior: none;
+    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width));
 }
 
 /*  Scroll bar styles (for WebKit/Blink).
@@ -2913,11 +2921,7 @@ body.directory-index #disqus_thread {
 /*└──────────────────────────────┘*/
 
 .popup.annotation {
-    min-width: 360px;
-    max-width: 640px;
-}
-.popup.annotation .popup-scroll-view {
-    max-height: 474px;
+    min-width: var(--GW-popups-annotation-popup-min-width);\
 }
 
 /*  Data fields.
@@ -2994,13 +2998,6 @@ body.directory-index #disqus_thread {
 /*└──────────────────┘*/
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
-.popup.footnote {
-    max-width: 640px;
-}
-.popup.footnote .popup-scroll-view {
-    max-height: 474px;
-}
-
 .popup.footnote a.footnote-back {
     display: none;
 }
@@ -3023,23 +3020,13 @@ body.directory-index #disqus_thread {
 /*│ Citation context popups. │*/
 /*└──────────────────────────┘*/
 
-.popup.citation-context {
-    max-width: 640px;
-}
-.popup.citation-context .popup-scroll-view {
-    max-height: 474px;
-}
-
 /*┌──────────────┐*/
 /*│ Code popups. │*/
 /*└──────────────┘*/
 
 .popup.local-code-file {
-    width: 640px;
-	height: 480px;
-}
-.popup.local-code-file .popup-scroll-view {
-    max-height: 474px;
+    width: var(--GW-popups-popup-max-width);
+	height: var(--GW-popups-popup-max-height);
 }
 .popup.local-code-file .popup-content-view {
     padding: 0;
@@ -3105,8 +3092,8 @@ body.directory-index #disqus_thread {
 /*  “Object popups”: videos, images, PDFs, archived web pages, etc.
     */
 .popup.object {
-    width: 640px;
-    height: 480px;
+    width: var(--GW-popups-popup-max-width);
+	height: var(--GW-popups-popup-max-height);
 }
 .popup.object .popup-content-view {
     background-color: var(--GW-object-popup-background-color);
@@ -3120,8 +3107,8 @@ body.directory-index #disqus_thread {
 }
 .popup.object iframe,
 .popup.object object {
-    width: 632px;
-    height: 474px;
+    width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
+    height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width));
 }
 
 /*┌───────────────┐*/
@@ -3129,6 +3116,7 @@ body.directory-index #disqus_thread {
 /*└───────────────┘*/
 
 .popup.image {
+	width: unset;
     min-width: 64px;
     height: unset;
 }
@@ -3157,8 +3145,8 @@ body.directory-index #disqus_thread {
     height: unset;
 }
 .popup.video iframe {
-    width: 495px;
-    height: 310px;
+    width: var(--GW-popups-video-iframe-width);
+    height: var(--GW-popups-video-iframe-height);
 }
 
 /*	“Loading failed” message.
@@ -3191,13 +3179,6 @@ body.directory-index #disqus_thread {
 /*│ Local transclude popups. │*/
 /*└──────────────────────────┘*/
 
-.popup.local-transclude {
-    max-width: 640px;
-}
-.popup.local-transclude .popup-scroll-view {
-    max-height: 474px;
-}
-
 .popup.local-transclude .popup-content-view {
 	overflow-x: hidden;
 }
@@ -3220,8 +3201,8 @@ body.directory-index #disqus_thread {
 /*	External page embeds popups.
 	*/
 .popup.external-page-embed {
-	width: 640px;
-	height: 480px;
+    width: var(--GW-popups-popup-max-width);
+	height: var(--GW-popups-popup-max-height);
 }
 
 /* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
