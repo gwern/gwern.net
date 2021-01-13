@@ -613,7 +613,8 @@ Extracts = {
 
 	//  Other websites.
 	isForeignSiteLink: (target) => {
-		if (!target.href) return false;
+		if (  !target.href
+			|| Extracts.isExtractLink(target)) return false;
 
 		return Extracts.qualifyingForeignDomains.includes(target.hostname);
 	},
