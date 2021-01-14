@@ -507,6 +507,16 @@ function identifyFootnotesSection(containingDocument = document.firstElementChil
 }
 doWhenDOMContentLoaded(identifyFootnotesSection);
 
+/*******************************************/
+/*	Add a TOC link to the footnotes section.
+	*/
+function injectFootnotesTOCLink() {
+	GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
+
+	document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
+}
+doWhenDOMContentLoaded(injectFootnotesTOCLink);
+
 /***************************************************************/
 /*	Add handler for miscellaneous rewriting in injected content.
 	*/
