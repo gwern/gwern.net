@@ -2996,13 +2996,6 @@ body.directory-index #disqus_thread {
     width: 100%;
 }
 
-/*	Miscellaneous adjustments.
-	*/
-.popup.annotation blockquote:last-child,
-.popup.annotation .table-wrapper:last-child {
-    margin-bottom: calc(1em/9);
-}
-
 /*  Special case for inline math in Wikipedia popups.
     */
 .popup.annotation .mwe-math-element {
@@ -3297,6 +3290,12 @@ body.directory-index #disqus_thread {
 
 .popup .popup-content-view .image-wrapper::after {
 	display: none;
+}
+
+.popup blockquote:last-child,
+.popup .table-wrapper:last-child,
+.popup div.sourceCode:last-child pre {
+    margin-bottom: calc(1em/9);
 }
 
 /*  Drop caps in popups.

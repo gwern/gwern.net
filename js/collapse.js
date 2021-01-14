@@ -160,9 +160,9 @@ function expandLockCollapseBlocks(containingDocument = document.firstElementChil
 		disclosureButton.remove();
 	});
 
-	//  Expand collapse blocks.
+	//  Permanently expand collapse blocks (by making them into regular blocks).
 	containingDocument.querySelectorAll(".collapse").forEach(collapseBlock => {
-		collapseBlock.classList.toggle("expanded", true);
+		collapseBlock.classList.remove("collapse", "expanded");
 	});
 }
 
