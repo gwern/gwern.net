@@ -3337,6 +3337,10 @@ body.directory-index #disqus_thread {
     color: var(--GW-popups-popup-link-hover-color);
 }
 
+.popup .popup-content-view > hr:first-child {
+    display: none;
+}
+
 /*=-----------------------=*/
 /*= POPUPS OPTIONS DIALOG =*/
 /*=-----------------------=*/
