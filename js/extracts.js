@@ -829,7 +829,7 @@ Extracts = {
 			let citationInPopup = popup.querySelector(decodeURIComponent(target.hash));
 
 			//  Highlight the citation.
-			citationInPopup.classList.add("highlighted");
+			citationInPopup.classList.add("targeted");
 
 			//  Scroll to the citation.
 			requestAnimationFrame(() => {
