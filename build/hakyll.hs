@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-10 10:23:19 gwern"
+When: Time-stamp: "2021-01-16 12:52:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -50,25 +50,22 @@ import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
                defaultHakyllWriterOptions, fromCapture, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAll, loadAndApplyTemplate, loadBody, makeItem, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess,
-               -- Template, cached, compressCss, readTemplate, getResourceString,
                tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Tags, unsafeCompiler)
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Pandoc.Shared (blocksToInlines)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
-                    -- Extension(Ext_markdown_in_html_blocks), ReaderOptions(..), bottomUp, topDown,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
                     ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..))
-import Text.Pandoc.Walk (walk, walkM) -- walkInlineM
+import Text.Pandoc.Walk (walk, walkM)
 
 import Data.List.Utils (replace)
 import qualified Data.Text as T
 
 -- local custom modules:
--- import Definition -- (dictionary)
 import Inflation (nominalToRealInflationAdjuster)
-import LinkMetadata (generateLinkBibliography, readLinkMetadata, Metadata)
+import LinkMetadata (isLocalLink, generateLinkBibliography, readLinkMetadata, Metadata)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 
@@ -82,9 +79,6 @@ main = hakyll $ do
 
              preprocess $ print ("Local archives parsing..." :: String)
              archive <- preprocess readArchiveMetadata
-             -- preprocess $ print ("Local abbreviations parsing..." :: String)
-             -- definitions <- preprocess dictionary
-             -- preprocess $ print archive
 
              match "**.page" $ do
                  -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
@@ -92,9 +86,8 @@ main = hakyll $ do
                  route $ gsubRoute "," (const "") `composeRoutes` gsubRoute "'" (const "") `composeRoutes` gsubRoute " " (const "-") `composeRoutes`
                           setExtension ""
                  -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
-                 let readerOptions = defaultHakyllReaderOptions -- {
-                       -- readerExtensions = Data.Set.filter (/=Ext_markdown_in_html_blocks) $ readerExtensions defaultHakyllReaderOptions }
-                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta archive) -- pandocTransform meta archive definitions
+                 let readerOptions = defaultHakyllReaderOptions
+                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta archive)
                      >>= loadAndApplyTemplate "static/templates/default.html" (postCtx tags)
                      >>= imgUrls
 
@@ -238,14 +231,11 @@ postCtx tags =
                               Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 
--- pandocTransform :: Metadata -> ArchiveMetadata -> (M.Map String String) -> Pandoc -> IO Pandoc
--- pandocTransform md adb dict = walkM (\x -> annotateLink md x >>= localizeLink adb) . walk smallcapsfy . walk headerSelflink . annotateFirstDefinitions . walkInlineM (defineAbbreviations dict) . bottomUp mergeSpaces . walk (map (nominalToRealInflationAdjuster . marginNotes . convertInterwikiLinks . addAmazonAffiliate))
-
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
 pandocTransform md adb p = do let pw = walk convertInterwikiLinks p
                               pb <- generateLinkBibliography md pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . addAmazonAffiliate)) $ pb
-                              let pbth = walk headerSelflink pbt -- run headerSelflink after generateLinkBibliography to cover the generated '# Link Bibliography' sections
+                              let pbth = isLocalLink $ walk headerSelflink pbt -- run headerSelflink after generateLinkBibliography to cover the generated '# Link Bibliography' sections
                               walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) pbth
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
