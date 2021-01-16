@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-01-09 23:11:08 gwern"
+When:  Time-stamp: "2021-01-15 10:38:00 gwern"
 License: CC-0
 -}
 
@@ -428,6 +428,7 @@ whiteList url
       , "clickotron.com"
       , "patrickcollison.com"
       , "amazon.com"
+      , "amzn.com"
       , "sparkfun.com"
       , "greenspun.com"
       , "shawwn.com"
