@@ -12,7 +12,7 @@ for ($i = 1; $i < $argc; $i++) {
 	$link_bibliography = trim($matches[1])."\n";
 	$modified_page = preg_replace('/(<section id="link-bibliography" class="level1) collapse(">).+?(<\/section>)/s', '$1$2$3', $page);
 
-	file_put_contents(preg_replace('/\.html$/', '-link-bibliography.html', $filepath), $link_bibliography);
+	file_put_contents(preg_replace('/^(.+?)(\.html)?$/', '$1-link-bibliography$2', $filepath), $link_bibliography);
 	file_put_contents($filepath, $modified_page);
 }
 
