@@ -27,6 +27,8 @@ Extracts = {
     targets: {
 		targetElementsSelector: "a[href], span.defnMetadata", 
 		excludedElementsSelector: [
+			".section-self-link",
+			".footnote-self-link",
 			".sidenote-self-link",
 			".link-bibliography-item-self-link",
 			".extract .data-field.title a",

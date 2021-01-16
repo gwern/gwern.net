@@ -457,6 +457,95 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 	}
 });
 
+/*************/
+/* FOOTNOTES */
+/*************/
+
+/************************************************************************/
+/*	The footnotes section has no ID because Pandoc is weird. Give it one.
+	*/
+function identifyFootnotesSection(containingDocument = document.firstElementChild) {
+	GWLog("identifyFootnotesSection", "rewrite.js", 1);
+
+	let footnotesSection = containingDocument.querySelector("section.footnotes");
+	if (footnotesSection)
+		footnotesSection.id = "footnotes";
+}
+doWhenDOMContentLoaded(identifyFootnotesSection);
+
+/******************************/
+/*	Inject footnote self-links.
+	*/
+function injectFootnoteSelfLinks(containingDocument = document.firstElementChild) {
+	GWLog("injectFootnoteSelfLinks", "rewrite.js", 1);
+
+	let footnotes = Array.from(containingDocument.querySelector("#footnotes > ol").children);
+
+	for (var i = 0; i < footnotes.length; i++)
+		footnotes[i].insertAdjacentHTML("afterbegin", `<a href="#fn${(i + 1)}" title="Link to footnote ${(i + 1)}" class="footnote-self-link">&nbsp;</a>`);
+
+	//  Highlight footnote on hover over self-link.
+	document.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
+		footnoteSelfLink.addEventListener("mouseenter", (event) => {
+			footnoteSelfLink.parentElement.classList.toggle("highlighted", true);
+		});
+		footnoteSelfLink.addEventListener("mouseleave", (event) => {
+			footnoteSelfLink.parentElement.classList.toggle("highlighted", false);
+		});
+	});
+}
+doWhenDOMContentLoaded(injectFootnoteSelfLinks);
+
+/*****************************************************/
+/*	Inject self-link for the footnotes section itself.
+	*/
+function injectFootnoteSectionSelfLink(containingDocument = document.firstElementChild) {
+	GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
+
+	let footnotesSectionSelfLink = document.createElement("A");
+	footnotesSectionSelfLink.href = "#footnotes";
+	footnotesSectionSelfLink.title = "Link to section: § ‘Footnotes’";
+	footnotesSectionSelfLink.classList.add("section-self-link");
+
+	let footnotesSection = document.querySelector("#footnotes");
+	footnotesSection.insertBefore(footnotesSectionSelfLink, footnotesSection.firstElementChild.nextElementSibling);
+
+	//  Highlight on hover.
+	footnotesSectionSelfLink.addEventListener("mouseenter", (event) => {
+		footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", true);
+	});
+	footnotesSectionSelfLink.addEventListener("mouseleave", (event) => {
+		footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", false);
+	});
+}
+doWhenDOMContentLoaded(injectFootnoteSectionSelfLink);
+
+/*********************************************************/
+/*	Add handler for footnotes section in injected content.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processMiscellaneousRewritesInInjectedContent = (info) => {
+	if (!info.needsRewrite)
+		return;
+
+	if (info.fullPage) {
+		identifyFootnotesSection(info.document);
+		injectFootnoteSectionSelfLink(info.document);
+		injectFootnoteSelfLinks(info.document);
+	}
+});
+
+/*****************************************************************************/
+/*	Add a TOC link to the footnotes section.
+	(No need for a listener to do this for injected content; the TOC only ever
+	 appears on the main page.)
+	*/
+function injectFootnotesTOCLink() {
+	GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
+
+	document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
+}
+doWhenDOMContentLoaded(injectFootnotesTOCLink);
+
 /*********/
 /* MISC. */
 /*********/
@@ -486,7 +575,7 @@ function directionalizeAnchorLinks(containingDocument = document.firstElementChi
 
 	containingDocument.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
 		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
-			|| identifierLink.closest(".footnote-ref, .footnote-back, .sidenote-self-link, .link-bibliography-item-self-link"))
+			|| identifierLink.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link, .link-bibliography-item-self-link"))
 			return;
 		target = containingDocument.querySelector(identifierLink.getAttribute("href"));
 		if (!target) return;
@@ -494,28 +583,6 @@ function directionalizeAnchorLinks(containingDocument = document.firstElementChi
 	});
 }
 doWhenDOMContentLoaded(directionalizeAnchorLinks);
-
-/************************************************************************/
-/*	The footnotes section has no ID because Pandoc is weird. Give it one.
-	*/
-function identifyFootnotesSection(containingDocument = document.firstElementChild) {
-	GWLog("identifyFootnotesSection", "rewrite.js", 1);
-
-	let footnotesSection = containingDocument.querySelector("section.footnotes");
-	if (footnotesSection)
-		footnotesSection.id = "footnotes";
-}
-doWhenDOMContentLoaded(identifyFootnotesSection);
-
-/*******************************************/
-/*	Add a TOC link to the footnotes section.
-	*/
-function injectFootnotesTOCLink() {
-	GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
-
-	document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
-}
-doWhenDOMContentLoaded(injectFootnotesTOCLink);
 
 /***************************************************************/
 /*	Add handler for miscellaneous rewriting in injected content.
@@ -526,8 +593,6 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 
 	cleanUpImageAltText(info.document);
 	directionalizeAnchorLinks(info.document);
-	if (info.fullPage)
-		identifyFootnotesSection(info.document);
 });
 
 /*************/
