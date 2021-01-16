@@ -53,29 +53,7 @@ Sidenotes = {
 			return "";
 	},
 
-	bindSidenoteHighlightMouseEventsToCitation: (sidenote, citation) => {
-		GWLog("Sidenotes.bindSidenoteHighlightMouseEventsToCitation", "sidenotes.js", 2);
-
-		citation.addEventListener("mouseenter", citation.citationover = (event) => {
-			sidenote.classList.toggle("highlighted", true);
-		});
-		citation.addEventListener("mouseleave", citation.citationout = (event) => {
-			sidenote.classList.toggle("highlighted", false);
-		});
-	},
-
-	bindCitationHighlightMouseEventsToSidenote: (citation, sidenote) => {
-		GWLog("Sidenotes.bindCitationHighlightMouseEventsToSidenote", "sidenotes.js", 2);
-
-		sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
-			citation.classList.toggle("highlighted", true);
-		});
-		sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
-			citation.classList.toggle("highlighted", false);
-		});
-	},
-
-	/*	Bind event listeners for mousing over citations and sidenotes.
+	/*	Bind event listeners to highlight citation when sidenote is hovered over.
 		*/
 	bindSidenoteMouseEvents: () => {
 		GWLog("Sidenotes.bindSidenoteMouseEvents", "sidenotes.js", 1);
@@ -84,31 +62,12 @@ Sidenotes = {
 			let citation = Sidenotes.citations[i];
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
-			Sidenotes.bindSidenoteHighlightMouseEventsToCitation(sidenote, citation);
-			Sidenotes.bindCitationHighlightMouseEventsToSidenote(citation, sidenote);
-		}
-	},
-
-	/*	Unbind event listeners for mousing over citations and sidenotes.
-		*/
-	unbindSidenoteMouseEvents: () => {
-		GWLog("Sidenotes.unbindSidenoteMouseEvents", "sidenotes.js", 1);
-
-		for (var i = 0; i < Sidenotes.citations.length; i++) {
-			let citation = Sidenotes.citations[i];
-			let sidenote = Sidenotes.sidenoteDivs[i];
-
-			citation.removeEventListener("mouseenter", citation.citationover);
-			citation.citationover = null;
-
-			citation.removeEventListener("mouseleave", citation.citationout);
-			citation.citationout = null;
-
-			sidenote.removeEventListener("mouseenter", sidenote.sidenoteover);
-			sidenote.sidenoteover = null;
-
-			sidenote.removeEventListener("mouseleave", sidenote.sidenoteout);
-			sidenote.sidenoteout = null;
+			sidenote.addEventListener("mouseenter", sidenote.sidenoteover = (event) => {
+				citation.classList.toggle("highlighted", true);
+			});
+			sidenote.addEventListener("mouseleave", sidenote.sidenoteout = (event) => {
+				citation.classList.toggle("highlighted", false);
+			});
 		}
 	},
 
@@ -598,32 +557,10 @@ Sidenotes = {
 			});
 		}, { once: true });
 
-		/*  Listen for changes to whether the viewport width media query is matched;
-			if such a change occurs (i.e., if the viewport becomes, or stops being,
-			wide enough to support sidenotes), switch modes from footnote popups to
-			sidenotes or vice/versa, as appropriate.
-			(This listener may also be fired if the dev tools pane is opened, etc.)
+		/*  Bind sidenote mouse-hover events.
 			*/
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {
-			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.bindOrUnbindEventListenersForCurrentMode", (mediaQuery) => {
-				//  Unbind sidenote mouse events.
-				Sidenotes.unbindSidenoteMouseEvents();
-
-				//  Determine whether we are in sidenote mode or footnote mode.
-				if (!mediaQuery.matches) {
-					//  If we are in sidenotes mode, bind sidenote mouse events.
-					Sidenotes.bindSidenoteMouseEvents();
-				}
-			}, null, (mediaQuery) => {
-				//  Unbind sidenote mouse events.
-				Sidenotes.unbindSidenoteMouseEvents();
-			});
-
-			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-				info.popup.querySelectorAll("a[href^='#sn'].footnote-ref").forEach(citation => {
-					Sidenotes.bindSidenoteHighlightMouseEventsToCitation(Sidenotes.sidenoteDivs[parseInt(citation.hash.substr(3)) - 1], citation);
-				});
-			});
+			Sidenotes.bindSidenoteMouseEvents();
 		}, { once: true });
 
 		GW.notificationCenter.addHandlerForEvent("Sidenotes.sidenotesDidConstruct", () => {

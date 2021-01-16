@@ -1041,6 +1041,10 @@ a.footnote-ref {
     border-color: var(--GW-footnote-backlink-border-hover-color);
 }
 
+/*=----------------------------------------------=*/
+/*= Special styling adjustments within footnotes =*/
+/*=----------------------------------------------=*/
+
 .footnotes li {
     position: relative;
 }
@@ -1054,6 +1058,13 @@ a.footnote-ref {
     background-color: var(--GW-footnote-backlink-after-bordered-block-background-color);
 }
 
+/*=-----------=*/
+/*= Footnotes =*/
+/*=-----------=*/
+
+section.footnotes {
+	position: relative;
+}
 section.footnotes > ol {
     list-style-type: none;
     padding-left: 2.625em;
@@ -1090,6 +1101,27 @@ section.footnotes > ol > li::after {
     left: calc(-0.75em - 1px);
 }
 
+/*=-----------------------------=*/
+/*= Footnotes section self-link =*/
+/*=-----------------------------=*/
+
+section.footnotes .section-self-link {
+	position: absolute;
+	width: 2em;
+	height: 2em;
+	top: 3px;
+	border: 1px solid transparent;
+	left: 0;
+	right: 0;
+	margin: auto;
+	z-index: 1;
+	opacity: 0;
+}
+
+/*=-----------------------=*/
+/*= Footnote highlighting =*/
+/*=-----------------------=*/
+
 section.footnotes > ol > li:target::before,
 section.footnotes > ol > li:target::after,
 section.footnotes > ol > li.highlighted::before,
@@ -1106,6 +1138,25 @@ section.footnotes > ol > li.highlighted::after {
     border-style: double;
     left: calc(-0.75em - 3px);
 }
+
+/*=---------------------=*/
+/*= Footnote self-links =*/
+/*=---------------------=*/
+
+section.footnotes .footnote-self-link {
+	position: absolute;
+	top: 2px;
+	right: calc(100% + 0.75em);
+	width: 1.75em;
+	height: 1.75em;
+	border: 1px solid transparent;
+	z-index: 1;
+	opacity: 0;
+}
+
+/*=-------------------------------------------------------=*/
+/*= Horizontal rule at the start of the footnotes section =*/
+/*=-------------------------------------------------------=*/
 
 section.footnotes > hr:first-child {
     position: relative;
@@ -1131,6 +1182,26 @@ section.footnotes > hr:first-child::before {
     background-color: var(--GW-footnotes-section-top-rule-color);
     width: 100%;
     top: 50%;
+}
+
+section.footnotes:target > hr:first-child::after,
+section.footnotes > hr:first-child.highlighted::after {
+    border-color: var(--GW-footnote-highlighted-border-color);
+    box-shadow:
+        0 0 0 1px var(--GW-body-background-color) inset,
+        0 0 0 2px var(--GW-footnote-highlighted-border-color) inset,
+        0 0 0 calc(0.5em - 1px) var(--GW-body-background-color) inset,
+        0 0 0 0.5em var(--GW-footnote-highlighted-border-color) inset,
+        0 0 0 calc(0.5em + 1px) var(--GW-body-background-color) inset,
+        0 0 0 calc(0.5em + 2px) var(--GW-footnote-highlighted-border-color) inset;
+}
+section.footnotes:target > hr:first-child::before,
+section.footnotes > hr:first-child.highlighted::before {
+    background-color: var(--GW-body-background-color);
+    box-shadow: 
+        0 1px 0 0 var(--GW-footnote-highlighted-border-color) inset,
+        0 -1px 0 0 var(--GW-footnote-highlighted-border-color) inset;
+    height: 3px;
 }
 
 /*************/
@@ -3339,6 +3410,10 @@ body.directory-index #disqus_thread {
 
 .popup .popup-content-view > hr:first-child {
     display: none;
+}
+
+.popup .footnote-self-link {
+	display: none;
 }
 
 /*=-----------------------=*/
