@@ -65,6 +65,7 @@ then
      echo "</urlset>") >> ./_site/sitemap.xml
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
+    echo "Generating syntax-highlighted versions of source code files..."
     syntaxHighlight() {
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" )
         for FILE in "$@"; do
@@ -83,6 +84,7 @@ then
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
+    echo "Compiling LaTeX HTML into static CSS..."
     staticCompileMathJax () {
         if [[ $(fgrep '<span class="math inline"' "$@") ]]; then
             TARGET=$(mktemp /tmp/XXXXXXX.html)
@@ -99,6 +101,12 @@ then
     }
     export -f staticCompileMathJax
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel staticCompileMathJax || true
+
+    ## TEMPORARY: copy the link bibliographies (the annotations on a page) into a standalone file, as scaffolding for the final link popup rewrite (where each annotation will be dumped to a file in annotations/* under a hash of the URL so they can be looked-up directly, rather than inlining annotations into the body of the page, which is tricky to get right and increasingly heavy-weight in terms of bloating the HTML & stressing browsers)
+    echo "Building external link-bibliographies..."
+    externalLinkBibliographyCompile () { php static/build/externalize_link_bibliography.php "$@"; }
+    export -f externalLinkBibliographyCompile
+    find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel externalLinkBibliographyCompile || true
 
     rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
 
@@ -181,10 +189,13 @@ then
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg docs/*), just force a hash-based sync every time:
+    echo "Syncing static/..."
     rsync --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@78.46.86.149:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie non-generated files):
+    echo "Syncing pages..."
     rsync --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
     ## Randomize sync type - usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
+    echo "Syncing everything else..."
     SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi;
     rsync --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
     set +e
