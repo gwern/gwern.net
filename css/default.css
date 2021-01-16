@@ -2942,6 +2942,7 @@ body.directory-index #disqus_thread {
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     line-height: 1.45;
+    overflow: auto;
 }
 
 /*┌───────────────────────────┐*/
