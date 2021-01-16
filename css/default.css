@@ -3412,6 +3412,10 @@ body.directory-index #disqus_thread {
     display: none;
 }
 
+.popup .footnote-self-link {
+	display: none;
+}
+
 /*=-----------------------=*/
 /*= POPUPS OPTIONS DIALOG =*/
 /*=-----------------------=*/
