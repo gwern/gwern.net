@@ -520,14 +520,44 @@ function injectFootnoteSectionSelfLink(containingDocument = document.firstElemen
 }
 doWhenDOMContentLoaded(injectFootnoteSectionSelfLink);
 
+/***********************************************************************/
+/*	Returns all footnote and sidenote elements associated with the given 
+	citation.
+	*/
+function allNotesForCitation(citation) {
+	if (!citation.classList.contains("footnote-ref"))
+		return null;
+
+	let citationNumber = citation.id.substr(5);
+	return Array.from(document.querySelectorAll(`#fn${citationNumber}, #sn${citationNumber}`)).filter(note => note.querySelector(".footnote-back").pathname == citation.pathname);
+}
+
+function bindNoteHighlightEventsToCitations(containingDocument = document.firstElementChild) {
+	GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
+
+	containingDocument.querySelectorAll(".footnote-ref").forEach(citation => {
+		let notesForCitation = allNotesForCitation(citation);
+		citation.addEventListener("mouseenter", (event) => {
+			notesForCitation.forEach(note => {
+				note.classList.toggle("highlighted", true);
+			});
+		});
+		citation.addEventListener("mouseleave", (event) => {
+			notesForCitation.forEach(note => {
+				note.classList.toggle("highlighted", false);
+			});
+		});
+	});
+}
+doWhenDOMContentLoaded(bindNoteHighlightEventsToCitations);
+
 /*********************************************************/
 /*	Add handler for footnotes section in injected content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processMiscellaneousRewritesInInjectedContent = (info) => {
-	if (!info.needsRewrite)
-		return;
+	bindNoteHighlightEventsToCitations(info.document);
 
-	if (info.fullPage) {
+	if (info.needsRewrite && info.fullPage) {
 		identifyFootnotesSection(info.document);
 		injectFootnoteSectionSelfLink(info.document);
 		injectFootnoteSelfLinks(info.document);
