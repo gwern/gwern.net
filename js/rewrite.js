@@ -331,12 +331,10 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 function injectLinkBibliography(containingDocument = document.firstElementChild) {
 	GWLog("injectLinkBibliography", "rewrite.js", 1);
 
+	let linkBibliography = containingDocument.querySelector("#link-bibliography");
+
 	let linkBibliographyURL = new URL(location);
 	linkBibliographyURL.pathname = location.pathname + "-link-bibliography";
-
-	let linkBibliography = containingDocument.querySelector("#link-bibliography");
-	if (!linkBibliography || linkBibliography.firstElementChild != null)
-		return;
 
 	doAjax({
 		location: linkBibliographyURL.href,
@@ -362,7 +360,6 @@ function injectLinkBibliography(containingDocument = document.firstElementChild)
 		}
 	});
 }
-doWhenDOMContentLoaded(injectLinkBibliography);
 
 /****************************************************************************/
 /*	Enable hovering over a link bibliography entry number to link to it, much
@@ -432,24 +429,39 @@ function fullyQualifyLinksInLinkBibliographyEntries(containingDocument = documen
 	*/
 doWhenDOMContentLoaded(() => {
 	let linkBibliography = document.querySelector("#link-bibliography");
-	if (   linkBibliography == null
-		|| linkBibliography.firstElementChild == null) 
+	if (linkBibliography == null) {
 		return;
-
-	injectLinkBibliographyItemSelfLinks();
-	rectifyTypographyInLinkBibliographyEntries();
-	setImageDimensionsInLinkBibliographyEntries();
-	fullyQualifyLinksInLinkBibliographyEntries();
+	} else if (linkBibliography.childElementCount == 0) {
+		injectLinkBibliography();
+		return;
+	} else {
+		injectLinkBibliographyItemSelfLinks();
+		rectifyTypographyInLinkBibliographyEntries();
+		setImageDimensionsInLinkBibliographyEntries();
+		fullyQualifyLinksInLinkBibliographyEntries();
+	}
 });
 
-/********************************************************************/
-/*	Add handler for processing link bibliography in injected content.
+/*************************************************************************/
+/*	Add handler for injecting and processing link bibliography in injected
+	content.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
 	if (!info.needsRewrite)
 		return;
 
-	if (info.fullPage || info.document.id == "link-bibliography") {
+	let linkBibliography = (info.fullPage 
+							? info.document.querySelector("#link-bibliography") 
+							: null) 
+						|| (info.document.id == "link-bibliography" 
+							? info.document 
+							: null);
+	if (!linkBibliography) {
+		return;
+	} else if (linkBibliography.childElementCount == 0) {
+		injectLinkBibliography(info.document);
+		return;
+	} else {
 		injectLinkBibliographyItemSelfLinks(info.document);
 		rectifyTypographyInLinkBibliographyEntries(info.document);
 		setImageDimensionsInLinkBibliographyEntries(info.document);
