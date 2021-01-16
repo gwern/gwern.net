@@ -175,6 +175,7 @@ Extracts = {
 		    anchorLink.pathname = popFrame.spawningTarget.pathname;
 		});
     },
+
     nearestBlockElement: (element) => {
     	return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
@@ -794,13 +795,9 @@ Extracts = {
 			to is visible, and do not spawn citation context popup if citation 
 			is visible.
 			*/
-		if (   Extracts.isCitation(target)
-			|| Extracts.isCitationBackLink(target)) {
-			let targetElement = containingDocument.querySelector(decodeURIComponent(target.hash));
-			if (   (isMainDocument(containingDocument) && isOnScreen(targetElement))
-				|| (!isMainDocument(containingDocument) && isWithinRect(targetElement, containingDocument.getBoundingClientRect())))
-				return false;
-		}
+		if (   (Extracts.isCitation(target) && Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
+			|| (Extracts.isCitationBackLink(target) && Popups.isVisible(containingDocument.querySelector(decodeURIComponent(target.hash)))))
+			return false;
 
 		/*  Highlight citations and notes appropriately.
 			*/

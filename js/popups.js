@@ -161,6 +161,13 @@ Popups = {
 		Popups.removeTargetsWithin(document, targets, targetRestoreFunction);
 	},
 
+	/*	Returns true if the given element is currently visible.
+		*/
+	isVisible: (element) => {
+		let containingPopup = element.closest(".popup");
+		return (containingPopup ? isWithinRect(element, containingPopup.getBoundingClientRect()) : isOnScreen(element));
+	},
+
 	scrollElementIntoViewInPopup: (element) => {
 		let popup = element.closest(".popup");
 		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.scrollView.getBoundingClientRect().top;
