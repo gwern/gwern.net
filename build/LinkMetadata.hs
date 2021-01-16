@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-11 18:38:46 gwern"
+When:  Time-stamp: "2021-01-15 20:20:13 gwern"
 License: CC-0
 -}
 
@@ -719,6 +719,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let metas = filter (isTagOpenName "meta") f
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "title" then snd $ head b else "") metas
                         let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
+                        let keywords = concatMap (\(TagOpen _ (a:b)) -> if snd a == "keywords" then snd $ head b else "") metas
+                        let keywords' = "<p>[<strong>Keywords</strong>: " ++ keywords ++ "]</p>"
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
                         let thumbnail = if length (filter filterThumbnail metas) >0 then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
@@ -734,7 +736,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
                         let abstract'     = if length description > length abstract then description else abstract
                         if abstract' == "404 Not Found Error: no page by this name!" then return Nothing else
-                          return $ Just (p, (title, author, date, doi, thumbnailFigure++abstract'))
+                          return $ Just (p, (title, author, date, doi, thumbnailFigure++abstract'++keywords'))
         where
           dropToBody (TagOpen "body" _) = False
           dropToBody _ = True
