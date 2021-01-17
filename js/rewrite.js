@@ -340,9 +340,7 @@ function injectLinkBibliography(containingDocument = document.firstElementChild)
 		location: linkBibliographyURL.href,
 		onSuccess: (event) => {
 			linkBibliography.innerHTML = `${event.target.responseText}`;
-			//  NOTE: This conditional is a hack!!
-			if (containingDocument == document.firstElementChild)
-				linkBibliography.classList.toggle("collapse", true);
+			linkBibliography.classList.toggle("collapse", true);
 			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
 				source: "injectLinkBibliography",
 				document: linkBibliography, 
@@ -700,8 +698,8 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.setUpOu
 /* BACK TO TOP LINK */
 /********************/
 
-/*******************************************************************/
-/*	Injects the “back to top” link. (Called only for the main page.)
+/***********************************************************************/
+/*	Injects the “back to top” link. (Called only for the main document.)
 	*/
 function injectBackToTopLink() {
 	GWLog("injectBackToTopLink", "rewrite.js", 1);
@@ -716,7 +714,7 @@ function injectBackToTopLink() {
 }
 doWhenDOMContentLoaded(injectBackToTopLink);
 
-/***********************************************************/
+/*******************************************************************************/
 /*  Show/hide the back-to-top link in response to scrolling.
 
     Called by the ‘updateBackToTopLinkVisibilityScrollListener’ scroll listener.
@@ -725,9 +723,8 @@ function updateBackToTopLinkVisibility(event) {
     GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
 
     // Hide back-to-top link when scrolling a full page down.
-    if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight) {
+    if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
         GW.backToTop.classList.toggle("hidden", true);
-    }
 
     // Show back-to-top link on ANY scroll up.
 	if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)

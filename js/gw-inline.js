@@ -381,6 +381,17 @@ GWLog("document.readyState." + document.readyState, "browser event");
 window.addEventListener("DOMContentLoaded", () => {
     GWLog("window.DOMContentLoaded", "browser event");
     GW.DOMContentLoaded = true;
+    GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+		source: "DOMContentLoaded",
+		document: document.firstElementChild, 
+		isMainDocument: true,
+		needsRewrite: true, 
+		clickable: true, 
+		collapseAllowed: true, 
+		isCollapseBlock: false,
+		fullPage: true,
+		fullWidthPossible: true
+    });
 });
 window.addEventListener("load", () => {
     GWLog("window.load", "browser event");
