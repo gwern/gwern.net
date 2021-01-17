@@ -76,7 +76,7 @@ function isWithinCollapsedBlock(element) {
 
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
-function prepareCollapseBlocks(containingDocument = document.firstElementChild, includeContainingDocument = false) {
+function prepareCollapseBlocks(loadEventInfo) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
 	let hashTarget = getHashTargetedElement();
@@ -114,15 +114,15 @@ function prepareCollapseBlocks(containingDocument = document.firstElementChild, 
 	};
 
 	//  Expand the containing document itself, if it’s also a collapse block.
-	if (includeContainingDocument)
-		prepareCollapseBlock(containingDocument);
+	if (loadEventInfo.isCollapseBlock)
+		prepareCollapseBlock(loadEventInfo.document);
 
 	//  Expand all collapse blocks in the containing document.
-	containingDocument.querySelectorAll(".collapse").forEach(prepareCollapseBlock);
+	loadEventInfo.document.querySelectorAll(".collapse").forEach(prepareCollapseBlock);
 
     /*  Add listeners to toggle ‘expanded’ class of collapse blocks.
 		*/
-	containingDocument.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+	loadEventInfo.document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		updateDisclosureButtonTitle(disclosureButton);
 
 		let collapseBlock = disclosureButton.closest(".collapse");
@@ -148,31 +148,30 @@ function prepareCollapseBlocks(containingDocument = document.firstElementChild, 
 		});
 	});
 }
-doWhenDOMContentLoaded(prepareCollapseBlocks);
 
 /*	Removes disclosure buttons and expands collapse blocks.
 	*/
-function expandLockCollapseBlocks(containingDocument = document.firstElementChild) {
+function expandLockCollapseBlocks(loadEventInfo) {
 	GWLog("expandLockCollapseBlocks", "collapse.js", 2);
 
 	//  Remove disclosure buttons.
-	containingDocument.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
+	loadEventInfo.document.querySelectorAll(".disclosure-button").forEach(disclosureButton => {
 		disclosureButton.remove();
 	});
 
 	//  Permanently expand collapse blocks (by making them into regular blocks).
-	containingDocument.querySelectorAll(".collapse").forEach(collapseBlock => {
+	loadEventInfo.document.querySelectorAll(".collapse").forEach(collapseBlock => {
 		collapseBlock.classList.remove("collapse", "expanded");
 	});
 }
 
 /*	Add handler for processing collapse blocks in injected content.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processCollapseBlocksInInjectedContent = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.processCollapseBlocks = (info) => {
 	if (!info.collapseAllowed) {
-		expandLockCollapseBlocks(info.document);
+		expandLockCollapseBlocks(info);
 	} else if (info.needsRewrite) {
-		prepareCollapseBlocks(info.document, info.isCollapseBlock);
+		prepareCollapseBlocks(info);
 	}
 });
 

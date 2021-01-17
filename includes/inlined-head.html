@@ -2145,7 +2145,14 @@ GW.notificationCenter.removeAllHandlersForEvent = function (eventName) {
     GW.notificationCenter[eventName] = null;
 }
 GW.notificationCenter.fireEvent = function (eventName, eventInfo) {
-    GWLog(`Event “${eventName}” fired.`, "notification");
+	/*  The ‘16’ here is the width of the date field plus spacing.
+		The “Source:” text is manually padded to be as wide as “[notification]”.
+		*/
+    GWLog(`Event “${eventName}” fired.` + `${(
+    	(eventInfo && eventInfo.source) 
+    	? ("\n" + "".padStart(16, ' ') + "       Source:".padEnd(GW.logSourcePadLength, ' ') + eventInfo.source) 
+    	: ""
+    )}`, "notification");
 
     if (GW.notificationCenter[eventName] == null)
         return;
@@ -2194,6 +2201,18 @@ GWLog("document.readyState." + document.readyState, "browser event");
 window.addEventListener("DOMContentLoaded", () => {
     GWLog("window.DOMContentLoaded", "browser event");
     GW.DOMContentLoaded = true;
+    GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+		source: "DOMContentLoaded",
+		document: document.firstElementChild, 
+		isMainDocument: true,
+		needsRewrite: true, 
+		clickable: true, 
+		collapseAllowed: true, 
+		isCollapseBlock: false,
+		fullPage: true,
+		location: new URL(location.href),
+		fullWidthPossible: true
+    });
 });
 window.addEventListener("load", () => {
     GWLog("window.load", "browser event");
