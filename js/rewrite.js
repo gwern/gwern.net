@@ -340,8 +340,11 @@ function injectLinkBibliography(containingDocument = document.firstElementChild)
 		location: linkBibliographyURL.href,
 		onSuccess: (event) => {
 			linkBibliography.innerHTML = `${event.target.responseText}`;
-			linkBibliography.classList.toggle("collapse", true);
+			//  NOTE: This conditional is a hack!!
+			if (containingDocument == document.firstElementChild)
+				linkBibliography.classList.toggle("collapse", true);
 			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
+				source: "injectLinkBibliography",
 				document: linkBibliography, 
 				needsRewrite: true, 
 				clickable: true, 

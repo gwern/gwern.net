@@ -576,7 +576,8 @@ Extracts = {
 			/*  Then, trigger the rewrite pass by firing the requisite event.
 				(This will also activate spawning targets in the embedded page.)
 				*/
-			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
+			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", {
+				source: "Extracts.externalPageEmbedForTarget",
 				document: target.popFrame.contentView, 
 				needsRewrite: true, 
 				fullPage: true
@@ -876,7 +877,10 @@ Extracts = {
 		}
 
 		//  Trigger a rewrite pass by firing the requisite event.
-		GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { document: popup.contentView });
+		GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", {
+			source: "Extracts.preparePopup",
+			document: popup.contentView
+		});
 
 		//  Add popup title bar contents.
 		var popupTitle;
