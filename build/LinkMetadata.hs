@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-15 20:20:13 gwern"
+When:  Time-stamp: "2021-01-16 12:57:07 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 module LinkMetadata where
 
 import Control.Monad (when, void)
-import qualified Data.ByteString as B (appendFile, readFile, isInfixOf)
+import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
@@ -44,6 +44,24 @@ import Data.Text.IO as TIO (readFile)
 import System.IO (stderr, hPutStrLn, hPrint)
 import Typography (invertImage) -- TODO: 'typographyTransform'. This is semi-intractable. When we read in the HTML, the hyphenation pass breaks much of the LaTeX. Adding in guards in the walk to avoid Spans doesn't work like it ought to.
 import Network.HTTP (urlDecode, urlEncode)
+
+----
+-- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
+-- we exclude several directories (docs/, static/, images/) entirely; a gwern.net page is then any link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a period inside its URL).
+-- Local links get the 'link-local' class.
+isLocalLink :: Pandoc -> Pandoc
+isLocalLink = walk isLocalLink'
+  where isLocalLink' :: Inline -> Inline
+        isLocalLink' y@(Link (a,b,c) e (f,g)) =
+          let f' = replace "https://www.gwern.net" "" $ T.unpack f in
+            if not ("/" `isPrefixOf` f') then y
+            else
+              if ("/docs/" `isPrefixOf` f' || "/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f') then y
+              else
+                if takeExtension f' /= "" then y
+                else (Link (a,"link-local":b,c) e (f,g))
+        isLocalLink' x = x
+
 
 -------------------------------------------------------------------------------------------------------------------------------
 -- Prototype flat annotation implementation
