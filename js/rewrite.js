@@ -313,8 +313,8 @@ function injectLinkBibliography(loadEventInfo) {
 
 	let linkBibliography = loadEventInfo.document.querySelector("#link-bibliography");
 
-	let linkBibliographyURL = new URL(location);
-	linkBibliographyURL.pathname = location.pathname + "-link-bibliography";
+	let linkBibliographyURL = loadEventInfo.location;
+	linkBibliographyURL.pathname += "-link-bibliography";
 
 	doAjax({
 		location: linkBibliographyURL.href,
@@ -331,9 +331,10 @@ function injectLinkBibliography(loadEventInfo) {
 				collapseAllowed: loadEventInfo.collapseAllowed, 
 				isCollapseBlock: loadEventInfo.collapseAllowed,
 				fullPage: false,
+				location: loadEventInfo.location,
 				fullWidthPossible: loadEventInfo.fullWidthPossible
 			});
-			setTimeout(realignHash, 50);
+			setTimeout(() => { requestAnimationFrame(() => { realignHash(); }); });
 		},
 		onFailure: (event) => {
 			linkBibliography.innerHTML = `<h1><a 

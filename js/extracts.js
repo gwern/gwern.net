@@ -115,8 +115,8 @@ Extracts = {
 				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
 			});
 
-			//  Remove event handler for injected content loads.
-			GW.notificationCenter.removeHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopupTargetsInInjectedContent);
+			//  Remove content load event handler.
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad);
 		}
     },
     setup: () => {
@@ -152,7 +152,7 @@ Extracts = {
 			/*  Add handler to set up targets in injected content (including 
 				newly-spawned popups; this allows for popup recursion).
 				*/
-			GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", Extracts.processPopupTargetsInInjectedContent = (info) => {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad = (info) => {
 				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, prepareTarget);
 			});
         }
@@ -576,11 +576,17 @@ Extracts = {
 			/*  Then, trigger the rewrite pass by firing the requisite event.
 				(This will also activate spawning targets in the embedded page.)
 				*/
-			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", {
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.externalPageEmbedForTarget",
 				document: target.popFrame.contentView, 
+				isMainDocument: false,
 				needsRewrite: true, 
-				fullPage: true
+				clickable: false, 
+				collapseAllowed: false, 
+				isCollapseBlock: false,
+				fullPage: true,
+				location: new URL(target.href),
+				fullWidthPossible: false
 			});
 
 			//  Scroll to the target.
@@ -877,9 +883,17 @@ Extracts = {
 		}
 
 		//  Trigger a rewrite pass by firing the requisite event.
-		GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", {
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "Extracts.preparePopup",
-			document: popup.contentView
+			document: popup.contentView,
+			isMainDocument: false,
+			needsRewrite: false, 
+			clickable: false, 
+			collapseAllowed: false, 
+			isCollapseBlock: false,
+			fullPage: false,
+			location: new URL(target.href),
+			fullWidthPossible: false
 		});
 
 		//  Add popup title bar contents.
