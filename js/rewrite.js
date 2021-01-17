@@ -558,13 +558,18 @@ function bindNoteHighlightEventsToCitations(containingDocument = document.firstE
 	GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
 	containingDocument.querySelectorAll(".footnote-ref").forEach(citation => {
+		//  Unbind existing events, if any.
+		if (citation.citationMouseEnter) citation.removeEventListener("mouseenter", citation.citationMouseEnter);
+		if (citation.citationMouseLeave) citation.removeEventListener("mouseleave", citation.citationMouseLeave);
+
+		//  Bind events.
 		let notesForCitation = allNotesForCitation(citation);
-		citation.addEventListener("mouseenter", (event) => {
+		citation.addEventListener("mouseenter", citation.citationMouseEnter = (event) => {
 			notesForCitation.forEach(note => {
 				note.classList.toggle("highlighted", true);
 			});
 		});
-		citation.addEventListener("mouseleave", (event) => {
+		citation.addEventListener("mouseleave", citation.citationMouseLeave = (event) => {
 			notesForCitation.forEach(note => {
 				note.classList.toggle("highlighted", false);
 			});
