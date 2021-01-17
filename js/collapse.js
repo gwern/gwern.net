@@ -115,7 +115,7 @@ function prepareCollapseBlocks(loadEventInfo) {
 
 	//  Expand the containing document itself, if it’s also a collapse block.
 	if (loadEventInfo.isCollapseBlock)
-		prepareCollapseBlock(containingDocument);
+		prepareCollapseBlock(loadEventInfo.document);
 
 	//  Expand all collapse blocks in the containing document.
 	loadEventInfo.document.querySelectorAll(".collapse").forEach(prepareCollapseBlock);

@@ -1,18 +1,8 @@
 /* Miscellaneous JS functions which run after the page loads to rewrite or adjust parts of the page. */
 /* author: Said Achmiz */
-/* license: MIT
+/* license: MIT */
 
-/***********/
-/* HELPERS */
-/***********/
-
-/***********************************************************************/
-/*	Returns true if the given document element is the main page’s <html> 
-	element, false otherwise.
-	*/
-function isMainDocument(documentElement) {
-	return documentElement == document.firstElementChild;
-}
+GW.rewriteFunctions = { };
 
 /**********/
 /* TABLES */
@@ -21,30 +11,29 @@ function isMainDocument(documentElement) {
 /****************************************************************/
 /*  Wrap each table in a div.table-wrapper (for layout purposes).
     */
-function wrapTables(containingDocument = document.firstElementChild) {
+function wrapTables(loadEventInfo) {
 	GWLog("wrapTables", "rewrite.js", 1);
 
 	let wrapperClass = "table-wrapper";
-	containingDocument.querySelectorAll("table").forEach(table => {
+	loadEventInfo.document.querySelectorAll("table").forEach(table => {
 		if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
 			table.parentElement.classList.toggle(wrapperClass, true);
 		else
 			table.outerHTML = `<div class="${wrapperClass}">` + table.outerHTML + `</div>`;
 	});
 }
-doWhenDOMContentLoaded(wrapTables);
 
 /******************************************************************************/
 /*	Wrap each full-width table in a div.full-width-table-wrapper, and also move
 	the .collapse class (if any) from the outer wrapper to the table (for
 	consistency).
 	*/
-function wrapFullWidthTables(containingDocument = document.firstElementChild) {
+function wrapFullWidthTables(loadEventInfo) {
 	GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
 	let fullWidthInnerWrapperClass = "full-width-table-inner-wrapper";
-	containingDocument.querySelectorAll(`.table-wrapper.${fullWidthClass}`).forEach(fullWidthTableWrapper => {
+	loadEventInfo.document.querySelectorAll(`.table-wrapper.${fullWidthClass}`).forEach(fullWidthTableWrapper => {
 		if (fullWidthTableWrapper.classList.contains("collapse")) {
 			fullWidthTableWrapper.classList.remove("collapse");
 			fullWidthTableWrapper.firstElementChild.classList.add("collapse");
@@ -53,18 +42,17 @@ function wrapFullWidthTables(containingDocument = document.firstElementChild) {
 		fullWidthTableWrapper.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthTableWrapper.innerHTML + `</div>`;
 	});
 }
-doWhenDOMContentLoaded(wrapFullWidthTables);
 
 /**********************************************/
-/*	Add handler for tables in injected content.
+/*	Add content load handler to process tables.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processTablesInInjectedContent = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processTables = (info) => {
 	if (!info.needsRewrite)
 		return;
 
-	wrapTables(info.document);
+	wrapTables(info);
 	if (info.fullWidthPossible)
-		wrapFullWidthTables(info.document);
+		wrapFullWidthTables(info);
 });
 
 /***********/
@@ -74,10 +62,10 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /********************************/
 /*  Inject wrappers into figures.
     */
-function wrapFigures(containingDocument = document.firstElementChild) {
+function wrapFigures(loadEventInfo) {
 	GWLog("wrapFigures", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll("figure").forEach(figure => {
+	loadEventInfo.document.querySelectorAll("figure").forEach(figure => {
 		let media = figure.querySelector("img, audio, video");
 		let caption = figure.querySelector("figcaption");
 
@@ -109,17 +97,16 @@ function wrapFigures(containingDocument = document.firstElementChild) {
 			media.closest("figure").classList.add("float-right");
 	});
 }
-doWhenDOMContentLoaded(wrapFigures);
 
 /********************************************************************/
 /*	Designate full-width figures as such (with a ‘full-width’ class).
 	*/
-function markFullWidthFigures(containingDocument = document.firstElementChild) {
+function markFullWidthFigures(loadEventInfo) {
 	GWLog("markFullWidthFigures", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
 
-	let allFullWidthMedia = containingDocument.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
+	let allFullWidthMedia = loadEventInfo.document.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
     allFullWidthMedia.forEach(fullWidthMedia => {
         fullWidthMedia.closest("figure").classList.toggle(fullWidthClass, true);
     });
@@ -136,18 +123,17 @@ function markFullWidthFigures(containingDocument = document.firstElementChild) {
     	});
     });
 }
-doWhenDOMContentLoaded(markFullWidthFigures);
 
 /***********************************************/
-/*	Add handler for figures in injected content.
+/*	Add content load handler to process figures.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFiguresInInjectedContent = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFigures = (info) => {
 	if (!info.needsRewrite)
 		return;
 
-	wrapFigures(info.document);
+	wrapFigures(info);
 	if (info.fullWidthPossible)
-		markFullWidthFigures(info.document);
+		markFullWidthFigures(info);
 });
 
 /***************/
@@ -158,12 +144,12 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /*  Wrap each pre.full-width in a div.full-width and a 
 	div.full-width-code-block-wrapper (for layout purposes).
     */
-function wrapFullWidthPreBlocks(containingDocument = document.firstElementChild) {
+function wrapFullWidthPreBlocks(loadEventInfo) {
 	GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
 	let fullWidthClass = "full-width";
 	let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
-	containingDocument.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
+	loadEventInfo.document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
 		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
 			fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
 		else
@@ -172,17 +158,16 @@ function wrapFullWidthPreBlocks(containingDocument = document.firstElementChild)
 		fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
 	});
 }
-doWhenDOMContentLoaded(wrapFullWidthPreBlocks);
 
 /***************************************************/
-/*	Add handler for code blocks in injected content.
+/*	Add content load handler to process code blocks.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processCodeBlocksInInjectedContent = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCodeBlocks = (info) => {
 	if (!info.needsRewrite)
 		return;
 
 	if (info.fullWidthPossible)
-		wrapFullWidthPreBlocks(info.document);
+		wrapFullWidthPreBlocks(info);
 });
 
 /**************/
@@ -271,11 +256,11 @@ doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 /************************************/
 /*	Set margins of full-width blocks.
 	*/
-function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementChild, forceRemove = false) {
+function setMarginsOnFullWidthBlocks(loadEventInfo) {
 	GWLog("setMarginsOnFullWidthBlocks", "rewrite.js", 1);
 
 	//  Get all full-width blocks in the given document.
-	let allFullWidthBlocks = containingDocument.querySelectorAll("div.full-width, figure.full-width");
+	let allFullWidthBlocks = loadEventInfo.document.querySelectorAll("div.full-width, figure.full-width");
 
 	let removeFullWidthBlockMargins = () => {
 		allFullWidthBlocks.forEach(fullWidthBlock => {
@@ -284,7 +269,7 @@ function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementC
 		});
 	};
 
-	if (forceRemove) {
+	if (!loadEventInfo.fullWidthPossible) {
 		removeFullWidthBlockMargins();
 		return;
 	}
@@ -307,17 +292,12 @@ function setMarginsOnFullWidthBlocks(containingDocument = document.firstElementC
 		});
 	});
 }
-doWhenPageLoaded(setMarginsOnFullWidthBlocks);
 
 /*********************************************************/
-/*	Add handler for full-width blocks in injected content.
+/*	Add content load handler to process full-width blocks.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processFullWidthBlocksInInjectedContent = (info) => {
-	if (info.fullWidthPossible) {
-		setMarginsOnFullWidthBlocks(info.document);
-	} else {
-		setMarginsOnFullWidthBlocks(info.document, true);
-	}
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFullWidthBlocks = (info) => {
+	setMarginsOnFullWidthBlocks(info);
 });
 
 /*********************/
@@ -328,10 +308,10 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /*	Inject the link bibliography (located at 
 	`<url for current page>-link-bibliography`), if not already inlined.
 	*/
-function injectLinkBibliography(containingDocument = document.firstElementChild) {
+function injectLinkBibliography(loadEventInfo) {
 	GWLog("injectLinkBibliography", "rewrite.js", 1);
 
-	let linkBibliography = containingDocument.querySelector("#link-bibliography");
+	let linkBibliography = loadEventInfo.document.querySelector("#link-bibliography");
 
 	let linkBibliographyURL = new URL(location);
 	linkBibliographyURL.pathname = location.pathname + "-link-bibliography";
@@ -340,16 +320,20 @@ function injectLinkBibliography(containingDocument = document.firstElementChild)
 		location: linkBibliographyURL.href,
 		onSuccess: (event) => {
 			linkBibliography.innerHTML = `${event.target.responseText}`;
-			linkBibliography.classList.toggle("collapse", true);
-			GW.notificationCenter.fireEvent("GW.injectedContentDidLoad", { 
+			if (loadEventInfo.collapseAllowed)
+				linkBibliography.classList.toggle("collapse", true);
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
 				source: "injectLinkBibliography",
 				document: linkBibliography, 
+				isMainDocument: false,
 				needsRewrite: true, 
-				clickable: true, 
-				collapseAllowed: true, 
-				isCollapseBlock: true,
-				fullWidthPossible: true
+				clickable: loadEventInfo.clickable, 
+				collapseAllowed: loadEventInfo.collapseAllowed, 
+				isCollapseBlock: loadEventInfo.collapseAllowed,
+				fullPage: false,
+				fullWidthPossible: loadEventInfo.fullWidthPossible
 			});
+			setTimeout(realignHash, 50);
 		},
 		onFailure: (event) => {
 			linkBibliography.innerHTML = `<h1><a 
@@ -366,10 +350,10 @@ function injectLinkBibliography(containingDocument = document.firstElementChild)
 /*	Enable hovering over a link bibliography entry number to link to it, much
 	like the self-links on section headings.
 	*/
-function injectLinkBibliographyItemSelfLinks(containingDocument = document.firstElementChild) {
+function injectLinkBibliographyItemSelfLinks(loadEventInfo) {
 	GWLog("injectLinkBibliographyItemSelfLinks", "rewrite.js", 1);
 
-	let linkBibliographyListItems = Array.from(containingDocument.querySelector("#link-bibliography > ol").children);
+	let linkBibliographyListItems = Array.from(loadEventInfo.document.querySelector("#link-bibliography > ol").children);
 
 	for (var i = 0; i < linkBibliographyListItems.length; i++) {
 		let id = `link-bibliography-entry-${i + 1}`;
@@ -384,10 +368,10 @@ function injectLinkBibliographyItemSelfLinks(containingDocument = document.first
 
 	Requires typography.js to be loaded prior to this file.
 	*/
-function rectifyTypographyInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
+function rectifyTypographyInLinkBibliographyEntries(loadEventInfo) {
 	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
+	loadEventInfo.document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
 		Typography.processElement(linkBibliographyEntryContent, 
 			  Typography.replacementTypes.QUOTES 
 			| Typography.replacementTypes.WORDBREAKS 
@@ -406,10 +390,10 @@ function rectifyTypographyInLinkBibliographyEntries(containingDocument = documen
 	(This is to ensure no reflow when popups for link bibliography entries are
 	 spawned.)
 	*/
-function setImageDimensionsInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
+function setImageDimensionsInLinkBibliographyEntries(loadEventInfo) {
 	GWLog("setImageDimensionsInLinkBibliographyEntries", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll("#link-bibliography figure img[width]").forEach(image => {
+	loadEventInfo.document.querySelectorAll("#link-bibliography figure img[width]").forEach(image => {
 		image.style.width = image.getAttribute("width") + "px";
 	});
 }
@@ -417,37 +401,18 @@ function setImageDimensionsInLinkBibliographyEntries(containingDocument = docume
 /******************************************************************/
 /*	Ensure all link bibliography entries are fully qualified links.
 	*/
-function fullyQualifyLinksInLinkBibliographyEntries(containingDocument = document.firstElementChild) {
+function fullyQualifyLinksInLinkBibliographyEntries(loadEventInfo) {
 	GWLog("fullyQualifyLinksInLinkBibliographyEntries", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll("#link-bibliography > ol > li > p a").forEach(link => {
+	loadEventInfo.document.querySelectorAll("#link-bibliography > ol > li > p a").forEach(link => {
 		link.href = link.href;
 	});
 }
 
-/*****************************************/
-/*	Process link bibliography, if loaded.
+/***************************************************************************/
+/*	Add content load handler for injecting and processing link bibliography.
 	*/
-doWhenDOMContentLoaded(() => {
-	let linkBibliography = document.querySelector("#link-bibliography");
-	if (linkBibliography == null) {
-		return;
-	} else if (linkBibliography.childElementCount == 0) {
-		injectLinkBibliography();
-		return;
-	} else {
-		injectLinkBibliographyItemSelfLinks();
-		rectifyTypographyInLinkBibliographyEntries();
-		setImageDimensionsInLinkBibliographyEntries();
-		fullyQualifyLinksInLinkBibliographyEntries();
-	}
-});
-
-/*************************************************************************/
-/*	Add handler for injecting and processing link bibliography in injected
-	content.
-	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processLinkBibliographyInInjectedContent = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinkBibliography = (info) => {
 	if (!info.needsRewrite)
 		return;
 
@@ -460,13 +425,13 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 	if (!linkBibliography) {
 		return;
 	} else if (linkBibliography.childElementCount == 0) {
-		injectLinkBibliography(info.document);
+		injectLinkBibliography(info);
 		return;
 	} else {
-		injectLinkBibliographyItemSelfLinks(info.document);
-		rectifyTypographyInLinkBibliographyEntries(info.document);
-		setImageDimensionsInLinkBibliographyEntries(info.document);
-		fullyQualifyLinksInLinkBibliographyEntries(info.document);
+		injectLinkBibliographyItemSelfLinks(info);
+		rectifyTypographyInLinkBibliographyEntries(info);
+		setImageDimensionsInLinkBibliographyEntries(info);
+		fullyQualifyLinksInLinkBibliographyEntries(info);
 	}
 });
 
@@ -477,22 +442,21 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /************************************************************************/
 /*	The footnotes section has no ID because Pandoc is weird. Give it one.
 	*/
-function identifyFootnotesSection(containingDocument = document.firstElementChild) {
+function identifyFootnotesSection(loadEventInfo) {
 	GWLog("identifyFootnotesSection", "rewrite.js", 1);
 
-	let footnotesSection = containingDocument.querySelector("section.footnotes");
+	let footnotesSection = loadEventInfo.document.querySelector("section.footnotes");
 	if (footnotesSection)
 		footnotesSection.id = "footnotes";
 }
-doWhenDOMContentLoaded(identifyFootnotesSection);
 
 /******************************/
 /*	Inject footnote self-links.
 	*/
-function injectFootnoteSelfLinks(containingDocument = document.firstElementChild) {
+function injectFootnoteSelfLinks(loadEventInfo) {
 	GWLog("injectFootnoteSelfLinks", "rewrite.js", 1);
 
-	let footnotes = Array.from(containingDocument.querySelector("#footnotes > ol").children);
+	let footnotes = Array.from(loadEventInfo.document.querySelector("#footnotes > ol").children);
 
 	for (var i = 0; i < footnotes.length; i++)
 		footnotes[i].insertAdjacentHTML("afterbegin", `<a href="#fn${(i + 1)}" title="Link to footnote ${(i + 1)}" class="footnote-self-link">&nbsp;</a>`);
@@ -507,12 +471,11 @@ function injectFootnoteSelfLinks(containingDocument = document.firstElementChild
 		});
 	});
 }
-doWhenDOMContentLoaded(injectFootnoteSelfLinks);
 
 /*****************************************************/
 /*	Inject self-link for the footnotes section itself.
 	*/
-function injectFootnoteSectionSelfLink(containingDocument = document.firstElementChild) {
+function injectFootnoteSectionSelfLink(loadEventInfo) {
 	GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
 
 	let footnotesSectionSelfLink = document.createElement("A");
@@ -520,7 +483,7 @@ function injectFootnoteSectionSelfLink(containingDocument = document.firstElemen
 	footnotesSectionSelfLink.title = "Link to section: § ‘Footnotes’";
 	footnotesSectionSelfLink.classList.add("section-self-link");
 
-	let footnotesSection = document.querySelector("#footnotes");
+	let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
 	footnotesSection.insertBefore(footnotesSectionSelfLink, footnotesSection.firstElementChild.nextElementSibling);
 
 	//  Highlight on hover.
@@ -531,7 +494,6 @@ function injectFootnoteSectionSelfLink(containingDocument = document.firstElemen
 		footnotesSectionSelfLink.previousElementSibling.classList.toggle("highlighted", false);
 	});
 }
-doWhenDOMContentLoaded(injectFootnoteSectionSelfLink);
 
 /**************************************************************************/
 /*	Return all {side|foot}note elements associated with the given citation.
@@ -552,10 +514,10 @@ function allNotesForCitation(citation) {
 /*	Bind mouse hover events to, when hovering over a citation, highlight all 
 	{side|foot}notes associated with that citation.
 	*/
-function bindNoteHighlightEventsToCitations(containingDocument = document.firstElementChild) {
+function bindNoteHighlightEventsToCitations(loadEventInfo) {
 	GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll(".footnote-ref").forEach(citation => {
+	loadEventInfo.document.querySelectorAll(".footnote-ref").forEach(citation => {
 		//  Unbind existing events, if any.
 		if (citation.citationMouseEnter) citation.removeEventListener("mouseenter", citation.citationMouseEnter);
 		if (citation.citationMouseLeave) citation.removeEventListener("mouseleave", citation.citationMouseLeave);
@@ -574,32 +536,33 @@ function bindNoteHighlightEventsToCitations(containingDocument = document.firstE
 		});
 	});
 }
-doWhenDOMContentLoaded(bindNoteHighlightEventsToCitations);
 
-/*********************************************************/
-/*	Add handler for footnotes section in injected content.
-	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processMiscellaneousRewritesInInjectedContent = (info) => {
-	bindNoteHighlightEventsToCitations(info.document);
-
-	if (info.needsRewrite && info.fullPage) {
-		identifyFootnotesSection(info.document);
-		injectFootnoteSectionSelfLink(info.document);
-		injectFootnoteSelfLinks(info.document);
-	}
-});
-
-/*****************************************************************************/
+/*******************************************/
 /*	Add a TOC link to the footnotes section.
-	(No need for a listener to do this for injected content; the TOC only ever
-	 appears on the main page.)
 	*/
-function injectFootnotesTOCLink() {
+function injectFootnotesTOCLink(loadEventInfo) {
 	GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
 
-	document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
+	loadEventInfo.document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", 
+		`<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
 }
-doWhenDOMContentLoaded(injectFootnotesTOCLink);
+
+/*************************************************************/
+/*	Add content load handler for processing footnotes section.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
+	bindNoteHighlightEventsToCitations(info);
+
+	if (info.needsRewrite && info.fullPage) {
+		identifyFootnotesSection(info);
+		injectFootnoteSectionSelfLink(info);
+		injectFootnoteSelfLinks(info);
+	}
+
+	if (info.isMainDocument) {
+		injectFootnotesTOCLink(info);
+	}
+});
 
 /*********/
 /* MISC. */
@@ -609,14 +572,13 @@ doWhenDOMContentLoaded(injectFootnotesTOCLink);
 /*	Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
 	right? Yeah, right...)
 	*/
-function cleanUpImageAltText(containingDocument = document.firstElementChild) {
+function cleanUpImageAltText(loadEventInfo) {
 	GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll("img[alt]").forEach(image => {
+	loadEventInfo.document.querySelectorAll("img[alt]").forEach(image => {
 		image.alt = decodeURIComponent(image.alt);
 	});
 }
-doWhenDOMContentLoaded(cleanUpImageAltText);
 
 /*****************************************************************************/
 /*	Directional navigation links on self-links: for each self-link like 
@@ -625,24 +587,23 @@ doWhenDOMContentLoaded(cleanUpImageAltText);
 	with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a 
 	backwards link to a identifier already read, or an unread identifier.
 	*/
-function directionalizeAnchorLinks(containingDocument = document.firstElementChild) {
+function directionalizeAnchorLinks(loadEventInfo) {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
-	containingDocument.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
+	loadEventInfo.document.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
 		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
 			|| identifierLink.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link, .link-bibliography-item-self-link"))
 			return;
-		target = containingDocument.querySelector(identifierLink.getAttribute("href"));
+		target = loadEventInfo.document.querySelector(decodeURIComponent(identifierLink.getAttribute("href")));
 		if (!target) return;
 		identifierLink.classList.add((identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 	});
 }
-doWhenDOMContentLoaded(directionalizeAnchorLinks);
 
-/***************************************************************/
-/*	Add handler for miscellaneous rewriting in injected content.
+/**************************************************************/
+/*	Add content load handler for doing miscellaneous rewriting.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.processMiscellaneousRewritesInInjectedContent = (info) => {
+GW.notificationCenter.addHandlerForEvent("contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
 	if (!info.needsRewrite)
 		return;
 
@@ -657,13 +618,13 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.process
 /********************************************************/
 /*	Set up outbound click tracking with Google Analytics.
 	*/
-function setUpOutboundClickTracking(containingDocument = document.firstElementChild) {
+function setUpOutboundClickTracking(loadEventInfo) {
 	GWLog("setUpOutboundClickTracking", "rewrite.js", 1);
 
 	if (!GW.googleAnalyticsLoaded)
 		return;
 
-	containingDocument.querySelectorAll("a[href]").forEach(link => {
+	loadEventInfo.document.querySelectorAll("a[href]").forEach(link => {
 		if (link.hostname == location.hostname)
 			return;
 
@@ -684,14 +645,12 @@ function setUpOutboundClickTracking(containingDocument = document.firstElementCh
 		});
 	});
 }
-doWhenDOMContentLoaded(setUpOutboundClickTracking);
 
-/*******************************************************************************/
-/*	Add handlers to set up outbound click tracking in injected content, popups,
-	etc.
+/**************************************************************/
+/*	Add content load handler to set up outbound click tracking.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.setUpOutboundClickTrackingInInjectedContent = (info) => {
-	setUpOutboundClickTracking(info.document);
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.setUpOutboundClickTracking = (info) => {
+	setUpOutboundClickTracking(info);
 });
 
 /********************/
@@ -701,7 +660,7 @@ GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.setUpOu
 /***********************************************************************/
 /*	Injects the “back to top” link. (Called only for the main document.)
 	*/
-function injectBackToTopLink() {
+function injectBackToTopLink(loadEventInfo) {
 	GWLog("injectBackToTopLink", "rewrite.js", 1);
 
 	GW.backToTop = addUIElement(`<div id="back-to-top"><a href="#top" tabindex="-1" title="Back to top">` +
@@ -712,7 +671,14 @@ function injectBackToTopLink() {
 	if (GW.isMobile())
 		addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener");
 }
-doWhenDOMContentLoaded(injectBackToTopLink);
+
+/***********************************************************/
+/*	Add content load handler to inject the back-to-top link.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectBackToTopLink = (info) => {
+	if (info.isMainDocument)
+		injectBackToTopLink(info);
+});
 
 /*******************************************************************************/
 /*  Show/hide the back-to-top link in response to scrolling.
