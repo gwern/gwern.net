@@ -690,9 +690,6 @@ doWhenDOMContentLoaded(setUpOutboundClickTracking);
 GW.notificationCenter.addHandlerForEvent("GW.injectedContentDidLoad", GW.setUpOutboundClickTrackingInInjectedContent = (info) => {
 	setUpOutboundClickTracking(info.document);
 });
-GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", GW.setUpOutboundClickTrackingInPopup = (info) => {
-	setUpOutboundClickTracking(info.popup);
-});
 
 /********************/
 /* BACK TO TOP LINK */
