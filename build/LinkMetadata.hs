@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-16 12:57:07 gwern"
+When:  Time-stamp: "2021-01-17 16:50:02 gwern"
 License: CC-0
 -}
 
@@ -26,7 +26,7 @@ import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
 import qualified Data.Map.Strict as M (fromList, lookup, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
-                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions,
+                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr,
                     queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote, Div))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
@@ -152,14 +152,14 @@ hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfix
                                                                     --  Left html' -> return $ RawBlock (Format "html") html'
 hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
-          hasAnnotationInline mdb idBool y@(Link (a,b,c) e (f,g)) = if "linkBibliography-annotated" `elem` b then y else
+          hasAnnotationInline mdb idBool y@(Link (a,b,c) e (f,g)) =
                                                         case M.lookup (linkCanonicalize $ T.unpack f) mdb of
                                                           Nothing               -> y
                                                           Just (_, _, _, _, "") -> y
                                                           Just (_,aut,dt,_,_) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
                                                             if T.head f == '?' then
-                                                            Span (a', nubOrd (b++["defnMetadata", "linkBibliography-has-annotation"]), [("original-definition-id",f)]++c) e else
-                                                            Link (a', nubOrd (b++["docMetadata",  "linkBibliography-has-annotation"]), c) e (f,g)
+                                                            Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
+                                                            Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
 
           hasAnnotationInline _ _ y = y
 
@@ -185,9 +185,9 @@ generateListItems (f, ann) = case ann of
                                                               let date = if dt=="" then [] else [Str "(", Span ("", ["date"], []) [Str (T.pack dt)], Str ")"] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
                                                                   let link = if head f == '?' then
-                                                                               Span (lid, ["defnMetadata", "linkBibliography-annotated"], [("original-definition-id",T.pack f)]++values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
+                                                                               Span (lid, ["defnMetadata"], [("original-definition-id",T.pack f)]++values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
                                                                         else
-                                                                               Link (lid, ["docMetadata", "linkBibliography-annotated"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
+                                                                               Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
                                                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
                                                                      let abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
@@ -200,7 +200,7 @@ generateListItems (f, ann) = case ann of
                                                            ]
                              where
                                nonAnnotatedLink :: [Block]
-                               nonAnnotatedLink = [Para [Link ("",["linkBibliography-null"],[]) [Str (T.pack f)] (T.pack f, "")]]
+                               nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
 
 -- annotations, like /Faces, often link to specific sections or anchors, like 'I clean the data with [Discriminator Ranking](#discriminator-ranking)'; when transcluded into other pages, these links are broken. But we don't want to rewrite the original abstract as `[Discriminator Ranking](/Faces#discriminator-ranking)` to make it absolute, because that screws with section-popups/link-icons! So instead, when we write out the body of each annotation inside the link bibliography, while we still know what the original URL was, we traverse it looking for any links starting with '#' and rewrite them to be absolute:
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
