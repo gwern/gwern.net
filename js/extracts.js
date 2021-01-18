@@ -115,8 +115,9 @@ Extracts = {
 				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
 			});
 
-			//  Remove content load event handler.
+			//  Remove content load event handlers.
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad);
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent);
 		}
     },
     setup: () => {
@@ -149,6 +150,44 @@ Extracts = {
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad = (info) => {
 				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, prepareTarget);
+			});
+
+			/*  Add handler to add hover event listeners to annotated targets,
+				to lazy-load and inject the link bibliography.
+				*/
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
+				if (info.document.id == "link-bibliography") {
+					info.document.linkBibliographyLoaded = true;
+					return;
+				} else if (!info.fullPage) {
+					return;
+				}
+
+				info.document.querySelectorAll("a.docMetadata, span.defnMetadata").forEach(annotatedTarget => {
+					annotatedTarget.addEventListener("mouseenter", annotatedTarget.linkBibliographyLoad_mouseEnter = (event) => {
+						if (info.document.linkBibliographyLoaded) return;
+
+						annotatedTarget.linkBibliographyInjectTimer = setTimeout(() => {
+							GW.rewriteFunctions.processLinkBibliography({
+								source: "Extracts.setUpLinkBibliographyInjectEvent",
+								document: info.document.querySelector("#link-bibliography"), 
+								isMainDocument: false,
+								needsRewrite: true, 
+								clickable: info.clickable, 
+								collapseAllowed: info.collapseAllowed, 
+								isCollapseBlock: info.collapseAllowed,
+								fullPage: false,
+								location: info.location,
+								fullWidthPossible: info.fullWidthPossible
+							});
+						}, (Popups.popupTriggerDelay / 2.0));
+					});
+					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
+						if (info.document.linkBibliographyLoaded) return;
+
+						clearTimeout(annotatedTarget.linkBibliographyInjectTimer);
+					});
+				});
 			});
         }
 

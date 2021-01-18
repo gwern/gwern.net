@@ -311,8 +311,12 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function injectLinkBibliography(loadEventInfo) {
 	GWLog("injectLinkBibliography", "rewrite.js", 1);
 
-	let linkBibliography = loadEventInfo.document.querySelector("#link-bibliography");
-
+	let linkBibliography = (loadEventInfo.fullPage 
+							? loadEventInfo.document.querySelector("#link-bibliography") 
+							: null) 
+						|| (loadEventInfo.document.id == "link-bibliography" 
+							? loadEventInfo.document 
+							: null);
 	let linkBibliographyURL = new URL(loadEventInfo.location.href);
 	linkBibliographyURL.pathname += "-link-bibliography";
 
@@ -429,10 +433,10 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 		linkBibliography.remove();
 		document.querySelector(`#TOC a[href="#link-bibliography"]`).closest("li").remove();
 		return;
-	} else if (linkBibliography.childElementCount == 0) {
+	} else if (info.document.id == "link-bibliography" && linkBibliography.childElementCount == 0) {
 		injectLinkBibliography(info);
 		return;
-	} else {
+	} else if (linkBibliography.childElementCount > 0) {
 		injectLinkBibliographyItemSelfLinks(info);
 		rectifyTypographyInLinkBibliographyEntries(info);
 		setImageDimensionsInLinkBibliographyEntries(info);
