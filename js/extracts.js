@@ -163,20 +163,17 @@ Extracts = {
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
 				if (info.document.id == "link-bibliography") {
-					info.document.closest(".markdownBody").linkBibliographyLoaded = true;
+					Extracts.originatingDocumentForTarget(info.document).swapClasses([ "link-bibliography-loading", "link-bibliography-loaded" ], 1);
 					return;
 				} else if (!info.fullPage) {
 					return;
 				}
 
-				let contentContainer = info.document.classList.contains("markdownBody") 
-									   ? info.document 
-									   : info.document.querySelector(".markdownBody");
-
 				info.document.querySelectorAll("a.docMetadata, span.defnMetadata").forEach(annotatedTarget => {
 					annotatedTarget.addEventListener("mouseenter", annotatedTarget.linkBibliographyLoad_mouseEnter = (event) => {
-						if (contentContainer.linkBibliographyLoaded) return;
+						if (info.document.classList.contains("link-bibliography-loaded")) return;
 
+						info.document.classList.add("link-bibliography-loading");
 						annotatedTarget.linkBibliographyInjectTimer = setTimeout(() => {
 							GW.rewriteFunctions.processLinkBibliography({
 								source: "Extracts.setUpLinkBibliographyInjectEvent",
@@ -193,7 +190,7 @@ Extracts = {
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
 					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
-						if (contentContainer.linkBibliographyLoaded) return;
+						if (info.document.classList.contains("link-bibliography-loaded")) return;
 
 						clearTimeout(annotatedTarget.linkBibliographyInjectTimer);
 					});
@@ -311,7 +308,7 @@ Extracts = {
 		let containingPopFrame = target.closest(".popframe");
 		if (containingPopFrame) {
 			if (containingPopFrame.classList.contains("external-page-embed"))
-				return containingPopFrame;
+				return containingPopFrame.contentView;
 			else
 				return Extracts.originatingDocumentForTarget(containingPopFrame.spawningTarget);
 		} else {
@@ -401,6 +398,11 @@ Extracts = {
     extractForTarget: (target) => {
 		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
+		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
+			target.popFrame.classList.toggle("loading", true);
+			return `&nbsp;`;
+		}
+
 		let referenceData = Extracts.referenceDataForTarget(target);
 
 		//  Link to original URL (for archive links) or link to archive (for live links).
@@ -487,6 +489,11 @@ Extracts = {
     },
     definitionForTarget: (target) => {
         GWLog("Extracts.definitionForTarget", "extracts.js", 2);
+
+		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
+			target.popFrame.classList.toggle("loading", true);
+			return `&nbsp;`;
+		}
 
         let referenceData = Extracts.referenceDataForTarget(target, false);
 
@@ -846,7 +853,8 @@ Extracts = {
 			to is visible, and do not spawn citation context popup if citation 
 			is visible.
 			*/
-		if (   (Extracts.isCitation(target) && Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
+		if (   (   Extracts.isCitation(target) 
+				&& Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
 			|| (   Extracts.isCitationBackLink(target) 
 				&& Popups.isVisible(Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash)))))
 			return false;
