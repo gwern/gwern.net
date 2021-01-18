@@ -841,31 +841,26 @@ Extracts = {
 			]) == false)
 			return false;
 
-		//  Designate section links spawned by the TOC (for special styling).
-		if (Extracts.isTOCLink(target))
-			popup.classList.add("toc-section");
-
-		//  Remove click listener from code popups, to allow selection.
-		if (Extracts.isLocalCodeFileLink(target)) {
-			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-				popup.removeEventListener("click", Popups.popupClicked);
-			}, { once: true });
-		}
-
-		//	Account for popups spawned from within an external page embed.
-		let containingDocument = Extracts.originatingDocumentForTarget(target);
-
 		/*  Situationally prevent spawning of citation and citation-context 
 			links: do not spawn footnote popup if the {side|foot}note it points 
 			to is visible, and do not spawn citation context popup if citation 
 			is visible.
 			*/
 		if (   (Extracts.isCitation(target) && Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
-			|| (Extracts.isCitationBackLink(target) && Popups.isVisible(containingDocument.querySelector(decodeURIComponent(target.hash)))))
+			|| (   Extracts.isCitationBackLink(target) 
+				&& Popups.isVisible(Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash)))))
 			return false;
 
-		//  Add event listeners to highlight/un-highlight spawning citation.
-		if (Extracts.isCitation(target)) {
+		//  Various special handling.
+		if (Extracts.isTOCLink(target)) {
+			//  Designate section links spawned by the TOC (for special styling).
+			popup.classList.add("toc-section");
+		} else if (Extracts.isLocalCodeFileLink(target)) {
+			//  Remove click listener from code popups, to allow selection.
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				popup.removeEventListener("click", Popups.popupClicked);
+			}, { once: true });
+		} else if (Extracts.isCitation(target)) {
 			/*  Add event listeners to highlight citation when its footnote
 				popup is spawned.
 				*/
