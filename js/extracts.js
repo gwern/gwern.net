@@ -835,6 +835,17 @@ Extracts = {
 			]) == false)
 			return false;
 
+		//  Designate section links spawned by the TOC (for special styling).
+		if (Extracts.isTOCLink(target))
+			popup.classList.add("toc-section");
+
+		//  Remove click listener from code popups, to allow selection.
+		if (Extracts.isLocalCodeFileLink(target)) {
+			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+				popup.removeEventListener("click", Popups.popupClicked);
+			}, { once: true });
+		}
+
 		//	Account for popups spawned from within an external page embed.
 		let containingDocument = Extracts.originatingDocumentForTarget(target);
 
@@ -847,8 +858,7 @@ Extracts = {
 			|| (Extracts.isCitationBackLink(target) && Popups.isVisible(containingDocument.querySelector(decodeURIComponent(target.hash)))))
 			return false;
 
-		/*  Highlight citations and notes appropriately.
-			*/
+		//  Add event listeners to highlight/un-highlight spawning citation.
 		if (Extracts.isCitation(target)) {
 			/*  Add event listeners to highlight citation when its footnote
 				popup is spawned.
@@ -863,6 +873,19 @@ Extracts = {
 				target.classList.toggle("highlighted", false);
 			});
 		}
+
+		/*  If it’s an empty popup, that means we’re waiting for content to be
+			loaded into it asynchronously. In this case, there’s no need to do
+			anything else for now.
+			*/
+		if (popup.contentView.childElementCount == 0)
+			return true;
+
+		/*                  */
+		/*	Begin rewrites. */
+		/*                  */
+
+		//  Highlight citation in popup.
 		if (Extracts.isCitationBackLink(target)) {
 			/*  Remove the .targeted class from a targeted citation (if any)
 				inside the popup (to prevent confusion with the citation that
@@ -885,10 +908,7 @@ Extracts = {
 			});
 		}
 
-		//  Designate section links spawned by the TOC (for special styling).
-		if (Extracts.isTOCLink(target))
-			popup.classList.add("toc-section");
-
+		//  Special handling for image popups.
 		if (Extracts.isLocalImageLink(target)) {
 			//  Remove extraneous classes from images in image popups.
 			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
@@ -988,13 +1008,6 @@ Extracts = {
 			objectOfSomeSort.onerror = (event) => {
 				popup.swapClasses([ "loading", "loading-failed" ], 1);
 			};
-		}
-
-		//  Remove click listener from code popups, to allow selection.
-		if (Extracts.isLocalCodeFileLink(target)) {
-			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-				popup.removeEventListener("click", Popups.popupClicked);
-			}, { once: true });
 		}
 
 		return true;
