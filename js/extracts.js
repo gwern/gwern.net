@@ -20,7 +20,7 @@ Extracts = {
 
 	/*	Target containers.
 		*/
-	contentContainersSelector: "#markdownBody, #TOC",
+	contentContainersSelector: ".markdownBody, #TOC",
 
 	/*	Targets.
 		*/
@@ -149,7 +149,13 @@ Extracts = {
 				newly-spawned popups; this allows for popup recursion).
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad = (info) => {
-				Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, prepareTarget);
+				if (info.document.closest(Extracts.contentContainersSelector) == info.document) {
+					Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, prepareTarget);
+				} else {
+					info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+						Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+					});
+				}
 			});
 
 			/*  Add handler to add hover event listeners to annotated targets,
