@@ -400,6 +400,22 @@ Extracts = {
 
 		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
 			target.popFrame.classList.toggle("loading", true);
+
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectExtractWhenLinkBibliographyLazyLoaded = (info) => {
+				if (   info.document.id == "link-bibliography" 
+					&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
+					) {
+					GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectExtractWhenLinkBibliographyLazyLoaded);
+
+					if (!target.popFrame)
+						return;
+
+					target.popFrame.classList.toggle("loading", false);
+					target.popFrame.contentView.innerHTML = Extracts.extractForTarget(target);
+					//  TODO: generalize this (or the rewritePopupContent function) for popins too!
+					Extracts.rewritePopupContent(target.popFrame);
+				}
+			});
 			return `&nbsp;`;
 		}
 
@@ -831,23 +847,6 @@ Extracts = {
 		//  Add ‘markdownBody’ class.
 		popup.contentView.classList.add("markdownBody");
 
-		/*	Inject the extract for the target into the popup. (See the comment
-			for fillPopFrame() for a description of what this array does.)
-			*/
-		if (Extracts.fillPopFrame(popup, [
-			[ "isExtractLink", 			"extractForTarget", 			"extract annotation"		],
-			[ "isDefinitionLink", 		"definitionForTarget", 			"definition annotation" 	],
-			[ "isCitation", 			"sectionEmbedForTarget", 		"footnote" 					],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 		"citation-context" 			],
-			[ "isVideoLink", 			"videoForTarget", 				"video object" 				],
-			[ "isLocalImageLink", 		"localImageForTarget", 			"image object" 				],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 		"local-document object" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 		"local-code-file" 			],
-			[ "isLocalPageLink",		"localTranscludeForTarget", 	"local-transclude" 			],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 		"foreign-site object" 		]
-			]) == false)
-			return false;
-
 		/*  Situationally prevent spawning of citation and citation-context 
 			links: do not spawn footnote popup if the {side|foot}note it points 
 			to is visible, and do not spawn citation context popup if citation 
@@ -883,15 +882,52 @@ Extracts = {
 			});
 		}
 
-		/*  If we’re waiting for content to be loaded into the popup 
-			asynchronously, then there’s no need to do anything else for now.
+		/*	Inject the content for the target into the popup. (See the comment
+			for fillPopFrame() for a description of what this array does.)
 			*/
-		if (popup.classList.contains("loading"))
-			return true;
+		if (Extracts.fillPopFrame(popup, [
+			[ "isExtractLink", 			"extractForTarget", 			"extract annotation"		],
+			[ "isDefinitionLink", 		"definitionForTarget", 			"definition annotation" 	],
+			[ "isCitation", 			"sectionEmbedForTarget", 		"footnote" 					],
+			[ "isCitationBackLink", 	"sectionEmbedForTarget", 		"citation-context" 			],
+			[ "isVideoLink", 			"videoForTarget", 				"video object" 				],
+			[ "isLocalImageLink", 		"localImageForTarget", 			"image object" 				],
+			[ "isLocalDocumentLink", 	"localDocumentForTarget", 		"local-document object" 	],
+			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 		"local-code-file" 			],
+			[ "isLocalPageLink",		"localTranscludeForTarget", 	"local-transclude" 			],
+			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 		"foreign-site object" 		]
+			]) == false)
+			return false;
 
-		/*                  */
-		/*	Begin rewrites. */
-		/*                  */
+		//  Add popup title bar contents.
+		var popupTitle;
+		if (Extracts.isDefinitionLink(target)) {
+			//  TODO: account for contents possibly not being loaded yet!
+			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
+		} else if (!Extracts.isLocalImageLink(target)) {
+			popupTitle = `<a 
+				class="popup-title"
+				href="${target.href}"
+				title="Open ${target.href} in a new window"
+				target="_blank"
+					>${(target.href || "")}</a>`
+		}
+		//  NOTE: TEMPORARILY DISABLED!
+// 		if (popupTitle) popup.titleBarContents.push(popupTitle);
+
+		/*  If we’re waiting for content to be loaded into the popup 
+			asynchronously, then there’s no need to do rewrites for now.
+			*/
+		if (!popup.classList.contains("loading")) 
+			Extracts.rewritePopupContent(popup);
+
+		return true;
+    },
+    
+    rewritePopupContent: (popup) => {
+		GWLog("Extracts.rewritePopupContent", "extracts.js", 2);
+
+		let target = popup.spawningTarget;
 
 		//  Highlight citation in popup.
 		if (Extracts.isCitationBackLink(target)) {
@@ -965,21 +1001,6 @@ Extracts = {
 			fullWidthPossible: false
 		});
 
-		//  Add popup title bar contents.
-		var popupTitle;
-		if (Extracts.isDefinitionLink(target)) {
-			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
-		} else if (!Extracts.isLocalImageLink(target)) {
-			popupTitle = `<a 
-				class="popup-title"
-				href="${target.href}"
-				title="Open ${target.href} in a new window"
-				target="_blank"
-					>${(target.href || "")}</a>`
-		}
-		//  NOTE: TEMPORARILY DISABLED!
-// 		if (popupTitle) popup.titleBarContents.push(popupTitle);
-
 		//  Loading spinners.
 		if (   Extracts.isLocalDocumentLink(target)
 			|| Extracts.isForeignSiteLink(target)
@@ -1017,8 +1038,6 @@ Extracts = {
 				popup.swapClasses([ "loading", "loading-failed" ], 1);
 			};
 		}
-
-		return true;
     }
 };
 
