@@ -69,12 +69,12 @@ function imageFocusSetup() {
 
 	//  Wrap all images in figures in a span.
 	document.querySelectorAll("figure img").forEach(image => {
-		let figure = image.closest("figure");
+		let imageContainer = image.parentElement;
 
 		let wrapper = document.createElement("span");
 		wrapper.classList.add("image-wrapper");
 		wrapper.appendChild(image);
-		figure.insertBefore(wrapper, figure.firstChild);
+		imageContainer.insertBefore(wrapper, imageContainer.firstChild);
 
 		//  Set ‘focusable’ class, for CSS to apply the hover style and tooltip.
 		image.classList.toggle("focusable", true);
