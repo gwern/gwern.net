@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-17 16:50:02 gwern"
+When:  Time-stamp: "2021-01-18 11:29:13 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ isLocalLink = walk isLocalLink'
           let f' = replace "https://www.gwern.net" "" $ T.unpack f in
             if not ("/" `isPrefixOf` f') then y
             else
-              if ("/docs/" `isPrefixOf` f' || "/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f') then y
+              if ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f') then y
               else
                 if takeExtension f' /= "" then y
                 else (Link (a,"link-local":b,c) e (f,g))
