@@ -332,10 +332,10 @@ Extracts = {
 
 	/*	Used to generate extract and definition pop-frames.
 		*/
-	referenceDataForTarget: (target, link = true) => {
+	referenceDataForTarget: (target, isLink = true) => {
 		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
 		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` 
-							   + (link 
+							   + (isLink 
 							   	  ? `a[href='${target.href}']` 
 							   	  : `span[data-original-definition-id='${target.dataset.originalDefinitionId}']`));
 		let referenceListEntry = referenceElement.closest("li");
