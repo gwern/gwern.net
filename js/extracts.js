@@ -144,12 +144,7 @@ Extracts = {
 					target.classList.remove("has-content");
 			};
 
-			//  Set up targets.
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
-			});
-
-			/*  Add handler to set up targets in injected content (including 
+			/*  Add handler to set up targets in loaded content (including 
 				newly-spawned popups; this allows for popup recursion).
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad = (info) => {
@@ -962,13 +957,11 @@ Extracts = {
 
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
-doWhenPageLoaded(() => {
-	let serviceProviderObjectName = GW.isMobile() ? "Popins" : "Popups";
-
-	if (window[serviceProviderObjectName])
+let serviceProviderObjectName = GW.isMobile() ? "Popins" : "Popups";
+if (window[serviceProviderObjectName]) {
+	Extracts.setup();
+} else {
+	GW.notificationCenter.addHandlerForEvent(serviceProviderObjectName + ".didLoad", () => {
 		Extracts.setup();
-	else
-		GW.notificationCenter.addHandlerForEvent(serviceProviderObjectName + ".setupDidComplete", () => {
-			Extracts.setup();
-		}, { once: true });
-});
+	}, { once: true });
+}
