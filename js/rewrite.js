@@ -313,7 +313,7 @@ function injectLinkBibliography(loadEventInfo) {
 
 	let linkBibliography = loadEventInfo.document.querySelector("#link-bibliography");
 
-	let linkBibliographyURL = loadEventInfo.location;
+	let linkBibliographyURL = new URL(loadEventInfo.location.href);
 	linkBibliographyURL.pathname += "-link-bibliography";
 
 	doAjax({
@@ -570,6 +570,65 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 });
 
 /*********/
+/* LINKS */
+/*********/
+
+/********************************************************************/
+/*	Designate self-links (a.k.a. anchorlinks) and local links (a.k.a. 
+	within-site links) as such.
+	*/
+function addSpecialLinkClasses(loadEventInfo) {
+	GWLog("addSpecialLinkClasses", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".markdownBody a[href]").forEach(link => {
+		if (   link.hostname != loadEventInfo.location.hostname
+			|| link.closest("h1, h2, h3, h4, h5, h6")
+			|| link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link, .link-bibliography-item-self-link"))
+			return;
+
+		if (link.pathname == loadEventInfo.location.pathname) {
+			link.classList.toggle("link-self", true);
+		} else if (link.pathname.substr(1).match(/[\/\.]/) == null) {
+			link.classList.toggle("link-local", true);
+		} else {
+			link.classList.remove("link-self", "link-local");
+		}
+	});
+}
+
+/*****************************************************************************/
+/*	Directional navigation links on self-links: for each self-link like 
+	“see [later](#later-identifier)”, find the linked identifier, whether it’s 
+	before or after, and if it is before/previously, annotate the self-link 
+	with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a 
+	backwards link to a identifier already read, or an unread identifier.
+	*/
+function directionalizeAnchorLinks(loadEventInfo) {
+	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll("a.link-self").forEach(identifierLink => {
+		target = loadEventInfo.document.querySelector(decodeURIComponent(identifierLink.hash));
+		if (!target) return;
+		identifierLink.classList.add(
+			identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
+			? 'identifier-link-down' 
+			: 'identifier-link-up'
+		);
+	});
+}
+
+/************************************************/
+/*	Add content load handler for link processing.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinks = (info) => {
+	if (!info.needsRewrite)
+		return;
+
+	addSpecialLinkClasses(info);
+	directionalizeAnchorLinks(info);
+});
+
+/*********/
 /* MISC. */
 /*********/
 
@@ -585,26 +644,6 @@ function cleanUpImageAltText(loadEventInfo) {
 	});
 }
 
-/*****************************************************************************/
-/*	Directional navigation links on self-links: for each self-link like 
-	“see [later](#later-identifier)”, find the linked identifier, whether it’s 
-	before or after, and if it is before/previously, annotate the self-link 
-	with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a 
-	backwards link to a identifier already read, or an unread identifier.
-	*/
-function directionalizeAnchorLinks(loadEventInfo) {
-	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
-
-	loadEventInfo.document.querySelectorAll("#markdownBody a[href^='#']").forEach(identifierLink => {
-		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
-			|| identifierLink.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link, .link-bibliography-item-self-link"))
-			return;
-		target = loadEventInfo.document.querySelector(decodeURIComponent(identifierLink.hash));
-		if (!target) return;
-		identifierLink.classList.add((identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
-	});
-}
-
 /**************************************************************/
 /*	Add content load handler for doing miscellaneous rewriting.
 	*/
@@ -613,7 +652,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 		return;
 
 	cleanUpImageAltText(info);
-	directionalizeAnchorLinks(info);
 });
 
 /*************/
