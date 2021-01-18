@@ -425,6 +425,10 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 							: null);
 	if (!linkBibliography) {
 		return;
+	} else if (GW.isMobile() && info.isMainDocument) {
+		linkBibliography.remove();
+		document.querySelector(`#TOC a[href="#link-bibliography"]`).closest("li").remove();
+		return;
 	} else if (linkBibliography.childElementCount == 0) {
 		injectLinkBibliography(info);
 		return;
