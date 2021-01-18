@@ -123,13 +123,13 @@ a[href$='.jsonl' i]::after,
 a[href$='.css' i]::after,
 a[href$='.hs' i]::after,
 a[href$='.js' i]::after,
-a.link-local[href$='.php' i]::after,
+a[href^='/'][href$='.php' i]::after,
 a[href$='.conf' i]::after,
 a[href$='.sh' i]::after,
 a[href$='.R' i]::after,
 a[href$='.patch' i]::after,
 a[href$='.diff' i]::after,
-a.link-local[href*="/static/" i][href$=".html" i]::after,
+a[href^="/static/" i][href$=".html" i]::after,
 /*  Word */
 a[href$='.doc' i]::after,
 a[href$='.docx' i]::after,
@@ -205,13 +205,13 @@ a[href$='.jsonl' i]:hover::after,
 a[href$='.css' i]:hover::after,
 a[href$='.hs' i]:hover::after,
 a[href$='.js' i]:hover::after,
-a.link-local[href$='.php' i]:hover::after,
+a[href^='/'][href$='.php' i]:hover::after,
 a[href$='.conf' i]:hover::after,
 a[href$='.sh' i]:hover::after,
 a[href$='.R' i]:hover::after,
 a[href$='.patch' i]:hover::after,
 a[href$='.diff' i]:hover::after,
-a.link-local[href*="/static/" i][href$=".html" i]:hover::after,
+a[href^="/static/" i][href$=".html" i]:hover::after,
 /*  Word */
 a[href$='.doc' i]:hover::after,
 a[href$='.docx' i]:hover::after,
@@ -297,10 +297,10 @@ a[href$='.js' i]::after,
 a[href$='.R' i]::after,
 a[href$='.diff' i]::after,
 a[href$='.patch' i]::after,
-a.link-local[href$='.php' i]::after,
+a[href^='/'][href$='.php' i]::after,
 a[href$='.conf' i]::after,
 a[href$='.sh' i]::after,
-a.link-local[href*="/static/" i][href$=".html" i]::after {
+a[href^="/static/" i][href$=".html" i]::after {
     background-image: url('/static/img/icons/code.svg');
 }
 
@@ -995,7 +995,7 @@ a[href*='paulgraham.com']::after,
 a[href*='ycombinator.com']::after,
 a[href*='intelligence.org']::after,
 a[href*='deepmind']::after,
-a.link-local[href*='docs/.*/*.pdf#deepmind']::after,
+a[href*='docs/.*/*.pdf#deepmind']::after,
 a[href*='openai']::after,
 a[href$='.pdf#openai']::after,
 a[href*='distill.pub']::after,
@@ -1032,7 +1032,7 @@ a[href*="tumblr.com"]::after,
 a[href*="t.umblr.com"]::after,
 a[href*="#facebook"]::after,
 a[href*="#facebook"][href*="arxiv.org"]::after,
-a.link-local[href*='docs/.*/*.pdf#.*facebook']::after,
+a[href*='docs/.*/*.pdf#.*facebook']::after,
 a[href*="facebook.com"]::after,
 a[href*="bitcointalk.org"]::after,
 a[href*="bitcoin.it"]::after,
@@ -1092,7 +1092,7 @@ a[href*="tumblr.com"]:hover::after,
 a[href*="t.umblr.com"]:hover::after,
 a[href*="#facebook"]:hover::after,
 a[href*="#facebook"][href*="arxiv.org"]:hover::after,
-a.link-local[href*='docs/.*/*.pdf#.*facebook']:hover::after,
+a[href*='docs/.*/*.pdf#.*facebook']:hover::after,
 a[href*="facebook.com"]:hover::after,
 a[href*="bitcointalk.org"]:hover::after,
 a[href*="bitcoin.it"]:hover::after,
@@ -1284,7 +1284,7 @@ a[href*='intelligence.org']::after {
 /*  DeepMind; match articles or anchors about DM too.
     */
 a[href*='deepmind']::after, /* primary user: deepmind.com */
-a.link-local[href*='docs/.*/*.pdf#deepmind']::after {
+a[href*='docs/.*/*.pdf#deepmind']::after {
     background-image: url('/static/img/icons/deepmind.svg');
     height: 1.1em;
     width: 1.1em;
@@ -1293,7 +1293,7 @@ a.link-local[href*='docs/.*/*.pdf#deepmind']::after {
     opacity: 0.75;
 }
 a[href*='deepmind']:hover::after,
-a.link-local[href*='docs/.*/*.pdf#deepmind']:hover::after {
+a[href*='docs/.*/*.pdf#deepmind']:hover::after {
     opacity: 0.5;
 }
 
@@ -1544,7 +1544,7 @@ a[href*="t.umblr.com"]::after {
     */
 a[href*="#facebook"]::after,
 a[href*="#facebook"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
-a.link-local[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
+a[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
 a[href*="facebook.com"]::after {
     background-image: url('/static/img/icons/facebook.svg');
     height: 0.8em;
@@ -1574,8 +1574,8 @@ a[href*="#google"]::after,
 a[href*="#org=google"]::after,
 a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
 a[href*="#org=google"][href*="arxiv.org"]::after,
-a.link-local[href*='docs/.*/*.pdf#.*google']::after,
-a.link-local[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
+a[href*='docs/.*/*.pdf#.*google']::after,
+a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
     background-image: url('/static/img/icons/google.svg');
     height: 0.65em;
     width: 0.65em;
