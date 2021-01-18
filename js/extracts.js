@@ -880,11 +880,10 @@ Extracts = {
 			});
 		}
 
-		/*  If it’s an empty popup, that means we’re waiting for content to be
-			loaded into it asynchronously. In this case, there’s no need to do
-			anything else for now.
+		/*  If we’re waiting for content to be loaded into the popup 
+			asynchronously, then there’s no need to do anything else for now.
 			*/
-		if (popup.contentView.childElementCount == 0)
+		if (popup.classList.contains("loading"))
 			return true;
 
 		/*                  */
