@@ -599,7 +599,7 @@ function directionalizeAnchorLinks(loadEventInfo) {
 		if (   identifierLink.closest("h1, h2, h3, h4, h5, h6")
 			|| identifierLink.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link, .link-bibliography-item-self-link"))
 			return;
-		target = loadEventInfo.document.querySelector(decodeURIComponent(identifierLink.getAttribute("href")));
+		target = loadEventInfo.document.querySelector(decodeURIComponent(identifierLink.hash));
 		if (!target) return;
 		identifierLink.classList.add((identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING) ? 'identifier-link-down' : 'identifier-link-up');
 	});
@@ -608,7 +608,7 @@ function directionalizeAnchorLinks(loadEventInfo) {
 /**************************************************************/
 /*	Add content load handler for doing miscellaneous rewriting.
 	*/
-GW.notificationCenter.addHandlerForEvent("contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
 	if (!info.needsRewrite)
 		return;
 
