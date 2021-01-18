@@ -157,15 +157,19 @@ Extracts = {
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
 				if (info.document.id == "link-bibliography") {
-					info.document.linkBibliographyLoaded = true;
+					info.document.closest(".markdownBody").linkBibliographyLoaded = true;
 					return;
 				} else if (!info.fullPage) {
 					return;
 				}
 
+				let contentContainer = info.document.classList.contains("markdownBody") 
+									   ? info.document 
+									   : info.document.querySelector(".markdownBody");
+
 				info.document.querySelectorAll("a.docMetadata, span.defnMetadata").forEach(annotatedTarget => {
 					annotatedTarget.addEventListener("mouseenter", annotatedTarget.linkBibliographyLoad_mouseEnter = (event) => {
-						if (info.document.linkBibliographyLoaded) return;
+						if (contentContainer.linkBibliographyLoaded) return;
 
 						annotatedTarget.linkBibliographyInjectTimer = setTimeout(() => {
 							GW.rewriteFunctions.processLinkBibliography({
@@ -183,7 +187,7 @@ Extracts = {
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
 					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
-						if (info.document.linkBibliographyLoaded) return;
+						if (contentContainer.linkBibliographyLoaded) return;
 
 						clearTimeout(annotatedTarget.linkBibliographyInjectTimer);
 					});
@@ -806,10 +810,13 @@ Extracts = {
 
 		let target = popup.spawningTarget;
 
-		//  Import the class(es) of the target, and add some others.
-		popup.classList.add(...target.classList, "markdownBody");
+		//  Import the class(es) of the target.
+		popup.classList.add(...target.classList);
 		//  We then remove some of the imported classes.
 		popup.classList.remove("has-annotation", "has-content", "link-local", "spawns-popup");
+
+		//  Add ‘markdownBody’ class.
+		popup.contentView.classList.add("markdownBody");
 
 		/*	Inject the extract for the target into the popup. (See the comment
 			for fillPopFrame() for a description of what this array does.)
