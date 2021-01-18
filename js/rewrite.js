@@ -612,8 +612,8 @@ GW.notificationCenter.addHandlerForEvent("contentDidLoad", GW.rewriteFunctions.p
 	if (!info.needsRewrite)
 		return;
 
-	cleanUpImageAltText(info.document);
-	directionalizeAnchorLinks(info.document);
+	cleanUpImageAltText(info);
+	directionalizeAnchorLinks(info);
 });
 
 /*************/

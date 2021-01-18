@@ -775,7 +775,7 @@ Extracts = {
 		//  Import the class(es) of the target, and add some others.
 		popup.classList.add(...target.classList, "markdownBody");
 		//  We then remove some of the imported classes.
-		popup.classList.remove("has-annotation", "has-content", "spawns-popup");
+		popup.classList.remove("has-annotation", "has-content", "link-local", "spawns-popup");
 
 		/*	Inject the extract for the target into the popup. (See the comment
 			for fillPopFrame() for a description of what this array does.)
