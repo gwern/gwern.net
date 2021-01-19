@@ -564,6 +564,8 @@ function injectFootnotesTOCLink(loadEventInfo) {
 
 	loadEventInfo.document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", 
 		`<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
+	if (Extracts)
+		Extracts.addTargetsWithin(loadEventInfo.document.querySelector("#TOC > ul a[href='#footnotes']").parentElement);
 }
 
 /*************************************************************/
@@ -666,48 +668,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 		return;
 
 	cleanUpImageAltText(info);
-});
-
-/*************/
-/* ANALYTICS */
-/*************/
-
-/********************************************************/
-/*	Set up outbound click tracking with Google Analytics.
-	*/
-function setUpOutboundClickTracking(loadEventInfo) {
-	GWLog("setUpOutboundClickTracking", "rewrite.js", 1);
-
-	if (!GW.googleAnalyticsLoaded)
-		return;
-
-	loadEventInfo.document.querySelectorAll("a[href]").forEach(link => {
-		if (link.hostname == location.hostname)
-			return;
-
-		link.addActivateEvent((event) => {
-			event.preventDefault();
-
-			/*	Setting the transport method to ‘beacon’ lets the hit be sent
-				using ‘navigator.sendBeacon’ in browsers that support it.
-				*/
-			gtag("event", "click", {
-				"event_category": "outbound",
-				"event_label": link.href,
-				"transport_type": "beacon",
-				"event_callback": () => { document.location = link.href; }
-			});
-
-			return true;
-		});
-	});
-}
-
-/**************************************************************/
-/*	Add content load handler to set up outbound click tracking.
-	*/
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.setUpOutboundClickTracking = (info) => {
-	setUpOutboundClickTracking(info);
 });
 
 /********************/

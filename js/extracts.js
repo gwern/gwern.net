@@ -122,6 +122,22 @@ Extracts = {
 
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
+    addTargetsWithin: (container) => {
+    	if (GW.isMobile()) {
+    		return;
+    	} else {
+			//  Target prepare function.
+			let prepareTarget = (target) => {
+				//  Remove the title attribute.
+				target.removeAttribute("title");
+
+				if (Extracts.isTOCLink(target))
+					target.classList.remove("has-content");
+			};
+
+    		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+    	}
+    },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
@@ -138,24 +154,15 @@ Extracts = {
 				}
 			}
 
-			//  Target prepare function.
-			let prepareTarget = (target) => {
-				//  Remove the title attribute.
-				target.removeAttribute("title");
-
-				if (Extracts.isTOCLink(target))
-					target.classList.remove("has-content");
-			};
-
 			/*  Add handler to set up targets in loaded content (including 
 				newly-spawned popups; this allows for popup recursion).
 				*/
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad = (info) => {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
 				if (info.document.closest(Extracts.contentContainersSelector) == info.document) {
-					Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, prepareTarget);
+					Extracts.addTargetsWithin(info.document);
 				} else {
 					info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-						Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+						Extracts.addTargetsWithin(container);
 					});
 				}
 			});
@@ -179,7 +186,12 @@ Extracts = {
 				}
 
 				//  Get all the annotated targets in the document.
-				let allAnnotatedTargetsInDocument = info.document.querySelectorAll("a.docMetadata, span.defnMetadata");
+				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll("a.docMetadata, span.defnMetadata"));
+				/*  Special case to also lazy-load the main document’s link
+					bibliography when its ToC entry is hovered over.
+					*/
+				if (info.isMainDocument)
+					allAnnotatedTargetsInDocument.push(info.document.querySelector("#TOC a[href='#link-bibliography']"));
 
 				//  Add hover event listeners to all the annotated targets.
 				allAnnotatedTargetsInDocument.forEach(annotatedTarget => {
@@ -418,45 +430,6 @@ Extracts = {
 	//  Either an extract or a definition.
 	annotationForTarget: (target) => {
 		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
-
-		/*	If the link bibliography for the containing document is still 
-			loading, then we set up an event handler for when it loads,
-			and inject the link bibliography into the pop-frame after it spawns
-			(if it hasn’t de-spawned already, e.g. if the user moused out of
-			 the target [if it’s a popup] or collapsed it [if it’s a popin]).
-			*/
-		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
-			target.popFrame.classList.toggle("loading", true);
-
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectAnnotationWhenLinkBibliographyLazyLoaded = (info) => {
-				/*	We check that it’s a link bibliography load event (and not
-					some other kind of content load), and that the loaded link
-					bibliography is associated with the correct document.
-					*/
-				if (   info.document.id == "link-bibliography" 
-					&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
-					) {
-					/*  We no longer need to watch for load events for this
-						pop-frame.
-						*/
-					GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectAnnotationWhenLinkBibliographyLazyLoaded);
-
-					//  If the pop-frame has de-spawned, we can’t fill it.
-					if (!target.popFrame)
-						return;
-
-					target.popFrame.classList.toggle("loading", false);
-
-					//  Fill the pop-frame.
-					let setPopFrameContent = Popups.setPopFrameContent;
-					setPopFrameContent(target.popFrame, Extracts.annotationForTarget(target));
-
-					//  TODO: generalize this (or the rewritePopupContent function) for popins too!
-					Extracts.rewritePopupContent(target.popFrame);
-				}
-			});
-			return `&nbsp;`;
-		}
 
 		if (Extracts.isExtractLink(target)) {
 			return Extracts.extractForTarget(target);
@@ -940,10 +913,57 @@ Extracts = {
 			});
 		}
 
+		/*	If the link bibliography for the containing document is still 
+			loading, then we set up an event handler for when it loads,
+			and inject the link bibliography into the popup after it spawns
+			(if it hasn’t de-spawned already, e.g. if the user moused out of
+			 the target).
+			*/
+		if (   (   (   Extracts.isExtractLink(target) 
+					|| Extracts.isDefinitionLink(target))
+				|| (   Extracts.isTOCLink(target) 
+					&& target.hash == "#link-bibliography"))
+			&& Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")
+			) {
+			target.popup.classList.toggle("loading", true);
+
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectPopupContentWhenLinkBibliographyLazyLoaded = (info) => {
+				/*	We check that it’s a link bibliography load event (and not
+					some other kind of content load), and that the loaded link
+					bibliography is associated with the correct document.
+					*/
+				if (   info.document.id == "link-bibliography" 
+					&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
+					) {
+					/*  We no longer need to watch for load events for this
+						pop-frame.
+						*/
+					GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectPopupContentWhenLinkBibliographyLazyLoaded);
+
+					//  If the popup has de-spawned, we can’t fill it.
+					if (!target.popup)
+						return;
+
+					target.popup.classList.toggle("loading", false);
+
+					//  Fill the popup.
+					var popupFillFunction;
+					if (   Extracts.isExtractLink(target) 
+						|| Extracts.isDefinitionLink(target)) {
+						popupFillFunction = Extracts.annotationForTarget;
+					} else if (Extracts.isTOCLink(target)) {
+						popupFillFunction = Extracts.sectionEmbedForTarget;
+					}
+					Popups.setPopFrameContent(target.popup, popupFillFunction(target));
+
+					//  Do rewrites.
+					Extracts.rewritePopupContent(target.popup);
+				}
+			});
+		} else if (Extracts.fillPopFrame(popup, [
 		/*	Inject the content for the target into the popup. (See the comment
 			for fillPopFrame() for a description of what this array does.)
 			*/
-		if (Extracts.fillPopFrame(popup, [
 			[ "isExtractLink", 			"annotationForTarget", 			"extract annotation"		],
 			[ "isDefinitionLink", 		"annotationForTarget", 			"definition annotation" 	],
 			[ "isCitation", 			"sectionEmbedForTarget", 		"footnote" 					],
@@ -954,8 +974,9 @@ Extracts = {
 			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 		"local-code-file" 			],
 			[ "isLocalPageLink",		"localTranscludeForTarget", 	"local-transclude" 			],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 		"foreign-site object" 		]
-			]) == false)
+			]) == false) {
 			return false;
+		}
 
 		//  Add popup title bar contents.
 		var popupTitle;
