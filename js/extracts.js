@@ -380,21 +380,18 @@ Extracts = {
 		the pop-frame spawned by the given target.
 		*/
 
-	//  Summaries of links to elsewhere.
-	isExtractLink: (target) => {
-		return target.classList.contains("docMetadata");
-	},
-    extractForTarget: (target) => {
-		GWLog("Extracts.extractForTarget", "extracts.js", 2);
+	//  Either an extract or a definition.
+	annotationForTarget: (target) => {
+		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
 		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
 			target.popFrame.classList.toggle("loading", true);
 
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectExtractWhenLinkBibliographyLazyLoaded = (info) => {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectAnnotationWhenLinkBibliographyLazyLoaded = (info) => {
 				if (   info.document.id == "link-bibliography" 
 					&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
 					) {
-					GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectExtractWhenLinkBibliographyLazyLoaded);
+					GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectAnnotationWhenLinkBibliographyLazyLoaded);
 
 					if (!target.popFrame)
 						return;
@@ -402,7 +399,7 @@ Extracts = {
 					target.popFrame.classList.toggle("loading", false);
 
 					let setPopFrameContent = Popups.setPopFrameContent;
-					setPopFrameContent(target.popFrame, Extracts.extractForTarget(target));
+					setPopFrameContent(target.popFrame, Extracts.annotationForTarget(target));
 
 					//  TODO: generalize this (or the rewritePopupContent function) for popins too!
 					Extracts.rewritePopupContent(target.popFrame);
@@ -410,6 +407,22 @@ Extracts = {
 			});
 			return `&nbsp;`;
 		}
+
+		if (Extracts.isExtractLink(target)) {
+			return Extracts.extractForTarget(target);
+		} else if (Extracts.isDefinitionLink(target)) {
+			return Extracts.definitionForTarget(target);
+		} else {
+			return ``;
+		}
+	},
+
+	//  Summaries of links to elsewhere.
+	isExtractLink: (target) => {
+		return target.classList.contains("docMetadata");
+	},
+    extractForTarget: (target) => {
+		GWLog("Extracts.extractForTarget", "extracts.js", 2);
 
 		let referenceData = Extracts.referenceDataForTarget(target);
 
@@ -881,8 +894,8 @@ Extracts = {
 			for fillPopFrame() for a description of what this array does.)
 			*/
 		if (Extracts.fillPopFrame(popup, [
-			[ "isExtractLink", 			"extractForTarget", 			"extract annotation"		],
-			[ "isDefinitionLink", 		"definitionForTarget", 			"definition annotation" 	],
+			[ "isExtractLink", 			"annotationForTarget", 			"extract annotation"		],
+			[ "isDefinitionLink", 		"annotationForTarget", 			"definition annotation" 	],
 			[ "isCitation", 			"sectionEmbedForTarget", 		"footnote" 					],
 			[ "isCitationBackLink", 	"sectionEmbedForTarget", 		"citation-context" 			],
 			[ "isVideoLink", 			"videoForTarget", 				"video object" 				],
@@ -992,7 +1005,7 @@ Extracts = {
 			collapseAllowed: false, 
 			isCollapseBlock: false,
 			fullPage: false,
-			location: new URL(target.href),
+			location: null,
 			fullWidthPossible: false
 		});
 
