@@ -119,6 +119,8 @@ Extracts = {
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad);
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent);
 		}
+
+		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
@@ -162,6 +164,13 @@ Extracts = {
 				to lazy-load and inject the link bibliography.
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
+				/*	If this is a link bibliography that’s loading, then we 
+					mark its containing document as having loaded its link
+					bibliography.
+
+					Otherwise, if it’s not a full-page content load, then it’s
+					some random thing, like a popup spawning; we ignore it.
+					*/
 				if (info.document.id == "link-bibliography") {
 					Extracts.originatingDocumentForTarget(info.document).swapClasses([ "link-bibliography-loading", "link-bibliography-loaded" ], 1);
 					return;
@@ -169,21 +178,47 @@ Extracts = {
 					return;
 				}
 
-				info.document.querySelectorAll("a.docMetadata, span.defnMetadata").forEach(annotatedTarget => {
+				//  Get all the annotated targets in the document.
+				let allAnnotatedTargetsInDocument = info.document.querySelectorAll("a.docMetadata, span.defnMetadata");
+
+				//  Add hover event listeners to all the annotated targets.
+				allAnnotatedTargetsInDocument.forEach(annotatedTarget => {
 					annotatedTarget.addEventListener("mouseenter", annotatedTarget.linkBibliographyLoad_mouseEnter = (event) => {
+						/*  Do nothing if the link bibliography for the target’s
+							containing document is already loaded.
+							*/
 						if (info.document.classList.contains("link-bibliography-loaded")) return;
 
-						info.document.classList.add("link-bibliography-loading");
+						/*  On hover, start a timer, duration of one-half the 
+							popup trigger delay...
+							*/
 						annotatedTarget.linkBibliographyInjectTimer = setTimeout(() => {
+							/*  ... to inject the link bibliography for the 
+								target’s containing document.
+								*/
+							info.document.classList.add("link-bibliography-loading");
 							injectLinkBibliography(info);
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
 					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
 						if (info.document.classList.contains("link-bibliography-loaded")) return;
 
+						/*  Cancel timer on mouseout (no need to commence a load
+							on a merely transient hover).
+							*/
 						clearTimeout(annotatedTarget.linkBibliographyInjectTimer);
 					});
 				});
+
+				/*  Set up handler to remove hover event listeners from all
+					the annotated targets in the document.
+					*/
+				GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+					allAnnotatedTargetsInDocument.forEach(annotatedTarget => {
+						annotatedTarget.removeEventListener("mouseenter", annotatedTarget.linkBibliographyLoad_mouseEnter);
+						annotatedTarget.removeEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave);
+					});
+				}, { once: true });
 			});
         }
 
@@ -384,20 +419,35 @@ Extracts = {
 	annotationForTarget: (target) => {
 		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
+		/*	If the link bibliography for the containing document is still 
+			loading, then we set up an event handler for when it loads,
+			and inject the link bibliography into the pop-frame after it spawns
+			(if it hasn’t de-spawned already, e.g. if the user moused out of
+			 the target [if it’s a popup] or collapsed it [if it’s a popin]).
+			*/
 		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
 			target.popFrame.classList.toggle("loading", true);
 
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectAnnotationWhenLinkBibliographyLazyLoaded = (info) => {
+				/*	We check that it’s a link bibliography load event (and not
+					some other kind of content load), and that the loaded link
+					bibliography is associated with the correct document.
+					*/
 				if (   info.document.id == "link-bibliography" 
 					&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
 					) {
+					/*  We no longer need to watch for load events for this
+						pop-frame.
+						*/
 					GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectAnnotationWhenLinkBibliographyLazyLoaded);
 
+					//  If the pop-frame has de-spawned, we can’t fill it.
 					if (!target.popFrame)
 						return;
 
 					target.popFrame.classList.toggle("loading", false);
 
+					//  Fill the pop-frame.
 					let setPopFrameContent = Popups.setPopFrameContent;
 					setPopFrameContent(target.popFrame, Extracts.annotationForTarget(target));
 
