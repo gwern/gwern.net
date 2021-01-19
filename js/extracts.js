@@ -181,7 +181,7 @@ Extracts = {
 				if (info.document.id == "link-bibliography") {
 					Extracts.originatingDocumentForTarget(info.document).swapClasses([ "link-bibliography-loading", "link-bibliography-loaded" ], 1);
 					return;
-				} else if (!info.fullPage) {
+				} else if (!info.isFullPage) {
 					return;
 				}
 
@@ -677,7 +677,7 @@ Extracts = {
 				clickable: false, 
 				collapseAllowed: false, 
 				isCollapseBlock: false,
-				fullPage: true,
+				isFullPage: true,
 				location: new URL(target.href),
 				fullWidthPossible: false
 			});
@@ -1025,7 +1025,7 @@ Extracts = {
 			clickable: false, 
 			collapseAllowed: false, 
 			isCollapseBlock: false,
-			fullPage: false,
+			isFullPage: false,
 			location: null,
 			fullWidthPossible: false
 		});

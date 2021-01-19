@@ -389,7 +389,7 @@ window.addEventListener("DOMContentLoaded", () => {
 		clickable: true, 
 		collapseAllowed: true, 
 		isCollapseBlock: false,
-		fullPage: true,
+		isFullPage: true,
 		location: new URL(location.href),
 		fullWidthPossible: true
     });

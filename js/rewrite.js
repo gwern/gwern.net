@@ -313,7 +313,7 @@ GW.linkBibliographyCache = { };
 function injectLinkBibliography(loadEventInfo) {
 	GWLog("injectLinkBibliography", "rewrite.js", 1);
 
-	let linkBibliography = (loadEventInfo.fullPage 
+	let linkBibliography = (loadEventInfo.isFullPage 
 							? loadEventInfo.document.querySelector("#link-bibliography") 
 							: null) 
 						|| (loadEventInfo.document.id == "link-bibliography" 
@@ -333,7 +333,7 @@ function injectLinkBibliography(loadEventInfo) {
 			clickable: loadEventInfo.clickable, 
 			collapseAllowed: loadEventInfo.collapseAllowed, 
 			isCollapseBlock: loadEventInfo.collapseAllowed,
-			fullPage: false,
+			isFullPage: false,
 			location: linkBibliographyURL,
 			fullWidthPossible: loadEventInfo.fullWidthPossible
 		});
@@ -434,7 +434,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	if (!info.needsRewrite)
 		return;
 
-	let linkBibliography = (info.fullPage 
+	let linkBibliography = (info.isFullPage 
 							? info.document.querySelector("#link-bibliography") 
 							: null) 
 						|| (info.document.id == "link-bibliography" 
@@ -574,7 +574,7 @@ function injectFootnotesTOCLink(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
 	bindNoteHighlightEventsToCitations(info);
 
-	if (info.needsRewrite && info.fullPage) {
+	if (info.needsRewrite && info.isFullPage) {
 		identifyFootnotesSection(info);
 		injectFootnoteSectionSelfLink(info);
 		injectFootnoteSelfLinks(info);
