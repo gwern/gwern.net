@@ -116,7 +116,7 @@ Extracts = {
 			});
 
 			//  Remove content load event handlers.
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad);
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad);
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent);
 		}
 
