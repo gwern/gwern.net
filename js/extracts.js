@@ -449,30 +449,20 @@ Extracts = {
 
 		let referenceData = Extracts.referenceDataForTarget(target);
 
-		//  Link to original URL (for archive links) or link to archive (for live links).
-        var archiveOrOriginalLinkHTML = "";
+		//  Link to original URL (for archive links).
+        var originalLinkHTML = "";
         if (   referenceData.element.dataset.urlOriginal != undefined 
         	&& referenceData.element.dataset.urlOriginal != target.href) {
-            archiveOrOriginalLinkHTML = `<span class="originalURL">[<a 
+            originalLinkHTML = `<span class="originalURL">[<a 
                        		title="Link to original URL for ‘${referenceData.titleText}’" 
             				href="${referenceData.element.dataset.urlOriginal}"
             				target="_new" 
                        		alt="Original URL for this archived link; may be broken."
                        			>original</a>]</span>`;
-        } else if (![ "www.gwern.net", 
-        			  "en.wikipedia.org", 
-        			  "archive.org", 
-        			  "www.biorxiv.org", 
-        			  "arxiv.org" ].includes(target.hostname)) {
-			archiveOrOriginalLinkHTML = `<span class="iaMirror"><a 
-							title="Search Internet Archive via Memento for mirrors of URL: <${target.href}> (for ‘${referenceData.titleText}’)" 
-					   		href="http://timetravel.mementoweb.org/list/20100101000000/${target.href}" 
-					   		target="_new"
-					   			></a></span>`;
         }
 
 		//  Extract title/link.
-		let titleLinkClass = (archiveOrOriginalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
+		let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
 		let titleLinkHTML = `<a 
 								class="${titleLinkClass}" 
 								target="_new" 
@@ -480,50 +470,9 @@ Extracts = {
 								title="Open ${target.href} in a new window"
 									>${referenceData.titleHTML}</a>`;
 
-		//  Link to citations on Google Scholar, or link to search for links on Google.
-        var citationsOrLinksHTML = "";
-        if (referenceData.element.dataset.doi != undefined) {
-            citationsOrLinksHTML = `; <a  
-            				class="cites"
-            				title="Reverse citations of this paper (‘${referenceData.titleText}’), with DOI ‘${referenceData.element.dataset.doi}’, in Google Scholar"
-            				href="https://scholar.google.com/scholar?q=%22${referenceData.element.dataset.doi}%22+OR+%22${referenceData.titleText}%22" 
-            				target="_new" 
-            					>cites</a>`;
-        } else if ([ "arxiv.org", 
-        			 "openreview.net", 
-        			 "ieee.org", 
-        			 "rand.org", 
-        			 "dspace.mit.edu", 
-        			 "thegradient.pub", 
-        			 "inkandswitch.com", 
-        			 "nature.com", 
-        			 "sciencemag.org" 
-        			].includes(target.hostname) 
-        		   || target.pathname.match(/\.pdf$/)) {
-            //  Not all scholarly papers come with DOIs; eg it’s the policy of Arxiv to *not* provide DOIs. ;_;
-            citationsOrLinksHTML = `; <a  
-            				class="cites"
-            				title="Reverse citations of this paper (‘${referenceData.titleText}’) in Google Scholar"
-            				href="https://scholar.google.com/scholar?q=%22${referenceData.titleText}%22" 
-            				target="_new" 
-            					>cites</a>`;
-        } else if (target.hostname != "en.wikipedia.org") {
-            citationsOrLinksHTML = `; <a 
-            				class="cites" 
-            				title="Links to this page (‘${referenceData.titleText}’) in Google"
-            				href="https://www.google.com/search?num=100&q=link%3A%22${target.href}%22+OR+%22${referenceData.titleText}%22" 
-            				target="_new" 
-            					>links</a>`;
-        }
-
-        //  Date; citations/links.
-        let dateAndCitationsOrLinksHTML = (referenceData.dateHTML || citationsOrLinksHTML) 
-                                          ? ` <span class="date-plus-cites">${referenceData.dateHTML}${citationsOrLinksHTML}</span>` 
-                                          : ``;
-
         //  The fully constructed extract pop-frame contents.
-        return `<p class="data-field title">${archiveOrOriginalLinkHTML}${titleLinkHTML}</p>` 
-        	 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${dateAndCitationsOrLinksHTML}</p>` 
+        return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
+        	 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
         	 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
     },
 
@@ -533,11 +482,6 @@ Extracts = {
     },
     definitionForTarget: (target) => {
         GWLog("Extracts.definitionForTarget", "extracts.js", 2);
-
-		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
-			target.popFrame.classList.toggle("loading", true);
-			return `&nbsp;`;
-		}
 
         let referenceData = Extracts.referenceDataForTarget(target, false);
 
@@ -979,18 +923,18 @@ Extracts = {
 		}
 
 		//  Add popup title bar contents.
-		var popupTitle;
-		if (Extracts.isDefinitionLink(target)) {
-			//  TODO: account for contents possibly not being loaded yet!
-			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
-		} else if (!Extracts.isLocalImageLink(target)) {
-			popupTitle = `<a 
-				class="popup-title"
-				href="${target.href}"
-				title="Open ${target.href} in a new window"
-				target="_blank"
-					>${(target.href || "")}</a>`
-		}
+// 		var popupTitle;
+// 		if (Extracts.isDefinitionLink(target)) {
+// 			//  TODO: account for contents possibly not being loaded yet!
+// 			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
+// 		} else if (!Extracts.isLocalImageLink(target)) {
+// 			popupTitle = `<a 
+// 				class="popup-title"
+// 				href="${target.href}"
+// 				title="Open ${target.href} in a new window"
+// 				target="_blank"
+// 					>${(target.href || "")}</a>`
+// 		}
 		//  NOTE: TEMPORARILY DISABLED!
 // 		if (popupTitle) popup.titleBarContents.push(popupTitle);
 
