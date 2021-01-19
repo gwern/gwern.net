@@ -304,6 +304,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /* LINK BIBLIOGRAPHY */
 /*********************/
 
+GW.linkBibliographyCache = { };
+
 /***********************************************************************/
 /*	Inject the link bibliography (located at 
 	`<url for current page>-link-bibliography`), if not already inlined.
@@ -320,35 +322,46 @@ function injectLinkBibliography(loadEventInfo) {
 	let linkBibliographyURL = new URL(loadEventInfo.location.href);
 	linkBibliographyURL.pathname += "-link-bibliography";
 
-	doAjax({
-		location: linkBibliographyURL.href,
-		onSuccess: (event) => {
-			linkBibliography.innerHTML = `${event.target.responseText}`;
-			if (loadEventInfo.collapseAllowed)
-				linkBibliography.classList.toggle("collapse", true);
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
-				source: "injectLinkBibliography",
-				document: linkBibliography, 
-				isMainDocument: false,
-				needsRewrite: true, 
-				clickable: loadEventInfo.clickable, 
-				collapseAllowed: loadEventInfo.collapseAllowed, 
-				isCollapseBlock: loadEventInfo.collapseAllowed,
-				fullPage: false,
-				location: loadEventInfo.location,
-				fullWidthPossible: loadEventInfo.fullWidthPossible
-			});
-			setTimeout(() => { requestAnimationFrame(() => { realignHash(); }); });
-		},
-		onFailure: (event) => {
-			linkBibliography.innerHTML = `<h1><a 
-				href="#link-bibliography" 
-				title="Link to section: § ‘Link Bibliography’"
-					>Link Bibliography</a></h1>` + 
-				`<p><strong>Failed to load link bibliography! Extract/definition popups are not available.</strong></p>`;
-			linkBibliography.classList.toggle("loading-failed", true);
-		}
-	});
+	let postProcessLinkBibliography = () => {
+		if (loadEventInfo.collapseAllowed)
+			linkBibliography.classList.toggle("collapse", true);
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
+			source: "injectLinkBibliography",
+			document: linkBibliography, 
+			isMainDocument: false,
+			needsRewrite: true, 
+			clickable: loadEventInfo.clickable, 
+			collapseAllowed: loadEventInfo.collapseAllowed, 
+			isCollapseBlock: loadEventInfo.collapseAllowed,
+			fullPage: false,
+			location: linkBibliographyURL,
+			fullWidthPossible: loadEventInfo.fullWidthPossible
+		});
+	};
+
+	if (GW.linkBibliographyCache[linkBibliographyURL.pathname]) {
+		requestAnimationFrame(() => {
+			linkBibliography.innerHTML = GW.linkBibliographyCache[linkBibliographyURL.pathname].innerHTML;
+			postProcessLinkBibliography();
+		});
+	} else {
+		doAjax({
+			location: linkBibliographyURL.href,
+			onSuccess: (event) => {
+				linkBibliography.innerHTML = event.target.responseText;
+				GW.linkBibliographyCache[linkBibliographyURL.pathname] = linkBibliography;
+				postProcessLinkBibliography();
+			},
+			onFailure: (event) => {
+				linkBibliography.innerHTML = `<h1><a 
+					href="#link-bibliography" 
+					title="Link to section: § ‘Link Bibliography’"
+						>Link Bibliography</a></h1>` + 
+					`<p><strong>Failed to load link bibliography! Extract/definition popups are not available.</strong></p>`;
+				linkBibliography.classList.toggle("loading-failed", true);
+			}
+		});
+	}
 }
 
 /****************************************************************************/
@@ -427,15 +440,12 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 						|| (info.document.id == "link-bibliography" 
 							? info.document 
 							: null);
-	if (!linkBibliography) {
+	if (!linkBibliography)
 		return;
-	} else if (GW.isMobile() && info.isMainDocument) {
+
+	if (GW.isMobile() && info.isMainDocument) {
 		linkBibliography.remove();
 		document.querySelector(`#TOC a[href="#link-bibliography"]`).closest("li").remove();
-		return;
-	} else if (info.document.id == "link-bibliography" && linkBibliography.childElementCount == 0) {
-		injectLinkBibliography(info);
-		return;
 	} else if (linkBibliography.childElementCount > 0) {
 		injectLinkBibliographyItemSelfLinks(info);
 		rectifyTypographyInLinkBibliographyEntries(info);
