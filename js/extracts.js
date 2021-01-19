@@ -122,6 +122,22 @@ Extracts = {
 
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
+    addTargetsWithin: (container) => {
+    	if (GW.isMobile()) {
+    		return;
+    	} else {
+			//  Target prepare function.
+			let prepareTarget = (target) => {
+				//  Remove the title attribute.
+				target.removeAttribute("title");
+
+				if (Extracts.isTOCLink(target))
+					target.classList.remove("has-content");
+			};
+
+    		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+    	}
+    },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
@@ -138,24 +154,15 @@ Extracts = {
 				}
 			}
 
-			//  Target prepare function.
-			let prepareTarget = (target) => {
-				//  Remove the title attribute.
-				target.removeAttribute("title");
-
-				if (Extracts.isTOCLink(target))
-					target.classList.remove("has-content");
-			};
-
 			/*  Add handler to set up targets in loaded content (including 
 				newly-spawned popups; this allows for popup recursion).
 				*/
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processPopupTargetsOnContentLoad = (info) => {
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
 				if (info.document.closest(Extracts.contentContainersSelector) == info.document) {
-					Popups.addTargetsWithin(info.document, Extracts.targets, Extracts.preparePopup, prepareTarget);
+					Extracts.addTargetsWithin(info.document);
 				} else {
 					info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-						Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+						Extracts.addTargetsWithin(container);
 					});
 				}
 			});
