@@ -443,7 +443,11 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	if (!linkBibliography)
 		return;
 
-	if (GW.isMobile() && info.isMainDocument) {
+	if (   info.isFullPage 
+		&& (   info.location.hash == "#link-bibliography"
+			|| info.location.hash.startsWith("#link-bibliography-entry-"))) {
+		injectLinkBibliography(info);
+	} else if (GW.isMobile() && info.isMainDocument) {
 		linkBibliography.remove();
 		document.querySelector(`#TOC a[href="#link-bibliography"]`).closest("li").remove();
 	} else if (linkBibliography.childElementCount > 0) {
