@@ -175,18 +175,7 @@ Extracts = {
 
 						info.document.classList.add("link-bibliography-loading");
 						annotatedTarget.linkBibliographyInjectTimer = setTimeout(() => {
-							GW.rewriteFunctions.processLinkBibliography({
-								source: "Extracts.setUpLinkBibliographyInjectEvent",
-								document: info.document.querySelector("#link-bibliography"), 
-								isMainDocument: false,
-								needsRewrite: true, 
-								clickable: info.clickable, 
-								collapseAllowed: info.collapseAllowed, 
-								isCollapseBlock: info.collapseAllowed,
-								fullPage: false,
-								location: info.location,
-								fullWidthPossible: info.fullWidthPossible
-							});
+							injectLinkBibliography(info);
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
 					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
@@ -411,7 +400,10 @@ Extracts = {
 						return;
 
 					target.popFrame.classList.toggle("loading", false);
-					target.popFrame.contentView.innerHTML = Extracts.extractForTarget(target);
+
+					let setPopFrameContent = Popups.setPopFrameContent;
+					setPopFrameContent(target.popFrame, Extracts.extractForTarget(target));
+
 					//  TODO: generalize this (or the rewritePopupContent function) for popins too!
 					Extracts.rewritePopupContent(target.popFrame);
 				}
@@ -664,7 +656,10 @@ Extracts = {
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
+			target.popFrame.classList.toggle("loading", true);
 			requestAnimationFrame(() => {
+				target.popFrame.classList.toggle("loading", false);
+
 				fillPopFrame(Extracts.cachedPages[target.pathname]);
 			});
 		} else {
