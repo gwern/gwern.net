@@ -310,7 +310,7 @@ Extracts = {
 
 		let target = popFrame.spawningTarget;
 
-		var didFill = false;
+		let didFill = false;
 		let setPopFrameContent = Popups.setPopFrameContent;
 		for ([ testMethodName, fillMethodName, classes ] of possiblePopTypes) {
 			if (   Extracts[fillMethodName] != null
@@ -440,7 +440,7 @@ Extracts = {
 
 		//  Author list.
 		let authorElement = referenceListEntry.querySelector(".author");
-		var authorList;
+		let authorList;
 		if (authorElement) {
 			authorList = authorElement.textContent.split(", ").slice(0, 3).join(", ");
 			if (authorList.length < authorElement.textContent.length)
@@ -514,7 +514,7 @@ Extracts = {
 		let referenceData = Extracts.referenceDataForTarget(target);
 
 		//  Link to original URL (for archive links).
-        var originalLinkHTML = "";
+        let originalLinkHTML = "";
         if (   referenceData.element.dataset.urlOriginal != undefined 
         	&& referenceData.element.dataset.urlOriginal != target.href) {
             originalLinkHTML = `<span class="originalURL">[<a 
@@ -772,8 +772,8 @@ Extracts = {
     localImageForTarget: (target) => {
 		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
 
-		var width = target.dataset.imageWidth || 0;
-		var height = target.dataset.imageHeight || 0;
+		let width = target.dataset.imageWidth || 0;
+		let height = target.dataset.imageHeight || 0;
 
 		if (width > Extracts.imageMaxWidth) {
 			height *= Extracts.imageMaxWidth / width;
@@ -784,7 +784,7 @@ Extracts = {
 			height = Extracts.imageMaxHeight;
 		}
 
-		var styles = ``;
+		let styles = ``;
 		if (width > 0 && height > 0) {
 			styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 		}
@@ -947,7 +947,7 @@ Extracts = {
 			return false;
 
 		//  Add popup title bar contents.
-// 		var popupTitle;
+// 		let popupTitle;
 // 		if (Extracts.isDefinitionLink(target)) {
 // 			//  TODO: account for contents possibly not being loaded yet!
 // 			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
