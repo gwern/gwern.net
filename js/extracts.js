@@ -245,7 +245,7 @@ Extracts = {
 						"link-bibliography-loaded" 
 					], 1);
 				}
-			}, { phase: "<rewrite" });
+			}, { phase: ">rewrite" });
         }
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
