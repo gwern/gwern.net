@@ -2148,22 +2148,22 @@ GW.notificationCenter = {
 
 		let insertAt = handlers.length;
 
-		let phaseAt = (index) => {
-			if (index >= handlers.length) return null;
-			let parts = handlers[index].options.phase.match(/^([<>]?)(.+)/);
-			return {
-				phase: parts[2], 
-				before: (parts[1] == "<"), 
-				after: (parts[1] == ">")
-			};
-		};
-
 		let phaseOrder = GW.notificationCenter.handlerPhaseOrders[eventName];
 		if (phaseOrder)
 			options.phase = (options.phase || "");
 		if (options.phase && phaseOrder) {
 			let targetPhase = options.phase.match(/^([<>]?)(.+)/)[2];
 			let targetPhaseOrder = defval(phaseOrder.length, phaseOrder.indexOf(targetPhase), -1);
+
+			let phaseAt = (index) => {
+				if (index >= handlers.length) return null;
+				let parts = handlers[index].options.phase.match(/^([<>]?)(.+)/);
+				return {
+					phase: parts[2], 
+					before: (parts[1] == "<"), 
+					after: (parts[1] == ">")
+				};
+			};
 
 			if (options.phase.startsWith("<")) {
 				for (var i = 0; i < handlers.length; i++) {
