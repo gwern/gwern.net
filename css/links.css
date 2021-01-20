@@ -404,12 +404,12 @@ a.link-self.identifier-link-down::after {
     content: "";
     display: inline-block;
     font-size: 1em;
-    width: 0.8em;
-    height: 0.8em;
+    width: 0.75em;
+    height: 0.75em;
     margin: 0 0 0 4px;
-    bottom: 0.15em;
+    bottom: 0.1em;
     background-repeat: no-repeat;
-    opacity: 0.6;
+    opacity: 0.8;
 }
 a.link-self.identifier-link-up::after {
     background-image: url('/static/img/icons/arrow-up.svg');
