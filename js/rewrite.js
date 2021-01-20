@@ -53,7 +53,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	wrapTables(info);
 	if (info.fullWidthPossible)
 		wrapFullWidthTables(info);
-});
+}, { phase: "rewrite" });
 
 /***********/
 /* FIGURES */
@@ -134,7 +134,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	wrapFigures(info);
 	if (info.fullWidthPossible)
 		markFullWidthFigures(info);
-});
+}, { phase: "rewrite" });
 
 /***************/
 /* CODE BLOCKS */
@@ -168,7 +168,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 	if (info.fullWidthPossible)
 		wrapFullWidthPreBlocks(info);
-});
+}, { phase: "rewrite" });
 
 /**************/
 /* TYPOGRAPHY */
@@ -298,7 +298,7 @@ function setMarginsOnFullWidthBlocks(loadEventInfo) {
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFullWidthBlocks = (info) => {
 	setMarginsOnFullWidthBlocks(info);
-});
+}, { phase: ">rewrite" });
 
 /*********************/
 /* LINK BIBLIOGRAPHY */
@@ -456,7 +456,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 		setImageDimensionsInLinkBibliographyEntries(info);
 		fullyQualifyLinksInLinkBibliographyEntries(info);
 	}
-});
+}, { phase: "rewrite" });
 
 /*************/
 /* FOOTNOTES */
@@ -568,16 +568,12 @@ function injectFootnotesTOCLink(loadEventInfo) {
 
 	loadEventInfo.document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", 
 		`<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
-	if (Extracts)
-		Extracts.addTargetsWithin(loadEventInfo.document.querySelector("#TOC > ul a[href='#footnotes']").parentElement);
 }
 
-/*************************************************************/
-/*	Add content load handler for processing footnotes section.
+/**************************************************************/
+/*	Add content load handlers for processing footnotes section.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
-	bindNoteHighlightEventsToCitations(info);
-
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFootnotes = (info) => {
 	if (info.needsRewrite && info.isFullPage) {
 		identifyFootnotesSection(info);
 		injectFootnoteSectionSelfLink(info);
@@ -587,7 +583,10 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	if (info.isMainDocument) {
 		injectFootnotesTOCLink(info);
 	}
-});
+}, { phase: "rewrite" });
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
+	bindNoteHighlightEventsToCitations(info);
+}, { phase: "eventListeners" });
 
 /*********/
 /* LINKS */
@@ -646,7 +645,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 	addSpecialLinkClasses(info);
 	directionalizeAnchorLinks(info);
-});
+}, { phase: "rewrite" });
 
 /*********/
 /* MISC. */
@@ -672,7 +671,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 		return;
 
 	cleanUpImageAltText(info);
-});
+}, { phase: "rewrite" });
 
 /********************/
 /* BACK TO TOP LINK */
@@ -699,7 +698,7 @@ function injectBackToTopLink(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectBackToTopLink = (info) => {
 	if (info.isMainDocument)
 		injectBackToTopLink(info);
-});
+}, { phase: "rewrite" });
 
 /*******************************************************************************/
 /*  Show/hide the back-to-top link in response to scrolling.

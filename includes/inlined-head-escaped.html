@@ -2059,6 +2059,12 @@ function addScrollListener(fn, name) {
     }
 }
 
+/*	Returns val, or def if val == defval. (By default, defval is -1.)
+	*/
+function defval(def, val, defval = -1) {
+	return (val == defval) ? def : val;
+}
+
 /************************/
 /* ACTIVE MEDIA QUERIES */
 /************************/
@@ -2123,48 +2129,107 @@ function cancelDoWhenMatchMedia(name) {
 /*  Options object may have members:
 
         `once` (boolean; does the handler get removed after being called?)
+        `phase` (string; in [e.g. "rewrite"], before [e.g. "<rewrite"], or after
+        		 [e.g. ">rewrite"] which phase of that event’s handlers does the
+        		 given handler get called?)
     */
-GW.notificationCenter = { };
-GW.notificationCenter.addHandlerForEvent = function (eventName, f, options = { }) {
-    if (GW.notificationCenter[eventName] == null)
-        GW.notificationCenter[eventName] = [ ];
+GW.notificationCenter = {
+	eventHandlers: { },
+	handlerPhaseOrders: {
+		"GW.contentDidLoad": [ "rewrite", "eventListeners" ]
+	},
+	addHandlerForEvent: (eventName, f, options = { }) => {
+		if (GW.notificationCenter.eventHandlers[eventName] == null)
+			GW.notificationCenter.eventHandlers[eventName] = [ ];
 
-    if (GW.notificationCenter[eventName].findIndex(handler => handler.f == f) !== -1)
-        return;
+		let handlers = GW.notificationCenter.eventHandlers[eventName];
+		if (handlers.findIndex(handler => handler.f == f) !== -1)
+			return;
 
-    GW.notificationCenter[eventName].push({ f: f, options: options });
-};
-GW.notificationCenter.removeHandlerForEvent = function (eventName, f, options = { }) {
-    if (GW.notificationCenter[eventName] == null)
-        return;
+		let insertAt = handlers.length;
 
-    GW.notificationCenter[eventName].removeIf(handler => handler.f == f);
-}
-GW.notificationCenter.removeAllHandlersForEvent = function (eventName) {
-    GW.notificationCenter[eventName] = null;
-}
-GW.notificationCenter.fireEvent = function (eventName, eventInfo) {
-	/*  The ‘16’ here is the width of the date field plus spacing.
-		The “Source:” text is manually padded to be as wide as “[notification]”.
-		*/
-    GWLog(`Event “$${eventName}” fired.` + `$${(
-    	(eventInfo && eventInfo.source) 
-    	? ("\n" + "".padStart(16, ' ') + "       Source:".padEnd(GW.logSourcePadLength, ' ') + eventInfo.source) 
-    	: ""
-    )}`, "notification");
+		let phaseOrder = GW.notificationCenter.handlerPhaseOrders[eventName];
+		if (phaseOrder)
+			options.phase = (options.phase || "");
+		if (options.phase && phaseOrder) {
+			let targetPhase = options.phase.match(/^([<>]?)(.+)/)[2];
+			let targetPhaseOrder = defval(phaseOrder.length, phaseOrder.indexOf(targetPhase), -1);
 
-    if (GW.notificationCenter[eventName] == null)
-        return;
+			let phaseAt = (index) => {
+				if (index >= handlers.length) return null;
+				let parts = handlers[index].options.phase.match(/^([<>]?)(.+)/);
+				return {
+					phase: parts[2], 
+					before: (parts[1] == "<"), 
+					after: (parts[1] == ">")
+				};
+			};
 
-	for (var i = 0; i < GW.notificationCenter[eventName].length; i++) {
-		let handler = GW.notificationCenter[eventName][i];
-        handler.f(eventInfo);
-        if (handler.options.once) {
-        	GW.notificationCenter[eventName].splice(i, 1);
-        	i--;
-        }
+			if (options.phase.startsWith("<")) {
+				for (var i = 0; i < handlers.length; i++) {
+					if (phaseAt(i).phase == targetPhase && !phaseAt(i).before)
+						break;
+					if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(i).phase))
+						break;
+				}
+				insertAt = i;
+			} else if (options.phase.startsWith(">")) {
+				for (var j = handlers.length - 1; j > -1; j--) {
+					if (phaseAt(j).phase == targetPhase) {
+						j++;
+						break;
+					}
+					if (phaseOrder.slice(0, targetPhaseOrder - 1).includes(phaseAt(j).phase)) {
+						j++;
+						break;
+					}
+				}
+				insertAt = j;
+			} else {
+				for (var k = 0; k < handlers.length; k++) {
+					if (phaseAt(k).phase == targetPhase && phaseAt(k).after)
+						break;
+					if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(k).phase))
+						break;
+				}
+				insertAt = k;
+			}
+		}
+
+		GW.notificationCenter.eventHandlers[eventName].splice(insertAt, 0, { f: f, options: options });
+	},
+	removeHandlerForEvent: (eventName, f, options = { }) => {
+		if (GW.notificationCenter.eventHandlers[eventName] == null)
+			return;
+
+		GW.notificationCenter.eventHandlers[eventName].removeIf(handler => handler.f == f);
+	},
+	removeAllHandlersForEvent: (eventName) => {
+		GW.notificationCenter.eventHandlers[eventName] = null;
+	},
+	fireEvent: (eventName, eventInfo) => {
+		/*  The ‘16’ here is the width of the date field plus spacing.
+			The “Source:” text is manually padded to be as wide as “[notification]”.
+			*/
+		GWLog(`Event “$${eventName}” fired.` + `$${(
+			(eventInfo && eventInfo.source) 
+			? ("\n" + "".padStart(16, ' ') + "       Source:".padEnd(GW.logSourcePadLength, ' ') + eventInfo.source) 
+			: ""
+		)}`, "notification");
+
+		if (GW.notificationCenter.eventHandlers[eventName] == null)
+			return;
+
+		for (var i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
+			let handler = GW.notificationCenter.eventHandlers[eventName][i];
+			handler.f(eventInfo);
+			if (handler.options.once) {
+				GW.notificationCenter.eventHandlers[eventName].splice(i, 1);
+				i--;
+			}
+		}
 	}
-}
+};
 
 /****************/
 /* SCROLL STATE */

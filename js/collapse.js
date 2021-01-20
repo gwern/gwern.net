@@ -173,7 +173,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.processCollapse
 	} else if (info.needsRewrite) {
 		prepareCollapseBlocks(info);
 	}
-});
+}, { phase: "eventListeners" });
 
 /*	Ensure that the given element is scrolled into view when layout is complete.
 	*/
