@@ -996,9 +996,11 @@ Extracts = {
 		}
 
 		//  Ensure no reflow due to figures.
-		popup.querySelectorAll("img[width]").forEach(img => {
-			if (img.style.width <= "")
+		popup.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
+			if (img.style.width <= "") {
 				img.style.width = img.getAttribute("width") + "px";
+				img.style.maxHeight = "unset";
+			}
 		});
 
 		//  Allow for floated figures at the start of abstract.
