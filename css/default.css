@@ -26,8 +26,9 @@
     --GW-sidenotes-max-width: 550px;
 
 	--GW-popups-popup-max-width: 640px;
-	--GW-popups-annotation-popup-min-width: 360px;
 	--GW-popups-popup-max-height: 480px;
+	--GW-popups-annotation-popup-min-width: 360px;
+	--GW-popups-annotation-popup-min-height: 240px;
 	--GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: 1.5rem;
 	--GW-popups-video-iframe-width: 495px;
@@ -3020,6 +3021,7 @@ body.directory-index #disqus_thread {
 
 .popup.annotation {
     min-width: var(--GW-popups-annotation-popup-min-width);
+    min-height: var(--GW-popups-annotation-popup-min-height);
 }
 
 /*  Data fields.
