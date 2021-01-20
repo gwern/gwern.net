@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-01-20 11:35:50 gwern"
+# When:  Time-stamp: "2021-01-20 17:35:07 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -127,6 +127,8 @@ do
         wrap λ "LaTeX: \\cdot is nicer"
         λ(){ fgrep '$$E(' -- "$PAGE"; }
         wrap λ "LaTeX: use \\mathbb for expectations"
+        λ(){ egp -e '[a-zA-Z]→[a-zA-Z]' -e '[a-zA-Z]←[a-zA-Z]' -e '[a-zA-Z]↔[a-zA-Z]' -- "$PAGE"; }
+        wrap λ "Add spaces to arrows: more legible, fewer odd interactions (like Hyphenator)"
 
         λ(){ fgp -i -e '<div class="admonition-warning">' -e '<div class="admonition-note">' -e '<div class="admonition-error">' \
                  -e '**Warn' -e '**Note' -e '**Error' -- "$PAGE"; }
