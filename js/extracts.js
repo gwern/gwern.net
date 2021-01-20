@@ -173,20 +173,12 @@ Extracts = {
 				to lazy-load and inject the link bibliography.
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
-				/*	If this is a link bibliography that’s loading, then we 
-					mark its containing document as having loaded its link
-					bibliography.
+				GWLog("Extracts.setUpLinkBibliographyInjectEvent", "extracts.js", 2);
 
-					Otherwise, if it’s not a full-page content load, then it’s
+				/*	If it’s not a full-page content load, then it’s
 					some random thing, like a popup spawning; we ignore it.
 					*/
-				if (info.document.id == "link-bibliography") {
-					Extracts.originatingDocumentForTarget(info.document).swapClasses([ 
-						"link-bibliography-loading", 
-						"link-bibliography-loaded" 
-					], 1);
-					return;
-				} else if (!info.isFullPage) {
+				if (!info.isFullPage) {
 					return;
 				}
 
@@ -237,6 +229,23 @@ Extracts = {
 					});
 				}, { once: true });
 			}, { phase: "eventListeners" });
+
+			/*	Add handler to mark a link bibliography as loaded.
+				*/
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.markLinkBibliographyLoaded = (info) => {
+				GWLog("Extracts.markLinkBibliographyLoaded", "extracts.js", 2);
+
+				/*	If this is a link bibliography that’s loading, then we 
+					mark its containing document as having loaded its link
+					bibliography.
+					*/
+				if (info.document.id == "link-bibliography") {
+					Extracts.originatingDocumentForTarget(info.document).swapClasses([ 
+						"link-bibliography-loading", 
+						"link-bibliography-loaded" 
+					], 1);
+				}
+			}, { phase: "<rewrite" });
         }
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
@@ -322,6 +331,8 @@ Extracts = {
 	},
 
 	fillPopFrameAfterLinkBibliographyLoads: (target, fillFunction) => {
+		GWLog("Extracts.fillPopFrameAfterLinkBibliographyLoads", "extracts.js", 2);
+
 		/*	If the link bibliography for the containing document is still 
 			loading, then we set up an event handler for when it loads,
 			and inject the link bibliography into the popup after it spawns
@@ -331,6 +342,8 @@ Extracts = {
 		target.popFrame.classList.toggle("loading", true);
 
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectPopFrameContentWhenLinkBibliographyLazyLoaded = (info) => {
+			GWLog("injectPopFrameContentWhenLinkBibliographyLazyLoaded", "extracts.js", 2);
+
 			/*	We check that it’s a link bibliography load event (and not
 				some other kind of content load), and that the loaded link
 				bibliography is associated with the correct document.
