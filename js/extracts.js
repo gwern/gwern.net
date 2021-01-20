@@ -123,7 +123,9 @@ Extracts = {
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
     addTargetsWithin: (container) => {
-    	if (GW.isMobile()) {
+ 		GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
+
+		if (GW.isMobile()) {
     		return;
     	} else {
 			//  Target prepare function.
@@ -165,7 +167,7 @@ Extracts = {
 						Extracts.addTargetsWithin(container);
 					});
 				}
-			});
+			}, { phase: "eventListeners" });
 
 			/*  Add handler to add hover event listeners to annotated targets,
 				to lazy-load and inject the link bibliography.
@@ -179,7 +181,10 @@ Extracts = {
 					some random thing, like a popup spawning; we ignore it.
 					*/
 				if (info.document.id == "link-bibliography") {
-					Extracts.originatingDocumentForTarget(info.document).swapClasses([ "link-bibliography-loading", "link-bibliography-loaded" ], 1);
+					Extracts.originatingDocumentForTarget(info.document).swapClasses([ 
+						"link-bibliography-loading", 
+						"link-bibliography-loaded" 
+					], 1);
 					return;
 				} else if (!info.isFullPage) {
 					return;
@@ -231,7 +236,7 @@ Extracts = {
 						annotatedTarget.removeEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave);
 					});
 				}, { once: true });
-			});
+			}, { phase: "eventListeners" });
         }
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
@@ -354,7 +359,7 @@ Extracts = {
 				let rewritePopFrameContent = Extracts.rewritePopupContent;
 				rewritePopFrameContent(target.popup);
 			}
-		});
+		}, { phase: ">rewrite" });
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
