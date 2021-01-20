@@ -568,8 +568,6 @@ function injectFootnotesTOCLink(loadEventInfo) {
 
 	loadEventInfo.document.querySelector("#TOC > ul").insertAdjacentHTML("beforeend", 
 		`<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
-	if (Extracts)
-		Extracts.addTargetsWithin(loadEventInfo.document.querySelector("#TOC > ul a[href='#footnotes']").parentElement);
 }
 
 /**************************************************************/

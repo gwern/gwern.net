@@ -356,10 +356,14 @@ GW.notificationCenter = {
 				insertAt = i;
 			} else if (options.phase.startsWith(">")) {
 				for (var j = handlers.length - 1; j > -1; j--) {
-					if (phaseAt(j).phase == targetPhase)
+					if (phaseAt(j).phase == targetPhase) {
+						j++;
 						break;
-					if (phaseOrder.slice(0, targetPhaseOrder - 1).includes(phaseAt(j).phase))
+					}
+					if (phaseOrder.slice(0, targetPhaseOrder - 1).includes(phaseAt(j).phase)) {
+						j++;
 						break;
+					}
 				}
 				insertAt = j;
 			} else {
