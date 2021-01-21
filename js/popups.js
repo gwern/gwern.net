@@ -168,6 +168,10 @@ Popups = {
 		return (containingPopup ? isWithinRect(element, containingPopup.getBoundingClientRect()) : isOnScreen(element));
 	},
 
+	allSpawnedPopups: () => {
+		return Array.from(Popups.popupContainer.children);
+	},
+
 	preferSidePositioning: (target) => {
 		return target.preferSidePositioning ? target.preferSidePositioning() : false;
 	},
@@ -207,7 +211,7 @@ Popups = {
 		target.popup.spawningTarget = target;
 
 		// Prepare the newly created popup for spawning.
-		if (target.preparePopup(target.popup) == false)
+		if (!(target.popup = target.preparePopup(target.popup)))
 			return;
 
 		/*  If title bar contents are provided, create and inject the popup

@@ -458,9 +458,9 @@ Extracts = {
 		*/
 	originatingDocumentLocationForTarget: (target) => {
 		let originatingDocument = Extracts.originatingDocumentForTarget(target);
-		return (originatingDocument == document.firstElementChild)
-			   ? new URL(location.href)
-			   : new URL(originatingDocument.closest(".popframe").spawningTarget.href);
+		return new URL((originatingDocument == document.firstElementChild)
+					   ? location.href
+					   : originatingDocument.closest(".popframe").spawningTarget.href);
 	},
 
 	/*	Returns true if the target location matches an already-displayed page 
@@ -931,6 +931,18 @@ Extracts = {
 	/*	Popups.
 		*/
 
+	spawnedPopupMatchingTarget: (target) => {
+		return null;
+
+		let allSpawnedPopups = Popups.allSpawnedPopups();
+		return Popups.allSpawnedPopups().find(popup => {
+			return    (   target.href 
+					   && target.href == popup.spawningTarget.href)
+				   || (   target.dataset.originalDefinitionId 
+				   	   && target.dataset.originalDefinitionId == popup.spawningTarget.dataset.originalDefinitionId);
+		}) || null;
+	},
+
 	/*	Called by popups.js just before spawning (injecting and positioning) the
 		popup. This is our chance to fill the popup with content, and rewrite
 		that content in whatever ways necessary. After this function exits, the
@@ -940,6 +952,10 @@ Extracts = {
 		GWLog("Extracts.preparePopup", "extracts.js", 2);
 
 		let target = popup.spawningTarget;
+
+		let existingPopup = Extracts.spawnedPopupMatchingTarget(target);
+		if (existingPopup)
+			return existingPopup;
 
 		//  Import the class(es) of the target.
 		popup.classList.add(...target.classList);
@@ -958,7 +974,7 @@ Extracts = {
 				&& Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
 			|| (   Extracts.isCitationBackLink(target) 
 				&& Popups.isVisible(Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash)))))
-			return false;
+			return null;
 
 		//  Various special handling.
 		if (Extracts.isTOCLink(target)) {
@@ -999,7 +1015,7 @@ Extracts = {
 			[ "isLocalPageLink",		"localTranscludeForTarget", 	"local-transclude" 			],
 			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 		"foreign-site object" 		]
 			]) == false)
-			return false;
+			return null;
 
 		//  Add popup title bar contents.
 // 		let popupTitle;
@@ -1023,7 +1039,7 @@ Extracts = {
 		if (!popup.classList.contains("loading")) 
 			Extracts.rewritePopupContent(popup);
 
-		return true;
+		return popup;
     },
     
     rewritePopupContent: (popup) => {
