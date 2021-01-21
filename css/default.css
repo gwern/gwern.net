@@ -1393,12 +1393,19 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     left: 0;
 }
 
+/*=------------=*/
+/*= Edge cases =*/
+/*=-------------=*/
 
+.sidenote .footnote-self-link {
+	display: none;
+}
 
 /*=--------------=*/
-/*= Margin notes *=/
+/*= Margin notes =*/
 /*=--------------=*/
 /* display inline on mobile/narrow windows; on sufficiently-wide screens, pop out as number-less sidenotes */
+
 .marginnote {
     /* bolding turns out to be too obtrusive for users' liking; italicized both inline & popped-out */
     font-style: italic;
