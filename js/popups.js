@@ -476,8 +476,9 @@ Popups = {
 		//	Stop the countdown to un-pop the popup.
 		Popups.clearPopupTimers(event.target);
 
-		//  Start the countdown to pop up the popup.
-		Popups.setPopupSpawnTimer(event.target, event);
+		//  Start the countdown to pop up the popup (if not already spawned).
+		if (event.target.popup == null)
+			Popups.setPopupSpawnTimer(event.target, event);
 	},
 	//	The mouseleave event.
 	targetMouseleave: (event) => {
