@@ -640,11 +640,11 @@ function directionalizeAnchorLinks(loadEventInfo) {
 /*	Add content load handler for link processing.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinks = (info) => {
-	if (!info.needsRewrite)
-		return;
-
 	addSpecialLinkClasses(info);
-	directionalizeAnchorLinks(info);
+
+	if (info.needsRewrite) {
+		directionalizeAnchorLinks(info);
+	}
 }, { phase: "rewrite" });
 
 /*********/

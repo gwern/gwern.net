@@ -37,7 +37,6 @@ Extracts = {
 			".footnote-self-link",
 			".sidenote-self-link",
 			".link-bibliography-item-self-link",
-			".extract .data-field.title a",
 			/*  Do not provide extracts for annotated links that are link
 				bibliography entries, as their annotations are right there below the
 				link itself.

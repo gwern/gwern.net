@@ -3037,6 +3037,7 @@ body.directory-index #disqus_thread {
 .popup.annotation .data-field.title {
     font-weight: bold;
     font-size: 1.125em;
+    line-height: 1.35;
 }
 .popup.annotation .data-field.author {
     font-style: italic;
@@ -3366,6 +3367,11 @@ body.directory-index #disqus_thread {
 	display: none;
 }
 
+.popup blockquote:first-child,
+.popup .table-wrapper:first-child,
+.popup div.sourceCode:first-child pre {
+    margin-top: calc(3em/9);
+}
 .popup blockquote:last-child,
 .popup .table-wrapper:last-child,
 .popup div.sourceCode:last-child pre {
