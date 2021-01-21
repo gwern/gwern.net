@@ -26,7 +26,7 @@ Extracts = {
 
 	/*	Target containers.
 		*/
-	contentContainersSelector: ".markdownBody, #TOC",
+	contentContainersSelector: ".markdownBody, #TOC, #page-metadata, #sidebar",
 
 	/*	Targets.
 		*/
@@ -37,7 +37,6 @@ Extracts = {
 			".footnote-self-link",
 			".sidenote-self-link",
 			".link-bibliography-item-self-link",
-			".extract .data-field.title a",
 			/*  Do not provide extracts for annotated links that are link
 				bibliography entries, as their annotations are right there below the
 				link itself.
@@ -204,7 +203,7 @@ Extracts = {
 							/*  ... to inject the link bibliography for the 
 								target’s containing document.
 								*/
-							info.document.classList.add("link-bibliography-loading");
+							info.document.swapClasses([ "link-bibliography-loading-failed", "link-bibliography-loading" ], 1);
 							injectLinkBibliography({
 								source: "Extracts.setUpLinkBibliographyInjectEvent",
 								document: Extracts.originatingDocumentForTarget(info.document),
@@ -256,6 +255,23 @@ Extracts = {
 					], 1);
 				}
 			}, { phase: ">rewrite" });
+
+			/*	Add handler for if loading the link bibliography failed.
+				*/
+			GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.markLinkBibliographyLoadFailed = (info) => {
+				GWLog("Extracts.markLinkBibliographyLoadFailed", "extracts.js", 2);
+
+				/*	If this is a link bibliography that’s failed to load, then 
+					we mark its containing document as having failed to load its
+					link bibliography.
+					*/
+				if (info.document.id == "link-bibliography") {
+					Extracts.originatingDocumentForTarget(info.document).swapClasses([ 
+						"link-bibliography-loading", 
+						"link-bibliography-loading-failed" 
+					], 1);
+				}
+			});
         }
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
@@ -343,14 +359,13 @@ Extracts = {
 	refreshPopFrameAfterLinkBibliographyLoads: (target) => {
 		GWLog("Extracts.refreshPopFrameAfterLinkBibliographyLoads", "extracts.js", 2);
 
-		/*	If the link bibliography for the containing document is still 
-			loading, then we set up an event handler for when it loads,
-			and respawn the popup / re-inject the popin, after it spawns
-			(if it hasn’t de-spawned already, e.g. if the user moused out of
-			 the target).
-			*/
 		target.popFrame.classList.toggle("loading", true);
 
+		/*	We set up an event handler for when the link bibliography loads, 
+			and respawn the popup / re-inject the popin, after it spawns (if it 
+			hasn’t de-spawned already, e.g. if the user moused out of the 
+			target).
+			*/
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded = (info) => {
 			GWLog("refreshPopFrameWhenLinkBibliographyLazyLoaded", "extracts.js", 2);
 
@@ -366,7 +381,7 @@ Extracts = {
 					*/
 				GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded);
 
-				//  If the popup has despawned, don’t respawn it.
+				//  If the pop-frame has despawned, don’t respawn it.
 				if (!target.popFrame)
 					return;
 
@@ -374,6 +389,26 @@ Extracts = {
 				Popups.spawnPopup(target);
 			}
 		}, { phase: ">rewrite" });
+
+		//  Add handler for if the link bibliography load fails.
+		GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", target.updatePopFrameWhenLinkBibliographyLoadFails = (info) => {
+			GWLog("updatePopFrameWhenLinkBibliographyLoadFails", "extracts.js", 2);
+
+			if (   info.document.id == "link-bibliography" 
+				&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
+				) {
+				/*  We no longer need to watch for load events for this
+					pop-frame.
+					*/
+				GW.notificationCenter.removeHandlerForEvent("GW.contentLoadDidFail", target.updatePopFrameWhenLinkBibliographyLoadFails);
+
+				//  If the pop-frame has despawned, don’t respawn it.
+				if (!target.popFrame)
+					return;
+
+				target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+			}
+		});
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
@@ -503,6 +538,9 @@ Extracts = {
 
 		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
 			Extracts.refreshPopFrameAfterLinkBibliographyLoads(target);
+			return `&nbsp;`;
+		} else if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading-failed")) {
+			target.popFrame.classList.add("loading-failed");
 			return `&nbsp;`;
 		}
 

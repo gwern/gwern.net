@@ -55,6 +55,7 @@
     }
     a.no-popup,
     a.no-popin,
+    #sidebar .has-content,
 	body.index .has-annotation,
     body.index .has-content {
         margin: 0;
@@ -63,6 +64,7 @@
     }
     a.no-popup::before,
     a.no-popin::before,
+    #sidebar .has-content::before,
     body.index .has-annotation::before,
     body.index .has-content::before {
         content: none;

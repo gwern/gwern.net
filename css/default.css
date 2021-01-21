@@ -1393,40 +1393,19 @@ article > :not(#TOC) .sidenote > .sidenote-self-link {
     left: 0;
 }
 
-/* /\* Sidenotes return links: align to the sidenote box like the sidenote numbering *\/ */
-/* #sidenote-column-left .footnote-back { */
-/*   position: absolute; */
-/*   bottom: -8px; */
-/*   border-color: #aaa; */
-/*   border-width: 1px 1px 0px 1px; */
-/*   width: 1.6em; */
-/*   height: 2em; */
-/*   display: flex; */
-/*   align-items: center; */
-/*   justify-content: center; */
-/*   right: 0px; */
-/* } */
-/* #sidenote-column-right .footnote-back { */
-/*   position: absolute; */
-/*   bottom: -6px; */
-/*   border-color: #aaa; */
-/*   border-width: 1px 1px 0px 1px; */
-/*   width: 1.6em; */
-/*   height: 2em; */
-/*   display: flex; */
-/*   align-items: center; */
-/*   justify-content: center; */
-/*   right: 0px; */
-/* } */
-/* /\* special-case: move the return link into blockquotes to avoid messy partial overlap *\/ */
-/* #sidenote-column-left blockquote + .footnote-back { margin-bottom: 9px; } */
-/* #sidenote-column-right blockquote + .footnote-back { margin-bottom: 7px; } */
-/* #sidenote-column-left ul + .footnote-back { margin-bottom: -11px; } */
+/*=------------=*/
+/*= Edge cases =*/
+/*=-------------=*/
+
+.sidenote .footnote-self-link {
+	display: none;
+}
 
 /*=--------------=*/
-/*= Margin notes *=/
+/*= Margin notes =*/
 /*=--------------=*/
 /* display inline on mobile/narrow windows; on sufficiently-wide screens, pop out as number-less sidenotes */
+
 .marginnote {
     /* bolding turns out to be too obtrusive for users' liking; italicized both inline & popped-out */
     font-style: italic;
@@ -3037,6 +3016,7 @@ body.directory-index #disqus_thread {
 .popup.annotation .data-field.title {
     font-weight: bold;
     font-size: 1.125em;
+    line-height: 1.35;
 }
 .popup.annotation .data-field.author {
     font-style: italic;
@@ -3366,6 +3346,11 @@ body.directory-index #disqus_thread {
 	display: none;
 }
 
+.popup blockquote:first-child,
+.popup .table-wrapper:first-child,
+.popup div.sourceCode:first-child pre {
+    margin-top: calc(3em/9);
+}
 .popup blockquote:last-child,
 .popup .table-wrapper:last-child,
 .popup div.sourceCode:last-child pre {
