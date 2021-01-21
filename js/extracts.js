@@ -14,9 +14,15 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 Extracts = {
+	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ]
+};
+
+Extracts = {
     /*****************/
     /*  Configuration.
         */
+
+	annotatedTargetSelectors: Extracts.annotatedTargetSelectors,
 
 	/*	Target containers.
 		*/
@@ -36,7 +42,7 @@ Extracts = {
 				bibliography entries, as their annotations are right there below the
 				link itself.
 				*/
-			[ "a.docMetadata", "span.defnMetadata" ].map(annotatedTargetSelector => 
+			Extracts.annotatedTargetSelectors.map(annotatedTargetSelector => 
 				[ "#link-bibliography > ol > li > p", "li[id^='link-bibliography-entry-'] > p" ].map(referenceElementContainerSelector =>
 					`${referenceElementContainerSelector} ${annotatedTargetSelector}`
 				).join(", ")
@@ -175,15 +181,8 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
 				GWLog("Extracts.setUpLinkBibliographyInjectEvent", "extracts.js", 2);
 
-				/*	If it’s not a full-page content load, then it’s
-					some random thing, like a popup spawning; we ignore it.
-					*/
-				if (!info.isFullPage) {
-					return;
-				}
-
 				//  Get all the annotated targets in the document.
-				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll("a.docMetadata, span.defnMetadata"));
+				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
 				/*  Special case to also lazy-load the main document’s link
 					bibliography when its ToC entry is hovered over.
 					*/
@@ -206,7 +205,18 @@ Extracts = {
 								target’s containing document.
 								*/
 							info.document.classList.add("link-bibliography-loading");
-							injectLinkBibliography(info);
+							injectLinkBibliography({
+								source: "Extracts.setUpLinkBibliographyInjectEvent",
+								document: Extracts.originatingDocumentForTarget(info.document),
+								isMainDocument: false,
+								needsRewrite: true, 
+								clickable: info.clickable, 
+								collapseAllowed: info.collapseAllowed, 
+								isCollapseBlock: false,
+								isFullPage: true,
+								location: Extracts.originatingDocumentLocationForTarget(info.document),
+								fullWidthPossible: info.fullWidthPossible
+							});
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
 					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
@@ -399,6 +409,21 @@ Extracts = {
 				return Extracts.originatingDocumentForTarget(containingPopFrame.spawningTarget);
 		} else {
 			return document.firstElementChild;
+		}
+	},
+
+	/*	Returns the location (a URL object) of the originating document for
+		the given target.
+		*/
+	originatingDocumentLocationForTarget: (target) => {
+		let containingPopFrame = target.closest(".popframe");
+		if (containingPopFrame) {
+			if (containingPopFrame.classList.contains("external-page-embed"))
+				return new URL(containingPopFrame.spawningTarget.href);
+			else
+				return Extracts.originatingDocumentLocationForTarget(containingPopFrame.spawningTarget);
+		} else {
+			return new URL(location.href);
 		}
 	},
 
@@ -1037,7 +1062,7 @@ Extracts = {
 			collapseAllowed: false, 
 			isCollapseBlock: false,
 			isFullPage: false,
-			location: null,
+			location: Extracts.originatingDocumentLocationForTarget(target),
 			fullWidthPossible: false
 		});
 
