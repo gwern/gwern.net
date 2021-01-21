@@ -186,6 +186,9 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
 				GWLog("Extracts.setUpLinkBibliographyInjectEvent", "extracts.js", 2);
 
+				if (info.document.id == "link-bibliography")
+					return;
+
 				//  Get all the annotated targets in the document.
 				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
 				/*  Special case to also lazy-load the main document’s link
