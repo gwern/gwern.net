@@ -171,7 +171,7 @@ Extracts = {
 				newly-spawned popups; this allows for popup recursion).
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
-				if (info.document.closest(Extracts.contentContainersSelector) == info.document) {
+				if (info.document.closest(Extracts.contentContainersSelector)) {
 					Extracts.addTargetsWithin(info.document);
 				} else {
 					info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
@@ -203,7 +203,7 @@ Extracts = {
 						/*  Do nothing if the link bibliography for the target’s
 							containing document is already loaded.
 							*/
-						if (info.document.classList.contains("link-bibliography-loaded")) return;
+						if (Extracts.originatingDocumentForTarget(info.document).classList.contains("link-bibliography-loaded")) return;
 
 						/*  On hover, start a timer, duration of one-half the 
 							popup trigger delay...
@@ -228,7 +228,7 @@ Extracts = {
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
 					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
-						if (info.document.classList.contains("link-bibliography-loaded")) return;
+						if (Extracts.originatingDocumentForTarget(info.document).classList.contains("link-bibliography-loaded")) return;
 
 						/*  Cancel timer on mouseout (no need to commence a load
 							on a merely transient hover).
