@@ -356,24 +356,24 @@ Extracts = {
 					*/
 				GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectPopFrameContentWhenLinkBibliographyLazyLoaded);
 
-				//  If the popup has de-spawned, we can’t fill it.
+				//  If the popup has despawned, don’t respawn it.
 				if (!target.popFrame)
 					return;
 
-				target.popFrame.classList.toggle("loading", false);
-
-				//  Fill the pop-frame.
+// 				target.popFrame.classList.toggle("loading", false);
+// 
+// 				//  Fill the pop-frame.
+// 				//  TODO: generalize this for popins!
+// 				let setPopFrameContent = Popups.setPopFrameContent;
+// 				setPopFrameContent(target.popFrame, fillFunction(target));
+// 
+// 				//  Do rewrites.
+// 				//  TODO: generalize this for popins!
+// 				let rewritePopFrameContent = Extracts.rewritePopupContent;
+// 				rewritePopFrameContent(target.popFrame);
+// 
 				//  TODO: generalize this for popins!
-				let setPopFrameContent = Popups.setPopFrameContent;
-				setPopFrameContent(target.popFrame, fillFunction(target));
-
-				//  Do rewrites.
-				//  TODO: generalize this for popins!
-				let rewritePopFrameContent = Extracts.rewritePopupContent;
-				rewritePopFrameContent(target.popFrame);
-
-				//  TODO: skip this for popins!
-				Popups.respawnPopup(target.popFrame);
+				Popups.spawnPopup(target);
 			}
 		}, { phase: ">rewrite" });
 	},
