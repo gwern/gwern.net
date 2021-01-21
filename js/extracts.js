@@ -14,9 +14,15 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 Extracts = {
+	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ]
+};
+
+Extracts = {
     /*****************/
     /*  Configuration.
         */
+
+	annotatedTargetSelectors: Extracts.annotatedTargetSelectors,
 
 	/*	Target containers.
 		*/
@@ -36,7 +42,7 @@ Extracts = {
 				bibliography entries, as their annotations are right there below the
 				link itself.
 				*/
-			[ "a.docMetadata", "span.defnMetadata" ].map(annotatedTargetSelector => 
+			Extracts.annotatedTargetSelectors.map(annotatedTargetSelector => 
 				[ "#link-bibliography > ol > li > p", "li[id^='link-bibliography-entry-'] > p" ].map(referenceElementContainerSelector =>
 					`${referenceElementContainerSelector} ${annotatedTargetSelector}`
 				).join(", ")
@@ -175,15 +181,8 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
 				GWLog("Extracts.setUpLinkBibliographyInjectEvent", "extracts.js", 2);
 
-				/*	If it’s not a full-page content load, then it’s
-					some random thing, like a popup spawning; we ignore it.
-					*/
-				if (!info.isFullPage) {
-					return;
-				}
-
 				//  Get all the annotated targets in the document.
-				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll("a.docMetadata, span.defnMetadata"));
+				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
 				/*  Special case to also lazy-load the main document’s link
 					bibliography when its ToC entry is hovered over.
 					*/
@@ -206,7 +205,18 @@ Extracts = {
 								target’s containing document.
 								*/
 							info.document.classList.add("link-bibliography-loading");
-							injectLinkBibliography(info);
+							injectLinkBibliography({
+								source: "Extracts.setUpLinkBibliographyInjectEvent",
+								document: Extracts.originatingDocumentForTarget(info.document),
+								isMainDocument: false,
+								needsRewrite: true, 
+								clickable: info.clickable, 
+								collapseAllowed: info.collapseAllowed, 
+								isCollapseBlock: false,
+								isFullPage: true,
+								location: Extracts.originatingDocumentLocationForTarget(info.document),
+								fullWidthPossible: info.fullWidthPossible
+							});
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
 					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
@@ -330,19 +340,19 @@ Extracts = {
 		}
 	},
 
-	fillPopFrameAfterLinkBibliographyLoads: (target, fillFunction) => {
-		GWLog("Extracts.fillPopFrameAfterLinkBibliographyLoads", "extracts.js", 2);
+	refreshPopFrameAfterLinkBibliographyLoads: (target) => {
+		GWLog("Extracts.refreshPopFrameAfterLinkBibliographyLoads", "extracts.js", 2);
 
 		/*	If the link bibliography for the containing document is still 
 			loading, then we set up an event handler for when it loads,
-			and inject the link bibliography into the popup after it spawns
+			and respawn the popup / re-inject the popin, after it spawns
 			(if it hasn’t de-spawned already, e.g. if the user moused out of
 			 the target).
 			*/
 		target.popFrame.classList.toggle("loading", true);
 
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectPopFrameContentWhenLinkBibliographyLazyLoaded = (info) => {
-			GWLog("injectPopFrameContentWhenLinkBibliographyLazyLoaded", "extracts.js", 2);
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded = (info) => {
+			GWLog("refreshPopFrameWhenLinkBibliographyLazyLoaded", "extracts.js", 2);
 
 			/*	We check that it’s a link bibliography load event (and not
 				some other kind of content load), and that the loaded link
@@ -354,23 +364,14 @@ Extracts = {
 				/*  We no longer need to watch for load events for this
 					pop-frame.
 					*/
-				GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectPopFrameContentWhenLinkBibliographyLazyLoaded);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded);
 
-				//  If the popup has de-spawned, we can’t fill it.
+				//  If the popup has despawned, don’t respawn it.
 				if (!target.popFrame)
 					return;
 
-				target.popFrame.classList.toggle("loading", false);
-
-				//  Fill the pop-frame.
 				//  TODO: generalize this for popins!
-				let setPopFrameContent = Popups.setPopFrameContent;
-				setPopFrameContent(target.popup, fillFunction(target));
-
-				//  Do rewrites.
-				//  TODO: generalize this for popins!
-				let rewritePopFrameContent = Extracts.rewritePopupContent;
-				rewritePopFrameContent(target.popup);
+				Popups.spawnPopup(target);
 			}
 		}, { phase: ">rewrite" });
 	},
@@ -409,6 +410,16 @@ Extracts = {
 		} else {
 			return document.firstElementChild;
 		}
+	},
+
+	/*	Returns the location (a URL object) of the originating document for
+		the given target.
+		*/
+	originatingDocumentLocationForTarget: (target) => {
+		let originatingDocument = Extracts.originatingDocumentForTarget(target);
+		return (originatingDocument == document.firstElementChild)
+			   ? new URL(location.href)
+			   : new URL(originatingDocument.closest(".popframe").spawningTarget.href);
 	},
 
 	/*	Returns true if the target location matches an already-displayed page 
@@ -491,7 +502,7 @@ Extracts = {
 		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
 		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
-			Extracts.fillPopFrameAfterLinkBibliographyLoads(target, Extracts.annotationForTarget);
+			Extracts.refreshPopFrameAfterLinkBibliographyLoads(target);
 			return `&nbsp;`;
 		}
 
@@ -641,7 +652,7 @@ Extracts = {
 				&& target.hash == "#link-bibliography")
 			&& Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")
 			) {
-			Extracts.fillPopFrameAfterLinkBibliographyLoads(target, Extracts.sectionEmbedForTarget);
+			Extracts.refreshPopFrameAfterLinkBibliographyLoads(target);
 			return `&nbsp;`;
 		}
 
@@ -1046,7 +1057,7 @@ Extracts = {
 			collapseAllowed: false, 
 			isCollapseBlock: false,
 			isFullPage: false,
-			location: null,
+			location: Extracts.originatingDocumentLocationForTarget(target),
 			fullWidthPossible: false
 		});
 

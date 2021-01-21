@@ -99,7 +99,7 @@ Popups = {
 			target.addEventListener("mouseleave", Popups.targetMouseleave);
 
 			//  Set prepare function.
-			target.popupPrepareFunction = prepareFunction;
+			target.preparePopup = prepareFunction;
 
 			//  Run any custom processing.
 			if (targetPrepareFunction)
@@ -145,7 +145,7 @@ Popups = {
 				Popups.despawnPopup(target.popup);
 
 			//  Unset popup prepare function.
-			target.popupPrepareFunction = null;
+			target.preparePopup = null;
 
 			//  Un-mark target as spawning a popup.
 			target.classList.toggle("spawns-popup", false);
@@ -188,38 +188,53 @@ Popups = {
 		popup.querySelector(".popup-content-view").innerHTML = contentHTML;
 		return (contentHTML > "");
 	},
-	spawnPopup: (popup, event) => {
+	spawnPopup: (target, spawnPoint) => {
 		GWLog("Popups.spawnPopup", "popups.js", 2);
+
+		//  Despawn existing popup, if any.
+		if (target.popup)
+			Popups.despawnPopup(target.popup);
+
+		//  Create the new popup.
+		target.popup = Popups.newPopup();
+		target.popFrame = target.popup;
+
+		//  Give the popup a reference to the target.
+		target.popup.spawningTarget = target;
+
+		// Prepare the newly created popup for spawning.
+		if (target.preparePopup(target.popup) == false)
+			return;
 
 		/*  If title bar contents are provided, create and inject the popup
 			title bar, and set class `has-title-bar` on the popup.
 			*/
-		if (popup.titleBarContents.length > 0) {
-			popup.classList.add("has-title-bar");
+		if (target.popup.titleBarContents.length > 0) {
+			target.popup.classList.add("has-title-bar");
 
-			popup.titleBar = document.createElement("div");
-			popup.titleBar.classList.add("popup-title-bar");
+			target.popup.titleBar = document.createElement("div");
+			target.popup.titleBar.classList.add("popup-title-bar");
 			popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
-			popup.titleBarContents.forEach(elementOrHTML => {
+			target.popup.titleBarContents.forEach(elementOrHTML => {
 				if (typeof elementOrHTML == "string") {
-					popup.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
+					target.popup.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
 				} else {
-					popup.titleBar.appendChild(elementOrHTML);
+					target.popup.titleBar.appendChild(elementOrHTML);
 				}
 			});
 		}
 
 		//	Inject the popup into the page.
-		Popups.injectPopup(popup);
+		Popups.injectPopup(target.popup);
 
 		//  Position the popup appropriately with respect to the target.
-		Popups.positionPopup(popup, event);
+		Popups.positionPopup(target.popup, spawnPoint);
 
 		//  Mark target as having an active popup associated with it.
-		popup.spawningTarget.classList.add("popup-open");
+		target.popup.spawningTarget.classList.add("popup-open");
 
-		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: popup });
+		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
 	},
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
@@ -231,10 +246,12 @@ Popups = {
 		popup.addEventListener("mouseenter", Popups.popupMouseenter);
 		popup.addEventListener("mouseleave", Popups.popupMouseleave);
 	},
-	positionPopup: (popup, event) => {
+	positionPopup: (popup, spawnPoint) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
 		let target = popup.spawningTarget;
+		if (spawnPoint) target.lastMouseEnterLocation = spawnPoint;
+		else spawnPoint = target.lastMouseEnterLocation;
 
 		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 
@@ -255,8 +272,8 @@ Popups = {
 		};
 
 		let mouseEnterEventPositionInPopupContainer = {
-			x: (event.clientX - popupContainerViewportRect.left),
-			y: (event.clientY - popupContainerViewportRect.top)
+			x: (spawnPoint.x - popupContainerViewportRect.left),
+			y: (spawnPoint.y - popupContainerViewportRect.top)
 		};
 
 		//	Prevent popup cycling in Chromium.
@@ -307,7 +324,7 @@ Popups = {
 			}
 
 			if (offToTheSide) {
-				provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((event.clientY / window.innerHeight) * popupIntrinsicHeight);
+				provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((spawnPoint.y / window.innerHeight) * popupIntrinsicHeight);
 				if (provisionalPopupYPosition - popupContainerViewportRect.y < 0)
 					provisionalPopupYPosition = 0.0;
 
@@ -356,7 +373,7 @@ Popups = {
 			popup.style.top = `${provisionalPopupYPosition}px`;
 
 			//	Prevent popup cycling in Chromium.
-			popup.style.visibility = "visible";
+			popup.style.visibility = "";
 
 			document.activeElement.blur();
 		});
@@ -370,6 +387,7 @@ Popups = {
         popup.remove();
         popup.spawningTarget.classList.remove("popup-open");
         popup.spawningTarget.popup = null;
+        popup.spawningTarget.popFrame = null;
         document.activeElement.blur();
     },
 
@@ -390,29 +408,14 @@ Popups = {
         clearTimeout(target.popupDespawnTimer);
         clearTimeout(target.popupSpawnTimer);
     },
-	setPopupSpawnTimer: (target, event, prepareFunction) => {
+	setPopupSpawnTimer: (target, event) => {
 		GWLog("Popups.setPopupSpawnTimer", "popups.js", 2);
 
 		target.popupSpawnTimer = setTimeout(() => {
 			GWLog("Popups.popupSpawnTimer fired", "popups.js", 2);
 
-			//  Despawn existing popup, if any.
-			if (target.popup)
-				Popups.despawnPopup(target.popup);
-
-			//  Create the new popup.
-			target.popup = Popups.newPopup();
-			target.popFrame = target.popup;
-
-			//  Give the popup a reference to the target.
-			target.popup.spawningTarget = target;
-
-			// Prepare the newly created popup for spawning.
-			if (prepareFunction(target.popup) == false)
-				return;
-
-			// Spawn the prepared popup.
-			Popups.spawnPopup(target.popup, event);
+			// Spawn the popup.
+			Popups.spawnPopup(target, { x: event.clientX, y: event.clientY });
 		}, Popups.popupTriggerDelay);
 	},
     setPopupFadeTimer: (target) => {
@@ -469,11 +472,13 @@ Popups = {
 		Popups.clearPopupTimers(event.target);
 
 		//  Start the countdown to pop up the popup.
-		Popups.setPopupSpawnTimer(event.target, event, event.target.popupPrepareFunction);
+		Popups.setPopupSpawnTimer(event.target, event);
 	},
 	//	The mouseleave event.
 	targetMouseleave: (event) => {
 		GWLog("Popups.targetMouseleave", "popups.js", 2);
+
+		event.target.lastMouseEnterEvent = null;
 
 		Popups.clearPopupTimers(event.target);
 
