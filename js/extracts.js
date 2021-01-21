@@ -26,7 +26,7 @@ Extracts = {
 
 	/*	Target containers.
 		*/
-	contentContainersSelector: ".markdownBody, #TOC",
+	contentContainersSelector: ".markdownBody, #TOC, #page-metadata, #sidebar",
 
 	/*	Targets.
 		*/

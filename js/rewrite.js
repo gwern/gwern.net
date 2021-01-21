@@ -479,7 +479,11 @@ function identifyFootnotesSection(loadEventInfo) {
 function injectFootnoteSelfLinks(loadEventInfo) {
 	GWLog("injectFootnoteSelfLinks", "rewrite.js", 1);
 
-	let footnotes = Array.from(loadEventInfo.document.querySelector("#footnotes > ol").children);
+	let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
+	if (!footnotesSection)
+		return;
+
+	let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
 
 	for (var i = 0; i < footnotes.length; i++)
 		footnotes[i].insertAdjacentHTML("afterbegin", `<a href="#fn${(i + 1)}" title="Link to footnote ${(i + 1)}" class="footnote-self-link">&nbsp;</a>`);
