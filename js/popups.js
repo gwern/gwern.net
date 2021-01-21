@@ -283,7 +283,7 @@ Popups = {
 		//	Prevent popup cycling in Chromium.
 		popup.style.visibility = "hidden";
 
-		//  Wait for the "naive" layout to be completed, and then...
+		//  Wait for the “naive” layout to be completed, and then...
 		requestAnimationFrame(() => {
 			/*  How much "breathing room" to give the target (i.e., offset of
 				the popup).

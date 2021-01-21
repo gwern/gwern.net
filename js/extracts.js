@@ -1091,19 +1091,29 @@ Extracts = {
 			Extracts.qualifyLinksInPopFrame(target.popFrame);
 		}
 
-		//  Trigger a rewrite pass by firing the requisite event.
-		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-			source: "Extracts.preparePopup",
-			document: popup.contentView,
-			isMainDocument: false,
-			needsRewrite: false, 
-			clickable: false, 
-			collapseAllowed: false, 
-			isCollapseBlock: false,
-			isFullPage: false,
-			location: Extracts.originatingDocumentLocationForTarget(target),
-			fullWidthPossible: false
-		});
+		/*  If the popup is of a type that contains local HTML content of some
+			sort, then fire a contentDidLoad event to trigger any necessary
+			rewrites.
+			*/
+		if (   Extracts.isExtractLink(target)
+			|| Extracts.isDefinitionLink(target)
+			|| Extracts.isLocalPageLink(target)
+			|| Extracts.isCitation(target)
+			|| Extracts.isCitationBackLink(target)
+			) {
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.preparePopup",
+				document: popup.contentView,
+				isMainDocument: false,
+				needsRewrite: false, 
+				clickable: false, 
+				collapseAllowed: false, 
+				isCollapseBlock: false,
+				isFullPage: false,
+				location: Extracts.originatingDocumentLocationForTarget(target),
+				fullWidthPossible: false
+			});
+		}
 
 		//  Loading spinners.
 		if (   Extracts.isLocalDocumentLink(target)
