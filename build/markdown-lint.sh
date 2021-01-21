@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-01-11 09:35:05 gwern"
+# When:  Time-stamp: "2021-01-20 17:35:07 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -75,7 +75,7 @@ do
                   -e ']{.dropcaps}' -e '{,smallcaps}' -e '[.smallcaps}' -e '[PMC]{.smallcaps}' -e 'nsheppard' -e '<div class-' \
                   -e '^ > [a-Z]' -e '^  > [a-Z]' -e '^   > [a-Z]' -e '^  - [a-Z]' -e '^   - [a-Z]' \
                   -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/docs/genetic/' \
-                  -e '" ](' -e '!Marin:' -e '](images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' -- "$PAGE"; }
+                  -e '" ](' -e '!Marin:' -e '](images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' -e '#close' -- "$PAGE"; }
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a long-term div ID)"
 
         λ() { grep --perl-regexp --null-data --only-matching '(?s)\n\<\/div\>\n\n\^\[\!Margin: .....' -- "$PAGE"; }
@@ -127,6 +127,8 @@ do
         wrap λ "LaTeX: \\cdot is nicer"
         λ(){ fgrep '$$E(' -- "$PAGE"; }
         wrap λ "LaTeX: use \\mathbb for expectations"
+        λ(){ egp -e '[a-zA-Z]→[a-zA-Z]' -e '[a-zA-Z]←[a-zA-Z]' -e '[a-zA-Z]↔[a-zA-Z]' -- "$PAGE"; }
+        wrap λ "Add spaces to arrows: more legible, fewer odd interactions (like Hyphenator)"
 
         λ(){ fgp -i -e '<div class="admonition-warning">' -e '<div class="admonition-note">' -e '<div class="admonition-error">' \
                  -e '**Warn' -e '**Note' -e '**Error' -- "$PAGE"; }

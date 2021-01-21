@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-18 11:29:13 gwern"
+When:  Time-stamp: "2021-01-20 18:43:07 gwern"
 License: CC-0
 -}
 
@@ -41,7 +41,7 @@ import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 import Data.Text.IO as TIO (readFile)
-import System.IO (stderr, hPutStrLn, hPrint)
+import System.IO (stderr, hPutStrLn)
 import Typography (invertImage) -- TODO: 'typographyTransform'. This is semi-intractable. When we read in the HTML, the hyphenation pass breaks much of the LaTeX. Adding in guards in the walk to avoid Spans doesn't work like it ought to.
 import Network.HTTP (urlDecode, urlEncode)
 
@@ -129,7 +129,7 @@ annotateLink' md target =
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations
                        Nothing -> writeLinkMetadata target'' ("", "", "", "", "") >> return False
                        Just y@(f,m@(_,_,_,_,e)) -> do
-                                       when (e=="") $ error $ (f ++ ": " ++ show target ++ ": " ++ show y)
+                                       when (e=="") $ hPutStrLn stderr (f ++ ": " ++ show target ++ ": " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
                                        writeLinkMetadata target'' m >> return True
 
@@ -241,7 +241,7 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 
 -- append a new automatic annotation if its Path is not already in the auto database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,abst) = do hPrint stderr (l ++ show i)
+writeLinkMetadata l i@(t,a,d,di,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
                                            -- check very quickly whether the path/key is already in newest on-disk version, to avoid potential duplicate instances
                                            -- (duplicates do not cause errors, but they make it harder to lint & edit)
                                            newest <- TIO.readFile "metadata/auto.yaml"
@@ -325,12 +325,12 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
-                ExitFailure err -> (hPrint stderr $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
+                ExitFailure err -> (hPutStrLn stderr $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
                 _ -> do
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return Nothing else
-                          do let (title:author:date:doi:abstract:_) = parsed
-                             return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, cleanAbstractsHTML abstract))
+                          do let (title:author:date:doi:abstract) = parsed
+                             return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-Date", "-DOI", p]
@@ -340,7 +340,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
                 let ecreator = U.toString mb2
                 let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator) then eauthor else ecreator
-                hPrint stderr $ "PDF: " ++ p ++" DOI: " ++ edoi
+                hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi
                 aMaybe <- doi2Abstract edoi
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 case aMaybe of
@@ -354,7 +354,7 @@ instance FromJSON Crossref
 data Message = Message { abstract :: Maybe String } deriving (Show,Generic)
 instance FromJSON Message
 doi2Abstract :: [Char] -> IO (Maybe String)
-doi2Abstract doi = if length doi <7 then return Nothing
+doi2Abstract doi = if length doi < 7 then return Nothing
                    else do (_,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://api.crossref.org/works/"++doi, "--user-agent", "gwern+crossrefscraping@gwern.net"]
                            if bs=="Resource not found." then return Nothing
                            else let j = eitherDecode bs :: Either String Crossref
@@ -428,7 +428,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Title" then snd $ head b else "") metas
-                        if (title=="") then hPrint stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return Nothing
+                        if (title=="") then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return Nothing
                           else do
                                  let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Date" then snd $ head b else "") metas
                                  let author = initializeAuthors $ intercalate ", " $ filter (/="") $ map (\(TagOpen _ (a:b)) -> if snd a == "DC.Contributor" then snd $ head b else "") metas
@@ -501,12 +501,16 @@ cleanAbstractsHTML t = trim $
   -- simple string substitutions:
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
+    , (" </sec>", "")
+    , ("   <title/>    <p>", "<p>")
+    , ("  <p>", "<p>")
     , ("<br/><h3>", "<h3>")
     , ("</p><p>", "</p> <p>")
     , ("<strong>ABSTRACT</strong><br/>              <p>", "<p>")
     , ("</strong><p>", "</strong>: <p>")
     , ("<strong>Abstract</strong>:        ", "")
     , ("<abstract abstract-type=\"summary\"><br/>", "")
+    , ("<abstract abstract-type=\"toc\">", "")
     , ("<strong>SUMMARY</jats:title>", "")
     , ("<strong>Abstract</jats:title>", "")
     , ("<strong>Abstract</strong><br/>", "")
@@ -572,6 +576,8 @@ cleanAbstractsHTML t = trim $
     , ("</jats:italics>", "</em>")
     , ("<jats:italic>", "<em>")
     , ("</jats:italic>", "</em>")
+    , ("<italic>", "<em>")
+    , ("</italic>", "</em>")
     , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "")
     , ("<h3>ABSTRACT</h3>", "")
     , ("<h3>Abstract</h3>", "")
@@ -754,7 +760,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
                         let abstract'     = if length description > length abstract then description else abstract
                         if abstract' == "404 Not Found Error: no page by this name!" then return Nothing else
-                          return $ Just (p, (title, author, date, doi, thumbnailFigure++abstract'++keywords'))
+                          return $ Just (p, (title, author, date, doi, thumbnailFigure++"<p>"++abstract'++"</p>"++keywords'))
         where
           dropToBody (TagOpen "body" _) = False
           dropToBody _ = True

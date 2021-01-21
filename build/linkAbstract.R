@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2020-12-11 20:44:40 gwern"
+# When:  Time-stamp: "2021-01-20 11:18:51 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -55,7 +55,7 @@ if (grepl("plos",args)) {
     # NOTE: we preserve XML/HTML formatting in the abstract (but not other fields), such as headers or subscripts, by using 'as.character' option
     abstract <- (fulltext %>% ft_collect("abstract") %>% pub_chunks(extract="as.character"))$plos[[1]]$abstract
 
-    title <- y$title
+    title <- gsub("\n *", " ", y$title)
     author <- paste(sapply(y$authors, function(a) { paste(a$given_names, a$surname)}), collapse=", ")
     # doi
     date <- y$history$accepted
@@ -65,7 +65,7 @@ if (grepl("plos",args)) {
 
         # fallback to the other fulltext/rentrez path:
         # if the backup query fails, fail out:
-        if (any(c(is.list(title), is.list(author), is.list(date), is.list(abstract)))) {
+        if (any(c(is.list(title), is.list(author), is.list(date), is.list(abstract), (nchar(abstract) < 50)))) {
           cat(paste("Some medata missing, exiting with error:", args[1], title, author, date, doi, abstract, sep="\n"), "\n")
           quit(status=1)  }
     }

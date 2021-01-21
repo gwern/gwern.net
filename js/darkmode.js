@@ -1,7 +1,7 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2020-11-22 18:02:50 gwern"
+// When:  Time-stamp: "2021-01-20 18:22:54 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
@@ -20,7 +20,7 @@
 /***********/
 
 GW.modeOptions = [
-    [ 'auto', 'Auto', 'Set light or dark mode automatically, according to system-wide setting (Win: Start→Personalization→Colors; Mac: Apple→System-Preferences→General→Appearance; iOS: Settings→Display-and-Brightness; Android: Settings→Display)' ],
+    [ 'auto', 'Auto', 'Set light or dark mode automatically, according to system-wide setting (Win: Start → Personalization → Colors; Mac: Apple → System-Preferences → General → Appearance; iOS: Settings → Display-and-Brightness; Android: Settings → Display)' ],
     [ 'light', 'Light', 'Light mode at all times (black-on-white)' ],
     [ 'dark', 'Dark', 'Dark mode at all times (inverted: white-on-black)' ]
 ];
@@ -198,7 +198,7 @@ function injectModeSelector() {
 	}
     </style>`);
 
-    // We pre-query the relevant elements, so we don’t have to run 
+    // We pre-query the relevant elements, so we don’t have to run
     // querySelectorAll on every firing of the scroll listener.
     GW.darkMode = {
     	modeSelector: document.querySelectorAll("#mode-selector")[0]
