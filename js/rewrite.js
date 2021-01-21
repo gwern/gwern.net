@@ -359,6 +359,11 @@ function injectLinkBibliography(loadEventInfo) {
 						>Link Bibliography</a></h1>` + 
 					`<p><strong>Failed to load link bibliography! Extract/definition popups are not available.</strong></p>`;
 				linkBibliography.classList.toggle("loading-failed", true);
+				GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
+					source: "injectLinkBibliography",
+					document: linkBibliography, 
+					location: linkBibliographyURL
+				});
 			}
 		});
 	}
@@ -505,12 +510,15 @@ function injectFootnoteSelfLinks(loadEventInfo) {
 function injectFootnoteSectionSelfLink(loadEventInfo) {
 	GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
 
+	let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
+	if (!footnotesSection)
+		return;
+
 	let footnotesSectionSelfLink = document.createElement("A");
 	footnotesSectionSelfLink.href = "#footnotes";
 	footnotesSectionSelfLink.title = "Link to section: § ‘Footnotes’";
 	footnotesSectionSelfLink.classList.add("section-self-link");
 
-	let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
 	footnotesSection.insertBefore(footnotesSectionSelfLink, footnotesSection.firstElementChild.nextElementSibling);
 
 	//  Highlight on hover.
