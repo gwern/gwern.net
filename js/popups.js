@@ -260,7 +260,7 @@ Popups = {
 		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 
 		let targetViewportRect = target.getBoundingClientRect();
-		var targetRectInPopupContainer = {
+		let targetRectInPopupContainer = {
 			x: (targetViewportRect.left - popupContainerViewportRect.left),
 			y: (targetViewportRect.top - popupContainerViewportRect.top)
 		};
@@ -288,7 +288,7 @@ Popups = {
 			/*  How much "breathing room" to give the target (i.e., offset of
 				the popup).
 				*/
-			var popupBreathingRoom = {
+			let popupBreathingRoom = {
 				x: Popups.popupBreathingRoomX,
 				y: Popups.popupBreathingRoomY
 			};
@@ -297,18 +297,18 @@ Popups = {
 				by the layout system, and taking into account the popup's content,
 				and the max-width, min-width, etc., CSS properties.
 				*/
-			var popupIntrinsicWidth = popup.offsetWidth;
-			var popupIntrinsicHeight = popup.offsetHeight;
+			let popupIntrinsicWidth = popup.offsetWidth;
+			let popupIntrinsicHeight = popup.offsetHeight;
 
-			var provisionalPopupXPosition;
-			var provisionalPopupYPosition;
+			let provisionalPopupXPosition;
+			let provisionalPopupYPosition;
 
 			/*  Can the popup fit above the target? If so, put it there.
 				Failing that, can it fit below the target? If so, put it there.
 				*/
-			var offToTheSide = false;
-			var popupSpawnYOriginForSpawnAbove = targetRectInPopupContainer.top - popupBreathingRoom.y;
-			var popupSpawnYOriginForSpawnBelow = targetRectInPopupContainer.bottom + popupBreathingRoom.y;
+			let offToTheSide = false;
+			let popupSpawnYOriginForSpawnAbove = targetRectInPopupContainer.top - popupBreathingRoom.y;
+			let popupSpawnYOriginForSpawnBelow = targetRectInPopupContainer.bottom + popupBreathingRoom.y;
 			if (target.closest(".popup") || Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it'
 					prefers to have popups spawned to the side; we try to out
@@ -397,7 +397,7 @@ Popups = {
     },
 
 	getPopupAncestorStack: (popup) => {
-		var popupAndAncestors = [ ];
+		let popupAndAncestors = [ ];
 		for (popupInStack = popup; popupInStack != null; popupInStack = popupInStack.spawningTarget.closest(".popup"))
 			popupAndAncestors.splice(0, 0, popupInStack);
 		return popupAndAncestors;

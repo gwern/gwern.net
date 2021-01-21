@@ -1992,7 +1992,7 @@ String.prototype.includesAnyOf = function (substrings) {
 /*  Remove given item from array.
 	*/
 Array.prototype.remove = function (item) {
-    var index = this.indexOf(item);
+    let index = this.indexOf(item);
     if (index !== -1)
         this.splice(index, 1);
 };
@@ -2001,7 +2001,7 @@ Array.prototype.remove = function (item) {
 	The test function should take an array item and return true/false.
 	*/
 Array.prototype.removeIf = function (test) {
-    var index = this.findIndex(test);
+    let index = this.findIndex(test);
     if (index !== -1)
         this.splice(index, 1);
 };
@@ -2032,7 +2032,7 @@ function doWhenDOMContentLoaded(f) {
     returns the created element.
     */
 function addUIElement(element_html) {
-    var ui_elements_container = document.querySelector("#ui-elements-container");
+    let ui_elements_container = document.querySelector("#ui-elements-container");
     if (!ui_elements_container) {
         ui_elements_container = document.createElement("div");
         ui_elements_container.id = "ui-elements-container";
@@ -2224,7 +2224,7 @@ GW.notificationCenter = {
 		if (GW.notificationCenter.eventHandlers[eventName] == null)
 			return;
 
-		for (var i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
+		for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
 			let handler = GW.notificationCenter.eventHandlers[eventName][i];
 			handler.f(eventInfo);
 			if (handler.options.once) {

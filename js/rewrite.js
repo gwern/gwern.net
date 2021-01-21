@@ -178,7 +178,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /*	Returns the current selection as HTML.
 	*/
 function getSelectionHTML() {
-    var container = document.createElement("div");
+    let container = document.createElement("div");
     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
     return container.innerHTML;
 }
@@ -378,7 +378,7 @@ function injectLinkBibliographyItemSelfLinks(loadEventInfo) {
 
 	let linkBibliographyListItems = Array.from(loadEventInfo.document.querySelector("#link-bibliography > ol").children);
 
-	for (var i = 0; i < linkBibliographyListItems.length; i++) {
+	for (let i = 0; i < linkBibliographyListItems.length; i++) {
 		let id = `link-bibliography-entry-${i + 1}`;
 		linkBibliographyListItems[i].id = id;
 		linkBibliographyListItems[i].insertAdjacentHTML("afterbegin", `<a href="#${id}" class="link-bibliography-item-self-link">&nbsp;</a>`);
@@ -490,7 +490,7 @@ function injectFootnoteSelfLinks(loadEventInfo) {
 
 	let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
 
-	for (var i = 0; i < footnotes.length; i++)
+	for (let i = 0; i < footnotes.length; i++)
 		footnotes[i].insertAdjacentHTML("afterbegin", `<a href="#fn${(i + 1)}" title="Link to footnote ${(i + 1)}" class="footnote-self-link">&nbsp;</a>`);
 
 	//  Highlight footnote on hover over self-link.
@@ -788,7 +788,7 @@ let t,e;const n=new Set,o=document.createElement("link"),z=o.relList&&o.relList.
 
 // For X11 Linux, middle-click somehow manages to bypass the copy-paste listener
 // function getTextNodes(node) {
-//  var allTextNodes = [ ];
+//  let allTextNodes = [ ];
 //  let walk = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null, false);
 //  while (node = walk.nextNode())
 //      allTextNodes.push(node);
