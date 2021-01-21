@@ -416,15 +416,10 @@ Extracts = {
 		the given target.
 		*/
 	originatingDocumentLocationForTarget: (target) => {
-		let containingPopFrame = target.closest(".popframe");
-		if (containingPopFrame) {
-			if (containingPopFrame.classList.contains("external-page-embed"))
-				return new URL(containingPopFrame.spawningTarget.href);
-			else
-				return Extracts.originatingDocumentLocationForTarget(containingPopFrame.spawningTarget);
-		} else {
-			return new URL(location.href);
-		}
+		let originatingDocument = Extracts.originatingDocumentForTarget(target);
+		return (originatingDocument == document.firstElementChild)
+			   ? new URL(location.href)
+			   : new URL(originatingDocument.closest(".popframe").spawningTarget.href);
 	},
 
 	/*	Returns true if the target location matches an already-displayed page 
