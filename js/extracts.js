@@ -365,12 +365,15 @@ Extracts = {
 				//  Fill the pop-frame.
 				//  TODO: generalize this for popins!
 				let setPopFrameContent = Popups.setPopFrameContent;
-				setPopFrameContent(target.popup, fillFunction(target));
+				setPopFrameContent(target.popFrame, fillFunction(target));
 
 				//  Do rewrites.
 				//  TODO: generalize this for popins!
 				let rewritePopFrameContent = Extracts.rewritePopupContent;
-				rewritePopFrameContent(target.popup);
+				rewritePopFrameContent(target.popFrame);
+
+				//  TODO: skip this for popins!
+				Popups.respawnPopup(target.popFrame);
 			}
 		}, { phase: ">rewrite" });
 	},

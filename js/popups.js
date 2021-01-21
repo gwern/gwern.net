@@ -221,6 +221,22 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: popup });
 	},
+	respawnPopup: (popup) => {
+		GWLog("Popups.respawnPopup", "popups.js", 2);
+
+		Popups.despawnPopup(popup);
+
+		popup.spawningTarget.popup = popup;
+		popup.spawningTarget.popFrame = popup;
+
+		Popups.injectPopup(popup);
+		Popups.positionPopup(popup, event);
+
+		//  Mark target as having an active popup associated with it.
+		popup.spawningTarget.classList.add("popup-open");
+
+		GW.notificationCenter.fireEvent("Popups.popupDidRespawn", { popup: popup });
+	},
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
 
@@ -235,6 +251,8 @@ Popups = {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
 		let target = popup.spawningTarget;
+		if (event) target.lastMouseEnterEvent = event;
+		else event = target.lastMouseEnterEvent;
 
 		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 
@@ -356,7 +374,7 @@ Popups = {
 			popup.style.top = `${provisionalPopupYPosition}px`;
 
 			//	Prevent popup cycling in Chromium.
-			popup.style.visibility = "visible";
+			popup.style.visibility = "";
 
 			document.activeElement.blur();
 		});
@@ -370,6 +388,7 @@ Popups = {
         popup.remove();
         popup.spawningTarget.classList.remove("popup-open");
         popup.spawningTarget.popup = null;
+        popup.spawningTarget.popFrame = null;
         document.activeElement.blur();
     },
 
@@ -474,6 +493,8 @@ Popups = {
 	//	The mouseleave event.
 	targetMouseleave: (event) => {
 		GWLog("Popups.targetMouseleave", "popups.js", 2);
+
+		event.target.lastMouseEnterEvent = null;
 
 		Popups.clearPopupTimers(event.target);
 
