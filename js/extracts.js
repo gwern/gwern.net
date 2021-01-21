@@ -330,19 +330,19 @@ Extracts = {
 		}
 	},
 
-	fillPopFrameAfterLinkBibliographyLoads: (target, fillFunction) => {
-		GWLog("Extracts.fillPopFrameAfterLinkBibliographyLoads", "extracts.js", 2);
+	refreshPopFrameAfterLinkBibliographyLoads: (target) => {
+		GWLog("Extracts.refreshPopFrameAfterLinkBibliographyLoads", "extracts.js", 2);
 
 		/*	If the link bibliography for the containing document is still 
 			loading, then we set up an event handler for when it loads,
-			and inject the link bibliography into the popup after it spawns
+			and respawn the popup / re-inject the popin, after it spawns
 			(if it hasn’t de-spawned already, e.g. if the user moused out of
 			 the target).
 			*/
 		target.popFrame.classList.toggle("loading", true);
 
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.injectPopFrameContentWhenLinkBibliographyLazyLoaded = (info) => {
-			GWLog("injectPopFrameContentWhenLinkBibliographyLazyLoaded", "extracts.js", 2);
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded = (info) => {
+			GWLog("refreshPopFrameWhenLinkBibliographyLazyLoaded", "extracts.js", 2);
 
 			/*	We check that it’s a link bibliography load event (and not
 				some other kind of content load), and that the loaded link
@@ -354,24 +354,12 @@ Extracts = {
 				/*  We no longer need to watch for load events for this
 					pop-frame.
 					*/
-				GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.injectPopFrameContentWhenLinkBibliographyLazyLoaded);
+				GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded);
 
 				//  If the popup has despawned, don’t respawn it.
 				if (!target.popFrame)
 					return;
 
-// 				target.popFrame.classList.toggle("loading", false);
-// 
-// 				//  Fill the pop-frame.
-// 				//  TODO: generalize this for popins!
-// 				let setPopFrameContent = Popups.setPopFrameContent;
-// 				setPopFrameContent(target.popFrame, fillFunction(target));
-// 
-// 				//  Do rewrites.
-// 				//  TODO: generalize this for popins!
-// 				let rewritePopFrameContent = Extracts.rewritePopupContent;
-// 				rewritePopFrameContent(target.popFrame);
-// 
 				//  TODO: generalize this for popins!
 				Popups.spawnPopup(target);
 			}
@@ -494,7 +482,7 @@ Extracts = {
 		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
 		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
-			Extracts.fillPopFrameAfterLinkBibliographyLoads(target, Extracts.annotationForTarget);
+			Extracts.refreshPopFrameAfterLinkBibliographyLoads(target);
 			return `&nbsp;`;
 		}
 
@@ -644,7 +632,7 @@ Extracts = {
 				&& target.hash == "#link-bibliography")
 			&& Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")
 			) {
-			Extracts.fillPopFrameAfterLinkBibliographyLoads(target, Extracts.sectionEmbedForTarget);
+			Extracts.refreshPopFrameAfterLinkBibliographyLoads(target);
 			return `&nbsp;`;
 		}
 
