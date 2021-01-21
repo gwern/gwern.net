@@ -168,6 +168,10 @@ Popups = {
 		return (containingPopup ? isWithinRect(element, containingPopup.getBoundingClientRect()) : isOnScreen(element));
 	},
 
+	preferSidePositioning: (target) => {
+		return target.preferSidePositioning ? target.preferSidePositioning() : false;
+	},
+
 	scrollElementIntoViewInPopup: (element) => {
 		let popup = element.closest(".popup");
 		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.scrollView.getBoundingClientRect().top;
@@ -305,9 +309,10 @@ Popups = {
 			var offToTheSide = false;
 			var popupSpawnYOriginForSpawnAbove = targetRectInPopupContainer.top - popupBreathingRoom.y;
 			var popupSpawnYOriginForSpawnBelow = targetRectInPopupContainer.bottom + popupBreathingRoom.y;
-			if (target.closest(".popup")) {
-				/*  The popup is a nested popup. We prefer to put it off to 
-					the left or right.
+			if (target.closest(".popup") || Popups.preferSidePositioning(target)) {
+				/*  The popup is a nested popup, or the target specifies that it'
+					prefers to have popups spawned to the side; we try to out
+					the popup off to the left or right.
 					*/
 				offToTheSide = true;
 			} else if ((popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight) >= (popupContainerViewportRect.y * -1)) {

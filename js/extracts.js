@@ -140,6 +140,12 @@ Extracts = {
 
 				if (Extracts.isTOCLink(target))
 					target.classList.remove("has-content");
+
+				//  For special positioning by Popups.js.
+				target.preferSidePositioning = () => {
+					return (   target.closest("#sidebar, li") != null
+							&& target.closest(".columns") == null);
+				};
 			};
 
     		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
