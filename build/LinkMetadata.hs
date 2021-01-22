@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-22 11:53:09 gwern"
+When:  Time-stamp: "2021-01-22 14:40:30 gwern"
 License: CC-0
 -}
 
@@ -23,7 +23,7 @@ import GHC.Generics (Generic)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M (fromList, lookup, mapWithKey, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (fromList, lookup, traverseWithKey, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
@@ -90,18 +90,19 @@ readLinkMetadata = do
              return firstVersion
 
 writeAnnotationFragments :: Metadata -> IO ()
-writeAnnotationFragments md = do x <- M.traverseWithKey writeAnnotationFragment md
-                                 return ()
+writeAnnotationFragments = void . M.traverseWithKey writeAnnotationFragment
+-- TODO: write only when changed
 writeAnnotationFragment :: Path -> MetadataItem -> IO ()
-writeAnnotationFragment u i@(_,_,_,_,e) = when (length e > 10) $ do let u' = linkCanonicalize u
-                                                                    let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
-                                                                    let filepath' = take 276 filepath
-                                                                    when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                                                    let annotationPandoc = generateListItems (u', Just i)
-                                                                    let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta annotationPandoc)
-                                                                    case annotationHTMLEither of
-                                                                        Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
-                                                                        Right annotationHTML -> TIO.writeFile filepath' annotationHTML
+writeAnnotationFragment u i@(_,_,_,_,e) = when (length e > 290) $
+                                          do let u' = linkCanonicalize u
+                                             let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
+                                             let filepath' = take 274 filepath
+                                             when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
+                                             let annotationPandoc = generateListItems (u', Just i)
+                                             let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta annotationPandoc)
+                                             case annotationHTMLEither of
+                                               Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
+                                               Right annotationHTML -> TIO.writeFile filepath' annotationHTML
 
 
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
