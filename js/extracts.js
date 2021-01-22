@@ -62,16 +62,14 @@ Extracts = {
 				[ "isForeignSiteLink",	 	"has-content"		]
 			];
 
-			let testPassed = false;
-
 			for ([ testMethodName, classes ] of targetTypes) {
 				if (Extracts[testMethodName](target)) {
 					if (classes) target.classList.add(...(classes.split(" ")));
-					testPassed = true;
+					return true;
 				}
 			}
 
-			return testPassed;
+			return false;
 		}
     },
 
