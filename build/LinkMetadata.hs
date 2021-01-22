@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-20 18:43:07 gwern"
+When:  Time-stamp: "2021-01-22 11:53:09 gwern"
 License: CC-0
 -}
 
@@ -23,10 +23,10 @@ import GHC.Generics (Generic)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M (fromList, lookup, union, Map)
+import qualified Data.Map.Strict as M (fromList, lookup, mapWithKey, traverseWithKey, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
-                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr,
+                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
                     queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote, Div))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
@@ -40,7 +40,7 @@ import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
-import Data.Text.IO as TIO (readFile)
+import Data.Text.IO as TIO (readFile, writeFile)
 import System.IO (stderr, hPutStrLn)
 import Typography (invertImage) -- TODO: 'typographyTransform'. This is semi-intractable. When we read in the HTML, the hyphenation pass breaks much of the LaTeX. Adding in guards in the walk to avoid Spans doesn't work like it ought to.
 import Network.HTTP (urlDecode, urlEncode)
@@ -88,6 +88,21 @@ readLinkMetadata = do
              -- merge the hand-written & auto-generated link annotations, and return:
              let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
              return firstVersion
+
+writeAnnotationFragments :: Metadata -> IO ()
+writeAnnotationFragments md = do x <- M.traverseWithKey writeAnnotationFragment md
+                                 return ()
+writeAnnotationFragment :: Path -> MetadataItem -> IO ()
+writeAnnotationFragment u i@(_,_,_,_,e) = when (length e > 10) $ do let u' = linkCanonicalize u
+                                                                    let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
+                                                                    let filepath' = take 276 filepath
+                                                                    when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
+                                                                    let annotationPandoc = generateListItems (u', Just i)
+                                                                    let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta annotationPandoc)
+                                                                    case annotationHTMLEither of
+                                                                        Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
+                                                                        Right annotationHTML -> TIO.writeFile filepath' annotationHTML
+
 
 generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
 generateLinkBibliography md x@(Pandoc meta doc) = do let links = nubOrd $ dedupe $ collectLinks doc
@@ -284,7 +299,7 @@ generateID url author date
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- eg '/Faces' = '#gwern-faces'
-  | "Gwern Branwen" == author = T.pack (replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url)
+  | "Gwern Branwen" == author = T.pack (replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url')
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
                            let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
@@ -292,7 +307,7 @@ generateID url author date
                              if authorCount == 0 then "" else
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
                                  -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
-                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url in if not (s=="") && isNumber (head s) then "-" ++ s else "") in
+                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url' in if not (s=="") && isNumber (head s) then "-" ++ s else "") in
                                    let suffix' = if suffix == "-1" then "" else suffix in
                                  filter (/='.') $ map toLower $ if authorCount >= 3 then
                                                  firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
@@ -301,6 +316,7 @@ generateID url author date
                                                        firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix'
                                                    else
                                                      firstAuthorSurname ++ "-" ++ year ++ suffix'
+  where url' = replace "?" "definition-" url -- definition links, like '?Portia' or '?Killing-Rabbits' are invalid HTML selectors, so substitute there to a final ID like eg '#gwern-definition-portia'
 
 linkDispatcher, wikipedia, gwern, arxiv, biorxiv, pubmed :: Path -> IO (Maybe (Path, MetadataItem))
 linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
