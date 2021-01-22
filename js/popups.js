@@ -387,6 +387,13 @@ Popups = {
 			document.activeElement.blur();
 		});
 	},
+	detachPopupFromTarget: (popup) => {
+		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
+
+        popup.spawningTarget.classList.remove("popup-open");
+        popup.spawningTarget.popup = null;
+        popup.spawningTarget.popFrame = null;
+	},
     despawnPopup: (popup) => {
 		GWLog("Popups.despawnPopup", "popups.js", 2);
 
@@ -394,17 +401,13 @@ Popups = {
 
 	    popup.classList.remove("fading");
         popup.remove();
-        popup.spawningTarget.classList.remove("popup-open");
-        popup.spawningTarget.popup = null;
-        popup.spawningTarget.popFrame = null;
+        Popups.detachPopupFromTarget(popup);
         document.activeElement.blur();
     },
 
 	getPopupAncestorStack: (popup) => {
-		let popupAndAncestors = [ ];
-		for (popupInStack = popup; popupInStack != null; popupInStack = popupInStack.spawningTarget.closest(".popup"))
-			popupAndAncestors.splice(0, 0, popupInStack);
-		return popupAndAncestors;
+		let allPopups = Array.from(Popups.popupContainer.children);
+		return allPopups.slice(0, allPopups.indexOf(popup) + 1);
 	},
 
     clearPopupTimers: (target) => {
@@ -480,9 +483,16 @@ Popups = {
 		//	Stop the countdown to un-pop the popup.
 		Popups.clearPopupTimers(event.target);
 
-		//  Start the countdown to pop up the popup (if not already spawned).
-		if (event.target.popup == null)
+		if (event.target.popup == null) {
+			//  Start the countdown to pop up the popup (if not already spawned).
 			Popups.setPopupSpawnTimer(event.target, event);
+		} else {
+			/*  If already spawned, just bring the popup to the front and
+				re-position it.
+				*/
+			Popups.injectPopup(event.target.popup);
+			Popups.positionPopup(event.target.popup, { x: event.clientX, y: event.clientY });
+		}
 	},
 	//	The mouseleave event.
 	targetMouseleave: (event) => {

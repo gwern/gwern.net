@@ -49,9 +49,9 @@ Extracts = {
 		].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 		testTarget: (target) => {
-			let linkTypes = [
+			let targetTypes = [
 				[ "isExtractLink", 			"has-annotation" 	],
-				[ "isDefinitionLink", 		"has-annotation" 	],
+				[ "isDefinition", 			"has-annotation" 	],
 				[ "isCitation", 			null 				],
 				[ "isCitationBackLink", 	null 				],
 				[ "isVideoLink", 			"has-content" 		],
@@ -62,14 +62,16 @@ Extracts = {
 				[ "isForeignSiteLink",	 	"has-content"		]
 			];
 
-			for ([ testMethodName, classes ] of linkTypes) {
+			let testPassed = false;
+
+			for ([ testMethodName, classes ] of targetTypes) {
 				if (Extracts[testMethodName](target)) {
 					if (classes) target.classList.add(...(classes.split(" ")));
-					return true;
+					testPassed = true;
 				}
 			}
 
-			return false;
+			return testPassed;
 		}
     },
 
@@ -290,6 +292,35 @@ Extracts = {
 	/*	Content.
 		*/
 
+	targetType: (target) => {
+		let targetTypes = [
+			[ "isExtractLink", 			"EXTRACT" 				],
+			[ "isDefinition",	 		"DEFINITION" 			],
+			[ "isCitation", 			"CITATION" 				],
+			[ "isCitationBackLink", 	"CITATION_BACK_LINK" 	],
+			[ "isVideoLink", 			"VIDEO" 				],
+			[ "isLocalImageLink", 		"LOCAL_IMAGE"			],
+			[ "isLocalDocumentLink", 	"LOCAL_DOCUMENT"		],
+			[ "isLocalCodeFileLink", 	"LOCAL_CODE_FILE"		],
+			[ "isLocalPageLink",	 	"LOCAL_PAGE" 			],
+			[ "isForeignSiteLink",	 	"FOREIGN_SITE"			]
+		];
+
+		for ([ testMethodName, targetType ] of targetTypes)
+			if (Extracts[testMethodName](target))
+				return targetType;
+
+		return "";
+	},
+
+	targetsMatch: (targetA, targetB) => {
+		return    (   (   targetA.href 
+					   && targetA.href == targetB.href)
+				   || (   targetA.dataset.originalDefinitionId 
+					   && targetA.dataset.originalDefinitionId == targetB.dataset.originalDefinitionId))
+			   && Extracts.targetType(targetA) == Extracts.targetType(targetB);
+	},
+
 	/*	This function qualifies anchorlinks in transcluded content (i.e., other
 		pages on the site, as well as extracts describing other pages on the 
 		site), by rewriting their href attributes to include the path of the 
@@ -445,25 +476,16 @@ Extracts = {
 		link which spawned… etc.).
 		*/
 	originatingDocumentForTarget: (target) => {
-		let containingPopFrame = target.closest(".popframe");
-		if (containingPopFrame) {
-			if (containingPopFrame.classList.contains("external-page-embed"))
-				return containingPopFrame.contentView;
-			else
-				return Extracts.originatingDocumentForTarget(containingPopFrame.spawningTarget);
-		} else {
-			return document.firstElementChild;
-		}
+		return target.originatingDocument || document.firstElementChild;
 	},
 
 	/*	Returns the location (a URL object) of the originating document for
 		the given target.
 		*/
 	originatingDocumentLocationForTarget: (target) => {
-		let originatingDocument = Extracts.originatingDocumentForTarget(target);
-		return new URL((originatingDocument == document.firstElementChild)
+		return new URL((Extracts.originatingDocumentForTarget(target) == document.firstElementChild)
 					   ? location.href
-					   : originatingDocument.closest(".popframe").spawningTarget.href);
+					   : target.originatingDocument.closest(".popframe").spawningTarget.href);
 	},
 
 	/*	Returns true if the target location matches an already-displayed page 
@@ -555,7 +577,7 @@ Extracts = {
 
 		if (Extracts.isExtractLink(target)) {
 			return Extracts.extractForTarget(target);
-		} else if (Extracts.isDefinitionLink(target)) {
+		} else if (Extracts.isDefinition(target)) {
 			return Extracts.definitionForTarget(target);
 		} else {
 			return ``;
@@ -599,7 +621,7 @@ Extracts = {
     },
 
     //  Definitions.
-    isDefinitionLink: (target) => {
+    isDefinition: (target) => {
         return target.classList.contains("defnMetadata");
     },
     definitionForTarget: (target) => {
@@ -935,15 +957,7 @@ Extracts = {
 		*/
 
 	spawnedPopupMatchingTarget: (target) => {
-		return null;
-
-		let allSpawnedPopups = Popups.allSpawnedPopups();
-		return Popups.allSpawnedPopups().find(popup => {
-			return    (   target.href 
-					   && target.href == popup.spawningTarget.href)
-				   || (   target.dataset.originalDefinitionId 
-				   	   && target.dataset.originalDefinitionId == popup.spawningTarget.dataset.originalDefinitionId);
-		}) || null;
+		return (Popups.allSpawnedPopups().find(popup => Extracts.targetsMatch(target, popup.spawningTarget)) || null);
 	},
 
 	/*	Called by popups.js just before spawning (injecting and positioning) the
@@ -957,8 +971,11 @@ Extracts = {
 		let target = popup.spawningTarget;
 
 		let existingPopup = Extracts.spawnedPopupMatchingTarget(target);
-		if (existingPopup)
+		if (existingPopup) {
+			Popups.detachPopupFromTarget(existingPopup);
+			existingPopup.spawningTarget = target;
 			return existingPopup;
+		}
 
 		//  Import the class(es) of the target.
 		popup.classList.add(...target.classList);
@@ -1008,7 +1025,7 @@ Extracts = {
 			for fillPopFrame() for a description of what this array does.)
 			*/
 			[ "isExtractLink", 			"annotationForTarget", 			"extract annotation"		],
-			[ "isDefinitionLink", 		"annotationForTarget", 			"definition annotation" 	],
+			[ "isDefinition",	 		"annotationForTarget", 			"definition annotation" 	],
 			[ "isCitation", 			"sectionEmbedForTarget", 		"footnote" 					],
 			[ "isCitationBackLink", 	"sectionEmbedForTarget", 		"citation-context" 			],
 			[ "isVideoLink", 			"videoForTarget", 				"video object" 				],
@@ -1022,7 +1039,7 @@ Extracts = {
 
 		//  Add popup title bar contents.
 // 		let popupTitle;
-// 		if (Extracts.isDefinitionLink(target)) {
+// 		if (Extracts.isDefinition(target)) {
 // 			//  TODO: account for contents possibly not being loaded yet!
 // 			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
 // 		} else if (!Extracts.isLocalImageLink(target)) {
@@ -1092,7 +1109,7 @@ Extracts = {
 
 		//  Allow for floated figures at the start of abstract.
 		if (   Extracts.isExtractLink(target)
-			|| Extracts.isDefinitionLink(target)) {
+			|| Extracts.isDefinition(target)) {
 			let initialFigure = popup.querySelector(".annotation-abstract > figure.float-right:first-child");
 			if (initialFigure) {
 				popup.contentView.insertBefore(initialFigure, popup.contentView.firstElementChild);
@@ -1115,11 +1132,19 @@ Extracts = {
 			rewrites.
 			*/
 		if (   Extracts.isExtractLink(target)
-			|| Extracts.isDefinitionLink(target)
+			|| Extracts.isDefinition(target)
 			|| Extracts.isLocalPageLink(target)
 			|| Extracts.isCitation(target)
 			|| Extracts.isCitationBackLink(target)
 			) {
+			//  If the target is itself in a popup, set originating document.
+			let containingPopup = target.closest(".popup");
+			if (containingPopup) {
+				target.originatingDocument = (containingPopup.classList.contains("external-page-embed"))
+											 ? containingPopup.contentView
+											 : Extracts.originatingDocumentForTarget(containingPopup.spawningTarget);
+			}
+
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.preparePopup",
 				document: popup.contentView,
