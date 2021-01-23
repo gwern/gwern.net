@@ -487,7 +487,10 @@ Extracts = {
 		if (!target.href)
 			return target.dataset.originalDefinitionId;
 
-		return (target.hostname == location.hostname) ? (target.pathname + target.hash) : target.href;
+		return    target.dataset.urlOriginal 
+			   || (target.hostname == location.hostname
+			   	   ? target.pathname + target.hash
+			   	   : target.href);
 	},
 
 	cachedAnnotationReferenceEntries: { },
