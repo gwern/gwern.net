@@ -23,6 +23,7 @@ Extracts = {
         */
 
 	annotatedTargetSelectors: Extracts.annotatedTargetSelectors,
+	annotationsBasePathname: "/metadata/annotations/",
 
 	/*	Target containers.
 		*/
@@ -35,17 +36,7 @@ Extracts = {
 		excludedElementsSelector: [
 			".section-self-link",
 			".footnote-self-link",
-			".sidenote-self-link",
-			".link-bibliography-item-self-link",
-			/*  Do not provide extracts for annotated links that are link
-				bibliography entries, as their annotations are right there below the
-				link itself.
-				*/
-			Extracts.annotatedTargetSelectors.map(annotatedTargetSelector => 
-				[ "#link-bibliography > ol > li > p", "li[id^='link-bibliography-entry-'] > p" ].map(referenceElementContainerSelector =>
-					`${referenceElementContainerSelector} ${annotatedTargetSelector}`
-				).join(", ")
-			).join(", "),
+			".sidenote-self-link"
 		].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 		testTarget: (target) => {
@@ -91,11 +82,6 @@ Extracts = {
 		"404 Not Found"
 	],
 
-	/*	Infrastructure.
-		*/
-	referenceElementContainerSelector: "#link-bibliography",
-	referenceElementEntrySelectorPrefix: "#link-bibliography > ol > li > p",
-
 	/***********/
 	/*	General.
 		*/
@@ -122,7 +108,9 @@ Extracts = {
 
 			//  Remove content load event handlers.
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad);
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent);
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.setUpAnnotationLoadEvent);
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoaded);
+			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoadFailed);
 		}
 
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
@@ -171,6 +159,8 @@ Extracts = {
 				newly-spawned popups; this allows for popup recursion).
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
+				GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
+
 				if (info.document.closest(Extracts.contentContainersSelector)) {
 					Extracts.addTargetsWithin(info.document);
 				} else {
@@ -180,60 +170,76 @@ Extracts = {
 				}
 			}, { phase: "eventListeners" });
 
-			/*  Add handler to add hover event listeners to annotated targets,
-				to lazy-load and inject the link bibliography.
-				*/
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpLinkBibliographyInjectEvent = (info) => {
-				GWLog("Extracts.setUpLinkBibliographyInjectEvent", "extracts.js", 2);
+			//  Inject the staging area for annotations.
+			document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
+			let annotationsWorkspace = document.querySelector("#annotations-workspace");
 
-				if (info.document.id == "link-bibliography")
-					return;
+			/*  Add handler to add hover event listeners to annotated targets,
+				to load annotations (fragments).
+				*/
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpAnnotationLoadEvent = (info) => {
+				GWLog("Extracts.setUpAnnotationLoadEvent", "extracts.js", 2);
 
 				//  Get all the annotated targets in the document.
 				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
-				/*  Special case to also lazy-load the main document’s link
-					bibliography when its ToC entry is hovered over.
-					*/
-				if (info.isMainDocument)
-					allAnnotatedTargetsInDocument.push(info.document.querySelector("#TOC a[href='#link-bibliography']"));
 
 				//  Add hover event listeners to all the annotated targets.
 				allAnnotatedTargetsInDocument.forEach(annotatedTarget => {
-					annotatedTarget.addEventListener("mouseenter", annotatedTarget.linkBibliographyLoad_mouseEnter = (event) => {
-						/*  Do nothing if the link bibliography for the target’s
-							containing document is already loaded.
+					annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
+						/*  Do nothing if the annotation for the target is 
+							already loaded.
 							*/
-						if (Extracts.originatingDocumentForTarget(info.document).classList.contains("link-bibliography-loaded")) return;
+						let annotationIdentifier = Extracts.identifierForAnnotatedTarget(annotatedTarget);
+
+						let cachedAnnotation = Extracts.cachedAnnotationReferenceEntries[annotationIdentifier];
+						if (cachedAnnotation && cachedAnnotation != "LOADING_FAILED") return;
+
+						let annotationURL = new URL("https://" + location.hostname + Extracts.annotationsBasePathname 
+													+ encodeURIComponent(encodeURIComponent(annotationIdentifier)) + ".html");
 
 						/*  On hover, start a timer, duration of one-half the 
 							popup trigger delay...
 							*/
-						annotatedTarget.linkBibliographyInjectTimer = setTimeout(() => {
-							/*  ... to inject the link bibliography for the 
-								target’s containing document.
+						annotatedTarget.annotationLoadTimer = setTimeout(Extracts.loadAnnotation = () => {
+							GWLog("Extracts.loadAnnotation", "extracts.js", 2);
+
+							/*  ... to load the annotation.
 								*/
-							info.document.swapClasses([ "link-bibliography-loading-failed", "link-bibliography-loading" ], 1);
-							injectLinkBibliography({
-								source: "Extracts.setUpLinkBibliographyInjectEvent",
-								document: Extracts.originatingDocumentForTarget(info.document),
-								isMainDocument: false,
-								needsRewrite: true, 
-								clickable: info.clickable, 
-								collapseAllowed: info.collapseAllowed, 
-								isCollapseBlock: false,
-								isFullPage: true,
-								location: Extracts.originatingDocumentLocationForTarget(info.document),
-								fullWidthPossible: info.fullWidthPossible
+							doAjax({
+								location: annotationURL.href,
+								onSuccess: (event) => {
+									document.querySelector("#annotations-workspace").insertAdjacentHTML("beforeend", 
+										`<div class="annotation">${event.target.responseText}</div>`);
+									GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
+										source: "Extracts.loadAnnotation",
+										document: annotationsWorkspace.lastElementChild, 
+										identifier: annotationIdentifier,
+										isMainDocument: false,
+										needsRewrite: true, 
+										clickable: false, 
+										collapseAllowed: false, 
+										isCollapseBlock: false,
+										isFullPage: false,
+										location: annotationURL,
+										fullWidthPossible: false
+									});
+								},
+								onFailure: (event) => {
+									GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
+										source: "Extracts.loadAnnotation",
+										document: annotationsWorkspace, 
+										identifier: annotationIdentifier,
+										location: annotationURL
+									});
+								}
 							});
 						}, (Popups.popupTriggerDelay / 2.0));
 					});
-					annotatedTarget.addEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave = (event) => {
-						if (Extracts.originatingDocumentForTarget(info.document).classList.contains("link-bibliography-loaded")) return;
-
+					annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
 						/*  Cancel timer on mouseout (no need to commence a load
 							on a merely transient hover).
 							*/
-						clearTimeout(annotatedTarget.linkBibliographyInjectTimer);
+						clearTimeout(annotatedTarget.annotationLoadTimer);
 					});
 				});
 
@@ -242,43 +248,41 @@ Extracts = {
 					*/
 				GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
 					allAnnotatedTargetsInDocument.forEach(annotatedTarget => {
-						annotatedTarget.removeEventListener("mouseenter", annotatedTarget.linkBibliographyLoad_mouseEnter);
-						annotatedTarget.removeEventListener("mouseleave", annotatedTarget.linkBibliographyLoad_mouseLeave);
+						annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
+						annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
 					});
 				}, { once: true });
 			}, { phase: "eventListeners" });
 
-			/*	Add handler to mark a link bibliography as loaded.
-				*/
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.markLinkBibliographyLoaded = (info) => {
-				GWLog("Extracts.markLinkBibliographyLoaded", "extracts.js", 2);
+			//	Add handler for if an annotation loads.
+			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoaded = (info) => {
+				GWLog("Extracts.signalAnnotationLoaded", "extracts.js", 2);
 
-				/*	If this is a link bibliography that’s loading, then we 
-					mark its containing document as having loaded its link
-					bibliography.
+				/*  If this is an annotation that’s loaded, we cache it, remove 
+					it from the staging element, and fire the annotationDidLoad
+					event.
 					*/
-				if (info.document.id == "link-bibliography") {
-					Extracts.originatingDocumentForTarget(info.document).swapClasses([ 
-						"link-bibliography-loading", 
-						"link-bibliography-loaded" 
-					], 1);
+				if (   info.isMainDocument == false 
+					&& info.document.parentElement.id == "annotations-workspace") {
+					Extracts.cachedAnnotationReferenceEntries[info.identifier] = info.document;
+					info.document.remove();
+
+					GW.notificationCenter.fireEvent("GW.annotationDidLoad", { identifier: info.identifier });
 				}
 			}, { phase: ">rewrite" });
 
-			/*	Add handler for if loading the link bibliography failed.
-				*/
-			GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.markLinkBibliographyLoadFailed = (info) => {
-				GWLog("Extracts.markLinkBibliographyLoadFailed", "extracts.js", 2);
+			//	Add handler for if loading an annotation failed.
+			GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.signalAnnotationLoadFailed = (info) => {
+				GWLog("Extracts.signalAnnotationLoadFailed", "extracts.js", 2);
 
-				/*	If this is a link bibliography that’s failed to load, then 
-					we mark its containing document as having failed to load its
-					link bibliography.
+				/*	If this is an annotation that’s failed to load, then we set
+					the cache value to indicate this, and fire the 
+					annotationLoadDidFail event.
 					*/
-				if (info.document.id == "link-bibliography") {
-					Extracts.originatingDocumentForTarget(info.document).swapClasses([ 
-						"link-bibliography-loading", 
-						"link-bibliography-loading-failed" 
-					], 1);
+				if (info.document.id == "annotations-workspace") {
+					Extracts.cachedAnnotationReferenceEntries[info.identifier] = "LOADING_FAILED";
+
+					GW.notificationCenter.fireEvent("GW.annotationLoadDidFail", { identifier: info.identifier });
 				}
 			});
         }
@@ -394,58 +398,48 @@ Extracts = {
 		}
 	},
 
-	refreshPopFrameAfterLinkBibliographyLoads: (target) => {
-		GWLog("Extracts.refreshPopFrameAfterLinkBibliographyLoads", "extracts.js", 2);
+	refreshPopFrameAfterFragmentLoads: (target) => {
+		GWLog("Extracts.refreshPopFrameAfterFragmentLoads", "extracts.js", 2);
 
 		target.popFrame.classList.toggle("loading", true);
 
-		/*	We set up an event handler for when the link bibliography loads, 
-			and respawn the popup / re-inject the popin, after it spawns (if it 
+		/*	We set up an event handler for when the fragment loads, and respawn 
+			the popup / re-inject the popin, after it spawns (if it 
 			hasn’t de-spawned already, e.g. if the user moused out of the 
 			target).
 			*/
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded = (info) => {
-			GWLog("refreshPopFrameWhenLinkBibliographyLazyLoaded", "extracts.js", 2);
+		GW.notificationCenter.addHandlerForEvent("GW.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
+			GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
 
-			/*	We check that it’s a link bibliography load event (and not
-				some other kind of content load), and that the loaded link
-				bibliography is associated with the correct document.
-				*/
-			if (   info.document.id == "link-bibliography" 
-				&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
-				) {
-				/*  We no longer need to watch for load events for this
-					pop-frame.
-					*/
-				GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", target.refreshPopFrameWhenLinkBibliographyLazyLoaded);
+			//  We check that the fragment is for this annotation.
+			if (info.identifier != Extracts.identifierForAnnotatedTarget(target))
+				return;
 
-				//  If the pop-frame has despawned, don’t respawn it.
-				if (!target.popFrame)
-					return;
+			GW.notificationCenter.removeHandlerForEvent("GW.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded);
 
-				//  TODO: generalize this for popins!
-				Popups.spawnPopup(target);
-			}
-		}, { phase: ">rewrite" });
+			//  If the pop-frame has despawned, don’t respawn it.
+			if (!target.popFrame)
+				return;
 
-		//  Add handler for if the link bibliography load fails.
-		GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", target.updatePopFrameWhenLinkBibliographyLoadFails = (info) => {
-			GWLog("updatePopFrameWhenLinkBibliographyLoadFails", "extracts.js", 2);
+			//  TODO: generalize this for popins!
+			Popups.spawnPopup(target);
+		});
 
-			if (   info.document.id == "link-bibliography" 
-				&& Extracts.originatingDocumentForTarget(target) == Extracts.originatingDocumentForTarget(info.document)
-				) {
-				/*  We no longer need to watch for load events for this
-					pop-frame.
-					*/
-				GW.notificationCenter.removeHandlerForEvent("GW.contentLoadDidFail", target.updatePopFrameWhenLinkBibliographyLoadFails);
+		//  Add handler for if the fragment load fails.
+		GW.notificationCenter.addHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
+			GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
 
-				//  If the pop-frame has despawned, don’t respawn it.
-				if (!target.popFrame)
-					return;
+			//  We check that the fragment is for this annotation.
+			if (info.identifier != Extracts.identifierForAnnotatedTarget(target))
+				return;
 
-				target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-			}
+			GW.notificationCenter.removeHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails);
+
+			//  If the pop-frame has despawned, don’t respawn it.
+			if (!target.popFrame)
+				return;
+
+			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
 		});
 	},
 
@@ -503,18 +497,23 @@ Extracts = {
 		}
 	},
 
+	identifierForAnnotatedTarget: (target) => {
+		if (!target.href)
+			return target.dataset.originalDefinitionId;
+
+		return (target.hostname == location.hostname) ? (target.pathname + target.hash) : target.href;
+	},
+
+	cachedAnnotationReferenceEntries: { },
+
 	/*	Used to generate extract and definition pop-frames.
 		*/
-	referenceDataForTarget: (target, isLink = true) => {
-		let referenceElementContainer = Extracts.originatingDocumentForTarget(target).querySelector(Extracts.referenceElementContainerSelector);
-		let referenceElement = referenceElementContainer.querySelector(`${Extracts.referenceElementEntrySelectorPrefix} ` 
-							   + (isLink 
-							   	  ? `a[href='${target.href}']` 
-							   	  : `span[data-original-definition-id='${target.dataset.originalDefinitionId}']`));
-		let referenceListEntry = referenceElement.closest("li");
+	referenceDataForTarget: (target) => {
+		let referenceEntry = Extracts.cachedAnnotationReferenceEntries[Extracts.identifierForAnnotatedTarget(target)];
+		let referenceElement = referenceEntry.querySelector(".annotation > p:first-child a");
 
 		//  Author list.
-		let authorElement = referenceListEntry.querySelector(".author");
+		let authorElement = referenceEntry.querySelector(".author");
 		let authorList;
 		if (authorElement) {
 			authorList = authorElement.textContent.split(", ").slice(0, 3).join(", ");
@@ -523,17 +522,17 @@ Extracts = {
 		}
 
 		//  Date.
-		let dateElement = referenceListEntry.querySelector(".date");
+		let dateElement = referenceEntry.querySelector(".date");
 
 		return {
 			element: 		referenceElement,
-			listEntry: 		referenceListEntry,
+			listEntry: 		referenceEntry,
 
 			titleText: 		referenceElement.textContent,
 			titleHTML: 		referenceElement.innerHTML.trimQuotes(),
 			authorHTML:		(authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
 			dateHTML:		(dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
-			abstractHTML:	referenceListEntry.querySelector("blockquote").innerHTML,
+			abstractHTML:	referenceEntry.querySelector("blockquote").innerHTML,
 		};
 	},
 
@@ -565,10 +564,11 @@ Extracts = {
 	annotationForTarget: (target) => {
 		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
-		if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")) {
-			Extracts.refreshPopFrameAfterLinkBibliographyLoads(target);
+		let annotationIdentifier = Extracts.identifierForAnnotatedTarget(target);
+		if (Extracts.cachedAnnotationReferenceEntries[annotationIdentifier] == null) {
+			Extracts.refreshPopFrameAfterFragmentLoads(target);
 			return `&nbsp;`;
-		} else if (Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading-failed")) {
+		} else if (Extracts.cachedAnnotationReferenceEntries[annotationIdentifier] == "LOADING_FAILED") {
 			target.popFrame.classList.add("loading-failed");
 			return `&nbsp;`;
 		}
@@ -625,7 +625,7 @@ Extracts = {
     definitionForTarget: (target) => {
         GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-        let referenceData = Extracts.referenceDataForTarget(target, false);
+        let referenceData = Extracts.referenceDataForTarget(target);
 
         return `<p class="data-field title">${referenceData.titleHTML}</p>` 
         	 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
@@ -714,14 +714,6 @@ Extracts = {
 	//  Sections of the current page.
     sectionEmbedForTarget: (target) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
-
-		if (   (   Extracts.isTOCLink(target)
-				&& target.hash == "#link-bibliography")
-			&& Extracts.originatingDocumentForTarget(target).classList.contains("link-bibliography-loading")
-			) {
-			Extracts.refreshPopFrameAfterLinkBibliographyLoads(target);
-			return `&nbsp;`;
-		}
 
         let nearestBlockElement = Extracts.nearestBlockElement(Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash)));
 
