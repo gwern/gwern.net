@@ -638,7 +638,9 @@ Sidenotes = {
 
 		/*  Construct the sidenotes as soon as the HTML content is fully loaded.
 			*/
-		doWhenDOMContentLoaded(Sidenotes.constructSidenotes);
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Sidenotes.constructSidenotesWhenMainContentLoads = (info) => {
+			Sidenotes.constructSidenotes();
+		}, { phase: "<eventListeners", once: true, condition: (info) => info.isMainDocument });
 
 		GW.notificationCenter.fireEvent("Sidenotes.setupDidComplete");
 	}

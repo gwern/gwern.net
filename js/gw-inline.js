@@ -403,6 +403,8 @@ GW.notificationCenter = {
 
 		for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
 			let handler = GW.notificationCenter.eventHandlers[eventName][i];
+			if (handler.options.condition && !handler.options.condition(eventInfo))
+				continue;
 			handler.f(eventInfo);
 			if (handler.options.once) {
 				GW.notificationCenter.eventHandlers[eventName].splice(i, 1);

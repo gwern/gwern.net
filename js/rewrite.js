@@ -47,6 +47,8 @@ function wrapFullWidthTables(loadEventInfo) {
 /*	Add content load handler to process tables.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processTables = (info) => {
+	GWLog("GW.rewriteFunctions.processTables", "rewrite.js", 2);
+
 	if (!info.needsRewrite)
 		return;
 
@@ -128,6 +130,8 @@ function markFullWidthFigures(loadEventInfo) {
 /*	Add content load handler to process figures.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFigures = (info) => {
+	GWLog("GW.rewriteFunctions.processFigures", "rewrite.js", 2);
+
 	if (!info.needsRewrite)
 		return;
 
@@ -163,6 +167,8 @@ function wrapFullWidthPreBlocks(loadEventInfo) {
 /*	Add content load handler to process code blocks.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCodeBlocks = (info) => {
+	GWLog("GW.rewriteFunctions.processCodeBlocks", "rewrite.js", 2);
+
 	if (!info.needsRewrite)
 		return;
 
@@ -297,6 +303,8 @@ function setMarginsOnFullWidthBlocks(loadEventInfo) {
 /*	Add content load handler to process full-width blocks.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFullWidthBlocks = (info) => {
+	GWLog("GW.rewriteFunctions.processFullWidthBlocks", "rewrite.js", 2);
+
 	setMarginsOnFullWidthBlocks(info);
 }, { phase: ">rewrite" });
 
@@ -341,6 +349,8 @@ function setImageDimensionsInAnnotation(loadEventInfo) {
 /*	Add content load handler for processing a loaded annotation (fragment).
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotation = (info) => {
+	GWLog("GW.rewriteFunctions.processAnnotation", "rewrite.js", 2);
+
 	if (   info.isMainDocument == false 
 		&& info.document.parentElement.id == "annotations-workspace") {
 		rectifyTypographyInAnnotation(info);
@@ -471,6 +481,8 @@ function injectFootnotesTOCLink(loadEventInfo) {
 /*	Add content load handlers for processing footnotes section.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFootnotes = (info) => {
+	GWLog("GW.rewriteFunctions.processFootnotes", "rewrite.js", 2);
+
 	if (info.needsRewrite && info.isFullPage) {
 		identifyFootnotesSection(info);
 		injectFootnoteSectionSelfLink(info);
@@ -482,6 +494,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	}
 }, { phase: "rewrite" });
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
+	GWLog("GW.rewriteFunctions.processCitations", "rewrite.js", 2);
+
 	bindNoteHighlightEventsToCitations(info);
 }, { phase: "eventListeners" });
 
@@ -537,6 +551,8 @@ function directionalizeAnchorLinks(loadEventInfo) {
 /*	Add content load handler for link processing.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinks = (info) => {
+	GWLog("GW.rewriteFunctions.processLinks", "rewrite.js", 2);
+
 	addSpecialLinkClasses(info);
 
 	if (info.needsRewrite) {
@@ -564,6 +580,8 @@ function cleanUpImageAltText(loadEventInfo) {
 /*	Add content load handler for doing miscellaneous rewriting.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
+	GWLog("GW.rewriteFunctions.processMiscellaneousRewrites", "rewrite.js", 2);
+
 	if (!info.needsRewrite)
 		return;
 
@@ -593,6 +611,8 @@ function injectBackToTopLink(loadEventInfo) {
 /*	Add content load handler to inject the back-to-top link.
 	*/
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectBackToTopLink = (info) => {
+	GWLog("GW.rewriteFunctions.injectBackToTopLink", "rewrite.js", 2);
+
 	if (info.isMainDocument)
 		injectBackToTopLink(info);
 }, { phase: "rewrite" });
