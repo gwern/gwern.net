@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-01-20 18:26:26 gwern"
+When:  Time-stamp: "2021-01-22 23:03:46 gwern"
 License: CC-0
 -}
 
@@ -137,7 +137,8 @@ whiteList :: String -> Bool
 whiteList url
   | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = True
   | any (`isPrefixOf` url) ["/", "https://www.gwern.net", "#", "!", "$", "mailto", "irc"] = True
-  | any (`isSuffixOf` url) ["pdf"] = False
+  | any (`isSuffixOf` url) [".pdf"] = False
+  | any (`isInfixOf` url) [".pdf#"] = False
   | any (`isInfixOf` url) [".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
       , ".xz"
@@ -498,6 +499,7 @@ whiteList url
       , "thiscatdoesnotexist.com" -- interactive/service
       , "thisstorydoesnotexist.com" -- interactive/service
       , "thiswaifudoesnotexist.net" -- interactive/service
+      , "thisanimedoesnotexist.ai" -- interactive/service
       , "washingtonpost.com" -- stable
       , "iqout.com"  -- interactive/service
       , "ubuntu.com" -- stable
