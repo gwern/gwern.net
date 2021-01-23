@@ -524,8 +524,11 @@ function directionalizeAnchorLinks(loadEventInfo) {
 	GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
 	loadEventInfo.document.querySelectorAll("a.link-self").forEach(identifierLink => {
+		if (!identifierLink.hash) return;
+
 		target = loadEventInfo.document.querySelector(decodeURIComponent(identifierLink.hash));
 		if (!target) return;
+
 		identifierLink.classList.add(
 			identifierLink.compareDocumentPosition(target) == Node.DOCUMENT_POSITION_FOLLOWING
 			? 'identifier-link-down' 
