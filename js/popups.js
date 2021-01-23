@@ -319,19 +319,8 @@ Popups = {
 					the popup off to the left or right.
 					*/
 				offToTheSide = true;
-			} else if ((popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight) >= (popupContainerViewportRect.y * -1)) {
-				//  Above.
-				provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
-			} else if ((popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight) <= ((popupContainerViewportRect.y * -1) + window.innerHeight)) {
-				//  Below.
-				provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
-			} else {
-				/*  The popup does not fit above or below! We will have to
-					put it off to the left or right.
-					*/
-				offToTheSide = true;
 			}
-
+	
 			if (offToTheSide) {
 				provisionalPopupYPosition = mouseEnterEventPositionInPopupContainer.y - ((spawnPoint.y / window.innerHeight) * popupIntrinsicHeight);
 				if (provisionalPopupYPosition - popupContainerViewportRect.y < 0)
@@ -353,8 +342,28 @@ Popups = {
 							 popupContainerViewportRect.x * -1) {
 					//  Off to the left.
 					provisionalPopupXPosition = targetRectInPopupContainer.left - popupIntrinsicWidth - popupBreathingRoom.x;
+				} else {
+					//  Not off to either side, in fact.
+					offToTheSide = false;
 				}
-			} else {
+			}
+			
+			if (!offToTheSide) {
+				if ((popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight) >= (popupContainerViewportRect.y * -1)) {
+					//  Above.
+					provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
+				} else if ((popupSpawnYOriginForSpawnBelow + popupIntrinsicHeight) <= ((popupContainerViewportRect.y * -1) + window.innerHeight)) {
+					//  Below.
+					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
+				} else {
+					/*  The popup does not fit above or below! We will have to
+						put it off to to the right after all...
+						*/
+					offToTheSide = true;
+				}
+			}
+
+			if (!offToTheSide) {
 				/*  Place popup off to the right (and either above or below),
 					as per the previous block of code.
 					*/
