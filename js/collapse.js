@@ -167,13 +167,15 @@ function expandLockCollapseBlocks(loadEventInfo) {
 
 /*	Add handler for processing collapse blocks in injected content.
 	*/
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.processCollapseBlocks = (info) => {
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCollapseBlocks = (info) => {
+	GWLog("GW.rewriteFunctions.processCollapseBlocks", "collapse.js", 2);
+
 	if (!info.collapseAllowed) {
 		expandLockCollapseBlocks(info);
 	} else if (info.needsRewrite) {
 		prepareCollapseBlocks(info);
 	}
-}, { phase: "eventListeners" });
+}, { phase: ">rewrite", condition: (info) => (!info.collapseAllowed || info.needsRewrite) });
 
 /*	Ensure that the given element is scrolled into view when layout is complete.
 	*/

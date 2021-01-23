@@ -262,14 +262,14 @@ Extracts = {
 					it from the staging element, and fire the annotationDidLoad
 					event.
 					*/
-				if (   info.isMainDocument == false 
-					&& info.document.parentElement.id == "annotations-workspace") {
-					Extracts.cachedAnnotationReferenceEntries[info.identifier] = info.document;
-					info.document.remove();
+				Extracts.cachedAnnotationReferenceEntries[info.identifier] = info.document;
+				info.document.remove();
 
-					GW.notificationCenter.fireEvent("GW.annotationDidLoad", { identifier: info.identifier });
-				}
-			}, { phase: ">rewrite" });
+				GW.notificationCenter.fireEvent("GW.annotationDidLoad", { identifier: info.identifier });
+			}, {
+				phase: ">rewrite",
+				condition: (info) => (info.document.parentElement && info.document.parentElement.id == "annotations-workspace")
+			});
 
 			//	Add handler for if loading an annotation failed.
 			GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.signalAnnotationLoadFailed = (info) => {
@@ -279,12 +279,10 @@ Extracts = {
 					the cache value to indicate this, and fire the 
 					annotationLoadDidFail event.
 					*/
-				if (info.document.id == "annotations-workspace") {
-					Extracts.cachedAnnotationReferenceEntries[info.identifier] = "LOADING_FAILED";
+				Extracts.cachedAnnotationReferenceEntries[info.identifier] = "LOADING_FAILED";
 
-					GW.notificationCenter.fireEvent("GW.annotationLoadDidFail", { identifier: info.identifier });
-				}
-			});
+				GW.notificationCenter.fireEvent("GW.annotationLoadDidFail", { identifier: info.identifier });
+			}, { condition: (info) => info.document.id == "annotations-workspace" });
         }
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
@@ -411,36 +409,24 @@ Extracts = {
 		GW.notificationCenter.addHandlerForEvent("GW.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
 			GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
 
-			//  We check that the fragment is for this annotation.
-			if (info.identifier != Extracts.identifierForAnnotatedTarget(target))
-				return;
-
-			GW.notificationCenter.removeHandlerForEvent("GW.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded);
-
 			//  If the pop-frame has despawned, don’t respawn it.
 			if (!target.popFrame)
 				return;
 
 			//  TODO: generalize this for popins!
 			Popups.spawnPopup(target);
-		});
+		}, { once: true, condition: (info) => info.identifier == Extracts.identifierForAnnotatedTarget(target) });
 
 		//  Add handler for if the fragment load fails.
 		GW.notificationCenter.addHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
 			GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
-
-			//  We check that the fragment is for this annotation.
-			if (info.identifier != Extracts.identifierForAnnotatedTarget(target))
-				return;
-
-			GW.notificationCenter.removeHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails);
 
 			//  If the pop-frame has despawned, don’t respawn it.
 			if (!target.popFrame)
 				return;
 
 			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-		});
+		}, { once: true, condition: (info) => info.identifier == Extracts.identifierForAnnotatedTarget(target) });
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages

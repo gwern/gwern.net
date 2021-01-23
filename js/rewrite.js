@@ -49,13 +49,10 @@ function wrapFullWidthTables(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processTables = (info) => {
 	GWLog("GW.rewriteFunctions.processTables", "rewrite.js", 2);
 
-	if (!info.needsRewrite)
-		return;
-
 	wrapTables(info);
 	if (info.fullWidthPossible)
 		wrapFullWidthTables(info);
-}, { phase: "rewrite" });
+}, { phase: "rewrite", condition: (info) => info.needsRewrite });
 
 /***********/
 /* FIGURES */
@@ -132,13 +129,10 @@ function markFullWidthFigures(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFigures = (info) => {
 	GWLog("GW.rewriteFunctions.processFigures", "rewrite.js", 2);
 
-	if (!info.needsRewrite)
-		return;
-
 	wrapFigures(info);
 	if (info.fullWidthPossible)
 		markFullWidthFigures(info);
-}, { phase: "rewrite" });
+}, { phase: "rewrite", condition: (info) => info.needsRewrite });
 
 /***************/
 /* CODE BLOCKS */
@@ -169,12 +163,9 @@ function wrapFullWidthPreBlocks(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCodeBlocks = (info) => {
 	GWLog("GW.rewriteFunctions.processCodeBlocks", "rewrite.js", 2);
 
-	if (!info.needsRewrite)
-		return;
-
 	if (info.fullWidthPossible)
 		wrapFullWidthPreBlocks(info);
-}, { phase: "rewrite" });
+}, { phase: "rewrite", condition: (info) => info.needsRewrite });
 
 /**************/
 /* TYPOGRAPHY */
@@ -351,12 +342,9 @@ function setImageDimensionsInAnnotation(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotation = (info) => {
 	GWLog("GW.rewriteFunctions.processAnnotation", "rewrite.js", 2);
 
-	if (   info.isMainDocument == false 
-		&& info.document.parentElement.id == "annotations-workspace") {
-		rectifyTypographyInAnnotation(info);
-		setImageDimensionsInAnnotation(info);
-	}
-}, { phase: "rewrite" });
+	rectifyTypographyInAnnotation(info);
+	setImageDimensionsInAnnotation(info);
+}, { phase: "rewrite", condition: (info) => (info.isMainDocument == false && info.document.parentElement.id == "annotations-workspace") });
 
 /*************/
 /* FOOTNOTES */
@@ -483,16 +471,15 @@ function injectFootnotesTOCLink(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFootnotes = (info) => {
 	GWLog("GW.rewriteFunctions.processFootnotes", "rewrite.js", 2);
 
-	if (info.needsRewrite && info.isFullPage) {
-		identifyFootnotesSection(info);
-		injectFootnoteSectionSelfLink(info);
-		injectFootnoteSelfLinks(info);
-	}
+	identifyFootnotesSection(info);
+	injectFootnoteSectionSelfLink(info);
+	injectFootnoteSelfLinks(info);
+}, { phase: "rewrite", condition: (info) => (info.needsRewrite && info.isFullPage) });
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectFootnotesTOCLink = (info) => {
+	GWLog("GW.rewriteFunctions.injectFootnotesTOCLink", "rewrite.js", 2);
 
-	if (info.isMainDocument) {
-		injectFootnotesTOCLink(info);
-	}
-}, { phase: "rewrite" });
+	injectFootnotesTOCLink(info);
+}, { phase: "rewrite", condition: (info) => info.isMainDocument });
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
 	GWLog("GW.rewriteFunctions.processCitations", "rewrite.js", 2);
 
@@ -582,11 +569,8 @@ function cleanUpImageAltText(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
 	GWLog("GW.rewriteFunctions.processMiscellaneousRewrites", "rewrite.js", 2);
 
-	if (!info.needsRewrite)
-		return;
-
 	cleanUpImageAltText(info);
-}, { phase: "rewrite" });
+}, { phase: "rewrite", condition: (info) => info.needsRewrite });
 
 /********************/
 /* BACK TO TOP LINK */
@@ -613,9 +597,8 @@ function injectBackToTopLink(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectBackToTopLink = (info) => {
 	GWLog("GW.rewriteFunctions.injectBackToTopLink", "rewrite.js", 2);
 
-	if (info.isMainDocument)
-		injectBackToTopLink(info);
-}, { phase: "rewrite" });
+	injectBackToTopLink(info);
+}, { phase: "rewrite", condition: (info) => info.isMainDocument });
 
 /*******************************************************************************/
 /*  Show/hide the back-to-top link in response to scrolling.
