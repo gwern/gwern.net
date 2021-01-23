@@ -300,90 +300,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	setMarginsOnFullWidthBlocks(info);
 }, { phase: ">rewrite" });
 
-/*********************/
-/* LINK BIBLIOGRAPHY */
-/*********************/
-
-GW.linkBibliographyCache = { };
-
-/***********************************************************************/
-/*	Inject the link bibliography (located at 
-	`<url for current page>-link-bibliography`), if not already inlined.
-	*/
-function injectLinkBibliography(loadEventInfo) {
-	GWLog("injectLinkBibliography", "rewrite.js", 1);
-
-	let linkBibliography = (loadEventInfo.isFullPage 
-							? loadEventInfo.document.querySelector("#link-bibliography") 
-							: null) 
-						|| (loadEventInfo.document.id == "link-bibliography" 
-							? loadEventInfo.document 
-							: null);
-	let linkBibliographyURL = new URL(loadEventInfo.location.href);
-	linkBibliographyURL.pathname += "-link-bibliography";
-
-	let postProcessLinkBibliography = () => {
-		if (loadEventInfo.collapseAllowed)
-			linkBibliography.classList.toggle("collapse", true);
-		GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
-			source: "injectLinkBibliography",
-			document: linkBibliography, 
-			isMainDocument: false,
-			needsRewrite: true, 
-			clickable: loadEventInfo.clickable, 
-			collapseAllowed: loadEventInfo.collapseAllowed, 
-			isCollapseBlock: loadEventInfo.collapseAllowed,
-			isFullPage: false,
-			location: linkBibliographyURL,
-			fullWidthPossible: loadEventInfo.fullWidthPossible
-		});
-	};
-
-	if (GW.linkBibliographyCache[linkBibliographyURL.pathname]) {
-		requestAnimationFrame(() => {
-			linkBibliography.innerHTML = GW.linkBibliographyCache[linkBibliographyURL.pathname].innerHTML;
-			postProcessLinkBibliography();
-		});
-	} else {
-		doAjax({
-			location: linkBibliographyURL.href,
-			onSuccess: (event) => {
-				linkBibliography.innerHTML = event.target.responseText;
-				GW.linkBibliographyCache[linkBibliographyURL.pathname] = linkBibliography;
-				postProcessLinkBibliography();
-			},
-			onFailure: (event) => {
-				linkBibliography.innerHTML = `<h1><a 
-					href="#link-bibliography" 
-					title="Link to section: § ‘Link Bibliography’"
-						>Link Bibliography</a></h1>` + 
-					`<p><strong>Failed to load link bibliography! Extract/definition popups are not available.</strong></p>`;
-				linkBibliography.classList.toggle("loading-failed", true);
-				GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-					source: "injectLinkBibliography",
-					document: linkBibliography, 
-					location: linkBibliographyURL
-				});
-			}
-		});
-	}
-}
-
-/****************************************************************************/
-/*	Enable hovering over a link bibliography entry number to link to it, much
-	like the self-links on section headings.
-	*/
-function injectLinkBibliographyItemSelfLinks(loadEventInfo) {
-	GWLog("injectLinkBibliographyItemSelfLinks", "rewrite.js", 1);
-
-	let linkBibliographyListItems = Array.from(loadEventInfo.document.querySelector("#link-bibliography > ol").children);
-
-	for (let i = 0; i < linkBibliographyListItems.length; i++) {
-		let id = `link-bibliography-entry-${i + 1}`;
-		linkBibliographyListItems[i].id = id;
-		linkBibliographyListItems[i].insertAdjacentHTML("afterbegin", `<a href="#${id}" class="link-bibliography-item-self-link">&nbsp;</a>`);
-	}
-}
+/***************************/
+/* ANNOTATIONS (FRAGMENTS) */
+/***************************/
 
 /*******************************************************************************/
 /*	Apply various typographic fixes (educate quotes, inject <wbr> elements after
@@ -391,75 +310,41 @@ function injectLinkBibliographyItemSelfLinks(loadEventInfo) {
 
 	Requires typography.js to be loaded prior to this file.
 	*/
-function rectifyTypographyInLinkBibliographyEntries(loadEventInfo) {
-	GWLog("rectifyTypographyInLinkBibliographyEntries", "rewrite.js", 1);
+function rectifyTypographyInAnnotation(loadEventInfo) {
+	GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll("#link-bibliography > ol > li > blockquote").forEach(linkBibliographyEntryContent => {
-		Typography.processElement(linkBibliographyEntryContent, 
-			  Typography.replacementTypes.QUOTES 
-			| Typography.replacementTypes.WORDBREAKS 
-			| Typography.replacementTypes.ELLIPSES 
-		);
+	Typography.processElement(loadEventInfo.document, 
+		  Typography.replacementTypes.QUOTES 
+		| Typography.replacementTypes.WORDBREAKS 
+		| Typography.replacementTypes.ELLIPSES 
+	);
 
-		//	Educate quotes in image alt-text.
-		linkBibliographyEntryContent.querySelectorAll("img").forEach(image => {
-			image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
-		});
+	//	Educate quotes in image alt-text.
+	loadEventInfo.document.querySelectorAll("img").forEach(image => {
+		image.alt = Typography.processString(image.alt, Typography.replacementTypes.QUOTES);
 	});
 }
 
 /*****************************************************************************/
 /*	Sets, in CSS, the image dimensions that are specified in HTML.
-	(This is to ensure no reflow when popups for link bibliography entries are
-	 spawned.)
+	(This is to ensure no reflow when annotation popups are spawned.)
 	*/
-function setImageDimensionsInLinkBibliographyEntries(loadEventInfo) {
-	GWLog("setImageDimensionsInLinkBibliographyEntries", "rewrite.js", 1);
+function setImageDimensionsInAnnotation(loadEventInfo) {
+	GWLog("setImageDimensionsInAnnotation", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll("#link-bibliography figure img[width]").forEach(image => {
+	loadEventInfo.document.querySelectorAll("figure img[width]").forEach(image => {
 		image.style.width = image.getAttribute("width") + "px";
 	});
 }
 
-/******************************************************************/
-/*	Ensure all link bibliography entries are fully qualified links.
+/**************************************************************************/
+/*	Add content load handler for processing a loaded annotation (fragment).
 	*/
-function fullyQualifyLinksInLinkBibliographyEntries(loadEventInfo) {
-	GWLog("fullyQualifyLinksInLinkBibliographyEntries", "rewrite.js", 1);
-
-	loadEventInfo.document.querySelectorAll("#link-bibliography > ol > li > p a").forEach(link => {
-		link.href = link.href;
-	});
-}
-
-/***************************************************************************/
-/*	Add content load handler for injecting and processing link bibliography.
-	*/
-GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinkBibliography = (info) => {
-	if (!info.needsRewrite)
-		return;
-
-	let linkBibliography = (info.isFullPage 
-							? info.document.querySelector("#link-bibliography") 
-							: null) 
-						|| (info.document.id == "link-bibliography" 
-							? info.document 
-							: null);
-	if (!linkBibliography)
-		return;
-
-	if (   info.isFullPage 
-		&& (   info.location.hash == "#link-bibliography"
-			|| info.location.hash.startsWith("#link-bibliography-entry-"))) {
-		injectLinkBibliography(info);
-	} else if (GW.isMobile() && info.isMainDocument) {
-		linkBibliography.remove();
-		document.querySelector(`#TOC a[href="#link-bibliography"]`).closest("li").remove();
-	} else if (linkBibliography.childElementCount > 0) {
-		injectLinkBibliographyItemSelfLinks(info);
-		rectifyTypographyInLinkBibliographyEntries(info);
-		setImageDimensionsInLinkBibliographyEntries(info);
-		fullyQualifyLinksInLinkBibliographyEntries(info);
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotation = (info) => {
+	if (   info.isMainDocument == false 
+		&& info.document.parentElement.id == "annotations-workspace") {
+		rectifyTypographyInAnnotation(info);
+		setImageDimensionsInAnnotation(info);
 	}
 }, { phase: "rewrite" });
 
@@ -614,7 +499,7 @@ function addSpecialLinkClasses(loadEventInfo) {
 	loadEventInfo.document.querySelectorAll(".markdownBody a[href]").forEach(link => {
 		if (   link.hostname != loadEventInfo.location.hostname
 			|| link.closest("h1, h2, h3, h4, h5, h6")
-			|| link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link, .link-bibliography-item-self-link"))
+			|| link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
 			return;
 
 		if (link.pathname == loadEventInfo.location.pathname) {
