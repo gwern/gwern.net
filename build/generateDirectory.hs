@@ -65,7 +65,7 @@ generateYAMLHeader d tdy = "---\n" ++
                            "...\n" ++
                            "\n" ++
                            "<div class=\"abstract\">\n" ++
-                           "> <code>/" ++ d ++ "</code> directory contents (<a href=\"#link-bibliography\">with annotations</a> where available):\n" ++
+                           "> <code>/" ++ d ++ "</code> directory contents:\n" ++
                            "</div>\n" ++
                            "\n" ++
                            "# Files {.collapse}\n" ++

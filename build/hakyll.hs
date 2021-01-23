@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-16 12:52:12 gwern"
+When: Time-stamp: "2021-01-23 12:42:36 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -65,7 +65,7 @@ import qualified Data.Text as T
 
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
-import LinkMetadata (isLocalLink, generateLinkBibliography, readLinkMetadata, Metadata)
+import LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 
@@ -76,6 +76,7 @@ main = hakyll $ do
              -- popup metadata:
              preprocess $ print ("Popups parsing..." :: String)
              meta <- preprocess readLinkMetadata
+             preprocess $ writeAnnotationFragments meta
 
              preprocess $ print ("Local archives parsing..." :: String)
              archive <- preprocess readArchiveMetadata
@@ -230,12 +231,12 @@ postCtx tags =
                               Left _          -> return "N/A"
                               Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
-
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
 pandocTransform md adb p = do let pw = walk convertInterwikiLinks p
-                              pb <- generateLinkBibliography md pw
+                              _ <- createAnnotations md pw
+                              let pb = walk (hasAnnotation md True) pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . addAmazonAffiliate)) $ pb
-                              let pbth = isLocalLink $ walk headerSelflink pbt -- run headerSelflink after generateLinkBibliography to cover the generated '# Link Bibliography' sections
+                              let pbth = isLocalLink $ walk headerSelflink pbt
                               walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) pbth
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")

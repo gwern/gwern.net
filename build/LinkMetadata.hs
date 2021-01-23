@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-22 18:16:20 gwern"
+When:  Time-stamp: "2021-01-23 12:56:21 gwern"
 License: CC-0
 -}
 
@@ -11,7 +11,7 @@ License: CC-0
 -- 3. bugs in packages: the WMF API omits the need for `-L` in curl but somehow their live demo works anyway (?!); rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation) where
 
 import Control.Monad (when, void)
 import qualified Data.ByteString as B (appendFile)
@@ -27,7 +27,7 @@ import qualified Data.Map.Strict as M (fromList, lookup, traverseWithKey, union,
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
-                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), ListNumberStyle(Decimal), ListNumberDelim(Period), Block(RawBlock, Para, Header, OrderedList, BlockQuote, Div))
+                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
@@ -64,7 +64,6 @@ isLocalLink = walk isLocalLink'
 
 
 -------------------------------------------------------------------------------------------------------------------------------
--- Prototype flat annotation implementation
 
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
@@ -86,18 +85,18 @@ readLinkMetadata = do
              auto <- readYaml "metadata/auto.yaml"
 
              -- merge the hand-written & auto-generated link annotations, and return:
-             let firstVersion = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
-             return firstVersion
+             let final = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
+             return final
 
 writeAnnotationFragments :: Metadata -> IO ()
-writeAnnotationFragments = void . M.traverseWithKey writeAnnotationFragment
-writeAnnotationFragment :: Path -> MetadataItem -> IO ()
-writeAnnotationFragment u i@(_,_,_,_,e) = when (length e > 290) $
+writeAnnotationFragments md = void $ M.traverseWithKey (writeAnnotationFragment md) md
+writeAnnotationFragment :: Metadata -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment md u i@(_,_,_,_,e) = when (length e > 290) $
                                           do let u' = linkCanonicalize u
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
                                              when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                             let annotationPandoc = generateListItems (u', Just i)
+                                             let annotationPandoc = walk (hasAnnotation md False) $ generateAnnotationBlock (u', Just i)
                                              let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta annotationPandoc)
                                              case annotationHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
@@ -110,28 +109,12 @@ writeAnnotationFragment u i@(_,_,_,_,e) = when (length e > 290) $
                                                else do contentsOld <- TIO.readFile target
                                                        when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
 
-generateLinkBibliography :: Metadata -> Pandoc -> IO Pandoc
-generateLinkBibliography md x@(Pandoc meta doc) = do let links = nubOrd $ dedupe $ collectLinks doc
-                                                     let bibContents = recurseList md links
-                                                     -- now, annotate existing links with a class indicating if they can be popped up or not; but skip duplicate IDs while doing the link bibliography:
-                                                     let doc' = walk (hasAnnotation md True) doc
-                                                     let bibContents'' = walk (hasAnnotation md False) bibContents
-                                                     let body = (doc'++bibContents'')
-                                                     -- extract final full set of URLs, and run a pass
-                                                     let targets = nubOrd $ dedupe $ collectLinks body
-                                                     changes <- mapM (annotateLink' md) targets
-                                                     -- if we faulted in new URLs, our page is stale & missing an annotation, so rebuild until it's clean:
-                                                     if or changes then do
-                                                         md' <- readLinkMetadata
-                                                         generateLinkBibliography md' x
-                                                       else return (Pandoc meta body)
-
--- remove duplicates, taking into account canonicalization (that "https://www.gwern.net/x" == "/x")
-dedupe :: [String] -> [String]
-dedupe [] = []
-dedupe (x:xs) = x : if "/" `isPrefixOf` x then (dedupe $ filter (\y -> y /= ("https://www.gwern.net"++x)) xs) else
-                      if "https://www.gwern.net" `isPrefixOf` x then (dedupe $ filter (\y -> y /= (replace "https://www.gwern.net" "" x)) xs)
-                      else dedupe xs
+-- walk each page, extract the links, and create annotations as necessary for new links
+createAnnotations :: Metadata -> Pandoc -> IO ()
+createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink' md) $ queryWith extractLink markdown
+  where extractLink :: Inline -> [String]
+        extractLink (Link _ _ (path, _)) = [T.unpack path]
+        extractLink _ = []
 
 annotateLink' :: Metadata -> String -> IO Bool
 annotateLink' md target =
@@ -154,7 +137,7 @@ annotateLink' md target =
                                        -- return true because we *did* change the database & need to rebuild:
                                        writeLinkMetadata target'' m >> return True
 
--- for links
+-- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
 -- goddamn it Pandoc, why can't you read the very HTML you just wrote‽
 hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` h) then x else
@@ -168,13 +151,11 @@ hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfix
                                                                           in case p' of
                                                                             Left e -> error (show x ++ ": " ++ show e)
                                                                             Right p'' -> p''
-                                                                    -- case html of
-                                                                    --   Right e -> error (show x ++ ": " ++ show e)
-                                                                    --  Left html' -> return $ RawBlock (Format "html") html'
 hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,b,c) e (f,g)) =
-                                                        case M.lookup (linkCanonicalize $ T.unpack f) mdb of
+                                                        let f' = linkCanonicalize $ T.unpack f in
+                                                        case M.lookup f' mdb of
                                                           Nothing               -> y
                                                           Just (_, _, _, _, "") -> y
                                                           Just (_,aut,dt,_,_) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
@@ -185,19 +166,8 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
           hasAnnotationInline _ _ y = y
 
 
--- repeatedly query a Link Bibliography section for all links, generate a new Link Bibliography, and inline annotations; do so recursively until a fixed point (where the new version == old version)
-recurseList :: Metadata -> [String] -> [Block]
-recurseList md links = if (sort $ uniq links')==(sort $ uniq finalLinks) then [Header 1 ("link-bibliography",["collapse"], []) [Str "Link Bibliography"]] ++
-  [Div ("link-bibliography-description", ["collapseSummary"], []) [Para [Str "Bibliography of page links in reading order (with annotations when available):"]]] ++
-  sectionContents else recurseList md finalLinks
-                       where links' = nubOrd links
-                             linkAnnotations = map (`M.lookup` md) (map linkCanonicalize links')
-                             pairs = zip links' linkAnnotations :: [(String, Maybe LinkMetadata.MetadataItem)]
-                             sectionContents = [OrderedList (1,Decimal,Period) (map generateListItems pairs)] :: [Block]
-                             finalLinks = collectLinks sectionContents
-
-generateListItems :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
-generateListItems (f, ann) = case ann of
+generateAnnotationBlock :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
+generateAnnotationBlock (f, ann) = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (_,    _, _,_ ,"") -> nonAnnotatedLink
@@ -227,21 +197,6 @@ generateListItems (f, ann) = case ann of
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
-
-collectLinks :: [Block] -> [String]
-collectLinks p = nubOrd $ dedupe $ filter (\u -> "/" `isPrefixOf` u || "?" `isPrefixOf` u || "http" `isPrefixOf` u) $ queryWith collectLink p
-  where
-   collectLink :: Block -> [String]
-   collectLink (RawBlock (Format "html") t) = if not ("href=" `T.isInfixOf` t) then [] else let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} t in
-                                                   case markdown of
-                                                     Left e -> error (T.unpack t ++ ": " ++ show e)
-                                                     Right markdown' -> queryWith collectLinks markdown'
-   collectLink x = queryWith extractLink x
-
-   extractLink :: Inline -> [String]
-   extractLink (Span (_, "defnMetadata":_, ("original-definition-id",f):_) y) = [T.unpack f] ++ queryWith collectLinks y
-   extractLink (Link _ _ (path, _)) = [T.unpack path]
-   extractLink _ = []
 
 -------------------------------------------------------------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-01-20 17:35:07 gwern"
+# When:  Time-stamp: "2021-01-23 12:29:00 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -66,6 +66,8 @@ do
                  -e 'biorxiv.org/content/biorxiv/.*\.pdf ' -e '(https://www.biorxiv.org/content/biorxiv/.*\.pdf)' \
                  -e 'arxiv.org/pdf/.*\.pdf)' -e 'arxiv.org/pdf/.*\.pdf "'  -- "$PAGE"; }
         wrap λ "if I am not linking a specific page on Arxiv or BioRxiv, why am I linking to the PDF rather than the landing page?"
+        λ(){ fgp -e ".pdf#subsection" -e ".pdf#Appendix" -- "$PAGE"; }
+        wrap λ "Section PDF links break when archived locally (thereby breaking the local-PDF popups), so avoid unusual anchors in favor of 'page=N' anchor links"
 
         λ() { egp -e '<div id="abstract"' -e '<div id="collapseSummary"' -e '^</div$' -e '^\[\!Margin: ' -e ' n=[[:digit:]]' -e ' n = [[:digit:]]' \
                   -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' \

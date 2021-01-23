@@ -102,14 +102,6 @@ then
     export -f staticCompileMathJax
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel staticCompileMathJax || true
 
-    ## TEMPORARY: copy the link bibliographies (the annotations on a page) into a standalone file, as scaffolding for the final link popup rewrite (where each annotation will be dumped to a file in annotations/* under a hash of the URL so they can be looked-up directly, rather than inlining annotations into the body of the page, which is tricky to get right and increasingly heavy-weight in terms of bloating the HTML & stressing browsers)
-    echo "Building external link-bibliographies..."
-    externalLinkBibliographyCompile () { php static/build/externalize_link_bibliography.php "$@"; }
-    export -f externalLinkBibliographyCompile
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel externalLinkBibliographyCompile || true
-
-    rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
-
     # Testing compilation results:
     set +e
     ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
@@ -201,7 +193,7 @@ then
     set +e
 
     # expire CloudFlare cache to avoid hassle of manual expiration:
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | fgrep -v 'images/thumbnails/' | sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | sort) $(find . -name "*.page" -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1-link-bibliography/' | sort ) https://www.gwern.net/sitemap.xml https://www.gwern.net/index"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | fgrep -v 'images/thumbnails/' | sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | sort) https://www.gwern.net/sitemap.xml https://www.gwern.net/index"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -316,7 +308,7 @@ then
     λ(){ fgrep -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
     wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
 
-    λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v images/thumbnails/; }
+    λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v -e images/thumbnails/ -e metadata/annotations/; }
     wrap λ "No files should have double hyphens or tildes in their names."
 
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
