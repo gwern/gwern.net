@@ -195,7 +195,7 @@ Extracts = {
 						if (cachedAnnotation && cachedAnnotation != "LOADING_FAILED") return;
 
 						let annotationURL = new URL("https://" + location.hostname + Extracts.annotationsBasePathname 
-													+ encodeURIComponent(encodeURIComponent(annotationIdentifier)) + ".html");
+													+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
 
 						/*  On hover, start a timer, duration of one-half the 
 							popup trigger delay...

@@ -1879,11 +1879,19 @@ GW.setLogLevel = (level, permanently = false) => {
 /* HELPERS */
 /***********/
 
+/*	Because encodeURIComponent does not conform to RFC 3986; see MDN docs.
+	*/
+function fixedEncodeURIComponent(str) {
+	return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+		return '%' + c.charCodeAt(0).toString(16);
+	});
+}
+
 /*	Helper function for AJAX, by kronusaturn
 	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
 	*/
 function urlEncodeQuery(params) {
-	return (Object.keys(params)).map(x => (`${x}=${encodeURIComponent(params[x])}`)).join("&");
+	return (Object.keys(params)).map(x => (`${x}=${ fixedEncodeURIComponent(params[x]) }`)).join("&");
 }
 
 /*	Helper function for AJAX, by kronusaturn
