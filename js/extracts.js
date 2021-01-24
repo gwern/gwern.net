@@ -867,7 +867,8 @@ Extracts = {
 		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
 
 		if (target.href.match(/\.pdf(#|$)/) != null) {
-			return `<object data="${target.href}"></object>`;
+			let data = target.href + (target.href.includes("#") ? "&" : "#") + "view=FitH";
+			return `<object data="${data}"></object>`;
 		} else {
 			return `<iframe src="${target.href}" frameborder="0" sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe>`;
 		}
