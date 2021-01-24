@@ -27,7 +27,8 @@ import Text.Pandoc (Inline(..), Block(..), Pandoc)
 import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk hyphenate . walk smallcapsfyInlineCleanup . walk smallcapsfy . walk breakSlashes . rulersCycle 3
+typographyTransform = walk breakSlashes . walk hyphenate . -- work around the RawBlock/RawInline trapdoor by running hyphenation *first*; breakSlashes doesn't care, but if we run hyphenate afterwards, individual phrases like "classification/categorization" will get <wbr>s but not soft-hyphens.
+                       walk smallcapsfyInlineCleanup . walk smallcapsfy . rulersCycle 3
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
 -- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
