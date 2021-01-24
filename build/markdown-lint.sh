@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-01-23 16:38:58 gwern"
+# When:  Time-stamp: "2021-01-24 10:46:12 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -58,7 +58,7 @@ do
         λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
         wrap λ "check for aggregator-hosted PDFs and host them on gwern.net to make them visible to Google Scholar/provide backups"
 
-        λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/'; }
+        λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/' -e 'https://.*twitter.com/.+/status/[0-9]+'; }
         wrap λ "Switch Twitter.com to Nitter.net links"
 
         λ(){ egp -e 'http://www.pnas.org/content/.*/.*/.*.abstract' -e '[^\.]t\.test\(' -e '^\~\~\{\.' \
