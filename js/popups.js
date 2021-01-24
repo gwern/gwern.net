@@ -399,6 +399,8 @@ Popups = {
 	detachPopupFromTarget: (popup) => {
 		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
 
+		Popups.clearPopupTimers(popup.spawningTarget);
+
         popup.spawningTarget.classList.remove("popup-open");
         popup.spawningTarget.popup = null;
         popup.spawningTarget.popFrame = null;
@@ -408,9 +410,8 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.popupWillDespawn", { popup: popup });
 
-	    popup.classList.remove("fading");
-        popup.remove();
         Popups.detachPopupFromTarget(popup);
+        popup.remove();
         document.activeElement.blur();
     },
 
