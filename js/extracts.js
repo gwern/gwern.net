@@ -684,6 +684,9 @@ Extracts = {
 			|| Extracts.isExtractLink(target))
 			return false;
 
+		if (target.hostname != location.hostname)
+			return false;
+
 		/*  If it has a period in it, it’s not a page, but is something else,
 			like a file of some sort, or a locally archived document (accounted
 			for in the other test functions, if need be).
@@ -691,7 +694,8 @@ Extracts = {
 		if (target.pathname.match(/\./))
 			return false;
 
-		return (target.hostname == location.hostname);
+		return (   target.pathname != location.pathname
+				|| target.hash > "");
 	},
 
     localTranscludeForTarget: (target) => {
