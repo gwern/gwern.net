@@ -500,7 +500,7 @@ Extracts = {
 	referenceDataForTarget: (target) => {
 		let referenceEntry = Extracts.cachedAnnotationReferenceEntries[Extracts.identifierForAnnotatedTarget(target)];
 		let referenceElement = referenceEntry.querySelector(Extracts.annotatedTargetSelectors.map(selector => 
-			`.annotation > p:first-child ${selector}`
+			`.annotation > p ${selector}`
 		).join(", "));
 
 		//  Author list.
