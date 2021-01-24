@@ -499,7 +499,9 @@ Extracts = {
 		*/
 	referenceDataForTarget: (target) => {
 		let referenceEntry = Extracts.cachedAnnotationReferenceEntries[Extracts.identifierForAnnotatedTarget(target)];
-		let referenceElement = referenceEntry.querySelector(".annotation > p:first-child a");
+		let referenceElement = referenceEntry.querySelector(Extracts.annotatedTargetSelectors.map(selector => 
+			`.annotation > p:first-child ${selector}`
+		).join(", "));
 
 		//  Author list.
 		let authorElement = referenceEntry.querySelector(".author");
