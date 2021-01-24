@@ -499,7 +499,9 @@ Extracts = {
 		*/
 	referenceDataForTarget: (target) => {
 		let referenceEntry = Extracts.cachedAnnotationReferenceEntries[Extracts.identifierForAnnotatedTarget(target)];
-		let referenceElement = referenceEntry.querySelector(".annotation > p:first-child a");
+		let referenceElement = referenceEntry.querySelector(Extracts.annotatedTargetSelectors.map(selector => 
+			`.annotation > p:first-child ${selector}`
+		).join(", "));
 
 		//  Author list.
 		let authorElement = referenceEntry.querySelector(".author");
@@ -515,13 +517,11 @@ Extracts = {
 
 		return {
 			element: 		referenceElement,
-			listEntry: 		referenceEntry,
-
 			titleText: 		referenceElement.textContent,
 			titleHTML: 		referenceElement.innerHTML.trimQuotes(),
 			authorHTML:		(authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
 			dateHTML:		(dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
-			abstractHTML:	referenceEntry.querySelector("blockquote").innerHTML,
+			abstractHTML:	referenceEntry.querySelector("blockquote").innerHTML
 		};
 	},
 
