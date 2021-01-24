@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-24 11:01:12 gwern"
+When:  Time-stamp: "2021-01-24 11:49:26 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation) where
 
 import Control.Monad (when, void)
-import qualified Data.ByteString as B (appendFile)
+import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
@@ -23,7 +23,7 @@ import GHC.Generics (Generic)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M (fromList, lookup, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
@@ -82,6 +82,7 @@ readLinkMetadata = do
              when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
              -- auto-generated cached definitions; can be deleted if gone stale
+             rewriteLinkMetadata "metadata/auto.yaml" -- cleanup first
              auto <- readYaml "metadata/auto.yaml"
 
              -- merge the hand-written & auto-generated link annotations, and return:
@@ -216,11 +217,19 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
                  convertListToMetadata [u, t, a, d, di, s] = [(u, (t,a,d,di,s))]
                  convertListToMetadata e@_ = error $ "Pattern-match failed (too few fields?): " ++ show e
 
--- append a new automatic annotation if its Path is not already in the auto database:
+-- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
+rewriteLinkMetadata :: Path -> IO ()
+rewriteLinkMetadata yaml = do old <- readYaml yaml
+                              let new = M.fromList old :: Metadata -- NOTE: constructing a Map datastructure automatically sorts/dedupes
+                              let newYaml = Y.encode $ map (\(a,(b,c,d,e,f)) -> (a,b,c,d,e,f)) $ -- flatten [(Path, (String, String, String, String, String))]
+                                    M.toList new
+                              B.writeFile yaml newYaml
+
+-- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
                                            -- check very quickly whether the path/key is already in newest on-disk version, to avoid potential duplicate instances
-                                           -- (duplicates do not cause errors, but they make it harder to lint & edit)
+                                           -- (duplicates do not cause errors, but they bloat the file, and the existence of duplicates makes it harder to lint & edit)
                                            newest <- TIO.readFile "metadata/auto.yaml"
                                            when (not $ T.pack ("\n- - " ++ l ++ "\n") `T.isInfixOf` newest) $
                                               do let newYaml = Y.encode [(l,t,a,d,di,abst)]
