@@ -36,10 +36,10 @@ Extracts = {
 		].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 		testTarget: (target) => {
-			let targetTypeInfo = Extracts.typeInfo(Extracts.targetType(target));
+			let targetTypeInfo = Extracts.targetTypeInfo(target);
 			if (targetTypeInfo) {
-				if (targetTypeInfo.classes)
-					target.classList.add(...(targetTypeInfo.classes.split(" ")));
+				if (targetTypeInfo.targetClasses)
+					target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
 				return true;
 			}
 
@@ -292,35 +292,27 @@ Extracts = {
 		[ "FOREIGN_SITE", 		"isForeignSiteLink", 	"has-content",	 	"foreignSiteForTarget", 		"foreign-site object"	]
 	],
 			
-	/*	Returns the type of a target (a string). (Target types are defined in
-		the Extracts.targetTypeDefinitions array.)
+	/*	Returns full type info for the given target. This contains the target 
+		type name, the name of the predicate function for identifying targets of
+		that type (e.g., isExtractLink), classes which should be applied to 
+		targets of that type during initial processing, the fill functions to
+		fill popups and popins of that type, and the classes which should be 
+		applied to pop-frames of that type.
 		*/
-	targetType: (target) => {
-		for ([ targetType, predicateFunctionName, ...rest ] of Extracts.targetTypeDefinitions)
-			if (Extracts[predicateFunctionName](target))
-				return targetType;
-
-		return "";
-	},
-
-	/*	Returns full type info for the given target type. This contains the 
-		name of the predicate function for identifying targets of that type 
-		(i.e., isExtractLink), classes which should be applied to targets of 
-		that type during initial processing, the fill functions to fill popups
-		and popins of that type, and the classes which should be applied to 
-		pop-frames of that type.
-		*/
-	typeInfo: (targetType) => {
-		let definition = Extracts.targetTypeDefinitions.find(definition => definition[0] == targetType);
-		if (!definition) return null;
+	targetTypeInfo: (target) => {
 		let info = { };
-		[ 	info.typeName, 
-			info.predicateFunctionName, 
-			info.targetClasses,
-			info.popupFillFunctionName,
-			info.popFrameClasses
-		] = definition;
-		return info;
+		for (definition of Extracts.targetTypeDefinitions) {
+			[ 	info.typeName, 
+				info.predicateFunctionName, 
+				info.targetClasses,
+				info.popupFillFunctionName,
+				info.popFrameClasses
+			] = definition;
+			if (Extracts[info.predicateFunctionName](target))
+				return info;
+		}
+
+		return null;
 	},
 
 	/*	Returns the target identifier: the definition ID (for definitions), or
@@ -342,7 +334,7 @@ Extracts = {
 		*/
 	targetsMatch: (targetA, targetB) => {
 		return    Extracts.targetIdentifier(targetA) == Extracts.targetIdentifier(targetB)
-			   && Extracts.targetType(targetA) == Extracts.targetType(targetB);
+			   && Extracts.targetTypeInfo(targetA).typeName == Extracts.targetTypeInfo(targetB).typeName;
 	},
 
 	/*	This function qualifies anchorlinks in transcluded content (i.e., other
@@ -402,7 +394,7 @@ Extracts = {
 
 		let didFill = false;
 		let setPopFrameContent = Popups.setPopFrameContent;
-		let targetTypeInfo = Extracts.typeInfo(Extracts.targetType(target));
+		let targetTypeInfo = Extracts.targetTypeInfo(target);
 		if (targetTypeInfo && targetTypeInfo.popupFillFunctionName) {
 			didFill = setPopFrameContent(popFrame, Extracts[targetTypeInfo.popupFillFunctionName](target));
 			if (targetTypeInfo.popFrameClasses)
