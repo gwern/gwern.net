@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-23 12:56:21 gwern"
+When:  Time-stamp: "2021-01-24 11:01:12 gwern"
 License: CC-0
 -}
 
@@ -91,7 +91,7 @@ readLinkMetadata = do
 writeAnnotationFragments :: Metadata -> IO ()
 writeAnnotationFragments md = void $ M.traverseWithKey (writeAnnotationFragment md) md
 writeAnnotationFragment :: Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment md u i@(_,_,_,_,e) = when (length e > 290) $
+writeAnnotationFragment md u i@(_,_,_,_,e) = when (length e > 180) $
                                           do let u' = linkCanonicalize u
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
@@ -158,10 +158,11 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
                                                         case M.lookup f' mdb of
                                                           Nothing               -> y
                                                           Just (_, _, _, _, "") -> y
-                                                          Just (_,aut,dt,_,_) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
-                                                            if T.head f == '?' then
-                                                            Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
-                                                            Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
+                                                          Just (_,aut,dt,_,abs) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
+                                                            if (length abs < 180) then y else
+                                                              if T.head f == '?' then
+                                                                Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
+                                                                Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
 
           hasAnnotationInline _ _ y = y
 
@@ -260,7 +261,7 @@ generateID url author date
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- eg '/Faces' = '#gwern-faces'
-  | "Gwern Branwen" == author = T.pack (replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url')
+  | "Gwern Branwen" == author = T.pack (trim $ replace "." "-" $ replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url')
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
                            let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
@@ -650,6 +651,11 @@ cleanAbstractsHTML t = trim $
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("h(2)",    "<em>h</em><sup>2</sup>")
     , ("r(g)",    "<em>r</em><sub<em>g</em></sub>")
+    , ("r=", "<em>r</em> = ")
+    , ("r>", "<em>r</em> > ")
+    , ("r<", "<em>r</em> < ")
+    , ("r≥", "<em>r</em> ≥ ")
+    , ("r≤", "<em>r</em> ≤ ")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
     , ("\40r=",     "\40<em>r</em> = ")
     , ("\40R=",     "\40<em>r</em> = ")
@@ -703,7 +709,8 @@ cleanAbstractsHTML t = trim $
       ]
 
 trim :: String -> String
-trim = reverse . dropWhile (isSpace) . reverse . dropWhile (isSpace) -- . filter (/='\n')
+trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
+  where badChars c = isSpace c || (c=='-')
 
 -- gwern :: Path -> IO (Maybe (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p

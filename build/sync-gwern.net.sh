@@ -49,6 +49,8 @@ then
     N="$(if [ ${#} == 0 ]; then echo 8; else echo "$1"; fi)"
     cd ../../ # go to site root
     ./static/build/hakyll build +RTS -N"$N" -RTS || exit 1
+    # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
+    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So... a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-2"> <section id="statistics"/' ./_site/index
@@ -101,6 +103,7 @@ then
     }
     export -f staticCompileMathJax
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel staticCompileMathJax || true
+    find ./_site/metadata/annotations/ -name "*.html" | sort | parallel staticCompileMathJax || true
 
     # Testing compilation results:
     set +e

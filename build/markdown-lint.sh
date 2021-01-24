@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-01-23 12:29:00 gwern"
+# When:  Time-stamp: "2021-01-24 10:46:12 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -58,7 +58,7 @@ do
         λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
         wrap λ "check for aggregator-hosted PDFs and host them on gwern.net to make them visible to Google Scholar/provide backups"
 
-        λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/'; }
+        λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/' -e 'https://.*twitter.com/.+/status/[0-9]+'; }
         wrap λ "Switch Twitter.com to Nitter.net links"
 
         λ(){ egp -e 'http://www.pnas.org/content/.*/.*/.*.abstract' -e '[^\.]t\.test\(' -e '^\~\~\{\.' \
@@ -70,7 +70,7 @@ do
         wrap λ "Section PDF links break when archived locally (thereby breaking the local-PDF popups), so avoid unusual anchors in favor of 'page=N' anchor links"
 
         λ() { egp -e '<div id="abstract"' -e '<div id="collapseSummary"' -e '^</div$' -e '^\[\!Margin: ' -e ' n=[[:digit:]]' -e ' n = [[:digit:]]' \
-                  -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' \
+                  -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' -e '^\.>' \
                   -e 'cssExtension: [a-c,e-z]' -e '^R> ' -- "$PAGE";
               fgp -e '(www' -e ')www' -e '![](' -e ']()' -e ' )' -e '](//' -e '](/wiki/' -e '](wiki/' -e '——–' -e '——' -e '————–' -e ' --- ' \
                   -e ' percent ' -e "    Pearson'" -e '~~~{.sh}' -e 'library("' -e ' +-' -e ' -+' -e '"collapse Summary"' -e '"CollapseSummary"' -e 'collapseSumary' -e '<!_-' -e ' bu ' \
