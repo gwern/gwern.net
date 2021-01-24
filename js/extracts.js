@@ -38,6 +38,10 @@ Extracts = {
 		testTarget: (target) => {
 			let targetTypeInfo = Extracts.targetTypeInfo(target);
 			if (targetTypeInfo) {
+				let containingPopFrame = target.closest(".popframe");
+				if (containingPopFrame && Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
+					return false;
+
 				if (targetTypeInfo.targetClasses)
 					target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
 				return true;
