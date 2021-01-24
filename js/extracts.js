@@ -14,15 +14,11 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 Extracts = {
-	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ]
-};
-
-Extracts = {
     /*****************/
     /*  Configuration.
         */
 
-	annotatedTargetSelectors: Extracts.annotatedTargetSelectors,
+	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
 	annotationsBasePathname: "/metadata/annotations/",
 
 	/*	Target containers.
@@ -40,24 +36,11 @@ Extracts = {
 		].join(", "),
 		excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
 		testTarget: (target) => {
-			let targetTypes = [
-				[ "isExtractLink", 			"has-annotation" 	],
-				[ "isDefinition", 			"has-annotation" 	],
-				[ "isCitation", 			null 				],
-				[ "isCitationBackLink", 	null 				],
-				[ "isVideoLink", 			"has-content" 		],
-				[ "isLocalImageLink", 		"has-content"		],
-				[ "isLocalDocumentLink", 	"has-content"		],
-				[ "isLocalCodeFileLink", 	"has-content"		],
-				[ "isLocalPageLink",	 	"has-content" 		],
-				[ "isForeignSiteLink",	 	"has-content"		]
-			];
-
-			for ([ testMethodName, classes ] of targetTypes) {
-				if (Extracts[testMethodName](target)) {
-					if (classes) target.classList.add(...(classes.split(" ")));
-					return true;
-				}
+			let targetTypeInfo = Extracts.typeInfo(Extracts.targetType(target));
+			if (targetTypeInfo) {
+				if (targetTypeInfo.classes)
+					target.classList.add(...(targetTypeInfo.classes.split(" ")));
+				return true;
 			}
 
 			return false;
@@ -189,7 +172,7 @@ Extracts = {
 						/*  Do nothing if the annotation for the target is 
 							already loaded.
 							*/
-						let annotationIdentifier = Extracts.identifierForAnnotatedTarget(annotatedTarget);
+						let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
 
 						let cachedAnnotation = Extracts.cachedAnnotationReferenceEntries[annotationIdentifier];
 						if (cachedAnnotation && cachedAnnotation != "LOADING_FAILED") return;
@@ -292,32 +275,73 @@ Extracts = {
 	/*	Content.
 		*/
 
+	/*	This array defines the types of ‘targets’ (i.e., annotated links,
+		definitions, links pointing to available content such as images or code
+		files, citations, etc.) that Extracts supports.
+		*/
+	targetTypeDefinitions: [
+		[ "EXTRACT",  			"isExtractLink",		"has-annotation", 	"annotationForTarget", 			"extract annotation"	],
+		[ "DEFINITION",  		"isDefinition",			"has-annotation",	"annotationForTarget", 			"definition annotation"	],
+		[ "CITATION",  			"isCitation", 			null, 				"sectionEmbedForTarget", 		"footnote"				],
+		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"sectionEmbedForTarget", 		"citation-context"				],
+		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"			],
+		[ "LOCAL_IMAGE", 		"isLocalImageLink", 	"has-content", 		"localImageForTarget", 			"image object"			],
+		[ "LOCAL_DOCUMENT", 	"isLocalDocumentLink", 	"has-content", 		"localDocumentForTarget", 		"local-document object"		],
+		[ "LOCAL_CODE_FILE", 	"isLocalCodeFileLink", 	"has-content", 		"localCodeFileForTarget", 		"local-code-file"		],
+		[ "LOCAL_PAGE",  		"isLocalPageLink", 		"has-content",		"localTranscludeForTarget", 	"local-transclude"	 	],
+		[ "FOREIGN_SITE", 		"isForeignSiteLink", 	"has-content",	 	"foreignSiteForTarget", 		"foreign-site object"	]
+	],
+			
+	/*	Returns the type of a target (a string). (Target types are defined in
+		the Extracts.targetTypeDefinitions array.)
+		*/
 	targetType: (target) => {
-		let targetTypes = [
-			[ "isExtractLink", 			"EXTRACT" 				],
-			[ "isDefinition",	 		"DEFINITION" 			],
-			[ "isCitation", 			"CITATION" 				],
-			[ "isCitationBackLink", 	"CITATION_BACK_LINK" 	],
-			[ "isVideoLink", 			"VIDEO" 				],
-			[ "isLocalImageLink", 		"LOCAL_IMAGE"			],
-			[ "isLocalDocumentLink", 	"LOCAL_DOCUMENT"		],
-			[ "isLocalCodeFileLink", 	"LOCAL_CODE_FILE"		],
-			[ "isLocalPageLink",	 	"LOCAL_PAGE" 			],
-			[ "isForeignSiteLink",	 	"FOREIGN_SITE"			]
-		];
-
-		for ([ testMethodName, targetType ] of targetTypes)
-			if (Extracts[testMethodName](target))
+		for ([ targetType, predicateFunctionName, ...rest ] of Extracts.targetTypeDefinitions)
+			if (Extracts[predicateFunctionName](target))
 				return targetType;
 
 		return "";
 	},
 
+	/*	Returns full type info for the given target type. This contains the 
+		name of the predicate function for identifying targets of that type 
+		(i.e., isExtractLink), classes which should be applied to targets of 
+		that type during initial processing, the fill functions to fill popups
+		and popins of that type, and the classes which should be applied to 
+		pop-frames of that type.
+		*/
+	typeInfo: (targetType) => {
+		let definition = Extracts.targetTypeDefinitions.find(definition => definition[0] == targetType);
+		if (!definition) return null;
+		let info = { };
+		[ 	info.typeName, 
+			info.predicateFunctionName, 
+			info.targetClasses,
+			info.popupFillFunctionName,
+			info.popFrameClasses
+		] = definition;
+		return info;
+	},
+
+	/*	Returns the target identifier: the definition ID (for definitions), or
+		the original URL (for locally archived pages), or the relative url
+		(for local links), or the full URL (for foreign links).
+		*/
+	targetIdentifier: (target) => {
+		if (!target.href)
+			return target.dataset.originalDefinitionId;
+
+		return    target.dataset.urlOriginal 
+			   || (target.hostname == location.hostname
+			   	   ? target.pathname + target.hash
+			   	   : target.href);
+	},
+
+	/*	Returns true if the two targets will spawn identical popups
+		(that is, if they are of the same type, and have the same identifiers).
+		*/
 	targetsMatch: (targetA, targetB) => {
-		return    (   (   targetA.href 
-					   && targetA.href == targetB.href)
-				   || (   targetA.dataset.originalDefinitionId 
-					   && targetA.dataset.originalDefinitionId == targetB.dataset.originalDefinitionId))
+		return    Extracts.targetIdentifier(targetA) == Extracts.targetIdentifier(targetB)
 			   && Extracts.targetType(targetA) == Extracts.targetType(targetB);
 	},
 
@@ -371,31 +395,31 @@ Extracts = {
 		The function then returns true if a filling method was found (i.e., the
 		pop-frame successfully filled), false otherwise.
 		*/
-	fillPopFrame: (popFrame, possiblePopTypes) => {
+	fillPopFrame: (popFrame) => {
 		GWLog("Extracts.fillPopFrame", "extracts.js", 2);
 
 		let target = popFrame.spawningTarget;
 
 		let didFill = false;
 		let setPopFrameContent = Popups.setPopFrameContent;
-		for ([ testMethodName, fillMethodName, classes ] of possiblePopTypes) {
-			if (   Extracts[fillMethodName] != null
-				&& Extracts[testMethodName](target)) {
-				didFill = setPopFrameContent(popFrame, Extracts[fillMethodName](target));
-				if (classes)
-					popFrame.classList.add(...(classes.split(" ")));
-				break;
-			}
+		let targetTypeInfo = Extracts.typeInfo(Extracts.targetType(target));
+		if (targetTypeInfo && targetTypeInfo.popupFillFunctionName) {
+			didFill = setPopFrameContent(popFrame, Extracts[targetTypeInfo.popupFillFunctionName](target));
+			if (targetTypeInfo.popFrameClasses)
+				popFrame.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
 		}
 
 		if (didFill) {
 			return true;
 		} else {
-			GWLog(`Unable to fill pop-frame (${(target.href || target.dataset.originalDefinitionId)})!`, "extracts.js", 1);
+			GWLog(`Unable to fill pop-frame (${Extracts.targetIdentifier(target)} [${(targetTypeInfo ? targetTypeInfo.typeName : "UNDEFINED")}])!`, "extracts.js", 1);
 			return false;
 		}
 	},
 
+	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
+		its annotation (fragment) loads.
+		*/
 	refreshPopFrameAfterFragmentLoads: (target) => {
 		GWLog("Extracts.refreshPopFrameAfterFragmentLoads", "extracts.js", 2);
 
@@ -415,7 +439,7 @@ Extracts = {
 
 			//  TODO: generalize this for popins!
 			Popups.spawnPopup(target);
-		}, { once: true, condition: (info) => info.identifier == Extracts.identifierForAnnotatedTarget(target) });
+		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 
 		//  Add handler for if the fragment load fails.
 		GW.notificationCenter.addHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
@@ -426,7 +450,7 @@ Extracts = {
 				return;
 
 			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-		}, { once: true, condition: (info) => info.identifier == Extracts.identifierForAnnotatedTarget(target) });
+		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
@@ -483,22 +507,12 @@ Extracts = {
 		}
 	},
 
-	identifierForAnnotatedTarget: (target) => {
-		if (!target.href)
-			return target.dataset.originalDefinitionId;
-
-		return    target.dataset.urlOriginal 
-			   || (target.hostname == location.hostname
-			   	   ? target.pathname + target.hash
-			   	   : target.href);
-	},
-
 	cachedAnnotationReferenceEntries: { },
 
 	/*	Used to generate extract and definition pop-frames.
 		*/
 	referenceDataForTarget: (target) => {
-		let referenceEntry = Extracts.cachedAnnotationReferenceEntries[Extracts.identifierForAnnotatedTarget(target)];
+		let referenceEntry = Extracts.cachedAnnotationReferenceEntries[Extracts.targetIdentifier(target)];
 		let referenceElement = referenceEntry.querySelector(Extracts.annotatedTargetSelectors.map(selector => 
 			`.annotation > p ${selector}`
 		).join(", "));
@@ -553,7 +567,7 @@ Extracts = {
 	annotationForTarget: (target) => {
 		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
-		let annotationIdentifier = Extracts.identifierForAnnotatedTarget(target);
+		let annotationIdentifier = Extracts.targetIdentifier(target);
 		if (Extracts.cachedAnnotationReferenceEntries[annotationIdentifier] == null) {
 			Extracts.refreshPopFrameAfterFragmentLoads(target);
 			return `&nbsp;`;
@@ -1000,21 +1014,7 @@ Extracts = {
 			});
 		}
 
-		if (Extracts.fillPopFrame(popup, [
-		/*	Inject the content for the target into the popup. (See the comment
-			for fillPopFrame() for a description of what this array does.)
-			*/
-			[ "isExtractLink", 			"annotationForTarget", 			"extract annotation"		],
-			[ "isDefinition",	 		"annotationForTarget", 			"definition annotation" 	],
-			[ "isCitation", 			"sectionEmbedForTarget", 		"footnote" 					],
-			[ "isCitationBackLink", 	"sectionEmbedForTarget", 		"citation-context" 			],
-			[ "isVideoLink", 			"videoForTarget", 				"video object" 				],
-			[ "isLocalImageLink", 		"localImageForTarget", 			"image object" 				],
-			[ "isLocalDocumentLink", 	"localDocumentForTarget", 		"local-document object" 	],
-			[ "isLocalCodeFileLink", 	"localCodeFileForTarget", 		"local-code-file" 			],
-			[ "isLocalPageLink",		"localTranscludeForTarget", 	"local-transclude" 			],
-			[ "isForeignSiteLink",	 	"foreignSiteForTarget", 		"foreign-site object" 		]
-			]) == false)
+		if (Extracts.fillPopFrame(popup) == false)
 			return null;
 
 		//  Add popup title bar contents.
