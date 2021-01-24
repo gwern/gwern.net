@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-23 12:56:21 gwern"
+When:  Time-stamp: "2021-01-23 20:05:39 gwern"
 License: CC-0
 -}
 
@@ -91,7 +91,7 @@ readLinkMetadata = do
 writeAnnotationFragments :: Metadata -> IO ()
 writeAnnotationFragments md = void $ M.traverseWithKey (writeAnnotationFragment md) md
 writeAnnotationFragment :: Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment md u i@(_,_,_,_,e) = when (length e > 290) $
+writeAnnotationFragment md u i@(_,_,_,_,e) = when (length e > 180) $
                                           do let u' = linkCanonicalize u
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
@@ -158,10 +158,11 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
                                                         case M.lookup f' mdb of
                                                           Nothing               -> y
                                                           Just (_, _, _, _, "") -> y
-                                                          Just (_,aut,dt,_,_) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
-                                                            if T.head f == '?' then
-                                                            Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
-                                                            Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
+                                                          Just (_,aut,dt,_,abs) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
+                                                            if (length abs < 180) then y else
+                                                              if T.head f == '?' then
+                                                                Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
+                                                                Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
 
           hasAnnotationInline _ _ y = y
 
@@ -650,6 +651,11 @@ cleanAbstractsHTML t = trim $
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("h(2)",    "<em>h</em><sup>2</sup>")
     , ("r(g)",    "<em>r</em><sub<em>g</em></sub>")
+    , ("r=", "<em>r</em> = ")
+    , ("r>", "<em>r</em> > ")
+    , ("r<", "<em>r</em> < ")
+    , ("r≥", "<em>r</em> ≥ ")
+    , ("r≤", "<em>r</em> ≤ ")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
     , ("\40r=",     "\40<em>r</em> = ")
     , ("\40R=",     "\40<em>r</em> = ")
