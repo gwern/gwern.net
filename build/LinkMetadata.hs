@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-24 19:03:27 gwern"
+When:  Time-stamp: "2021-01-24 22:58:02 gwern"
 License: CC-0
 -}
 
@@ -474,7 +474,7 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
 processArxivAbstract u a = let cleaned = runPure $ do
-                                    pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $ replace "\n  " "\n\n" a
+                                    pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $ replace "%" "\\%" $ replace "\n  " "\n\n" a
                                     html <- writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
                                     return html
               in case cleaned of
