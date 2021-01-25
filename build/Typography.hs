@@ -145,7 +145,8 @@ hyphenate x@Header{}    = x
 hyphenate x@Table{}     = x
 hyphenate x = walk hyphenateInline x
 hyphenateInline :: Inline -> Inline
-hyphenateInline x@(Str s) = if T.any (=='\173') s then x else -- U+00AD SOFT HYPHEN, HTML: &#173; &shy;
+hyphenateInline x@(Span (id, classes, keys) xs) = if "math" `elem` classes then x else Span (id, classes, keys) (walk hyphenateInline xs)
+hyphenateInline x@(Str s) = if T.any (=='\173') s || T.any (=='\\') s then x else -- U+00AD SOFT HYPHEN, HTML: &#173; &shy;
                               Str $ T.replace "-\173" "-" $ -- odd edge-case exposed on Safari: because hyphenator breaks on hyphens (why?), interspersing the soft hyphen results in *two* hyphens being displayed should the line break there! since the regular hyphen already ensures a line-break opportunity
                                                             -- the soft hyphen is unnecessary, so just delete it.
                                                             -- https://github.com/ekmett/hyphenation/issues/16
