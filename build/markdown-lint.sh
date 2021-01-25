@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-01-24 10:46:12 gwern"
+# When:  Time-stamp: "2021-01-24 23:25:56 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -120,8 +120,8 @@ do
         wrap λ "Unicodify: misc"
         λ(){ egp -e '[[:alnum:]]≠[[:alnum:]]' -- "$PAGE"; }
         wrap λ "Unicodify: != renders better with spaces around it"
-        λ(){ egp -e '\$[[:alnum:]]\$' -e '\$\\sqrt{[[:digit:]]}\$' -e '\$[[:alnum:]]^[[:alnum:]]\$' -e '\$[[:alnum:]]\$' \
-                 -e '\$\\sqrt{[[:digit:]]}\$' -- "$PAGE"; }
+        λ(){ egp -e '\$[[:alnum:]]\$' -e '\$\\sqrt{[[:digit:]]}\$' -e '\$[[:alnum:]]^[[:alnum:]]\$' -e '\$[[:alnum:]]+ \cdot [[:alnum:]]+\$' -e '\$[[:alnum:]]\$' \
+                 -e '\$\\sqrt{[[:digit:]]}\$' -e '\$log_2\$' -e '\$log_10\$' -- "$PAGE"; }
         wrap λ "LaTeX: simplify to Unicode/Markdown"
         λ(){ egp -e '\$\\frac{[0-9]\+}{[0-9]\+}' -- "$PAGE"; }
         wrap λ "Unicodify: LaTeX for simple numerical fractions is overkill; use '⁄' FRACTION SLASH instead"
