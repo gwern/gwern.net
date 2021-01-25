@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-24 22:58:02 gwern"
+When:  Time-stamp: "2021-01-25 16:57:37 gwern"
 License: CC-0
 -}
 
@@ -42,7 +42,7 @@ import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 import Data.Text.IO as TIO (readFile, writeFile)
 import System.IO (stderr, hPutStrLn)
-import Typography (invertImage) -- TODO: 'typographyTransform'. This is semi-intractable. When we read in the HTML, the hyphenation pass breaks much of the LaTeX. Adding in guards in the walk to avoid Spans doesn't work like it ought to.
+import Typography (invertImage, typographyTransform)
 import Network.HTTP (urlDecode, urlEncode)
 
 ----
@@ -92,13 +92,17 @@ readLinkMetadata = do
 writeAnnotationFragments :: Metadata -> IO ()
 writeAnnotationFragments md = void $ M.traverseWithKey (writeAnnotationFragment md) md
 writeAnnotationFragment :: Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment md u i@(_,_,_,_,e) = when (length e > 180) $
+writeAnnotationFragment md u i@(a,b,c,d,e) = when (length e > 180) $
                                           do let u' = linkCanonicalize u
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
                                              when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                             let annotationPandoc = walk (hasAnnotation md False) $ generateAnnotationBlock (u', Just i)
-                                             let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta annotationPandoc)
+                                             let titleHtml    = typesetHtmlField a
+                                             let authorHtml   = typesetHtmlField b
+                                             -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
+                                             let abstractHtml = typesetHtmlField e
+                                             let annotationPandoc = (Pandoc nullMeta (generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))))
+                                             let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} annotationPandoc
                                              case annotationHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
                                                Right annotationHTML -> writeUpdatedFile filepath' annotationHTML
@@ -109,6 +113,12 @@ writeAnnotationFragment md u i@(_,_,_,_,e) = when (length e > 180) $
                                                TIO.writeFile target contentsNew
                                                else do contentsOld <- TIO.readFile target
                                                        when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
+
+    typesetHtmlField :: String -> String
+    typesetHtmlField e = let (Right fieldPandoc) = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack e) in
+                           let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
+                             let (Right fieldHtml) = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta fieldPandoc') in
+                               T.unpack fieldHtml
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -474,7 +484,9 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
 processArxivAbstract u a = let cleaned = runPure $ do
-                                    pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $ replace "%" "\\%" $ replace "\n  " "\n\n" a
+                                    pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $
+                                      -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
+                                              replace "%" "\\%" $ replace "\\%" "%" $ replace "$\\%$" "%" $ replace "\n  " "\n\n" a
                                     html <- writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
                                     return html
               in case cleaned of
