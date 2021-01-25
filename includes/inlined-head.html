@@ -958,7 +958,7 @@ html {
 	clear: none;
 }
 
-/* auto-smallcaps the first line of the introduction (= the first `<p>` after `<div class="abstract"></div>`); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
+/* auto-smallcaps the first line of the introduction (= the first `<p>` after an 'abstract' div); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
 .abstract + p::first-line, #markdownBody > p:first-child::first-line { font-feature-settings: 'smcp'; }
 
 h1 {
@@ -1709,6 +1709,7 @@ a[href$='.sh' i]::after,
 a[href$='.R' i]::after,
 a[href$='.patch' i]::after,
 a[href$='.diff' i]::after,
+a[href^="/static/" i][href$=".html" i]::after,
 a[href$='.doc' i]::after,
 a[href$='.docx' i]::after,
 a[href*='docs.google.com' i]::after,
