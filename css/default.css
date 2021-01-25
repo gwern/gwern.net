@@ -501,14 +501,14 @@ hr::after,
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
     content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
-    opacity: 0.65;
+    opacity: 0.90;
     width: 24px;
 }
 .horizontalRule-nth-2 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
     content: url('/static/img/icons/sun-verginasun-black.svg');
     /* NOTE: alternative moon icon is /static/img/icons/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
-    opacity: 0.65;
+    opacity: 0.85;
     width: 40px;
 }
 
@@ -1199,7 +1199,7 @@ section.footnotes > hr:first-child.highlighted::after {
 section.footnotes:target > hr:first-child::before,
 section.footnotes > hr:first-child.highlighted::before {
     background-color: var(--GW-body-background-color);
-    box-shadow: 
+    box-shadow:
         0 1px 0 0 var(--GW-footnote-highlighted-border-color) inset,
         0 -1px 0 0 var(--GW-footnote-highlighted-border-color) inset;
     height: 3px;
@@ -3114,7 +3114,7 @@ body.directory-index #disqus_thread {
 	white-space: pre-wrap;
 }
 .popup.local-code-file pre.raw-code code {
-	word-break: break-word;  
+	word-break: break-word;
     padding-left: 2px;
     padding-right: 2px;
 }
@@ -3128,7 +3128,7 @@ body.directory-index #disqus_thread {
 }
 .popup.local-code-file pre.raw-code .line:hover {
 	background-color: var(--GW-raw-code-popup-line-highlight-background-color);
-	box-shadow: 
+	box-shadow:
 	0  1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color),
 	0 -1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color);
 }
@@ -3226,7 +3226,7 @@ body.directory-index #disqus_thread {
 /*	“Loading failed” message.
 	*/
 .popup.video.loading-failed::after {
-	content: "Video not found."; 
+	content: "Video not found.";
 }
 
 /*┌───────────────┐*/
@@ -3236,7 +3236,7 @@ body.directory-index #disqus_thread {
 /*	“Loading failed” message.
 	*/
 .popup.video.loading-failed::after {
-	content: "Audio file not found."; 
+	content: "Audio file not found.";
 }
 
 /*┌────────────────────────┐*/
