@@ -496,7 +496,7 @@ Extracts = {
 		if (GW.isMobile()) {
 			return false;
 		} else {
-			return (Array.from(Popups.popupContainer.children).findIndex(popup => (
+			return (Popups.allSpawnedPopups().findIndex(popup => (
 						   popup.classList.contains("external-page-embed") 
 						&& popup.spawningTarget.pathname == target.pathname
 						)) != -1);
@@ -705,8 +705,11 @@ Extracts = {
 			page (which can be the root page of the window).
 			*/
 		if (Extracts.documentIsDisplayed(target)) {
-			//  If it does, display the section (if an anchorlink) or nothing.
-			return (target.hash > "" ? Extracts.sectionEmbedForTarget(target) : null);
+			/*  If it does, display the section. (We know it must be an 
+				anchorlink because if it were not, the target would not be
+				active.)
+				*/
+			return Extracts.sectionEmbedForTarget(target);
 		} else {
 			//  Otherwise, display the entire linked page.
 			target.popFrame.classList.add("external-page-embed");
