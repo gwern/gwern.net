@@ -802,6 +802,9 @@ Extracts = {
 					fillPopFrame(Extracts.cachedPages[target.pathname]);
 				},
 				onFailure: (event) => {
+					if (!target.popFrame)
+						return;
+
 					target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
 				}
 			});
@@ -937,6 +940,9 @@ Extracts = {
 						setPopFrameContent(target.popFrame, `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`);
 					},
 					onFailure: (event) => {
+						if (!target.popFrame)
+							return;
+
 						target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
 					}
 				});
