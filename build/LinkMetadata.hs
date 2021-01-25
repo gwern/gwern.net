@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-24 13:55:59 gwern"
+When:  Time-stamp: "2021-01-24 19:03:27 gwern"
 License: CC-0
 -}
 
@@ -20,7 +20,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
 import qualified Data.HashMap.Strict as HM (lookup)
 import GHC.Generics (Generic)
-import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
+import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
 import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey, union, Map)
@@ -737,7 +737,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "title" then snd $ head b else "") metas
                         let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
                         let keywords = concatMap (\(TagOpen _ (a:b)) -> if snd a == "keywords" then snd $ head b else "") metas
-                        let keywords' = "<p>[<strong>Keywords</strong>: " ++ keywords ++ "]</p>"
+                        let keywords' = "<p>[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</p>"
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
                         let thumbnail = if length (filter filterThumbnail metas) >0 then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
@@ -769,3 +769,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
           filterAbstract _                         = True
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
+
+          -- ["statistics","NN","anime","shell","dataset"] ~> "<a href=\"/tags/statistics\">statistics</a>, <a href=\"/tags/NN\">NN</a>, <a href=\"/tags/anime\">anime</a>, <a href=\"/tags/shell\">shell</a>, <a href=\"/tags/dataset\">dataset</a>"
+          keywordsToLinks :: String -> String
+          keywordsToLinks = concat . intersperse ", " . map (\k -> "<a title=\"All pages tagged '"++k++"'\"" ++ " href=\"/tags/"++k++"\">"++k++"</a>") . words . replace "," ""

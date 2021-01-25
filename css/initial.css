@@ -698,7 +698,7 @@ html {
 	clear: none;
 }
 
-/* auto-smallcaps the first line of the introduction (= the first `<p>` after `<div class="abstract"></div>`); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
+/* auto-smallcaps the first line of the introduction (= the first `<p>` after an 'abstract' div); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
 .abstract + p::first-line, #markdownBody > p:first-child::first-line { font-feature-settings: 'smcp'; }
 
 h1 {
