@@ -3319,6 +3319,10 @@ body.directory-index #disqus_thread {
     margin-bottom: 0.2em;
 }
 
+.popup li {
+	text-align: left;
+}
+
 .popup h1,
 .popup h2,
 .popup h3,
