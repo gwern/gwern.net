@@ -336,10 +336,10 @@ section:not(.collapse) > h1:first-child {
         0 -2px 0 0 var(--GW-H1-box-shadow-background-color) inset,
         0 -3px 0 0 var(--GW-H1-box-shadow-line-color) inset;
 }
-#markdownBody section:not(.collapse) > h1:first-child a {
+.markdownBody section:not(.collapse) > h1:first-child a {
     position: relative;
 }
-#markdownBody section:not(.collapse) > h1:first-child a::after {
+.markdownBody section:not(.collapse) > h1:first-child a::after {
     position: absolute;
     top: 0.15em;
 }
@@ -353,7 +353,7 @@ section:not(.collapse) > h1:first-child {
             0 -5px 0 0 var(--GW-H1-box-shadow-background-color) inset,
             0 -6px 0 0 var(--GW-H1-box-shadow-line-color) inset;
     }
-    #markdownBody section:not(.collapse) > h1:first-child a::after {
+    .markdownBody section:not(.collapse) > h1:first-child a::after {
         left: -0.75em;
     }
 }
@@ -443,20 +443,20 @@ section > :first-child a::after {
     opacity: 0;
     transition: opacity 0s ease 0.1s;
 }
-section > :first-child a[href^='#']:hover::after,
-section > :first-child a[href^='#']:active::after,
-section > :first-child a[href^='#']:focus::after,
-section.highlighted > :first-child a[href^='#']::after,
-section:target > :first-child a[href^='#']::after {
+section > :first-child a:hover::after,
+section > :first-child a:active::after,
+section > :first-child a:focus::after,
+section.highlighted > :first-child a::after,
+section:target > :first-child a::after {
     visibility: visible;
 }
-section > :first-child a[href^='#']:hover::after,
-section > :first-child a[href^='#']:active::after,
-section > :first-child a[href^='#']:focus::after,
-section.highlighted > :first-child a[href^='#']::after {
+section > :first-child a:hover::after,
+section > :first-child a:active::after,
+section > :first-child a:focus::after,
+section.highlighted > :first-child a::after {
     opacity: 0.8;
 }
-section:target > :first-child a[href^='#']::after {
+section:target > :first-child a::after {
     opacity: 0.5;
 }
 
@@ -898,7 +898,7 @@ blockquote table {
 .epigraph p:last-child {
     font-style: normal;
 }
-#markdownBody .epigraph p:last-child {
+.epigraph p:last-child {
     margin: 0.5em 0 0 0;
     text-align: right;
     font-size: 0.875em;
