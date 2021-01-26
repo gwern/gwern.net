@@ -199,6 +199,10 @@ Popups = {
 	spawnPopup: (target, spawnPoint) => {
 		GWLog("Popups.spawnPopup", "popups.js", 2);
 
+		//  Prevent spawn attempts before setup complete.
+		if (Popups.popupContainer == null)
+			return;
+
 		//  Despawn existing popup, if any.
 		if (target.popup)
 			Popups.despawnPopup(target.popup);
