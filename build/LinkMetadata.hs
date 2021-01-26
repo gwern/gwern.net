@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-25 16:57:37 gwern"
+When:  Time-stamp: "2021-01-26 16:53:14 gwern"
 License: CC-0
 -}
 
@@ -97,10 +97,10 @@ writeAnnotationFragment md u i@(a,b,c,d,e) = when (length e > 180) $
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
                                              when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                             let titleHtml    = typesetHtmlField a
-                                             let authorHtml   = typesetHtmlField b
+                                             let titleHtml    = typesetHtmlField "" a
+                                             let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
-                                             let abstractHtml = typesetHtmlField e
+                                             let abstractHtml = typesetHtmlField e e
                                              let annotationPandoc = (Pandoc nullMeta (generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))))
                                              let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} annotationPandoc
                                              case annotationHTMLEither of
@@ -114,11 +114,13 @@ writeAnnotationFragment md u i@(a,b,c,d,e) = when (length e > 180) $
                                                else do contentsOld <- TIO.readFile target
                                                        when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
 
-    typesetHtmlField :: String -> String
-    typesetHtmlField e = let (Right fieldPandoc) = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack e) in
-                           let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
-                             let (Right fieldHtml) = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta fieldPandoc') in
-                               T.unpack fieldHtml
+    typesetHtmlField :: String -> String -> String
+    typesetHtmlField orig e = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack e) in
+                           case fieldPandocMaybe of
+                             Left errr -> error $ show i ++ ": " ++ e ++ show errr
+                             Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
+                                                    let (Right fieldHtml) = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta fieldPandoc') in
+                               restoreFloatRight orig $ T.unpack fieldHtml
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -577,6 +579,7 @@ cleanAbstractsHTML t = trim $
     , ("</jats:italic>", "</em>")
     , ("<italic>", "<em>")
     , ("</italic>", "</em>")
+    , ("< /i>", "</i>")
     , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "")
     , ("<h3>ABSTRACT</h3>", "")
     , ("<h3>Abstract</h3>", "")
