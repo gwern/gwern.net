@@ -61,6 +61,8 @@ Extracts = {
     	"www.lesswrong.com",
     	"lesswrong.com" 
     ],
+    blacklistedForeignDomains: [
+    ],
 
 	imageMaxWidth: 634.0,
 	imageMaxHeight: 474.0,
@@ -821,7 +823,11 @@ Extracts = {
 		if (  !target.href
 			|| Extracts.isExtractLink(target)) return false;
 
-		return Extracts.qualifyingForeignDomains.includes(target.hostname);
+// 		return (target.hostname != location.hostname) 
+// 			&& !Extracts.blacklistedForeignDomains.includes(target.hostname);
+
+		return Extracts.qualifyingForeignDomains.includes(target.hostname)
+			&& !Extracts.blacklistedForeignDomains.includes(target.hostname);
 	},
 	foreignSiteForTarget: (target) => {
 		let url = new URL(target.href);
@@ -830,6 +836,8 @@ Extracts = {
 			url.protocol = "https:";
 			url.hostname = "www.greaterwrong.com";
 			url.search = "format=preview&theme=classic";
+		} else {
+			url.protocol = "https:";
 		}
 
 		return `<iframe src="${url.href}" frameborder="0" sandbox></iframe>`;
