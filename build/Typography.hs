@@ -96,8 +96,8 @@ smallcapsfyRegex = R.makeRegex
     -- match hyphen-separated acronyms like 'GPT-2-117M' but not small mixed like '150MB'/'P100'/'FP16'
     -- or hyphenated expressions with lowercase letters like 'BigGAN-level':
    "[A-Z][A-Z][A-Z]+(-[[:digit:]]+|[A-Z]+)+|" ++
-   -- but we do want to continue across hyphens of all-uppercase strings like "YYYY-MM-DD" or "X-UNITER":
-   "[A-Z][A-Z][A-Z]+(-[A-Z]+)+|" ++ "[A-Z]+-[A-Z][A-Z][A-Z]+|" ++
+   -- but we do want to continue across hyphens of all-uppercase strings like "YYYY-MM-DD" or "X-UNITER" or "DALL·E":
+   "[A-Z][A-Z][A-Z]+(-[A-Z]+)+|" ++ "[A-Z]+-[A-Z][A-Z][A-Z]+|" ++ "[A-Z]+\183[A-Z]+|" ++
    -- special-case AM/PM like "9:30AM" or "1PM" or "5:55 PM" (WARNING: Pandoc will typically parse spaces into 'Space' AST nodes, making it hard to match on things like "5 PM")
    "[[:digit:]]+ ?[AP]M|" ++
    "\\??[AP]M|" ++ -- special-case handling for all the "?AM--?PM" in /Morning-writing:
