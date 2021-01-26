@@ -967,7 +967,10 @@ Extracts = {
 		*/
 
 	spawnedPopupMatchingTarget: (target) => {
-		return (Popups.allSpawnedPopups().find(popup => Extracts.targetsMatch(target, popup.spawningTarget)) || null);
+		let parentPopup = target.closest(".popup");
+		return (parentPopup == null 
+				? null 
+				: (parentPopup.popupStack.find(popup => Extracts.targetsMatch(target, popup.spawningTarget)) || null));
 	},
 
 	/*	Called by popups.js just before spawning (injecting and positioning) the

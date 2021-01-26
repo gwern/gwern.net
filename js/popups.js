@@ -247,6 +247,16 @@ Popups = {
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
 
+		//  Add popup to a popup stack.
+		if (popup.popupStack == null) {
+			let parentPopup = popup.spawningTarget.closest(".popup");
+			popup.popupStack = parentPopup ? parentPopup.popupStack : [ ];
+		} else {
+			popup.popupStack.remove(popup);
+		}
+		popup.popupStack.push(popup);
+
+		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
 
 		//	Add event listeners.
@@ -412,13 +422,9 @@ Popups = {
 
         Popups.detachPopupFromTarget(popup);
         popup.remove();
+        popup.popupStack.remove(popup);
         document.activeElement.blur();
     },
-
-	getPopupAncestorStack: (popup) => {
-		let allPopups = Array.from(Popups.popupContainer.children);
-		return allPopups.slice(0, allPopups.indexOf(popup) + 1);
-	},
 
     clearPopupTimers: (target) => {
 	    GWLog("Popups.clearPopupTimers", "popups.js", 3);
@@ -459,6 +465,10 @@ Popups = {
 			Popups.despawnPopup(target.popup);
 		}, Popups.popupFadeoutDuration);
     },
+
+	getPopupAncestorStack: (popup) => {
+		return popup.popupStack.slice(0, popup.popupStack.indexOf(popup) + 1);
+	},
 
     //	The “user moved mouse out of popup” mouseleave event.
 	popupMouseleave: (event) => {
