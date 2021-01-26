@@ -230,7 +230,7 @@ section.collapse > h2:first-child {
 section.collapse > h2:first-child::after {
     content: none;
 }
-article > :not(#TOC) section.collapse > *:first-child a {
+section.collapse > *:first-child a {
     text-shadow: none;
 }
 section.collapse > :first-child > a {
@@ -1383,7 +1383,7 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 /*  Disable link underlining.
     */
-article > :not(#TOC) .sidenote > .sidenote-self-link {
+.sidenote > .sidenote-self-link {
     background-image: none;
 }
 #sidenote-column-left .sidenote > .sidenote-self-link {

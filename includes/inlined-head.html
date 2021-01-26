@@ -511,12 +511,16 @@ header h1 {
 	font-size: 0.95em;
 	line-height: 1.5;
 }
+#page-metadata p {
+	text-align: left;
+}
 
 /* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
 #page-metadata #page-description {
 	display: block;
 	margin: 0 auto 0.75em auto;
 	font-style: italic;
+	text-align: justify;
 }
 #page-metadata #page-description em {
 	font-style: normal;
@@ -539,6 +543,11 @@ header h1 {
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
     display: inline-block;
     margin: 0 0.35em 0 0.65em;
+}
+
+#page-tags,
+#page-metadata-block {
+	hyphens: none;
 }
 
 /*=--------=*/
@@ -888,7 +897,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /* MAIN CONTENT */
 /****************/
 
-#markdownBody {
+.markdownBody {
 	/*  Try to avoid scrollbars on paragraphs: prevents long unbroken
 		un-hyphenatable lines from causing H-scrolling
 		*/
@@ -935,8 +944,8 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 	To work around Chrome failure, we use Edward Kmett's Haskell-ification of the TeX algorithm & dictionaries ( https://hackage.haskell.org/package/hyphenation ) to run a Hakyll compilation pass to insert soft hyphens. There is one bad side-effect: soft hyphens are often preserved in copy-paste, cluttering text, so a copy-paste JS listener in rewrite.js deletes all fancy hyphens from copy-pastes.
 	*/
-#markdownBody p,
-#markdownBody li {
+.markdownBody p,
+.markdownBody li {
 	text-align: justify;
 	-webkit-hyphens: auto;
 	-ms-hyphens: auto;
@@ -1013,7 +1022,7 @@ h1 {
 /* LINKS */
 /*********/
 
-#markdownBody a {
+.markdownBody a {
 	/* force the occasional inline URL or other long word to break at max-width */
 	word-wrap: break-word;
 }
@@ -1038,8 +1047,8 @@ a {
 May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
 */
 
-article > :not(#TOC) a:link,
-span.defnMetadata {
+.markdownBody a:link,
+.markdownBody span.defnMetadata {
 	text-decoration: none;
 	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
 	background-size: 1px 1px;
@@ -1049,8 +1058,8 @@ span.defnMetadata {
 	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
 	font-variant-numeric: lining-nums;
 }
-article > :not(#TOC) a:link,
-article > :not(#TOC) a:link *,
+.markdownBody a:link,
+.markdownBody a:link *,
 span.defnMetadata,
 span.defnMetadata * {
 	text-shadow:
@@ -1064,7 +1073,7 @@ span.defnMetadata * {
 		 0.17em 0	    var(--GW-link-underline-background-color),
 		-0.17em 0	    var(--GW-link-underline-background-color);
 }
-article > :not(#TOC) a:hover {
+.markdownBody a:hover {
 	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
 }
 

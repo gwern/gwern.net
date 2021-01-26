@@ -550,6 +550,28 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	}
 }, { phase: "rewrite" });
 
+/*****************/
+/* PAGE METADATA */
+/*****************/
+
+/********************************************************************/
+/*	Add ‘markdownBody’ class to #page-metadata, for styling purposes.
+	*/
+function fixPageMetadataClass(loadEventInfo) {
+	GWLog("fixPageMetadataClass", "rewrite.js", 1);
+
+	document.querySelector("#page-metadata").classList.add("markdownBody");
+}
+
+/*****************************************************************/
+/*	Add content load handler for processing page metadata section.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processPageMetadata = (info) => {
+	GWLog("GW.rewriteFunctions.processPageMetadata", "rewrite.js", 2);
+
+	fixPageMetadataClass(info);
+}, { phase: ">rewrite", condition: (info) => info.isMainDocument });
+
 /*********/
 /* MISC. */
 /*********/
