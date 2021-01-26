@@ -1035,10 +1035,10 @@ a.footnote-ref {
     top: 0.15em;
     padding: 0.45em 0.2em 0.2em 0.2em;
 }
-#markdownBody .footnotes a.footnote-back {
+.markdownBody .footnotes a.footnote-back {
     background-image: none;
 }
-#markdownBody .footnotes a.footnote-back:hover {
+.markdownBody .footnotes a.footnote-back:hover {
     border-color: var(--GW-footnote-backlink-border-hover-color);
 }
 
@@ -1383,7 +1383,7 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 /*  Disable link underlining.
     */
-.sidenote > .sidenote-self-link {
+.markdownBody .sidenote > .sidenote-self-link {
     background-image: none;
 }
 #sidenote-column-left .sidenote > .sidenote-self-link {
