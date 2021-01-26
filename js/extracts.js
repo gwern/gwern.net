@@ -804,8 +804,16 @@ Extracts = {
 
 					target.popFrame.classList.toggle("loading", false);
 
+					//  Inject the whole page into the pop-frame at first.
 					setPopFrameContent(target.popFrame, event.target.responseText);
+
+					//  The content is the page body plus the metadata block.
 					Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
+					let pageMetadata = target.popFrame.querySelector("#page-metadata");
+					if (pageMetadata)
+						Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
+
+					//  Inject the content into the pop-frame.
 					fillPopFrame(Extracts.cachedPages[target.pathname]);
 				},
 				onFailure: (event) => {

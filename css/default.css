@@ -3285,6 +3285,18 @@ body.directory-index #disqus_thread {
     z-index: 1;
 }
 
+.popup #page-metadata {
+	margin: 0;
+	overflow: visible;
+}
+.popup #page-metadata::after {
+	content: "";
+	display: block;
+	width: calc(100% + 2em);
+	border-bottom: 1px dotted currentColor;
+	margin: 1em -1em 1.125em -1em;
+}
+
 /*=---------------=*/
 /*= POPUP CONTENT =*/
 /*=---------------=*/
