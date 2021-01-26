@@ -71,6 +71,8 @@ Extracts = {
 		"404 Not Found"
 	],
 
+	rootDocument: document.firstElementChild,
+
 	/***********/
 	/*	General.
 		*/
@@ -476,33 +478,33 @@ Extracts = {
 		link which spawned… etc.).
 		*/
 	originatingDocumentForTarget: (target) => {
-		return target.originatingDocument || document.firstElementChild;
+		return target.originatingDocument || Extracts.rootDocument;
 	},
 
-	/*	Returns the location (a URL object) of the originating document for
-		the given target.
+	/*	Returns the location (a URL object) of the given document.
 		*/
-	originatingDocumentLocationForTarget: (target) => {
-		return new URL((Extracts.originatingDocumentForTarget(target) == document.firstElementChild)
-					   ? location.href
-					   : target.originatingDocument.closest(".popframe").spawningTarget.href);
+	locationForDocument: (aDocument) => {
+		return new URL(aDocument == Extracts.rootDocument 
+					   ? location.href 
+					   : aDocument.closest(".popframe").spawningTarget.href);
 	},
 
 	/*	Returns true if the target location matches an already-displayed page 
 		(which can be the root page of the window).
 		*/
 	documentIsDisplayed: (target) => {
-		if (target.pathname == location.pathname)
-			return true;
-
-		if (GW.isMobile()) {
+		//  TEMPORARY!!
+		if (GW.isMobile())
 			return false;
-		} else {
-			return (Popups.allSpawnedPopups().findIndex(popup => (
-						   popup.classList.contains("external-page-embed") 
-						&& popup.spawningTarget.pathname == target.pathname
-						)) != -1);
+
+		for (var originatingDocument = Extracts.originatingDocumentForTarget(target);
+			 originatingDocument != Extracts.rootDocument;
+			 originatingDocument = Extracts.originatingDocumentForTarget(originatingDocument.closest(".popframe").spawningTarget)) {
+			 if (target.pathname == Extracts.locationForDocument(originatingDocument).pathname)
+			 	return true;
 		}
+
+		return (target.pathname == location.pathname);
 	},
 
 	cachedAnnotationReferenceEntries: { },
@@ -1148,7 +1150,7 @@ Extracts = {
 				collapseAllowed: false, 
 				isCollapseBlock: false,
 				isFullPage: false,
-				location: Extracts.originatingDocumentLocationForTarget(target),
+				location: Extracts.locationForDocument(Extracts.originatingDocumentForTarget(target)),
 				fullWidthPossible: false
 			});
 		}
