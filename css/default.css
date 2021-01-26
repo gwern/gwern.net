@@ -426,11 +426,11 @@ h2 + section > h3:first-child {
 /*= Section heading self-links =*/
 /*=----------------------------=*/
 
-article #markdownBody section > :first-child a {
+.markdownBody section > :first-child a {
     background: none;
 }
-article #markdownBody section:not(.collapse) > h1:first-child a,
-article #markdownBody section:not(.collapse) > h2:first-child a {
+.markdownBody section:not(.collapse) > h1:first-child a,
+.markdownBody section:not(.collapse) > h2:first-child a {
     display: block;
 }
 section > :first-child a::after {
@@ -3327,14 +3327,6 @@ body.directory-index #disqus_thread {
 .popup h6 {
     margin-left: 0;
 }
-.popup h1 a,
-.popup h2 a,
-.popup h3 a,
-.popup h4 a,
-.popup h5 a,
-.popup h6 a {
-    text-decoration: none;
-}
 
 .popup blockquote {
     margin: 1em 0;
@@ -3389,14 +3381,6 @@ body.directory-index #disqus_thread {
     */
 .popup .marginnote {
     display: initial;
-}
-
-/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
-.popup a {
-    text-decoration: underline;
-}
-.popup a:hover {
-    color: var(--GW-popups-popup-link-hover-color);
 }
 
 .popup .popup-content-view > hr:first-child {
