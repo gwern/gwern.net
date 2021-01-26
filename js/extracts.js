@@ -991,6 +991,9 @@ Extracts = {
 
 		let target = popup.spawningTarget;
 
+		/*  If a popup already exists that matches the target, do not spawn a
+			new popup; just use the existing popup.
+			*/
 		let existingPopup = Extracts.spawnedPopupMatchingTarget(target);
 		if (existingPopup) {
 			Popups.detachPopupFromTarget(existingPopup);
@@ -1041,6 +1044,15 @@ Extracts = {
 			});
 		}
 
+		//  If the target is itself in a popup, set originating document.
+		let containingPopup = target.closest(".popup");
+		if (containingPopup) {
+			target.originatingDocument = (containingPopup.classList.contains("external-page-embed"))
+										 ? containingPopup.contentView
+										 : Extracts.originatingDocumentForTarget(containingPopup.spawningTarget);
+		}
+
+		//  Attempt to fill the popup.
 		if (Extracts.fillPopFrame(popup) == false)
 			return null;
 
@@ -1144,14 +1156,6 @@ Extracts = {
 			|| Extracts.isCitation(target)
 			|| Extracts.isCitationBackLink(target)
 			) {
-			//  If the target is itself in a popup, set originating document.
-			let containingPopup = target.closest(".popup");
-			if (containingPopup) {
-				target.originatingDocument = (containingPopup.classList.contains("external-page-embed"))
-											 ? containingPopup.contentView
-											 : Extracts.originatingDocumentForTarget(containingPopup.spawningTarget);
-			}
-
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.preparePopup",
 				document: popup.contentView,
