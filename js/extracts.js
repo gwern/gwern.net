@@ -823,9 +823,6 @@ Extracts = {
 		if (  !target.href
 			|| Extracts.isExtractLink(target)) return false;
 
-// 		return (target.hostname != location.hostname) 
-// 			&& !Extracts.blacklistedForeignDomains.includes(target.hostname);
-
 		return Extracts.qualifyingForeignDomains.includes(target.hostname)
 			&& !Extracts.blacklistedForeignDomains.includes(target.hostname);
 	},
