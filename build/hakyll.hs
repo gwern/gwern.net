@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-23 12:42:36 gwern"
+When: Time-stamp: "2021-01-25 20:19:19 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -373,7 +373,12 @@ convertInterwikiLinks x@(Link attr ref (interwiki, article)) =
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else x
             where -- 'https://starwars.wikia.com/wiki/Emperor_Palpatine'
-                  interwikiurl u a = u `T.append` T.pack (replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a)))
+              --
+                  interwikiurl :: T.Text -> T.Text -> T.Text
+                  -- normalize links; MediaWiki requires first letter to be capitalized
+                  interwikiurl u a = let a' = if u=="https://en.wikipedia.org/wiki/" then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
+                                       u `T.append` T.pack (replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
+                  deunicode :: String -> String
                   deunicode = map (\c -> if c == '’' then '\'' else c)
 convertInterwikiLinks x = x
 -- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
