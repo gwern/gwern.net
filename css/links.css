@@ -455,6 +455,10 @@ a.link-local::after {
     font-weight: normal;
 }
 
+#page-metadata a.link-local::after {
+	content: none;
+}
+
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
 /*=-------------------------------=*/
