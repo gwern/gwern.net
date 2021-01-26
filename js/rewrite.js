@@ -560,7 +560,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function fixPageMetadataClass(loadEventInfo) {
 	GWLog("fixPageMetadataClass", "rewrite.js", 1);
 
-	document.querySelector("#page-metadata").classList.add("markdownBody");
+	let pageMetadataSection = document.querySelector("#page-metadata");
+	if (pageMetadataSection)
+		pageMetadataSection.classList.add("markdownBody");
 }
 
 /*****************************************************************/
