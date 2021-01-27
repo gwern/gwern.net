@@ -16,10 +16,21 @@ if (window.Extracts) {
 		GWLog("Extracts.enableExtractPopups", "extracts.js", 1);
 
 		localStorage.removeItem("extract-popups-disabled");
+
+		//  Run setup.
 		Extracts.setup();
+
+		/*  Since the main document has already loaded, we must trigger the
+			processing of targets (and add event handlers) manually.
+			*/
 		document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 			Extracts.addTargetsWithin(container);
+			Extracts.setUpAnnotationLoadEventWithin(container);
 		});
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoaded);
+		GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.signalAnnotationLoadFailed);
+
+		//  Remove the icon/button.
 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 	};
 

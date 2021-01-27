@@ -144,6 +144,85 @@ Extracts = {
     		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
     	}
     },
+    setUpAnnotationLoadEventWithin: (container) => {
+		GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts.js", 1);
+
+		//  The staging element for annotations.
+		let annotationsWorkspace = document.querySelector("#annotations-workspace");
+
+		//  Get all the annotated targets in the container.
+		let allAnnotatedTargetsInContainer = Array.from(container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
+
+		//  Add hover event listeners to all the annotated targets.
+		allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+			annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
+				/*  Do nothing if the annotation for the target is 
+					already loaded.
+					*/
+				let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+
+				let cachedAnnotation = Extracts.cachedAnnotationReferenceEntries[annotationIdentifier];
+				if (cachedAnnotation && cachedAnnotation != "LOADING_FAILED") return;
+
+				let annotationURL = new URL("https://" + location.hostname + Extracts.annotationsBasePathname 
+											+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
+
+				/*  On hover, start a timer, duration of one-half the 
+					popup trigger delay...
+					*/
+				annotatedTarget.annotationLoadTimer = setTimeout(Extracts.loadAnnotation = () => {
+					GWLog("Extracts.loadAnnotation", "extracts.js", 2);
+
+					/*  ... to load the annotation.
+						*/
+					doAjax({
+						location: annotationURL.href,
+						onSuccess: (event) => {
+							document.querySelector("#annotations-workspace").insertAdjacentHTML("beforeend", 
+								`<div class="annotation">${event.target.responseText}</div>`);
+							GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
+								source: "Extracts.loadAnnotation",
+								document: annotationsWorkspace.lastElementChild, 
+								identifier: annotationIdentifier,
+								isMainDocument: false,
+								needsRewrite: true, 
+								clickable: false, 
+								collapseAllowed: false, 
+								isCollapseBlock: false,
+								isFullPage: false,
+								location: annotationURL,
+								fullWidthPossible: false
+							});
+						},
+						onFailure: (event) => {
+							GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
+								source: "Extracts.loadAnnotation",
+								document: annotationsWorkspace, 
+								identifier: annotationIdentifier,
+								location: annotationURL
+							});
+						}
+					});
+				}, (Popups.popupTriggerDelay / 2.0));
+			});
+			annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
+				/*  Cancel timer on mouseout (no need to commence a load
+					on a merely transient hover).
+					*/
+				clearTimeout(annotatedTarget.annotationLoadTimer);
+			});
+		});
+
+		/*  Set up handler to remove hover event listeners from all
+			the annotated targets in the document.
+			*/
+		GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+			allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+				annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
+				annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
+			});
+		}, { once: true });
+    },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
@@ -160,103 +239,26 @@ Extracts = {
 				}
 			}
 
+			//  Inject the staging area for annotations.
+			document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
+
 			/*  Add handler to set up targets in loaded content (including 
-				newly-spawned popups; this allows for popup recursion).
+				newly-spawned popups; this allows for popup recursion), and to
+				add hover event listeners to annotated targets, to load 
+				annotations (fragments).
 				*/
 			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
 				GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
 
 				if (info.document.closest(Extracts.contentContainersSelector)) {
 					Extracts.addTargetsWithin(info.document);
+					Extracts.setUpAnnotationLoadEventWithin(info.document);
 				} else {
 					info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
 						Extracts.addTargetsWithin(container);
+						Extracts.setUpAnnotationLoadEventWithin(container);
 					});
 				}
-			}, { phase: "eventListeners" });
-
-			//  Inject the staging area for annotations.
-			document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
-			let annotationsWorkspace = document.querySelector("#annotations-workspace");
-
-			/*  Add handler to add hover event listeners to annotated targets,
-				to load annotations (fragments).
-				*/
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.setUpAnnotationLoadEvent = (info) => {
-				GWLog("Extracts.setUpAnnotationLoadEvent", "extracts.js", 2);
-
-				//  Get all the annotated targets in the document.
-				let allAnnotatedTargetsInDocument = Array.from(info.document.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
-
-				//  Add hover event listeners to all the annotated targets.
-				allAnnotatedTargetsInDocument.forEach(annotatedTarget => {
-					annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
-						/*  Do nothing if the annotation for the target is 
-							already loaded.
-							*/
-						let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
-
-						let cachedAnnotation = Extracts.cachedAnnotationReferenceEntries[annotationIdentifier];
-						if (cachedAnnotation && cachedAnnotation != "LOADING_FAILED") return;
-
-						let annotationURL = new URL("https://" + location.hostname + Extracts.annotationsBasePathname 
-													+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
-
-						/*  On hover, start a timer, duration of one-half the 
-							popup trigger delay...
-							*/
-						annotatedTarget.annotationLoadTimer = setTimeout(Extracts.loadAnnotation = () => {
-							GWLog("Extracts.loadAnnotation", "extracts.js", 2);
-
-							/*  ... to load the annotation.
-								*/
-							doAjax({
-								location: annotationURL.href,
-								onSuccess: (event) => {
-									document.querySelector("#annotations-workspace").insertAdjacentHTML("beforeend", 
-										`<div class="annotation">${event.target.responseText}</div>`);
-									GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
-										source: "Extracts.loadAnnotation",
-										document: annotationsWorkspace.lastElementChild, 
-										identifier: annotationIdentifier,
-										isMainDocument: false,
-										needsRewrite: true, 
-										clickable: false, 
-										collapseAllowed: false, 
-										isCollapseBlock: false,
-										isFullPage: false,
-										location: annotationURL,
-										fullWidthPossible: false
-									});
-								},
-								onFailure: (event) => {
-									GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-										source: "Extracts.loadAnnotation",
-										document: annotationsWorkspace, 
-										identifier: annotationIdentifier,
-										location: annotationURL
-									});
-								}
-							});
-						}, (Popups.popupTriggerDelay / 2.0));
-					});
-					annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
-						/*  Cancel timer on mouseout (no need to commence a load
-							on a merely transient hover).
-							*/
-						clearTimeout(annotatedTarget.annotationLoadTimer);
-					});
-				});
-
-				/*  Set up handler to remove hover event listeners from all
-					the annotated targets in the document.
-					*/
-				GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
-					allAnnotatedTargetsInDocument.forEach(annotatedTarget => {
-						annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
-						annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
-					});
-				}, { once: true });
 			}, { phase: "eventListeners" });
 
 			//	Add handler for if an annotation loads.
