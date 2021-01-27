@@ -171,8 +171,8 @@ article > div:not(#TOC) a[href*='wikisource.org'].docMetadata:hover,
 
 /*	All SVG linkicons have to be inverted.
 	*/
-a.link-local.identifier-link-up::after,
-a.link-local.identifier-link-down::after,
+a.link-self.identifier-link-up::after,
+a.link-self.identifier-link-down::after,
 a[href$='.pdf' i]::after,
 a[href$='/pdf' i]::after,
 a[href*='*/pdf/*' i]::after,
