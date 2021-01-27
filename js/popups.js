@@ -427,6 +427,7 @@ Popups = {
         Popups.detachPopupFromTarget(popup);
         popup.remove();
         popup.popupStack.remove(popup);
+        popup.popupStack = null;
         document.activeElement.blur();
     },
 
