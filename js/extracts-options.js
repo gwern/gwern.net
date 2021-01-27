@@ -134,17 +134,30 @@ if (window.Extracts) {
 
 		//  Add event listener.
 		requestAnimationFrame(() => {
-			Extracts.popupsDisabledShowPopupOptionsDialogButton.addActivateEvent(Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked = (event) => {
+			Extracts.popupsDisabledShowPopupOptionsDialogButton.querySelector("button").addActivateEvent(Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked = (event) => {
 				GWLog("Extracts.popupsDisabledShowPopupOptionsDialogButtonClicked", "extracts.js", 2);
 
 				event.stopPropagation();
-				if (Extracts.showPopupOptionsDialog) {
-					Extracts.showPopupOptionsDialog();
-				} else {
-					GWLog("Script not loaded: extracts-options.js", "extracts.js", 1);
-				}
+
+				Extracts.showPopupOptionsDialog();
 			});
 		});
+
+		//	Show/hide the button on scroll up/down.
+		addScrollListener(Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility, 
+			"updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener");
+	};
+
+	Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility = (event) => {
+		GWLog("updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "rewrite.js", 3);
+
+		// Hide button when scrolling a full page down.
+		if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
+			Extracts.popupsDisabledShowPopupOptionsDialogButton.classList.toggle("hidden", true);
+
+		// Show back-to-top link on ANY scroll up.
+		if (GW.scrollState.unbrokenUpScrollDistance > window.innerHeight || GW.scrollState.lastScrollTop <= 0)
+			Extracts.popupsDisabledShowPopupOptionsDialogButton.classList.toggle("hidden", false);
 	};
 
 	Extracts.removePopupsDisabledShowPopupOptionsDialogButton = () => {
@@ -157,3 +170,7 @@ if (window.Extracts) {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	};
 }
+
+//  Inject “popups disabled” icon/button, if need be.
+if (localStorage.getItem("extract-popups-disabled") == "true")
+	Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();

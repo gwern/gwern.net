@@ -1249,11 +1249,13 @@ Extracts = {
 
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
-let serviceProviderObjectName = GW.isMobile() ? "Popins" : "Popups";
-if (window[serviceProviderObjectName]) {
-	Extracts.setup();
-} else {
-	GW.notificationCenter.addHandlerForEvent(serviceProviderObjectName + ".didLoad", () => {
+if (localStorage.getItem("extract-popups-disabled") != "true") {
+	let serviceProviderObjectName = GW.isMobile() ? "Popins" : "Popups";
+	if (window[serviceProviderObjectName]) {
 		Extracts.setup();
-	}, { once: true });
+	} else {
+		GW.notificationCenter.addHandlerForEvent(serviceProviderObjectName + ".didLoad", () => {
+			Extracts.setup();
+		}, { once: true });
+	}
 }
