@@ -17,6 +17,9 @@ if (window.Extracts) {
 
 		localStorage.removeItem("extract-popups-disabled");
 		Extracts.setup();
+		document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+			Extracts.addTargetsWithin(container);
+		});
 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 	};
 

@@ -97,6 +97,11 @@ Extracts = {
 				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
 			});
 
+			//  Remove staging element for annotations.
+			let annotationsWorkspace = document.querySelector("#annotations-workspace");
+			if (annotationsWorkspace)
+				annotationsWorkspace.remove();
+
 			//  Remove content load event handlers.
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad);
 			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.setUpAnnotationLoadEvent);
