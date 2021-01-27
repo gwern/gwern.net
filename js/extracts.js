@@ -290,8 +290,8 @@ Extracts = {
 	targetTypeDefinitions: [
 		[ "EXTRACT",  			"isExtractLink",		"has-annotation", 	"annotationForTarget", 			"extract annotation"	],
 		[ "DEFINITION",  		"isDefinition",			"has-annotation",	"annotationForTarget", 			"definition annotation"	],
-		[ "CITATION",  			"isCitation", 			null, 				"sectionEmbedForTarget", 		"footnote"				],
-		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"sectionEmbedForTarget", 		"citation-context"				],
+		[ "CITATION",  			"isCitation", 			null, 				"localTranscludeForTarget", 	"footnote"				],
+		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"localTranscludeForTarget", 	"citation-context"				],
 		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"			],
 		[ "LOCAL_IMAGE", 		"isLocalImageLink", 	"has-content", 		"localImageForTarget", 			"image object"			],
 		[ "LOCAL_DOCUMENT", 	"isLocalDocumentLink", 	"has-content", 		"localDocumentForTarget", 		"local-document object"		],
@@ -489,24 +489,6 @@ Extracts = {
 					   : aDocument.closest(".popframe").spawningTarget.href);
 	},
 
-	/*	Returns true if the target location matches an already-displayed page 
-		(which can be the root page of the window).
-		*/
-	documentIsDisplayed: (target) => {
-		//  TEMPORARY!!
-		if (GW.isMobile())
-			return false;
-
-		for (var originatingDocument = Extracts.originatingDocumentForTarget(target);
-			 originatingDocument != Extracts.rootDocument;
-			 originatingDocument = Extracts.originatingDocumentForTarget(originatingDocument.closest(".popframe").spawningTarget)) {
-			 if (target.pathname == Extracts.locationForDocument(originatingDocument).pathname)
-			 	return true;
-		}
-
-		return (target.pathname == location.pathname);
-	},
-
 	cachedAnnotationReferenceEntries: { },
 
 	/*	Used to generate extract and definition pop-frames.
@@ -702,18 +684,37 @@ Extracts = {
 				|| target.hash > "");
 	},
 
+	/*	Returns an already-displayed full page matching the target pathname
+		(which can be the root page of the window), or null.
+		*/
+	fullTargetDocumentForTarget: (target) => {
+		//  TEMPORARY!!
+		if (GW.isMobile())
+			return null;
+
+		for (var originatingDocument = Extracts.originatingDocumentForTarget(target);
+			 originatingDocument != Extracts.rootDocument;
+			 originatingDocument = Extracts.originatingDocumentForTarget(originatingDocument.closest(".popframe").spawningTarget)) {
+			 if (target.pathname == Extracts.locationForDocument(originatingDocument).pathname)
+			 	return originatingDocument;
+		}
+
+		return (target.pathname == location.pathname ? Extracts.rootDocument : null);
+	},
+
     localTranscludeForTarget: (target) => {
 		GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
 		/*	Check to see if the target location matches an already-displayed 
 			page (which can be the root page of the window).
 			*/
-		if (Extracts.documentIsDisplayed(target)) {
+		let fullTargetDocument = Extracts.fullTargetDocumentForTarget(target);
+		if (fullTargetDocument) {
 			/*  If it does, display the section. (We know it must be an 
 				anchorlink because if it were not, the target would not be
 				active.)
 				*/
-			return Extracts.sectionEmbedForTarget(target);
+			return Extracts.sectionEmbedForTarget(target, fullTargetDocument);
 		} else {
 			//  Otherwise, display the entire linked page.
 			target.popFrame.classList.add("external-page-embed");
@@ -722,10 +723,10 @@ Extracts = {
 	},
 
 	//  Sections of the current page.
-    sectionEmbedForTarget: (target) => {
+    sectionEmbedForTarget: (target, fullTargetDocument) => {
 		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
 
-        let nearestBlockElement = Extracts.nearestBlockElement(Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash)));
+        let nearestBlockElement = Extracts.nearestBlockElement(fullTargetDocument.querySelector(decodeURIComponent(target.hash)));
 
 		//  Unwrap sections and {foot|side}notes from their containers.
 		if (nearestBlockElement.tagName == "SECTION") {
