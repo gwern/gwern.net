@@ -226,7 +226,7 @@ Popups = {
 
 			target.popup.titleBar = document.createElement("div");
 			target.popup.titleBar.classList.add("popup-title-bar");
-			popup.insertBefore(popup.titleBar, popup.firstElementChild);
+			target.popup.insertBefore(target.popup.titleBar, target.popup.firstElementChild);
 
 			target.popup.titleBarContents.forEach(elementOrHTML => {
 				if (typeof elementOrHTML == "string") {

@@ -2864,7 +2864,7 @@ body.directory-index #disqus_thread {
 .popup .popup-title {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
-    padding: 0 0.25em 0 0.375em;
+    padding: 0 0.25em 0 0.5em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

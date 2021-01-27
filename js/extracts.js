@@ -1058,20 +1058,37 @@ Extracts = {
 			return null;
 
 		//  Add popup title bar contents.
-// 		let popupTitle;
-// 		if (Extracts.isDefinition(target)) {
-// 			//  TODO: account for contents possibly not being loaded yet!
-// 			popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
-// 		} else if (!Extracts.isLocalImageLink(target)) {
-// 			popupTitle = `<a 
-// 				class="popup-title"
-// 				href="${target.href}"
-// 				title="Open ${target.href} in a new window"
-// 				target="_blank"
-// 					>${(target.href || "")}</a>`
-// 		}
-		//  NOTE: TEMPORARILY DISABLED!
-// 		if (popupTitle) popup.titleBarContents.push(popupTitle);
+		let popupTitle;
+		if (Extracts.isDefinition(target)) {
+			if (popup.classList.contains("loading"))
+				popupTitle = `<span class="popup-title">${target.dataset.originalDefinitionId}</span>`;
+			else
+				popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
+		} else if (!Extracts.isLocalImageLink(target)) {
+			let popupTitleText;
+			if (target.hostname == location.hostname) {
+				if (target.dataset.urlOriginal) {
+					popupTitleText = target.dataset.urlOriginal;
+				} else if (target.pathname == location.pathname) {
+					popupTitleText = target.hash;
+				} else {
+					popupTitleText = popup.classList.contains("external-page-embed") 
+									 ? target.pathname 
+									 : (target.pathname + target.hash);
+				}
+			} else {
+				popupTitleText = target.href;
+			}
+			popupTitle = `<a 
+				class="popup-title"
+				href="${target.href}"
+				title="Open ${target.href} in a new window"
+				target="_blank"
+					>${popupTitleText}</a>`
+		}
+		if (popupTitle) {
+			popup.titleBarContents.push(popupTitle);
+		}
 
 		/*  If we’re waiting for content to be loaded into the popup 
 			asynchronously, then there’s no need to do rewrites for now.
