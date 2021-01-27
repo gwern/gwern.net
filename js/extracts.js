@@ -1076,6 +1076,8 @@ Extracts = {
 			if (target.hostname == location.hostname) {
 				if (target.dataset.urlOriginal) {
 					popupTitleText = target.dataset.urlOriginal;
+				} else if (Extracts.isExtractLink(target)) {
+					popupTitleText = target.pathname + target.hash;
 				} else if (target.pathname == location.pathname) {
 					popupTitleText = target.hash;
 				} else {
