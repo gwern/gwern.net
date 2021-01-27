@@ -3517,9 +3517,12 @@ body.directory-index #disqus_thread {
 }
 #popup-options-dialog button.close-button:hover {
     cursor: pointer;
+    box-shadow: 1px 1px 0 0 currentColor;
 }
 #popup-options-dialog button.close-button:active {
-    transform: scale(0.9);
+    left: calc(0.4em + 1px);
+    top: calc(0.4em + 1px);
+    box-shadow: -1px -1px 0 0 currentColor;
 }
 #popup-options-dialog button.close-button svg {
     display: block;
@@ -3590,6 +3593,15 @@ body.directory-index #disqus_thread {
     top: calc(0.55em + 3px);
     right: 12em;
     z-index: 1;
+	opacity: 1.0;
+	visibility: visible;
+	transition:
+		opacity 2s ease,
+		visibility 2s ease;
+}
+#popups-disabled-show-popup-options-dialog-button.hidden {
+	opacity: 0;
+	visibility: hidden;
 }
 #popups-disabled-show-popup-options-dialog-button button {
     -moz-appearance: none;
