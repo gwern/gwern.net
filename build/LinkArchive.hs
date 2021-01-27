@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-01-23 20:46:25 gwern"
+When:  Time-stamp: "2021-01-26 17:58:44 gwern"
 License: CC-0
 -}
 
@@ -149,13 +149,11 @@ whiteList url
       , ".ogg"
       , ".jpg"
       , ".ogg"
-      , "https://halshs.archives-ouvertes.fr/"
-      , "haskell.org:8080"
+      , "halshs.archives-ouvertes.fr/"
       , "apenwarr.ca"
       , "distill.pub"
       , "thegradient.pub"
       , "perma.cc"
-      , "antilop.cc"
       , "nips.cc"
       , "youtu.be"
       , "nomeata.de"
@@ -388,7 +386,6 @@ whiteList url
       , "nymag.com"
       , "norvig.com"
       , "librarything.com"
-      , "neuralnetworksanddeeplearning.com"
       , "greaterwrong.com"
       , "lesswrong.com"
       , "farnamstreetblog.com"
@@ -653,14 +650,13 @@ whiteList url
       , "www.barnesandnoble.com/" -- service
       , "www.discoverbooks.com" -- service
       , "camelcamelcamel.com/" -- service
-      , "1dollarscan.com/"-- service
+      , "1dollarscan.com/" -- service
       , "old.reddit.com/r/DataHoarder/" -- news/portal
       , "old.reddit.com/r/Piracy/" -- news/portal
       , "old.reddit.com/r/PrequelMemes/" -- news/portal
       , "old.reddit.com/r/emojipasta/" -- news/portal
       , "old.reddit.com/r/explorables/" -- news/portal
       , "cryptome.org" -- stable
-      , "nicovideo.jp" -- interactive
       , "danluu.com" -- stable
       , "getlamp.com" -- stable
       , "vizhub.healthdata.org" -- interactive
@@ -760,7 +756,6 @@ whiteList url
       , "www.theindiaforum.in" -- low-quality archiving (sidenotes don't work)
       , "knightcolumbia.org" -- low-quality archiving (sidenotes don't work)
       , "thefirstaibook.com" -- low-quality archiving
-      , "qntm.org" -- stable
       , "tl.net/blogs/" -- low-quality archiving (screenshots/images break)
       , "metaculus.com" -- updated/service/stable
       , "simplify.so" -- service

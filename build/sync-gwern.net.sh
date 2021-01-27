@@ -314,7 +314,7 @@ then
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
-    λ(){ fgrep -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
+    λ(){ fgrep --color=always -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
     wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
 
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v -e images/thumbnails/ -e metadata/annotations/; }
