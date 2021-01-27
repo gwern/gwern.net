@@ -151,6 +151,9 @@ if (window.Extracts) {
 	Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility = (event) => {
 		GWLog("updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "rewrite.js", 3);
 
+		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
+			return;
+
 		// Hide button when scrolling a full page down.
 		if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
 			Extracts.popupsDisabledShowPopupOptionsDialogButton.classList.toggle("hidden", true);
