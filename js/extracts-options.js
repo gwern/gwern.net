@@ -23,6 +23,8 @@ if (window.Extracts) {
 	Extracts.showPopupOptionsDialog = () => {
 		GWLog("Extracts.showPopupOptionsDialog", "extracts.js", 1);
 
+		Popups.hidePopupContainer();
+
 		//  Create the options dialog, if needed.
 		if (Extracts.popupOptionsDialog == null) {
 			let popupsEnabled = localStorage.getItem("extract-popups-disabled") != "true";
@@ -99,6 +101,8 @@ if (window.Extracts) {
 
 	Extracts.hidePopupOptionsDialog = () => {
 		GWLog("Extracts.hidePopupOptionsDialog", "extracts.js", 1);
+
+		Popups.unhidePopupContainer();
 
 		if (Extracts.popupOptionsDialog != null) {
 			Extracts.popupOptionsDialog.style.display = "none";

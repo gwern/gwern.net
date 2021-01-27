@@ -1061,10 +1061,12 @@ Extracts = {
 		let popupTitle;
 		if (Extracts.isDefinition(target)) {
 			if (popup.classList.contains("loading"))
-				popupTitle = `<span class="popup-title">${target.dataset.originalDefinitionId}</span>`;
+				popupTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
 			else
-				popupTitle = `<span class="popup-title">${popup.querySelector(".data-field.title").textContent}</span>`;
-		} else if (!Extracts.isLocalImageLink(target)) {
+				popupTitle = `<span>${popup.querySelector(".data-field.title").textContent}</span>`;
+		} else if (!(   Extracts.isLocalImageLink(target)
+					 || Extracts.isCitation(target)
+					 || Extracts.isCitationBackLink(target))) {
 			let popupTitleText;
 			if (target.hostname == location.hostname) {
 				if (target.dataset.urlOriginal) {
@@ -1080,14 +1082,26 @@ Extracts = {
 				popupTitleText = target.href;
 			}
 			popupTitle = `<a 
-				class="popup-title"
 				href="${target.href}"
 				title="Open ${target.href} in a new window"
 				target="_blank"
 					>${popupTitleText}</a>`
 		}
 		if (popupTitle) {
+			popupTitle = `<span class="popup-title">${popupTitle}</span>`;
 			popup.titleBarContents.push(popupTitle);
+
+			if (Extracts.popupOptionsEnabled) {
+				let showPopupOptionsDialogButton = Popups.titleBarComponents.optionsButton();
+				showPopupOptionsDialogButton.addActivateEvent((event) => {
+					event.stopPropagation();
+
+					Extracts.showPopupOptionsDialog();
+				});
+				showPopupOptionsDialogButton.title = "Show popup options (enable/disable popups)";
+				showPopupOptionsDialogButton.classList.add("show-popup-options-dialog");
+				popup.titleBarContents.push(showPopupOptionsDialogButton);
+			}
 		}
 
 		/*  If we’re waiting for content to be loaded into the popup 

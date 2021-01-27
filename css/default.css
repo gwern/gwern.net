@@ -2864,6 +2864,7 @@ body.directory-index #disqus_thread {
 .popup .popup-title {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
+    flex: 1 1 100%;
     padding: 0 0.25em 0 0.5em;
     white-space: nowrap;
     overflow: hidden;
@@ -2872,6 +2873,37 @@ body.directory-index #disqus_thread {
 }
 .popup .popup-title::after {
     display: none;
+}
+
+/*	Buttons in the popup title bar.
+	*/
+.popup .popup-title-bar-button {
+	-moz-appearance: none;
+	appearance: none;
+	border: none;
+	background-color: transparent;
+	font-size: inherit;
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	margin: 0;
+    padding: 4px;
+	height: 100%;
+	cursor: pointer;
+    width: 1.5em;
+    color: var(--GW-popups-popup-title-bar-button-color);
+}
+.popup .popup-title-bar-button:hover {
+    opacity: 0.6;
+}
+.popup .popup-title-bar-button:active {
+    transform: scale(0.9);
+}
+.popup .popup-title-bar-button svg {
+	max-width: 100%;
+	max-height: 100%;
+    width: 24px;
+    height: 24px;
 }
 
 /*┌────────────────────┐*/
