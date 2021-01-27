@@ -81,6 +81,12 @@ Extracts = {
 
 		//  Target restore function (same for mobile and non-mobile).
 		let restoreTarget = (target) => {
+			//  Restore title attribute, if any.
+			if (target.dataset.attributeTitle) {
+				target.title = target.dataset.attributeTitle;
+				target.removeAttribute("data-attribute-title");
+			}
+
 			target.classList.remove("has-content", "has-annotation");
 		};
 
@@ -119,8 +125,11 @@ Extracts = {
     	} else {
 			//  Target prepare function.
 			let prepareTarget = (target) => {
-				//  Remove the title attribute.
-				target.removeAttribute("title");
+				//  Remove the title attribute (saving it first);
+				if (target.title) {
+					target.dataset.attributeTitle = target.title;
+					target.removeAttribute("title");
+				}
 
 				if (Extracts.isTOCLink(target))
 					target.classList.remove("has-content");
