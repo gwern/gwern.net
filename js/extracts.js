@@ -697,7 +697,7 @@ Extracts = {
 		if (GW.isMobile())
 			return null;
 
-		for (var originatingDocument = Extracts.originatingDocumentForTarget(target);
+		for (let originatingDocument = Extracts.originatingDocumentForTarget(target);
 			 originatingDocument != Extracts.rootDocument;
 			 originatingDocument = Extracts.originatingDocumentForTarget(originatingDocument.closest(".popframe").spawningTarget)) {
 			 if (target.pathname == Extracts.locationForDocument(originatingDocument).pathname)
