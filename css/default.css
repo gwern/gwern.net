@@ -3517,9 +3517,12 @@ body.directory-index #disqus_thread {
 }
 #popup-options-dialog button.close-button:hover {
     cursor: pointer;
+    box-shadow: 1px 1px 0 0 currentColor;
 }
 #popup-options-dialog button.close-button:active {
-    transform: scale(0.9);
+    left: calc(0.4em + 1px);
+    top: calc(0.4em + 1px);
+    box-shadow: -1px -1px 0 0 currentColor;
 }
 #popup-options-dialog button.close-button svg {
     display: block;
