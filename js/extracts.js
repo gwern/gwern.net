@@ -697,7 +697,7 @@ Extracts = {
 		if (GW.isMobile())
 			return null;
 
-		for (var originatingDocument = Extracts.originatingDocumentForTarget(target);
+		for (let originatingDocument = Extracts.originatingDocumentForTarget(target);
 			 originatingDocument != Extracts.rootDocument;
 			 originatingDocument = Extracts.originatingDocumentForTarget(originatingDocument.closest(".popframe").spawningTarget)) {
 			 if (target.pathname == Extracts.locationForDocument(originatingDocument).pathname)
@@ -1076,6 +1076,8 @@ Extracts = {
 			if (target.hostname == location.hostname) {
 				if (target.dataset.urlOriginal) {
 					popupTitleText = target.dataset.urlOriginal;
+				} else if (Extracts.isExtractLink(target)) {
+					popupTitleText = target.pathname + target.hash;
 				} else if (target.pathname == location.pathname) {
 					popupTitleText = target.hash;
 				} else {
