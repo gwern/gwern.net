@@ -376,38 +376,43 @@ Extracts = {
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
 		on the same website (displayed to the user in popups, or injected in 
-		block flow as popins), and the (almost-)seamless handling of links (or
-		other target elements) in such transcluded content in the same way that
-		they’re handled in the root document (i.e., the actual page loaded in
-		the browser window). This permits us to have truly recursive popups
-		with unlimited recursion depth and no loss of functionality.
+		block flow as popins), and the (almost-)seamless handling of local links
+		in such transcluded content in the same way that they’re handled in the 
+		root document (i.e., the actual page loaded in the browser window). This
+		permits us to have truly recursive popups with unlimited recursion depth
+		and no loss of functionality.
 
-		For any given target element, originatingDocumentForTarget() asks: where
-		(that is, in what *page*, a.k.a. ‘document’) was this element *defined*?
+		For any given target element, targetDocument() asks: to what local 
+		document does the link refer?
 
-		Was it defined in the root document, or in some extract for a target in 
-		the root document, at some remove (even if the target is actually within 
-		an extract popup spawned by a section embed popup spawned by a footnote 
-		popup)? If so, the root element of the root document (i.e., the <html> 
-		element of the page) is returned.
-
-		OR, was the target defined in an entire other page that was transcluded 
-		wholesale and embedded as a pop-frame? In that case, the pop-frame 
-		where said other page is embedded is returns (again, even if the given
-		target is actually in a popup several levels down from that full-page
-		embed popup, having been spawned by a definition which spawned a section
-		link which spawned… etc.).
+		This may be either the root document, or an entire other page that was
+		transcluded wholesale and embedded as a pop-frame (of class 
+		‘external-page-embed’).
 		*/
-	originatingDocumentForTarget: (target) => {
-		return target.originatingDocument || Extracts.rootDocument;
+	targetDocument: (target) => {
+		if (target.hostname != location.hostname)
+			return null;
+
+		if (target.pathname == location.pathname)
+			return Extracts.rootDocument;
+
+		if (Extracts.serviceProvider == Popups) {
+			let containingPopup = target.closest(".popup");
+			if (!containingPopup)
+				return null;
+
+			let popupForTargetDocument = containingPopup.popupStack.find(popup => (   popup.classList.contains("external-page-embed") 
+																				   && popup.spawningTarget.pathname == target.pathname));
+			return popupForTargetDocument ? popupForTargetDocument.contentView : null;
+		} else {
+		
+		}
 	},
 
-	/*	Returns the location (a URL object) of the given document.
+	/*	Returns the location (a URL object) of the document for a given target.
 		*/
-	locationForDocument: (aDocument) => {
-		return new URL(aDocument == Extracts.rootDocument 
-					   ? location.href 
-					   : aDocument.closest(".popframe").spawningTarget.href);
+	locationForTarget: (target) => {
+		return (target.hostname == location.hostname) ? new URL(location.href) : null;
 	},
 
 	/**************************************************************************/
@@ -686,31 +691,13 @@ Extracts = {
 				|| target.hash > "");
 	},
 
-	/*	Returns an already-displayed full page matching the target pathname
-		(which can be the root page of the window), or null.
-		*/
-	fullTargetDocumentForTarget: (target) => {
-		//  TEMPORARY!!
-		if (GW.isMobile())
-			return null;
-
-		for (let originatingDocument = Extracts.originatingDocumentForTarget(target);
-			 originatingDocument != Extracts.rootDocument;
-			 originatingDocument = Extracts.originatingDocumentForTarget(originatingDocument.closest(".popframe").spawningTarget)) {
-			 if (target.pathname == Extracts.locationForDocument(originatingDocument).pathname)
-			 	return originatingDocument;
-		}
-
-		return (target.pathname == location.pathname ? Extracts.rootDocument : null);
-	},
-
     localTranscludeForTarget: (target) => {
 		GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
 		/*	Check to see if the target location matches an already-displayed 
 			page (which can be the root page of the window).
 			*/
-		let fullTargetDocument = Extracts.fullTargetDocumentForTarget(target);
+		let fullTargetDocument = Extracts.targetDocument(target);
 		if (fullTargetDocument) {
 			/*  If it does, display the section. (We know it must be an 
 				anchorlink because if it were not, the target would not be
@@ -1039,7 +1026,7 @@ Extracts = {
 		if (   (   Extracts.isCitation(target) 
 				&& Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
 			|| (   Extracts.isCitationBackLink(target) 
-				&& Popups.isVisible(Extracts.originatingDocumentForTarget(target).querySelector(decodeURIComponent(target.hash)))))
+				&& Popups.isVisible(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash)))))
 			return null;
 
 		//  Various special handling.
@@ -1064,14 +1051,6 @@ Extracts = {
 			GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", Extracts.footnotePopupDespawnHandler = (info) => {
 				target.classList.toggle("highlighted", false);
 			});
-		}
-
-		//  If the target is itself in a popup, set originating document.
-		let containingPopup = target.closest(".popup");
-		if (containingPopup) {
-			target.originatingDocument = (containingPopup.classList.contains("external-page-embed"))
-										 ? containingPopup.contentView
-										 : Extracts.originatingDocumentForTarget(containingPopup.spawningTarget);
 		}
 
 		//  Attempt to fill the popup.
@@ -1221,7 +1200,7 @@ Extracts = {
 				collapseAllowed: false, 
 				isCollapseBlock: false,
 				isFullPage: false,
-				location: Extracts.locationForDocument(Extracts.originatingDocumentForTarget(target)),
+				location: Extracts.locationForTarget(target),
 				fullWidthPossible: false
 			});
 		}

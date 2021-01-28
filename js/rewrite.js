@@ -498,7 +498,7 @@ function addSpecialLinkClasses(loadEventInfo) {
 	GWLog("addSpecialLinkClasses", "rewrite.js", 1);
 
 	loadEventInfo.document.querySelectorAll(".markdownBody a[href]").forEach(link => {
-		if (   link.hostname != loadEventInfo.location.hostname
+		if (   link.hostname != location.hostname
 			|| link.closest("h1, h2, h3, h4, h5, h6")
 			|| link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
 			return;
