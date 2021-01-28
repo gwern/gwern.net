@@ -614,8 +614,10 @@ function injectBackToTopLink(loadEventInfo) {
 		+ `</a></div>`);
 
 	//	On mobile, show/hide the back-to-top link on scroll up/down.
-	if (GW.isMobile())
-		addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener");
+	addScrollListener(updateBackToTopLinkVisibility, "updateBackToTopLinkVisibilityScrollListener");
+
+	//  Update state immediately.
+	updateBackToTopLinkVisibility();
 }
 
 /***********************************************************/
@@ -635,13 +637,15 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function updateBackToTopLinkVisibility(event) {
     GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
 
-    // Hide back-to-top link when scrolling a full page down.
-    if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
-        GW.backToTop.classList.toggle("hidden", true);
-
-    // Show back-to-top link on ANY scroll up.
-	if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)
+	/*  Show back-to-top link on ANY scroll up, or when scrolling a full page 
+		down from the top.
+		*/
+	if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
 		GW.backToTop.classList.toggle("hidden", false);
+
+	//  Hide back-to-top link when scrolling to top.
+	if (GW.scrollState.lastScrollTop <= 0)
+		GW.backToTop.classList.toggle("hidden", true);
 }
 
 /*****************/

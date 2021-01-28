@@ -2281,7 +2281,7 @@ body.directory-index article::before {
 
 /* For desktop users, we hide the horizontal rulers on the /index page as they are unnecessary given the flowing columns; for mobile users, we'll separate sections by rulers because they only get a single very long column to scroll through, which lacks a sense of hierarchy/chunking. However, desktop users still get the initial <hr> inserted by sed to divide the two blocks of New/Popular/Notable from all-topics sections (which has no class set on it). */
 @media only screen and (min-width: 650px) {
- /*  Horizontal ruler on the home page.
+/*  Horizontal ruler on the home page.
     */
     body.index hr {
         margin: 1.5em 0 0;
@@ -2289,6 +2289,24 @@ body.directory-index article::before {
     body.index [class^='horizontalRule'] {
         display: none;
     }
+}
+
+/*	Back-to-top link on home page.
+	*/
+@media only screen and (max-width: 1184px) {
+    #back-to-top {
+        left: 4rem;
+    }
+}
+@media only screen and (min-width: 1185px) {
+	#back-to-top {
+        left: calc(120px + (100% - 1185px)/2);
+	}
+}
+@media only screen and (min-width: 1761px) {
+	#back-to-top {
+        left: calc(80px + (100% - 1185px)/2);
+	}
 }
 
 /*=---------------=*/
@@ -3721,7 +3739,7 @@ body.directory-index #disqus_thread {
 		right: 1rem;
 	}
 }
-@media only screen and (min-width: 1760px) {
+@media only screen and (min-width: 1761px) {
 	#back-to-top {
 		right: calc(60px + (100% - 1185px) / 2);
 	}
