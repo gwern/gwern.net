@@ -80,6 +80,8 @@ Extracts = {
 
 	rootDocument: document.firstElementChild,
 
+	annotationsWorkspace: null,
+
 	serviceProviderName: null,
 	serviceProvider: null,
 
@@ -100,11 +102,7 @@ Extracts = {
 			target.classList.remove("has-content", "has-annotation");
 		};
 
-		if (Extracts.serviceProvider == Popups) {
-			Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
-    	} else {
-    		return;
-    	}
+		Extracts.serviceProvider.removeTargetsWithin(container, Extracts.targets, restoreTarget);
     },
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
@@ -115,24 +113,22 @@ Extracts = {
 		});
 
 		//  Remove staging element for annotations.
-		let annotationsWorkspace = document.querySelector("#annotations-workspace");
-		if (annotationsWorkspace)
-			annotationsWorkspace.remove();
+		if (Extracts.annotationsWorkspace)
+			Extracts.annotationsWorkspace.remove();
+
+		//  Remove content load event handlers.
+		[ Extracts.processTargetsOnContentLoad,
+		  Extracts.setUpAnnotationLoadEvent,
+		  Extracts.signalAnnotationLoaded,
+		  Extracts.signalAnnotationLoadFailed
+		  ].forEach(handler => GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", handler));
 
 		if (Extracts.serviceProvider == Popups) {
 			//  Remove “popups disabled” icon/button, if present.
 			if (Extracts.popupOptionsEnabled) {
 				Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 			}
-
-			//  Remove content load event handlers.
-			[ Extracts.processTargetsOnContentLoad,
-			  Extracts.setUpAnnotationLoadEvent,
-			  Extracts.signalAnnotationLoaded,
-			  Extracts.signalAnnotationLoadFailed
-			  ].forEach(handler => GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", handler));
 		} else {
-			return;
 		}
 
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
@@ -141,22 +137,7 @@ Extracts = {
  		GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
 		if (Extracts.serviceProvider == Popups) {
-			//  Target prepare function.
-			let prepareTarget = (target) => {
-				//  Remove the title attribute (saving it first);
-				if (target.title) {
-					target.dataset.attributeTitle = target.title;
-					target.removeAttribute("title");
-				}
-
-				//  For special positioning by Popups.js.
-				target.preferSidePositioning = () => {
-					return (   target.closest("#sidebar, li") != null
-							&& target.closest(".columns") == null);
-				};
-			};
-
-    		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+    		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget);
     	} else {
     		return;
     	}
@@ -164,81 +145,49 @@ Extracts = {
     setUpAnnotationLoadEventWithin: (container) => {
 		GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts.js", 1);
 
-		//  The staging element for annotations.
-		let annotationsWorkspace = document.querySelector("#annotations-workspace");
-
 		//  Get all the annotated targets in the container.
 		let allAnnotatedTargetsInContainer = Array.from(container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
 
-		//  Add hover event listeners to all the annotated targets.
-		allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-			annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
-				/*  Do nothing if the annotation for the target is 
-					already loaded.
-					*/
-				let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
-
-				let cachedAnnotation = Extracts.cachedAnnotationReferenceEntries[annotationIdentifier];
-				if (cachedAnnotation && cachedAnnotation != "LOADING_FAILED") return;
-
-				let annotationURL = new URL("https://" + location.hostname + Extracts.annotationsBasePathname 
-											+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
-
-				/*  On hover, start a timer, duration of one-half the 
-					popup trigger delay...
-					*/
-				annotatedTarget.annotationLoadTimer = setTimeout(Extracts.loadAnnotation = () => {
-					GWLog("Extracts.loadAnnotation", "extracts.js", 2);
-
-					/*  ... to load the annotation.
-						*/
-					doAjax({
-						location: annotationURL.href,
-						onSuccess: (event) => {
-							document.querySelector("#annotations-workspace").insertAdjacentHTML("beforeend", 
-								`<div class="annotation">${event.target.responseText}</div>`);
-							GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
-								source: "Extracts.loadAnnotation",
-								document: annotationsWorkspace.lastElementChild, 
-								identifier: annotationIdentifier,
-								isMainDocument: false,
-								needsRewrite: true, 
-								clickable: false, 
-								collapseAllowed: false, 
-								isCollapseBlock: false,
-								isFullPage: false,
-								location: annotationURL,
-								fullWidthPossible: false
-							});
-						},
-						onFailure: (event) => {
-							GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-								source: "Extracts.loadAnnotation",
-								document: annotationsWorkspace, 
-								identifier: annotationIdentifier,
-								location: annotationURL
-							});
-						}
-					});
-				}, (Popups.popupTriggerDelay / 2.0));
-			});
-			annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
-				/*  Cancel timer on mouseout (no need to commence a load
-					on a merely transient hover).
-					*/
-				clearTimeout(annotatedTarget.annotationLoadTimer);
-			});
-		});
-
-		/*  Set up handler to remove hover event listeners from all
-			the annotated targets in the document.
-			*/
-		GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+		if (Extracts.serviceProvider == Popups) {
+			//  Add hover event listeners to all the annotated targets.
 			allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-				annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
-				annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
+				annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
+					//  Get the unique identifier of the annotation for the target.
+					let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+
+					//  Do nothing if the annotation is already loaded.
+					if (Extracts.cachedAnnotationExists(annotationIdentifier))
+						return;
+
+					/*  On hover, start a timer, duration of one-half the 
+						popup trigger delay...
+						*/
+					annotatedTarget.annotationLoadTimer = setTimeout(() => {
+						/*  ... to load the annotation.
+							*/
+						Extracts.loadAnnotation(annotationIdentifier);
+					}, (Popups.popupTriggerDelay / 2.0));
+				});
+				annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
+					/*  Cancel timer on mouseout (no need to commence a load
+						on a merely transient hover).
+						*/
+					clearTimeout(annotatedTarget.annotationLoadTimer);
+				});
 			});
-		}, { once: true });
+
+			/*  Set up handler to remove hover event listeners from all
+				the annotated targets in the document.
+				*/
+			GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+				allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+					annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
+					annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
+				});
+			}, { once: true });
+		} else {
+		
+		}
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
@@ -248,6 +197,7 @@ Extracts = {
 
 		//  Inject the staging area for annotations.
 		document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
+		Extracts.annotationsWorkspace = document.querySelector("#annotations-workspace");
 
         if (Extracts.serviceProvider == Popups) {
             GWLog("Setting up for popups.", "extracts.js", 1);
@@ -261,58 +211,60 @@ Extracts = {
 			}
 
             GWLog("Activating popups.", "extracts.js", 1);
-
-			/*  Add handler to set up targets in loaded content (including 
-				newly-spawned popups; this allows for popup recursion), and to
-				add hover event listeners to annotated targets, to load 
-				annotations (fragments).
-				*/
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
-				GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
-
-				if (info.document.closest(Extracts.contentContainersSelector)) {
-					Extracts.addTargetsWithin(info.document);
-					Extracts.setUpAnnotationLoadEventWithin(info.document);
-				} else {
-					info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-						Extracts.addTargetsWithin(container);
-						Extracts.setUpAnnotationLoadEventWithin(container);
-					});
-				}
-			}, { phase: "eventListeners" });
-
-			//	Add handler for if an annotation loads.
-			GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoaded = (info) => {
-				GWLog("Extracts.signalAnnotationLoaded", "extracts.js", 2);
-
-				/*  If this is an annotation that’s loaded, we cache it, remove 
-					it from the staging element, and fire the annotationDidLoad
-					event.
-					*/
-				Extracts.cachedAnnotationReferenceEntries[info.identifier] = info.document;
-				info.document.remove();
-
-				GW.notificationCenter.fireEvent("GW.annotationDidLoad", { identifier: info.identifier });
-			}, {
-				phase: ">rewrite",
-				condition: (info) => (info.document.parentElement && info.document.parentElement.id == "annotations-workspace")
-			});
-
-			//	Add handler for if loading an annotation failed.
-			GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.signalAnnotationLoadFailed = (info) => {
-				GWLog("Extracts.signalAnnotationLoadFailed", "extracts.js", 2);
-
-				/*	If this is an annotation that’s failed to load, then we set
-					the cache value to indicate this, and fire the 
-					annotationLoadDidFail event.
-					*/
-				Extracts.cachedAnnotationReferenceEntries[info.identifier] = "LOADING_FAILED";
-
-				GW.notificationCenter.fireEvent("GW.annotationLoadDidFail", { identifier: info.identifier });
-			}, { condition: (info) => info.document.id == "annotations-workspace" });
         } else {
-			return;
+            GWLog("Setting up for popins.", "extracts.js", 1);
+
+            GWLog("Activating popins.", "extracts.js", 1);
         }
+
+		/*  Add handler to set up targets in loaded content (including 
+			newly-spawned pop-frames; this allows for recursion), and to
+			add hover/click event listeners to annotated targets, to load 
+			annotations (fragments).
+			*/
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
+			GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
+
+			if (info.document.closest(Extracts.contentContainersSelector)) {
+				Extracts.addTargetsWithin(info.document);
+				Extracts.setUpAnnotationLoadEventWithin(info.document);
+			} else {
+				info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+					Extracts.addTargetsWithin(container);
+					Extracts.setUpAnnotationLoadEventWithin(container);
+				});
+			}
+		}, { phase: "eventListeners" });
+
+		//	Add handler for if an annotation loads.
+		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoaded = (info) => {
+			GWLog("Extracts.signalAnnotationLoaded", "extracts.js", 2);
+
+			/*  If this is an annotation that’s loaded, we cache it, remove 
+				it from the staging element, and fire the annotationDidLoad
+				event.
+				*/
+			Extracts.cachedAnnotationReferenceEntries[info.identifier] = info.document;
+			info.document.remove();
+
+			GW.notificationCenter.fireEvent("GW.annotationDidLoad", { identifier: info.identifier });
+		}, {
+			phase: ">rewrite",
+			condition: (info) => (info.document.parentElement && info.document.parentElement.id == "annotations-workspace")
+		});
+
+		//	Add handler for if loading an annotation failed.
+		GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.signalAnnotationLoadFailed = (info) => {
+			GWLog("Extracts.signalAnnotationLoadFailed", "extracts.js", 2);
+
+			/*	If this is an annotation that’s failed to load, then we set
+				the cache value to indicate this, and fire the 
+				annotationLoadDidFail event.
+				*/
+			Extracts.cachedAnnotationReferenceEntries[info.identifier] = "LOADING_FAILED";
+
+			GW.notificationCenter.fireEvent("GW.annotationLoadDidFail", { identifier: info.identifier });
+		}, { condition: (info) => info.document.id == "annotations-workspace" });
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
@@ -399,50 +351,17 @@ Extracts = {
     	return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
 
-	/*	This function fills a pop-frame for a given target with content. To do
-		so, it uses a provided array of testing/filling function pairs. The
-		testing functions are called in order until a match is found, at which 
-		point the filling function of the pair is called. Provided classes, if 
-		any, are then added to the pop-frame. (Details follow.)
-
-		In addition to the pop-frame and the target, fillPopFrame() takes a
-		‘possiblePopTypes’ array, which must have the following structure:
-
-		[ [ testMethodName1, fillMethodName1|null, classString1|null ],
-		  [ testMethodName2, fillMethodName2|null, classString2|null ],
-		  … ]
-
-		NOTES:
-
-		- fillPopFrame() looks for methods of the given names in the Extracts 
-		  object
-		- classString must be space-delimited
-
-		The entries will be processed IN ARRAY ORDER. For each entry:
-
-		1. If a fill method of the given name exists, the test method of the 
-		   given name will be called with the target as argument.
-		2. If the test method returns true, then the pop-frame will be filled 
-		   by the given fill method.
-		3. If there’s a non-empty class string, the classes in the string will 
-		   be added to the pop-frame.
-
-		No further array entries will be processed once a match (i.e., test 
-		method that returns true for the given target) is found.
-
-		The function then returns true if a filling method was found (i.e., the
-		pop-frame successfully filled), false otherwise.
+	/*	This function fills a pop-frame for a given target with content. It 
+		returns true if the pop-frame successfully filled, false otherwise.
 		*/
 	fillPopFrame: (popFrame) => {
 		GWLog("Extracts.fillPopFrame", "extracts.js", 2);
 
-		let target = popFrame.spawningTarget;
-
 		let didFill = false;
-		let setPopFrameContent = Popups.setPopFrameContent;
+		let target = popFrame.spawningTarget;
 		let targetTypeInfo = Extracts.targetTypeInfo(target);
 		if (targetTypeInfo && targetTypeInfo.popFrameFillFunctionName) {
-			didFill = setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
+			didFill = Extracts.serviceProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
 			if (targetTypeInfo.popFrameClasses)
 				popFrame.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
 		}
@@ -453,42 +372,6 @@ Extracts = {
 			GWLog(`Unable to fill pop-frame (${Extracts.targetIdentifier(target)} [${(targetTypeInfo ? targetTypeInfo.typeName : "UNDEFINED")}])!`, "extracts.js", 1);
 			return false;
 		}
-	},
-
-	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
-		its annotation (fragment) loads.
-		*/
-	refreshPopFrameAfterFragmentLoads: (target) => {
-		GWLog("Extracts.refreshPopFrameAfterFragmentLoads", "extracts.js", 2);
-
-		target.popFrame.classList.toggle("loading", true);
-
-		/*	We set up an event handler for when the fragment loads, and respawn 
-			the popup / re-inject the popin, after it spawns (if it 
-			hasn’t de-spawned already, e.g. if the user moused out of the 
-			target).
-			*/
-		GW.notificationCenter.addHandlerForEvent("GW.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
-			GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
-
-			//  If the pop-frame has despawned, don’t respawn it.
-			if (!target.popFrame)
-				return;
-
-			//  TODO: generalize this for popins!
-			Popups.spawnPopup(target);
-		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
-
-		//  Add handler for if the fragment load fails.
-		GW.notificationCenter.addHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
-			GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
-
-			//  If the pop-frame has despawned, don’t respawn it.
-			if (!target.popFrame)
-				return;
-
-			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
@@ -527,7 +410,88 @@ Extracts = {
 					   : aDocument.closest(".popframe").spawningTarget.href);
 	},
 
+	/**************************************************************************/
+	/*  Helpers/objects for targets with annotations (extracts or definitions).
+		*/
+
 	cachedAnnotationReferenceEntries: { },
+
+    cachedAnnotationExists: (annotationIdentifier) => {
+		let cachedAnnotation = Extracts.cachedAnnotationReferenceEntries[annotationIdentifier];
+		return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
+    },
+
+    loadAnnotation: (annotationIdentifier) => {
+		GWLog("Extracts.loadAnnotation", "extracts.js", 2);
+
+		let annotationURL = new URL("https://" + location.hostname + Extracts.annotationsBasePathname 
+									+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
+
+		doAjax({
+			location: annotationURL.href,
+			onSuccess: (event) => {
+				document.querySelector("#annotations-workspace").insertAdjacentHTML("beforeend", 
+					`<div class="annotation">${event.target.responseText}</div>`);
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
+					source: "Extracts.loadAnnotation",
+					document: Extracts.annotationsWorkspace.lastElementChild, 
+					identifier: annotationIdentifier,
+					isMainDocument: false,
+					needsRewrite: true, 
+					clickable: false, 
+					collapseAllowed: false, 
+					isCollapseBlock: false,
+					isFullPage: false,
+					location: annotationURL,
+					fullWidthPossible: false
+				});
+			},
+			onFailure: (event) => {
+				GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
+					source: "Extracts.loadAnnotation",
+					document: Extracts.annotationsWorkspace, 
+					identifier: annotationIdentifier,
+					location: annotationURL
+				});
+			}
+		});
+    },
+
+	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
+		its annotation (fragment) loads.
+		*/
+	refreshPopFrameAfterFragmentLoads: (target) => {
+		GWLog("Extracts.refreshPopFrameAfterFragmentLoads", "extracts.js", 2);
+
+		target.popFrame.classList.toggle("loading", true);
+
+		/*	We set up an event handler for when the fragment loads, and respawn 
+			the popup / re-inject the popin, after it spawns (if it 
+			hasn’t de-spawned already, e.g. if the user moused out of the 
+			target).
+			*/
+		GW.notificationCenter.addHandlerForEvent("GW.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
+			GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
+
+			//  If the pop-frame has despawned, don’t respawn it.
+			if (!target.popFrame)
+				return;
+
+			//  TODO: generalize this for popins!
+			Popups.spawnPopup(target);
+		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
+
+		//  Add handler for if the fragment load fails.
+		GW.notificationCenter.addHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
+			GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
+
+			//  If the pop-frame has despawned, don’t respawn it.
+			if (!target.popFrame)
+				return;
+
+			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
+	},
 
 	/*	Used to generate extract and definition pop-frames.
 		*/
@@ -1022,6 +986,21 @@ Extracts = {
 		return (parentPopup == null 
 				? null 
 				: (parentPopup.popupStack.find(popup => Extracts.targetsMatch(target, popup.spawningTarget)) || null));
+	},
+
+	//  Called by popups.js when adding a target.
+	preparePopupTarget: (target) => {
+		//  Remove the title attribute (saving it first);
+		if (target.title) {
+			target.dataset.attributeTitle = target.title;
+			target.removeAttribute("title");
+		}
+
+		//  For special positioning by Popups.js.
+		target.preferSidePositioning = () => {
+			return (   target.closest("#sidebar, li") != null
+					&& target.closest(".columns") == null);
+		};
 	},
 
 	/*	Called by popups.js just before spawning (injecting and positioning) the
