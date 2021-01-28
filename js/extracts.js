@@ -149,9 +149,6 @@ Extracts = {
 					target.removeAttribute("title");
 				}
 
-				if (Extracts.isTOCLink(target))
-					target.classList.remove("has-content");
-
 				//  For special positioning by Popups.js.
 				target.preferSidePositioning = () => {
 					return (   target.closest("#sidebar, li") != null
