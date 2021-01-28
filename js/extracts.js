@@ -1128,6 +1128,7 @@ Extracts = {
 			} else {
 				popupTitleText = target.href;
 			}
+			popupTitleText = decodeURIComponent(popupTitleText);
 			popupTitle = `<a 
 				href="${target.href}"
 				title="Open ${target.href} in a new window"
