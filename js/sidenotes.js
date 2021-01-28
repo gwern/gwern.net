@@ -22,7 +22,7 @@ Sidenotes = {
 
 	/*	Maximum height of a sidenote.
 		*/
-	sidenoteMaxHeight: 720.0,
+	sidenoteMaxHeight: 600.0,
 
 	/*	Elements which occupy (partially or fully) the sidenote columns, and 
 		which can thus collide with sidenotes.
