@@ -154,13 +154,6 @@ svg {
 		padding-left: 0.125em;
 		margin-top: 0.05em;
 	}
-	#sidebar a.mail::before,
-	#sidebar a.r_gwern::before {
-		content: "\2727\2007";
-		bottom: 0.2em;
-		position: relative;
-		font-size: 0.6em;
-	}
 }
 
 @media only screen and (max-width: 649px) {
