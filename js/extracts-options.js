@@ -99,6 +99,8 @@ if (window.Extracts) {
 					Extracts.fadePopupOptionsDialog();
 				});
 			});
+		} else {
+			Extracts.popupOptionsDialog.querySelector(Extracts.popupsEnabled() ? "input.popups-enable" : "input.popups-disable").checked = true;
 		}
 
 		//  Un-hide the options dialog.
