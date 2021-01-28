@@ -38,6 +38,13 @@ Extracts = {
 		testTarget: (target) => {
 			let targetTypeInfo = Extracts.targetTypeInfo(target);
 			if (targetTypeInfo) {
+				//  Not all types of popups are available as popins also.
+				if (   Extracts.serviceProvider == Popins
+					&& (   Extracts.isCitationBackLink(target)
+						|| Extracts.isTOCLink(target)))
+					return false;
+
+				//  Do not allow pop-frames to spawn themselves.
 				let containingPopFrame = target.closest(".popframe");
 				if (containingPopFrame && Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
 					return false;
@@ -73,13 +80,16 @@ Extracts = {
 
 	rootDocument: document.firstElementChild,
 
+	serviceProviderName: null,
+	serviceProvider: null,
+
 	/***********/
 	/*	General.
 		*/
-    cleanup: () => {
-		GWLog("Extracts.cleanup", "extracts.js", 1);
+    removeTargetsWithin: (container) => {
+ 		GWLog("Extracts.removeTargetsWithin", "extracts.js", 1);
 
-		//  Target restore function (same for mobile and non-mobile).
+		//  Target restore function (same for popups and popins).
 		let restoreTarget = (target) => {
 			//  Restore title attribute, if any.
 			if (target.dataset.attributeTitle) {
@@ -90,29 +100,39 @@ Extracts = {
 			target.classList.remove("has-content", "has-annotation");
 		};
 
-		if (GW.isMobile()) {
-			return;
-		} else {
+		if (Extracts.serviceProvider == Popups) {
+			Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
+    	} else {
+    		return;
+    	}
+    },
+    cleanup: () => {
+		GWLog("Extracts.cleanup", "extracts.js", 1);
+
+		//  Unbind event listeners, restore targets, and remove popups.
+		document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+			Extracts.removeTargetsWithin(container);
+		});
+
+		//  Remove staging element for annotations.
+		let annotationsWorkspace = document.querySelector("#annotations-workspace");
+		if (annotationsWorkspace)
+			annotationsWorkspace.remove();
+
+		if (Extracts.serviceProvider == Popups) {
 			//  Remove “popups disabled” icon/button, if present.
 			if (Extracts.popupOptionsEnabled) {
 				Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 			}
 
-			//  Unbind event listeners, restore targets, and remove popups.
-			document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-				Popups.removeTargetsWithin(container, Extracts.targets, restoreTarget);
-			});
-
-			//  Remove staging element for annotations.
-			let annotationsWorkspace = document.querySelector("#annotations-workspace");
-			if (annotationsWorkspace)
-				annotationsWorkspace.remove();
-
 			//  Remove content load event handlers.
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad);
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.setUpAnnotationLoadEvent);
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoaded);
-			GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoadFailed);
+			[ Extracts.processTargetsOnContentLoad,
+			  Extracts.setUpAnnotationLoadEvent,
+			  Extracts.signalAnnotationLoaded,
+			  Extracts.signalAnnotationLoadFailed
+			  ].forEach(handler => GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", handler));
+		} else {
+			return;
 		}
 
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
@@ -120,9 +140,7 @@ Extracts = {
     addTargetsWithin: (container) => {
  		GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
-		if (GW.isMobile()) {
-    		return;
-    	} else {
+		if (Extracts.serviceProvider == Popups) {
 			//  Target prepare function.
 			let prepareTarget = (target) => {
 				//  Remove the title attribute (saving it first);
@@ -142,6 +160,8 @@ Extracts = {
 			};
 
     		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, prepareTarget);
+    	} else {
+    		return;
     	}
     },
     setUpAnnotationLoadEventWithin: (container) => {
@@ -226,21 +246,24 @@ Extracts = {
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
-        if (GW.isMobile()) {
-			return;
-        } else {
-            GWLog("Non-mobile client detected. Activating popups.", "extracts.js", 1);
+		//  Set service provider object.
+		Extracts.serviceProvider = window[Extracts.serviceProviderName];
 
-			if (Extracts.popupOptionsEnabled) {
-				if (localStorage.getItem("extract-popups-disabled") == "true") {
+		//  Inject the staging area for annotations.
+		document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
+
+        if (Extracts.serviceProvider == Popups) {
+            GWLog("Setting up for popups.", "extracts.js", 1);
+
+			if (!Extracts.popupsEnabled()) {
+				if (Extracts.popupOptionsEnabled) {
 					//  Inject “popups disabled” icon/button.
 					Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
-					return;
 				}
+				return;
 			}
 
-			//  Inject the staging area for annotations.
-			document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
+            GWLog("Activating popups.", "extracts.js", 1);
 
 			/*  Add handler to set up targets in loaded content (including 
 				newly-spawned popups; this allows for popup recursion), and to
@@ -290,6 +313,8 @@ Extracts = {
 
 				GW.notificationCenter.fireEvent("GW.annotationLoadDidFail", { identifier: info.identifier });
 			}, { condition: (info) => info.document.id == "annotations-workspace" });
+        } else {
+			return;
         }
 
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
@@ -304,16 +329,16 @@ Extracts = {
 		files, citations, etc.) that Extracts supports.
 		*/
 	targetTypeDefinitions: [
-		[ "EXTRACT",  			"isExtractLink",		"has-annotation", 	"annotationForTarget", 			"extract annotation"	],
-		[ "DEFINITION",  		"isDefinition",			"has-annotation",	"annotationForTarget", 			"definition annotation"	],
-		[ "CITATION",  			"isCitation", 			null, 				"localTranscludeForTarget", 	"footnote"				],
-		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"localTranscludeForTarget", 	"citation-context"				],
-		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"			],
-		[ "LOCAL_IMAGE", 		"isLocalImageLink", 	"has-content", 		"localImageForTarget", 			"image object"			],
-		[ "LOCAL_DOCUMENT", 	"isLocalDocumentLink", 	"has-content", 		"localDocumentForTarget", 		"local-document object"		],
-		[ "LOCAL_CODE_FILE", 	"isLocalCodeFileLink", 	"has-content", 		"localCodeFileForTarget", 		"local-code-file"		],
-		[ "LOCAL_PAGE",  		"isLocalPageLink", 		"has-content",		"localTranscludeForTarget", 	"local-transclude"	 	],
-		[ "FOREIGN_SITE", 		"isForeignSiteLink", 	"has-content",	 	"foreignSiteForTarget", 		"foreign-site object"	]
+		[ "EXTRACT",  			"isExtractLink",		"has-annotation", 	"annotationForTarget", 			"extract annotation"    ],
+		[ "DEFINITION",  		"isDefinition",			"has-annotation",	"annotationForTarget", 			"definition annotation" ],
+		[ "CITATION",  			"isCitation", 			null, 				"localTranscludeForTarget", 	"footnote"              ],
+		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"localTranscludeForTarget", 	"citation-context"      ],
+		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"          ],
+		[ "LOCAL_IMAGE", 		"isLocalImageLink", 	"has-content", 		"localImageForTarget", 			"image object"          ],
+		[ "LOCAL_DOCUMENT", 	"isLocalDocumentLink", 	"has-content", 		"localDocumentForTarget", 		"local-document object" ],
+		[ "LOCAL_CODE_FILE", 	"isLocalCodeFileLink", 	"has-content", 		"localCodeFileForTarget", 		"local-code-file"       ],
+		[ "LOCAL_PAGE",  		"isLocalPageLink", 		"has-content",		"localTranscludeForTarget", 	"local-transclude"      ],
+		[ "FOREIGN_SITE", 		"isForeignSiteLink", 	"has-content",	 	"foreignSiteForTarget", 		"foreign-site object"   ]
 	],
 			
 	/*	Returns full type info for the given target. This contains the target 
@@ -329,7 +354,7 @@ Extracts = {
 			[ 	info.typeName, 
 				info.predicateFunctionName, 
 				info.targetClasses,
-				info.popupFillFunctionName,
+				info.popFrameFillFunctionName,
 				info.popFrameClasses
 			] = definition;
 			if (Extracts[info.predicateFunctionName](target))
@@ -419,8 +444,8 @@ Extracts = {
 		let didFill = false;
 		let setPopFrameContent = Popups.setPopFrameContent;
 		let targetTypeInfo = Extracts.targetTypeInfo(target);
-		if (targetTypeInfo && targetTypeInfo.popupFillFunctionName) {
-			didFill = setPopFrameContent(popFrame, Extracts[targetTypeInfo.popupFillFunctionName](target));
+		if (targetTypeInfo && targetTypeInfo.popFrameFillFunctionName) {
+			didFill = setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
 			if (targetTypeInfo.popFrameClasses)
 				popFrame.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
 		}
@@ -991,6 +1016,10 @@ Extracts = {
 	/*	Popups.
 		*/
 
+	popupsEnabled: () => {
+		return (localStorage.getItem("extract-popups-disabled") != "true");
+	},
+
 	spawnedPopupMatchingTarget: (target) => {
 		let parentPopup = target.closest(".popup");
 		return (parentPopup == null 
@@ -1262,13 +1291,21 @@ Extracts = {
 
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
-if (localStorage.getItem("extract-popups-disabled") != "true") {
-	let serviceProviderObjectName = GW.isMobile() ? "Popins" : "Popups";
-	if (window[serviceProviderObjectName]) {
-		Extracts.setup();
-	} else {
-		GW.notificationCenter.addHandlerForEvent(serviceProviderObjectName + ".didLoad", () => {
-			Extracts.setup();
-		}, { once: true });
-	}
+//  Set pop-frame type (mode) - popups or popins.
+Extracts.serviceProviderName = GW.isMobile() ? "Popins" : "Popups";
+GWLog(`${(GW.isMobile() ? "Mobile" : "Non-mobile")} client detected. Activating ${(GW.isMobile() ? "popins" : "popups")}.`, "extracts.js", 1);
+
+doSetup = () => {
+	//  Prevent null references.
+	Popups = window["Popups"] || { };
+	Popins = window["Popins"] || { };
+
+	Extracts.setup();
+};
+if (window[Extracts.serviceProviderName]) {
+	doSetup();
+} else {
+	GW.notificationCenter.addHandlerForEvent(Extracts.serviceProviderName + ".didLoad", () => {
+		doSetup();
+	}, { once: true });
 }

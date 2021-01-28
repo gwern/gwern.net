@@ -449,6 +449,10 @@ a.link-local::after {
 	content: none;
 }
 
+body.index a.link-local::after {
+	content: none;
+}
+
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
 /*=-------------------------------=*/

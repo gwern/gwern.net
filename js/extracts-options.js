@@ -41,9 +41,8 @@ if (window.Extracts) {
 
 		//  Create the options dialog, if needed.
 		if (Extracts.popupOptionsDialog == null) {
-			let popupsEnabled = localStorage.getItem("extract-popups-disabled") != "true";
-			let enabledRadioButtonChecked = popupsEnabled ? `checked=""` : ``;
-			let disabledRadioButtonChecked = popupsEnabled ? `` : `checked=""`;
+			let enabledRadioButtonChecked = Extracts.popupsEnabled() ? `checked=""` : ``;
+			let disabledRadioButtonChecked = Extracts.popupsEnabled() ? `` : `checked=""`;
 			Extracts.popupOptionsDialog = addUIElement(`<div id='popup-options-dialog' style='display: none;'><div>` + 
 				`<h1>Popups</h1>` + 
 				`<form class="option-buttons">
@@ -186,5 +185,5 @@ if (window.Extracts) {
 }
 
 //  Inject “popups disabled” icon/button, if need be.
-if (localStorage.getItem("extract-popups-disabled") == "true")
+if (!Extracts.popupsEnabled())
 	Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();

@@ -410,18 +410,6 @@ svg {
 		white-space: nowrap;
 		line-height: 1.35;
 	}
-	#sidebar a.mail,
-	#sidebar a.r_gwern {
-		padding-left: 0.125em;
-		margin-top: 0.05em;
-	}
-	#sidebar a.mail::before,
-	#sidebar a.r_gwern::before {
-		content: "\2727\2007";
-		bottom: 0.2em;
-		position: relative;
-		font-size: 0.6em;
-	}
 }
 
 @media only screen and (max-width: 649px) {
@@ -431,7 +419,7 @@ svg {
 	}
 	#sidebar a {
 		border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
-		padding: 3px 10px;
+		padding: 4px 10px 3px 10px;
 		text-align: center;
 		margin: 1px;
 	}
@@ -451,9 +439,7 @@ svg {
 		flex: 1 1 40%;
 	}
 	#sidebar a.new,
-	#sidebar a.mail,
-	#sidebar a.r_gwern {
-		padding: 3px 10px;
+	#sidebar a.mail {
 		flex: 1 1 auto;
 	}
 	#sidebar a.patreon {
