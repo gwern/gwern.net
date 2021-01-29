@@ -228,6 +228,7 @@ function addUIElement(element_html) {
     return ui_elements_container.lastElementChild;
 }
 
+GW.scrollListeners = { };
 /*  Adds a scroll event listener to the page.
     */
 function addScrollListener(fn, name) {
@@ -241,11 +242,17 @@ function addScrollListener(fn, name) {
 
     // Retain a reference to the scroll listener, if a name is provided.
     if (typeof name != "undefined") {
-    	if (GW.scrollListeners == null)
-    		GW.scrollListeners = { };
-
         GW.scrollListeners[name] = wrapper;
     }
+}
+/*	Removes a named scroll event listener from the page.
+	*/
+function removeScrollListener(name) {
+	let wrapper = GW.scrollListeners[name];
+	if (wrapper) {
+		document.removeEventListener("scroll", wrapper);
+		GW.scrollListeners[name] = null;
+	}
 }
 
 /*	Returns val, or def if val == defval. (By default, defval is -1.)
@@ -433,7 +440,7 @@ GW.scrollState = {
 };
 
 function updateScrollState(event) {
-    GWLog("updateScrollState", "darkmode.js", 3);
+    GWLog("updateScrollState", "gw.js", 3);
 
     let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop) 
@@ -445,6 +452,28 @@ function updateScrollState(event) {
     GW.scrollState.lastScrollTop = newScrollTop;
 }
 addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+
+/*	Toggles whether the page is scrollable.
+	*/
+function isPageScrollingEnabled() {
+	return !(document.documentElement.classList.contains("no-scroll"));
+}
+function togglePageScrolling(enable) {
+	if (typeof enable == "undefined")
+		enable = document.documentElement.classList.contains("no-scroll");
+
+	let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
+
+	if (enable && !isPageScrollingEnabled()) {
+		document.documentElement.classList.toggle("no-scroll", false);
+		removeScrollListener("preventScroll");
+		addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+	} else if (!enable && isPageScrollingEnabled()) {
+		document.documentElement.classList.toggle("no-scroll", true);
+		addScrollListener(preventScroll, "preventScroll");
+		removeScrollListener("updateScrollStateScrollListener");
+	}
+}
 
 /******************/
 /* BROWSER EVENTS */

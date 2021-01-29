@@ -182,11 +182,19 @@ Popups = {
 	},
 
 	titleBarComponents: {
-		closeButton: () => {
+		genericButton: () => {
 			let button = document.createElement("BUTTON");
-			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-54.4 289.1c4.7 4.7 4.7 12.3 0 17L306 377.6c-4.7 4.7-12.3 4.7-17 0L224 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L102.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L280 256l65.6 65.1z"/></svg>`;
+			button.classList.add("popup-title-bar-button");
+			button.buttonAction = (event) => {
+				event.stopPropagation();
+			};
+			return button;
+		},
+		closeButton: () => {
+			let button = Popups.titleBarComponents.genericButton();
+			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M325.8 193.8L263.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L224 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17zM448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-48 346V86c0-3.3-2.7-6-6-6H54c-3.3 0-6 2.7-6 6v340c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>`;
 			button.title = "Close this popup";
-			button.classList.add("popup-title-bar-button", "close-button");
+			button.classList.add("close-button");
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
@@ -198,12 +206,56 @@ Popups = {
 			};
 			return button;
 		},
+		maximizeButton: () => {
+			let button = Popups.titleBarComponents.genericButton();
+			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`;
+			button.alternateHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12z"></path></svg>`;
+			button.title = "Maximize this popup";
+			button.alternateTitle = "Restore this popup to normal size";
+			button.classList.add("maximize-button", "maximize");
+			button.buttonAction = (event) => {
+				event.stopPropagation();
+
+				let popup = event.target.closest(".popup");
+				if (popup)
+					Popups.zoomPopup(popup);
+
+				button.toggleState();
+			};
+			button.toggleState = () => {
+				let buttonHTML = button.innerHTML;
+				button.innerHTML = button.alternateHTML;
+				button.alternateHTML = buttonHTML;
+
+				let buttonTitle = button.title;
+				button.title = button.alternateTitle;
+				button.alternateTitle = buttonTitle;
+
+				button.classList.toggle("maximize");
+				button.classList.toggle("restore");
+			};
+			return button;
+		},
 		optionsButton: () => {
-			let button = document.createElement("BUTTON");
+			let button = Popups.titleBarComponents.genericButton();
 			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g transform="translate(10 10)"><path id="a" d="M1.5-10h-3l-1 6.5h5m0 7h-5l1 6.5h3"/><use transform="rotate(45)" xlink:href="#a"/><use transform="rotate(90)" xlink:href="#a"/><use transform="rotate(135)" xlink:href="#a"/></g><path d="M10 2.5a7.5 7.5 0 000 15 7.5 7.5 0 000-15v4a3.5 3.5 0 010 7 3.5 3.5 0 010-7"/></svg>`;
-			button.classList.add("popup-title-bar-button");
 			return button;
 		}
+	},
+
+	zoomPopup: (popup) => {
+		let maximize = !(popup.classList.contains("maximized"));
+		popup.classList.toggle("maximized", maximize);
+		Popups.positionPopup(popup);
+
+		Popups.updatePageScrollState();
+	},
+
+	updatePageScrollState: () => {
+		if (Popups.allSpawnedPopups().findIndex(popup => popup.classList.contains("maximized")) == -1)
+			togglePageScrolling(true);
+		else
+			togglePageScrolling(false);
 	},
 
 	hidePopupContainer: () => {
@@ -437,6 +489,14 @@ Popups = {
 				provisionalPopupXPosition = 0;
 			}
 
+			/*  If the popup is set to be maximized, ignore all of that and make
+				it span the viewport.
+				*/
+			if (popup.classList.contains("maximized")) {
+				provisionalPopupXPosition = 0.0;
+				provisionalPopupYPosition = (popupContainerViewportRect.top * -1);
+			}
+
 			popup.style.left = `${provisionalPopupXPosition}px`;
 			popup.style.top = `${provisionalPopupYPosition}px`;
 
@@ -464,6 +524,9 @@ Popups = {
         popup.remove();
         popup.popupStack.remove(popup);
         popup.popupStack = null;
+
+		Popups.updatePageScrollState();
+
         document.activeElement.blur();
     },
 
@@ -515,6 +578,9 @@ Popups = {
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
 
+		if (event.target.classList.contains("maximized"))
+			return;
+
 		Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
 			Popups.clearPopupTimers(popupInStack.spawningTarget);
 			Popups.setPopupFadeTimer(popupInStack.spawningTarget);
@@ -532,6 +598,9 @@ Popups = {
 		GWLog("Popups.popupClicked", "popups.js", 2);
 
 		let popup = event.target.closest(".popup");
+
+		if (popup.classList.contains("maximized"))
+			return;
 
 		event.stopPropagation();
 		Popups.clearPopupTimers(popup.spawningTarget);
