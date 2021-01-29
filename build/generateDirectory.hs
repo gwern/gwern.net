@@ -3,12 +3,12 @@ module Main where
 
 -- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but, because of the flattened-annotation pass in hakyll.hs, it has a 'Link Bibliography' which provides an automatically-annotated directory interface! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
-import Control.Monad (when)
+import Control.Monad (filterM, when)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import Data.Time (getCurrentTime)
-import System.Directory (listDirectory, doesFileExist, renameFile)
+import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile)
 import System.Environment (getArgs)
-import System.FilePath (takeFileName)
+import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Para), Inline(Code, Link), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup, size, toList, filterWithKey)
@@ -68,7 +68,7 @@ generateYAMLHeader d tdy = "---\n" ++
                            "> <code>/" ++ d ++ "</code> directory contents:\n" ++
                            "</div>\n" ++
                            "\n" ++
-                           "# Files {.collapse}\n" ++
+                           "# Files\n" ++
                            "\n" ++
                            "<div class=\"columns\">" ++
                            "\n"
@@ -76,10 +76,17 @@ generateYAMLFooter :: String
 generateYAMLFooter = "</div>"
 
 listFiles :: Metadata -> FilePath -> IO [FilePath]
-listFiles m d = do files <- listDirectory d
-                   let files'          = map (\f -> "/"++d++f) $ (sort . filter (not . isSuffixOf ".tar") .  filter (/="index.page")) files
+listFiles m d = do direntries <- listDirectory d
+                   let direntries' = map (\entry -> "/"++d++entry) direntries
+
+                   directories <- filterM (doesDirectoryExist . tail) direntries'
+                   let directories' = map (\d -> d++"/index") directories
+
+                   files <- filterM (doesFileExist . tail) direntries'
+                   let files'          = (sort . filter (not . isSuffixOf ".tar") .  filter (/=("/"++d++"index.page"))) files
                    let fileAnnotations = map (lookupFallback m) files'
-                   return fileAnnotations
+
+                   return $ directories' ++ fileAnnotations
 
 -- how do we handle files with appended data, like '/docs/rl/2020-bellemare.pdf#google'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> FilePath
@@ -91,4 +98,5 @@ lookupFallback m u = case M.lookup u m of
                                            if M.size possibles > 0 then fst $ head $ M.toList possibles else u
 
 generateListItems :: FilePath -> [Block]
-generateListItems f  = [Para [Link nullAttr [Code nullAttr (T.pack $ takeFileName f)] (T.pack f, "")]]
+generateListItems f  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
+                         [Para [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")]]
