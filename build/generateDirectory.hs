@@ -83,7 +83,7 @@ listFiles m d = do direntries <- listDirectory d
                    let directories' = map (\d -> d++"/index") directories
 
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (not . isSuffixOf ".tar") .  filter (/="index.page")) files
+                   let files'          = (sort . filter (not . isSuffixOf ".tar") .  filter (/=("/"++d++"index.page"))) files
                    let fileAnnotations = map (lookupFallback m) files'
 
                    return $ directories' ++ fileAnnotations
