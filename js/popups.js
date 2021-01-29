@@ -182,6 +182,22 @@ Popups = {
 	},
 
 	titleBarComponents: {
+		closeButton: () => {
+			let button = document.createElement("BUTTON");
+			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-54.4 289.1c4.7 4.7 4.7 12.3 0 17L306 377.6c-4.7 4.7-12.3 4.7-17 0L224 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L102.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L280 256l65.6 65.1z"/></svg>`;
+			button.title = "Close this popup";
+			button.classList.add("popup-title-bar-button", "close-button");
+			button.buttonAction = (event) => {
+				event.stopPropagation();
+
+				let popup = event.target.closest(".popup");
+				if (popup) {
+					Popups.clearPopupTimers(popup.spawningTarget);
+					Popups.despawnPopup(popup);
+				}
+			};
+			return button;
+		},
 		optionsButton: () => {
 			let button = document.createElement("BUTTON");
 			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g transform="translate(10 10)"><path id="a" d="M1.5-10h-3l-1 6.5h5m0 7h-5l1 6.5h3"/><use transform="rotate(45)" xlink:href="#a"/><use transform="rotate(90)" xlink:href="#a"/><use transform="rotate(135)" xlink:href="#a"/></g><path d="M10 2.5a7.5 7.5 0 000 15 7.5 7.5 0 000-15v4a3.5 3.5 0 010 7 3.5 3.5 0 010-7"/></svg>`;
@@ -251,6 +267,9 @@ Popups = {
 				} else {
 					target.popup.titleBar.appendChild(elementOrHTML);
 				}
+				let newlyAddedElement = target.popup.titleBar.lastElementChild;
+				if (newlyAddedElement.buttonAction)
+					newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
 			});
 		}
 
