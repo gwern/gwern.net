@@ -2868,6 +2868,7 @@ body.directory-index #disqus_thread {
     flex-flow: row;
     align-items: center;
     width: 100%;
+    z-index: 1;
 }
 
 .popup {
