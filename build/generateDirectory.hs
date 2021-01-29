@@ -8,7 +8,7 @@ import Data.List (isPrefixOf, isSuffixOf, sort)
 import Data.Time (getCurrentTime)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile)
 import System.Environment (getArgs)
-import System.FilePath (takeFileName)
+import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Para), Inline(Code, Link), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup, size, toList, filterWithKey)
@@ -68,7 +68,7 @@ generateYAMLHeader d tdy = "---\n" ++
                            "> <code>/" ++ d ++ "</code> directory contents:\n" ++
                            "</div>\n" ++
                            "\n" ++
-                           "# Files {.collapse}\n" ++
+                           "# Files\n" ++
                            "\n" ++
                            "<div class=\"columns\">" ++
                            "\n"
@@ -98,4 +98,5 @@ lookupFallback m u = case M.lookup u m of
                                            if M.size possibles > 0 then fst $ head $ M.toList possibles else u
 
 generateListItems :: FilePath -> [Block]
-generateListItems f  = [Para [Link nullAttr [Code nullAttr (T.pack $ takeFileName f)] (T.pack f, "")]]
+generateListItems f  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
+                         [Para [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")]]
