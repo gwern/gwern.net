@@ -495,10 +495,6 @@ Popups = {
 			if (popup.classList.contains("maximized")) {
 				provisionalPopupXPosition = 0.0;
 				provisionalPopupYPosition = (popupContainerViewportRect.top * -1);
-// 				provisionalPopupYPosition = 0.0;
-// 				popup.style.position = "fixed";
-			} else {
-				popup.style.position = "";
 			}
 
 			popup.style.left = `${provisionalPopupXPosition}px`;
