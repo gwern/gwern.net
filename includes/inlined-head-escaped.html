@@ -2271,6 +2271,28 @@ function updateScrollState(event) {
 }
 addScrollListener(updateScrollState, "updateScrollStateScrollListener");
 
+/*	Toggles whether the page is scrollable.
+	*/
+function isPageScrollingEnabled() {
+	return !(document.documentElement.classList.contains("no-scroll"));
+}
+function togglePageScrolling(enable) {
+	if (typeof enable == "undefined")
+		enable = document.documentElement.classList.contains("no-scroll");
+
+	let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
+
+	if (enable && !isPageScrollingEnabled()) {
+		document.documentElement.classList.toggle("no-scroll", false);
+		removeScrollListener("preventScroll");
+		addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+	} else if (!enable && isPageScrollingEnabled()) {
+		document.documentElement.classList.toggle("no-scroll", true);
+		addScrollListener(preventScroll, "preventScroll");
+		removeScrollListener("updateScrollStateScrollListener");
+	}
+}
+
 /******************/
 /* BROWSER EVENTS */
 /******************/

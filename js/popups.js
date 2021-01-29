@@ -4,28 +4,6 @@
 Original author:  Lukas Mathis (2010-04-20)
 License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
 	*/
-/*	Toggles whether the page is scrollable.
-	*/
-function isPageScrollingEnabled() {
-	return !(document.documentElement.classList.contains("no-scroll"));
-}
-function togglePageScrolling(enable) {
-	if (typeof enable == "undefined")
-		enable = document.documentElement.classList.contains("no-scroll");
-
-	let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
-
-	if (enable && !isPageScrollingEnabled()) {
-		document.documentElement.classList.toggle("no-scroll", false);
-		removeScrollListener("preventScroll");
-		addScrollListener(updateScrollState, "updateScrollStateScrollListener");
-	} else if (!enable && isPageScrollingEnabled()) {
-		document.documentElement.classList.toggle("no-scroll", true);
-		addScrollListener(preventScroll, "preventScroll");
-		removeScrollListener("updateScrollStateScrollListener");
-	}
-}
-
 Popups = {
 	/**********/
 	/*	Config.
