@@ -2888,6 +2888,7 @@ body.directory-index #disqus_thread {
     overflow: hidden;
     text-overflow: ellipsis;
     text-decoration: none;
+    text-align: center;
 }
 .popup .popup-title::after {
     display: none;
@@ -2904,15 +2905,15 @@ body.directory-index #disqus_thread {
 	font-family: inherit;
 	font-weight: inherit;
 	font-style: inherit;
-	margin: 0;
+	margin: 0 1px;
     padding: 4px;
 	height: 100%;
+    width: calc(var(--GW-popups-popup-title-bar-height) - 1px);
 	cursor: pointer;
-    width: 1.5em;
     color: var(--GW-popups-popup-title-bar-button-color);
 }
 .popup .popup-title-bar-button:hover {
-    opacity: 0.6;
+    color: var(--GW-popups-popup-title-bar-button-color-hover);
 }
 .popup .popup-title-bar-button:active {
     transform: scale(0.9);

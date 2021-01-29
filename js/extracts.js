@@ -1091,9 +1091,14 @@ Extracts = {
 					>${popupTitleText}</a>`
 		}
 		if (popupTitle) {
+			//  Add the close button.
+			popup.titleBarContents.push(Popups.titleBarComponents.closeButton());
+
+			//  Add the title.
 			popupTitle = `<span class="popup-title">${popupTitle}</span>`;
 			popup.titleBarContents.push(popupTitle);
 
+			//  Add the options button.
 			if (Extracts.popupOptionsEnabled) {
 				let showPopupOptionsDialogButton = Popups.titleBarComponents.optionsButton();
 				showPopupOptionsDialogButton.addActivateEvent((event) => {

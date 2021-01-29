@@ -217,7 +217,8 @@
     --GW-popups-popup-border-color: #7c7c7c;
     --GW-popups-box-shadow-color: #7c7c7c;
     --GW-popups-popup-title-bar-background-color: #3e3e3e;
-    --GW-popups-popup-title-bar-button-color: #c1c1c1;
+    --GW-popups-popup-title-bar-button-color: #a6a6a6;
+    --GW-popups-popup-title-bar-button-color-hover: #fff;
     --GW-popups-popup-link-hover-color: var(--GW-body-link-hover-color);
     --GW-popups-popup-scrollbar-thumb-color: #5c5c5c;
     --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
