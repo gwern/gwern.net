@@ -3,25 +3,6 @@
 /* License: GPL (derivative work of https://www.pmwiki.org/wiki/Cookbook/ImgFocus ) */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
-/****************/
-/* MISC HELPERS */
-/****************/
-
-/*	Toggles whether the page is scrollable.
-	*/
-function togglePageScrolling(enable) {
-	if (!enable) {
-		window.addEventListener("keydown", GW.imageFocus.keyDown = (event) => {
-			if ([ " ", "Spacebar", "ArrowUp", "ArrowDown", "Up", "Down" ].includes(event.key) &&
-				event.target == document.body) {
-				event.preventDefault();
-			}
-		});
-	} else {
-		window.removeEventListener("keydown", GW.imageFocus.keyDown);
-	}
-}
-
 /***************/
 /* IMAGE FOCUS */
 /***************/
