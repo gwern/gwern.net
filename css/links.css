@@ -55,6 +55,9 @@
         padding-left: 0;
         position: static;
     }
+    #TOC .has-content {
+    	position: relative;
+    }
     #TOC .has-content::before,
     #sidebar .has-content::before,
     body.index .has-annotation::before,
