@@ -16,7 +16,9 @@ if ($force || (`git diff-index --cached HEAD -- {$static_dir}/css/colors.css {$s
 	`git add {$static_dir}/includes/.`;
 }
 
-require_once("{$build_dir}/build_versioned_includes.php");
-`git add {$static_dir}/includes/.`;
+if ($force || (`git diff-index --cached HEAD -- {$static_dir}/css/fonts.css {$static_dir}/css/default.css {$static_dir}/css/links.css {$static_dir}/js/popups.js {$static_dir}/js/extracts.js {$static_dir}/js/extracts-options.js {$static_dir}/js/image-focus.js {$static_dir}/js/tablesorter.js {$static_dir}/js/typography.js {$static_dir}/js/rewrite.js {$static_dir}/js/collapse.js {$static_dir}/js/darkmode.js`)) {
+	require_once("{$build_dir}/build_versioned_includes.php");
+	`git add {$static_dir}/includes/.`;
+}
 
 ?>
