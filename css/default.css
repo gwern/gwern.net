@@ -2884,7 +2884,7 @@ body.directory-index #disqus_thread {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     flex: 1 1 100%;
-    padding: 0 1.5rem 0 0;
+    padding: 0 3rem 0 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2925,6 +2925,11 @@ body.directory-index #disqus_thread {
 	max-height: 100%;
     width: 24px;
     height: 24px;
+}
+
+.popup .popup-title-bar-button:disabled {
+    pointer-events: none;
+    opacity: 0.35;
 }
 
 /*┌────────────────────┐*/
