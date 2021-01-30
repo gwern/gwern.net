@@ -405,6 +405,10 @@ Popups = {
 				if (newlyAddedElement.buttonAction)
 					newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
 			});
+
+			target.popup.titleBar.addActivateEvent((event) => {
+				event.stopPropagation();
+			});
 		}
 
 		//	Inject the popup into the page.

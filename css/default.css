@@ -2991,6 +2991,16 @@ body.directory-index #disqus_thread {
     height: var(--GW-popups-popup-max-height);
 }
 
+.popup.maximized .popup-content-view {
+	max-width: 970px;
+	margin: auto;
+	font-size: 1em;
+}
+.popup.object.maximized .popup-content-view,
+.popup.local-code-file.maximized .popup-content-view {
+	max-width: unset;
+}
+
 /*┌───────────────────────────┐*/
 /*│ Transitional UI elements. │*/
 /*└───────────────────────────┘*/
