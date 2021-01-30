@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-01-28 19:59:11 gwern"
+When:  Time-stamp: "2021-01-30 11:46:51 gwern"
 License: CC-0
 -}
 
@@ -767,5 +767,13 @@ whiteList url
       , "aidungeon.io" -- updated/interactive service
       , "www.tensorflow.org" -- technical documentation, better not point at potentially-outdated archives
       , "bit-player.org" -- low-quality (interactive JS widgets didn't preserve right)
+      , "www.themoneyillusion.com" -- low-quality
+      , "cedar.wwu.edu/cedarbooks/4/" -- stable
+      , "krebsonsecurity.com" -- stable
+      , "buttercupfestival.com" -- stable
+      , "www.cna.org" -- landing/homepage, not useful to archive
+      , "www.caniuse.com" -- updated service
+      , "www.scottaaronson.com" -- stable
+      , "archiveofourown.org" -- blocks archiving
       ] = True
     | otherwise = False
