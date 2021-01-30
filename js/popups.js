@@ -682,15 +682,18 @@ Popups = {
     },
 
 	getPopupAncestorStack: (popup) => {
-		return popup.popupStack.slice(0, popup.popupStack.indexOf(popup) + 1);
+		let indexOfPopup = popup.popupStack.indexOf(popup);
+		if (indexOfPopup != -1) {
+			return popup.popupStack.slice(0, indexOfPopup + 1);
+		} else {
+			let parentPopup = popup.spawningTarget.closest(".popup");
+			return (parentPopup && parentPopup.popupStack) ? Popups.getPopupAncestorStack(parentPopup) : [ ];
+		}
 	},
 
     //	The “user moved mouse out of popup” mouseleave event.
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
-
-		if (Popups.popupIsMaximized(event.target))
-			return;
 
 		Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
 			Popups.clearPopupTimers(popupInStack.spawningTarget);
