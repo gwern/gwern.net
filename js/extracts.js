@@ -902,7 +902,8 @@ Extracts = {
 	//  Locally hosted code files (css, js, hs, etc.).
     isLocalCodeFileLink: (target) => {
 		if (  !target.href
-			|| target.hostname != location.hostname)
+			|| target.hostname != location.hostname
+			|| Extracts.isExtractLink(target))
 			return false;
 
 		let codeFileURLRegExp = new RegExp(

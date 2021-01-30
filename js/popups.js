@@ -705,7 +705,7 @@ Popups = {
 
 		let popup = event.target.closest(".popup");
 
-		if (Popups.popupIsMaximized(popup))
+		if (Popups.popupIsPinned(popup))
 			return;
 
 		event.stopPropagation();
