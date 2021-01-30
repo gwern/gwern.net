@@ -200,8 +200,10 @@ Popups = {
 
 				let popup = event.target.closest(".popup");
 				if (popup) {
-					Popups.clearPopupTimers(popup.spawningTarget);
-					Popups.despawnPopup(popup);
+					Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
+						Popups.clearPopupTimers(popupInStack.spawningTarget);
+						Popups.despawnPopup(popupInStack);
+					});
 				}
 			};
 			return button;

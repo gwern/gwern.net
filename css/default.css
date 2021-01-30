@@ -2884,7 +2884,7 @@ body.directory-index #disqus_thread {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     flex: 1 1 100%;
-    padding: 0 0.25em 0 0.5em;
+    padding: 0 1.5rem 0 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
