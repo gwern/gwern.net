@@ -322,12 +322,15 @@ Popups = {
 		popup.swapClasses([ "pinned", "unpinned" ], 0);
 		Popups.positionPopup(popup);
 		popup.popupStack.remove(popup);
+		Popups.detachPopupFromTarget(popup);
 	},
 
 	unpinPopup: (popup) => {
 		popup.swapClasses([ "pinned", "unpinned" ], 1);
 		Popups.positionPopup(popup);
 		popup.popupStack.push(popup);
+        popup.spawningTarget.popup = popup;
+        popup.spawningTarget.popFrame = popup;
 	},
 
 	updatePageScrollState: () => {
@@ -488,9 +491,6 @@ Popups = {
 			let provisionalPopupXPosition;
 			let provisionalPopupYPosition;
 
-			/*  Can the popup fit above the target? If so, put it there.
-				Failing that, can it fit below the target? If so, put it there.
-				*/
 			let offToTheSide = false;
 			let popupSpawnYOriginForSpawnAbove = targetRectInPopupContainer.top - popupBreathingRoom.y;
 			let popupSpawnYOriginForSpawnBelow = targetRectInPopupContainer.bottom + popupBreathingRoom.y;
@@ -529,6 +529,9 @@ Popups = {
 				}
 			}
 			
+			/*  Can the popup fit above the target? If so, put it there.
+				Failing that, can it fit below the target? If so, put it there.
+				*/
 			if (!offToTheSide) {
 				if ((popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight) >= (popupContainerViewportRect.y * -1)) {
 					//  Above.
@@ -602,6 +605,8 @@ Popups = {
 					popup.classList.toggle("restored", false);
 				}
 			}
+
+			console.log(`(${provisionalPopupXPosition}, ${provisionalPopupYPosition})`);
 
 			popup.style.left = `${provisionalPopupXPosition}px`;
 			popup.style.top = `${provisionalPopupYPosition}px`;
