@@ -1097,6 +1097,9 @@ Extracts = {
 			//  Add the maximize button.
 			popup.titleBarContents.push(Popups.titleBarComponents.maximizeButton());
 
+			//  Add the pin button.
+			popup.titleBarContents.push(Popups.titleBarComponents.pinButton());
+
 			//  Add the title.
 			popupTitle = `<span class="popup-title">${popupTitle}</span>`;
 			popup.titleBarContents.push(popupTitle);
