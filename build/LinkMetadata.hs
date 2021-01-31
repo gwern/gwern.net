@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-26 16:53:14 gwern"
+When:  Time-stamp: "2021-01-30 19:14:02 gwern"
 License: CC-0
 -}
 
@@ -580,7 +580,7 @@ cleanAbstractsHTML t = trim $
     , ("<italic>", "<em>")
     , ("</italic>", "</em>")
     , ("< /i>", "</i>")
-    , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "")
+    , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "<p>")
     , ("<h3>ABSTRACT</h3>", "")
     , ("<h3>Abstract</h3>", "")
     , ("<h3>SUMMARY</h3>", "")
@@ -677,7 +677,7 @@ cleanAbstractsHTML t = trim $
     , ("r(g)",    "<em>r</em><sub<em>g</em></sub>")
     , ("r=", "<em>r</em> = ")
     , ("r>", "<em>r</em> > ")
-    , ("r<", "<em>r</em> < ")
+    , (" r<", " <em>r</em> < ")
     , ("r≥", "<em>r</em> ≥ ")
     , ("r≤", "<em>r</em> ≤ ")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
@@ -726,7 +726,7 @@ cleanAbstractsHTML t = trim $
     , (" 3x", " 3×")
     , ("<p> ", "<p>")
     , ("+/-", "±")
-    , ("ml-1", "ml<sup-1</sup>")
+    , ("ml-1", "ml<sup>−1</sup>")
     , ("Cmax", "C<sub>max</sub>")
     , ("<small></small>", "")
     , ("\173", "") -- we do soft hyphenation at compile-time to keep the data sources clean & readable, and benefit from any upgrades
