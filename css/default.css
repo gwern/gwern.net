@@ -2884,7 +2884,8 @@ body.directory-index #disqus_thread {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     flex: 1 1 100%;
-    padding: 0 3rem 0 0;
+    /*  Extra 3rem padding on left to accommodate 2 extra buttons. */
+    padding: 0 4rem 0 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2988,6 +2989,16 @@ body.directory-index #disqus_thread {
 	--GW-popups-popup-max-height: 100vh;
     width: var(--GW-popups-popup-max-width);
     height: var(--GW-popups-popup-max-height);
+}
+
+.popup.maximized .popup-content-view {
+	max-width: 970px;
+	margin: auto;
+	font-size: 1em;
+}
+.popup.object.maximized .popup-content-view,
+.popup.local-code-file.maximized .popup-content-view {
+	max-width: unset;
 }
 
 /*┌───────────────────────────┐*/

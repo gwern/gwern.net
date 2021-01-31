@@ -553,6 +553,8 @@ a[href*="neweva.blog103.fc2.com"]::after {
     position: relative;
     bottom: 0.25em;
     opacity: 0.83;
+    padding: 0;
+    background-size: unset;
 }
 
 /******************/
@@ -1072,6 +1074,8 @@ a[href*='docs/.*/*.pdf#org=google']::after {
     background-position: bottom center;
     margin: 0 0 0 2px;
     font-size: 1em;
+    padding: 0;
+    background-size: unset;
 }
 /*  Hover styles.
     */
