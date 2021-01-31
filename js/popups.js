@@ -304,8 +304,9 @@ Popups = {
 		let maximize = !Popups.popupIsMaximized(popup);
 		popup.swapClasses([ "maximized", "restored" ], (maximize ? 0 : 1));
 		if (maximize) {
-			popup.dataset.previousXPosition = parseFloat(popup.style.left);
-			popup.dataset.previousYPosition = parseFloat(popup.style.top);
+			let popupRect = popup.getBoundingClientRect();
+			popup.dataset.previousXPosition = popupRect.left;
+			popup.dataset.previousYPosition = popupRect.top;
 		}
 		Popups.positionPopup(popup);
 
@@ -442,8 +443,176 @@ Popups = {
 		popup.addEventListener("mouseenter", Popups.popupMouseenter);
 		popup.addEventListener("mouseleave", Popups.popupMouseleave);
 	},
+	altPositionPopup: (popup, spawnPoint) => {
+		let target = popup.spawningTarget;
+		if (spawnPoint) target.lastMouseEnterLocation = spawnPoint;
+		else spawnPoint = target.lastMouseEnterLocation;
+
+		let targetViewportRect = target.getBoundingClientRect();
+
+		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
+
+		//	Prevent popup cycling in Chromium.
+		popup.style.visibility = "hidden";
+
+		//  Wait for the “naive” layout to be completed, and then...
+		requestAnimationFrame(() => {
+			/*  How much "breathing room" to give the target (i.e., offset of
+				the popup).
+				*/
+			let popupBreathingRoom = {
+				x: Popups.popupBreathingRoomX,
+				y: Popups.popupBreathingRoomY
+			};
+
+			/*  This is the width and height of the popup, as already determined
+				by the layout system, and taking into account the popup's content,
+				and the max-width, min-width, etc., CSS properties.
+				*/
+			let popupIntrinsicWidth = popup.offsetWidth;
+			let popupIntrinsicHeight = popup.offsetHeight;
+
+			let provisionalPopupXPosition = 0.0;
+			let provisionalPopupYPosition = 0.0;
+
+			let offToTheSide = false;
+			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top - popupBreathingRoom.y;
+			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom + popupBreathingRoom.y;
+			if (target.closest(".popup") || Popups.preferSidePositioning(target)) {
+				/*  The popup is a nested popup, or the target specifies that it
+					prefers to have popups spawned to the side; we try to put
+					the popup off to the left or right.
+					*/
+				offToTheSide = true;
+			}
+
+			provisionalPopupYPosition = spawnPoint.y - ((spawnPoint.y / window.innerHeight) * popupIntrinsicHeight);
+			if (provisionalPopupYPosition < 0.0)
+				provisionalPopupYPosition = 0.0;
+
+			//  Determine whether to put the popup off to the right, or left.
+			if (  targetViewportRect.right
+				+ popupBreathingRoom.x
+				+ popupIntrinsicWidth
+				  <= window.innerWidth) {
+				//  Off to the right.
+				provisionalPopupXPosition = targetViewportRect.right + popupBreathingRoom.x;
+			} else if (  targetViewportRect.left
+					   - popupBreathingRoom.x
+					   - popupIntrinsicWidth
+						 >= 0) {
+				//  Off to the left.
+				provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - popupBreathingRoom.x;
+			} else {
+				//  Not off to either side, in fact.
+				offToTheSide = false;
+			}
+
+			/*  Can the popup fit above the target? If so, put it there.
+				Failing that, can it fit below the target? If so, put it there.
+				*/
+			if (!offToTheSide) {
+				if (  popupSpawnYOriginForSpawnAbove
+					- popupIntrinsicHeight
+					  >= 0) {
+					//  Above.
+					provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
+				} else if (  popupSpawnYOriginForSpawnBelow 
+						   + popupIntrinsicHeight 
+						     <= window.innerHeight) {
+					//  Below.
+					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
+				} else {
+					/*  The popup does not fit above or below! We will have to
+						put it off to to the right after all...
+						*/
+					offToTheSide = true;
+				}
+			}
+
+			if (!offToTheSide) {
+				/*  Place popup off to the right (and either above or below),
+					as per the previous block of code.
+					*/
+				provisionalPopupXPosition = spawnPoint.x + popupBreathingRoom.x;
+			}
+
+			/*  Does the popup extend past the right edge of the container?
+				If so, move it left, until its right edge is flush with
+				the container’s right edge.
+				*/
+			if (  provisionalPopupXPosition 
+				+ popupIntrinsicWidth 
+				  > window.innerWidth) {
+				//  We add 1.0 here to prevent wrapping due to rounding.
+				provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - window.innerWidth + 1.0);
+			}
+
+			/*  Now (after having nudged the popup left, if need be),
+				does the popup extend past the *left* edge of the container?
+				Make its left edge flush with the container's left edge.
+				*/
+			if (provisionalPopupXPosition < 0) {
+				provisionalPopupXPosition = 0;
+			}
+
+			//  Special cases for maximizing/restoring and pinning/unpinning.
+			if (Popups.popupIsPinned(popup)) {
+				if (Popups.popupIsMaximized(popup)) {
+					provisionalPopupXPosition = 0.0;
+					provisionalPopupYPosition = 0.0;
+				} else {
+					if (Popups.popupWasRestored(popup)) {
+						provisionalPopupXPosition = parseFloat(popup.dataset.previousXPosition);
+						provisionalPopupYPosition = parseFloat(popup.dataset.previousYPosition);
+
+						popup.classList.toggle("restored", false);
+					} else {
+						let popupRect = popup.getBoundingClientRect();
+						provisionalPopupXPosition = popupRect.left;
+						provisionalPopupYPosition = popupRect.top;
+					}
+				}
+				popup.style.position = "fixed";
+			} else {
+				if (Popups.popupWasUnpinned(popup)) {
+					let popupRect = popup.getBoundingClientRect();
+					provisionalPopupXPosition = popupRect.left;
+					provisionalPopupYPosition = popupRect.top;
+
+					popup.classList.toggle("unpinned", false);
+				} else if (Popups.popupWasRestored(popup)) {
+					provisionalPopupXPosition = parseFloat(popup.dataset.previousXPosition);
+					provisionalPopupYPosition = parseFloat(popup.dataset.previousYPosition);
+
+					popup.classList.toggle("restored", false);
+				}
+				popup.style.position = "";
+			}
+
+			console.log(`(${provisionalPopupXPosition}, ${provisionalPopupYPosition})`);
+
+			if (!Popups.popupIsPinned(popup)) {
+				provisionalPopupXPosition -= popupContainerViewportRect.left;
+				provisionalPopupYPosition -= popupContainerViewportRect.top;
+			}
+
+			popup.style.left = `${provisionalPopupXPosition}px`;
+			popup.style.top = `${provisionalPopupYPosition}px`;
+
+			//	Prevent popup cycling in Chromium.
+			popup.style.visibility = "";
+
+			document.activeElement.blur();
+		});
+	},
 	positionPopup: (popup, spawnPoint) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
+
+		if (localStorage.getItem("use-alternate-positioning-algorithm") == "true") {
+			Popups.altPositionPopup(popup, spawnPoint);
+			return;
+		}
 
 		let target = popup.spawningTarget;
 		if (spawnPoint) target.lastMouseEnterLocation = spawnPoint;
