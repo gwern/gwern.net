@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-01-30 11:46:51 gwern"
+When:  Time-stamp: "2021-01-30 19:12:13 gwern"
 License: CC-0
 -}
 
@@ -91,7 +91,7 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
 rewriteLink:
 1. Exit on whitelisted URLs.
 2. Access what we know about the URL, defaulting to "First I've heard of it.".
-3. If we've never attempted to archive it and have known the url _n_ days, do so.
+3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of PDFs, which we locally archive immediately.)
 4. Return archive contents.
 -}
 rewriteLink :: ArchiveMetadata -> String -> IO String
@@ -101,7 +101,7 @@ rewriteLink adb url = do
   fromMaybe url <$> if whiteList url then return Nothing else
     case M.lookup url adb of
       Nothing -> Nothing <$ insertLinkIntoDB (Left today) url
-      Just (Left firstSeen) -> if today - firstSeen < archiveDelay
+      Just (Left firstSeen) -> if (today - firstSeen < archiveDelay) && not ("pdf" `isInfixOf` url)
         then return Nothing
         else do
           archive <- archiveURL url
