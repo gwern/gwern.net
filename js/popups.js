@@ -394,6 +394,7 @@ Popups = {
 
 			target.popup.titleBar = document.createElement("div");
 			target.popup.titleBar.classList.add("popup-title-bar");
+			target.popup.titleBar.title = "Drag popup by title bar to reposition";
 			target.popup.insertBefore(target.popup.titleBar, target.popup.firstElementChild);
 
 			target.popup.titleBarContents.forEach(elementOrHTML => {
@@ -409,6 +410,114 @@ Popups = {
 
 			target.popup.titleBar.addActivateEvent((event) => {
 				event.stopPropagation();
+			});
+
+			target.popup.titleBar.addEventListener("mousedown", Popups.popupTitleBarMouseDown = (event) => {
+				GWLog("Popups.popupTitleBarMouseDown", "popups.js", 2);
+
+				//  We only want to do anything on left-clicks.
+				if (event.button != 0)
+					return;
+
+				//  Also do nothing if the click is on a title bar button.
+				if (event.target.closest(".popup-title-bar-button"))
+					return;
+
+				event.preventDefault();
+
+				let popup = event.target.closest(".popup");
+				popup.classList.toggle("grabbed", true);
+
+				//  Change cursor to “grabbing hand”.
+				document.documentElement.style.cursor = "grabbing";
+
+				/*  If the mouse-down event is on the popup title (and the title
+					is a link).
+					*/
+				let linkDragTarget = event.target.closest("a");
+
+				/*  Deal with edge case where drag to screen bottom ends up
+					with the mouse-up event happening in the popup body.
+					*/
+				popup.removeEventListener("click", Popups.popupClicked);
+
+				//  Point where the drag began.
+				let dragStartMouseCoordX = event.clientX;
+				let dragStartMouseCoordY = event.clientY;
+
+				let popupRect = popup.getBoundingClientRect();
+				let popupPosition = {
+					x: popupRect.left,
+					y: popupRect.top
+				};
+
+				window.addEventListener("mouseup", Popups.popupDragMouseUp = (event) => {
+					GWLog("Popups.popupDragMouseUp", "popups.js", 2);
+
+					event.stopPropagation();
+
+					window.onmousemove = null;
+
+					//  Reset cursor to normal.
+					document.documentElement.style.cursor = "";
+
+					let popup = window.popupBeingDragged;
+					if (popup) {
+						popup.classList.toggle("grabbed", false);
+						popup.classList.toggle("dragging", false);
+
+						if (linkDragTarget) {
+							requestAnimationFrame(() => {
+								linkDragTarget.onclick = null;
+								linkDragTarget = null;
+							});
+						}
+
+						//  Ensure that the click listener isn’t fired at once.
+						requestAnimationFrame(() => {
+							popup.addEventListener("click", Popups.popupClicked);
+						});
+
+						/*  If the drag of a non-pinned popup ended outside the
+							popup (possibly outside the viewport), treat this
+							as mousing out of the popup.
+							*/
+						if ((  !event.target.closest 
+							 || event.target.closest(".popup") == null)
+							&& !Popups.popupIsPinned(popup)) {
+							Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
+								Popups.clearPopupTimers(popupInStack.spawningTarget);
+								Popups.setPopupFadeTimer(popupInStack.spawningTarget);
+							});
+						}
+					}
+					window.popupBeingDragged = null;
+
+					window.removeEventListener("mouseup", Popups.popupDragMouseUp);
+				});
+
+				//  Viewport width must account for vertical scroll bar.
+				let viewportWidth = document.documentElement.offsetWidth;
+				let viewportHeight = window.innerHeight;
+
+				window.onmousemove = (event) => {
+					window.popupBeingDragged = popup;
+
+					popup.classList.toggle("dragging", true);
+					if (linkDragTarget)
+						linkDragTarget.onclick = (event) => { return false; };
+
+					popupPosition.x = popupRect.left + (event.clientX - dragStartMouseCoordX);
+					popupPosition.y = popupRect.top + (event.clientY - dragStartMouseCoordY);
+
+					popupPosition.x = Math.min(popupPosition.x, viewportWidth - popupRect.width);
+					popupPosition.y = Math.min(popupPosition.y, viewportHeight - popupRect.height);
+
+					popupPosition.x = Math.max(popupPosition.x, 0);
+					popupPosition.y = Math.max(popupPosition.y, 0);
+
+					Popups.setPopupPositionInViewport(popup, popupPosition);
+				};
 			});
 		}
 
@@ -449,8 +558,6 @@ Popups = {
 		else spawnPoint = target.lastMouseEnterLocation;
 
 		let targetViewportRect = target.getBoundingClientRect();
-
-		let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 
 		//	Prevent popup cycling in Chromium.
 		popup.style.visibility = "hidden";
@@ -494,7 +601,7 @@ Popups = {
 			if (  targetViewportRect.right
 				+ popupBreathingRoom.x
 				+ popupIntrinsicWidth
-				  <= window.innerWidth) {
+				  <= document.documentElement.offsetWidth) {
 				//  Off to the right.
 				provisionalPopupXPosition = targetViewportRect.right + popupBreathingRoom.x;
 			} else if (  targetViewportRect.left
@@ -543,9 +650,9 @@ Popups = {
 				*/
 			if (  provisionalPopupXPosition 
 				+ popupIntrinsicWidth 
-				  > window.innerWidth) {
+				  > document.documentElement.offsetWidth) {
 				//  We add 1.0 here to prevent wrapping due to rounding.
-				provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - window.innerWidth + 1.0);
+				provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - document.documentElement.offsetWidth + 1.0);
 			}
 
 			/*  Now (after having nudged the popup left, if need be),
@@ -573,7 +680,6 @@ Popups = {
 						provisionalPopupYPosition = popupRect.top;
 					}
 				}
-				popup.style.position = "fixed";
 			} else {
 				if (Popups.popupWasUnpinned(popup)) {
 					let popupRect = popup.getBoundingClientRect();
@@ -587,24 +693,27 @@ Popups = {
 
 					popup.classList.toggle("restored", false);
 				}
-				popup.style.position = "";
 			}
 
-			console.log(`(${provisionalPopupXPosition}, ${provisionalPopupYPosition})`);
-
-			if (!Popups.popupIsPinned(popup)) {
-				provisionalPopupXPosition -= popupContainerViewportRect.left;
-				provisionalPopupYPosition -= popupContainerViewportRect.top;
-			}
-
-			popup.style.left = `${provisionalPopupXPosition}px`;
-			popup.style.top = `${provisionalPopupYPosition}px`;
+			Popups.setPopupPositionInViewport(popup, { x: provisionalPopupXPosition, y: provisionalPopupYPosition});
 
 			//	Prevent popup cycling in Chromium.
 			popup.style.visibility = "";
 
 			document.activeElement.blur();
 		});
+	},
+	setPopupPositionInViewport: (popup, position) => {
+		if (!Popups.popupIsPinned(popup)) {
+			let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
+			position.x -= popupContainerViewportRect.left;
+			position.y -= popupContainerViewportRect.top;
+		}
+
+		popup.style.position = Popups.popupIsPinned(popup) ? "fixed" : "";
+
+		popup.style.left = `${position.x}px`;
+		popup.style.top = `${position.y}px`;
 	},
 	positionPopup: (popup, spawnPoint) => {
 		GWLog("Popups.positionPopup", "popups.js", 2);
@@ -686,7 +795,7 @@ Popups = {
 					+ popupIntrinsicWidth
 					  <=
 					  popupContainerViewportRect.x * -1
-					+ window.innerWidth) {
+					+ document.documentElement.offsetWidth) {
 					//  Off to the right.
 					provisionalPopupXPosition = targetRectInPopupContainer.right + popupBreathingRoom.x;
 				} else if (  targetRectInPopupContainer.left
@@ -867,6 +976,9 @@ Popups = {
     //	The “user moved mouse out of popup” mouseleave event.
 	popupMouseleave: (event) => {
 		GWLog("Popups.popupMouseleave", "popups.js", 2);
+
+		if (window.popupBeingDragged)
+			return;
 
 		Popups.getPopupAncestorStack(event.target).reverse().forEach(popupInStack => {
 			Popups.clearPopupTimers(popupInStack.spawningTarget);

@@ -2868,7 +2868,13 @@ body.directory-index #disqus_thread {
     flex-flow: row;
     align-items: center;
     width: 100%;
+    cursor: grab;
     z-index: 1;
+}
+.popup.grabbed .popup-title-bar,
+.popup.dragging .popup-title-bar,
+.popup.dragging .popup-title-bar a {
+	cursor: grabbing;
 }
 
 .popup {
