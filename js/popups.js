@@ -519,6 +519,10 @@ Popups = {
 					Popups.setPopupPositionInViewport(popup, popupPosition);
 				};
 			});
+			target.popup.titleBar.addEventListener("mouseup", (event) => {
+				let popup = event.target.closest(".popup");
+				popup.classList.toggle("grabbed", false);
+			});
 		}
 
 		//	Inject the popup into the page.
