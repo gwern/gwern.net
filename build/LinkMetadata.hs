@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-01-30 19:14:02 gwern"
+When:  Time-stamp: "2021-02-01 18:29:46 gwern"
 License: CC-0
 -}
 
@@ -101,7 +101,7 @@ writeAnnotationFragment md u i@(a,b,c,d,e) = when (length e > 180) $
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
-                                             let annotationPandoc = (Pandoc nullMeta (generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))))
+                                             let annotationPandoc = walk (hasAnnotation md True) (Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml)))
                                              let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} annotationPandoc
                                              case annotationHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
