@@ -36,7 +36,7 @@ then
                docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
                docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
-               docs/longnow/ docs/lwsurvey/ docs/sr/pickard/index &
+               docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ &
 
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/
