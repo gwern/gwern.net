@@ -2294,17 +2294,17 @@ body.directory-index article::before {
 /*	Back-to-top link on home page.
 	*/
 @media only screen and (max-width: 1184px) {
-    #back-to-top {
+    body.index #back-to-top {
         left: 4rem;
     }
 }
 @media only screen and (min-width: 1185px) {
-	#back-to-top {
+	body.index #back-to-top {
         left: calc(120px + (100% - 1185px)/2);
 	}
 }
 @media only screen and (min-width: 1761px) {
-	#back-to-top {
+	body.index #back-to-top {
         left: calc(80px + (100% - 1185px)/2);
 	}
 }
@@ -3778,6 +3778,7 @@ body.directory-index #disqus_thread {
 }
 @media only screen and (min-width: 1761px) {
 	#back-to-top {
+        left: unset;
 		right: calc(60px + (100% - 1185px) / 2);
 	}
 }
