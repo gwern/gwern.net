@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-01 18:29:46 gwern"
+When:  Time-stamp: "2021-02-02 11:44:40 gwern"
 License: CC-0
 -}
 
@@ -44,6 +44,7 @@ import Data.Text.IO as TIO (readFile, writeFile)
 import System.IO (stderr, hPutStrLn)
 import Typography (invertImage, typographyTransform)
 import Network.HTTP (urlDecode, urlEncode)
+import Control.Concurrent (threadDelay)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -441,6 +442,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replace "https://arxiv.org/pdf/" "" $ replace ".pdf" "" url
                                  else replace "https://arxiv.org/abs/" "" url
+               threadDelay 50000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
@@ -498,7 +500,7 @@ processArxivAbstract u a = let cleaned = runPure $ do
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML t = trim $
   -- regexp substitutions:
-  (\s -> subRegex (mkRegex "([0-9]+)x([0-9]+)") s "\\1×\\2") $
+  (\s -> subRegex (mkRegex "([.0-9]+)x") s "\\1×") $
   -- simple string substitutions:
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
