@@ -510,11 +510,9 @@ Popups = {
 					popupPosition.x = popupRect.left + (event.clientX - dragStartMouseCoordX);
 					popupPosition.y = popupRect.top + (event.clientY - dragStartMouseCoordY);
 
-					popupPosition.x = Math.min(popupPosition.x, viewportWidth - popupRect.width);
-					popupPosition.y = Math.min(popupPosition.y, viewportHeight - popupRect.height);
-
-					popupPosition.x = Math.max(popupPosition.x, 0);
-					popupPosition.y = Math.max(popupPosition.y, 0);
+					//  Restrict popup position to viewport limits.
+					popupPosition.x = Math.max(Math.min(popupPosition.x, viewportWidth - popupRect.width), 0)
+					popupPosition.y = Math.max(Math.min(popupPosition.y, viewportHeight - popupRect.height), 0);
 
 					Popups.setPopupPositionInViewport(popup, popupPosition);
 				};
@@ -1012,6 +1010,9 @@ Popups = {
 	//	The mouseenter event.
 	targetMouseenter: (event) => {
 		GWLog("Popups.targetMouseenter", "popups.js", 2);
+
+		if (window.popupBeingDragged)
+			return;
 
 		//	Stop the countdown to un-pop the popup.
 		Popups.clearPopupTimers(event.target);
