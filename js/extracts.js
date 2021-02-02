@@ -1260,8 +1260,9 @@ Extracts = {
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
 //  Set pop-frame type (mode) - popups or popins.
-Extracts.serviceProviderName = GW.isMobile() ? "Popins" : "Popups";
-GWLog(`${(GW.isMobile() ? "Mobile" : "Non-mobile")} client detected. Activating ${(GW.isMobile() ? "popins" : "popups")}.`, "extracts.js", 1);
+let mobileMode = (localStorage.getItem("extracts-force-popins") == "true") || GW.isMobile();
+Extracts.serviceProviderName = mobileMode ? "Popins" : "Popups";
+GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
 
 doSetup = () => {
 	//  Prevent null references.
