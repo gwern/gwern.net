@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-02 11:44:40 gwern"
+When:  Time-stamp: "2021-02-02 17:32:26 gwern"
 License: CC-0
 -}
 
@@ -28,7 +28,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
                     queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote))
-import Text.Pandoc.Walk (walk)
+import Text.Pandoc.Walk (walk, walkM)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
@@ -45,6 +45,7 @@ import System.IO (stderr, hPutStrLn)
 import Typography (invertImage, typographyTransform)
 import Network.HTTP (urlDecode, urlEncode)
 import Control.Concurrent (threadDelay)
+import LinkArchive (localizeLink, ArchiveMetadata)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -90,10 +91,10 @@ readLinkMetadata = do
              let final = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
              return final
 
-writeAnnotationFragments :: Metadata -> IO ()
-writeAnnotationFragments md = void $ M.traverseWithKey (writeAnnotationFragment md) md
-writeAnnotationFragment :: Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment md u i@(a,b,c,d,e) = when (length e > 180) $
+writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
+writeAnnotationFragments am md = void $ M.traverseWithKey (writeAnnotationFragment am md) md
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                           do let u' = linkCanonicalize u
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
@@ -102,11 +103,16 @@ writeAnnotationFragment md u i@(a,b,c,d,e) = when (length e > 180) $
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
-                                             let annotationPandoc = walk (hasAnnotation md True) (Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml)))
-                                             let annotationHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} annotationPandoc
-                                             case annotationHTMLEither of
+                                             -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs
+                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
+                                             void $ createAnnotations md pandoc
+                                             let annotationPandoc = walk (hasAnnotation md True) pandoc
+                                             localizedPandoc <- walkM (localizeLink am) annotationPandoc
+
+                                             let finalHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} localizedPandoc
+                                             case finalHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
-                                               Right annotationHTML -> writeUpdatedFile filepath' annotationHTML
+                                               Right finalHTML -> writeUpdatedFile filepath' finalHTML
    where -- write only when changed, to reduce sync overhead
     writeUpdatedFile :: FilePath -> T.Text -> IO ()
     writeUpdatedFile target contentsNew = do existsOld <- doesFileExist target
@@ -442,7 +448,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replace "https://arxiv.org/pdf/" "" $ replace ".pdf" "" url
                                  else replace "https://arxiv.org/abs/" "" url
-               threadDelay 50000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long delay for each request...
+               threadDelay 5000000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long 5s delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing

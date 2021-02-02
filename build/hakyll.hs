@@ -5,7 +5,7 @@
 Hakyll file for building gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-01-25 20:19:19 gwern"
+When: Time-stamp: "2021-02-02 17:09:15 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -73,13 +73,13 @@ main :: IO ()
 main = hakyll $ do
              tags <- buildTags "**.page" (fromCapture "tags/*")
 
+             preprocess $ print ("Local archives parsing..." :: String)
+             am <- preprocess readArchiveMetadata
+
              -- popup metadata:
              preprocess $ print ("Popups parsing..." :: String)
              meta <- preprocess readLinkMetadata
-             preprocess $ writeAnnotationFragments meta
-
-             preprocess $ print ("Local archives parsing..." :: String)
-             archive <- preprocess readArchiveMetadata
+             preprocess $ writeAnnotationFragments am meta
 
              match "**.page" $ do
                  -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
@@ -88,7 +88,7 @@ main = hakyll $ do
                           setExtension ""
                  -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
                  let readerOptions = defaultHakyllReaderOptions
-                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta archive)
+                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am)
                      >>= loadAndApplyTemplate "static/templates/default.html" (postCtx tags)
                      >>= imgUrls
 
