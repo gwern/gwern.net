@@ -644,17 +644,17 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 		line-height is necessary, and no one size suits all, so set 3 brackets
 		of increasing height.
 		*/
-		#markdownBody {
+		.markdownBody {
 			line-height: 1.45;
 		}
 	}
 	@media only screen and (min-width: 1001px) and (max-width: 1200px) {
-		#markdownBody {
+		.markdownBody {
 			line-height: 1.5;
 		}
 	}
 	@media only screen and (min-width: 1201px) {
-		#markdownBody {
+		.markdownBody {
 			line-height: 1.55;
 		}
 	}

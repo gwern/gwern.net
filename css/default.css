@@ -379,18 +379,17 @@ h2::after {
     left: 0;
     bottom: 0.05em;
     pointer-events: none;
-    z-index: -1;
 }
-#markdownBody section:not(.collapse) > h2:first-child a {
+.markdownBody section:not(.collapse) > h2:first-child a {
     position: relative;
 }
-#markdownBody section:not(.collapse) > h2:first-child a::after {
+.markdownBody section:not(.collapse) > h2:first-child a::after {
     position: absolute;
     top: 0.1em;
     left: unset;
     right: -0.75em;
 }
-#markdownBody section.collapse > h2:first-child a::after {
+.markdownBody section.collapse > h2:first-child a::after {
     top: -0.2em;
 }
 @media only screen and (min-width: 650px) {
@@ -1015,7 +1014,7 @@ a.footnote-ref {
     margin-left: 0.05em;
 }
 
-#markdownBody .footnotes > ol > li + li {
+.markdownBody .footnotes > ol > li + li {
     margin: 1em 0 0 0;
 }
 
@@ -1077,21 +1076,20 @@ section.footnotes > ol > li {
     padding: 6px 0 0 0;
 }
 section.footnotes > ol > li::before {
+    content: counter(footnotes);
     position: absolute;
-    z-index: 1;
-}
-section.footnotes > ol > li::before {
-    border: 1px dotted var(--GW-footnote-border-color);
+    right: calc(100% + 0.75em);
+    top: calc(-0.125em + 5px);
     width: 1.75em;
     height: 1.75em;
-    line-height: 1;
-    font-feature-settings: 'lnum';
-    content: counter(footnotes);
     display: flex;
     justify-content: center;
     align-items: center;
-    right: calc(100% + 0.75em);
-    top: calc(-0.125em + 5px);
+    border: 1px dotted var(--GW-footnote-border-color);
+    border-right-color: transparent;
+    line-height: 1;
+    font-feature-settings: 'lnum';
+    z-index: 1;
 }
 section.footnotes > ol > li::after {
     content: "";
@@ -1595,7 +1593,7 @@ th.tablesorter-headerDesc:hover {
     background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
     --GW-link-underline-background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
 }
-#markdownBody table tbody tr:hover {
+.markdownBody table tbody tr:hover {
     outline: 1px dotted var(--GW-table-row-hover-outline-color);
 }
 
@@ -1813,7 +1811,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     (also fixes occasional link icon overlaps, eg a WP link to 'MGS:V' where
     the right-tilted 'V' would touch the WP 'W' link icon).
     */
-#markdownBody em {
+.markdownBody em {
     margin-right: 0.1em;
 }
 
@@ -2058,8 +2056,8 @@ span.inflationAdjusted {
     column-gap: 3em;
     margin-bottom: 2em;
 }
-#markdownBody .columns li,
-#markdownBody .columns li p {
+.markdownBody .columns li,
+.markdownBody .columns li p {
     text-align: left;
     break-inside: avoid;
 }
@@ -2472,12 +2470,12 @@ body.directory-index #disqus_thread {
 /*= Hover styles =*/
 /*=--------------=*/
 
-#markdownBody img.focusable:hover {
+.markdownBody img.focusable:hover {
 /*     filter: drop-shadow(0 0 3px var(--SA-image-focus-image-hover-drop-shadow-color)); */
     cursor: zoom-in;
     box-shadow: 0 0 10px 0 var(--SA-image-focus-image-hover-drop-shadow-color);
 }
-#markdownBody img.focusable:active {
+.markdownBody img.focusable:active {
     transform: scale(0.975);
 }
 
@@ -2982,8 +2980,10 @@ body.directory-index #disqus_thread {
     background-color: var(--GW-popups-popup-background-color);
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
-    line-height: 1.45;
     overflow: auto;
+}
+.popup:not(.maximized) .popup-content-view {
+    line-height: 1.45;
 }
 
 /*┌───────────────────┐*/
@@ -3370,12 +3370,6 @@ body.directory-index #disqus_thread {
 	height: var(--GW-popups-popup-max-height);
 }
 
-/* TODO: the popups should ideally inherit from the regular CSS once the #markdownBody class is rewritten, and the underlining can be removed */
-.popup.external-page-embed a.footnote-back {
-    text-decoration: none;
-    z-index: 1;
-}
-
 .popup #page-metadata {
 	margin: 0;
 	overflow: visible;
@@ -3394,23 +3388,17 @@ body.directory-index #disqus_thread {
 
 /*  Adjustments for styles in popups.
     */
-/*  TODO: remove this once popups inherit from main body styles.
-    */
-.popup p {
-    text-align: justify;
-    hyphens: auto;
-}
-.popup p + p {
-    text-indent: 1em;
+.popup:not(.maximized) p + p {
+    text-indent: 1.25em;
 }
 
-.popup p + ul,
-.popup p + ol {
+.popup:not(.maximized) p + ul,
+.popup:not(.maximized) p + ol {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
 }
 
-.popup li {
+.popup:not(.maximized) li {
 	text-align: left;
 }
 
@@ -3423,7 +3411,7 @@ body.directory-index #disqus_thread {
     margin-left: 0;
 }
 
-.popup blockquote {
+.popup:not(.maximized) blockquote {
     margin: 1em 0;
 }
 
