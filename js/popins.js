@@ -5,21 +5,13 @@ Original author:  Lukas Mathis (2010-04-20)
 License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
 	*/
 Popins = {
-	/**********/
-	/*	Config.
-		*/
-    stylesID: "popins-styles",
-
 	/******************/
 	/*	Implementation.
 		*/
 	cleanup: () => {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
-        //  Remove injected styles.
-        document.querySelectorAll(`#${Popins.stylesID}`).forEach(element => element.remove());
-
-		//  Remove all toggles and remnant popins.
+		//  Remove all remnant popins.
 		//  TODO: this
 	},
 	setup: () => {
@@ -27,9 +19,6 @@ Popins = {
 
         //  Run cleanup.
         Popins.cleanup();
-
-        //  Inject styles.
-        document.querySelector("head").insertAdjacentHTML("beforeend", Popins.stylesHTML);
 
 		GW.notificationCenter.fireEvent("Popins.setupDidComplete");
 	},
@@ -53,12 +42,18 @@ Popins = {
 				return;
 			}
 
+			//  Bind activate event.
+			target.onclick = Popins.targetClicked;
+
+			//  Set prepare function.
+			target.preparePopin = prepareFunction;
+
 			//  Run any custom processing.
 			if (targetPrepareFunction)
 				targetPrepareFunction(target);
 
-			//  Inject the popin.
-			Popins.injectPopin(target, prepareFunction);
+			//  Mark target as spawning a popin.
+			target.classList.toggle("spawns-popin", true);
 		});
 	},
 	addTargets: (targets, prepareFunction, targetPrepareFunction = null) => {
@@ -85,8 +80,17 @@ Popins = {
 				return;
 			}
 
-			//  Remove the popin.
+			//  Unbind existing activate events, if any.
+			target.onclick = null;
+
+			//  Remove the popin (if any).
 			Popins.removePopin(target);
+
+			//  Unset popin prepare function.
+			target.preparePopin = null;
+
+			//  Un-mark target as spawning a popin.
+			target.classList.toggle("spawns-popin", false);
 
 			//  Run any custom processing.
 			if (targetRestoreFunction)
@@ -99,65 +103,74 @@ Popins = {
 		Popins.removeTargetsWithin(document, targets, targetRestoreFunction);
 	},
 
-	injectPopin: (target, prepareFunction) => {
+	targetClicked: (event) => {
+		event.preventDefault();
+
+		if (event.target.classList.contains("popin-open")) {
+			Popins.removePopin(event.target);
+		} else {
+			Popins.injectPopin(event.target);
+		}
+
+		document.activeElement.blur();
+	},
+
+	newPopin: () => {
+		GWLog("Popins.newPopin", "popins.js", 2);
+
+		let popin = document.createElement("div");
+		popin.classList.add("popin", "popframe");
+		popin.innerHTML = `<div class="popin-scroll-view"><div class="popin-content-view"></div></div>`;
+		popin.scrollView = popin.querySelector(".popin-scroll-view");
+		popin.contentView = popin.querySelector(".popin-content-view");
+		popin.titleBarContents = [ ];
+		return popin;
+	},
+	setPopFrameContent: (popin, contentHTML) => {
+		popin.querySelector(".popin-content-view").innerHTML = contentHTML;
+		return (contentHTML > "");
+	},
+	injectPopin: (target) => {
 		GWLog("Popins.injectPopin", "popins.js", 2);
 
+		//  Remove existing popin, if any.
+		if (target.popin)
+			Popins.removePopin(target);
+
 		//  Create the new popin.
-		target.popin = document.createElement("div");
-		target.popin.classList.add("popindiv");
+		target.popin = Popins.newPopin();
+		target.popFrame = target.popin;
 
 		//  Give the popin a reference to the target.
-		target.popin.popinTarget = target;
+		target.popin.spawningTarget = target;
 
 		// Prepare the newly created popin for injection.
-		if (prepareFunction(target.popin, target) == false)
+		if (!(target.popin = target.preparePopin(target.popin)))
 			return;
 
+		/*  If title bar contents are provided, create and inject the popup
+			title bar, and set class `has-title-bar` on the popup.
+			*/
+		//  TODO: this
+
 		//  Inject the popin.
-		target.onclick = (event) => {
-			event.preventDefault();
-			if (target.popinPreShowFunction)
-				target.popinPreShowFunction(target.popin);
-			target.classList.toggle("popin-open");
-			document.activeElement.blur();
-		};
 		target.parentElement.insertBefore(target.popin, target.nextSibling);
-		target.classList.toggle("spawns-popin", true);
+
+		//  Mark target as having an open popin associated with it.
+		target.classList.add("popin-open");
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
 	removePopin: (target) => {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
-		target.classList.toggle("popin-open", false);
-		target.classList.toggle("spawns-popin", false);
 		if (target.popin)
 			target.popin.remove();
 		target.popin = null;
+		target.popFrame = null;
+		target.classList.toggle("popin-open", false);
 	}
 };
-
-/********************/
-/*	Essential styles.
-	*/
-Popins.stylesHTML = `<style id='${Popins.stylesID}'>
-
-.popindiv {
-    display: none;
-
-    float: left;
-    border-width: 3px;
-    border-style: double;
-    margin: 1em 0;
-    padding: 0.625em 1em 0.75em 1em;
-    font-size: 0.9em;
-    width: 100%;
-    box-sizing: border-box;
-}
-.spawns-popin.popin-open + .popindiv {
-    display: block;
-}
-</style>`;
 
 GW.notificationCenter.fireEvent("Popins.didLoad");
 

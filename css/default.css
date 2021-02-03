@@ -3676,11 +3676,25 @@ body.directory-index #disqus_thread {
 /* POPINS */
 /**********/
 
-.popindiv.video-popin {
+.popin {
+    float: left;
+    border-width: 3px;
+    border-style: double;
+    margin: 1em 0;
+    padding: 0.625em 1em 0.75em 1em;
+    font-size: 0.9em;
+    width: 100%;
+    box-sizing: border-box;
+}
+.spawns-popin.popin-open + .popin {
+    display: block;
+}
+
+.popin.video-popin {
     padding: 0;
 }
 
-.video-popin iframe {
+.popin.video-popin iframe {
     display: block;
     width: 100%;
 }
