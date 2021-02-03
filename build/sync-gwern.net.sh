@@ -23,7 +23,7 @@ then
     ## Update the directory listing pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
     runhaskell -istatic/build/ static/build/generateDirectory.hs docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ \
                docs/ai/poetry/ docs/algernon/ docs/anime/ docs/aspirin/ \
-               docs/biology/ docs/bitcoin/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
+               docs/biology/ docs/bitcoin/ docs/bitcoin/pirateat40/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
                docs/creatine/ docs/cs/ docs/culture/ docs/design/ docs/dnb/ docs/economics/ docs/elections/ docs/eva/ docs/fiction/ \
                docs/genetics/ docs/genetics/correlation/ docs/genetics/editing/ docs/genetics/heritable/ docs/genetics/selection/ \
                docs/history/ docs/history/medici/ docs/iodine/ docs/iq/ docs/iq/fullerton/ docs/iq/munich/ docs/iq/roe/ docs/iq/smpy/ \
@@ -156,8 +156,8 @@ then
                -e '\]\(/' -e '-, ' -e '<abstract abstract-type="toc">' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
-    λ(){ egrep -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
-    wrap λ "Check image hotlinking & non-absolute relative image paths in YAML metadata database"
+    λ(){ egrep -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
+    wrap λ "Check <figure> vs <img> usage,image hotlinking, non-absolute relative image paths in YAML metadata database"
 
     λ() {
         set +e;

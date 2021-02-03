@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-02 17:32:26 gwern"
+When:  Time-stamp: "2021-02-02 19:51:50 gwern"
 License: CC-0
 -}
 
@@ -683,11 +683,17 @@ cleanAbstractsHTML t = trim $
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("h(2)",    "<em>h</em><sup>2</sup>")
     , ("r(g)",    "<em>r</em><sub<em>g</em></sub>")
+    , (" rg ", " <em>r</em><sub<em>g</em></sub> ")
+    , (" rg=", " <em>r</em><sub<em>g</em></sub> = ")
+    , (" rg = ", " <em>r</em><sub<em>g</em></sub> = ")
+    , ("(rg)", "(<em>r</em><sub<em>g</em></sub>)")
+    , ("-&gt;", "→")
     , ("r=", "<em>r</em> = ")
     , ("r>", "<em>r</em> > ")
     , (" r<", " <em>r</em> < ")
     , ("r≥", "<em>r</em> ≥ ")
     , ("r≤", "<em>r</em> ≤ ")
+    , ("beta=", "β = ")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
     , ("\40r=",     "\40<em>r</em> = ")
     , ("\40R=",     "\40<em>r</em> = ")
