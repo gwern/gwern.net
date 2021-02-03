@@ -241,6 +241,13 @@
     --GW-raw-code-popup-line-number-color: #aaa;
     --GW-raw-code-popup-line-number-divider-color: #ccc;
 
+    /*  Popins.
+        */
+    --GW-popins-body-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-border-color: #aaa;
+    --GW-popins-box-shadow-color: #aaa;
+
     /*  Image focus.
         */
     --GW-image-focus-image-hover-drop-shadow-color: #777;

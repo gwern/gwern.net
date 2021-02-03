@@ -175,7 +175,7 @@ Popups = {
 		return target.preferSidePositioning ? target.preferSidePositioning() : false;
 	},
 
-	scrollElementIntoViewInPopup: (element) => {
+	scrollElementIntoViewInPopFrame: (element) => {
 		let popup = element.closest(".popup");
 		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.scrollView.getBoundingClientRect().top;
 	},
@@ -183,7 +183,7 @@ Popups = {
 	titleBarComponents: {
 		genericButton: () => {
 			let button = document.createElement("BUTTON");
-			button.classList.add("popup-title-bar-button");
+			button.classList.add("popframe-title-bar-button");
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 			};
@@ -353,14 +353,14 @@ Popups = {
 
 		let popup = document.createElement("div");
 		popup.classList.add("popup", "popframe");
-		popup.innerHTML = `<div class="popup-scroll-view"><div class="popup-content-view"></div></div>`;
-		popup.scrollView = popup.querySelector(".popup-scroll-view");
-		popup.contentView = popup.querySelector(".popup-content-view");
+		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
+		popup.scrollView = popup.querySelector(".popframe-scroll-view");
+		popup.contentView = popup.querySelector(".popframe-content-view");
 		popup.titleBarContents = [ ];
 		return popup;
 	},
 	setPopFrameContent: (popup, contentHTML) => {
-		popup.querySelector(".popup-content-view").innerHTML = contentHTML;
+		popup.querySelector(".popframe-content-view").innerHTML = contentHTML;
 		return (contentHTML > "");
 	},
 	spawnPopup: (target, spawnPoint) => {
@@ -392,7 +392,7 @@ Popups = {
 			target.popup.classList.add("has-title-bar");
 
 			target.popup.titleBar = document.createElement("div");
-			target.popup.titleBar.classList.add("popup-title-bar");
+			target.popup.titleBar.classList.add("popframe-title-bar");
 			target.popup.titleBar.title = "Drag popup by title bar to reposition";
 			target.popup.insertBefore(target.popup.titleBar, target.popup.firstElementChild);
 
@@ -419,7 +419,7 @@ Popups = {
 					return;
 
 				//  Also do nothing if the click is on a title bar button.
-				if (event.target.closest(".popup-title-bar-button"))
+				if (event.target.closest(".popframe-title-bar-button"))
 					return;
 
 				event.preventDefault();
