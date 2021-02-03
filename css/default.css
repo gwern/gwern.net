@@ -3129,6 +3129,33 @@ body.directory-index #disqus_thread {
     opacity: 0.35;
 }
 
+.popframe-title-bar .submenu {
+	position: absolute;
+	top: var(--popup-title-bar-height);
+	background-color: var(--GW-popups-popup-title-bar-background-color);
+	display: flex;
+	flex-flow: row wrap;
+	max-width: calc(4px + 4 * var(--popup-title-bar-height));
+	visibility: hidden;
+	opacity: 0.0;
+	transition:
+		visibility 0.1s ease 0.2s,
+		opacity 0.1s ease 0.2s;
+}
+.popframe-title-bar .submenu:hover,
+.popframe-title-bar .has-submenu:hover + .submenu {
+	visibility: visible;
+	opacity: 1.0;
+}
+
+.popframe-title-bar .submenu button {
+	height: var(--popup-title-bar-height);
+	border-style: solid;
+	border-width: 0 1px 1px 0;
+	border-color: var(--GW-popups-popup-border-color);
+	margin: 0;
+}
+
 /*┌────────────────────┐*/
 /*│ Popup scroll view. │*/
 /*└────────────────────┘*/
