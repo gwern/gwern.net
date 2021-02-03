@@ -20,6 +20,7 @@ Extracts = {
 
 	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
 	annotationsBasePathname: "/metadata/annotations/",
+	annotationLoadHoverDelay: 25,
 
 	/*	Target containers.
 		*/
@@ -166,7 +167,7 @@ Extracts = {
 						/*  ... to load the annotation.
 							*/
 						Extracts.loadAnnotation(annotationIdentifier);
-					}, (Popups.popupTriggerDelay / 2.0));
+					}, (Extracts.annotationLoadHoverDelay));
 				});
 				annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
 					/*  Cancel timer on mouseout (no need to commence a load
@@ -193,7 +194,7 @@ Extracts = {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
 		//  TEMPORARY!!
-		if (!(localStorage.getItem("extracts-force-popins") == "true"))
+		if (GW.isMobile())
 			return;
 
 		//  Set service provider object.
