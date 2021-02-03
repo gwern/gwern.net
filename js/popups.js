@@ -8,7 +8,6 @@ Popups = {
 	/**********/
 	/*	Config.
 		*/
-    stylesID: "popups-styles",
     popupContainerID: "popup-container",
     popupContainerParentSelector: "html",
     popupContainerZIndex: "10001",
@@ -530,7 +529,7 @@ Popups = {
 		Popups.positionPopup(target.popup, spawnPoint);
 
 		//  Mark target as having an active popup associated with it.
-		target.popup.spawningTarget.classList.add("popup-open");
+		target.classList.add("popup-open");
 
 		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
 	},

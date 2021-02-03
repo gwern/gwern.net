@@ -20,6 +20,7 @@ Extracts = {
 
 	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
 	annotationsBasePathname: "/metadata/annotations/",
+	annotationLoadHoverDelay: 25,
 
 	/*	Target containers.
 		*/
@@ -138,8 +139,8 @@ Extracts = {
 
 		if (Extracts.serviceProvider == Popups) {
     		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget);
-    	} else {
-    		return;
+    	} else if (Extracts.serviceProvider == Popins) {
+    		Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin);
     	}
     },
     setUpAnnotationLoadEventWithin: (container) => {
@@ -166,7 +167,7 @@ Extracts = {
 						/*  ... to load the annotation.
 							*/
 						Extracts.loadAnnotation(annotationIdentifier);
-					}, (Popups.popupTriggerDelay / 2.0));
+					}, (Extracts.annotationLoadHoverDelay));
 				});
 				annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
 					/*  Cancel timer on mouseout (no need to commence a load
@@ -191,6 +192,10 @@ Extracts = {
     },
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
+
+		//  TEMPORARY!!
+		if (GW.isMobile())
+			return;
 
 		//  Set service provider object.
 		Extracts.serviceProvider = window[Extracts.serviceProviderName];
@@ -962,6 +967,109 @@ Extracts = {
     },	
 
 	/**********/
+	/*	Popins.
+		*/
+
+	/*	Called by popins.js just before injecting the popin. This is our chance 
+		to fill the popin with content, and rewrite that content in whatever 
+		ways necessary. After this function exits, the popin will appear on the 
+		screen.
+		*/
+    preparePopin: (popin) => {
+		GWLog("Extracts.preparePopin", "extracts.js", 2);
+
+		let target = popin.spawningTarget;
+
+		//  Import the class(es) of the target.
+		popin.classList.add(...target.classList);
+		//  We then remove some of the imported classes.
+		popin.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
+
+		//  Add ‘markdownBody’ class.
+		popin.contentView.classList.add("markdownBody");
+
+		/*  Situationally prevent spawning of citation links: do not spawn 
+			footnote popin if the {side|foot}note it points to is visible.
+			*/
+		if (   Extracts.isCitation(target) 
+			&& Array.from(allNotesForCitation(target)).findIndex(note => Popins.isVisible(note)) != -1)
+			return null;
+
+		//  Attempt to fill the popin.
+		if (Extracts.fillPopFrame(popin) == false)
+			return null;
+
+		//  Add popin title bar contents.
+		//  TODO: this
+// 		let popinTitle;
+// 		if (Extracts.isDefinition(target)) {
+// 			if (popin.classList.contains("loading"))
+// 				popinTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
+// 			else
+// 				popinTitle = `<span>${popin.querySelector(".data-field.title").textContent}</span>`;
+// 		} else if (!(   Extracts.isLocalImageLink(target)
+// 					 || Extracts.isCitation(target))) {
+// 			let popinTitleText;
+// 			if (target.hostname == location.hostname) {
+// 				if (target.dataset.urlOriginal) {
+// 					popinTitleText = target.dataset.urlOriginal;
+// 				} else if (Extracts.isExtractLink(target)) {
+// 					popinTitleText = target.pathname + target.hash;
+// 				} else if (target.pathname == location.pathname) {
+// 					popinTitleText = target.hash;
+// 				} else {
+// 					popinTitleText = popin.classList.contains("external-page-embed") 
+// 									 ? target.pathname 
+// 									 : (target.pathname + target.hash);
+// 				}
+// 			} else {
+// 				popinTitleText = target.href;
+// 			}
+// 			popinTitleText = decodeURIComponent(popinTitleText);
+// 			popinTitle = `<a 
+// 				href="${target.href}"
+// 				title="Open ${target.href} in a new window"
+// 				target="_blank"
+// 					>${popinTitleText}</a>`
+// 		}
+// 		if (popinTitle) {
+// 			//  Add the close button.
+// 			popin.titleBarContents.push(Popins.titleBarComponents.closeButton());
+// 
+// 			//  Add the maximize button.
+// 			popin.titleBarContents.push(Popins.titleBarComponents.maximizeButton());
+// 
+// 			//  Add the pin button.
+// 			popin.titleBarContents.push(Popins.titleBarComponents.pinButton());
+// 
+// 			//  Add the title.
+// 			popinTitle = `<span class="popin-title">${popinTitle}</span>`;
+// 			popin.titleBarContents.push(popinTitle);
+// 
+// 			//  Add the options button.
+// 			if (Extracts.popinOptionsEnabled) {
+// 				let showPopinOptionsDialogButton = Popins.titleBarComponents.optionsButton();
+// 				showPopinOptionsDialogButton.addActivateEvent((event) => {
+// 					event.stopPropagation();
+// 
+// 					Extracts.showPopinOptionsDialog();
+// 				});
+// 				showPopinOptionsDialogButton.title = "Show popin options (enable/disable popins)";
+// 				showPopinOptionsDialogButton.classList.add("show-popin-options-dialog");
+// 				popup.titleBarContents.push(showPopinOptionsDialogButton);
+// 			}
+// 		}
+
+		/*  If we’re waiting for content to be loaded into the popin 
+			asynchronously, then there’s no need to do rewrites for now.
+			*/
+		if (!popin.classList.contains("loading")) 
+			Extracts.rewritePopinContent(popin);
+
+		return popin;
+    },
+    
+	/**********/
 	/*	Popups.
 		*/
 
@@ -1014,7 +1122,7 @@ Extracts = {
 		//  Import the class(es) of the target.
 		popup.classList.add(...target.classList);
 		//  We then remove some of the imported classes.
-		popup.classList.remove("has-annotation", "has-content", "link-local", "spawns-popup");
+		popup.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popup");
 
 		//  Add ‘markdownBody’ class.
 		popup.contentView.classList.add("markdownBody");
