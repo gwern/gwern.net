@@ -75,6 +75,12 @@ ul > li::before {
     filter: invert(1);
 }
 
+/*	Exclusion for TOC entries.
+	*/
+#TOC ul > li::before {
+    filter: none;
+}
+
 /*	For sortable table column headings, we use dark versions of the up/down/both
 	arrow icons.
 	*/
@@ -160,12 +166,12 @@ div#mode-selector button.select-mode-light::before {
 	pixel-grid-checkerboard background-image. We use an alternate version of 
 	this image in dark mode.
 	*/
-article > div:not(#TOC) a[href*='wikipedia.org'].docMetadata:hover,
-article > div:not(#TOC) a[href*='wikimedia.org'].docMetadata:hover,
-article > div:not(#TOC) a[href*='wiktionary.org'].docMetadata:hover,
-article > div:not(#TOC) a[href*='wikimediafoundation.org'].docMetadata:hover,
-article > div:not(#TOC) a[href*='wikisource.org'].docMetadata:hover,
-#markdownBody span.defnMetadata:hover {
+.markdownBody a[href*='wikipedia.org'].docMetadata:hover,
+.markdownBody a[href*='wikimedia.org'].docMetadata:hover,
+.markdownBody a[href*='wiktionary.org'].docMetadata:hover,
+.markdownBody a[href*='wikimediafoundation.org'].docMetadata:hover,
+.markdownBody a[href*='wikisource.org'].docMetadata:hover,
+.markdownBody span.defnMetadata:hover {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
