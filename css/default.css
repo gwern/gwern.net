@@ -3135,7 +3135,7 @@ body.directory-index #disqus_thread {
 	background-color: var(--GW-popups-popup-title-bar-background-color);
 	display: flex;
 	flex-flow: row wrap;
-	max-width: calc(4px + 4 * var(--popup-title-bar-height));
+	max-width: calc(3 * (1px + var(--popup-title-bar-height)));
 	visibility: hidden;
 	opacity: 0.0;
 	transition:

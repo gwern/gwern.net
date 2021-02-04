@@ -181,7 +181,7 @@ Popups = {
 	},
 
 	titleBarComponents: {
-		popupPlaces: [ "left", "right", "top", "bottom", "top-left", "top-right", "bottom-left", "bottom-right" ],
+		popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
 		buttonIcons: {
 			"close": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M325.8 193.8L263.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L224 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17zM448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-48 346V86c0-3.3-2.7-6-6-6H54c-3.3 0-6 2.7-6 6v340c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>`,
 			"maximize": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
@@ -189,13 +189,14 @@ Popups = {
 			"pin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M306.5 186.6l-5.7-42.6H328c13.2 0 24-10.8 24-24V24c0-13.2-10.8-24-24-24H56C42.8 0 32 10.8 32 24v96c0 13.2 10.8 24 24 24h27.2l-5.7 42.6C29.6 219.4 0 270.7 0 328c0 13.2 10.8 24 24 24h144v104c0 .9.1 1.7.4 2.5l16 48c2.4 7.3 12.8 7.3 15.2 0l16-48c.3-.8.4-1.7.4-2.5V352h144c13.2 0 24-10.8 24-24 0-57.3-29.6-108.6-77.5-141.4zM50.5 304c8.3-38.5 35.6-70 71.5-87.8L138 96H80V48h224v48h-58l16 120.2c35.8 17.8 63.2 49.4 71.5 87.8z"/></svg>`,
 			"unpin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg>`,
 			"options": `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g transform="translate(10 10)"><path id="a" d="M1.5-10h-3l-1 6.5h5m0 7h-5l1 6.5h3"/><use transform="rotate(45)" xlink:href="#a"/><use transform="rotate(90)" xlink:href="#a"/><use transform="rotate(135)" xlink:href="#a"/></g><path d="M10 2.5a7.5 7.5 0 000 15 7.5 7.5 0 000-15v4a3.5 3.5 0 010 7 3.5 3.5 0 010-7"/></svg>`,
-			"zoom-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z m 160,288 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
-			"zoom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z m 148,276 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`,
-			"zoom-top": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z M 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z" /></svg>`,
-			"zoom-bottom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z M 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
 			"zoom-top-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z" /></svg>`,
+			"zoom-top": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z M 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z" /></svg>`,
 			"zoom-top-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z" /></svg>`,
+			"zoom-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z m 160,288 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
+			"zoom-full": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
+			"zoom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z m 148,276 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`,
 			"zoom-bottom-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
+			"zoom-bottom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z M 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
 			"zoom-bottom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`
 		},
 		buttonTitles: {
@@ -205,13 +206,14 @@ Popups = {
 			"pin": "Pin this popup to the screen",
 			"unpin": "Un-pin this popup from the screen",
 			"options": "Show options",
+			"zoom-top-left": "Place this popup in the top-left quarter of the screen",
+			"zoom-top": "Place this popup on the top half of the screen",
+			"zoom-top-right": "Place this popup in the top-right quarter of the screen",
 			"zoom-left": "Place this popup on the left half of the screen",
 			"zoom-right": "Place this popup on the right half of the screen",
-			"zoom-top": "Place this popup on the top half of the screen",
-			"zoom-bottom": "Place this popup on the bottom half of the screen",
-			"zoom-top-left": "Place this popup in the top-left quarter of the screen",
-			"zoom-top-right": "Place this popup in the top-right quarter of the screen",
+			"zoom-full": "Expand this popup to fill the screen",
 			"zoom-bottom-left": "Place this popup in the bottom-left quarter of the screen",
+			"zoom-bottom": "Place this popup on the bottom half of the screen",
 			"zoom-bottom-right": "Place this popup in the bottom-right quarter of the screen"
 		},
 		genericButton: () => {
@@ -349,6 +351,8 @@ Popups = {
 			popup.popupStack.push(popup);
 		}
 
+		Popups.clearPopupTimers(popup.spawningTarget);
+
 		Popups.updatePageScrollState();
 	},
 
@@ -374,23 +378,11 @@ Popups = {
 
 		let posX, posY;
 		switch (place) {
-			case "left":
+			case "top-left":
 				posX = 0.0;
-				posY = 0.0;
-				break;
-			case "right":
-				posX = viewportWidth / 2.0;
 				posY = 0.0;
 				break;
 			case "top":
-				posX = 0.0;
-				posY = 0.0;
-				break;
-			case "bottom":
-				posX = 0.0;
-				posY = viewportHeight / 2.0;
-				break;
-			case "top-left":
 				posX = 0.0;
 				posY = 0.0;
 				break;
@@ -398,7 +390,23 @@ Popups = {
 				posX = viewportWidth / 2.0;
 				posY = 0.0;
 				break;
+			case "left":
+				posX = 0.0;
+				posY = 0.0;
+				break;
+			case "full":
+				posX = 0.0;
+				posY = 0.0;
+				break;
+			case "right":
+				posX = viewportWidth / 2.0;
+				posY = 0.0;
+				break;
 			case "bottom-left":
+				posX = 0.0;
+				posY = viewportHeight / 2.0;
+				break;
+			case "bottom":
 				posX = 0.0;
 				posY = viewportHeight / 2.0;
 				break;
@@ -413,6 +421,10 @@ Popups = {
 		popup.style.maxWidth = "unset";
 		popup.style.maxHeight = "unset";
 		switch (place) {
+			case "full":
+				popup.style.width = "100%";
+				popup.style.height = "100vh";
+				break;
 			case "left":
 			case "right":
 				popup.style.width = "50%";
