@@ -35,7 +35,9 @@
 	--GW-popups-video-iframe-height: 310px;
 	--GW-popups-image-popup-min-size: 64px;
 
+	--GW-popins-popin-max-height: 50vh;
 	--GW-popins-popin-border-width: 3px;
+    --GW-popins-popin-title-bar-height: 1.5rem;
 }
 
 /*********************/
@@ -3031,8 +3033,10 @@ body.directory-index #disqus_thread {
 	box-sizing: border-box;
 }
 
-/*	Popup outer frame.
-	*/
+/*┌────────────────────┐*/
+/*│ Popup outer frame. │*/
+/*└────────────────────┘*/
+
 .popup {
 	/*  Layout. */
     position: absolute;
@@ -3047,8 +3051,10 @@ body.directory-index #disqus_thread {
     background-color: var(--GW-popups-popup-background-color);
 }
 
-/*	Popup title bar.
-	*/
+/*┌──────────────────┐*/
+/*│ Popup title bar. │*/
+/*└──────────────────┘*/
+
 .popup .popframe-title-bar {
 	position: absolute;
 	height: var(--GW-popups-popup-title-bar-height);
@@ -3129,7 +3135,10 @@ body.directory-index #disqus_thread {
     opacity: 0.35;
 }
 
-.popframe-title-bar .submenu {
+/*	Submenus of buttons in the popup title bar.
+	*/
+
+.popup .popframe-title-bar .submenu {
 	position: absolute;
 	top: var(--popup-title-bar-height);
 	background-color: var(--GW-popups-popup-title-bar-background-color);
@@ -3142,13 +3151,13 @@ body.directory-index #disqus_thread {
 		visibility 0.1s ease 0.2s,
 		opacity 0.1s ease 0.2s;
 }
-.popframe-title-bar .submenu:hover,
-.popframe-title-bar .has-submenu:hover + .submenu {
+.popup .popframe-title-bar .submenu:hover,
+.popup .popframe-title-bar .has-submenu:hover + .submenu {
 	visibility: visible;
 	opacity: 1.0;
 }
 
-.popframe-title-bar .submenu button {
+.popup .popframe-title-bar .submenu button {
 	height: var(--popup-title-bar-height);
 	border-style: solid;
 	border-width: 0 1px 1px 0;
@@ -3747,15 +3756,17 @@ body.directory-index #disqus_thread {
 	box-sizing: border-box;
 }
 
-/*	Popin outer frame.
-	*/
+/*┌────────────────────┐*/
+/*│ Popin outer frame. │*/
+/*└────────────────────┘*/
+
 .popin {
 	/*  Layout. */
     display: block;
     position: relative;
     float: left;
     width: 100%;
-    max-height: calc(100vh - 8em);
+    max-height: var(--GW-popins-popin-max-height);
     overflow: visible;
     z-index: 1;
 
@@ -3763,26 +3774,27 @@ body.directory-index #disqus_thread {
 
 	/*  Styling. */
     border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
-    box-shadow: 1px 2px 8px 0 var(--GW-popins-box-shadow-color) inset;
+    filter: drop-shadow(1px 2px 4px var(--GW-popins-box-shadow-color));
     background-color: var(--GW-popins-popin-background-color);
-
-    padding: 0.625em 1em 0.75em 1em;
 }
 
+/*┌──────────────────┐*/
+/*│ Popin title bar. │*/
+/*└──────────────────┘*/
 
-
-/*	Popin title bar.
-	*/
 .popin .popframe-title-bar {
 	position: absolute;
-	height: var(--GW-popins-popin-title-bar-height);
-	border-bottom: 1px solid var(--GW-popins-popin-border-color);
+    right: -3px;
+    bottom: calc(100%);
+	height: calc(var(--GW-popins-popin-border-width) + var(--GW-popins-popin-title-bar-height));
+	border-style: double;
+	border-color: var(--GW-popins-popin-border-color);
+	border-width:  var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
 	background-color: var(--GW-popins-popin-title-bar-background-color);
     display: flex;
     flex-flow: row;
     align-items: center;
-    width: 100%;
-    cursor: grab;
+    width: -moz-fit-content;
     z-index: 1;
 }
 
@@ -3793,25 +3805,26 @@ body.directory-index #disqus_thread {
     --popin-title-bar-height: var(--GW-popins-popin-title-bar-height);
 }
 
-/*  Popup title.
+/*  Popin title.
 	*/
 .popin .popframe-title {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     flex: 1 1 100%;
     /*  Extra 1.5rem padding on left to accommodate extra button. */
-    padding: 0 2.5rem 0 1rem;
+    padding: 0 1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     text-decoration: none;
     text-align: center;
+    text-indent: 0;
 }
 .popin .popframe-title::after {
     display: none;
 }
 
-/*	Buttons in the popup title bar.
+/*	Buttons in the popin title bar.
 	*/
 .popin .popframe-title-bar-button {
 	-moz-appearance: none;
@@ -3826,26 +3839,121 @@ body.directory-index #disqus_thread {
     padding: 4px;
 	height: 100%;
     flex: 1 0 auto;
-    width: calc(var(--GW-popups-popup-title-bar-height) - 1px);
+    width: calc(var(--GW-popins-popin-title-bar-height) - 1px);
 	cursor: pointer;
-    color: var(--GW-popups-popup-title-bar-button-color);
+    color: var(--GW-popins-popin-title-bar-button-color);
 }
-.popup .popframe-title-bar-button:hover {
-    color: var(--GW-popups-popup-title-bar-button-color-hover);
-}
-.popup .popframe-title-bar-button:active {
+.popin .popframe-title-bar-button:active {
     transform: scale(0.9);
 }
-.popup .popframe-title-bar-button svg {
+.popin .popframe-title-bar-button svg {
 	max-width: 100%;
 	max-height: 100%;
     width: 24px;
     height: 24px;
 }
 
-.popup .popframe-title-bar-button:disabled {
+.popin .popframe-title-bar-button:disabled {
     pointer-events: none;
     opacity: 0.35;
+}
+
+/*┌────────────────────┐*/
+/*│ Popin scroll view. │*/
+/*└────────────────────┘*/
+
+.popin .popframe-scroll-view {
+    overflow-y: auto;
+    overscroll-behavior: none;
+    max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
+    height: 100%;
+}
+
+/*  Scroll bar styles (for WebKit/Blink).
+    */
+.popin .popframe-scroll-view::-webkit-scrollbar {
+    width: 14px;
+}
+.popin .popframe-scroll-view::-webkit-scrollbar-thumb {
+    background-color: var(--GW-popins-popin-scrollbar-thumb-color);
+    box-shadow:
+        0 0 0 3px var(--GW-popins-popin-scrollbar-track-color) inset;
+}
+.popin .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
+    background-color: var(--GW-popins-popin-scrollbar-thumb-hover-color);
+}
+
+/*  Scroll bar styles (for Firefox).
+    */
+.popin .popframe-scroll-view {
+    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-color) var(--GW-popins-popin-scrollbar-track-color);
+}
+.popin .popframe-scroll-view:hover {
+    scrollbar-color: var(--GW-popins-popin-scrollbar-thumb-hover-color) var(--GW-popins-popin-scrollbar-track-color);
+}
+
+/*┌─────────────────────┐*/
+/*│ Popin content view. │*/
+/*└─────────────────────┘*/
+
+.popin .popframe-content-view {
+    background-color: var(--GW-popins-popin-background-color);
+    font-size: 0.9em;
+    padding: calc(7em/9) 1em calc(8em/9) 1em;
+    overflow: auto;
+}
+
+/*┌───────────────────────────┐*/
+/*│ Transitional UI elements. │*/
+/*└───────────────────────────┘*/
+
+/*  Loading spinner (for object popins).
+    */
+.popin.loading::before {
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
+    position: absolute;
+    width: 3em;
+    height: 6em;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    opacity: 0.2;
+    animation: fa-spin 2s infinite linear;
+}
+@keyframes fa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.popin.image.loading img,
+.popin.image.loading-failed img,
+.popin.object.loading-failed iframe {
+	visibility: hidden;
+}
+
+/*	“Loading failed” messages (for object popups).
+	*/
+.popin.loading-failed::after {
+	content: "Loading failed.";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 2em;
+	font-family: var(--GW-sans-serif-font-stack);
+	font-weight: bold;
+	text-transform: uppercase;
+	opacity: 0.35;
 }
 
 

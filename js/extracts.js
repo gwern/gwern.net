@@ -1016,8 +1016,7 @@ Extracts = {
 				popinTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
 			else
 				popinTitle = `<span>${popin.querySelector(".data-field.title").textContent}</span>`;
-		} else if (!(   Extracts.isLocalImageLink(target)
-					 || Extracts.isCitation(target))) {
+		} else {
 			let popinTitleText;
 			if (target.hostname == location.hostname) {
 				if (target.dataset.urlOriginal) {
@@ -1042,15 +1041,12 @@ Extracts = {
 					>${popinTitleText}</a>`
 		}
 		if (popinTitle) {
-			//  Add the close button.
-			popin.titleBarContents.push(Popins.titleBarComponents.closeButton());
-
-			//  Add the maximize button.
-			popin.titleBarContents.push(Popins.titleBarComponents.maximizeButton());
-
 			//  Add the title.
 			popinTitle = `<span class="popframe-title">${popinTitle}</span>`;
 			popin.titleBarContents.push(popinTitle);
+
+			//  Add the close button.
+			popin.titleBarContents.push(Popins.titleBarComponents.closeButton());
 
 			//  Add the options button.
 			if (Extracts.popinOptionsEnabled) {
