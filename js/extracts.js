@@ -40,7 +40,7 @@ Extracts = {
 			let targetTypeInfo = Extracts.targetTypeInfo(target);
 			if (targetTypeInfo) {
 				//  Not all types of popups are available as popins also.
-				if (   Extracts.serviceProvider == Popins
+				if (   Extracts.popFrameProvider == Popins
 					&& (   Extracts.isCitationBackLink(target)
 						|| Extracts.isTOCLink(target)))
 					return false;
@@ -83,8 +83,8 @@ Extracts = {
 
 	annotationsWorkspace: null,
 
-	serviceProviderName: null,
-	serviceProvider: null,
+	popFrameProviderName: null,
+	popFrameProvider: null,
 
 	/***********/
 	/*	General.
@@ -103,7 +103,7 @@ Extracts = {
 			target.classList.remove("has-content", "has-annotation");
 		};
 
-		Extracts.serviceProvider.removeTargetsWithin(container, Extracts.targets, restoreTarget);
+		Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, restoreTarget);
     },
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
@@ -124,7 +124,7 @@ Extracts = {
 		  Extracts.signalAnnotationLoadFailed
 		  ].forEach(handler => GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", handler));
 
-		if (Extracts.serviceProvider == Popups) {
+		if (Extracts.popFrameProvider == Popups) {
 			//  Remove “popups disabled” icon/button, if present.
 			if (Extracts.popupOptionsEnabled) {
 				Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
@@ -137,9 +137,9 @@ Extracts = {
     addTargetsWithin: (container) => {
  		GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
-		if (Extracts.serviceProvider == Popups) {
+		if (Extracts.popFrameProvider == Popups) {
     		Popups.addTargetsWithin(container, Extracts.targets, Extracts.preparePopup, Extracts.preparePopupTarget);
-    	} else if (Extracts.serviceProvider == Popins) {
+    	} else if (Extracts.popFrameProvider == Popins) {
     		Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin);
     	}
     },
@@ -149,7 +149,7 @@ Extracts = {
 		//  Get all the annotated targets in the container.
 		let allAnnotatedTargetsInContainer = Array.from(container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
 
-		if (Extracts.serviceProvider == Popups) {
+		if (Extracts.popFrameProvider == Popups) {
 			//  Add hover event listeners to all the annotated targets.
 			allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
 				annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
@@ -198,13 +198,13 @@ Extracts = {
 			return;
 
 		//  Set service provider object.
-		Extracts.serviceProvider = window[Extracts.serviceProviderName];
+		Extracts.popFrameProvider = window[Extracts.popFrameProviderName];
 
 		//  Inject the staging area for annotations.
 		document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
 		Extracts.annotationsWorkspace = document.querySelector("#annotations-workspace");
 
-        if (Extracts.serviceProvider == Popups) {
+        if (Extracts.popFrameProvider == Popups) {
             GWLog("Setting up for popups.", "extracts.js", 1);
 
 			if (!Extracts.popupsEnabled()) {
@@ -366,7 +366,7 @@ Extracts = {
 		let target = popFrame.spawningTarget;
 		let targetTypeInfo = Extracts.targetTypeInfo(target);
 		if (targetTypeInfo && targetTypeInfo.popFrameFillFunctionName) {
-			didFill = Extracts.serviceProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
+			didFill = Extracts.popFrameProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
 			if (targetTypeInfo.popFrameClasses)
 				popFrame.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
 		}
@@ -401,7 +401,7 @@ Extracts = {
 		if (target.pathname == location.pathname)
 			return Extracts.rootDocument;
 
-		if (Extracts.serviceProvider == Popups) {
+		if (Extracts.popFrameProvider == Popups) {
 			let containingPopup = target.closest(".popup");
 			if (!containingPopup)
 				return null;
@@ -487,8 +487,14 @@ Extracts = {
 			if (!target.popFrame)
 				return;
 
-			//  TODO: generalize this for popins!
-			Popups.spawnPopup(target);
+			if (Extracts.popFrameProvider == Popups) {
+				Popups.spawnPopup(target);
+			} else if (Extracts.popFrameProvider == Popins) {
+				Extracts.fillPopFrame(target.popin);
+				Extracts.rewritePopinContent(target.popin);
+
+				target.popin.classList.toggle("loading", false);
+			}
 		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 
 		//  Add handler for if the fragment load fails.
@@ -746,12 +752,10 @@ Extracts = {
     externalPageEmbedForTarget: (target) => {
 		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
 
-		let setPopFrameContent = Popups.setPopFrameContent;
-
 		let fillPopFrame = (markdownBody) => {
 			GWLog("Filling pop-frame...", "extracts.js", 2);
 
-			setPopFrameContent(target.popFrame, markdownBody.innerHTML);
+			Extracts.popFrameProvider.setPopFrameContent(target.popFrame, markdownBody.innerHTML);
 
 			//  Give the pop-frame an identifying class.
 			target.popFrame.classList.toggle("page-" + target.pathname.substring(1), true);
@@ -776,10 +780,8 @@ Extracts = {
 			});
 
 			//  Scroll to the target.
-			if (target.hash > "") {
-				let scrollElementIntoViewInPopFrame = Popups.scrollElementIntoViewInPopup;
-				scrollElementIntoViewInPopFrame(target.popFrame.querySelector(decodeURIComponent(target.hash)));
-			}
+			if (target.hash > "")
+				Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(target.popFrame.querySelector(decodeURIComponent(target.hash)));
 		};
 
 		if (Extracts.cachedPages[target.pathname]) {
@@ -800,7 +802,7 @@ Extracts = {
 					target.popFrame.classList.toggle("loading", false);
 
 					//  Inject the whole page into the pop-frame at first.
-					setPopFrameContent(target.popFrame, event.target.responseText);
+					Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
 
 					//  The content is the page body plus the metadata block.
 					Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
@@ -991,84 +993,181 @@ Extracts = {
 		/*  Situationally prevent spawning of citation links: do not spawn 
 			footnote popin if the {side|foot}note it points to is visible.
 			*/
-		if (   Extracts.isCitation(target) 
-			&& Array.from(allNotesForCitation(target)).findIndex(note => Popins.isVisible(note)) != -1)
-			return null;
+// 		if (   Extracts.isCitation(target) 
+// 			&& Array.from(allNotesForCitation(target)).findIndex(note => Popins.isVisible(note)) != -1)
+// 			return null;
+
+		//  Attempt to load annotation, if need be.
+		if (   Extracts.isExtractLink(target)
+			|| Extracts.isDefinition(target)) {
+			let annotationIdentifier = Extracts.targetIdentifier(target);
+			if (!Extracts.cachedAnnotationExists(annotationIdentifier))
+				Extracts.loadAnnotation(annotationIdentifier);
+		}
 
 		//  Attempt to fill the popin.
 		if (Extracts.fillPopFrame(popin) == false)
 			return null;
 
 		//  Add popin title bar contents.
-		//  TODO: this
-// 		let popinTitle;
-// 		if (Extracts.isDefinition(target)) {
-// 			if (popin.classList.contains("loading"))
-// 				popinTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
-// 			else
-// 				popinTitle = `<span>${popin.querySelector(".data-field.title").textContent}</span>`;
-// 		} else if (!(   Extracts.isLocalImageLink(target)
-// 					 || Extracts.isCitation(target))) {
-// 			let popinTitleText;
-// 			if (target.hostname == location.hostname) {
-// 				if (target.dataset.urlOriginal) {
-// 					popinTitleText = target.dataset.urlOriginal;
-// 				} else if (Extracts.isExtractLink(target)) {
-// 					popinTitleText = target.pathname + target.hash;
-// 				} else if (target.pathname == location.pathname) {
-// 					popinTitleText = target.hash;
-// 				} else {
-// 					popinTitleText = popin.classList.contains("external-page-embed") 
-// 									 ? target.pathname 
-// 									 : (target.pathname + target.hash);
-// 				}
-// 			} else {
-// 				popinTitleText = target.href;
-// 			}
-// 			popinTitleText = decodeURIComponent(popinTitleText);
-// 			popinTitle = `<a 
-// 				href="${target.href}"
-// 				title="Open ${target.href} in a new window"
-// 				target="_blank"
-// 					>${popinTitleText}</a>`
-// 		}
-// 		if (popinTitle) {
-// 			//  Add the close button.
-// 			popin.titleBarContents.push(Popins.titleBarComponents.closeButton());
-// 
-// 			//  Add the maximize button.
-// 			popin.titleBarContents.push(Popins.titleBarComponents.maximizeButton());
-// 
-// 			//  Add the pin button.
-// 			popin.titleBarContents.push(Popins.titleBarComponents.pinButton());
-// 
-// 			//  Add the title.
-// 			popinTitle = `<span class="popin-title">${popinTitle}</span>`;
-// 			popin.titleBarContents.push(popinTitle);
-// 
-// 			//  Add the options button.
-// 			if (Extracts.popinOptionsEnabled) {
-// 				let showPopinOptionsDialogButton = Popins.titleBarComponents.optionsButton();
-// 				showPopinOptionsDialogButton.addActivateEvent((event) => {
-// 					event.stopPropagation();
-// 
-// 					Extracts.showPopinOptionsDialog();
-// 				});
-// 				showPopinOptionsDialogButton.title = "Show popin options (enable/disable popins)";
-// 				showPopinOptionsDialogButton.classList.add("show-popin-options-dialog");
-// 				popup.titleBarContents.push(showPopinOptionsDialogButton);
-// 			}
-// 		}
+		let popinTitle;
+		if (Extracts.isDefinition(target)) {
+			if (popin.classList.contains("loading"))
+				popinTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
+			else
+				popinTitle = `<span>${popin.querySelector(".data-field.title").textContent}</span>`;
+		} else if (!(   Extracts.isLocalImageLink(target)
+					 || Extracts.isCitation(target))) {
+			let popinTitleText;
+			if (target.hostname == location.hostname) {
+				if (target.dataset.urlOriginal) {
+					popinTitleText = target.dataset.urlOriginal;
+				} else if (Extracts.isExtractLink(target)) {
+					popinTitleText = target.pathname + target.hash;
+				} else if (target.pathname == location.pathname) {
+					popinTitleText = target.hash;
+				} else {
+					popinTitleText = popin.classList.contains("external-page-embed") 
+									 ? target.pathname 
+									 : (target.pathname + target.hash);
+				}
+			} else {
+				popinTitleText = target.href;
+			}
+			popinTitleText = decodeURIComponent(popinTitleText);
+			popinTitle = `<a 
+				href="${target.href}"
+				title="Open ${target.href} in a new window"
+				target="_blank"
+					>${popinTitleText}</a>`
+		}
+		if (popinTitle) {
+			//  Add the close button.
+			popin.titleBarContents.push(Popins.titleBarComponents.closeButton());
+
+			//  Add the maximize button.
+			popin.titleBarContents.push(Popins.titleBarComponents.maximizeButton());
+
+			//  Add the title.
+			popinTitle = `<span class="popframe-title">${popinTitle}</span>`;
+			popin.titleBarContents.push(popinTitle);
+
+			//  Add the options button.
+			if (Extracts.popinOptionsEnabled) {
+				let showPopinOptionsDialogButton = Popins.titleBarComponents.optionsButton();
+				showPopinOptionsDialogButton.addActivateEvent((event) => {
+					event.stopPropagation();
+
+					Extracts.showPopinOptionsDialog();
+				});
+				showPopinOptionsDialogButton.title = "Show popin options (enable/disable popins)";
+				showPopinOptionsDialogButton.classList.add("show-popin-options-dialog");
+				popup.titleBarContents.push(showPopinOptionsDialogButton);
+			}
+		}
 
 		/*  If we’re waiting for content to be loaded into the popin 
 			asynchronously, then there’s no need to do rewrites for now.
 			*/
-		if (!popin.classList.contains("loading")) 
+		if (!popin.classList.contains("loading"))
 			Extracts.rewritePopinContent(popin);
 
 		return popin;
     },
-    
+     
+    rewritePopinContent: (popin) => {
+		GWLog("Extracts.rewritePopinContent", "extracts.js", 2);
+
+		let target = popin.spawningTarget;
+
+		//  Special handling for image popins.
+		if (Extracts.isLocalImageLink(target)) {
+			//  Remove extraneous classes from images in image popins.
+			popin.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
+		}
+
+		//  Allow for floated figures at the start of abstract.
+		if (   Extracts.isExtractLink(target)
+			|| Extracts.isDefinition(target)) {
+			let initialFigure = popin.querySelector(".annotation-abstract > figure.float-right:first-child");
+			if (initialFigure) {
+				popin.contentView.insertBefore(initialFigure, popin.contentView.firstElementChild);
+			}
+		}
+
+		//  Rectify margin note style.
+		popin.querySelectorAll(".marginnote").forEach(marginNote => {
+			marginNote.swapClasses([ "inline", "sidenote" ], 0);
+		});
+
+		//  Qualify internal links in extracts.
+		if (   Extracts.isExtractLink(target) 
+			&& target.hostname == location.hostname) {
+			Extracts.qualifyLinksInPopFrame(target.popFrame);
+		}
+
+		/*  If the popin is of a type that contains local HTML content of some
+			sort, then fire a contentDidLoad event to trigger any necessary
+			rewrites.
+			*/
+		if (   Extracts.isExtractLink(target)
+			|| Extracts.isDefinition(target)
+			|| Extracts.isLocalPageLink(target)
+			|| Extracts.isCitation(target)
+			) {
+			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+				source: "Extracts.preparePopin",
+				document: popin.contentView,
+				isMainDocument: false,
+				needsRewrite: false, 
+				clickable: false, 
+				collapseAllowed: false, 
+				isCollapseBlock: false,
+				isFullPage: false,
+				location: Extracts.locationForTarget(target),
+				fullWidthPossible: false
+			});
+		}
+
+		//  Loading spinners.
+		if (   Extracts.isLocalDocumentLink(target)
+			|| Extracts.isForeignSiteLink(target)
+			|| Extracts.isLocalImageLink(target)
+			) {
+			popin.classList.toggle("loading", true);
+
+			//  When loading ends (in success or failure)...
+			let objectOfSomeSort = popin.querySelector("iframe, object, img");
+			if (objectOfSomeSort.tagName == "IFRAME") {
+				//  Iframes do not fire ‘error’ on server error.
+				objectOfSomeSort.onload = (event) => {
+					popin.classList.toggle("loading", false);
+
+					/*	We do this for local documents only. Cross-origin 
+						protections prevent us from accessing the content of
+						an iframe with a foreign site, so we do nothing special
+						and simply let the foreign site’s server show its usual
+						404 page (or whatever) if the linked page is not found.
+						*/
+					if (   target.hostname == location.hostname
+						&& Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title))
+						popin.classList.toggle("loading-failed", true);
+				};
+			} else {
+				//  Objects & images fire ‘error’ on server error or load fail.
+				objectOfSomeSort.onload = (event) => {
+					popin.classList.toggle("loading", false);
+				};
+			}
+			/*  We set an ‘error’ handler for *all* types of entity, even 
+				iframes, just in case.
+				*/
+			objectOfSomeSort.onerror = (event) => {
+				popin.swapClasses([ "loading", "loading-failed" ], 1);
+			};
+		}
+    },
+   
 	/**********/
 	/*	Popups.
 		*/
@@ -1204,13 +1303,15 @@ Extracts = {
 			popup.titleBarContents.push(Popups.titleBarComponents.closeButton());
 
 			//  Add the maximize button.
-			popup.titleBarContents.push(Popups.titleBarComponents.maximizeButton());
+			let maximizeButton = Popups.titleBarComponents.maximizeButton();
+// 			maximizeButton.submenuEnabled = true;
+			popup.titleBarContents.push(maximizeButton);
 
 			//  Add the pin button.
 			popup.titleBarContents.push(Popups.titleBarComponents.pinButton());
 
 			//  Add the title.
-			popupTitle = `<span class="popup-title">${popupTitle}</span>`;
+			popupTitle = `<span class="popframe-title">${popupTitle}</span>`;
 			popup.titleBarContents.push(popupTitle);
 
 			//  Add the options button.
@@ -1259,15 +1360,14 @@ Extracts = {
 
 			//  Scroll to the citation.
 			requestAnimationFrame(() => {
-				let scrollElementIntoViewInPopFrame = Popups.scrollElementIntoViewInPopup;
-				scrollElementIntoViewInPopFrame(citationInPopup, popup);
+				Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(citationInPopup, popup);
 			});
 		}
 
 		//  Special handling for image popups.
 		if (Extracts.isLocalImageLink(target)) {
 			//  Remove extraneous classes from images in image popups.
-			popup.querySelector("img").classList.remove("has-annotation", "has-content", "spawns-popup");
+			popup.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popup");
 
 			if (popup.querySelector("img[width][height]"))
 				popup.classList.add("dimensions-specified");
@@ -1369,7 +1469,7 @@ GW.notificationCenter.fireEvent("Extracts.didLoad");
 
 //  Set pop-frame type (mode) - popups or popins.
 let mobileMode = (localStorage.getItem("extracts-force-popins") == "true") || GW.isMobile();
-Extracts.serviceProviderName = mobileMode ? "Popins" : "Popups";
+Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
 GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
 
 doSetup = () => {
@@ -1379,10 +1479,10 @@ doSetup = () => {
 
 	Extracts.setup();
 };
-if (window[Extracts.serviceProviderName]) {
+if (window[Extracts.popFrameProviderName]) {
 	doSetup();
 } else {
-	GW.notificationCenter.addHandlerForEvent(Extracts.serviceProviderName + ".didLoad", () => {
+	GW.notificationCenter.addHandlerForEvent(Extracts.popFrameProviderName + ".didLoad", () => {
 		doSetup();
 	}, { once: true });
 }

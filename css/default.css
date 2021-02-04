@@ -28,12 +28,14 @@
 	--GW-popups-popup-max-width: 640px;
 	--GW-popups-popup-max-height: 480px;
 	--GW-popups-annotation-popup-min-width: 360px;
-	--GW-popups-annotation-popup-min-height: 180px;
+	--GW-popups-annotation-popup-min-height: 120px;
 	--GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: 1.5rem;
 	--GW-popups-video-iframe-width: 495px;
 	--GW-popups-video-iframe-height: 310px;
 	--GW-popups-image-popup-min-size: 64px;
+
+	--GW-popins-popin-border-width: 3px;
 }
 
 /*********************/
@@ -2804,6 +2806,196 @@ body.directory-index #disqus_thread {
     opacity: 1.0;
 }
 
+/**************/
+/* POP-FRAMES */
+/**************/
+
+/*=-------------------=*/
+/*= POP-FRAME CONTENT =*/
+/*=-------------------=*/
+/*  Adjustments for styles in pop-frames.
+    */
+
+.popframe:not(.maximized) p + p {
+    text-indent: 1.25em;
+}
+
+.popframe:not(.maximized) p + ul,
+.popframe:not(.maximized) p + ol {
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+.popframe:not(.maximized) li {
+	text-align: left;
+}
+
+.popframe h1,
+.popframe h2,
+.popframe h3,
+.popframe h4,
+.popframe h5,
+.popframe h6 {
+    margin-left: 0;
+}
+
+.popframe:not(.maximized) blockquote {
+    margin: 1em 0;
+}
+
+.popframe .popframe-content-view > figure:only-child {
+	margin: 0;
+    max-width: unset;
+}
+
+.popframe blockquote:first-child,
+.popframe .table-wrapper:first-child,
+.popframe div.sourceCode:first-child pre {
+    margin-top: calc(3em/9);
+}
+.popframe blockquote:last-child,
+.popframe .table-wrapper:last-child,
+.popframe div.sourceCode:last-child pre {
+    margin-bottom: calc(1em/9);
+}
+
+/*  Drop caps in pop-frames.
+    */
+.popframe.markdownBody .drop-cap-goudy > p,
+.popframe.markdownBody .drop-cap-yinit > p,
+.popframe.markdownBody .drop-cap-de-zs > p,
+.popframe.markdownBody .drop-cap-cheshire > p,
+.popframe.markdownBody .drop-cap-kanzlei > p {
+    text-indent: 0;
+}
+.popframe.markdownBody .drop-cap-goudy > p::first-letter {
+    font-size: 6.5em;
+}
+.popframe.markdownBody .drop-cap-yinit > p::first-letter {
+    font-size: 5.125em;
+}
+.popframe.markdownBody .drop-cap-de-zs > p::first-letter {
+    font-size: 6.375em;
+}
+.popframe.markdownBody .drop-cap-cheshire > p::first-letter {
+    font-size: 6.375em;
+}
+.popframe.markdownBody .drop-cap-kanzlei > p::first-letter {
+    font-size: 6.625em;
+}
+
+/*  Margin notes in pop-frames.
+    */
+.popframe .marginnote {
+    display: initial;
+}
+
+.popframe .popframe-content-view > hr:first-child {
+    display: none;
+}
+
+.popframe .footnote-self-link {
+	display: none;
+}
+
+/*=-----------------=*/
+/*= POP-FRAME TYPES =*/
+/*=-----------------=*/
+
+/*┌──────────────────────────────────┐*/
+/*│ Extract & definition pop-frames. │*/
+/*└──────────────────────────────────┘*/
+
+/*  Data fields.
+    */
+.popframe.annotation .data-field {
+    text-align: left;
+    text-indent: 0;
+}
+.popframe.annotation .data-field + .data-field {
+    margin-top: 0.25em;
+}
+
+.popframe.annotation .data-field.title {
+    font-weight: bold;
+    font-size: 1.125em;
+    line-height: 1.35;
+}
+.popframe.annotation .data-field.author {
+    font-style: italic;
+}
+.popframe.annotation .date-plus-cites {
+    display: inline-block;
+}
+.popframe.annotation .originalURL {
+    font-variant-caps: small-caps;
+    margin: 0 0.5em 0 0;
+}
+.popframe.annotation .iaMirror {
+    padding-right: 0.3em;
+}
+.popframe.annotation .data-field.annotation-abstract {
+    margin-top: 0.5em;
+}
+
+/*  Images (such as the ones in Wikipedia pop-frames).
+    */
+.popframe.annotation .popframe-content-view > figure.float-right {
+    margin: 0.125em 0 0.125em 1.5em;
+    max-width: calc(50% - 1.5em);
+    float: right;
+}
+.popframe.annotation figure.float-left .image-wrapper,
+.popframe.annotation figure.float-right .image-wrapper {
+    max-width: 100%;
+}
+.popframe.annotation figure img {
+    width: 100%;
+}
+
+/*  Special case for inline math in Wikipedia pop-frames.
+    */
+.popframe.annotation .mwe-math-element {
+    display: inline-block;
+    height: 1.25em;
+    line-height: 1;
+    margin: 0;
+    vertical-align: bottom;
+    padding: 0;
+    text-indent: 0;
+}
+.popframe.annotation .mwe-math-element img {
+    display: inline-block;
+    height: 100%;
+}
+
+/*┌──────────────────────┐*/
+/*│ Footnote pop-frames. │*/
+/*└──────────────────────┘*/
+/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
+
+.popframe.footnote a.footnote-back {
+    display: none;
+}
+
+/*  The following compensates for the variable edge case where the last
+    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
+    back-to-citation link after it (which is not shown, if present, but makes it
+    uncertain whether the blockquote is the last child of the popup or not. This
+    code makes everything consistent regardless of which case applies.
+    —Obormot (2019-02-17)
+    */
+.popframe.footnote .popframe-content-view > blockquote:nth-last-child(2) {
+    margin-bottom: calc(1em/9);
+}
+.popframe.footnote .popframe-content-view > blockquote:nth-last-child(2) + p {
+    margin-top: 1em;
+}
+
+/*┌──────────────────────────────┐*/
+/*│ Citation context pop-frames. │*/
+/*└──────────────────────────────┘*/
+
 /**********/
 /* POPUPS */
 /**********/
@@ -2833,9 +3025,9 @@ body.directory-index #disqus_thread {
 	The content view contains the actual contents of a popup.
 	*/
 .popup,
-.popup-scroll-view,
-.popup-content-view,
-.popup-title-bar {
+.popup .popframe-scroll-view,
+.popup .popframe-content-view,
+.popup .popframe-title-bar {
 	box-sizing: border-box;
 }
 
@@ -2857,7 +3049,7 @@ body.directory-index #disqus_thread {
 
 /*	Popup title bar.
 	*/
-.popup-title-bar {
+.popup .popframe-title-bar {
 	position: absolute;
 	height: var(--GW-popups-popup-title-bar-height);
 	border-bottom: 1px solid var(--GW-popups-popup-border-color);
@@ -2869,9 +3061,9 @@ body.directory-index #disqus_thread {
     cursor: grab;
     z-index: 1;
 }
-.popup.grabbed .popup-title-bar,
-.popup.dragging .popup-title-bar,
-.popup.dragging .popup-title-bar a {
+.popup.grabbed .popframe-title-bar,
+.popup.dragging .popframe-title-bar,
+.popup.dragging .popframe-title-bar a {
 	cursor: grabbing;
 }
 
@@ -2884,7 +3076,7 @@ body.directory-index #disqus_thread {
 
 /*  Popup title.
 	*/
-.popup .popup-title {
+.popup .popframe-title {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     flex: 1 1 100%;
@@ -2896,13 +3088,13 @@ body.directory-index #disqus_thread {
     text-decoration: none;
     text-align: center;
 }
-.popup .popup-title::after {
+.popup .popframe-title::after {
     display: none;
 }
 
 /*	Buttons in the popup title bar.
 	*/
-.popup .popup-title-bar-button {
+.popup .popframe-title-bar-button {
 	-moz-appearance: none;
 	appearance: none;
 	border: none;
@@ -2919,29 +3111,56 @@ body.directory-index #disqus_thread {
 	cursor: pointer;
     color: var(--GW-popups-popup-title-bar-button-color);
 }
-.popup .popup-title-bar-button:hover {
+.popup .popframe-title-bar-button:hover {
     color: var(--GW-popups-popup-title-bar-button-color-hover);
 }
-.popup .popup-title-bar-button:active {
+.popup .popframe-title-bar-button:active {
     transform: scale(0.9);
 }
-.popup .popup-title-bar-button svg {
+.popup .popframe-title-bar-button svg {
 	max-width: 100%;
 	max-height: 100%;
     width: 24px;
     height: 24px;
 }
 
-.popup .popup-title-bar-button:disabled {
+.popup .popframe-title-bar-button:disabled {
     pointer-events: none;
     opacity: 0.35;
+}
+
+.popframe-title-bar .submenu {
+	position: absolute;
+	top: var(--popup-title-bar-height);
+	background-color: var(--GW-popups-popup-title-bar-background-color);
+	display: flex;
+	flex-flow: row wrap;
+	max-width: calc(3 * (1px + var(--popup-title-bar-height)));
+	visibility: hidden;
+	opacity: 0.0;
+	transition:
+		visibility 0.1s ease 0.2s,
+		opacity 0.1s ease 0.2s;
+}
+.popframe-title-bar .submenu:hover,
+.popframe-title-bar .has-submenu:hover + .submenu {
+	visibility: visible;
+	opacity: 1.0;
+}
+
+.popframe-title-bar .submenu button {
+	height: var(--popup-title-bar-height);
+	border-style: solid;
+	border-width: 0 1px 1px 0;
+	border-color: var(--GW-popups-popup-border-color);
+	margin: 0;
 }
 
 /*┌────────────────────┐*/
 /*│ Popup scroll view. │*/
 /*└────────────────────┘*/
 
-.popup-scroll-view {
+.popup .popframe-scroll-view {
     overflow-y: auto;
     overscroll-behavior: none;
     max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
@@ -2951,24 +3170,24 @@ body.directory-index #disqus_thread {
 
 /*  Scroll bar styles (for WebKit/Blink).
     */
-.popup-scroll-view::-webkit-scrollbar {
+.popup .popframe-scroll-view::-webkit-scrollbar {
     width: 14px;
 }
-.popup-scroll-view::-webkit-scrollbar-thumb {
+.popup .popframe-scroll-view::-webkit-scrollbar-thumb {
     background-color: var(--GW-popups-popup-scrollbar-thumb-color);
     box-shadow:
         0 0 0 3px var(--GW-popups-popup-scrollbar-track-color) inset;
 }
-.popup-scroll-view::-webkit-scrollbar-thumb:hover {
+.popup .popframe-scroll-view::-webkit-scrollbar-thumb:hover {
     background-color: var(--GW-popups-popup-scrollbar-thumb-hover-color);
 }
 
 /*  Scroll bar styles (for Firefox).
     */
-.popup-scroll-view {
+.popup .popframe-scroll-view {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-color) var(--GW-popups-popup-scrollbar-track-color);
 }
-.popup-scroll-view:hover {
+.popup .popframe-scroll-view:hover {
     scrollbar-color: var(--GW-popups-popup-scrollbar-thumb-hover-color) var(--GW-popups-popup-scrollbar-track-color);
 }
 
@@ -2976,13 +3195,13 @@ body.directory-index #disqus_thread {
 /*│ Popup content view. │*/
 /*└─────────────────────┘*/
 
-.popup-content-view {
+.popup .popframe-content-view {
     background-color: var(--GW-popups-popup-background-color);
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     overflow: auto;
 }
-.popup:not(.maximized) .popup-content-view {
+.popup:not(.maximized) .popframe-content-view {
     line-height: 1.45;
 }
 
@@ -2997,13 +3216,13 @@ body.directory-index #disqus_thread {
     height: var(--GW-popups-popup-max-height);
 }
 
-.popup.maximized .popup-content-view {
+.popup.maximized .popframe-content-view {
 	max-width: 970px;
 	margin: auto;
 	font-size: 1em;
 }
-.popup.object.maximized .popup-content-view,
-.popup.local-code-file.maximized .popup-content-view {
+.popup.object.maximized .popframe-content-view,
+.popup.local-code-file.maximized .popframe-content-view {
 	max-width: unset;
 }
 
@@ -3085,91 +3304,10 @@ body.directory-index #disqus_thread {
     min-height: var(--GW-popups-annotation-popup-min-height);
 }
 
-/*  Data fields.
-    */
-.popup.annotation .data-field {
-    text-align: left;
-    text-indent: 0;
-}
-.popup.annotation .data-field + .data-field {
-    margin-top: 0.25em;
-}
-
-.popup.annotation .data-field.title {
-    font-weight: bold;
-    font-size: 1.125em;
-    line-height: 1.35;
-}
-.popup.annotation .data-field.author {
-    font-style: italic;
-}
-.popup.annotation .date-plus-cites {
-    display: inline-block;
-}
-.popup.annotation .originalURL {
-    font-variant-caps: small-caps;
-    margin: 0 0.5em 0 0;
-}
-.popup.annotation .iaMirror {
-    padding-right: 0.3em;
-}
-.popup.annotation .data-field.annotation-abstract {
-    margin-top: 0.5em;
-}
-
-/*  Images (such as the ones in Wikipedia popups).
-    */
-.popup.annotation .popup-content-view > figure.float-right {
-    margin: 0.125em 0 0.125em 1.5em;
-    max-width: calc(50% - 1.5em);
-    float: right;
-}
-.popup.annotation figure.float-left .image-wrapper,
-.popup.annotation figure.float-right .image-wrapper {
-    max-width: 100%;
-}
-.popup.annotation figure img {
-    width: 100%;
-}
-
-/*  Special case for inline math in Wikipedia popups.
-    */
-.popup.annotation .mwe-math-element {
-    display: inline-block;
-    height: 1.25em;
-    line-height: 1;
-    margin: 0;
-    vertical-align: bottom;
-    padding: 0;
-    text-indent: 0;
-}
-.popup.annotation .mwe-math-element img {
-    display: inline-block;
-    height: 100%;
-}
-
 /*┌──────────────────┐*/
 /*│ Footnote popups. │*/
 /*└──────────────────┘*/
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
-
-.popup.footnote a.footnote-back {
-    display: none;
-}
-
-/*  The following compensates for the variable edge case where the last
-    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
-    back-to-citation link after it (which is not shown, if present, but makes it
-    uncertain whether the blockquote is the last child of the popup or not. This
-    code makes everything consistent regardless of which case applies.
-    —Obormot (2019-02-17)
-    */
-.popup.footnote .popup-content-view > blockquote:nth-last-child(2) {
-    margin-bottom: calc(1em/9);
-}
-.popup.footnote .popup-content-view > blockquote:nth-last-child(2) + p {
-    margin-top: 1em;
-}
 
 /*┌──────────────────────────┐*/
 /*│ Citation context popups. │*/
@@ -3183,7 +3321,8 @@ body.directory-index #disqus_thread {
     width: var(--GW-popups-popup-max-width);
 	height: var(--GW-popups-popup-max-height);
 }
-.popup.local-code-file .popup-content-view {
+
+.popup.local-code-file .popframe-content-view {
     padding: 0;
 }
 .popup.local-code-file pre {
@@ -3250,7 +3389,7 @@ body.directory-index #disqus_thread {
     width: var(--GW-popups-popup-max-width);
 	height: var(--GW-popups-popup-max-height);
 }
-.popup.object .popup-content-view {
+.popup.object .popframe-content-view {
     background-color: var(--GW-object-popup-background-color);
     padding: 0;
 }
@@ -3344,22 +3483,22 @@ body.directory-index #disqus_thread {
 /*│ Local transclude popups. │*/
 /*└──────────────────────────┘*/
 
-.popup.local-transclude .popup-content-view {
+.popup.local-transclude .popframe-content-view {
 	overflow-x: hidden;
 }
 
-.popup.local-transclude .popup-content-view > h1:first-child,
-.popup.local-transclude .popup-content-view > h2:first-child,
-.popup.local-transclude .popup-content-view > h3:first-child,
-.popup.local-transclude .popup-content-view > h4:first-child,
-.popup.local-transclude .popup-content-view > h5:first-child,
-.popup.local-transclude .popup-content-view > h6:first-child {
+.popup.local-transclude .popframe-content-view > h1:first-child,
+.popup.local-transclude .popframe-content-view > h2:first-child,
+.popup.local-transclude .popframe-content-view > h3:first-child,
+.popup.local-transclude .popframe-content-view > h4:first-child,
+.popup.local-transclude .popframe-content-view > h5:first-child,
+.popup.local-transclude .popframe-content-view > h6:first-child {
     margin-top: 0;
 }
 
 /*	Table of contents popups.
 	*/
-.popup.local-transclude.toc-section .popup-scroll-view {
+.popup.local-transclude.toc-section .popframe-scroll-view {
     max-height: calc(100vh - 6px - var(--popup-title-bar-height));
 }
 
@@ -3385,92 +3524,10 @@ body.directory-index #disqus_thread {
 /*=---------------=*/
 /*= POPUP CONTENT =*/
 /*=---------------=*/
-
 /*  Adjustments for styles in popups.
     */
-.popup:not(.maximized) p + p {
-    text-indent: 1.25em;
-}
 
-.popup:not(.maximized) p + ul,
-.popup:not(.maximized) p + ol {
-    margin-top: 0.2em;
-    margin-bottom: 0.2em;
-}
-
-.popup:not(.maximized) li {
-	text-align: left;
-}
-
-.popup h1,
-.popup h2,
-.popup h3,
-.popup h4,
-.popup h5,
-.popup h6 {
-    margin-left: 0;
-}
-
-.popup:not(.maximized) blockquote {
-    margin: 1em 0;
-}
-
-.popup .popup-content-view > figure:only-child {
-	margin: 0;
-    max-width: unset;
-}
-
-.popup .popup-content-view .image-wrapper::after {
-	display: none;
-}
-
-.popup blockquote:first-child,
-.popup .table-wrapper:first-child,
-.popup div.sourceCode:first-child pre {
-    margin-top: calc(3em/9);
-}
-.popup blockquote:last-child,
-.popup .table-wrapper:last-child,
-.popup div.sourceCode:last-child pre {
-    margin-bottom: calc(1em/9);
-}
-
-/*  Drop caps in popups.
-    */
-.popup.markdownBody .drop-cap-goudy > p,
-.popup.markdownBody .drop-cap-yinit > p,
-.popup.markdownBody .drop-cap-de-zs > p,
-.popup.markdownBody .drop-cap-cheshire > p,
-.popup.markdownBody .drop-cap-kanzlei > p {
-    text-indent: 0;
-}
-.popup.markdownBody .drop-cap-goudy > p::first-letter {
-    font-size: 6.5em;
-}
-.popup.markdownBody .drop-cap-yinit > p::first-letter {
-    font-size: 5.125em;
-}
-.popup.markdownBody .drop-cap-de-zs > p::first-letter {
-    font-size: 6.375em;
-}
-.popup.markdownBody .drop-cap-cheshire > p::first-letter {
-    font-size: 6.375em;
-}
-.popup.markdownBody .drop-cap-kanzlei > p::first-letter {
-    font-size: 6.625em;
-}
-
-/*  Margin notes in popups.
-    */
-.popup .marginnote {
-    display: initial;
-}
-
-.popup .popup-content-view > hr:first-child {
-    display: none;
-}
-
-.popup .footnote-self-link {
+.popup:not(.pinned) .popframe-content-view .image-wrapper::after {
 	display: none;
 }
 
@@ -3676,19 +3733,135 @@ body.directory-index #disqus_thread {
 /* POPINS */
 /**********/
 
+/*	The three nested boxes that make up a popin:
+	1. Outer frame (positioned within the block flow, after the spawning target)
+	2. Scroll view
+	3. Content view
+
+	The content view contains the actual contents of a popin.
+	*/
+.popin,
+.popin .popframe-scroll-view,
+.popin .popframe-content-view,
+.popin .popframe-title-bar {
+	box-sizing: border-box;
+}
+
+/*	Popin outer frame.
+	*/
 .popin {
-    float: left;
-    border-width: 3px;
-    border-style: double;
-    margin: 1em 0;
-    padding: 0.625em 1em 0.75em 1em;
-    font-size: 0.9em;
-    width: 100%;
-    box-sizing: border-box;
-}
-.spawns-popin.popin-open + .popin {
+	/*  Layout. */
     display: block;
+    position: relative;
+    float: left;
+    width: 100%;
+    max-height: calc(100vh - 8em);
+    overflow: visible;
+    z-index: 1;
+
+    margin: 1em 0;
+
+	/*  Styling. */
+    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
+    box-shadow: 1px 2px 8px 0 var(--GW-popins-box-shadow-color) inset;
+    background-color: var(--GW-popins-popin-background-color);
+
+    padding: 0.625em 1em 0.75em 1em;
 }
+
+
+
+/*	Popin title bar.
+	*/
+.popin .popframe-title-bar {
+	position: absolute;
+	height: var(--GW-popins-popin-title-bar-height);
+	border-bottom: 1px solid var(--GW-popins-popin-border-color);
+	background-color: var(--GW-popins-popin-title-bar-background-color);
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    width: 100%;
+    cursor: grab;
+    z-index: 1;
+}
+
+.popin {
+    --popin-title-bar-height: 0px;
+}
+.popin.has-title-bar {
+    --popin-title-bar-height: var(--GW-popins-popin-title-bar-height);
+}
+
+/*  Popup title.
+	*/
+.popin .popframe-title {
+    font-family: var(--GW-sans-serif-font-stack);
+    font-size: 0.8rem;
+    flex: 1 1 100%;
+    /*  Extra 1.5rem padding on left to accommodate extra button. */
+    padding: 0 2.5rem 0 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    text-align: center;
+}
+.popin .popframe-title::after {
+    display: none;
+}
+
+/*	Buttons in the popup title bar.
+	*/
+.popin .popframe-title-bar-button {
+	-moz-appearance: none;
+	appearance: none;
+	border: none;
+	background-color: transparent;
+	font-size: inherit;
+	font-family: inherit;
+	font-weight: inherit;
+	font-style: inherit;
+	margin: 0 1px;
+    padding: 4px;
+	height: 100%;
+    flex: 1 0 auto;
+    width: calc(var(--GW-popups-popup-title-bar-height) - 1px);
+	cursor: pointer;
+    color: var(--GW-popups-popup-title-bar-button-color);
+}
+.popup .popframe-title-bar-button:hover {
+    color: var(--GW-popups-popup-title-bar-button-color-hover);
+}
+.popup .popframe-title-bar-button:active {
+    transform: scale(0.9);
+}
+.popup .popframe-title-bar-button svg {
+	max-width: 100%;
+	max-height: 100%;
+    width: 24px;
+    height: 24px;
+}
+
+.popup .popframe-title-bar-button:disabled {
+    pointer-events: none;
+    opacity: 0.35;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .popin.video-popin {
     padding: 0;
