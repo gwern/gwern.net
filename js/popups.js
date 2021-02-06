@@ -58,18 +58,7 @@ Popups = {
         });
 
 		//  Add Escape key event listener.
-		document.addEventListener("keyup", Popups.keyUp = (event) => {
-			GWLog("Popups.keyUp", "popups.js", 3);
-			let allowedKeys = [ "Escape", "Esc" ];
-			if (!allowedKeys.includes(event.key) || Popups.popupContainer.childElementCount == 0)
-				return;
-
-			event.preventDefault();
-
-			[...Popups.popupContainer.children].forEach(popup => {
-				Popups.despawnPopup(popup);
-			});
-		});
+		document.addEventListener("keyup", Popups.keyUp);
 
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
@@ -281,6 +270,26 @@ Popups = {
 			};
 			return button;
 		},
+		popupZoomButtons: () => {
+			return Popups.titleBarComponents.popupPlaces.map(place => {
+				let button = Popups.titleBarComponents.genericButton();
+				button.innerHTML = Popups.titleBarComponents.buttonIcons[`zoom-${place}`];
+				button.title = Popups.titleBarComponents.buttonTitles[`zoom-${place}`];
+				button.classList.add("submenu-button", "zoom-button", place);
+				button.buttonAction = (event) => {
+					event.stopPropagation();
+
+					let popup = button.closest(".popup");
+					if (popup) {
+						Popups.zoomPopup(popup, place);
+						popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
+							titleBarButton.updateState();
+						});
+					}
+				};
+				return button;
+			});
+		},
 		pinButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.defaultHTML = Popups.titleBarComponents.buttonIcons["pin"];
@@ -321,7 +330,26 @@ Popups = {
 			let button = Popups.titleBarComponents.genericButton();
 			button.innerHTML = Popups.titleBarComponents.buttonIcons["options"];
 			button.title = Popups.titleBarComponents.buttonTitles["options"];
+			button.classList.add("options-button");
 			return button;
+		},
+		addSubmenuToButton: (button, submenuClass) => {
+			let popup = button.closest(".popup");
+			if (!popup || !popup.titleBar)
+				return;
+
+			button.classList.add("has-submenu");
+			button.submenu = document.createElement("div");
+			button.submenu.classList.add("submenu", submenuClass);
+
+			popup.titleBar.appendChild(button.submenu);
+		},
+		addButtonsToSubmenu: (submenu, buttons) => {
+			buttons.forEach(button => {
+				submenu.appendChild(button);
+				if (button.buttonAction)
+					button.addActivateEvent(button.buttonAction);
+			});
 		}
 	},
 
@@ -474,8 +502,7 @@ Popups = {
 			*/
 		if (!Popups.popupIsPinned(popup)) {
 			popup.popupStack.push(popup);
-			popup.spawningTarget.popup = popup;
-			popup.spawningTarget.popFrame = popup;
+			Popups.attachPopupToTarget(popup);
 		}
 
 		//  Clear timers.
@@ -500,8 +527,7 @@ Popups = {
 		popup.swapClasses([ "pinned", "unpinned" ], 1);
 		Popups.positionPopup(popup);
 		popup.popupStack.push(popup);
-        popup.spawningTarget.popup = popup;
-        popup.spawningTarget.popFrame = popup;
+		Popups.attachPopupToTarget(popup);
 	},
 
 	updatePageScrollState: () => {
@@ -587,31 +613,8 @@ Popups = {
 				if (   newlyAddedElement.classList.contains("zoom-button") 
 					&& newlyAddedElement.submenuEnabled) {
 					let zoomButton = newlyAddedElement;
-
-					zoomButton.classList.add("has-submenu");
-
-					zoomButton.submenu = document.createElement("div");
-					zoomButton.submenu.classList.add("submenu", "zoom-button-submenu");
-					target.popup.titleBar.appendChild(zoomButton.submenu);
-					Popups.titleBarComponents.popupPlaces.forEach(place => {
-						let button = Popups.titleBarComponents.genericButton();
-						button.innerHTML = Popups.titleBarComponents.buttonIcons[`zoom-${place}`];
-						button.title = Popups.titleBarComponents.buttonTitles[`zoom-${place}`];
-						button.classList.add("submenu-button", "zoom-button", place);
-						button.buttonAction = (event) => {
-							event.stopPropagation();
-
-							let popup = button.closest(".popup");
-							if (popup) {
-								Popups.zoomPopup(popup, place);
-								popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
-									titleBarButton.updateState();
-								});
-							}
-						};
-						zoomButton.submenu.appendChild(button);
-						button.addActivateEvent(button.buttonAction);
-					});
+					Popups.titleBarComponents.addSubmenuToButton(zoomButton, "zoom-button-submenu");
+					Popups.titleBarComponents.addButtonsToSubmenu(zoomButton.submenu, Popups.titleBarComponents.popupZoomButtons());
 				}
 			});
 
@@ -798,7 +801,9 @@ Popups = {
 		popup.addEventListener("click", Popups.popupClicked);
 		popup.addEventListener("mouseenter", Popups.popupMouseenter);
 		popup.addEventListener("mouseleave", Popups.popupMouseleave);
-		popup.addEventListener("mousemove", (event) => {
+		popup.addEventListener("mousemove", Popups.popupMousemove = (event) => {
+			GWLog("Popups.popupMousemove", "popups.js", 3);
+
 			if (   event.target == popup 
 				&& window.popupBeingDragged == null 
 				&& Popups.popupIsPinnedOrZoomed(popup)) {
@@ -828,13 +833,15 @@ Popups = {
 				}
 			}
 		});
-		popup.addEventListener("mouseout", (event) => {
+		popup.addEventListener("mouseout", Popups.popupMouseout = (event) => {
+			GWLog("Popups.popupMouseout", "popups.js", 3);
+
 			//  Reset cursor.
 			if (window.popupBeingDragged == null)
 				document.documentElement.style.cursor = "";
 		});
-		popup.addEventListener("mousedown", Popups.popupMouseDown = (event) => {
-			GWLog("Popups.popupMouseDown", "popups.js", 2);
+		popup.addEventListener("mousedown", Popups.popupMousedown = (event) => {
+			GWLog("Popups.popupMousedown", "popups.js", 2);
 
 			/*  Make sure we’re clicking on the popup (i.e., its edge) and not
 				on any of the popup’s contained elements; that this is a 
@@ -972,16 +979,8 @@ Popups = {
 
 		//  Wait for the “naive” layout to be completed, and then...
 		requestAnimationFrame(() => {
-			/*  How much "breathing room" to give the target (i.e., offset of
-				the popup).
-				*/
-			let popupBreathingRoom = {
-				x: Popups.popupBreathingRoomX,
-				y: Popups.popupBreathingRoomY
-			};
-
 			/*  This is the width and height of the popup, as already determined
-				by the layout system, and taking into account the popup's content,
+				by the layout system, and taking into account the popup’s content,
 				and the max-width, min-width, etc., CSS properties.
 				*/
 			let popupIntrinsicWidth = popup.offsetWidth;
@@ -991,8 +990,8 @@ Popups = {
 			let provisionalPopupYPosition = 0.0;
 
 			let offToTheSide = false;
-			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top - popupBreathingRoom.y;
-			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom + popupBreathingRoom.y;
+			let popupSpawnYOriginForSpawnAbove = targetViewportRect.top - Popups.popupBreathingRoomY;
+			let popupSpawnYOriginForSpawnBelow = targetViewportRect.bottom + Popups.popupBreathingRoomY;
 			if (target.closest(".popup") || Popups.preferSidePositioning(target)) {
 				/*  The popup is a nested popup, or the target specifies that it
 					prefers to have popups spawned to the side; we try to put
@@ -1007,17 +1006,17 @@ Popups = {
 
 			//  Determine whether to put the popup off to the right, or left.
 			if (  targetViewportRect.right
-				+ popupBreathingRoom.x
+				+ Popups.popupBreathingRoomX
 				+ popupIntrinsicWidth
 				  <= document.documentElement.offsetWidth) {
 				//  Off to the right.
-				provisionalPopupXPosition = targetViewportRect.right + popupBreathingRoom.x;
+				provisionalPopupXPosition = targetViewportRect.right + Popups.popupBreathingRoomX;
 			} else if (  targetViewportRect.left
-					   - popupBreathingRoom.x
+					   - Popups.popupBreathingRoomX
 					   - popupIntrinsicWidth
 						 >= 0) {
 				//  Off to the left.
-				provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - popupBreathingRoom.x;
+				provisionalPopupXPosition = targetViewportRect.left - popupIntrinsicWidth - Popups.popupBreathingRoomX;
 			} else {
 				//  Not off to either side, in fact.
 				offToTheSide = false;
@@ -1049,7 +1048,7 @@ Popups = {
 				/*  Place popup off to the right (and either above or below),
 					as per the previous block of code.
 					*/
-				provisionalPopupXPosition = spawnPoint.x + popupBreathingRoom.x;
+				provisionalPopupXPosition = spawnPoint.x + Popups.popupBreathingRoomX;
 			}
 
 			/*  Does the popup extend past the right edge of the container?
@@ -1142,6 +1141,15 @@ Popups = {
 
 			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 		}
+	},
+	attachPopupToTarget: (popup) => {
+		GWLog("Popups.attachPopupToTarget", "popups.js", 2);
+
+		Popups.clearPopupTimers(popup.spawningTarget);
+
+        popup.spawningTarget.classList.add("popup-open");
+        popup.spawningTarget.popup = popup;
+        popup.spawningTarget.popFrame = popup;
 	},
 	detachPopupFromTarget: (popup) => {
 		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
@@ -1290,6 +1298,19 @@ Popups = {
 
 		if (event.target.popup)
 			Popups.setPopupFadeTimer(event.target);
+	},
+	//  The keyup event (for hitting Escape to dismiss popups).
+	keyUp: (event) => {
+		GWLog("Popups.keyUp", "popups.js", 3);
+		let allowedKeys = [ "Escape", "Esc" ];
+		if (!allowedKeys.includes(event.key) || Popups.popupContainer.childElementCount == 0)
+			return;
+
+		event.preventDefault();
+
+		[...Popups.popupContainer.children].forEach(popup => {
+			Popups.despawnPopup(popup);
+		});
 	}
 };
 
