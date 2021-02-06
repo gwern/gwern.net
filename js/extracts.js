@@ -1298,10 +1298,10 @@ Extracts = {
 			//  Add the close button.
 			popup.titleBarContents.push(Popups.titleBarComponents.closeButton());
 
-			//  Add the maximize button.
-			let maximizeButton = Popups.titleBarComponents.maximizeButton();
-// 			maximizeButton.submenuEnabled = true;
-			popup.titleBarContents.push(maximizeButton);
+			//  Add the zoom button.
+			let zoomButton = Popups.titleBarComponents.zoomButton();
+			zoomButton.submenuEnabled = true;
+			popup.titleBarContents.push(zoomButton);
 
 			//  Add the pin button.
 			popup.titleBarContents.push(Popups.titleBarComponents.pinButton());

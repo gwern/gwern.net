@@ -184,7 +184,7 @@ Popups = {
 		popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
 		buttonIcons: {
 			"close": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M325.8 193.8L263.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L224 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17zM448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-48 346V86c0-3.3-2.7-6-6-6H54c-3.3 0-6 2.7-6 6v340c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>`,
-			"maximize": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
+			"zoom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
 			"restore": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12z"></path></svg>`,
 			"pin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M306.5 186.6l-5.7-42.6H328c13.2 0 24-10.8 24-24V24c0-13.2-10.8-24-24-24H56C42.8 0 32 10.8 32 24v96c0 13.2 10.8 24 24 24h27.2l-5.7 42.6C29.6 219.4 0 270.7 0 328c0 13.2 10.8 24 24 24h144v104c0 .9.1 1.7.4 2.5l16 48c2.4 7.3 12.8 7.3 15.2 0l16-48c.3-.8.4-1.7.4-2.5V352h144c13.2 0 24-10.8 24-24 0-57.3-29.6-108.6-77.5-141.4zM50.5 304c8.3-38.5 35.6-70 71.5-87.8L138 96H80V48h224v48h-58l16 120.2c35.8 17.8 63.2 49.4 71.5 87.8z"/></svg>`,
 			"unpin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg>`,
@@ -201,7 +201,7 @@ Popups = {
 		},
 		buttonTitles: {
 			"close": "Close this popup",
-			"maximize": "Maximize this popup",
+			"zoom": "Maximize this popup",
 			"restore": "Restore this popup to normal size",
 			"pin": "Pin this popup to the screen",
 			"unpin": "Un-pin this popup from the screen",
@@ -243,22 +243,26 @@ Popups = {
 			};
 			return button;
 		},
-		maximizeButton: () => {
+		zoomButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
-			button.defaultHTML = Popups.titleBarComponents.buttonIcons["maximize"];
+			button.defaultHTML = Popups.titleBarComponents.buttonIcons["zoom"];
 			button.alternateHTML = Popups.titleBarComponents.buttonIcons["restore"];
-			button.defaultTitle = Popups.titleBarComponents.buttonTitles["maximize"];
+			button.defaultTitle = Popups.titleBarComponents.buttonTitles["zoom"];
 			button.alternateTitle = Popups.titleBarComponents.buttonTitles["restore"];
 			button.innerHTML = button.defaultHTML;
 			button.title = button.defaultTitle;
-			button.classList.add("maximize-button", "maximize");
+			button.classList.add("zoom-button", "zoom");
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
 				let popup = button.closest(".popup");
 				if (popup) {
-					Popups.zoomPopup(popup);
-					popup.titleBar.querySelectorAll("button.maximize-button, button.pin-button").forEach(titleBarButton => {
+					if (Popups.popupIsZoomed(popup)) {
+						Popups.restorePopup(popup);
+					} else {
+						Popups.zoomPopup(popup, "full");
+					}
+					popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
 						titleBarButton.updateState();
 					});
 				}
@@ -268,10 +272,10 @@ Popups = {
 				if (!popup)
 					return;
 
-				button.innerHTML = Popups.popupIsMaximized(popup) ? button.alternateHTML : button.defaultHTML;
-				button.title = Popups.popupIsMaximized(popup) ? button.alternateTitle : button.defaultTitle;
+				button.innerHTML = Popups.popupIsZoomed(popup) ? button.alternateHTML : button.defaultHTML;
+				button.title = Popups.popupIsZoomed(popup) ? button.alternateTitle : button.defaultTitle;
 
-				button.swapClasses([ "maximize", "restore" ], (Popups.popupIsMaximized(popup) ? 1 : 0));
+				button.swapClasses([ "zoom", "restore" ], (Popups.popupIsZoomed(popup) ? 1 : 0));
 			};
 			return button;
 		},
@@ -302,12 +306,12 @@ Popups = {
 				if (!popup)
 					return;
 
-				button.innerHTML = Popups.popupIsPinned(popup) ? button.alternateHTML : button.defaultHTML;
+				button.innerHTML = Popups.popupIsPinnedOrZoomed(popup) ? button.alternateHTML : button.defaultHTML;
 				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = Popups.popupIsMaximized(popup);
+				button.disabled = Popups.popupIsZoomed(popup);
 			};
 			return button;
 		},
@@ -319,8 +323,16 @@ Popups = {
 		}
 	},
 
+	popupIsPinnedOrZoomed: (popup) => {
+		return (Popups.popupIsPinned(popup) || Popups.popupIsZoomed(popup));
+	},
+
+	popupIsZoomed: (popup) => {
+		return popup.classList.contains("zoomed");
+	},
+
 	popupIsMaximized: (popup) => {
-		return popup.classList.contains("maximized");
+		return popup.classList.contains("zoomed") && popup.classList.contains("full");
 	},
 
 	popupWasRestored: (popup) => {
@@ -328,96 +340,74 @@ Popups = {
 	},
 
 	popupIsPinned: (popup) => {
-		return popup.classList.contains("pinned") || Popups.popupIsMaximized(popup);
+		return popup.classList.contains("pinned");
 	},
 
 	popupWasUnpinned: (popup) => {
 		return popup.classList.contains("unpinned");
 	},
 
-	zoomPopup: (popup) => {
-		let maximize = !Popups.popupIsMaximized(popup);
-		popup.swapClasses([ "maximized", "restored" ], (maximize ? 0 : 1));
-		if (maximize) {
+	zoomPopup: (popup, place) => {
+		GWLog("Popups.zoomPopup", "popups.js", 2);
+
+		//  If popup isn’t already zoomed, save position.
+		if (!Popups.popupIsZoomed(popup)) {
 			let popupRect = popup.getBoundingClientRect();
 			popup.dataset.previousXPosition = popupRect.left;
 			popup.dataset.previousYPosition = popupRect.top;
 		}
-		Popups.positionPopup(popup);
 
-		if (maximize) {
-			popup.popupStack.remove(popup);
-		} else if (!Popups.popupIsPinned(popup)) {
-			popup.popupStack.push(popup);
-		}
+		//  Update classes.
+		popup.swapClasses([ "zoomed", "restored" ], 0);
+		popup.classList.remove(...(Popups.titleBarComponents.popupPlaces));
+		popup.classList.add(place);
 
-		Popups.clearPopupTimers(popup.spawningTarget);
-
-		Popups.updatePageScrollState();
-	},
-
-	pinPopup: (popup) => {
-		popup.swapClasses([ "pinned", "unpinned" ], 0);
-		Popups.positionPopup(popup);
-		popup.popupStack.remove(popup);
-		Popups.detachPopupFromTarget(popup);
-	},
-
-	unpinPopup: (popup) => {
-		popup.swapClasses([ "pinned", "unpinned" ], 1);
-		Popups.positionPopup(popup);
-		popup.popupStack.push(popup);
-        popup.spawningTarget.popup = popup;
-        popup.spawningTarget.popFrame = popup;
-	},
-
-	placePopup: (popup, place) => {
 		//  Viewport width must account for vertical scroll bar.
 		let viewportWidth = document.documentElement.offsetWidth;
 		let viewportHeight = window.innerHeight;
-
-		let posX, posY;
 		switch (place) {
 			case "top-left":
-				posX = 0.0;
-				posY = 0.0;
+				popup.zoomToX = 0.0;
+				popup.zoomToY = 0.0;
 				break;
 			case "top":
-				posX = 0.0;
-				posY = 0.0;
+				popup.zoomToX = 0.0;
+				popup.zoomToY = 0.0;
 				break;
 			case "top-right":
-				posX = viewportWidth / 2.0;
-				posY = 0.0;
+				popup.zoomToX = viewportWidth / 2.0;
+				popup.zoomToY = 0.0;
 				break;
 			case "left":
-				posX = 0.0;
-				posY = 0.0;
+				popup.zoomToX = 0.0;
+				popup.zoomToY = 0.0;
 				break;
 			case "full":
-				posX = 0.0;
-				posY = 0.0;
+				popup.zoomToX = 0.0;
+				popup.zoomToY = 0.0;
 				break;
 			case "right":
-				posX = viewportWidth / 2.0;
-				posY = 0.0;
+				popup.zoomToX = viewportWidth / 2.0;
+				popup.zoomToY = 0.0;
 				break;
 			case "bottom-left":
-				posX = 0.0;
-				posY = viewportHeight / 2.0;
+				popup.zoomToX = 0.0;
+				popup.zoomToY = viewportHeight / 2.0;
 				break;
 			case "bottom":
-				posX = 0.0;
-				posY = viewportHeight / 2.0;
+				popup.zoomToX = 0.0;
+				popup.zoomToY = viewportHeight / 2.0;
 				break;
 			case "bottom-right":
-				posX = viewportWidth / 2.0;
-				posY = viewportHeight / 2.0;
+				popup.zoomToX = viewportWidth / 2.0;
+				popup.zoomToY = viewportHeight / 2.0;
 				break;
 		}
 
-		Popups.setPopupPositionInViewport(popup, { x: posX, y: posY });
+		//  Update popup position.
+		Popups.positionPopup(popup);
 
+		//  Update popup size.
 		popup.style.maxWidth = "unset";
 		popup.style.maxHeight = "unset";
 		switch (place) {
@@ -443,9 +433,68 @@ Popups = {
 				popup.style.height = "50vh";
 				break;
 		}
+		popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
+
+		//  Remove popup from its stack.
+		popup.popupStack.remove(popup);
+
+		//  Clear timers.
+		Popups.clearPopupTimers(popup.spawningTarget);
+
+		//  Enable/disable main document scrolling.
+		Popups.updatePageScrollState();
+	},
+
+	restorePopup: (popup) => {
+		GWLog("Popups.restorePopup", "popups.js", 2);
+
+		//  Update classes.
+		popup.swapClasses([ "zoomed", "restored" ], 1);
+		popup.classList.remove(...(Popups.titleBarComponents.popupPlaces));
+
+		//  Update popup size.
+		popup.style.width = "";
+		popup.style.height = "";
+		popup.style.maxWidth = "";
+		popup.style.maxHeight = "";
+		popup.scrollView.style.maxHeight = "";
+
+		//  Update popup position.
+		Popups.positionPopup(popup);
+
+		//  Re-add popup to its stack (unless it’s pinned).
+		if (!Popups.popupIsPinned(popup))
+			popup.popupStack.push(popup);
+
+		//  Clear timers.
+		Popups.clearPopupTimers(popup.spawningTarget);
+
+		//  Enable/disable main document scrolling.
+		Popups.updatePageScrollState();
+	},
+
+	pinPopup: (popup) => {
+		GWLog("Popups.pinPopup", "popups.js", 2);
+
+		popup.swapClasses([ "pinned", "unpinned" ], 0);
+		Popups.positionPopup(popup);
+		popup.popupStack.remove(popup);
+		Popups.detachPopupFromTarget(popup);
+	},
+
+	unpinPopup: (popup) => {
+		GWLog("Popups.unpinPopup", "popups.js", 2);
+
+		popup.swapClasses([ "pinned", "unpinned" ], 1);
+		Popups.positionPopup(popup);
+		popup.popupStack.push(popup);
+        popup.spawningTarget.popup = popup;
+        popup.spawningTarget.popFrame = popup;
 	},
 
 	updatePageScrollState: () => {
+		GWLog("Popups.updatePageScrollState", "popups.js", 2);
+
 		if (Popups.allSpawnedPopups().findIndex(popup => Popups.popupIsMaximized(popup)) == -1)
 			togglePageScrolling(true);
 		else
@@ -453,10 +502,14 @@ Popups = {
 	},
 
 	hidePopupContainer: () => {
+		GWLog("Popups.hidePopupContainer", "popups.js", 3);
+
 		Popups.popupContainer.style.visibility = "hidden";
 	},
 
 	unhidePopupContainer: () => {
+		GWLog("Popups.unhidePopupContainer", "popups.js", 3);
+
 		Popups.popupContainer.style.visibility = "";
 	},
 
@@ -518,29 +571,33 @@ Popups = {
 				if (newlyAddedElement.buttonAction)
 					newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
 
-				//  Add popup-positioning submenu to maximize button.
-				if (   newlyAddedElement.classList.contains("maximize-button") 
+				//  Add popup-positioning submenu to zoom button.
+				if (   newlyAddedElement.classList.contains("zoom-button") 
 					&& newlyAddedElement.submenuEnabled) {
-					let maximizeButton = newlyAddedElement;
+					let zoomButton = newlyAddedElement;
 
-					maximizeButton.classList.add("has-submenu");
+					zoomButton.classList.add("has-submenu");
 
-					maximizeButton.submenu = document.createElement("div");
-					maximizeButton.submenu.classList.add("submenu", "window-arrange-menu");
-					target.popup.titleBar.appendChild(maximizeButton.submenu);
-					Popups.titleBarComponents.popupPlaces.forEach(position => {
+					zoomButton.submenu = document.createElement("div");
+					zoomButton.submenu.classList.add("submenu", "zoom-button-submenu");
+					target.popup.titleBar.appendChild(zoomButton.submenu);
+					Popups.titleBarComponents.popupPlaces.forEach(place => {
 						let button = Popups.titleBarComponents.genericButton();
-						button.innerHTML = Popups.titleBarComponents.buttonIcons[`zoom-${position}`];
-						button.title = Popups.titleBarComponents.buttonTitles[`zoom-${position}`];
-						button.classList.add("zoom-button", position);
+						button.innerHTML = Popups.titleBarComponents.buttonIcons[`zoom-${place}`];
+						button.title = Popups.titleBarComponents.buttonTitles[`zoom-${place}`];
+						button.classList.add("submenu-button", "zoom-button", place);
 						button.buttonAction = (event) => {
 							event.stopPropagation();
 
 							let popup = button.closest(".popup");
-							if (popup)
-								Popups.placePopup(popup, position);
+							if (popup) {
+								Popups.zoomPopup(popup, place);
+								popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
+									titleBarButton.updateState();
+								});
+							}
 						};
-						maximizeButton.submenu.appendChild(button);
+						zoomButton.submenu.appendChild(button);
 						button.addActivateEvent(button.buttonAction);
 					});
 				}
@@ -622,7 +679,7 @@ Popups = {
 							*/
 						if ((  !event.target.closest 
 							 || event.target.closest(".popup") == null)
-							&& !Popups.popupIsPinned(popup)) {
+							&& !Popups.popupIsPinnedOrZoomed(popup)) {
 							Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
 								Popups.clearPopupTimers(popupInStack.spawningTarget);
 								Popups.setPopupFadeTimer(popupInStack.spawningTarget);
@@ -804,10 +861,10 @@ Popups = {
 			}
 
 			//  Special cases for maximizing/restoring and pinning/unpinning.
-			if (Popups.popupIsPinned(popup)) {
-				if (Popups.popupIsMaximized(popup)) {
-					provisionalPopupXPosition = 0.0;
-					provisionalPopupYPosition = 0.0;
+			if (Popups.popupIsPinnedOrZoomed(popup)) {
+				if (Popups.popupIsZoomed(popup)) {
+					provisionalPopupXPosition = popup.zoomToX;
+					provisionalPopupYPosition = popup.zoomToY;
 				} else {
 					if (Popups.popupWasRestored(popup)) {
 						provisionalPopupXPosition = parseFloat(popup.dataset.previousXPosition);
@@ -844,19 +901,15 @@ Popups = {
 		});
 	},
 	setPopupPositionInViewport: (popup, position) => {
-		popup.classList.remove(...(Popups.titleBarComponents.popupPlaces.map(place => `place-${place}`)));
-		popup.style.maxWidth = "";
-		popup.style.maxHeight = "";
-		popup.style.width = "";
-		popup.style.height = "";
+		GWLog("Popups.setPopupPositionInViewport", "popups.js", 3);
 
-		if (!Popups.popupIsPinned(popup)) {
+		if (!Popups.popupIsPinnedOrZoomed(popup)) {
 			let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 			position.x -= popupContainerViewportRect.left;
 			position.y -= popupContainerViewportRect.top;
 		}
 
-		popup.style.position = Popups.popupIsPinned(popup) ? "fixed" : "";
+		popup.style.position = Popups.popupIsPinnedOrZoomed(popup) ? "fixed" : "";
 
 		popup.style.left = `${position.x}px`;
 		popup.style.top = `${position.y}px`;
@@ -960,7 +1013,7 @@ Popups = {
 
 		let popup = event.target.closest(".popup");
 
-		if (Popups.popupIsPinned(popup))
+		if (Popups.popupIsPinnedOrZoomed(popup))
 			return;
 
 		event.stopPropagation();

@@ -2818,17 +2818,17 @@ body.directory-index #disqus_thread {
 /*  Adjustments for styles in pop-frames.
     */
 
-.popframe:not(.maximized) p + p {
+.popframe:not(.zoomed) p + p {
     text-indent: 1.25em;
 }
 
-.popframe:not(.maximized) p + ul,
-.popframe:not(.maximized) p + ol {
+.popframe:not(.zoomed) p + ul,
+.popframe:not(.zoomed) p + ol {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
 }
 
-.popframe:not(.maximized) li {
+.popframe:not(.zoomed) li {
 	text-align: left;
 }
 
@@ -2841,7 +2841,7 @@ body.directory-index #disqus_thread {
     margin-left: 0;
 }
 
-.popframe:not(.maximized) blockquote {
+.popframe:not(.zoomed) blockquote {
     margin: 1em 0;
 }
 
@@ -3209,29 +3209,25 @@ body.directory-index #disqus_thread {
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     overflow: auto;
-}
-.popup:not(.maximized) .popframe-content-view {
     line-height: 1.45;
 }
 
-/*┌───────────────────┐*/
-/*│ Maximized popups. │*/
-/*└───────────────────┘*/
+/*┌────────────────┐*/
+/*│ Zoomed popups. │*/
+/*└────────────────┘*/
 
-.popup.maximized {
-	--GW-popups-popup-max-width: 100%;
-	--GW-popups-popup-max-height: 100vh;
-    width: var(--GW-popups-popup-max-width);
-    height: var(--GW-popups-popup-max-height);
-}
-
-.popup.maximized .popframe-content-view {
+.popup.zoomed .popframe-content-view {
 	max-width: 970px;
 	margin: auto;
-	font-size: 1em;
 }
-.popup.object.maximized .popframe-content-view,
-.popup.local-code-file.maximized .popframe-content-view {
+
+.popup.zoomed.full .popframe-content-view {
+	font-size: 1em;
+	line-height: 1.55;
+}
+
+.popup.object.zoomed .popframe-content-view,
+.popup.local-code-file.zoomed .popframe-content-view {
 	max-width: unset;
 }
 
