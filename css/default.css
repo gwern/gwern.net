@@ -3065,7 +3065,7 @@ body.directory-index #disqus_thread {
     align-items: center;
     width: 100%;
     cursor: grab;
-    z-index: 1;
+    z-index: 11;
 }
 .popup.grabbed .popframe-title-bar,
 .popup.dragging .popframe-title-bar,

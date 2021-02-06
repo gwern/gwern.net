@@ -257,10 +257,10 @@ Popups = {
 
 				let popup = button.closest(".popup");
 				if (popup) {
-					if (Popups.popupIsZoomed(popup)) {
-						Popups.restorePopup(popup);
-					} else {
+					if (button.classList.contains("zoom")) {
 						Popups.zoomPopup(popup, "full");
+					} else {
+						Popups.restorePopup(popup);
 					}
 					popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
 						titleBarButton.updateState();
@@ -272,10 +272,12 @@ Popups = {
 				if (!popup)
 					return;
 
-				button.innerHTML = Popups.popupIsZoomed(popup) ? button.alternateHTML : button.defaultHTML;
-				button.title = Popups.popupIsZoomed(popup) ? button.alternateTitle : button.defaultTitle;
+				let alternateStateEnabled = (Popups.popupIsZoomed(popup) || Popups.popupWasResized(popup));
 
-				button.swapClasses([ "zoom", "restore" ], (Popups.popupIsZoomed(popup) ? 1 : 0));
+				button.innerHTML = alternateStateEnabled ? button.alternateHTML : button.defaultHTML;
+				button.title = alternateStateEnabled ? button.alternateTitle : button.defaultTitle;
+
+				button.swapClasses([ "zoom", "restore" ], (alternateStateEnabled ? 1 : 0));
 			};
 			return button;
 		},
@@ -323,6 +325,10 @@ Popups = {
 		}
 	},
 
+	popupWasResized: (popup) => {
+		return popup.classList.contains("resized");
+	},
+
 	popupIsPinnedOrZoomed: (popup) => {
 		return (Popups.popupIsPinned(popup) || Popups.popupIsZoomed(popup));
 	},
@@ -352,9 +358,8 @@ Popups = {
 
 		//  If popup isn’t already zoomed, save position.
 		if (!Popups.popupIsZoomed(popup)) {
-			let popupRect = popup.getBoundingClientRect();
-			popup.dataset.previousXPosition = popupRect.left;
-			popup.dataset.previousYPosition = popupRect.top;
+			popup.dataset.previousXPosition = popup.viewportRect.left;
+			popup.dataset.previousYPosition = popup.viewportRect.top;
 		}
 
 		//  Update classes.
@@ -435,8 +440,9 @@ Popups = {
 		}
 		popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 
-		//  Remove popup from its stack.
+		//  Remove popup from its stack and detach from spawning target.
 		popup.popupStack.remove(popup);
+		Popups.detachPopupFromTarget(popup);
 
 		//  Clear timers.
 		Popups.clearPopupTimers(popup.spawningTarget);
@@ -451,6 +457,7 @@ Popups = {
 		//  Update classes.
 		popup.swapClasses([ "zoomed", "restored" ], 1);
 		popup.classList.remove(...(Popups.titleBarComponents.popupPlaces));
+		popup.classList.remove("resized");
 
 		//  Update popup size.
 		popup.style.width = "";
@@ -462,9 +469,14 @@ Popups = {
 		//  Update popup position.
 		Popups.positionPopup(popup);
 
-		//  Re-add popup to its stack (unless it’s pinned).
-		if (!Popups.popupIsPinned(popup))
+		/*  Re-add popup to its stack and re-attach it to its spawning target
+			(unless it’s pinned).
+			*/
+		if (!Popups.popupIsPinned(popup)) {
 			popup.popupStack.push(popup);
+			popup.spawningTarget.popup = popup;
+			popup.spawningTarget.popFrame = popup;
+		}
 
 		//  Clear timers.
 		Popups.clearPopupTimers(popup.spawningTarget);
@@ -640,11 +652,11 @@ Popups = {
 				let dragStartMouseCoordX = event.clientX;
 				let dragStartMouseCoordY = event.clientY;
 
-				let popupRect = popup.getBoundingClientRect();
-				let popupPosition = {
-					x: popupRect.left,
-					y: popupRect.top
-				};
+				//  Popup initial position.
+				let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
+				//  Do not change popup size.
+				newPopupViewportRect.width = 0;
+				newPopupViewportRect.height = 0;
 
 				window.addEventListener("mouseup", Popups.popupDragMouseUp = (event) => {
 					GWLog("Popups.popupDragMouseUp", "popups.js", 2);
@@ -661,12 +673,16 @@ Popups = {
 						popup.classList.toggle("grabbed", false);
 						popup.classList.toggle("dragging", false);
 
+						//  Re-enable clicking on the title.
 						if (linkDragTarget) {
 							requestAnimationFrame(() => {
 								linkDragTarget.onclick = null;
 								linkDragTarget = null;
 							});
 						}
+
+						//  Cache the viewport rect.
+						popup.viewportRect = popup.getBoundingClientRect();
 
 						//  Ensure that the click listener isn’t fired at once.
 						requestAnimationFrame(() => {
@@ -702,14 +718,17 @@ Popups = {
 					if (linkDragTarget)
 						linkDragTarget.onclick = (event) => { return false; };
 
-					popupPosition.x = popupRect.left + (event.clientX - dragStartMouseCoordX);
-					popupPosition.y = popupRect.top + (event.clientY - dragStartMouseCoordY);
+					let deltaX = event.clientX - dragStartMouseCoordX;
+					let deltaY = event.clientY - dragStartMouseCoordY;
 
-					//  Restrict popup position to viewport limits.
-					popupPosition.x = Math.max(Math.min(popupPosition.x, viewportWidth - popupRect.width), 0)
-					popupPosition.y = Math.max(Math.min(popupPosition.y, viewportHeight - popupRect.height), 0);
+					newPopupViewportRect.x = valMinMax(popup.viewportRect.left + deltaX, 
+													   0, 
+													   viewportWidth - popup.viewportRect.width);
+					newPopupViewportRect.y = valMinMax(popup.viewportRect.top + deltaY, 
+													   0, 
+													   viewportHeight - popup.viewportRect.height);
 
-					Popups.setPopupPositionInViewport(popup, popupPosition);
+					Popups.setPopupViewportRect(popup, newPopupViewportRect);
 				};
 			});
 			target.popup.titleBar.addEventListener("mouseup", (event) => {
@@ -729,6 +748,34 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
 	},
+	edgeOrCorner: (popup, relativeMousePos) => {
+		//  Make corner drag areas big enough to make a decent mouse target.
+		let cornerHandleSize = Math.min(20.0, (Math.min(popup.viewportRect.width, popup.viewportRect.height) / 3.0));
+
+			   if (   relativeMousePos.x < cornerHandleSize 
+				   && relativeMousePos.y < cornerHandleSize) {
+			return "corner-top-left";
+		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize 
+				   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
+			return "corner-bottom-right";
+		} else if (   relativeMousePos.x < cornerHandleSize 
+				   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
+			return "corner-bottom-left";
+		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize 
+				   && relativeMousePos.y < cornerHandleSize) {
+			return "corner-top-right";
+		} else if (relativeMousePos.x < cornerHandleSize) {
+			return "edge-left";
+		} else if (relativeMousePos.x > popup.viewportRect.width - cornerHandleSize) {
+			return "edge-right";
+		} else if (relativeMousePos.y < cornerHandleSize) {
+			return "edge-top";
+		} else if (relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
+			return "edge-bottom";
+		} else {
+			return "";
+		}
+	},
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
 
@@ -744,10 +791,174 @@ Popups = {
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
 
+		//  Cache border width.
+		popup.borderWidth = parseFloat(getComputedStyle(popup).borderLeftWidth);
+
 		//	Add event listeners.
 		popup.addEventListener("click", Popups.popupClicked);
 		popup.addEventListener("mouseenter", Popups.popupMouseenter);
 		popup.addEventListener("mouseleave", Popups.popupMouseleave);
+		popup.addEventListener("mousemove", (event) => {
+			if (   event.target == popup 
+				&& window.popupBeingDragged == null 
+				&& Popups.popupIsPinnedOrZoomed(popup)) {
+				//  Mouse position is relative to the popup’s coordinate system.
+				let edgeOrCorner = Popups.edgeOrCorner(popup, {
+					x: event.clientX - popup.viewportRect.left, 
+					y: event.clientY - popup.viewportRect.top 
+				});
+				//  Determine cursor type.
+				switch (edgeOrCorner) {
+					case "edge-top":
+					case "edge-bottom":
+						document.documentElement.style.cursor = "row-resize";
+						break;
+					case "edge-left":
+					case "edge-right":
+						document.documentElement.style.cursor = "col-resize";
+						break;
+					case "corner-top-left":
+					case "corner-bottom-right":
+						document.documentElement.style.cursor = "nwse-resize";
+						break;
+					case "corner-top-right":
+					case "corner-bottom-left":
+						document.documentElement.style.cursor = "nesw-resize";
+						break;
+				}
+			}
+		});
+		popup.addEventListener("mouseout", (event) => {
+			//  Reset cursor.
+			if (window.popupBeingDragged == null)
+				document.documentElement.style.cursor = "";
+		});
+		popup.addEventListener("mousedown", Popups.popupMouseDown = (event) => {
+			GWLog("Popups.popupMouseDown", "popups.js", 2);
+
+			/*  Make sure we’re clicking on the popup (i.e., its edge) and not
+				on any of the popup’s contained elements; that this is a 
+				left-click; and that the popup is pinned or zoomed.
+				*/
+			if (   event.target != popup
+				|| event.button != 0
+				|| !Popups.popupIsPinnedOrZoomed(popup))
+				return;
+
+			event.preventDefault();
+
+			//  Mark popup as currently being resized.
+			popup.classList.toggle("resizing", true);
+
+			//  Save position, if need be.
+			if (!("previousXPosition" in popup.dataset) && !("previousYPosition" in popup.dataset)) {
+				popup.dataset.previousXPosition = popup.viewportRect.left;
+				popup.dataset.previousYPosition = popup.viewportRect.top;
+			}
+
+			//  Determine direction of resizing.
+			let edgeOrCorner = Popups.edgeOrCorner(popup, {
+				x: event.clientX - popup.viewportRect.left, 
+				y: event.clientY - popup.viewportRect.top 
+			});
+
+			//  Point where the drag began.
+			let dragStartMouseCoordX = event.clientX;
+			let dragStartMouseCoordY = event.clientY;
+
+			//  Popup initial rect.
+			let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
+
+			window.addEventListener("mouseup", Popups.popupResizeMouseUp = (event) => {
+				GWLog("Popups.popupResizeMouseUp", "popups.js", 2);
+
+				event.stopPropagation();
+
+				window.onmousemove = null;
+
+				//  Reset cursor to normal.
+				document.documentElement.style.cursor = "";
+
+				let popup = window.popupBeingResized;
+				if (popup) {
+					popup.classList.toggle("resizing", false);
+
+					if (Popups.popupWasResized(popup))
+						popup.titleBar.querySelector("button.zoom-button:not(.submenu-button)").updateState();
+
+					//  Cache the viewport rect.
+					popup.viewportRect = popup.getBoundingClientRect();
+				}
+				window.popupBeingResized = null;
+
+				window.removeEventListener("mouseup", Popups.popupResizeMouseUp);
+			});
+
+			//  Viewport width must account for vertical scroll bar.
+			let viewportWidth = document.documentElement.offsetWidth;
+			let viewportHeight = window.innerHeight;
+
+			//  Popup minimum width/height.
+			let popupMinWidth = parseFloat(getComputedStyle(popup).minWidth);
+			let popupMinHeight = parseFloat(getComputedStyle(popup).minHeight);
+
+			window.onmousemove = (event) => {
+				window.popupBeingResized = popup;
+
+				popup.classList.toggle("resized", true);
+
+				let deltaX = event.clientX - dragStartMouseCoordX;
+				let deltaY = event.clientY - dragStartMouseCoordY;
+
+				let resizeTop = () => {
+					newPopupViewportRect.y = valMinMax(popup.viewportRect.y + deltaY, 0, popup.viewportRect.bottom - popupMinHeight);
+					newPopupViewportRect.height = popup.viewportRect.bottom - newPopupViewportRect.y;
+				};
+				let resizeBottom = () => {
+					newPopupViewportRect.height = valMinMax(popup.viewportRect.height + deltaY, popupMinHeight, viewportHeight - popup.viewportRect.y);
+				};
+				let resizeLeft = () => {
+					newPopupViewportRect.x = valMinMax(popup.viewportRect.x + deltaX, 0, popup.viewportRect.right - popupMinWidth);
+					newPopupViewportRect.width = popup.viewportRect.right - newPopupViewportRect.x;
+				};
+				let resizeRight = () => {
+					newPopupViewportRect.width = valMinMax(popup.viewportRect.width + deltaX, popupMinWidth, viewportWidth - popup.viewportRect.x);
+				};
+
+				switch (edgeOrCorner) {
+					case "edge-top":
+						resizeTop();
+						break;
+					case "edge-bottom":
+						resizeBottom();
+						break;
+					case "edge-left":
+						resizeLeft();
+						break;
+					case "edge-right":
+						resizeRight();
+						break;
+					case "corner-top-left":
+						resizeTop();
+						resizeLeft();
+						break;
+					case "corner-bottom-right":
+						resizeBottom();
+						resizeRight();
+						break;
+					case "corner-top-right":
+						resizeTop();
+						resizeRight();
+						break;
+					case "corner-bottom-left":
+						resizeBottom();
+						resizeLeft();
+						break;
+				}
+
+				Popups.setPopupViewportRect(popup, newPopupViewportRect);
+			};
+		});
 	},
 	positionPopup: (popup, spawnPoint) => {
 		let target = popup.spawningTarget;
@@ -861,38 +1072,46 @@ Popups = {
 			}
 
 			//  Special cases for maximizing/restoring and pinning/unpinning.
+			let getPositionToRestore = (popup) => {
+				xPos = parseFloat(popup.dataset.previousXPosition);
+				yPos = parseFloat(popup.dataset.previousYPosition);
+
+				//  Clear saved position.		
+				delete popup.dataset.previousXPosition;
+				delete popup.dataset.previousYPosition;
+
+				popup.classList.toggle("restored", false);
+
+				return [ xPos, yPos ];
+			};
 			if (Popups.popupIsPinnedOrZoomed(popup)) {
 				if (Popups.popupIsZoomed(popup)) {
 					provisionalPopupXPosition = popup.zoomToX;
 					provisionalPopupYPosition = popup.zoomToY;
 				} else {
 					if (Popups.popupWasRestored(popup)) {
-						provisionalPopupXPosition = parseFloat(popup.dataset.previousXPosition);
-						provisionalPopupYPosition = parseFloat(popup.dataset.previousYPosition);
-
-						popup.classList.toggle("restored", false);
+						[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
 					} else {
-						let popupRect = popup.getBoundingClientRect();
-						provisionalPopupXPosition = popupRect.left;
-						provisionalPopupYPosition = popupRect.top;
+						provisionalPopupXPosition = popup.viewportRect.left;
+						provisionalPopupYPosition = popup.viewportRect.top;
 					}
 				}
 			} else {
 				if (Popups.popupWasUnpinned(popup)) {
-					let popupRect = popup.getBoundingClientRect();
-					provisionalPopupXPosition = popupRect.left;
-					provisionalPopupYPosition = popupRect.top;
+					provisionalPopupXPosition = popup.viewportRect.left;
+					provisionalPopupYPosition = popup.viewportRect.top;
 
 					popup.classList.toggle("unpinned", false);
 				} else if (Popups.popupWasRestored(popup)) {
-					provisionalPopupXPosition = parseFloat(popup.dataset.previousXPosition);
-					provisionalPopupYPosition = parseFloat(popup.dataset.previousYPosition);
-
-					popup.classList.toggle("restored", false);
+					[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
 				}
 			}
 
-			Popups.setPopupPositionInViewport(popup, { x: provisionalPopupXPosition, y: provisionalPopupYPosition});
+			//  Set only position, not size.
+			Popups.setPopupViewportRect(popup, new DOMRect(provisionalPopupXPosition, provisionalPopupYPosition, 0, 0));
+
+			//  Cache the viewport rect.
+			popup.viewportRect = popup.getBoundingClientRect();
 
 			//	Prevent popup cycling in Chromium.
 			popup.style.visibility = "";
@@ -900,19 +1119,29 @@ Popups = {
 			document.activeElement.blur();
 		});
 	},
-	setPopupPositionInViewport: (popup, position) => {
-		GWLog("Popups.setPopupPositionInViewport", "popups.js", 3);
+	setPopupViewportRect: (popup, rect) => {
+		GWLog("Popups.setPopupViewportRect", "popups.js", 3);
 
 		if (!Popups.popupIsPinnedOrZoomed(popup)) {
-			let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
-			position.x -= popupContainerViewportRect.left;
-			position.y -= popupContainerViewportRect.top;
+            let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
+			rect.x -= popupContainerViewportRect.left;
+			rect.y -= popupContainerViewportRect.top;
 		}
 
 		popup.style.position = Popups.popupIsPinnedOrZoomed(popup) ? "fixed" : "";
 
-		popup.style.left = `${position.x}px`;
-		popup.style.top = `${position.y}px`;
+		popup.style.left = `${rect.x}px`;
+		popup.style.top = `${rect.y}px`;
+
+		if (rect.width > 0 && rect.height > 0) {
+			popup.style.maxWidth = "unset";
+			popup.style.maxHeight = "unset";
+
+			popup.style.width = `${rect.width}px`;
+			popup.style.height = `${rect.height}px`;
+
+			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
+		}
 	},
 	detachPopupFromTarget: (popup) => {
 		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
