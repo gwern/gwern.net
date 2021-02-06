@@ -202,7 +202,7 @@ Popups = {
 		buttonTitles: {
 			"close": "Close this popup",
 			"zoom": "Maximize this popup",
-			"restore": "Restore this popup to normal size",
+			"restore": "Restore this popup to normal size and position",
 			"pin": "Pin this popup to the screen",
 			"unpin": "Un-pin this popup from the screen",
 			"options": "Show options",
