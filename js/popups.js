@@ -625,6 +625,12 @@ Popups = {
 			target.popup.titleBar.addEventListener("mousedown", Popups.popupTitleBarMouseDown = (event) => {
 				GWLog("Popups.popupTitleBarMouseDown", "popups.js", 2);
 
+				//  Get the containing popup.
+				let popup = event.target.closest(".popup");
+
+				//  Bring the popup to the front.
+				Popups.bringPopupToFront(popup);
+
 				//  We only want to do anything on left-clicks.
 				if (event.button != 0)
 					return;
@@ -633,9 +639,10 @@ Popups = {
 				if (event.target.closest(".popframe-title-bar-button"))
 					return;
 
+				//  Prevent clicks from doing anything other than what we want.
 				event.preventDefault();
 
-				let popup = event.target.closest(".popup");
+				//  Mark popup as grabbed.
 				popup.classList.toggle("grabbed", true);
 
 				//  Change cursor to “grabbing hand”.
@@ -779,6 +786,30 @@ Popups = {
 			return "";
 		}
 	},
+	updatePopupsZOrder: () => {
+		GWLog("Popups.updatePopupsZOrder", "popups.js", 3);
+
+		let allPopups = Popups.allSpawnedPopups();
+		allPopups.sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
+		for (let i = 0; i < allPopups.length; i++)
+			allPopups[i].style.zIndex = i + 1;
+	},
+	popupIsFrontmost: (popup) => {
+		return (parseInt(popup.style.zIndex) == Popups.allSpawnedPopups().length);
+	},
+	bringPopupToFront: (popup) => {
+		GWLog("Popups.bringPopupToFront", "popups.js", 3);
+
+		//  If it’s already at the front, do nothing.
+		if (Popups.popupIsFrontmost(popup))
+			return;
+
+		//  Set z-index.
+		popup.style.zIndex = (Popups.allSpawnedPopups().length + 1);
+
+		//  Update z-indexes of all popups.
+		Popups.updatePopupsZOrder();
+	},
 	injectPopup: (popup) => {
 		GWLog("Popups.injectPopup", "popups.js", 2);
 
@@ -793,6 +824,9 @@ Popups = {
 
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);
+
+		//  Bring popup to front.
+		Popups.bringPopupToFront(popup);
 
 		//  Cache border width.
 		popup.borderWidth = parseFloat(getComputedStyle(popup).borderLeftWidth);
@@ -852,6 +886,10 @@ Popups = {
 				|| !Popups.popupIsPinnedOrZoomed(popup))
 				return;
 
+			//  Bring the popup to the front.
+			Popups.bringPopupToFront(popup);
+
+			//  Prevent clicks from doing anything other than what we want.
 			event.preventDefault();
 
 			//  Mark popup as currently being resized.
@@ -1165,11 +1203,20 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.popupWillDespawn", { popup: popup });
 
+		//  Detach popup from its spawning target.
         Popups.detachPopupFromTarget(popup);
+
+		//  Remove popup from the page.
         popup.remove();
+
+		//  Remove popup from its popup stack.
         popup.popupStack.remove(popup);
         popup.popupStack = null;
 
+		//  Update z-indexes of all popups.
+		Popups.updatePopupsZOrder();
+
+		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
 
         document.activeElement.blur();
@@ -1249,6 +1296,11 @@ Popups = {
 		GWLog("Popups.popupClicked", "popups.js", 2);
 
 		let popup = event.target.closest(".popup");
+
+		if (!Popups.popupIsFrontmost(popup)) {
+			Popups.bringPopupToFront(popup);
+			return;
+		}
 
 		if (Popups.popupIsPinnedOrZoomed(popup))
 			return;
