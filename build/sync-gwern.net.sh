@@ -20,7 +20,7 @@ then
     set -e
     cd ~/wiki/ && (git status &)
 
-    ## Update the directory listing pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
+    ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
     runhaskell -istatic/build/ static/build/generateDirectory.hs docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ \
                docs/ai/poetry/ docs/algernon/ docs/anime/ docs/aspirin/ \
                docs/biology/ docs/bitcoin/ docs/bitcoin/pirateat40/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
@@ -28,9 +28,9 @@ then
                docs/genetics/ docs/genetics/correlation/ docs/genetics/editing/ docs/genetics/heritable/ docs/genetics/selection/ \
                docs/history/ docs/history/medici/ docs/iodine/ docs/iq/ docs/iq/fullerton/ docs/iq/munich/ docs/iq/roe/ docs/iq/smpy/ \
                docs/japanese/ docs/japanese/zeami/ docs/linkrot/ docs/lithium/ docs/longevity/ docs/longevity/aspirin/ \
-               docs/math/ docs/melatonin/ docs/modafinil/ docs/modafinil/blackmarkets/ \
+               docs/lwsurvey/ docs/lwsurvey/hpmor/ docs/math/ docs/melatonin/ docs/modafinil/ docs/modafinil/blackmarkets/ \
                docs/modafinil/survey/ docs/music-distraction/ docs/nature/ docs/nicotine/ docs/nootropics/ docs/philo/ \
-               docs/philo/brethrenofpurity/ docs/predictions/ docs/psychology/ \
+               docs/philo/brethrenofpurity/ docs/predictions/ docs/psychology/ docs/psychology/europeanjournalofparapsychology/ \
                docs/psychology/okcupid/ docs/psychology/writing/ docs/radiance/ docs/rl/ docs/science/ docs/sociology/ docs/spacedrepetition/ \
                docs/sr/ docs/statistics/ docs/statistics/bayes/ docs/statistics/bias/ docs/statistics/causality/ \
                docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
