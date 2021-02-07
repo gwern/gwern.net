@@ -1379,9 +1379,8 @@ Popups = {
 		switch(event.key) {
 			case "Escape":
 			case "Esc":
-				[...Popups.popupContainer.children].forEach(popup => {
-					Popups.despawnPopup(popup);
-				});
+				if (Popups.allSpawnedPopups().length > 0)
+					Popups.despawnPopup(Popups.frontmostPopup());
 				break;
 			case Popups.popupTilingControlKeys.substr(0,1):
 				Popups.zoomPopup(Popups.frontmostPopup(), "left");
