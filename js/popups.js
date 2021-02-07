@@ -169,6 +169,16 @@ Popups = {
 		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.scrollView.getBoundingClientRect().top;
 	},
 
+	//  Popup tiling control keys.
+	popupTilingControlKeys: (localStorage.getItem("popup-tiling-control-keys") || ""),
+	setPopupTilingControlKeys: (keystring) => {
+		GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
+
+		Popups.popupTilingControlKeys = keystring || "aswd";
+		localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
+	},
+
+	//  Title bar buttons, etc.
 	titleBarComponents: {
 		popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
 		buttonIcons: {
@@ -251,9 +261,6 @@ Popups = {
 					} else {
 						Popups.restorePopup(popup);
 					}
-					popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
-						titleBarButton.updateState();
-					});
 				}
 			};
 			button.updateState = () => {
@@ -477,6 +484,11 @@ Popups = {
 
 		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
+
+		//  Update button state.
+		popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
+			titleBarButton.updateState();
+		});
 	},
 
 	restorePopup: (popup) => {
@@ -796,6 +808,10 @@ Popups = {
 	},
 	popupIsFrontmost: (popup) => {
 		return (parseInt(popup.style.zIndex) == Popups.allSpawnedPopups().length);
+	},
+	frontmostPopup: () => {
+		let allPopups = Popups.allSpawnedPopups();
+		return allPopups.find(popup => parseInt(popup.style.zIndex) == allPopups.length);
 	},
 	bringPopupToFront: (popup) => {
 		GWLog("Popups.bringPopupToFront", "popups.js", 3);
@@ -1351,18 +1367,37 @@ Popups = {
 		if (event.target.popup)
 			Popups.setPopupFadeTimer(event.target);
 	},
-	//  The keyup event (for hitting Escape to dismiss popups).
+	//  The keyup event.
 	keyUp: (event) => {
 		GWLog("Popups.keyUp", "popups.js", 3);
-		let allowedKeys = [ "Escape", "Esc" ];
-		if (!allowedKeys.includes(event.key) || Popups.popupContainer.childElementCount == 0)
+		let allowedKeys = [ "Escape", "Esc", ...(Popups.popupTilingControlKeys.split("")) ];
+		if (!allowedKeys.includes(event.key) || Popups.allSpawnedPopups().length == 0)
 			return;
 
 		event.preventDefault();
 
-		[...Popups.popupContainer.children].forEach(popup => {
-			Popups.despawnPopup(popup);
-		});
+		switch(event.key) {
+			case "Escape":
+			case "Esc":
+				[...Popups.popupContainer.children].forEach(popup => {
+					Popups.despawnPopup(popup);
+				});
+				break;
+			case Popups.popupTilingControlKeys.substr(0,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "left");
+				break;
+			case Popups.popupTilingControlKeys.substr(1,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "bottom");
+				break;
+			case Popups.popupTilingControlKeys.substr(2,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "top");
+				break;
+			case Popups.popupTilingControlKeys.substr(3,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "right");
+				break;
+			default:
+				break;
+		}
 	}
 };
 
