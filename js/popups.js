@@ -590,14 +590,13 @@ Popups = {
 			Popups.despawnPopup(target.popup);
 
 		//  Create the new popup.
-		target.popup = Popups.newPopup();
-		target.popFrame = target.popup;
+		target.popFrame = target.popup = Popups.newPopup();
 
 		//  Give the popup a reference to the target.
 		target.popup.spawningTarget = target;
 
 		// Prepare the newly created popup for spawning.
-		if (!(target.popup = target.preparePopup(target.popup)))
+		if (!(target.popFrame = target.popup = target.preparePopup(target.popup)))
 			return;
 
 		/*  If title bar contents are provided, create and inject the popup
