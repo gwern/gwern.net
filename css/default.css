@@ -3781,6 +3781,10 @@ body.directory-index #disqus_thread {
     background-color: var(--GW-popins-popin-background-color);
 }
 
+.popin + .popin {
+	display: none;
+}
+
 /*┌──────────────────┐*/
 /*│ Popin title bar. │*/
 /*└──────────────────┘*/

@@ -127,8 +127,9 @@ Popins = {
 				event.stopPropagation();
 
 				let popin = event.target.closest(".popin");
-				if (popin)
+				if (popin) {
 					Popins.removePopin(popin);
+				}
 			};
 			return button;
 		},
@@ -161,16 +162,18 @@ Popins = {
 		popin.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popin.scrollView = popin.querySelector(".popframe-scroll-view");
 		popin.contentView = popin.querySelector(".popframe-content-view");
+		popin.contentView.popin = popin.scrollView.popin = popin;
 		popin.titleBarContents = [ ];
 		return popin;
 	},
 	setPopFrameContent: (popin, contentHTML) => {
-		popin.querySelector(".popframe-content-view").innerHTML = contentHTML;
+		popin.contentView.innerHTML = contentHTML;
 		return (contentHTML > "");
 	},
 	rootDocument: document.firstElementChild,
 	containingDocumentForTarget: (target) => {
-		return (target.closest(".popin") || Popins.rootDocument);
+		let containingPopin = target.closest(".popin");
+		return (containingPopin ? containingPopin.contentView : Popins.rootDocument);
 	},
 	injectPopinForTarget: (target) => {
 		GWLog("Popins.injectPopinForTarget", "popins.js", 2);
@@ -207,14 +210,21 @@ Popins = {
 			});
 		}
 
+		//  Get containing document.
+		let containingDocument = Popins.containingDocumentForTarget(target);
+
 		//  Remove (other) existing popins on this level.
-		Popins.containingDocumentForTarget(target).querySelectorAll(".popin").forEach(existingPopin => {
+		containingDocument.querySelectorAll(".popin").forEach(existingPopin => {
 			if (existingPopin != target.popin)
 				Popins.removePopin(existingPopin);
 		});
 
 		//  Inject the popin.
-		target.parentElement.insertBefore(target.popin, target.nextSibling);
+		if (containingDocument.popin) {
+			containingDocument.popin.parentElement.insertBefore(target.popin, containingDocument.popin);
+		} else {
+			target.parentElement.insertBefore(target.popin, target.nextSibling);
+		}
 
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open");

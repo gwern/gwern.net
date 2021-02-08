@@ -571,11 +571,12 @@ Popups = {
 		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
 		popup.scrollView = popup.querySelector(".popframe-scroll-view");
 		popup.contentView = popup.querySelector(".popframe-content-view");
+		popup.contentView.popup = popup.scrollView.popup = popup;
 		popup.titleBarContents = [ ];
 		return popup;
 	},
 	setPopFrameContent: (popup, contentHTML) => {
-		popup.querySelector(".popframe-content-view").innerHTML = contentHTML;
+		popup.contentView.innerHTML = contentHTML;
 		return (contentHTML > "");
 	},
 	spawnPopup: (target, spawnPoint) => {
