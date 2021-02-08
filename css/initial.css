@@ -915,6 +915,8 @@ pre {
 	max-width: -moz-fit-content;
 	max-width: fit-content;
 	margin: auto;
+	position: relative;
+	z-index: 1;
 }
 .full-width-code-block-wrapper pre {
 	padding-right: 1px;
@@ -946,6 +948,7 @@ pre {
 
 .table-wrapper.full-width {
     position: relative;
+    z-index: 1;
 }
 .table-wrapper.full-width table {
 	width: -moz-fit-content;

@@ -1485,9 +1485,6 @@ table {
 /*= Full-width tables =*/
 /*=-------------------=*/
 
-.table-wrapper.full-width {
-    z-index: 1;
-}
 .table-wrapper.full-width .full-width-table-inner-wrapper {
     background-color: var(--GW-table-full-width-background-color);
 }
