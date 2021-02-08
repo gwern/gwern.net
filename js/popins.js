@@ -84,7 +84,8 @@ Popins = {
 			target.onclick = null;
 
 			//  Remove the popin (if any).
-			Popins.removePopin(target);
+			if (target.popin)
+				Popins.removePopin(target.popin);
 
 			//  Unset popin prepare function.
 			target.preparePopin = null;
@@ -127,7 +128,7 @@ Popins = {
 
 				let popin = event.target.closest(".popin");
 				if (popin)
-					Popins.removePopin(popin.spawningTarget);
+					Popins.removePopin(popin);
 			};
 			return button;
 		},
@@ -144,9 +145,9 @@ Popins = {
 		let target = event.target.closest(".spawns-popin");
 
 		if (target.classList.contains("popin-open")) {
-			Popins.removePopin(target);
+			Popins.removePopin(target.popin);
 		} else {
-			Popins.injectPopin(target);
+			Popins.injectPopinForTarget(target);
 		}
 
 		document.activeElement.blur();
@@ -167,22 +168,21 @@ Popins = {
 		popin.querySelector(".popframe-content-view").innerHTML = contentHTML;
 		return (contentHTML > "");
 	},
-	injectPopin: (target) => {
-		GWLog("Popins.injectPopin", "popins.js", 2);
-
-		//  Remove existing popin, if any.
-		if (target.popin)
-			Popins.removePopin(target);
+	rootDocument: document.firstElementChild,
+	containingDocumentForTarget: (target) => {
+		return (target.closest(".popin") || Popins.rootDocument);
+	},
+	injectPopinForTarget: (target) => {
+		GWLog("Popins.injectPopinForTarget", "popins.js", 2);
 
 		//  Create the new popin.
-		target.popin = Popins.newPopin();
-		target.popFrame = target.popin;
+		target.popFrame = target.popin = Popins.newPopin();
 
 		//  Give the popin a reference to the target.
 		target.popin.spawningTarget = target;
 
 		// Prepare the newly created popin for injection.
-		if (!(target.popin = target.preparePopin(target.popin)))
+		if (!(target.popFrame = target.popin = target.preparePopin(target.popin)))
 			return;
 
 		/*  If title bar contents are provided, create and inject the popin
@@ -207,6 +207,12 @@ Popins = {
 			});
 		}
 
+		//  Remove (other) existing popins on this level.
+		Popins.containingDocumentForTarget(target).querySelectorAll(".popin").forEach(existingPopin => {
+			if (existingPopin != target.popin)
+				Popins.removePopin(existingPopin);
+		});
+
 		//  Inject the popin.
 		target.parentElement.insertBefore(target.popin, target.nextSibling);
 
@@ -215,15 +221,22 @@ Popins = {
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
-	removePopin: (target) => {
+	removePopin: (popin) => {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
-		if (target.popin)
-			target.popin.remove();
-		target.popin = null;
-		target.popFrame = null;
-		target.classList.toggle("popin-open", false);
-	}
+		//  Remove popin from page.
+		popin.remove();
+
+		//  Detach popin from its spawning target.
+		Popins.detachPopinFromTarget(popin);
+	},
+	detachPopinFromTarget: (popin) => {
+		GWLog("Popins.detachPopinFromTarget", "popins.js", 2);
+
+		popin.spawningTarget.popin = null;
+		popin.spawningTarget.popFrame = null;
+		popin.spawningTarget.classList.toggle("popin-open", false);
+	},
 };
 
 GW.notificationCenter.fireEvent("Popins.didLoad");
