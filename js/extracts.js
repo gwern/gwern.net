@@ -1078,8 +1078,10 @@ Extracts = {
 
 		//  Special handling for image popins.
 		if (Extracts.isLocalImageLink(target)) {
+			let image = popin.querySelector("img");
+
 			//  Remove extraneous classes from images in image popins.
-			popin.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
+			image.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
 		}
 
 		//  Allow for floated figures at the start of abstract.

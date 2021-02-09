@@ -2995,6 +2995,94 @@ body.directory-index #disqus_thread {
 /*│ Citation context pop-frames. │*/
 /*└──────────────────────────────┘*/
 
+/*┌──────────────────┐*/
+/*│ Code pop-frames. │*/
+/*└──────────────────┘*/
+
+.popframe.local-code-file .popframe-content-view {
+    padding: 0;
+}
+.popframe.local-code-file pre {
+    height: 100%;
+    margin: 0;
+    border: none;
+    max-height: unset;
+}
+
+/*	“Loading failed” message.
+	*/
+.popframe.local-code-file.loading-failed::after {
+	content: "File not found.";
+}
+
+/*	“Raw code” pop-frames.
+	*/
+.popframe.local-code-file pre.raw-code {
+	white-space: pre-wrap;
+}
+.popframe.local-code-file pre.raw-code code {
+	word-break: break-word;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+.popframe.local-code-file pre.raw-code .line {
+	counter-increment: code-line;
+	display: inline-block;
+	width: 100%;
+	position: relative;
+	padding: 0 0 0.25em 4em;
+	box-sizing: border-box;
+}
+.popframe.local-code-file pre.raw-code .line:hover {
+	background-color: var(--GW-raw-code-popframe-line-highlight-background-color);
+	box-shadow:
+	0  1px 0 0 var(--GW-raw-code-popframe-line-hightlight-border-color),
+	0 -1px 0 0 var(--GW-raw-code-popframe-line-hightlight-border-color);
+}
+.popframe.local-code-file pre.raw-code .line::before {
+	content: counter(code-line);
+	position: absolute;
+	width: 3.5em;
+	height: 100%;
+	left: 0;
+	top: 0;
+	text-align: right;
+	color: var(--GW-raw-code-popframe-line-number-color);
+	font-size: 0.8em;
+	display: flex;
+	justify-content: flex-end;
+	align-items: flex-start;
+	padding: 0.25em 0.5em 0 0;
+	border-right: 1px solid var(--GW-raw-code-popframe-line-number-divider-color);
+}
+
+/*┌────────────────────┐*/
+/*│ Object pop-frames. │*/
+/*└────────────────────┘*/
+
+/*  “Object pop-frames”: videos, images, PDFs, archived web pages, etc.
+    */
+.popframe.object .popframe-content-view {
+    background-color: var(--GW-object-popup-background-color);
+    padding: 0;
+}
+
+.popframe.object img,
+.popframe.object iframe,
+.popframe.object object {
+    display: block;
+}
+
+/*┌───────────────────┐*/
+/*│ Image pop-frames. │*/
+/*└───────────────────┘*/
+
+/*	“Loading failed” message.
+	*/
+.popframe.image.loading-failed::after {
+    content: "Image not found.";
+}
+
 /**********/
 /* POPUPS */
 /**********/
@@ -3331,63 +3419,6 @@ body.directory-index #disqus_thread {
 	height: var(--GW-popups-popup-max-height);
 }
 
-.popup.local-code-file .popframe-content-view {
-    padding: 0;
-}
-.popup.local-code-file pre {
-    height: 100%;
-    margin: 0;
-    border: none;
-    max-height: unset;
-}
-
-/*	“Loading failed” message.
-	*/
-.popup.local-code-file.loading-failed::after {
-	content: "File not found.";
-}
-
-/*	“Raw code” popups.
-	*/
-.popup.local-code-file pre.raw-code {
-	white-space: pre-wrap;
-}
-.popup.local-code-file pre.raw-code code {
-	word-break: break-word;
-    padding-left: 2px;
-    padding-right: 2px;
-}
-.popup.local-code-file pre.raw-code .line {
-	counter-increment: code-line;
-	display: inline-block;
-	width: 100%;
-	position: relative;
-	padding: 0 0 0.25em 4em;
-	box-sizing: border-box;
-}
-.popup.local-code-file pre.raw-code .line:hover {
-	background-color: var(--GW-raw-code-popup-line-highlight-background-color);
-	box-shadow:
-	0  1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color),
-	0 -1px 0 0 var(--GW-raw-code-popup-line-hightlight-border-color);
-}
-.popup.local-code-file pre.raw-code .line::before {
-	content: counter(code-line);
-	position: absolute;
-	width: 3.5em;
-	height: 100%;
-	left: 0;
-	top: 0;
-	text-align: right;
-	color: var(--GW-raw-code-popup-line-number-color);
-	font-size: 0.8em;
-	display: flex;
-	justify-content: flex-end;
-	align-items: flex-start;
-	padding: 0.25em 0.5em 0 0;
-	border-right: 1px solid var(--GW-raw-code-popup-line-number-divider-color);
-}
-
 /*┌────────────────┐*/
 /*│ Object popups. │*/
 /*└────────────────┘*/
@@ -3398,16 +3429,7 @@ body.directory-index #disqus_thread {
     width: var(--GW-popups-popup-max-width);
 	height: var(--GW-popups-popup-max-height);
 }
-.popup.object .popframe-content-view {
-    background-color: var(--GW-object-popup-background-color);
-    padding: 0;
-}
 
-.popup.object img,
-.popup.object iframe,
-.popup.object object {
-    display: block;
-}
 .popup.object iframe,
 .popup.object object {
     width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
@@ -3434,9 +3456,6 @@ body.directory-index #disqus_thread {
 
 /*	“Loading failed” message.
 	*/
-.popup.image.loading-failed::after {
-    content: "Image not found.";
-}
 .popup.image:not(.dimensions-specified).loading-failed::after {
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg>');
     box-sizing: border-box;
@@ -3960,6 +3979,51 @@ body.directory-index #disqus_thread {
 	opacity: 0.35;
 }
 
+/*=-------------=*/
+/*= POPIN TYPES =*/
+/*=-------------=*/
+
+/*┌──────────────────────────────┐*/
+/*│ Extract & definition popins. │*/
+/*└──────────────────────────────┘*/
+
+/*┌──────────────────┐*/
+/*│ Footnote popins. │*/
+/*└──────────────────┘*/
+
+/*┌──────────────────────────┐*/
+/*│ Citation context popins. │*/
+/*└──────────────────────────┘*/
+
+/*┌──────────────┐*/
+/*│ Code popins. │*/
+/*└──────────────┘*/
+
+.popin.local-code-file .popframe-title-bar {
+	background-color: var(--GW-pre-element-background-color);
+}
+
+/*┌────────────────┐*/
+/*│ Object popins. │*/
+/*└────────────────┘*/
+
+/*  “Object popins”: videos, images, PDFs, archived web pages, etc.
+    */
+
+.popin.object iframe,
+.popin.object object {
+    width: 100%;
+    height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
+}
+
+/*┌───────────────┐*/
+/*│ Image popins. │*/
+/*└───────────────┘*/
+
+.popin.image img {
+    margin: auto;
+    max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
+}
 
 
 
