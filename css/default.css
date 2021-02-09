@@ -3068,6 +3068,7 @@ body.directory-index #disqus_thread {
 }
 
 .popframe.object img,
+.popframe.object video,
 .popframe.object iframe,
 .popframe.object object {
     display: block;
