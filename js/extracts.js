@@ -62,6 +62,7 @@ Extracts = {
 	/*	Misc. configuration.
 		*/
     imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
+    videoFileExtensions: [ "mp4" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ],
     qualifyingForeignDomains: [ 
     	"www.greaterwrong.com", 
@@ -74,6 +75,8 @@ Extracts = {
 
 	imageMaxWidth: 634.0,
 	imageMaxHeight: 474.0,
+	videoMaxWidth: 634.0,
+	videoMaxHeight: 474.0,
 
 	server404PageTitles: [
 		"404 Not Found"
@@ -288,6 +291,7 @@ Extracts = {
 		[ "CITATION",  			"isCitation", 			null, 				"localTranscludeForTarget", 	"footnote"              ],
 		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"localTranscludeForTarget", 	"citation-context"      ],
 		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"          ],
+		[ "LOCAL_VIDEO", 		"isLocalVideoLink", 	"has-content", 		"localVideoForTarget", 			"video object"          ],
 		[ "LOCAL_IMAGE", 		"isLocalImageLink", 	"has-content", 		"localImageForTarget", 			"image object"          ],
 		[ "LOCAL_DOCUMENT", 	"isLocalDocumentLink", 	"has-content", 		"localDocumentForTarget", 		"local-document object" ],
 		[ "LOCAL_CODE_FILE", 	"isLocalCodeFileLink", 	"has-content", 		"localCodeFileForTarget", 		"local-code-file"       ],
@@ -847,6 +851,46 @@ Extracts = {
 		return `<iframe src="${url.href}" frameborder="0" sandbox></iframe>`;
 	},
 
+	//  Locally hosted videos.
+	isLocalVideoLink: (target) => {
+		if (  !target.href
+			|| target.hostname != location.hostname)
+			return false;
+
+		let videoFileURLRegExp = new RegExp(
+			  '(' 
+			+ Extracts.videoFileExtensions.map(ext => `\\.${ext}`).join("|") 
+			+ ')$'
+		, 'i');
+		return (target.pathname.match(videoFileURLRegExp) != null);
+	},
+    localVideoForTarget: (target) => {
+		GWLog("Extracts.localVideoForTarget", "extracts.js", 2);
+
+// 		let width = target.dataset.imageWidth || 0;
+// 		let height = target.dataset.imageHeight || 0;
+// 
+// 		if (width > Extracts.imageMaxWidth) {
+// 			height *= Extracts.imageMaxWidth / width;
+// 			width = Extracts.imageMaxWidth;
+// 		}
+// 		if (height > Extracts.imageMaxHeight) {
+// 			width *= Extracts.imageMaxHeight / height;
+// 			height = Extracts.imageMaxHeight;
+// 		}
+// 
+// 		let styles = ``;
+// 		if (width > 0 && height > 0) {
+// 			styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
+// 		}
+
+        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
+//         return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
+        return `<video controls="controls" preload="none">` + 
+        	`<source src="${target.href}">` + 
+			`</video>`;
+    },
+
 	//  Locally hosted images.
     isLocalImageLink: (target) => {
 		if (  !target.href
@@ -1078,8 +1122,10 @@ Extracts = {
 
 		//  Special handling for image popins.
 		if (Extracts.isLocalImageLink(target)) {
+			let image = popin.querySelector("img");
+
 			//  Remove extraneous classes from images in image popins.
-			popin.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
+			image.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
 		}
 
 		//  Allow for floated figures at the start of abstract.
@@ -1129,11 +1175,12 @@ Extracts = {
 		if (   Extracts.isLocalDocumentLink(target)
 			|| Extracts.isForeignSiteLink(target)
 			|| Extracts.isLocalImageLink(target)
+			|| Extracts.isLocalVideoLink(target)
 			) {
 			popin.classList.toggle("loading", true);
 
 			//  When loading ends (in success or failure)...
-			let objectOfSomeSort = popin.querySelector("iframe, object, img");
+			let objectOfSomeSort = popin.querySelector("iframe, object, img, video");
 			if (objectOfSomeSort.tagName == "IFRAME") {
 				//  Iframes do not fire ‘error’ on server error.
 				objectOfSomeSort.onload = (event) => {
@@ -1269,6 +1316,7 @@ Extracts = {
 			else
 				popupTitle = `<span>${popup.querySelector(".data-field.title").textContent}</span>`;
 		} else if (!(   Extracts.isLocalImageLink(target)
+					 || Extracts.isLocalVideoLink(target)
 					 || Extracts.isCitation(target)
 					 || Extracts.isCitationBackLink(target))) {
 			let popupTitleText;
@@ -1425,11 +1473,12 @@ Extracts = {
 		if (   Extracts.isLocalDocumentLink(target)
 			|| Extracts.isForeignSiteLink(target)
 			|| Extracts.isLocalImageLink(target)
+			|| Extracts.isLocalVideoLink(target)
 			) {
 			popup.classList.toggle("loading", true);
 
 			//  When loading ends (in success or failure)...
-			let objectOfSomeSort = popup.querySelector("iframe, object, img");
+			let objectOfSomeSort = popup.querySelector("iframe, object, img, video");
 			if (objectOfSomeSort.tagName == "IFRAME") {
 				//  Iframes do not fire ‘error’ on server error.
 				objectOfSomeSort.onload = (event) => {
