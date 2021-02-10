@@ -77,14 +77,15 @@ Popups = {
 				return;
 			}
 
+			//  Apply the test function to the target.
 			if (!targets.testTarget(target)) {
 				target.classList.toggle("no-popup", true);
 				return;
 			}
 
 			//	Bind mouseenter/mouseleave events.
-			target.addEventListener("mouseenter", Popups.targetMouseenter);
-			target.addEventListener("mouseleave", Popups.targetMouseleave);
+			target.addEventListener("mouseenter", Popups.targetMouseEnter);
+			target.addEventListener("mouseleave", Popups.targetMouseLeave);
 
 			//  Set prepare function.
 			target.preparePopup = prepareFunction;
@@ -96,11 +97,6 @@ Popups = {
 			//  Mark target as spawning a popup.
 			target.classList.toggle("spawns-popup", true);
 		});
-	},
-	addTargets: (targets, prepareFunction, targetPrepareFunction = null) => {
-		GWLog("Popups.addTargets", "popups.js", 1);
-
-		Popups.addTargetsWithin(document, targets, prepareFunction, targetPrepareFunction);
 	},
 	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
@@ -116,14 +112,15 @@ Popups = {
 				return;
 			}
 
+			//  Apply the test function to the target.
 			if (!targets.testTarget(target)) {
 				target.classList.toggle("no-popup", false);
 				return;
 			}
 
 			//	Unbind existing mouseenter/mouseleave events, if any.
-			target.removeEventListener("mouseenter", Popups.targetMouseenter);
-			target.removeEventListener("mouseleave", Popups.targetMouseleave);
+			target.removeEventListener("mouseenter", Popups.targetMouseEnter);
+			target.removeEventListener("mouseleave", Popups.targetMouseLeave);
 
 			//  Clear timers for target.
 			Popups.clearPopupTimers(target);
@@ -143,25 +140,44 @@ Popups = {
 				targetRestoreFunction(target);
 		});
 	},
-	removeTargets: (targets, targetRestoreFunction = null) => {
-		GWLog("Popups.removeTargets", "popups.js", 1);
 
-		Popups.removeTargetsWithin(document, targets, targetRestoreFunction);
+	/*******************/
+	/*  General helpers.
+		*/
+
+	hidePopupContainer: () => {
+		GWLog("Popups.hidePopupContainer", "popups.js", 3);
+
+		Popups.popupContainer.style.visibility = "hidden";
 	},
 
-	/*	Returns true if the given element is currently visible.
-		*/
-	isVisible: (element) => {
-		let containingPopup = element.closest(".popup");
-		return (containingPopup ? isWithinRect(element, containingPopup.getBoundingClientRect()) : isOnScreen(element));
+	unhidePopupContainer: () => {
+		GWLog("Popups.unhidePopupContainer", "popups.js", 3);
+
+		Popups.popupContainer.style.visibility = "";
+	},
+
+	updatePageScrollState: () => {
+		GWLog("Popups.updatePageScrollState", "popups.js", 2);
+
+		if (Popups.allSpawnedPopups().findIndex(popup => Popups.popupIsMaximized(popup)) == -1)
+			togglePageScrolling(true);
+		else
+			togglePageScrolling(false);
 	},
 
 	allSpawnedPopups: () => {
 		return Array.from(Popups.popupContainer.children);
 	},
 
-	preferSidePositioning: (target) => {
-		return target.preferSidePositioning ? target.preferSidePositioning() : false;
+	/****************************************/
+	/*  Visibility of elements within popups.
+		*/
+
+	//	Returns true if the given element is currently visible.
+	isVisible: (element) => {
+		let containingPopup = element.closest(".popup");
+		return (containingPopup ? isWithinRect(element, containingPopup.getBoundingClientRect()) : isOnScreen(element));
 	},
 
 	scrollElementIntoViewInPopFrame: (element) => {
@@ -169,199 +185,178 @@ Popups = {
 		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.scrollView.getBoundingClientRect().top;
 	},
 
+	/*******************************/
+	/*  Popup spawning & despawning.
+		*/
+
+	newPopup: () => {
+		GWLog("Popups.newPopup", "popups.js", 2);
+
+		let popup = document.createElement("div");
+		popup.classList.add("popup", "popframe");
+		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
+		popup.scrollView = popup.querySelector(".popframe-scroll-view");
+		popup.contentView = popup.querySelector(".popframe-content-view");
+		popup.contentView.popup = popup.scrollView.popup = popup;
+		popup.titleBarContents = [ ];
+		return popup;
+	},
+
+	setPopFrameContent: (popup, contentHTML) => {
+		popup.contentView.innerHTML = contentHTML;
+		return (contentHTML > "");
+	},
+
+	spawnPopup: (target, spawnPoint) => {
+		GWLog("Popups.spawnPopup", "popups.js", 2);
+
+		//  Prevent spawn attempts before setup complete.
+		if (Popups.popupContainer == null)
+			return;
+
+		//  Despawn existing popup, if any.
+		if (target.popup)
+			Popups.despawnPopup(target.popup);
+
+		//  Create the new popup.
+		target.popFrame = target.popup = Popups.newPopup();
+
+		//  Give the popup a reference to the target.
+		target.popup.spawningTarget = target;
+
+		// Prepare the newly created popup for spawning.
+		if (!(target.popFrame = target.popup = target.preparePopup(target.popup)))
+			return;
+
+		//  If title bar contents are provided, add a title bar.
+		if (target.popup.titleBarContents.length > 0)
+			Popups.addTitleBarToPopup(target.popup);
+
+		//	Inject the popup into the page.
+		Popups.injectPopup(target.popup);
+
+		//  Position the popup appropriately with respect to the target.
+		Popups.positionPopup(target.popup, spawnPoint);
+
+		//  Mark target as having an active popup associated with it.
+		target.classList.add("popup-open");
+
+		//  Fire notification event.
+		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
+	},
+
+	injectPopup: (popup) => {
+		GWLog("Popups.injectPopup", "popups.js", 2);
+
+		//  Add popup to a popup stack.
+		if (popup.popupStack == null) {
+			let parentPopup = popup.spawningTarget.closest(".popup");
+			popup.popupStack = parentPopup ? parentPopup.popupStack : [ ];
+		} else {
+			popup.popupStack.remove(popup);
+		}
+		popup.popupStack.push(popup);
+
+		//  Inject popup into page.
+		Popups.popupContainer.appendChild(popup);
+
+		//  Bring popup to front.
+		Popups.bringPopupToFront(popup);
+
+		//  Cache border width.
+		popup.borderWidth = parseFloat(getComputedStyle(popup).borderLeftWidth);
+
+		//	Add event listeners.
+		popup.addEventListener("click", Popups.popupClicked);
+		popup.addEventListener("mouseenter", Popups.popupMouseEnter);
+		popup.addEventListener("mouseleave", Popups.popupMouseLeave);
+		popup.addEventListener("mouseout", Popups.popupMouseOut);
+		popup.addEventListener("mousedown", Popups.popupMouseDown);
+
+		//  We define the mousemove listener here in order to capture `popup`.
+		popup.addEventListener("mousemove", Popups.popupMouseMove = (event) => {
+			GWLog("Popups.popupMouseMove", "popups.js", 3);
+
+			if (   event.target == popup 
+				&& window.popupBeingDragged == null 
+				&& Popups.popupIsPinnedOrZoomed(popup)) {
+				//  Mouse position is relative to the popup’s coordinate system.
+				let edgeOrCorner = Popups.edgeOrCorner(popup, {
+					x: event.clientX - popup.viewportRect.left, 
+					y: event.clientY - popup.viewportRect.top 
+				});
+
+				//  Set cursor.
+				document.documentElement.style.cursor = Popups.cursorForPopupBorder(edgeOrCorner);
+			}
+		});
+	},
+
+	attachPopupToTarget: (popup) => {
+		GWLog("Popups.attachPopupToTarget", "popups.js", 2);
+
+		Popups.clearPopupTimers(popup.spawningTarget);
+
+        popup.spawningTarget.classList.add("popup-open");
+        popup.spawningTarget.popup = popup;
+        popup.spawningTarget.popFrame = popup;
+	},
+
+	detachPopupFromTarget: (popup) => {
+		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
+
+		Popups.clearPopupTimers(popup.spawningTarget);
+
+        popup.spawningTarget.classList.remove("popup-open");
+        popup.spawningTarget.popup = null;
+        popup.spawningTarget.popFrame = null;
+	},
+
+    despawnPopup: (popup) => {
+		GWLog("Popups.despawnPopup", "popups.js", 2);
+
+		GW.notificationCenter.fireEvent("Popups.popupWillDespawn", { popup: popup });
+
+		//  Detach popup from its spawning target.
+        Popups.detachPopupFromTarget(popup);
+
+		//  Remove popup from the page.
+        popup.remove();
+
+		//  Remove popup from its popup stack.
+        popup.popupStack.remove(popup);
+        popup.popupStack = null;
+
+		//  Update z-indexes of all popups.
+		Popups.updatePopupsZOrder();
+
+		//  Enable/disable main document scrolling.
+		Popups.updatePageScrollState();
+
+        document.activeElement.blur();
+    },
+
+	getPopupAncestorStack: (popup) => {
+		let indexOfPopup = popup.popupStack.indexOf(popup);
+		if (indexOfPopup != -1) {
+			return popup.popupStack.slice(0, indexOfPopup + 1);
+		} else {
+			let parentPopup = popup.spawningTarget.closest(".popup");
+			return (parentPopup && parentPopup.popupStack) ? Popups.getPopupAncestorStack(parentPopup) : [ ];
+		}
+	},
+
+	/********************************************************/
+	/*  Popup pinning/unpinning, zooming/tiling, & restoring.
+		*/
+
 	//  Popup tiling control keys.
 	popupTilingControlKeys: (localStorage.getItem("popup-tiling-control-keys") || ""),
 	setPopupTilingControlKeys: (keystring) => {
 		GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
-		Popups.popupTilingControlKeys = keystring || "aswd";
+		Popups.popupTilingControlKeys = keystring || "aswdqexzf";
 		localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
-	},
-
-	//  Title bar buttons, etc.
-	titleBarComponents: {
-		popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
-		buttonIcons: {
-			"close": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M325.8 193.8L263.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L224 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17zM448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-48 346V86c0-3.3-2.7-6-6-6H54c-3.3 0-6 2.7-6 6v340c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>`,
-			"zoom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
-			"restore": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12z"></path></svg>`,
-			"pin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M306.5 186.6l-5.7-42.6H328c13.2 0 24-10.8 24-24V24c0-13.2-10.8-24-24-24H56C42.8 0 32 10.8 32 24v96c0 13.2 10.8 24 24 24h27.2l-5.7 42.6C29.6 219.4 0 270.7 0 328c0 13.2 10.8 24 24 24h144v104c0 .9.1 1.7.4 2.5l16 48c2.4 7.3 12.8 7.3 15.2 0l16-48c.3-.8.4-1.7.4-2.5V352h144c13.2 0 24-10.8 24-24 0-57.3-29.6-108.6-77.5-141.4zM50.5 304c8.3-38.5 35.6-70 71.5-87.8L138 96H80V48h224v48h-58l16 120.2c35.8 17.8 63.2 49.4 71.5 87.8z"/></svg>`,
-			"unpin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg>`,
-			"options": `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g transform="translate(10 10)"><path id="a" d="M1.5-10h-3l-1 6.5h5m0 7h-5l1 6.5h3"/><use transform="rotate(45)" xlink:href="#a"/><use transform="rotate(90)" xlink:href="#a"/><use transform="rotate(135)" xlink:href="#a"/></g><path d="M10 2.5a7.5 7.5 0 000 15 7.5 7.5 0 000-15v4a3.5 3.5 0 010 7 3.5 3.5 0 010-7"/></svg>`,
-			"zoom-top-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z" /></svg>`,
-			"zoom-top": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z M 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z" /></svg>`,
-			"zoom-top-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z" /></svg>`,
-			"zoom-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z m 160,288 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
-			"zoom-full": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
-			"zoom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z m 148,276 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`,
-			"zoom-bottom-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
-			"zoom-bottom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z M 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
-			"zoom-bottom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`
-		},
-		buttonTitles: {
-			"close": "Close this popup",
-			"zoom": "Maximize this popup",
-			"restore": "Restore this popup to normal size and position",
-			"pin": "Pin this popup to the screen",
-			"unpin": "Un-pin this popup from the screen",
-			"options": "Show options",
-			"zoom-top-left": "Place this popup in the top-left quarter of the screen",
-			"zoom-top": "Place this popup on the top half of the screen",
-			"zoom-top-right": "Place this popup in the top-right quarter of the screen",
-			"zoom-left": "Place this popup on the left half of the screen",
-			"zoom-right": "Place this popup on the right half of the screen",
-			"zoom-full": "Expand this popup to fill the screen",
-			"zoom-bottom-left": "Place this popup in the bottom-left quarter of the screen",
-			"zoom-bottom": "Place this popup on the bottom half of the screen",
-			"zoom-bottom-right": "Place this popup in the bottom-right quarter of the screen"
-		},
-		genericButton: () => {
-			let button = document.createElement("BUTTON");
-			button.classList.add("popframe-title-bar-button");
-			button.buttonAction = (event) => {
-				event.stopPropagation();
-			};
-			return button;
-		},
-		closeButton: () => {
-			let button = Popups.titleBarComponents.genericButton();
-			button.innerHTML = Popups.titleBarComponents.buttonIcons["close"];
-			button.title = Popups.titleBarComponents.buttonTitles["close"];
-			button.classList.add("close-button");
-			button.buttonAction = (event) => {
-				event.stopPropagation();
-
-				let popup = event.target.closest(".popup");
-				if (popup) {
-					Popups.unpinPopup(popup);
-					Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
-						Popups.clearPopupTimers(popupInStack.spawningTarget);
-						Popups.despawnPopup(popupInStack);
-					});
-				}
-			};
-			return button;
-		},
-		zoomButton: () => {
-			let button = Popups.titleBarComponents.genericButton();
-			button.defaultHTML = Popups.titleBarComponents.buttonIcons["zoom"];
-			button.alternateHTML = Popups.titleBarComponents.buttonIcons["restore"];
-			button.defaultTitle = Popups.titleBarComponents.buttonTitles["zoom"];
-			button.alternateTitle = Popups.titleBarComponents.buttonTitles["restore"];
-			button.innerHTML = button.defaultHTML;
-			button.title = button.defaultTitle;
-			button.classList.add("zoom-button", "zoom");
-			button.buttonAction = (event) => {
-				event.stopPropagation();
-
-				let popup = button.closest(".popup");
-				if (popup) {
-					if (button.classList.contains("zoom")) {
-						Popups.zoomPopup(popup, "full");
-					} else {
-						Popups.restorePopup(popup);
-					}
-				}
-			};
-			button.updateState = () => {
-				let popup = button.closest(".popup");
-				if (!popup)
-					return;
-
-				let alternateStateEnabled = (Popups.popupIsZoomed(popup) || Popups.popupWasResized(popup));
-
-				button.innerHTML = alternateStateEnabled ? button.alternateHTML : button.defaultHTML;
-				button.title = alternateStateEnabled ? button.alternateTitle : button.defaultTitle;
-
-				button.swapClasses([ "zoom", "restore" ], (alternateStateEnabled ? 1 : 0));
-			};
-			return button;
-		},
-		popupZoomButtons: () => {
-			return Popups.titleBarComponents.popupPlaces.map(place => {
-				let button = Popups.titleBarComponents.genericButton();
-				button.innerHTML = Popups.titleBarComponents.buttonIcons[`zoom-${place}`];
-				button.title = Popups.titleBarComponents.buttonTitles[`zoom-${place}`];
-				button.classList.add("submenu-button", "zoom-button", place);
-				button.buttonAction = (event) => {
-					event.stopPropagation();
-
-					let popup = button.closest(".popup");
-					if (popup) {
-						Popups.zoomPopup(popup, place);
-						popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
-							titleBarButton.updateState();
-						});
-					}
-				};
-				return button;
-			});
-		},
-		pinButton: () => {
-			let button = Popups.titleBarComponents.genericButton();
-			button.defaultHTML = Popups.titleBarComponents.buttonIcons["pin"];
-			button.alternateHTML = Popups.titleBarComponents.buttonIcons["unpin"];
-			button.defaultTitle = Popups.titleBarComponents.buttonTitles["pin"];
-			button.alternateTitle = Popups.titleBarComponents.buttonTitles["unpin"];
-			button.innerHTML = button.defaultHTML;
-			button.title = button.defaultTitle;
-			button.classList.add("pin-button", "pin");
-			button.buttonAction = (event) => {
-				event.stopPropagation();
-
-				let popup = button.closest(".popup");
-				if (popup) {
-					if (Popups.popupIsPinned(popup)) {
-						Popups.unpinPopup(popup);
-					} else {
-						Popups.pinPopup(popup);
-					}
-					button.updateState();
-				}
-			};
-			button.updateState = () => {
-				let popup = button.closest(".popup");
-				if (!popup)
-					return;
-
-				button.innerHTML = Popups.popupIsPinnedOrZoomed(popup) ? button.alternateHTML : button.defaultHTML;
-				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
-
-				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
-
-				button.disabled = Popups.popupIsZoomed(popup);
-			};
-			return button;
-		},
-		optionsButton: () => {
-			let button = Popups.titleBarComponents.genericButton();
-			button.innerHTML = Popups.titleBarComponents.buttonIcons["options"];
-			button.title = Popups.titleBarComponents.buttonTitles["options"];
-			button.classList.add("options-button");
-			return button;
-		},
-		addSubmenuToButton: (button, submenuClass) => {
-			let popup = button.closest(".popup");
-			if (!popup || !popup.titleBar)
-				return;
-
-			button.classList.add("has-submenu");
-			button.submenu = document.createElement("div");
-			button.submenu.classList.add("submenu", submenuClass);
-
-			popup.titleBar.appendChild(button.submenu);
-		},
-		addButtonsToSubmenu: (submenu, buttons) => {
-			buttons.forEach(button => {
-				submenu.appendChild(button);
-				if (button.buttonAction)
-					button.addActivateEvent(button.buttonAction);
-			});
-		}
-	},
-
-	popupWasResized: (popup) => {
-		return popup.classList.contains("resized");
 	},
 
 	popupIsPinnedOrZoomed: (popup) => {
@@ -485,10 +480,12 @@ Popups = {
 		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
 
-		//  Update button state.
-		popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
-			titleBarButton.updateState();
-		});
+		//  Update title bar buttons states (if any).
+		if (popup.titleBar) {
+			popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
+				titleBarButton.updateState();
+			});
+		}
 	},
 
 	restorePopup: (popup) => {
@@ -542,234 +539,14 @@ Popups = {
 		Popups.attachPopupToTarget(popup);
 	},
 
-	updatePageScrollState: () => {
-		GWLog("Popups.updatePageScrollState", "popups.js", 2);
+	/******************/
+	/*  Popup resizing.
+		*/
 
-		if (Popups.allSpawnedPopups().findIndex(popup => Popups.popupIsMaximized(popup)) == -1)
-			togglePageScrolling(true);
-		else
-			togglePageScrolling(false);
+	popupWasResized: (popup) => {
+		return popup.classList.contains("resized");
 	},
 
-	hidePopupContainer: () => {
-		GWLog("Popups.hidePopupContainer", "popups.js", 3);
-
-		Popups.popupContainer.style.visibility = "hidden";
-	},
-
-	unhidePopupContainer: () => {
-		GWLog("Popups.unhidePopupContainer", "popups.js", 3);
-
-		Popups.popupContainer.style.visibility = "";
-	},
-
-	newPopup: () => {
-		GWLog("Popups.newPopup", "popups.js", 2);
-
-		let popup = document.createElement("div");
-		popup.classList.add("popup", "popframe");
-		popup.innerHTML = `<div class="popframe-scroll-view"><div class="popframe-content-view"></div></div>`;
-		popup.scrollView = popup.querySelector(".popframe-scroll-view");
-		popup.contentView = popup.querySelector(".popframe-content-view");
-		popup.contentView.popup = popup.scrollView.popup = popup;
-		popup.titleBarContents = [ ];
-		return popup;
-	},
-	setPopFrameContent: (popup, contentHTML) => {
-		popup.contentView.innerHTML = contentHTML;
-		return (contentHTML > "");
-	},
-	spawnPopup: (target, spawnPoint) => {
-		GWLog("Popups.spawnPopup", "popups.js", 2);
-
-		//  Prevent spawn attempts before setup complete.
-		if (Popups.popupContainer == null)
-			return;
-
-		//  Despawn existing popup, if any.
-		if (target.popup)
-			Popups.despawnPopup(target.popup);
-
-		//  Create the new popup.
-		target.popFrame = target.popup = Popups.newPopup();
-
-		//  Give the popup a reference to the target.
-		target.popup.spawningTarget = target;
-
-		// Prepare the newly created popup for spawning.
-		if (!(target.popFrame = target.popup = target.preparePopup(target.popup)))
-			return;
-
-		/*  If title bar contents are provided, create and inject the popup
-			title bar, and set class `has-title-bar` on the popup.
-			*/
-		if (target.popup.titleBarContents.length > 0) {
-			target.popup.classList.add("has-title-bar");
-
-			target.popup.titleBar = document.createElement("div");
-			target.popup.titleBar.classList.add("popframe-title-bar");
-			target.popup.titleBar.title = "Drag popup by title bar to reposition";
-			target.popup.insertBefore(target.popup.titleBar, target.popup.firstElementChild);
-
-			target.popup.titleBarContents.forEach(elementOrHTML => {
-				if (typeof elementOrHTML == "string") {
-					target.popup.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
-				} else {
-					target.popup.titleBar.appendChild(elementOrHTML);
-				}
-				let newlyAddedElement = target.popup.titleBar.lastElementChild;
-				if (newlyAddedElement.buttonAction)
-					newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
-
-				//  Add popup-positioning submenu to zoom button.
-				if (   newlyAddedElement.classList.contains("zoom-button") 
-					&& newlyAddedElement.submenuEnabled) {
-					let zoomButton = newlyAddedElement;
-					Popups.titleBarComponents.addSubmenuToButton(zoomButton, "zoom-button-submenu");
-					Popups.titleBarComponents.addButtonsToSubmenu(zoomButton.submenu, Popups.titleBarComponents.popupZoomButtons());
-				}
-			});
-
-			target.popup.titleBar.addActivateEvent((event) => {
-				event.stopPropagation();
-			});
-
-			target.popup.titleBar.addEventListener("mousedown", Popups.popupTitleBarMouseDown = (event) => {
-				GWLog("Popups.popupTitleBarMouseDown", "popups.js", 2);
-
-				//  Get the containing popup.
-				let popup = event.target.closest(".popup");
-
-				//  Bring the popup to the front.
-				Popups.bringPopupToFront(popup);
-
-				//  We only want to do anything on left-clicks.
-				if (event.button != 0)
-					return;
-
-				//  Also do nothing if the click is on a title bar button.
-				if (event.target.closest(".popframe-title-bar-button"))
-					return;
-
-				//  Prevent clicks from doing anything other than what we want.
-				event.preventDefault();
-
-				//  Mark popup as grabbed.
-				popup.classList.toggle("grabbed", true);
-
-				//  Change cursor to “grabbing hand”.
-				document.documentElement.style.cursor = "grabbing";
-
-				/*  If the mouse-down event is on the popup title (and the title
-					is a link).
-					*/
-				let linkDragTarget = event.target.closest("a");
-
-				/*  Deal with edge case where drag to screen bottom ends up
-					with the mouse-up event happening in the popup body.
-					*/
-				popup.removeEventListener("click", Popups.popupClicked);
-
-				//  Point where the drag began.
-				let dragStartMouseCoordX = event.clientX;
-				let dragStartMouseCoordY = event.clientY;
-
-				//  Popup initial position.
-				let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
-				//  Do not change popup size.
-				newPopupViewportRect.width = 0;
-				newPopupViewportRect.height = 0;
-
-				window.addEventListener("mouseup", Popups.popupDragMouseUp = (event) => {
-					GWLog("Popups.popupDragMouseUp", "popups.js", 2);
-
-					event.stopPropagation();
-
-					window.onmousemove = null;
-
-					//  Reset cursor to normal.
-					document.documentElement.style.cursor = "";
-
-					let popup = window.popupBeingDragged;
-					if (popup) {
-						popup.classList.toggle("grabbed", false);
-						popup.classList.toggle("dragging", false);
-
-						//  Re-enable clicking on the title.
-						if (linkDragTarget) {
-							requestAnimationFrame(() => {
-								linkDragTarget.onclick = null;
-								linkDragTarget = null;
-							});
-						}
-
-						//  Cache the viewport rect.
-						popup.viewportRect = popup.getBoundingClientRect();
-
-						//  Ensure that the click listener isn’t fired at once.
-						requestAnimationFrame(() => {
-							popup.addEventListener("click", Popups.popupClicked);
-						});
-
-						/*  If the drag of a non-pinned popup ended outside the
-							popup (possibly outside the viewport), treat this
-							as mousing out of the popup.
-							*/
-						if ((  !event.target.closest 
-							 || event.target.closest(".popup") == null)
-							&& !Popups.popupIsPinnedOrZoomed(popup)) {
-							Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
-								Popups.clearPopupTimers(popupInStack.spawningTarget);
-								Popups.setPopupFadeTimer(popupInStack.spawningTarget);
-							});
-						}
-					}
-					window.popupBeingDragged = null;
-
-					window.removeEventListener("mouseup", Popups.popupDragMouseUp);
-				});
-
-				//  Viewport width must account for vertical scroll bar.
-				let viewportWidth = document.documentElement.offsetWidth;
-				let viewportHeight = window.innerHeight;
-
-				window.onmousemove = (event) => {
-					window.popupBeingDragged = popup;
-
-					popup.classList.toggle("dragging", true);
-					if (linkDragTarget)
-						linkDragTarget.onclick = (event) => { return false; };
-
-					let deltaX = event.clientX - dragStartMouseCoordX;
-					let deltaY = event.clientY - dragStartMouseCoordY;
-
-					newPopupViewportRect.x = valMinMax(popup.viewportRect.left + deltaX, 
-													   0, 
-													   viewportWidth - popup.viewportRect.width);
-					newPopupViewportRect.y = valMinMax(popup.viewportRect.top + deltaY, 
-													   0, 
-													   viewportHeight - popup.viewportRect.height);
-
-					Popups.setPopupViewportRect(popup, newPopupViewportRect);
-				};
-			});
-			target.popup.titleBar.addEventListener("mouseup", (event) => {
-				let popup = event.target.closest(".popup");
-				popup.classList.toggle("grabbed", false);
-			});
-		}
-
-		//	Inject the popup into the page.
-		Popups.injectPopup(target.popup);
-
-		//  Position the popup appropriately with respect to the target.
-		Popups.positionPopup(target.popup, spawnPoint);
-
-		//  Mark target as having an active popup associated with it.
-		target.classList.add("popup-open");
-
-		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
-	},
 	edgeOrCorner: (popup, relativeMousePos) => {
 		//  Make corner drag areas big enough to make a decent mouse target.
 		let cornerHandleSize = Math.min(20.0, (Math.min(popup.viewportRect.width, popup.viewportRect.height) / 3.0));
@@ -798,6 +575,261 @@ Popups = {
 			return "";
 		}
 	},
+
+	cursorForPopupBorder: (edgeOrCorner) => {
+		switch (edgeOrCorner) {
+			case "edge-top":
+			case "edge-bottom":
+				return "row-resize";
+			case "edge-left":
+			case "edge-right":
+				return "col-resize";
+			case "corner-top-left":
+			case "corner-bottom-right":
+				return "nwse-resize";
+			case "corner-top-right":
+			case "corner-bottom-left":
+				return "nesw-resize";
+		}
+	},
+
+	/*******************/
+	/*  Popup title bar.
+		*/
+
+	//  Add title bar to a popup which has a populated .titleBarContents.
+	addTitleBarToPopup: (popup) => {
+		GWLog("Popups.addTitleBarToPopup", "popups.js", 2);
+
+		//  Set class `has-title-bar` on the popup.
+		popup.classList.add("has-title-bar");
+
+		//  Create and inject the title bar element.
+		popup.titleBar = document.createElement("div");
+		popup.titleBar.classList.add("popframe-title-bar");
+		popup.titleBar.title = "Drag popup by title bar to reposition";
+		popup.insertBefore(popup.titleBar, popup.firstElementChild);
+
+		//  Add the provided title bar contents (buttons, title, etc.).
+		popup.titleBarContents.forEach(elementOrHTML => {
+			if (typeof elementOrHTML == "string") {
+				popup.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
+			} else {
+				popup.titleBar.appendChild(elementOrHTML);
+			}
+			let newlyAddedElement = popup.titleBar.lastElementChild;
+
+			if (newlyAddedElement.buttonAction)
+				newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
+
+			//  Add popup-positioning submenu to zoom button.
+			if (   newlyAddedElement.classList.contains("zoom-button") 
+				&& newlyAddedElement.submenuEnabled)
+				Popups.titleBarComponents.addSubmenuToButton(newlyAddedElement, "zoom-button-submenu", Popups.titleBarComponents.popupZoomButtons());
+		});
+
+		//  Add event listeners for dragging the popup by the title bar.
+		popup.titleBar.addEventListener("mousedown", Popups.popupTitleBarMouseDown);
+		popup.titleBar.addEventListener("mouseup", Popups.popupTitleBarMouseUp);
+	},
+
+	//  Elements and methods related to popup title bars.
+	titleBarComponents: {
+		popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
+		buttonIcons: {
+			"close": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M325.8 193.8L263.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L224 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17zM448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-48 346V86c0-3.3-2.7-6-6-6H54c-3.3 0-6 2.7-6 6v340c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>`,
+			"zoom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
+			"restore": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12z"></path></svg>`,
+			"pin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M306.5 186.6l-5.7-42.6H328c13.2 0 24-10.8 24-24V24c0-13.2-10.8-24-24-24H56C42.8 0 32 10.8 32 24v96c0 13.2 10.8 24 24 24h27.2l-5.7 42.6C29.6 219.4 0 270.7 0 328c0 13.2 10.8 24 24 24h144v104c0 .9.1 1.7.4 2.5l16 48c2.4 7.3 12.8 7.3 15.2 0l16-48c.3-.8.4-1.7.4-2.5V352h144c13.2 0 24-10.8 24-24 0-57.3-29.6-108.6-77.5-141.4zM50.5 304c8.3-38.5 35.6-70 71.5-87.8L138 96H80V48h224v48h-58l16 120.2c35.8 17.8 63.2 49.4 71.5 87.8z"/></svg>`,
+			"unpin": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M298.028 214.267L285.793 96H328c13.255 0 24-10.745 24-24V24c0-13.255-10.745-24-24-24H56C42.745 0 32 10.745 32 24v48c0 13.255 10.745 24 24 24h42.207L85.972 214.267C37.465 236.82 0 277.261 0 328c0 13.255 10.745 24 24 24h136v104.007c0 1.242.289 2.467.845 3.578l24 48c2.941 5.882 11.364 5.893 14.311 0l24-48a8.008 8.008 0 0 0 .845-3.578V352h136c13.255 0 24-10.745 24-24-.001-51.183-37.983-91.42-85.973-113.733z"/></svg>`,
+			"options": `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g transform="translate(10 10)"><path id="a" d="M1.5-10h-3l-1 6.5h5m0 7h-5l1 6.5h3"/><use transform="rotate(45)" xlink:href="#a"/><use transform="rotate(90)" xlink:href="#a"/><use transform="rotate(135)" xlink:href="#a"/></g><path d="M10 2.5a7.5 7.5 0 000 15 7.5 7.5 0 000-15v4a3.5 3.5 0 010 7 3.5 3.5 0 010-7"/></svg>`,
+			"zoom-top-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z" /></svg>`,
+			"zoom-top": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z M 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z" /></svg>`,
+			"zoom-top-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z" /></svg>`,
+			"zoom-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M 0,180 V 56 C 0,42.7 10.7,32 24,32 h 124 c 6.6,0 12,5.4 12,12 v 40 c 0,6.6 -5.4,12 -12,12 H 64 v 84 c 0,6.6 -5.4,12 -12,12 H 12 C 5.4,192 0,186.6 0,180 Z m 160,288 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
+			"zoom-full": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
+			"zoom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 288,44 v 40 c 0,6.6 5.4,12 12,12 h 84 v 84 c 0,6.6 5.4,12 12,12 h 40 c 6.6,0 12,-5.4 12,-12 V 56 C 448,42.7 437.3,32 424,32 H 300 c -6.6,0 -12,5.4 -12,12 z m 148,276 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`,
+			"zoom-bottom-left": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
+			"zoom-bottom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z M 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
+			"zoom-bottom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`
+		},
+		buttonTitles: {
+			"close": "Close this popup",
+			"zoom": "Maximize this popup",
+			"restore": "Restore this popup to normal size and position",
+			"pin": "Pin this popup to the screen",
+			"unpin": "Un-pin this popup from the screen",
+			"options": "Show options",
+			"zoom-top-left": "Place this popup in the top-left quarter of the screen",
+			"zoom-top": "Place this popup on the top half of the screen",
+			"zoom-top-right": "Place this popup in the top-right quarter of the screen",
+			"zoom-left": "Place this popup on the left half of the screen",
+			"zoom-right": "Place this popup on the right half of the screen",
+			"zoom-full": "Expand this popup to fill the screen",
+			"zoom-bottom-left": "Place this popup in the bottom-left quarter of the screen",
+			"zoom-bottom": "Place this popup on the bottom half of the screen",
+			"zoom-bottom-right": "Place this popup in the bottom-right quarter of the screen"
+		},
+		genericButton: () => {
+			let button = document.createElement("BUTTON");
+			button.classList.add("popframe-title-bar-button");
+
+			button.buttonAction = (event) => { event.stopPropagation(); };
+
+			return button;
+		},
+		closeButton: () => {
+			let button = Popups.titleBarComponents.genericButton();
+			button.classList.add("close-button");
+
+			button.innerHTML = Popups.titleBarComponents.buttonIcons["close"];
+			button.title = Popups.titleBarComponents.buttonTitles["close"];
+
+			button.buttonAction = (event) => {
+				event.stopPropagation();
+
+				let popup = event.target.closest(".popup");
+
+				Popups.unpinPopup(popup);
+				Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
+					Popups.clearPopupTimers(popupInStack.spawningTarget);
+					Popups.despawnPopup(popupInStack);
+				});
+			};
+
+			return button;
+		},
+		zoomButton: () => {
+			let button = Popups.titleBarComponents.genericButton();
+			button.classList.add("zoom-button", "zoom");
+
+			button.defaultHTML = Popups.titleBarComponents.buttonIcons["zoom"];
+			button.alternateHTML = Popups.titleBarComponents.buttonIcons["restore"];
+			button.innerHTML = button.defaultHTML;
+
+			button.defaultTitle = Popups.titleBarComponents.buttonTitles["zoom"];
+			button.alternateTitle = Popups.titleBarComponents.buttonTitles["restore"];
+			button.title = button.defaultTitle;
+
+			button.buttonAction = (event) => {
+				event.stopPropagation();
+
+				let popup = button.closest(".popup");
+
+				if (button.classList.contains("zoom")) {
+					Popups.zoomPopup(popup, "full");
+				} else {
+					Popups.restorePopup(popup);
+				}
+			};
+
+			button.updateState = () => {
+				let popup = button.closest(".popup");
+
+				let alternateStateEnabled = (Popups.popupIsZoomed(popup) || Popups.popupWasResized(popup));
+
+				button.innerHTML = alternateStateEnabled ? button.alternateHTML : button.defaultHTML;
+				button.title = alternateStateEnabled ? button.alternateTitle : button.defaultTitle;
+
+				button.swapClasses([ "zoom", "restore" ], (alternateStateEnabled ? 1 : 0));
+			};
+
+			return button;
+		},
+		popupZoomButtons: () => {
+			return Popups.titleBarComponents.popupPlaces.map(place => {
+				let button = Popups.titleBarComponents.genericButton();
+				button.classList.add("submenu-button", "zoom-button", place);
+
+				button.innerHTML = Popups.titleBarComponents.buttonIcons[`zoom-${place}`];
+				button.title = Popups.titleBarComponents.buttonTitles[`zoom-${place}`];
+
+				button.buttonAction = (event) => {
+					event.stopPropagation();
+
+					let popup = button.closest(".popup");
+
+					Popups.zoomPopup(popup, place);
+
+					popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
+						titleBarButton.updateState();
+					});
+				};
+
+				return button;
+			});
+		},
+		pinButton: () => {
+			let button = Popups.titleBarComponents.genericButton();
+			button.classList.add("pin-button", "pin");
+
+			button.defaultHTML = Popups.titleBarComponents.buttonIcons["pin"];
+			button.alternateHTML = Popups.titleBarComponents.buttonIcons["unpin"];
+			button.innerHTML = button.defaultHTML;
+
+			button.defaultTitle = Popups.titleBarComponents.buttonTitles["pin"];
+			button.alternateTitle = Popups.titleBarComponents.buttonTitles["unpin"];
+			button.title = button.defaultTitle;
+
+			button.buttonAction = (event) => {
+				event.stopPropagation();
+
+				let popup = button.closest(".popup");
+
+				if (Popups.popupIsPinned(popup)) {
+					Popups.unpinPopup(popup);
+				} else {
+					Popups.pinPopup(popup);
+				}
+
+				button.updateState();
+			};
+
+			button.updateState = () => {
+				let popup = button.closest(".popup");
+
+				button.innerHTML = Popups.popupIsPinnedOrZoomed(popup) ? button.alternateHTML : button.defaultHTML;
+				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
+
+				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
+
+				button.disabled = Popups.popupIsZoomed(popup);
+			};
+
+			return button;
+		},
+		optionsButton: () => {
+			let button = Popups.titleBarComponents.genericButton();
+			button.classList.add("options-button");
+
+			button.innerHTML = Popups.titleBarComponents.buttonIcons["options"];
+			button.title = Popups.titleBarComponents.buttonTitles["options"];
+
+			return button;
+		},
+
+		addSubmenuToButton: (button, submenuClass, submenuButtons) => {
+			let popup = button.closest(".popup");
+
+			button.classList.add("has-submenu");
+
+			button.submenu = document.createElement("div");
+			button.submenu.classList.add("submenu", submenuClass);
+
+			popup.titleBar.insertBefore(button.submenu, button.nextElementSibling);
+
+			submenuButtons.forEach(submenuButton => {
+				button.submenu.appendChild(submenuButton);
+				if (submenuButton.buttonAction)
+					submenuButton.addActivateEvent(submenuButton.buttonAction);
+			});
+		},
+	},
+
+	/*********************/
+	/*	Popups z-ordering.
+		*/
+
 	updatePopupsZOrder: () => {
 		GWLog("Popups.updatePopupsZOrder", "popups.js", 3);
 
@@ -826,201 +858,15 @@ Popups = {
 		//  Update z-indexes of all popups.
 		Popups.updatePopupsZOrder();
 	},
-	injectPopup: (popup) => {
-		GWLog("Popups.injectPopup", "popups.js", 2);
 
-		//  Add popup to a popup stack.
-		if (popup.popupStack == null) {
-			let parentPopup = popup.spawningTarget.closest(".popup");
-			popup.popupStack = parentPopup ? parentPopup.popupStack : [ ];
-		} else {
-			popup.popupStack.remove(popup);
-		}
-		popup.popupStack.push(popup);
+	/*********************/
+	/*  Popup positioning.
+		*/
 
-		//  Inject popup into page.
-		Popups.popupContainer.appendChild(popup);
-
-		//  Bring popup to front.
-		Popups.bringPopupToFront(popup);
-
-		//  Cache border width.
-		popup.borderWidth = parseFloat(getComputedStyle(popup).borderLeftWidth);
-
-		//	Add event listeners.
-		popup.addEventListener("click", Popups.popupClicked);
-		popup.addEventListener("mouseenter", Popups.popupMouseenter);
-		popup.addEventListener("mouseleave", Popups.popupMouseleave);
-		popup.addEventListener("mousemove", Popups.popupMousemove = (event) => {
-			GWLog("Popups.popupMousemove", "popups.js", 3);
-
-			if (   event.target == popup 
-				&& window.popupBeingDragged == null 
-				&& Popups.popupIsPinnedOrZoomed(popup)) {
-				//  Mouse position is relative to the popup’s coordinate system.
-				let edgeOrCorner = Popups.edgeOrCorner(popup, {
-					x: event.clientX - popup.viewportRect.left, 
-					y: event.clientY - popup.viewportRect.top 
-				});
-				//  Determine cursor type.
-				switch (edgeOrCorner) {
-					case "edge-top":
-					case "edge-bottom":
-						document.documentElement.style.cursor = "row-resize";
-						break;
-					case "edge-left":
-					case "edge-right":
-						document.documentElement.style.cursor = "col-resize";
-						break;
-					case "corner-top-left":
-					case "corner-bottom-right":
-						document.documentElement.style.cursor = "nwse-resize";
-						break;
-					case "corner-top-right":
-					case "corner-bottom-left":
-						document.documentElement.style.cursor = "nesw-resize";
-						break;
-				}
-			}
-		});
-		popup.addEventListener("mouseout", Popups.popupMouseout = (event) => {
-			GWLog("Popups.popupMouseout", "popups.js", 3);
-
-			//  Reset cursor.
-			if (window.popupBeingDragged == null)
-				document.documentElement.style.cursor = "";
-		});
-		popup.addEventListener("mousedown", Popups.popupMousedown = (event) => {
-			GWLog("Popups.popupMousedown", "popups.js", 2);
-
-			/*  Make sure we’re clicking on the popup (i.e., its edge) and not
-				on any of the popup’s contained elements; that this is a 
-				left-click; and that the popup is pinned or zoomed.
-				*/
-			if (   event.target != popup
-				|| event.button != 0
-				|| !Popups.popupIsPinnedOrZoomed(popup))
-				return;
-
-			//  Bring the popup to the front.
-			Popups.bringPopupToFront(popup);
-
-			//  Prevent clicks from doing anything other than what we want.
-			event.preventDefault();
-
-			//  Mark popup as currently being resized.
-			popup.classList.toggle("resizing", true);
-
-			//  Save position, if need be.
-			if (!("previousXPosition" in popup.dataset) && !("previousYPosition" in popup.dataset)) {
-				popup.dataset.previousXPosition = popup.viewportRect.left;
-				popup.dataset.previousYPosition = popup.viewportRect.top;
-			}
-
-			//  Determine direction of resizing.
-			let edgeOrCorner = Popups.edgeOrCorner(popup, {
-				x: event.clientX - popup.viewportRect.left, 
-				y: event.clientY - popup.viewportRect.top 
-			});
-
-			//  Point where the drag began.
-			let dragStartMouseCoordX = event.clientX;
-			let dragStartMouseCoordY = event.clientY;
-
-			//  Popup initial rect.
-			let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
-
-			window.addEventListener("mouseup", Popups.popupResizeMouseUp = (event) => {
-				GWLog("Popups.popupResizeMouseUp", "popups.js", 2);
-
-				event.stopPropagation();
-
-				window.onmousemove = null;
-
-				//  Reset cursor to normal.
-				document.documentElement.style.cursor = "";
-
-				let popup = window.popupBeingResized;
-				if (popup) {
-					popup.classList.toggle("resizing", false);
-
-					if (Popups.popupWasResized(popup))
-						popup.titleBar.querySelector("button.zoom-button:not(.submenu-button)").updateState();
-
-					//  Cache the viewport rect.
-					popup.viewportRect = popup.getBoundingClientRect();
-				}
-				window.popupBeingResized = null;
-
-				window.removeEventListener("mouseup", Popups.popupResizeMouseUp);
-			});
-
-			//  Viewport width must account for vertical scroll bar.
-			let viewportWidth = document.documentElement.offsetWidth;
-			let viewportHeight = window.innerHeight;
-
-			//  Popup minimum width/height.
-			let popupMinWidth = parseFloat(getComputedStyle(popup).minWidth);
-			let popupMinHeight = parseFloat(getComputedStyle(popup).minHeight);
-
-			window.onmousemove = (event) => {
-				window.popupBeingResized = popup;
-
-				popup.classList.toggle("resized", true);
-
-				let deltaX = event.clientX - dragStartMouseCoordX;
-				let deltaY = event.clientY - dragStartMouseCoordY;
-
-				let resizeTop = () => {
-					newPopupViewportRect.y = valMinMax(popup.viewportRect.y + deltaY, 0, popup.viewportRect.bottom - popupMinHeight);
-					newPopupViewportRect.height = popup.viewportRect.bottom - newPopupViewportRect.y;
-				};
-				let resizeBottom = () => {
-					newPopupViewportRect.height = valMinMax(popup.viewportRect.height + deltaY, popupMinHeight, viewportHeight - popup.viewportRect.y);
-				};
-				let resizeLeft = () => {
-					newPopupViewportRect.x = valMinMax(popup.viewportRect.x + deltaX, 0, popup.viewportRect.right - popupMinWidth);
-					newPopupViewportRect.width = popup.viewportRect.right - newPopupViewportRect.x;
-				};
-				let resizeRight = () => {
-					newPopupViewportRect.width = valMinMax(popup.viewportRect.width + deltaX, popupMinWidth, viewportWidth - popup.viewportRect.x);
-				};
-
-				switch (edgeOrCorner) {
-					case "edge-top":
-						resizeTop();
-						break;
-					case "edge-bottom":
-						resizeBottom();
-						break;
-					case "edge-left":
-						resizeLeft();
-						break;
-					case "edge-right":
-						resizeRight();
-						break;
-					case "corner-top-left":
-						resizeTop();
-						resizeLeft();
-						break;
-					case "corner-bottom-right":
-						resizeBottom();
-						resizeRight();
-						break;
-					case "corner-top-right":
-						resizeTop();
-						resizeRight();
-						break;
-					case "corner-bottom-left":
-						resizeBottom();
-						resizeLeft();
-						break;
-				}
-
-				Popups.setPopupViewportRect(popup, newPopupViewportRect);
-			};
-		});
+	preferSidePositioning: (target) => {
+		return target.preferSidePositioning ? target.preferSidePositioning() : false;
 	},
+
 	positionPopup: (popup, spawnPoint) => {
 		let target = popup.spawningTarget;
 		if (spawnPoint) target.lastMouseEnterLocation = spawnPoint;
@@ -1172,6 +1018,7 @@ Popups = {
 			document.activeElement.blur();
 		});
 	},
+	
 	setPopupViewportRect: (popup, rect) => {
 		GWLog("Popups.setPopupViewportRect", "popups.js", 3);
 
@@ -1196,47 +1043,10 @@ Popups = {
 			popup.scrollView.style.maxHeight = "calc(100% - var(--popup-title-bar-height))";
 		}
 	},
-	attachPopupToTarget: (popup) => {
-		GWLog("Popups.attachPopupToTarget", "popups.js", 2);
 
-		Popups.clearPopupTimers(popup.spawningTarget);
-
-        popup.spawningTarget.classList.add("popup-open");
-        popup.spawningTarget.popup = popup;
-        popup.spawningTarget.popFrame = popup;
-	},
-	detachPopupFromTarget: (popup) => {
-		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
-
-		Popups.clearPopupTimers(popup.spawningTarget);
-
-        popup.spawningTarget.classList.remove("popup-open");
-        popup.spawningTarget.popup = null;
-        popup.spawningTarget.popFrame = null;
-	},
-    despawnPopup: (popup) => {
-		GWLog("Popups.despawnPopup", "popups.js", 2);
-
-		GW.notificationCenter.fireEvent("Popups.popupWillDespawn", { popup: popup });
-
-		//  Detach popup from its spawning target.
-        Popups.detachPopupFromTarget(popup);
-
-		//  Remove popup from the page.
-        popup.remove();
-
-		//  Remove popup from its popup stack.
-        popup.popupStack.remove(popup);
-        popup.popupStack = null;
-
-		//  Update z-indexes of all popups.
-		Popups.updatePopupsZOrder();
-
-		//  Enable/disable main document scrolling.
-		Popups.updatePageScrollState();
-
-        document.activeElement.blur();
-    },
+	/****************/
+	/*	Popup timers.
+		*/
 
     clearPopupTimers: (target) => {
 	    GWLog("Popups.clearPopupTimers", "popups.js", 3);
@@ -1278,19 +1088,13 @@ Popups = {
 		}, Popups.popupFadeoutDuration);
     },
 
-	getPopupAncestorStack: (popup) => {
-		let indexOfPopup = popup.popupStack.indexOf(popup);
-		if (indexOfPopup != -1) {
-			return popup.popupStack.slice(0, indexOfPopup + 1);
-		} else {
-			let parentPopup = popup.spawningTarget.closest(".popup");
-			return (parentPopup && parentPopup.popupStack) ? Popups.getPopupAncestorStack(parentPopup) : [ ];
-		}
-	},
+	/*******************/
+	/*  Event listeners.
+		*/
 
     //	The “user moved mouse out of popup” mouseleave event.
-	popupMouseleave: (event) => {
-		GWLog("Popups.popupMouseleave", "popups.js", 2);
+	popupMouseLeave: (event) => {
+		GWLog("Popups.popupMouseLeave", "popups.js", 2);
 
 		if (window.popupBeingDragged)
 			return;
@@ -1300,14 +1104,17 @@ Popups = {
 			Popups.setPopupFadeTimer(popupInStack.spawningTarget);
 		});
 	},
+
 	//	The “user moved mouse back into popup” mouseenter event.
-	popupMouseenter: (event) => {
-		GWLog("Popups.popupMouseenter", "popups.js", 2);
+	popupMouseEnter: (event) => {
+		GWLog("Popups.popupMouseEnter", "popups.js", 2);
 
 		Popups.getPopupAncestorStack(event.target).forEach(popupInStack => {
 			Popups.clearPopupTimers(popupInStack.spawningTarget);
 		});
 	},
+
+	//  The “user clicked in body of popup” event.
     popupClicked: (event) => {
 		GWLog("Popups.popupClicked", "popups.js", 2);
 
@@ -1325,9 +1132,309 @@ Popups = {
 		Popups.clearPopupTimers(popup.spawningTarget);
 		Popups.despawnPopup(popup);
     },
-	//	The mouseenter event.
-	targetMouseenter: (event) => {
-		GWLog("Popups.targetMouseenter", "popups.js", 2);
+
+	//  The popup mouse down event (for resizing by dragging an edge/corner).
+	popupMouseDown: (event) => {
+		GWLog("Popups.popupMouseDown", "popups.js", 2);
+
+		//  Prevent other events from triggering.
+		event.stopPropagation();
+
+		//  Get the containing popup.
+		let popup = event.target.closest(".popup");
+
+		/*  Make sure we’re clicking on the popup (i.e., its edge) and not
+			on any of the popup’s contained elements; that this is a 
+			left-click; and that the popup is pinned or zoomed.
+			*/
+		if (   event.target != popup
+			|| event.button != 0
+			|| !Popups.popupIsPinnedOrZoomed(popup))
+			return;
+
+		//  Bring the popup to the front.
+		Popups.bringPopupToFront(popup);
+
+		//  Prevent clicks from doing anything other than what we want.
+		event.preventDefault();
+
+		//  Mark popup as currently being resized.
+		popup.classList.toggle("resizing", true);
+
+		//  Save position, if need be.
+		if (!("previousXPosition" in popup.dataset) && !("previousYPosition" in popup.dataset)) {
+			popup.dataset.previousXPosition = popup.viewportRect.left;
+			popup.dataset.previousYPosition = popup.viewportRect.top;
+		}
+
+		//  Determine direction of resizing.
+		let edgeOrCorner = Popups.edgeOrCorner(popup, {
+			x: event.clientX - popup.viewportRect.left, 
+			y: event.clientY - popup.viewportRect.top 
+		});
+
+		//  Point where the drag began.
+		let dragStartMouseCoordX = event.clientX;
+		let dragStartMouseCoordY = event.clientY;
+
+		//  Popup initial rect.
+		let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
+
+		/*  Add the mouse up event listener (to window, not the popup, because
+			the drag might end anywhere, due to animation lag).
+			*/
+		window.addEventListener("mouseup", Popups.popupResizeMouseUp);
+
+		//  Viewport width must account for vertical scroll bar.
+		let viewportWidth = document.documentElement.offsetWidth;
+		let viewportHeight = window.innerHeight;
+
+		//  Popup minimum width/height.
+		let popupMinWidth = parseFloat(getComputedStyle(popup).minWidth);
+		let popupMinHeight = parseFloat(getComputedStyle(popup).minHeight);
+
+		//  The mousemove event that triggers the continuous resizing.
+		window.onmousemove = (event) => {
+			window.popupBeingResized = popup;
+
+			popup.classList.toggle("resized", true);
+
+			let deltaX = event.clientX - dragStartMouseCoordX;
+			let deltaY = event.clientY - dragStartMouseCoordY;
+
+			let resizeTop = () => {
+				newPopupViewportRect.y = valMinMax(popup.viewportRect.y + deltaY, 0, popup.viewportRect.bottom - popupMinHeight);
+				newPopupViewportRect.height = popup.viewportRect.bottom - newPopupViewportRect.y;
+			};
+			let resizeBottom = () => {
+				newPopupViewportRect.height = valMinMax(popup.viewportRect.height + deltaY, popupMinHeight, viewportHeight - popup.viewportRect.y);
+			};
+			let resizeLeft = () => {
+				newPopupViewportRect.x = valMinMax(popup.viewportRect.x + deltaX, 0, popup.viewportRect.right - popupMinWidth);
+				newPopupViewportRect.width = popup.viewportRect.right - newPopupViewportRect.x;
+			};
+			let resizeRight = () => {
+				newPopupViewportRect.width = valMinMax(popup.viewportRect.width + deltaX, popupMinWidth, viewportWidth - popup.viewportRect.x);
+			};
+
+			switch (edgeOrCorner) {
+				case "edge-top":
+					resizeTop();
+					break;
+				case "edge-bottom":
+					resizeBottom();
+					break;
+				case "edge-left":
+					resizeLeft();
+					break;
+				case "edge-right":
+					resizeRight();
+					break;
+				case "corner-top-left":
+					resizeTop();
+					resizeLeft();
+					break;
+				case "corner-bottom-right":
+					resizeBottom();
+					resizeRight();
+					break;
+				case "corner-top-right":
+					resizeTop();
+					resizeRight();
+					break;
+				case "corner-bottom-left":
+					resizeBottom();
+					resizeLeft();
+					break;
+			}
+
+			Popups.setPopupViewportRect(popup, newPopupViewportRect);
+		};
+	},
+
+	//  The resize-end mouseup event.
+	popupResizeMouseUp: (event) => {
+		GWLog("Popups.popupResizeMouseUp", "popups.js", 2);
+
+		event.stopPropagation();
+
+		window.onmousemove = null;
+
+		//  Reset cursor to normal.
+		document.documentElement.style.cursor = "";
+
+		let popup = window.popupBeingResized;
+		if (popup) {
+			popup.classList.toggle("resizing", false);
+
+			if (Popups.popupWasResized(popup))
+				popup.titleBar.querySelector("button.zoom-button:not(.submenu-button)").updateState();
+
+			//  Cache the viewport rect.
+			popup.viewportRect = popup.getBoundingClientRect();
+		}
+		window.popupBeingResized = null;
+
+		window.removeEventListener("mouseup", Popups.popupResizeMouseUp);
+	},
+
+	//  The popup mouseout event.
+	popupMouseOut: (event) => {
+		GWLog("Popups.popupMouseOut", "popups.js", 3);
+
+		//  Reset cursor.
+		if (window.popupBeingDragged == null)
+			document.documentElement.style.cursor = "";
+	},
+
+	//  The popup title bar mouseup event.
+	popupTitleBarMouseDown: (event) => {
+		GWLog("Popups.popupTitleBarMouseDown", "popups.js", 2);
+
+		//  Prevent other events from triggering.
+		event.stopPropagation();
+
+		//  Get the containing popup.
+		let popup = event.target.closest(".popup");
+
+		//  Bring the popup to the front.
+		Popups.bringPopupToFront(popup);
+
+		//  We only want to do anything on left-clicks.
+		if (event.button != 0)
+			return;
+
+		//  Also do nothing if the click is on a title bar button.
+		if (event.target.closest(".popframe-title-bar-button"))
+			return;
+
+		//  Prevent clicks from doing anything other than what we want.
+		event.preventDefault();
+
+		//  Mark popup as grabbed.
+		popup.classList.toggle("grabbed", true);
+
+		//  Change cursor to “grabbing hand”.
+		document.documentElement.style.cursor = "grabbing";
+
+		/*  If the mouse-down event is on the popup title (and the title
+			is a link).
+			*/
+		popup.linkDragTarget = event.target.closest("a");
+
+		/*  Deal with edge case where drag to screen bottom ends up
+			with the mouse-up event happening in the popup body.
+			*/
+		popup.removeEventListener("click", Popups.popupClicked);
+
+		//  Point where the drag began.
+		let dragStartMouseCoordX = event.clientX;
+		let dragStartMouseCoordY = event.clientY;
+
+		//  Popup initial position.
+		let newPopupViewportRect = DOMRect.fromRect(popup.viewportRect);
+		//  Do not change popup size.
+		newPopupViewportRect.width = 0;
+		newPopupViewportRect.height = 0;
+
+		//  Add the drag-end mouseup listener.
+		window.addEventListener("mouseup", Popups.popupDragMouseUp);
+
+		//  Viewport width must account for vertical scroll bar.
+		let viewportWidth = document.documentElement.offsetWidth;
+		let viewportHeight = window.innerHeight;
+
+		//  We define the mousemove listener here to capture variables.
+		window.onmousemove = (event) => {
+			window.popupBeingDragged = popup;
+
+			//  Mark popup as being dragged.
+			popup.classList.toggle("dragging", true);
+
+			//  If dragging by the title, disable its normal click handler.
+			if (popup.linkDragTarget)
+				popup.linkDragTarget.onclick = (event) => { return false; };
+
+			//  Current drag vector relative to mouse starting position.
+			let deltaX = event.clientX - dragStartMouseCoordX;
+			let deltaY = event.clientY - dragStartMouseCoordY;
+
+			//  Apply the vector to popup starting position; clamp to screen.
+			newPopupViewportRect.x = valMinMax(popup.viewportRect.left + deltaX, 
+											   0, 
+											   viewportWidth - popup.viewportRect.width);
+			newPopupViewportRect.y = valMinMax(popup.viewportRect.top + deltaY, 
+											   0, 
+											   viewportHeight - popup.viewportRect.height);
+
+			//  Set the new popup rect.
+			Popups.setPopupViewportRect(popup, newPopupViewportRect);
+		};
+	},
+
+	//  The mouseup event that ends a popup drag-to-move.
+	popupDragMouseUp: (event) => {
+		GWLog("Popups.popupDragMouseUp", "popups.js", 2);
+
+		//  Prevent other events from triggering.
+		event.stopPropagation();
+
+		//  Remove the mousemove handler.
+		window.onmousemove = null;
+
+		//  Reset cursor to normal.
+		document.documentElement.style.cursor = "";
+
+		let popup = window.popupBeingDragged;
+		if (popup) {
+			popup.classList.toggle("grabbed", false);
+			popup.classList.toggle("dragging", false);
+
+			//  Re-enable clicking on the title.
+			if (popup.linkDragTarget) {
+				requestAnimationFrame(() => {
+					popup.linkDragTarget.onclick = null;
+					popup.linkDragTarget = null;
+				});
+			}
+
+			//  Cache the viewport rect.
+			popup.viewportRect = popup.getBoundingClientRect();
+
+			//  Ensure that the click listener isn’t fired at once.
+			requestAnimationFrame(() => {
+				popup.addEventListener("click", Popups.popupClicked);
+			});
+
+			/*  If the drag of a non-pinned popup ended outside the
+				popup (possibly outside the viewport), treat this
+				as mousing out of the popup.
+				*/
+			if ((  !event.target.closest 
+				 || event.target.closest(".popup") == null)
+				&& !Popups.popupIsPinnedOrZoomed(popup)) {
+				Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
+					Popups.clearPopupTimers(popupInStack.spawningTarget);
+					Popups.setPopupFadeTimer(popupInStack.spawningTarget);
+				});
+			}
+		}
+		window.popupBeingDragged = null;
+
+		//  Remove the listener (i.e., we only want this fired once).
+		window.removeEventListener("mouseup", Popups.popupDragMouseUp);
+	},
+
+	//  The popup title bar mouseup event.
+	popupTitleBarMouseUp: (event) => {
+		GWLog("Popups.popupTitleBarMouseUp", "popups.js", 2);
+
+		event.target.closest(".popup").classList.toggle("grabbed", false);
+	},
+
+	//	The target mouseenter event.
+	targetMouseEnter: (event) => {
+		GWLog("Popups.targetMouseEnter", "popups.js", 2);
 
 		if (window.popupBeingDragged)
 			return;
@@ -1356,9 +1463,10 @@ Popups = {
 			Popups.positionPopup(event.target.popup, { x: event.clientX, y: event.clientY });
 		}
 	},
-	//	The mouseleave event.
-	targetMouseleave: (event) => {
-		GWLog("Popups.targetMouseleave", "popups.js", 2);
+
+	//	The target mouseleave event.
+	targetMouseLeave: (event) => {
+		GWLog("Popups.targetMouseLeave", "popups.js", 2);
 
 		event.target.lastMouseEnterEvent = null;
 
@@ -1367,6 +1475,7 @@ Popups = {
 		if (event.target.popup)
 			Popups.setPopupFadeTimer(event.target);
 	},
+
 	//  The keyup event.
 	keyUp: (event) => {
 		GWLog("Popups.keyUp", "popups.js", 3);
@@ -1393,6 +1502,21 @@ Popups = {
 				break;
 			case Popups.popupTilingControlKeys.substr(3,1):
 				Popups.zoomPopup(Popups.frontmostPopup(), "right");
+				break;
+			case Popups.popupTilingControlKeys.substr(4,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "top-left");
+				break;
+			case Popups.popupTilingControlKeys.substr(5,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "top-right");
+				break;
+			case Popups.popupTilingControlKeys.substr(6,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-right");
+				break;
+			case Popups.popupTilingControlKeys.substr(7,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-left");
+				break;
+			case Popups.popupTilingControlKeys.substr(8,1):
+				Popups.zoomPopup(Popups.frontmostPopup(), "full");
 				break;
 			default:
 				break;
