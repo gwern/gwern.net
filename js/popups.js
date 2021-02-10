@@ -355,7 +355,7 @@ Popups = {
 	setPopupTilingControlKeys: (keystring) => {
 		GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
-		Popups.popupTilingControlKeys = keystring || "aswdqexzf";
+		Popups.popupTilingControlKeys = keystring || "aswdqexzfc";
 		localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
 	},
 
@@ -519,6 +519,16 @@ Popups = {
 
 		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
+	},
+
+	pinOrUnpinPopup: (popup) => {
+		GWLog("Popups.pinOrUnpinPopup", "popups.js", 2);
+
+		if (Popups.popupIsPinned(popup)) {
+			Popups.unpinPopup(popup);
+		} else {
+			Popups.pinPopup(popup);
+		}
 	},
 
 	pinPopup: (popup) => {
@@ -774,13 +784,7 @@ Popups = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				let popup = button.closest(".popup");
-
-				if (Popups.popupIsPinned(popup)) {
-					Popups.unpinPopup(popup);
-				} else {
-					Popups.pinPopup(popup);
-				}
+				Popups.pinOrUnpinPopup(button.closest(".popup"));
 
 				button.updateState();
 			};
@@ -1485,6 +1489,8 @@ Popups = {
 
 		event.preventDefault();
 
+		let frontmostPopup = Popups.frontmostPopup();
+
 		switch(event.key) {
 			case "Escape":
 			case "Esc":
@@ -1492,31 +1498,36 @@ Popups = {
 					Popups.despawnPopup(Popups.frontmostPopup());
 				break;
 			case Popups.popupTilingControlKeys.substr(0,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "left");
+				Popups.zoomPopup(frontmostPopup, "left");
 				break;
 			case Popups.popupTilingControlKeys.substr(1,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "bottom");
+				Popups.zoomPopup(frontmostPopup, "bottom");
 				break;
 			case Popups.popupTilingControlKeys.substr(2,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "top");
+				Popups.zoomPopup(frontmostPopup, "top");
 				break;
 			case Popups.popupTilingControlKeys.substr(3,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "right");
+				Popups.zoomPopup(frontmostPopup, "right");
 				break;
 			case Popups.popupTilingControlKeys.substr(4,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "top-left");
+				Popups.zoomPopup(frontmostPopup, "top-left");
 				break;
 			case Popups.popupTilingControlKeys.substr(5,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "top-right");
+				Popups.zoomPopup(frontmostPopup, "top-right");
 				break;
 			case Popups.popupTilingControlKeys.substr(6,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-right");
+				Popups.zoomPopup(frontmostPopup, "bottom-right");
 				break;
 			case Popups.popupTilingControlKeys.substr(7,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-left");
+				Popups.zoomPopup(frontmostPopup, "bottom-left");
 				break;
 			case Popups.popupTilingControlKeys.substr(8,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "full");
+				Popups.zoomPopup(frontmostPopup, "full");
+				break;
+			case Popups.popupTilingControlKeys.substr(9,1):
+				Popups.pinOrUnpinPopup(frontmostPopup);
+				if (frontmostPopup && frontmostPopup.titleBar)
+					frontmostPopup.titleBar.querySelector(".pin-button").updateState();
 				break;
 			default:
 				break;
