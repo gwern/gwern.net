@@ -3448,6 +3448,10 @@ body.directory-index #disqus_thread {
     min-height: var(--GW-popups-image-popup-min-size);
 }
 
+.popup.image img {
+    margin: auto;
+}
+
 /*	Loading spinner.
 	*/
 .popup.image.loading::before {
