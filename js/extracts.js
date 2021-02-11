@@ -1251,9 +1251,14 @@ Extracts = {
 
 	spawnedPopupMatchingTarget: (target) => {
 		let parentPopup = target.closest(".popup");
-		return (parentPopup == null 
-				? null 
-				: (parentPopup.popupStack.find(popup => Extracts.targetsMatch(target, popup.spawningTarget)) || null));
+		return Popups.allSpawnedPopups().find(popup => 
+			   Extracts.targetsMatch(target, popup.spawningTarget) 
+			&& !(   Popups.popupIsPinned(popup) 
+				 || Popups.popupIsZoomed(popup))
+		);
+// 		return (parentPopup == null 
+// 				? null 
+// 				: parentPopup.popupStack.find(popup => Extracts.targetsMatch(target, popup.spawningTarget)));
 	},
 
 	//  Called by popups.js when adding a target.

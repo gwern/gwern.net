@@ -228,12 +228,18 @@ Popups = {
 		if (!(target.popFrame = target.popup = target.preparePopup(target.popup)))
 			return;
 
-		//  If title bar contents are provided, add a title bar.
-		if (target.popup.titleBarContents.length > 0)
+		//  If title bar contents are provided, add a title bar (if needed).
+		if (  !target.popup.titleBar 
+			&& target.popup.titleBarContents.length > 0)
 			Popups.addTitleBarToPopup(target.popup);
 
-		//	Inject the popup into the page.
-		Popups.injectPopup(target.popup);
+		if (target.popup.parentElement == Popups.popupContainer) {
+			//  If the popup is an existing popup, just bring it to the front.
+			Popups.bringPopupToFront(target.popup);
+		} else {
+			//	Otherwise, inject the popup into the page.
+			Popups.injectPopup(target.popup);
+		}
 
 		//  Position the popup appropriately with respect to the target.
 		Popups.positionPopup(target.popup, spawnPoint);
