@@ -1453,17 +1453,7 @@ Popups = {
 			/*  If already spawned, just bring the popup to the front and
 				re-position it.
 				*/
-
-			//  Save popup’s scroll position.
-			let scrollTop = event.target.popup.scrollView.scrollTop;
-
-			//  Re-inject popup into page, bringing it to the front.
-			Popups.injectPopup(event.target.popup);
-
-			//  Restore popup’s scroll position.
-			event.target.popup.scrollView.scrollTop = scrollTop;
-
-			//  Re-position popup.
+			Popups.bringPopupToFront(event.target.popup);
 			Popups.positionPopup(event.target.popup, { x: event.clientX, y: event.clientY });
 		}
 	},
