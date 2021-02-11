@@ -27,6 +27,7 @@
 
 	--GW-popups-popup-max-width: 640px;
 	--GW-popups-popup-max-height: 480px;
+	--GW-popups-popup-with-title-bar-min-width: 320px;
 	--GW-popups-annotation-popup-min-width: 360px;
 	--GW-popups-annotation-popup-min-height: 120px;
 	--GW-popups-popup-border-width: 3px;
@@ -3150,7 +3151,7 @@ body.directory-index #disqus_thread {
 /*└──────────────────┘*/
 
 .popup.has-title-bar {
-	min-width: 320px;
+	min-width: var(--GW-popups-popup-with-title-bar-min-width);
 }
 
 .popup .popframe-title-bar {
