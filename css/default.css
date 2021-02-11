@@ -2809,6 +2809,10 @@ body.directory-index #disqus_thread {
 /* POP-FRAMES */
 /**************/
 
+.popframe .popframe-title-link-archived::after {
+	content: none;
+}
+
 /*=-------------------=*/
 /*= POP-FRAME CONTENT =*/
 /*=-------------------=*/

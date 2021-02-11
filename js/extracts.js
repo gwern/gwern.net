@@ -1078,11 +1078,28 @@ Extracts = {
 				popinTitleText = target.href;
 			}
 			popinTitleText = decodeURIComponent(popinTitleText);
-			popinTitle = `<a 
-				href="${target.href}"
-				title="Open ${target.href} in a new window"
-				target="_blank"
-					>${popinTitleText}</a>`
+
+			//  For local-archive links, include archive link with original.
+			if (target.dataset.urlOriginal) {
+				popinTitle = `<a 
+					class="popframe-title-link-archived"
+					href="${target.href}"
+					title="Open ${target.href} in a new window"
+					target="_blank"
+						>[ARCHIVED]</a>` + ` · ` +
+					`<a 
+						href="${target.dataset.urlOriginal}"
+						title="Open ${target.dataset.urlOriginal} in a new window"
+						target="_blank"
+							>${popinTitleText}</a>`;
+			} else {
+				popinTitle = `<a 
+					class="popframe-title-link"
+					href="${target.href}"
+					title="Open ${target.href} in a new window"
+					target="_blank"
+						>${popinTitleText}</a>`;
+			}
 		}
 		if (popinTitle) {
 			//  Add the title.
@@ -1336,11 +1353,28 @@ Extracts = {
 				popupTitleText = target.href;
 			}
 			popupTitleText = decodeURIComponent(popupTitleText);
-			popupTitle = `<a 
-				href="${target.href}"
-				title="Open ${target.href} in a new window"
-				target="_blank"
-					>${popupTitleText}</a>`
+
+			//  For local-archive links, include archive link with original.
+			if (target.dataset.urlOriginal) {
+				popupTitle = `<a 
+					class="popframe-title-link-archived"
+					href="${target.href}"
+					title="Open ${target.href} in a new window"
+					target="_blank"
+						>[ARCHIVED]</a>` + ` · ` +
+					`<a 
+						href="${target.dataset.urlOriginal}"
+						title="Open ${target.dataset.urlOriginal} in a new window"
+						target="_blank"
+							>${popupTitleText}</a>`;
+			} else {
+				popupTitle = `<a 
+					class="popframe-title-link"
+					href="${target.href}"
+					title="Open ${target.href} in a new window"
+					target="_blank"
+						>${popupTitleText}</a>`;
+			}
 		}
 		if (popupTitle) {
 			//  Add the close button.
