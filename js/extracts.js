@@ -383,6 +383,65 @@ Extracts = {
 		}
 	},
 
+	//  Returns the contents of the title element for a pop-frame.
+	titleForPopFrame: (popFrame) => {
+		let target = popFrame.spawningTarget;
+
+		if (Extracts.isDefinition(target)) {
+			if (popFrame.classList.contains("loading"))
+				popFrameTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
+			else
+				popFrameTitle = `<span>${popFrame.querySelector(".data-field.title").textContent}</span>`;
+		} else if (!(   Extracts.isLocalImageLink(target)
+					 || Extracts.isLocalVideoLink(target)
+					 || Extracts.isCitation(target)
+					 || Extracts.isCitationBackLink(target))) {
+			let popFrameTitleText;
+			if (target.hostname == location.hostname) {
+				if (target.dataset.urlOriginal) {
+					popFrameTitleText = target.dataset.urlOriginal;
+				} else if (Extracts.isExtractLink(target)) {
+					popFrameTitleText = target.pathname + target.hash;
+				} else if (target.pathname == location.pathname) {
+					popFrameTitleText = target.hash;
+				} else {
+					popFrameTitleText = popFrame.classList.contains("external-page-embed") 
+									 ? target.pathname 
+									 : (target.pathname + target.hash);
+				}
+			} else {
+				popFrameTitleText = target.href;
+			}
+			popFrameTitleText = decodeURIComponent(popFrameTitleText);
+
+			//  For local-archive links, include archive link with original.
+			if (target.dataset.urlOriginal) {
+				popFrameTitle = `<a 
+						class="popframe-title-link-archived"
+						href="${target.href}"
+						title="Open ${target.href} in a new window"
+						target="_blank"
+							>[ARCHIVED]</a>` +
+					`<span class="separator">·</span>` +
+					`<a 
+						class="popframe-title-link"
+						href="${target.dataset.urlOriginal}"
+						title="Open ${target.dataset.urlOriginal} in a new window"
+						target="_blank"
+							>${popFrameTitleText}</a>`;
+			} else {
+				popFrameTitle = `<a 
+					class="popframe-title-link"
+					href="${target.href}"
+					title="Open ${target.href} in a new window"
+					target="_blank"
+						>${popFrameTitleText}</a>`;
+			}
+		}
+
+		return popFrameTitle;
+	},
+
 	/*	This function’s purpose is to allow for the transclusion of entire pages
 		on the same website (displayed to the user in popups, or injected in 
 		block flow as popins), and the (almost-)seamless handling of local links
@@ -1054,53 +1113,7 @@ Extracts = {
 			return null;
 
 		//  Add popin title bar contents.
-		let popinTitle;
-		if (Extracts.isDefinition(target)) {
-			if (popin.classList.contains("loading"))
-				popinTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
-			else
-				popinTitle = `<span>${popin.querySelector(".data-field.title").textContent}</span>`;
-		} else {
-			let popinTitleText;
-			if (target.hostname == location.hostname) {
-				if (target.dataset.urlOriginal) {
-					popinTitleText = target.dataset.urlOriginal;
-				} else if (Extracts.isExtractLink(target)) {
-					popinTitleText = target.pathname + target.hash;
-				} else if (target.pathname == location.pathname) {
-					popinTitleText = target.hash;
-				} else {
-					popinTitleText = popin.classList.contains("external-page-embed") 
-									 ? target.pathname 
-									 : (target.pathname + target.hash);
-				}
-			} else {
-				popinTitleText = target.href;
-			}
-			popinTitleText = decodeURIComponent(popinTitleText);
-
-			//  For local-archive links, include archive link with original.
-			if (target.dataset.urlOriginal) {
-				popinTitle = `<a 
-					class="popframe-title-link-archived"
-					href="${target.href}"
-					title="Open ${target.href} in a new window"
-					target="_blank"
-						>[ARCHIVED]</a>` + `<span class="separator">·</span>` +
-					`<a 
-						href="${target.dataset.urlOriginal}"
-						title="Open ${target.dataset.urlOriginal} in a new window"
-						target="_blank"
-							>${popinTitleText}</a>`;
-			} else {
-				popinTitle = `<a 
-					class="popframe-title-link"
-					href="${target.href}"
-					title="Open ${target.href} in a new window"
-					target="_blank"
-						>${popinTitleText}</a>`;
-			}
-		}
+		let popinTitle = Extracts.titleForPopFrame(popin);
 		if (popinTitle) {
 			//  Add the title.
 			popinTitle = `<span class="popframe-title">${popinTitle}</span>`;
@@ -1326,67 +1339,14 @@ Extracts = {
 			return null;
 
 		//  Add popup title bar contents.
-		let popupTitle;
-		if (Extracts.isDefinition(target)) {
-			if (popup.classList.contains("loading"))
-				popupTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
-			else
-				popupTitle = `<span>${popup.querySelector(".data-field.title").textContent}</span>`;
-		} else if (!(   Extracts.isLocalImageLink(target)
-					 || Extracts.isLocalVideoLink(target)
-					 || Extracts.isCitation(target)
-					 || Extracts.isCitationBackLink(target))) {
-			let popupTitleText;
-			if (target.hostname == location.hostname) {
-				if (target.dataset.urlOriginal) {
-					popupTitleText = target.dataset.urlOriginal;
-				} else if (Extracts.isExtractLink(target)) {
-					popupTitleText = target.pathname + target.hash;
-				} else if (target.pathname == location.pathname) {
-					popupTitleText = target.hash;
-				} else {
-					popupTitleText = popup.classList.contains("external-page-embed") 
-									 ? target.pathname 
-									 : (target.pathname + target.hash);
-				}
-			} else {
-				popupTitleText = target.href;
-			}
-			popupTitleText = decodeURIComponent(popupTitleText);
-
-			//  For local-archive links, include archive link with original.
-			if (target.dataset.urlOriginal) {
-				popupTitle = `<a 
-					class="popframe-title-link-archived"
-					href="${target.href}"
-					title="Open ${target.href} in a new window"
-					target="_blank"
-						>[ARCHIVED]</a>` + `<span class="separator">·</span>` +
-					`<a 
-						href="${target.dataset.urlOriginal}"
-						title="Open ${target.dataset.urlOriginal} in a new window"
-						target="_blank"
-							>${popupTitleText}</a>`;
-			} else {
-				popupTitle = `<a 
-					class="popframe-title-link"
-					href="${target.href}"
-					title="Open ${target.href} in a new window"
-					target="_blank"
-						>${popupTitleText}</a>`;
-			}
-		}
+		let popupTitle = Extracts.titleForPopFrame(popup);
 		if (popupTitle) {
-			//  Add the close button.
-			popup.titleBarContents.push(Popups.titleBarComponents.closeButton());
-
-			//  Add the zoom button.
-			let zoomButton = Popups.titleBarComponents.zoomButton();
-			zoomButton.submenuEnabled = true;
-			popup.titleBarContents.push(zoomButton);
-
-			//  Add the pin button.
-			popup.titleBarContents.push(Popups.titleBarComponents.pinButton());
+			//  Add the close, zoom, and pin buttons.
+			popup.titleBarContents.push(
+				Popups.titleBarComponents.closeButton(),
+				Popups.titleBarComponents.zoomButton().enableSubmenu(),
+				Popups.titleBarComponents.pinButton()
+			);
 
 			//  Add the title.
 			popupTitle = `<span class="popframe-title">${popupTitle}</span>`;
@@ -1395,6 +1355,7 @@ Extracts = {
 			//  Add the options button.
 			if (Extracts.popupOptionsEnabled) {
 				let showPopupOptionsDialogButton = Popups.titleBarComponents.optionsButton();
+
 				showPopupOptionsDialogButton.addActivateEvent((event) => {
 					event.stopPropagation();
 
@@ -1402,6 +1363,7 @@ Extracts = {
 				});
 				showPopupOptionsDialogButton.title = "Show popup options (enable/disable popups)";
 				showPopupOptionsDialogButton.classList.add("show-popup-options-dialog");
+
 				popup.titleBarContents.push(showPopupOptionsDialogButton);
 			}
 		}

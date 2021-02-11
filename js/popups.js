@@ -645,7 +645,10 @@ Popups = {
 
 	//  Elements and methods related to popup title bars.
 	titleBarComponents: {
+		//  The standard positions for a popup to zoom to.
 		popupPlaces: [ "top-left", "top", "top-right", "left", "full", "right", "bottom-left", "bottom", "bottom-right" ],
+
+		//  Icons for various popup title bar buttons.
 		buttonIcons: {
 			"close": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M325.8 193.8L263.6 256l62.2 62.2c4.7 4.7 4.7 12.3 0 17l-22.6 22.6c-4.7 4.7-12.3 4.7-17 0L224 295.6l-62.2 62.2c-4.7 4.7-12.3 4.7-17 0l-22.6-22.6c-4.7-4.7-4.7-12.3 0-17l62.2-62.2-62.2-62.2c-4.7-4.7-4.7-12.3 0-17l22.6-22.6c4.7-4.7 12.3-4.7 17 0l62.2 62.2 62.2-62.2c4.7-4.7 12.3-4.7 17 0l22.6 22.6c4.7 4.7 4.7 12.3 0 17zM448 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-48 346V86c0-3.3-2.7-6-6-6H54c-3.3 0-6 2.7-6 6v340c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"/></svg>`,
 			"zoom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z"></path></svg>`,
@@ -663,6 +666,8 @@ Popups = {
 			"zoom-bottom": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z M 160,468 v -40 c 0,-6.6 -5.4,-12 -12,-12 H 64 v -84 c 0,-6.6 -5.4,-12 -12,-12 H 12 c -6.6,0 -12,5.4 -12,12 v 124 c 0,13.3 10.7,24 24,24 h 124 c 6.6,0 12,-5.4 12,-12 z" /></svg>`,
 			"zoom-bottom-right": `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="m 436,320 h -40 c -6.6,0 -12,5.4 -12,12 v 84 h -84 c -6.6,0 -12,5.4 -12,12 v 40 c 0,6.6 5.4,12 12,12 h 124 c 13.3,0 24,-10.7 24,-24 V 332 c 0,-6.6 -5.4,-12 -12,-12 z" /></svg>`
 		},
+
+		//  Tooltip text for various popup title bar icons.
 		buttonTitles: {
 			"close": "Close this popup",
 			"zoom": "Maximize this popup",
@@ -680,6 +685,8 @@ Popups = {
 			"zoom-bottom": "Place this popup on the bottom half of the screen",
 			"zoom-bottom-right": "Place this popup in the bottom-right quarter of the screen"
 		},
+
+		//  A generic button, with no icon or tooltip text.
 		genericButton: () => {
 			let button = document.createElement("BUTTON");
 			button.classList.add("popframe-title-bar-button");
@@ -688,6 +695,7 @@ Popups = {
 
 			return button;
 		},
+
 		closeButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("close-button");
@@ -709,6 +717,7 @@ Popups = {
 
 			return button;
 		},
+
 		zoomButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("zoom-button", "zoom");
@@ -744,8 +753,14 @@ Popups = {
 				button.swapClasses([ "zoom", "restore" ], (alternateStateEnabled ? 1 : 0));
 			};
 
+			button.enableSubmenu = () => {
+				button.submenuEnabled = true;
+				return button;
+			};
+
 			return button;
 		},
+
 		popupZoomButtons: () => {
 			return Popups.titleBarComponents.popupPlaces.map(place => {
 				let button = Popups.titleBarComponents.genericButton();
@@ -769,6 +784,7 @@ Popups = {
 				return button;
 			});
 		},
+
 		pinButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("pin-button", "pin");
@@ -802,6 +818,7 @@ Popups = {
 
 			return button;
 		},
+
 		optionsButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("options-button");
