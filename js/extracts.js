@@ -387,6 +387,8 @@ Extracts = {
 	titleForPopFrame: (popFrame) => {
 		let target = popFrame.spawningTarget;
 
+		let popFrameTitle;
+
 		if (Extracts.isDefinition(target)) {
 			if (popFrame.classList.contains("loading"))
 				popFrameTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
