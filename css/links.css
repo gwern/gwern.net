@@ -540,6 +540,7 @@ a[href*="online.wsj.com"]::after,
 a[href*="wiley.com"]::after,
 a[href*="yunnansourcing.com"]::after,
 a[href*="yvain"]::after,
+a[href*="astralcodexten"]::after,
 a[href*="unsongbook.com"]::after,
 a[href*="groups.yahoo.com"]::after,
 a[href*="publicdomainreview.org"]::after,
@@ -674,7 +675,8 @@ a[href*="sciencemag.org"]::after {
 a[href*="yvain"]::after,
 a[href*="slatestarcodex.com"]:not([href*=".pdf"])::after,
 a[href*="slatestarscratchpad.tumblr.com/"]::after,
-a[href*="slatestarcodex"]::after { /* primary user: slatestarcodex.com */
+a[href*="slatestarcodex"]::after,
+a[href*="astralcodexten"]::after { /* primary user: slatestarcodex.com */
     content: "SSC";
 }
 /* SSC's book */
