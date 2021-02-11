@@ -2813,6 +2813,10 @@ body.directory-index #disqus_thread {
 	content: none;
 }
 
+.popframe .popframe-title .separator {
+    margin: 0 0.5em;
+}
+
 /*=-------------------=*/
 /*= POP-FRAME CONTENT =*/
 /*=-------------------=*/

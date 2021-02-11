@@ -1086,7 +1086,7 @@ Extracts = {
 					href="${target.href}"
 					title="Open ${target.href} in a new window"
 					target="_blank"
-						>[ARCHIVED]</a>` + ` · ` +
+						>[ARCHIVED]</a>` + `<span class="separator">·</span>` +
 					`<a 
 						href="${target.dataset.urlOriginal}"
 						title="Open ${target.dataset.urlOriginal} in a new window"
@@ -1361,7 +1361,7 @@ Extracts = {
 					href="${target.href}"
 					title="Open ${target.href} in a new window"
 					target="_blank"
-						>[ARCHIVED]</a>` + ` · ` +
+						>[ARCHIVED]</a>` + `<span class="separator">·</span>` +
 					`<a 
 						href="${target.dataset.urlOriginal}"
 						title="Open ${target.dataset.urlOriginal} in a new window"
