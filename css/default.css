@@ -3149,6 +3149,10 @@ body.directory-index #disqus_thread {
 /*│ Popup title bar. │*/
 /*└──────────────────┘*/
 
+.popup.has-title-bar {
+	min-width: 320px;
+}
+
 .popup .popframe-title-bar {
 	position: absolute;
 	height: var(--GW-popups-popup-title-bar-height);
