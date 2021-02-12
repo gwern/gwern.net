@@ -31,7 +31,7 @@
 	--GW-popups-annotation-popup-min-width: 360px;
 	--GW-popups-annotation-popup-min-height: 120px;
 	--GW-popups-popup-border-width: 3px;
-    --GW-popups-popup-title-bar-height: 1.5rem;
+    --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
 	--GW-popups-video-iframe-width: 495px;
 	--GW-popups-video-iframe-height: 310px;
 	--GW-popups-image-popup-min-size: 64px;
@@ -3335,6 +3335,23 @@ body.directory-index #disqus_thread {
 .popup.object.zoomed object {
     width: 100%;
     height: 100%;
+}
+
+/*┌───────────────────┐*/
+/*│ Collapsed popups. │*/
+/*└───────────────────┘*/
+
+.popup.collapsed[class] {
+    height: unset;
+	min-height: unset;
+}
+.popup.collapsed .popframe-title-bar {
+	border-bottom: none;
+	height: calc(var(--GW-popups-popup-title-bar-height) - 1px);
+}
+.popup.collapsed .popframe-scroll-view {
+	height: 0;
+	margin-top: calc(var(--popup-title-bar-height) - 1px);
 }
 
 /*┌───────────────────────────┐*/

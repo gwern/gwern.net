@@ -352,6 +352,25 @@ Popups = {
 		}
 	},
 
+	/********************/
+	/*  Popup collapsing.
+		*/
+	popupIsCollapsed: (popup) => {
+		return popup.classList.contains("collapsed");
+	},
+
+	collapsePopup: (popup) => {
+		GWLog("Popups.collapsePopup", "popups.js", 3);
+
+		popup.classList.toggle("collapsed", true);
+	},
+
+	unCollapsePopup: (popup) => {
+		GWLog("Popups.unCollapsePopup", "popups.js", 3);
+
+		popup.classList.toggle("collapsed", false);
+	},
+
 	/********************************************************/
 	/*  Popup pinning/unpinning, zooming/tiling, & restoring.
 		*/
@@ -623,7 +642,7 @@ Popups = {
 		//  Create and inject the title bar element.
 		popup.titleBar = document.createElement("div");
 		popup.titleBar.classList.add("popframe-title-bar");
-		popup.titleBar.title = "Drag popup by title bar to reposition";
+		popup.titleBar.title = "Drag popup by title bar to reposition; double-click title bar to collapse";
 		popup.insertBefore(popup.titleBar, popup.firstElementChild);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
@@ -647,6 +666,9 @@ Popups = {
 		//  Add event listeners for dragging the popup by the title bar.
 		popup.titleBar.addEventListener("mousedown", Popups.popupTitleBarMouseDown);
 		popup.titleBar.addEventListener("mouseup", Popups.popupTitleBarMouseUp);
+
+		//  Add double-click event listener for collapsing/uncollapsing the popup.
+		popup.titleBar.addEventListener("dblclick", Popups.popupTitleBarDoubleClicked);
 	},
 
 	//  Elements and methods related to popup title bars.
@@ -864,14 +886,20 @@ Popups = {
 		allPopups.sort((a, b) => parseInt(a.style.zIndex) - parseInt(b.style.zIndex));
 		for (let i = 0; i < allPopups.length; i++)
 			allPopups[i].style.zIndex = i + 1;
+
+		//  Focus the front-most popup.
+		Popups.focusPopup(Popups.frontmostPopup());
 	},
+
 	popupIsFrontmost: (popup) => {
 		return (parseInt(popup.style.zIndex) == Popups.allSpawnedPopups().length);
 	},
+
 	frontmostPopup: () => {
 		let allPopups = Popups.allSpawnedPopups();
 		return allPopups.find(popup => parseInt(popup.style.zIndex) == allPopups.length);
 	},
+
 	bringPopupToFront: (popup) => {
 		GWLog("Popups.bringPopupToFront", "popups.js", 3);
 
@@ -884,6 +912,27 @@ Popups = {
 
 		//  Update z-indexes of all popups.
 		Popups.updatePopupsZOrder();
+	},
+
+	/******************/
+	/*  Popup focusing.
+		*/
+
+	popupIsFocused: (popup) => {
+		return popup.classList.contains("focused");
+	},
+
+	focusPopup: (popup) => {
+		GWLog("Popups.focusPopup", "popups.js", 3);
+
+		//  Un-focus any focused popups.
+		Popups.allSpawnedPopups().forEach(spawnedPopup => {
+			spawnedPopup.classList.toggle("focused", false);
+		});
+
+		//  Focus the given popup.
+		if (popup)
+			popup.classList.toggle("focused", true);
 	},
 
 	/*********************/
@@ -1457,6 +1506,18 @@ Popups = {
 		GWLog("Popups.popupTitleBarMouseUp", "popups.js", 2);
 
 		event.target.closest(".popup").classList.toggle("grabbed", false);
+	},
+
+	//  The popup title bar double-click event.
+	popupTitleBarDoubleClicked: (event) => {
+		GWLog("Popups.popupTitleBarDoubleClicked", "popups.js", 2);
+
+		let popup = event.target.closest(".popup");
+		if (Popups.popupIsCollapsed(popup)) {
+			Popups.unCollapsePopup(popup);
+		} else {
+			Popups.collapsePopup(popup);
+		}
 	},
 
 	//	The target mouseenter event.
