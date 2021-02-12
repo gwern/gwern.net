@@ -362,13 +362,41 @@ Popups = {
 	collapsePopup: (popup) => {
 		GWLog("Popups.collapsePopup", "popups.js", 3);
 
+		//  Update class.
 		popup.classList.toggle("collapsed", true);
+
+		//  Remove popup from its stack and detach from spawning target.
+		popup.popupStack.remove(popup);
+		Popups.detachPopupFromTarget(popup);
+
+		//  Clear timers.
+		Popups.clearPopupTimers(popup.spawningTarget);
+
+		//  Update title bar buttons states (if any).
+		if (popup.titleBar)
+			popup.titleBar.updateState();
 	},
 
 	unCollapsePopup: (popup) => {
 		GWLog("Popups.unCollapsePopup", "popups.js", 3);
 
+		//  Update class.
 		popup.classList.toggle("collapsed", false);
+
+		/*  Re-add popup to its stack and re-attach it to its spawning target
+			(unless it’s pinned).
+			*/
+		if (!Popups.popupIsPinned(popup)) {
+			popup.popupStack.push(popup);
+			Popups.attachPopupToTarget(popup);
+		}
+
+		//  Clear timers.
+		Popups.clearPopupTimers(popup.spawningTarget);
+
+		//  Update title bar buttons states (if any).
+		if (popup.titleBar)
+			popup.titleBar.updateState();
 	},
 
 	/********************************************************/
@@ -506,11 +534,8 @@ Popups = {
 		Popups.updatePageScrollState();
 
 		//  Update title bar buttons states (if any).
-		if (popup.titleBar) {
-			popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
-				titleBarButton.updateState();
-			});
-		}
+		if (popup.titleBar)
+			popup.titleBar.updateState();
 	},
 
 	restorePopup: (popup) => {
@@ -544,6 +569,10 @@ Popups = {
 
 		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
+
+		//  Update title bar buttons states (if any).
+		if (popup.titleBar)
+			popup.titleBar.updateState();
 	},
 
 	pinOrUnpinPopup: (popup) => {
@@ -563,6 +592,8 @@ Popups = {
 		Popups.positionPopup(popup);
 		popup.popupStack.remove(popup);
 		Popups.detachPopupFromTarget(popup);
+
+		popup.titleBar.updateState();
 	},
 
 	unpinPopup: (popup) => {
@@ -572,6 +603,8 @@ Popups = {
 		Popups.positionPopup(popup);
 		popup.popupStack.push(popup);
 		Popups.attachPopupToTarget(popup);
+
+		popup.titleBar.updateState();
 	},
 
 	/******************/
@@ -662,6 +695,14 @@ Popups = {
 				&& newlyAddedElement.submenuEnabled)
 				Popups.titleBarComponents.addSubmenuToButton(newlyAddedElement, "zoom-button-submenu", Popups.titleBarComponents.popupZoomButtons());
 		});
+
+		//  Add state-updating function.
+		popup.titleBar.updateState = () => {
+			popup.titleBar.querySelectorAll("button").forEach(button => {
+				if (button.updateState)
+					button.updateState();
+			});
+		};
 
 		//  Add event listeners for dragging the popup by the title bar.
 		popup.titleBar.addEventListener("mousedown", Popups.popupTitleBarMouseDown);
@@ -803,10 +844,6 @@ Popups = {
 					let popup = button.closest(".popup");
 
 					Popups.zoomPopup(popup, place);
-
-					popup.titleBar.querySelectorAll("button.zoom-button:not(.submenu-button), button.pin-button").forEach(titleBarButton => {
-						titleBarButton.updateState();
-					});
 				};
 
 				return button;
@@ -829,19 +866,17 @@ Popups = {
 				event.stopPropagation();
 
 				Popups.pinOrUnpinPopup(button.closest(".popup"));
-
-				button.updateState();
 			};
 
 			button.updateState = () => {
 				let popup = button.closest(".popup");
 
-				button.innerHTML = Popups.popupIsPinnedOrZoomed(popup) ? button.alternateHTML : button.defaultHTML;
+				button.innerHTML = (Popups.popupIsPinnedOrZoomed(popup) || Popups.popupIsCollapsed(popup)) ? button.alternateHTML : button.defaultHTML;
 				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = Popups.popupIsZoomed(popup);
+				button.disabled = (Popups.popupIsZoomed(popup) || Popups.popupIsCollapsed(popup));
 			};
 
 			return button;
@@ -1344,7 +1379,7 @@ Popups = {
 			popup.classList.toggle("resizing", false);
 
 			if (Popups.popupWasResized(popup))
-				popup.titleBar.querySelector("button.zoom-button:not(.submenu-button)").updateState();
+				popup.titleBar.updateState();
 
 			//  Cache the viewport rect.
 			popup.viewportRect = popup.getBoundingClientRect();
@@ -1563,8 +1598,6 @@ Popups = {
 
 		event.preventDefault();
 
-		let frontmostPopup = Popups.frontmostPopup();
-
 		switch(event.key) {
 			case "Escape":
 			case "Esc":
@@ -1572,36 +1605,34 @@ Popups = {
 					Popups.despawnPopup(Popups.frontmostPopup());
 				break;
 			case Popups.popupTilingControlKeys.substr(0,1):
-				Popups.zoomPopup(frontmostPopup, "left");
+				Popups.zoomPopup(Popups.frontmostPopup(), "left");
 				break;
 			case Popups.popupTilingControlKeys.substr(1,1):
-				Popups.zoomPopup(frontmostPopup, "bottom");
+				Popups.zoomPopup(Popups.frontmostPopup(), "bottom");
 				break;
 			case Popups.popupTilingControlKeys.substr(2,1):
-				Popups.zoomPopup(frontmostPopup, "top");
+				Popups.zoomPopup(Popups.frontmostPopup(), "top");
 				break;
 			case Popups.popupTilingControlKeys.substr(3,1):
-				Popups.zoomPopup(frontmostPopup, "right");
+				Popups.zoomPopup(Popups.frontmostPopup(), "right");
 				break;
 			case Popups.popupTilingControlKeys.substr(4,1):
-				Popups.zoomPopup(frontmostPopup, "top-left");
+				Popups.zoomPopup(Popups.frontmostPopup(), "top-left");
 				break;
 			case Popups.popupTilingControlKeys.substr(5,1):
-				Popups.zoomPopup(frontmostPopup, "top-right");
+				Popups.zoomPopup(Popups.frontmostPopup(), "top-right");
 				break;
 			case Popups.popupTilingControlKeys.substr(6,1):
-				Popups.zoomPopup(frontmostPopup, "bottom-right");
+				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-right");
 				break;
 			case Popups.popupTilingControlKeys.substr(7,1):
-				Popups.zoomPopup(frontmostPopup, "bottom-left");
+				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-left");
 				break;
 			case Popups.popupTilingControlKeys.substr(8,1):
-				Popups.zoomPopup(frontmostPopup, "full");
+				Popups.zoomPopup(Popups.frontmostPopup(), "full");
 				break;
 			case Popups.popupTilingControlKeys.substr(9,1):
-				Popups.pinOrUnpinPopup(frontmostPopup);
-				if (frontmostPopup && frontmostPopup.titleBar)
-					frontmostPopup.titleBar.querySelector(".pin-button").updateState();
+				Popups.pinOrUnpinPopup(Popups.frontmostPopup());
 				break;
 			default:
 				break;
