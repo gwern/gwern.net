@@ -385,6 +385,10 @@ Extracts = {
 		}
 	},
 
+	popFrameHasLoaded: (popFrame) => {
+		return !(popFrame.classList.contains("loading") || popFrame.classList.contains("loading-failed"));
+	},
+
 	//  Returns the contents of the title element for a pop-frame.
 	titleForPopFrame: (popFrame) => {
 		let target = popFrame.spawningTarget;
@@ -392,21 +396,21 @@ Extracts = {
 		let popFrameTitle;
 
 		if (Extracts.isDefinition(target)) {
-			popFrameTitle = popFrame.classList.contains("loading")
-							? `<span>${target.dataset.originalDefinitionId}</span>`
-							: `<span>${popFrame.querySelector(".data-field.title").textContent}</span>`;
+			popFrameTitle = Extracts.popFrameHasLoaded(popFrame)
+							? `<span>${popFrame.querySelector(".data-field.title").textContent}</span>`
+							: `<span>${target.dataset.originalDefinitionId}</span>`;
 		} else if (!(   Extracts.isLocalImageLink(target)
 					 || Extracts.isLocalVideoLink(target)
 					 || Extracts.isCitation(target)
 					 || Extracts.isCitationBackLink(target))) {
 			let popFrameTitleText;
-			if (target.hostname == location.hostname) {
+			if (Extracts.isExtractLink(target)) {
+					popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
+										? popFrame.querySelector(".data-field.title").textContent
+										: popFrameTitleText = target.pathname + target.hash;
+			} else if (target.hostname == location.hostname) {
 				if (target.dataset.urlOriginal) {
 					popFrameTitleText = target.dataset.urlOriginal;
-				} else if (Extracts.isExtractLink(target)) {
-					popFrameTitleText = popFrame.classList.contains("loading")
-										? popFrameTitleText = target.pathname + target.hash
-										: popFrame.querySelector(".data-field.title").textContent;
 				} else if (target.pathname == location.pathname) {
 					let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(decodeURIComponent(target.hash)));
 					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
@@ -1155,7 +1159,7 @@ Extracts = {
 		/*  If we’re waiting for content to be loaded into the popin 
 			asynchronously, then there’s no need to do rewrites for now.
 			*/
-		if (!popin.classList.contains("loading"))
+		if (Extracts.popFrameHasLoaded(popin))
 			Extracts.rewritePopinContent(popin);
 
 		return popin;
@@ -1395,7 +1399,7 @@ Extracts = {
 		/*  If we’re waiting for content to be loaded into the popup 
 			asynchronously, then there’s no need to do rewrites for now.
 			*/
-		if (!popup.classList.contains("loading")) 
+		if (Extracts.popFrameHasLoaded(popup)) 
 			Extracts.rewritePopupContent(popup);
 
 		return popup;
