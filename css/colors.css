@@ -221,15 +221,30 @@
         */
     --GW-popups-body-background-color: var(--GW-body-background-color);
     --GW-popups-popup-background-color: var(--GW-body-background-color);
-    --GW-popups-popup-border-color: #aaa;
-    --GW-popups-box-shadow-color: #aaa;
-    --GW-popups-popup-title-bar-background-color: #e6e6e6;
-    --GW-popups-popup-title-bar-button-color: #777;
+
+    --GW-popups-popup-border-color: #ccc;
+    --GW-popups-box-shadow-color: #ccc;
+    --GW-popups-popup-border-focused-color: #aaa;
+    --GW-popups-box-shadow-focused-color: #aaa;
+
+    --GW-popups-popup-title-bar-background-color: #f6f6f6;
+    --GW-popups-popup-title-bar-button-color: #bbb;
     --GW-popups-popup-title-bar-button-color-hover: #000;
-    --GW-popups-popup-link-hover-color: var(--GW-body-link-hover-color);
-    --GW-popups-popup-scrollbar-thumb-color: #ccc;
+	--GW-popups-popup-title-color: #aaa;
+    --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
+    --GW-popups-popup-title-bar-background-focused-color: #e6e6e6;
+    --GW-popups-popup-title-bar-button-focused-color: #777;
+    --GW-popups-popup-title-bar-button-focused-color-hover: #000;
+	--GW-popups-popup-title-focused-color: #000;
+    --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
+
     --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
-    --GW-popups-popup-scrollbar-thumb-hover-color: #999;
+
+    --GW-popups-popup-scrollbar-thumb-color: #ddd;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #bbb;
+    --GW-popups-popup-scrollbar-thumb-focused-color: #ccc;
+    --GW-popups-popup-scrollbar-thumb-hover-focused-color: #999;
+
     --GW-popups-popup-options-dialog-backdrop-background-color: rgba(255,255,255,0.95);
     --GW-popups-popup-options-dialog-background-color: var(--GW-body-background-color);
     --GW-popups-popup-options-dialog-border-color: #aaa;

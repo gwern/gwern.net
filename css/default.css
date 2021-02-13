@@ -2818,6 +2818,10 @@ body.directory-index #disqus_thread {
     margin: 0 0.5em;
 }
 
+.popframe-title-bar .options-button {
+	opacity: 0.8;
+}
+
 /*=-------------------=*/
 /*= POP-FRAME CONTENT =*/
 /*=-------------------=*/
@@ -3193,6 +3197,13 @@ body.directory-index #disqus_thread {
     text-decoration: none;
     text-align: center;
 }
+.popup .popframe-title span, 
+.popup .popframe-title a {
+    color: var(--GW-popups-popup-title-color);
+}
+.popup .popframe-title a:hover {
+    color: var(--GW-popups-popup-title-link-hover-color);
+}
 .popup .popframe-title::after {
     display: none;
 }
@@ -3309,6 +3320,28 @@ body.directory-index #disqus_thread {
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     overflow: auto;
     line-height: 1.45;
+}
+
+/*┌─────────────────┐*/
+/*│ Focused popups. │*/
+/*└─────────────────┘*/
+
+.popup:not(.focused) .popframe-title-bar * {
+	pointer-events: none;
+}
+
+.popup.focused {
+    --GW-popups-popup-border-color: var(--GW-popups-popup-border-focused-color);
+    --GW-popups-box-shadow-color: var(--GW-popups-box-shadow-focused-color);
+
+    --GW-popups-popup-title-bar-background-color: var(--GW-popups-popup-title-bar-background-focused-color);
+    --GW-popups-popup-title-bar-button-color: var(--GW-popups-popup-title-bar-button-focused-color);
+    --GW-popups-popup-title-bar-button-color-hover: var(--GW-popups-popup-title-bar-button-focused-color-hover);
+	--GW-popups-popup-title-color: var(--GW-popups-popup-title-focused-color);
+    --GW-popups-popup-title-link-hover-color: var(--GW-popups-popup-title-link-hover-focused-color);
+
+    --GW-popups-popup-scrollbar-thumb-color: var(--GW-popups-popup-scrollbar-thumb-focused-color);
+    --GW-popups-popup-scrollbar-thumb-hover-color: var(--GW-popups-popup-scrollbar-thumb-hover-focused-color);
 }
 
 /*┌────────────────┐*/
