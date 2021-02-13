@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-12 22:16:42 gwern"
+When:  Time-stamp: "2021-02-13 11:35:32 gwern"
 License: CC-0
 -}
 
@@ -102,7 +102,6 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              let titleHtml    = typesetHtmlField "" a
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
-                                             -- TODO: fix the float-erasure bug?
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs
                                              -- let pandoc = walk parseRawBlock $ Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
@@ -114,7 +113,8 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              let finalHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} localizedPandoc
                                              case finalHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
-                                               Right finalHTML -> writeUpdatedFile filepath' finalHTML
+                                               Right finalHTML -> let refloated = T.pack $ restoreFloatRight e $ T.unpack finalHTML
+                                                                  in writeUpdatedFile filepath' refloated
    where -- write only when changed, to reduce sync overhead
     writeUpdatedFile :: FilePath -> T.Text -> IO ()
     writeUpdatedFile target contentsNew = do existsOld <- doesFileExist target
