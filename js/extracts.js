@@ -82,6 +82,8 @@ Extracts = {
 		"404 Not Found"
 	],
 
+    pageTitleRegexp: /^(.+?) · Gwern\.net$/,
+
 	rootDocument: document.firstElementChild,
 
 	annotationsWorkspace: null,
@@ -390,10 +392,9 @@ Extracts = {
 		let popFrameTitle;
 
 		if (Extracts.isDefinition(target)) {
-			if (popFrame.classList.contains("loading"))
-				popFrameTitle = `<span>${target.dataset.originalDefinitionId}</span>`;
-			else
-				popFrameTitle = `<span>${popFrame.querySelector(".data-field.title").textContent}</span>`;
+			popFrameTitle = popFrame.classList.contains("loading")
+							? `<span>${target.dataset.originalDefinitionId}</span>`
+							: `<span>${popFrame.querySelector(".data-field.title").textContent}</span>`;
 		} else if (!(   Extracts.isLocalImageLink(target)
 					 || Extracts.isLocalVideoLink(target)
 					 || Extracts.isCitation(target)
@@ -403,13 +404,18 @@ Extracts = {
 				if (target.dataset.urlOriginal) {
 					popFrameTitleText = target.dataset.urlOriginal;
 				} else if (Extracts.isExtractLink(target)) {
-					popFrameTitleText = target.pathname + target.hash;
+					popFrameTitleText = popFrame.classList.contains("loading")
+										? popFrameTitleText = target.pathname + target.hash
+										: popFrame.querySelector(".data-field.title").textContent;
 				} else if (target.pathname == location.pathname) {
-					popFrameTitleText = target.hash;
+					let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(decodeURIComponent(target.hash)));
+					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
+										? nearestBlockElement.firstElementChild.textContent
+										: target.hash;
 				} else {
-					popFrameTitleText = popFrame.classList.contains("external-page-embed") 
-									 ? target.pathname 
-									 : (target.pathname + target.hash);
+					popFrameTitleText = popFrame.classList.contains("external-page-embed")
+										? target.pathname
+										: (target.pathname + target.hash);
 				}
 			} else {
 				popFrameTitleText = target.href;
@@ -814,6 +820,7 @@ Extracts = {
 
 	//  Other site pages.
     cachedPages: { },
+    cachedPageTitles: { },
     externalPageEmbedForTarget: (target) => {
 		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
 
@@ -824,6 +831,10 @@ Extracts = {
 
 			//  Give the pop-frame an identifying class.
 			target.popFrame.classList.toggle("page-" + target.pathname.substring(1), true);
+
+			//  Set the pop-frame title.
+			if (target.popFrame.titleBar)
+				target.popFrame.titleBar.querySelector(".popframe-title-link").innerHTML = Extracts.cachedPageTitles[target.pathname];
 
 			//  First, qualify internal links in the pop-frame.
 			Extracts.qualifyLinksInPopFrame(target.popFrame);
@@ -874,6 +885,9 @@ Extracts = {
 					let pageMetadata = target.popFrame.querySelector("#page-metadata");
 					if (pageMetadata)
 						Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
+
+					//  Get the page title.
+					Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
 
 					//  Inject the content into the pop-frame.
 					fillPopFrame(Extracts.cachedPages[target.pathname]);
@@ -1152,6 +1166,10 @@ Extracts = {
 
 		let target = popin.spawningTarget;
 
+		//  Update the title.
+		if (popin.titleBar)
+			popin.titleBar.querySelector(".popframe-title").innerHTML = Extracts.titleForPopFrame(popin);
+
 		//  Special handling for image popins.
 		if (Extracts.isLocalImageLink(target)) {
 			let image = popin.querySelector("img");
@@ -1254,13 +1272,9 @@ Extracts = {
 	spawnedPopupMatchingTarget: (target) => {
 		let parentPopup = target.closest(".popup");
 		return Popups.allSpawnedPopups().find(popup => 
-			   Extracts.targetsMatch(target, popup.spawningTarget) 
-			&& !(   Popups.popupIsPinned(popup) 
-				 || Popups.popupIsZoomed(popup))
+				   Extracts.targetsMatch(target, popup.spawningTarget) 
+				&& Popups.popupIsEphemeral(popup)
 		);
-// 		return (parentPopup == null 
-// 				? null 
-// 				: parentPopup.popupStack.find(popup => Extracts.targetsMatch(target, popup.spawningTarget)));
 	},
 
 	//  Called by popups.js when adding a target.
@@ -1348,6 +1362,9 @@ Extracts = {
 		//  Add popup title bar contents.
 		let popupTitle = Extracts.titleForPopFrame(popup);
 		if (popupTitle) {
+			//  Zero out existing title bar contents.
+			popup.titleBarContents = [ ];
+
 			//  Add the close, zoom, and pin buttons.
 			popup.titleBarContents.push(
 				Popups.titleBarComponents.closeButton(),
@@ -1472,6 +1489,16 @@ Extracts = {
 			});
 		}
 
+		//  For locally archived web pages, set title of popup from page title.
+		if (Extracts.isLocalDocumentLink(target)) {
+			let iframe = popup.querySelector("iframe");
+			if (iframe) {
+				iframe.addEventListener("load", (event) => {
+					popup.titleBar.querySelector(".popframe-title-link").innerHTML = iframe.contentDocument.title;
+				});
+			}
+		}
+
 		//  Loading spinners.
 		if (   Extracts.isLocalDocumentLink(target)
 			|| Extracts.isForeignSiteLink(target)
@@ -1494,8 +1521,9 @@ Extracts = {
 						404 page (or whatever) if the linked page is not found.
 						*/
 					if (   target.hostname == location.hostname
-						&& Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title))
+						&& Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title)) {
 						popup.classList.toggle("loading-failed", true);
+					}
 				};
 			} else {
 				//  Objects & images fire ‘error’ on server error or load fail.
