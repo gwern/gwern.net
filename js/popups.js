@@ -285,7 +285,7 @@ Popups = {
 
 			if (   event.target == popup 
 				&& window.popupBeingDragged == null 
-				&& Popups.popupIsPinnedOrZoomed(popup)) {
+				&& Popups.popupIsResizeable(popup)) {
 				//  Mouse position is relative to the popup’s coordinate system.
 				let edgeOrCorner = Popups.edgeOrCorner(popup, {
 					x: event.clientX - popup.viewportRect.left, 
@@ -365,6 +365,12 @@ Popups = {
 		//  Update class.
 		popup.classList.toggle("collapsed", true);
 
+		//  Save and unset height, if need be.
+		if (popup.style.height) {
+			popup.dataset.previousHeight = popup.style.height;
+			popup.style.height = "";
+		}
+
 		//  Remove popup from its stack and detach from spawning target.
 		popup.popupStack.remove(popup);
 		Popups.detachPopupFromTarget(popup);
@@ -383,10 +389,19 @@ Popups = {
 		//  Update class.
 		popup.classList.toggle("collapsed", false);
 
+		//  Restore height, if need be.
+		if (popup.dataset.previousHeight) {
+			if (!Popups.popupIsEphemeral(popup))
+				popup.style.height = popup.dataset.previousHeight;
+
+			//  Delete saved height.
+			delete popup.dataset["previousHeight"];
+		}
+
 		/*  Re-add popup to its stack and re-attach it to its spawning target
 			(unless it’s pinned).
 			*/
-		if (!Popups.popupIsPinned(popup)) {
+		if (!(Popups.popupIsPinned(popup))) {
 			popup.popupStack.push(popup);
 			Popups.attachPopupToTarget(popup);
 		}
@@ -412,7 +427,11 @@ Popups = {
 		localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
 	},
 
-	popupIsPinnedOrZoomed: (popup) => {
+	popupIsEphemeral: (popup) => {
+		return !(Popups.popupIsPinned(popup) || Popups.popupIsZoomed(popup) || Popups.popupIsCollapsed(popup));
+	},
+
+	popupIsResizeable: (popup) => {
 		return (Popups.popupIsPinned(popup) || Popups.popupIsZoomed(popup));
 	},
 
@@ -421,7 +440,7 @@ Popups = {
 	},
 
 	popupIsMaximized: (popup) => {
-		return popup.classList.contains("zoomed") && popup.classList.contains("full");
+		return (popup.classList.contains("zoomed") && popup.classList.contains("full"));
 	},
 
 	popupWasRestored: (popup) => {
@@ -440,10 +459,14 @@ Popups = {
 		GWLog("Popups.zoomPopup", "popups.js", 2);
 
 		//  If popup isn’t already zoomed, save position.
-		if (!Popups.popupIsZoomed(popup)) {
+		if (!(Popups.popupIsZoomed(popup))) {
 			popup.dataset.previousXPosition = popup.viewportRect.left;
 			popup.dataset.previousYPosition = popup.viewportRect.top;
 		}
+
+		//  If the popup is collapsed, expand it.
+		if (Popups.popupIsCollapsed(popup))
+			Popups.unCollapsePopup(popup);
 
 		//  Update classes.
 		popup.swapClasses([ "zoomed", "restored" ], 0);
@@ -559,7 +582,7 @@ Popups = {
 		/*  Re-add popup to its stack and re-attach it to its spawning target
 			(unless it’s pinned).
 			*/
-		if (!Popups.popupIsPinned(popup)) {
+		if (!(Popups.popupIsPinned(popup))) {
 			popup.popupStack.push(popup);
 			Popups.attachPopupToTarget(popup);
 		}
@@ -765,6 +788,7 @@ Popups = {
 			return button;
 		},
 
+		//  Close button.
 		closeButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("close-button");
@@ -787,6 +811,7 @@ Popups = {
 			return button;
 		},
 
+		//  Zoom button (with submenu).
 		zoomButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("zoom-button", "zoom");
@@ -830,6 +855,7 @@ Popups = {
 			return button;
 		},
 
+		//  Zoom buttons (to be put into zoom button submenu).
 		popupZoomButtons: () => {
 			return Popups.titleBarComponents.popupPlaces.map(place => {
 				let button = Popups.titleBarComponents.genericButton();
@@ -850,6 +876,7 @@ Popups = {
 			});
 		},
 
+		//  Pin button.
 		pinButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("pin-button", "pin");
@@ -871,17 +898,18 @@ Popups = {
 			button.updateState = () => {
 				let popup = button.closest(".popup");
 
-				button.innerHTML = (Popups.popupIsPinnedOrZoomed(popup) || Popups.popupIsCollapsed(popup)) ? button.alternateHTML : button.defaultHTML;
+				button.innerHTML = Popups.popupIsEphemeral(popup) ? button.defaultHTML : button.alternateHTML;
 				button.title = Popups.popupIsPinned(popup) ? button.alternateTitle : button.defaultTitle;
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = (Popups.popupIsZoomed(popup) || Popups.popupIsCollapsed(popup));
+				button.disabled = !(Popups.popupIsEphemeral(popup));
 			};
 
 			return button;
 		},
 
+		//  Options button (does nothing by default).
 		optionsButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("options-button");
@@ -892,6 +920,7 @@ Popups = {
 			return button;
 		},
 
+		//  Add a submenu of the given class and with given buttons to a button.
 		addSubmenuToButton: (button, submenuClass, submenuButtons) => {
 			let popup = button.closest(".popup");
 
@@ -1094,18 +1123,16 @@ Popups = {
 
 				return [ xPos, yPos ];
 			};
-			if (Popups.popupIsPinnedOrZoomed(popup)) {
-				if (Popups.popupIsZoomed(popup)) {
-					provisionalPopupXPosition = popup.zoomToX;
-					provisionalPopupYPosition = popup.zoomToY;
+			if (Popups.popupIsPinned(popup)) {
+				if (Popups.popupWasRestored(popup)) {
+					[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
 				} else {
-					if (Popups.popupWasRestored(popup)) {
-						[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
-					} else {
-						provisionalPopupXPosition = popup.viewportRect.left;
-						provisionalPopupYPosition = popup.viewportRect.top;
-					}
+					provisionalPopupXPosition = popup.viewportRect.left;
+					provisionalPopupYPosition = popup.viewportRect.top;
 				}
+			} else if (Popups.popupIsZoomed(popup)) {
+				provisionalPopupXPosition = popup.zoomToX;
+				provisionalPopupYPosition = popup.zoomToY;
 			} else {
 				if (Popups.popupWasUnpinned(popup)) {
 					provisionalPopupXPosition = popup.viewportRect.left;
@@ -1133,13 +1160,13 @@ Popups = {
 	setPopupViewportRect: (popup, rect) => {
 		GWLog("Popups.setPopupViewportRect", "popups.js", 3);
 
-		if (!Popups.popupIsPinnedOrZoomed(popup)) {
+		if (Popups.popupIsEphemeral(popup)) {
             let popupContainerViewportRect = Popups.popupContainer.getBoundingClientRect();
 			rect.x -= popupContainerViewportRect.left;
 			rect.y -= popupContainerViewportRect.top;
 		}
 
-		popup.style.position = Popups.popupIsPinnedOrZoomed(popup) ? "fixed" : "";
+		popup.style.position = Popups.popupIsEphemeral(popup) ? "" : "fixed";
 
 		popup.style.left = `${rect.x}px`;
 		popup.style.top = `${rect.y}px`;
@@ -1169,6 +1196,7 @@ Popups = {
         clearTimeout(target.popupDespawnTimer);
         clearTimeout(target.popupSpawnTimer);
     },
+
 	setPopupSpawnTimer: (target, event) => {
 		GWLog("Popups.setPopupSpawnTimer", "popups.js", 2);
 
@@ -1179,6 +1207,7 @@ Popups = {
 			Popups.spawnPopup(target, { x: event.clientX, y: event.clientY });
 		}, Popups.popupTriggerDelay);
 	},
+
     setPopupFadeTimer: (target) => {
 		GWLog("Popups.setPopupFadeTimer", "popups.js", 2);
 
@@ -1188,6 +1217,7 @@ Popups = {
 			Popups.setPopupDespawnTimer(target);
         }, Popups.popupFadeoutDelay);
     },
+
     setPopupDespawnTimer: (target) => {
 		GWLog("Popups.setPopupDespawnTimer", "popups.js", 2);
 
@@ -1231,12 +1261,12 @@ Popups = {
 
 		let popup = event.target.closest(".popup");
 
-		if (!Popups.popupIsFrontmost(popup)) {
+		if (!(Popups.popupIsFrontmost(popup))) {
 			Popups.bringPopupToFront(popup);
 			return;
 		}
 
-		if (Popups.popupIsPinnedOrZoomed(popup))
+		if (!(Popups.popupIsEphemeral(popup)))
 			return;
 
 		event.stopPropagation();
@@ -1260,7 +1290,7 @@ Popups = {
 			*/
 		if (   event.target != popup
 			|| event.button != 0
-			|| !Popups.popupIsPinnedOrZoomed(popup))
+			|| !(Popups.popupIsResizeable(popup)))
 			return;
 
 		//  Bring the popup to the front.
@@ -1523,7 +1553,7 @@ Popups = {
 				*/
 			if ((  !event.target.closest 
 				 || event.target.closest(".popup") == null)
-				&& !Popups.popupIsPinnedOrZoomed(popup)) {
+				&&  Popups.popupIsEphemeral(popup)) {
 				Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
 					Popups.clearPopupTimers(popupInStack.spawningTarget);
 					Popups.setPopupFadeTimer(popupInStack.spawningTarget);
