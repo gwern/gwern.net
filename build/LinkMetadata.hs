@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-08 14:54:31 gwern"
+When:  Time-stamp: "2021-02-12 22:16:42 gwern"
 License: CC-0
 -}
 
@@ -27,7 +27,7 @@ import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
-                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote))
+                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
@@ -102,8 +102,10 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              let titleHtml    = typesetHtmlField "" a
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
+                                             -- TODO: fix the float-erasure bug?
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs
+                                             -- let pandoc = walk parseRawBlock $ Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
                                              void $ createAnnotations md pandoc
                                              let annotationPandoc = walk (hasAnnotation md True) pandoc
@@ -160,17 +162,17 @@ annotateLink' md target =
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
 -- goddamn it Pandoc, why can't you read the very HTML you just wrote‽
-hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` h) then x else
-                                                  let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
-                                                   case markdown of
-                                                     Left e -> error (show x ++ ": " ++ show e)
-                                                     Right markdown' -> let p@(Pandoc _ _) = walk (hasAnnotation md idp) markdown' in
-                                                                          let p' = runPure $ do html <- writeHtml5String def{writerExtensions = pandocExtensions} p
-                                                                                                let html' = T.pack $ restoreFloatRight (T.unpack h) (T.unpack html)
-                                                                                                return $ RawBlock (Format "html") html'
-                                                                          in case p' of
-                                                                            Left e -> error (show x ++ ": " ++ show e)
-                                                                            Right p'' -> p''
+-- hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` h) then x else
+--                                                   let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+--                                                    case markdown of
+--                                                      Left e -> error (show x ++ ": " ++ show e)
+--                                                      Right markdown' -> let p@(Pandoc _ _) = walk (hasAnnotation md idp) markdown' in
+--                                                                           let p' = runPure $ do html <- writeHtml5String def{writerExtensions = pandocExtensions} p
+--                                                                                                 let html' = T.pack $ restoreFloatRight (T.unpack h) (T.unpack html)
+--                                                                                                 return $ RawBlock (Format "html") html'
+--                                                                           in case p' of
+--                                                                             Left e -> error (show x ++ ": " ++ show e)
+--                                                                             Right p'' -> p''
 hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,b,c) e (f,g)) =
@@ -186,6 +188,20 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
 
           hasAnnotationInline _ _ y = y
 
+parseAllRaw :: Pandoc -> Pandoc
+parseAllRaw pandoc = walk parseRawBlock pandoc
+parseRawBlock :: Block -> Block
+parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+                                          case markdown of
+                                            Left e -> error (show x ++ ": " ++ show e)
+                                            Right (Pandoc _ markdown') -> Div nullAttr markdown'
+parseRawBlock x = x
+-- parseRawInline :: Inline -> Inline
+-- parseRawInline x@(RawInline (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+--                                           case markdown of
+--                                             Left e -> error (show x ++ ": " ++ show e)
+--                                             Right (Pandoc _ markdown') -> Span nullAttr markdown'
+-- parseRawInline x = x
 
 generateAnnotationBlock :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateAnnotationBlock (f, ann) = case ann of
@@ -208,7 +224,7 @@ generateAnnotationBlock (f, ann) = case ann of
                                                               [Para
                                                                 ([link,
                                                                   Str ","] ++ author ++ date ++ [Str ":"]),
-                                                           BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
+                                                           BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                                            ]
                              where
                                nonAnnotatedLink :: [Block]
@@ -755,7 +771,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
         | "#" `isInfixOf` p = return Nothing -- section links require custom annotations; we can't scrape any abstract/summary for them easily
         | or (map (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"]) = return Nothing -- skip potentially very large archives
         | otherwise =
-            do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p, "--user-agent", "gwern+gwernscraping@gwern.net"]
+            let p' = replace "https://www.gwern.net/" "" p in
+            do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"]
 
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Gwern.net download failed: " ++ p) >> return Nothing
@@ -766,7 +783,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "title" then snd $ head b else "") metas
                         let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
                         let keywords = concatMap (\(TagOpen _ (a:b)) -> if snd a == "keywords" then snd $ head b else "") metas
-                        let keywords' = "<p>[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</p>"
+                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</p>"
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
                         let thumbnail = if length (filter filterThumbnail metas) >0 then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
