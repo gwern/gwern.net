@@ -440,7 +440,7 @@ Popups = {
 	},
 
 	popupIsMaximized: (popup) => {
-		return popup.classList.contains("zoomed") && popup.classList.contains("full");
+		return (popup.classList.contains("zoomed") && popup.classList.contains("full"));
 	},
 
 	popupWasRestored: (popup) => {
@@ -788,6 +788,7 @@ Popups = {
 			return button;
 		},
 
+		//  Close button.
 		closeButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("close-button");
@@ -810,6 +811,7 @@ Popups = {
 			return button;
 		},
 
+		//  Zoom button (with submenu).
 		zoomButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("zoom-button", "zoom");
@@ -853,6 +855,7 @@ Popups = {
 			return button;
 		},
 
+		//  Zoom buttons (to be put into zoom button submenu).
 		popupZoomButtons: () => {
 			return Popups.titleBarComponents.popupPlaces.map(place => {
 				let button = Popups.titleBarComponents.genericButton();
@@ -873,6 +876,7 @@ Popups = {
 			});
 		},
 
+		//  Pin button.
 		pinButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("pin-button", "pin");
@@ -905,6 +909,7 @@ Popups = {
 			return button;
 		},
 
+		//  Options button (does nothing by default).
 		optionsButton: () => {
 			let button = Popups.titleBarComponents.genericButton();
 			button.classList.add("options-button");
@@ -915,6 +920,7 @@ Popups = {
 			return button;
 		},
 
+		//  Add a submenu of the given class and with given buttons to a button.
 		addSubmenuToButton: (button, submenuClass, submenuButtons) => {
 			let popup = button.closest(".popup");
 
@@ -1190,6 +1196,7 @@ Popups = {
         clearTimeout(target.popupDespawnTimer);
         clearTimeout(target.popupSpawnTimer);
     },
+
 	setPopupSpawnTimer: (target, event) => {
 		GWLog("Popups.setPopupSpawnTimer", "popups.js", 2);
 
@@ -1200,6 +1207,7 @@ Popups = {
 			Popups.spawnPopup(target, { x: event.clientX, y: event.clientY });
 		}, Popups.popupTriggerDelay);
 	},
+
     setPopupFadeTimer: (target) => {
 		GWLog("Popups.setPopupFadeTimer", "popups.js", 2);
 
@@ -1209,6 +1217,7 @@ Popups = {
 			Popups.setPopupDespawnTimer(target);
         }, Popups.popupFadeoutDelay);
     },
+
     setPopupDespawnTimer: (target) => {
 		GWLog("Popups.setPopupDespawnTimer", "popups.js", 2);
 
