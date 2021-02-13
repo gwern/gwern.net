@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-13 11:35:32 gwern"
+When:  Time-stamp: "2021-02-13 18:35:12 gwern"
 License: CC-0
 -}
 
@@ -378,6 +378,7 @@ instance FromJSON Message
 doi2Abstract :: [Char] -> IO (Maybe String)
 doi2Abstract doi = if length doi < 7 then return Nothing
                    else do (_,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://api.crossref.org/works/"++doi, "--user-agent", "gwern+crossrefscraping@gwern.net"]
+                           threadDelay 1000000 -- delay 1s
                            if bs=="Resource not found." then return Nothing
                            else let j = eitherDecode bs :: Either String Crossref
                                 in case j of -- start unwrapping...
