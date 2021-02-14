@@ -153,7 +153,7 @@ then
                -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' \
                -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e '<p><p>' -e '</p></p>' \
                -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<figure-inline' -e '<small></small>' \
-               -e '\]\(/' -e '-, ' -e '<abstract abstract-type="toc">' -e '- pdftk' -e 'thumb|' -- ./metadata/*.yaml; }
+               -e '\]\(/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb\|' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
