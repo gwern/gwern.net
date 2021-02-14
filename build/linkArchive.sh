@@ -66,7 +66,7 @@ if [[ -z "$FILE" ]]; then
                 ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
                 source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "$TARGET" "$TARGET" || true
                 mkdir --parents "./docs/www/$DOMAIN/"
-                ## move the PDF into the gwern.net repo because ArchiveBox doesn't do PDFs:
+                ## move the PDF into the Gwern.net repo because ArchiveBox doesn't do PDFs:
                 mv "$TARGET" "./docs/www/$DOMAIN/$HASH.pdf"
                 echo -n "/docs/www/$DOMAIN/$HASH.pdf$ANCHOR"
             else

@@ -57,7 +57,7 @@ do
         wrap λ "Phys.org link detected: make sure John Hewitt didn't write it"
 
         λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
-        wrap λ "check for aggregator-hosted PDFs and host them on gwern.net to make them visible to Google Scholar/provide backups"
+        wrap λ "check for aggregator-hosted PDFs and host them on Gwern.net to make them visible to Google Scholar/provide backups"
 
         λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://twitter.com/' -e 'https://.*twitter.com/.+/status/[0-9]+'; }
         wrap λ "Switch Twitter.com to Nitter.net links"

@@ -1,17 +1,17 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-02-11 20:55:18 gwern"
+When:  Time-stamp: "2021-02-13 19:54:14 gwern"
 License: CC-0
 -}
 
 {-
 Local Mirror design:
 
-Because link rot has proven difficult to keep up with on `gwern.net` using [ordinary reactive link archiving methods](https://www.gwern.net/Archiving-URLs), I am switching to *pre-emptive archiving*: for most external links on gwern.net, they will now point to a local (stored on gwern.net) mirror of the original external link as the default.
+Because link rot has proven difficult to keep up with on `gwern.net` using [ordinary reactive link archiving methods](https://www.gwern.net/Archiving-URLs), I am switching to *pre-emptive archiving*: for most external links on Gwern.net, they will now point to a local (stored on Gwern.net) mirror of the original external link as the default.
 As the cost of disk/bandwidth falls while the value of human attention increases, if something is worth linking, it is worth hosting—assuming good tooling.
-The local mirror will be a self-contained static HTML copy which cannot linkrot (unless gwern.net itself goes down in which case the issue is largely moot).
-The local mirrors will, aside from being infinitely more reliable, also be faster for the reader to load & browse, as they will be loaded from the current domain's CDN and are the final DOMs saved using adblock etc (benefiting the large fraction of gwern.net readers who do not have ad blockers installed).
+The local mirror will be a self-contained static HTML copy which cannot linkrot (unless Gwern.net itself goes down in which case the issue is largely moot).
+The local mirrors will, aside from being infinitely more reliable, also be faster for the reader to load & browse, as they will be loaded from the current domain's CDN and are the final DOMs saved using adblock etc (benefiting the large fraction of Gwern.net readers who do not have ad blockers installed).
 
 The implementation strategy is, similar to the [link popups](https://www.gwern.net/LinkMetadata.hs), a Pandoc Hakyll plugin which at Markdown → HTML compile-time traverses the Markdown AST for non-whitelisted external links, looks for a local mirror of each one, create a local mirror via SingleFile (https://github.com/gildas-lormeau/SingleFile/) if necessary, and rewrites the link to point to the local mirror.
 
@@ -19,7 +19,7 @@ Details:
 
 - at compile-time, [`hakyll.hs`](https://www.gwern.net/hakyll.hs) reads the local database, and feeds it into a `localizeLink` function which walks the Pandoc AST and processes all external links
 - mirror metadata is stored in a local database (a Haskell association list read in as a [`Data.Map`](https://hackage.haskell.org/package/containers-0.4.0.0/docs/Data-Map.html) for now, like the popup previews) with the schema: `(URL, MIRROR_FILE, FIRST_SEEN, MIRRORED_SUCCESSFULLY)`
-- links are checked against a whitelist of domains to exclude, where mirroring is either unnecessary or undesirable: arxiv.org, Wikipedia, gwern.net, lesswrong.com, HN, Nature, Youtube etc. (Primary exclusion reasons: services, interactive pages, pages which are too hard to snapshot, pages which are too large due to inline media, domains which are stable & not at linkrot risk, pages which are inherently updated frequently & archiving is not helpful.)
+- links are checked against a whitelist of domains to exclude, where mirroring is either unnecessary or undesirable: arxiv.org, Wikipedia, Gwern.net, lesswrong.com, HN, Nature, Youtube etc. (Primary exclusion reasons: services, interactive pages, pages which are too hard to snapshot, pages which are too large due to inline media, domains which are stable & not at linkrot risk, pages which are inherently updated frequently & archiving is not helpful.)
 - links are only mirrored _n_ days after first being seen, giving them time to reach a finalized form (eg blog post discussions); if there is no entry in the database, one is made with the current date as `FIRST_SEEN` and the link is skipped; if an entry with `FIRST_SEEN` exists and the current date is ≥ _n_ days later and `MIRROR_FILE` does not exist, then unless `Failed` is false (indicating the previous mirror attempt failed and it's probably a permanently broken link which must be updated manually), it is mirrored  and rewritten, otherwise, just rewritten
 - mirrors are made using SingleFile, which runs Chromium to serialize a DOM
 
@@ -27,11 +27,11 @@ Details:
     - Why SingleFile instead of Chromium's screenshot mode, which is built-in & easy to use? Because Chromium screenshot mode is deliberately crippled and will never support extensions or cookies. Why do I want mirroring to be done with extensions & cookies? I want extensions because if I don't use uBlock, the mirrored versions will be stuffed full of malware, tracking code, and ads; and if I don't use a 'kill sticky' extension, thousands of mirrored pages will have giant "Please click here to accept cookies / GDPR / sign up for our newsletter / ill-thought-through floating-headers" obscuring the entire page. (I won't use NoScript because in whitelist mode, NoScript breaks a large fraction of all websites currently, and going through and adding the necessary whitelists is infeasible; I have to rely on uBlock to get rid of bad JS.)  And I want cookies because this allows cookies for logins (eg subreddits marked NSFW like the darknet market ones) rather than archiving useless login wall pages.
 - mirrors are saved to `wiki/docs/www/$DOMAIN($URL)/SHA1($URL).html`; the additional nesting by domain name is necessary to allow CSS link annotations to match rewritten links
 
-    - `/docs/www/` is excluded from the `sitemap.xml` & `sync-gwern.net` compile-time checks, blocked in `robots.txt`, `rel="canonical"` is set in the mirrors by SingleFile, additional`rel="archive nofollow"` attributes are set on each link when used in gwern.net, and noarchive/noindex/nofollow/nocache are set as HTTP headers by nginx for `/docs/www/`; exposing thousands of mirrors to the rest of the Internet risks causing SEO issues, high bandwidth consumption, and legal or social problems
+    - `/docs/www/` is excluded from the `sitemap.xml` & `sync-gwern.net` compile-time checks, blocked in `robots.txt`, `rel="canonical"` is set in the mirrors by SingleFile, additional`rel="archive nofollow"` attributes are set on each link when used in Gwern.net, and noarchive/noindex/nofollow/nocache are set as HTTP headers by nginx for `/docs/www/`; exposing thousands of mirrors to the rest of the Internet risks causing SEO issues, high bandwidth consumption, and legal or social problems
 - links are rewritten to point the `href` to `wiki/docs/www/$DOMAIN($URL)/SHA1($URL).html`; like inflation-adjustments or link popups, the original `href` is stored as a span (eg `<a href="https://foo.com">foo</a>` → `<a rel="archive nofollow" data-url-original="https://foo.com" href="/docs/www/foo.com/cf934d97a8012ba1c2d354d6cd39e77535fd0fb9.html">foo</a></span>`)
 - the `data-url-original` metadata is used by `popups.js` to add to link popups a '[original]' hyperlink (using the JS templating, something like `<p>..."Title" <a href="${target.dataset.urlOriginal}" title="Original (live) Internet version of ${target.dataset.popupTitle}">[original]</a>...</p>`)
 
-There are approximately 30k external links on gwern.net as of October 2019, of which perhaps 5k need to be mirrored; I estimate this will take up somewhere on the order of ~50GB and add a few dollars to S3 hosting costs. (After exclusions, my archive was 5300 links (excluding optional PDFs) / 20GB in February 2020.)
+There are approximately 30k external links on Gwern.net as of October 2019, of which perhaps 5k need to be mirrored; I estimate this will take up somewhere on the order of ~50GB and add a few dollars to S3 hosting costs. (After exclusions, my archive was 5300 links (excluding optional PDFs) / 20GB in February 2020.)
 But it'll be worth it to forestall thousands of dying links, regular reader frustration, and a considerable waste of my time every month dealing with the latest broken links.
 -}
 
@@ -131,7 +131,7 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
 
 -- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of URLs we always archive even if otherwise on a safe domain:
 -- 1. some matches we always want to skip
--- 2. after that, we want to mirror PDFs everywhere (except gwern.net because that's already 'mirrored')
+-- 2. after that, we want to mirror PDFs everywhere (except Gwern.net because that's already 'mirrored')
 -- 3. after that, we may want to skip various filetypes and domains
 whiteList :: String -> Bool
 whiteList url
@@ -781,5 +781,6 @@ whiteList url
       , "git.sr.ht" -- service/updated
       , "b-ok.cc/" -- service
       , "www.nap.edu/catalog" -- low quality
+      , "store.steampowered.com/app/" -- service
       ] = True
     | otherwise = False

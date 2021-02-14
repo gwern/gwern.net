@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 {-
-Hakyll file for building gwern.net
+Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
 When: Time-stamp: "2021-02-02 17:09:15 gwern"

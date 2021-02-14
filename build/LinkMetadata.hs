@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-13 18:35:12 gwern"
+When:  Time-stamp: "2021-02-13 19:38:56 gwern"
 License: CC-0
 -}
 
@@ -49,7 +49,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
--- we exclude several directories (docs/, static/, images/) entirely; a gwern.net page is then any link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a period inside its URL).
+-- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a period inside its URL).
 -- Local links get the 'link-local' class.
 isLocalLink :: Pandoc -> Pandoc
 isLocalLink = walk isLocalLink'
@@ -142,7 +142,7 @@ annotateLink' :: Metadata -> String -> IO Bool
 annotateLink' md target =
   do when (target=="") $ error (show target)
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
-     -- the leading '/' indicates this is a local gwern.net file
+     -- the leading '/' indicates this is a local Gwern.net file
      let target' = replace "https://www.gwern.net/" "/" target
      let target'' = if head target' == '.' then drop 1 target' else target'
 
@@ -330,7 +330,7 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
                  | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
                  | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
-                 -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on gwern.net; didn't see a complete list anywhere...
+                 -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
                  | "journals.plos.org" `isInfixOf` l = pubmed l
                  | "plosbiology.org" `isInfixOf` l = pubmed l
                  | "ploscompbiology.org" `isInfixOf` l = pubmed l
@@ -361,7 +361,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                 (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
                 let ecreator = U.toString mb2
-                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator) then eauthor else ecreator
+                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator || "pdftk" `isInfixOf` ecreator) then eauthor else ecreator
                 hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi
                 aMaybe <- doi2Abstract edoi
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:

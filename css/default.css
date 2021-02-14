@@ -2075,7 +2075,7 @@ span.inflationAdjusted {
 /* These are particularly useful in didactic technical writing, where there are many ways to slip up while using or coding something. */
 /* Available (in increasing order of minatoriness): 'tip', 'note', 'warning', 'error'. */
 /* Based on Markdeep's implementation: https://casual-effects.com/markdeep/features.md.html#basicformatting/admonitions (which appears loosely inspired by Wikipedia's notification templates like `{{NPOV}}`) */
-/* and modified to grayscale (increasing intensity == increasing warning) for gwern.net. */
+/* and modified to grayscale (increasing intensity == increasing warning) for Gwern.net. */
 /* Usage examples: */
 /* - <div class="admonition tip"><div class="admonition-title">Tip title (optional)</div> text</div> */
 /* - <div class="admonition note"><div class="admonition-title">Note title (*)</div> text</div> */
