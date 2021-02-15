@@ -986,6 +986,10 @@ Popups = {
 		return popup.classList.contains("focused");
 	},
 
+	focusedPopup: () => {
+		return Popups.allSpawnedPopups().find(popup => Popups.popupIsFocused(popup));
+	},
+
 	focusPopup: (popup) => {
 		GWLog("Popups.focusPopup", "popups.js", 3);
 
@@ -1632,37 +1636,37 @@ Popups = {
 			case "Escape":
 			case "Esc":
 				if (Popups.allSpawnedPopups().length > 0)
-					Popups.despawnPopup(Popups.frontmostPopup());
+					Popups.despawnPopup(Popups.focusedPopup());
 				break;
 			case Popups.popupTilingControlKeys.substr(0,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "left");
+				Popups.zoomPopup(Popups.focusedPopup(), "left");
 				break;
 			case Popups.popupTilingControlKeys.substr(1,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "bottom");
+				Popups.zoomPopup(Popups.focusedPopup(), "bottom");
 				break;
 			case Popups.popupTilingControlKeys.substr(2,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "top");
+				Popups.zoomPopup(Popups.focusedPopup(), "top");
 				break;
 			case Popups.popupTilingControlKeys.substr(3,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "right");
+				Popups.zoomPopup(Popups.focusedPopup(), "right");
 				break;
 			case Popups.popupTilingControlKeys.substr(4,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "top-left");
+				Popups.zoomPopup(Popups.focusedPopup(), "top-left");
 				break;
 			case Popups.popupTilingControlKeys.substr(5,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "top-right");
+				Popups.zoomPopup(Popups.focusedPopup(), "top-right");
 				break;
 			case Popups.popupTilingControlKeys.substr(6,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-right");
+				Popups.zoomPopup(Popups.focusedPopup(), "bottom-right");
 				break;
 			case Popups.popupTilingControlKeys.substr(7,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "bottom-left");
+				Popups.zoomPopup(Popups.focusedPopup(), "bottom-left");
 				break;
 			case Popups.popupTilingControlKeys.substr(8,1):
-				Popups.zoomPopup(Popups.frontmostPopup(), "full");
+				Popups.zoomPopup(Popups.focusedPopup(), "full");
 				break;
 			case Popups.popupTilingControlKeys.substr(9,1):
-				Popups.pinOrUnpinPopup(Popups.frontmostPopup());
+				Popups.pinOrUnpinPopup(Popups.focusedPopup());
 				break;
 			default:
 				break;
