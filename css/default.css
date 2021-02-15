@@ -2811,6 +2811,10 @@ body.directory-index #disqus_thread {
 /* POP-FRAMES */
 /**************/
 
+.popframe .popframe-title-link::after {
+	display: none;
+}
+
 .popframe .popframe-title-link-archived::after {
     content: none;
 }
@@ -3235,13 +3239,14 @@ body.directory-index #disqus_thread {
     margin: 0 1px;
     padding: 4px;
     height: 100%;
-    flex: 0 0 auto;
+    flex: 0 0 1.5rem;
     width: var(--popup-title-bar-button-size);
     cursor: pointer;
     color: var(--GW-popups-popup-title-bar-button-color);
 }
 .popup.mini-title-bar .popframe-title-bar-button {
     padding: 2px;
+    flex: 0 0 1rem;
 }
 .popup .popframe-title-bar-button:hover {
     color: var(--GW-popups-popup-title-bar-button-color-hover);
@@ -3259,7 +3264,8 @@ body.directory-index #disqus_thread {
     opacity: 0.35;
 }
 
-.popup.mini-title-bar button.zoom-button {
+.popup.mini-title-bar button.zoom-button,
+.popup.mini-title-bar button.options-button {
 	display: none;
 }
 
