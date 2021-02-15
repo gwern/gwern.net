@@ -399,10 +399,7 @@ Extracts = {
 			popFrameTitle = Extracts.popFrameHasLoaded(popFrame)
 							? `<span>${popFrame.querySelector(".data-field.title").textContent}</span>`
 							: `<span>${target.dataset.originalDefinitionId}</span>`;
-		} else if (!(   Extracts.isLocalImageLink(target)
-					 || Extracts.isLocalVideoLink(target)
-					 || Extracts.isCitation(target)
-					 || Extracts.isCitationBackLink(target))) {
+		} else {
 			let popFrameTitleText;
 			if (Extracts.isExtractLink(target)) {
 					popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
@@ -999,9 +996,8 @@ Extracts = {
 		}
 
 		let styles = ``;
-		if (width > 0 && height > 0) {
+		if (width > 0 && height > 0)
 			styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
-		}
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
         return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
@@ -1341,9 +1337,9 @@ Extracts = {
 			popup.classList.add("toc-section");
 		} else if (Extracts.isLocalCodeFileLink(target)) {
 			//  Remove click listener from code popups, to allow selection.
-			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-				popup.removeEventListener("click", Popups.popupClicked);
-			}, { once: true });
+// 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
+// 				popup.removeEventListener("click", Popups.popupClicked);
+// 			}, { once: true });
 		} else if (Extracts.isCitation(target)) {
 			/*  Add event listeners to highlight citation when its footnote
 				popup is spawned.
@@ -1395,6 +1391,13 @@ Extracts = {
 				popup.titleBarContents.push(showPopupOptionsDialogButton);
 			}
 		}
+
+		//  Some kinds of popups get an alternate form of title bar.
+		if (   Extracts.isLocalImageLink(target)
+			|| Extracts.isLocalVideoLink(target)
+			|| Extracts.isCitation(target)
+			|| Extracts.isCitationBackLink(target))
+			popup.classList.add("mini-title-bar");	
 
 		/*  If we’re waiting for content to be loaded into the popup 
 			asynchronously, then there’s no need to do rewrites for now.
