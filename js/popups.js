@@ -1013,6 +1013,8 @@ Popups = {
 	},
 
 	positionPopup: (popup, spawnPoint) => {
+		GWLog("Popups.positionPopup", "popups.js", 2);
+
 		let target = popup.spawningTarget;
 		if (spawnPoint) target.lastMouseEnterLocation = spawnPoint;
 		else spawnPoint = target.lastMouseEnterLocation;
@@ -1128,16 +1130,16 @@ Popups = {
 
 				return [ xPos, yPos ];
 			};
-			if (Popups.popupIsPinned(popup)) {
+			if (Popups.popupIsZoomed(popup)) {
+				provisionalPopupXPosition = popup.zoomToX;
+				provisionalPopupYPosition = popup.zoomToY;
+			} else if (Popups.popupIsPinned(popup)) {
 				if (Popups.popupWasRestored(popup)) {
 					[ provisionalPopupXPosition, provisionalPopupYPosition ] = getPositionToRestore(popup);
 				} else {
 					provisionalPopupXPosition = popup.viewportRect.left;
 					provisionalPopupYPosition = popup.viewportRect.top;
 				}
-			} else if (Popups.popupIsZoomed(popup)) {
-				provisionalPopupXPosition = popup.zoomToX;
-				provisionalPopupYPosition = popup.zoomToY;
 			} else {
 				if (Popups.popupWasUnpinned(popup)) {
 					provisionalPopupXPosition = popup.viewportRect.left;
