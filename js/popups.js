@@ -903,7 +903,8 @@ Popups = {
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = !(Popups.popupIsEphemeral(popup));
+				button.disabled = !(Popups.popupIsEphemeral(popup)) 
+							   && !(Popups.popupIsPinned(popup));
 			};
 
 			return button;
