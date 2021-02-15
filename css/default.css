@@ -3206,7 +3206,7 @@ body.directory-index #disqus_thread {
 .popup.mini-title-bar .popframe-title {
     visibility: hidden;
     padding: 0;
-    flex: 0 1 calc(100% - 3 * (var(--popup-title-bar-button-size) + 2px));
+    flex: 0 1 calc(100% - 3 * var(--popup-title-bar-button-size));
     line-height: 0;
 }
 .popup .popframe-title span,
