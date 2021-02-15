@@ -1278,7 +1278,7 @@ Popups = {
 
 		event.stopPropagation();
 		Popups.clearPopupTimers(popup.spawningTarget);
-		Popups.despawnPopup(popup);
+// 		Popups.despawnPopup(popup);
     },
 
 	//  The popup mouse down event (for resizing by dragging an edge/corner).

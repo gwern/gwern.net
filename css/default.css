@@ -32,6 +32,7 @@
     --GW-popups-annotation-popup-min-height: 120px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
+    --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
     --GW-popups-video-iframe-width: 495px;
     --GW-popups-video-iframe-height: 310px;
     --GW-popups-image-popup-min-size: 64px;
@@ -3160,13 +3161,14 @@ body.directory-index #disqus_thread {
 
 .popup .popframe-title-bar {
     position: absolute;
-    height: var(--GW-popups-popup-title-bar-height);
+    height: var(--popup-title-bar-height);
     border-bottom: 1px solid var(--GW-popups-popup-border-color);
     background-color: var(--GW-popups-popup-title-bar-background-color);
     display: flex;
-    flex-flow: row;
+    flex-flow: row wrap;
     align-items: center;
     width: 100%;
+    overflow: hidden;
     cursor: grab;
     z-index: 11;
 }
@@ -3181,6 +3183,10 @@ body.directory-index #disqus_thread {
 }
 .popup.has-title-bar {
     --popup-title-bar-height: var(--GW-popups-popup-title-bar-height);
+    --popup-title-bar-button-size: var(--popup-title-bar-height) - 1px;
+}
+.popup.has-title-bar.mini-title-bar {
+    --popup-title-bar-height: var(--GW-popups-popup-mini-title-bar-height);
 }
 
 /*  Popup title.
@@ -3196,6 +3202,12 @@ body.directory-index #disqus_thread {
     text-overflow: ellipsis;
     text-decoration: none;
     text-align: center;
+}
+.popup.mini-title-bar .popframe-title {
+    visibility: hidden;
+    padding: 0;
+    flex: 0 1 calc(100% - 3 * (var(--popup-title-bar-button-size) + 2px));
+    line-height: 0;
 }
 .popup .popframe-title span,
 .popup .popframe-title a {
@@ -3219,13 +3231,17 @@ body.directory-index #disqus_thread {
     font-family: inherit;
     font-weight: inherit;
     font-style: inherit;
+    line-height: 0;
     margin: 0 1px;
     padding: 4px;
     height: 100%;
-    flex: 1 0 auto;
-    width: calc(var(--GW-popups-popup-title-bar-height) - 1px);
+    flex: 0 0 auto;
+    width: var(--popup-title-bar-button-size);
     cursor: pointer;
     color: var(--GW-popups-popup-title-bar-button-color);
+}
+.popup.mini-title-bar .popframe-title-bar-button {
+    padding: 2px;
 }
 .popup .popframe-title-bar-button:hover {
     color: var(--GW-popups-popup-title-bar-button-color-hover);
@@ -3236,13 +3252,15 @@ body.directory-index #disqus_thread {
 .popup .popframe-title-bar-button svg {
     max-width: 100%;
     max-height: 100%;
-    width: 24px;
-    height: 24px;
 }
 
 .popup .popframe-title-bar-button:disabled {
     pointer-events: none;
     opacity: 0.35;
+}
+
+.popup.mini-title-bar button.zoom-button {
+	display: none;
 }
 
 /*  Submenus of buttons in the popup title bar.
@@ -3380,7 +3398,7 @@ body.directory-index #disqus_thread {
 }
 .popup.collapsed .popframe-title-bar {
     border-bottom: none;
-    height: calc(var(--GW-popups-popup-title-bar-height) - 1px);
+    height: calc(var(--popup-title-bar-height) - 1px);
 }
 .popup.collapsed .popframe-scroll-view {
     height: 0;
@@ -3513,6 +3531,14 @@ body.directory-index #disqus_thread {
 
 .popup.image img {
     margin: auto;
+    max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
+    max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
+    object-fit: contain;
+	background-color: var(--GW-popups-popup-border-color);
+}
+.popup.image img.invertible,
+.popup.image img.invertible-auto {
+	background-color: var(--GW-body-background-color);
 }
 
 /*  Loading spinner.
@@ -3595,7 +3621,7 @@ body.directory-index #disqus_thread {
 /*  Table of contents popups.
     */
 .popup.local-transclude.toc-section .popframe-scroll-view {
-    max-height: calc(100vh - 6px - var(--popup-title-bar-height));
+    max-height: calc(100vh - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
 }
 
 /*  External page embeds popups.
