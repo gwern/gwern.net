@@ -3165,7 +3165,7 @@ body.directory-index #disqus_thread {
     border-bottom: 1px solid var(--GW-popups-popup-border-color);
     background-color: var(--GW-popups-popup-title-bar-background-color);
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row;
     align-items: center;
     width: 100%;
     overflow: hidden;
@@ -3206,7 +3206,7 @@ body.directory-index #disqus_thread {
 .popup.mini-title-bar .popframe-title {
     visibility: hidden;
     padding: 0;
-    flex: 0 1 calc(100% - 3 * var(--popup-title-bar-button-size));
+    flex: 0 1 100%;
     line-height: 0;
 }
 .popup .popframe-title span,
