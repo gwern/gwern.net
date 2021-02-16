@@ -125,6 +125,9 @@ then
          [ "$COMPILED_BYTES" -le 41000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size"
 
+    λ(){ fgrep '\\' ./static/css/*.css; }
+    wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
+
     λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel fgrep --with-filename --color=always '!Wikipedia'; }
     wrap λ "Stray interwiki links"
 
