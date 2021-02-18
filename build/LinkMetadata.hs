@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-14 15:00:41 gwern"
+When:  Time-stamp: "2021-02-18 14:02:56 gwern"
 License: CC-0
 -}
 
@@ -355,7 +355,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                              return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
-pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-Date", "-DOI", p]
+pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
            if BL.length mb > 0 then
              do let (etitle:eauthor:edate:edoi:_) = lines $ U.toString mb
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
@@ -367,7 +367,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 case aMaybe of
                   Nothing -> return Nothing
-                  Just a -> return $ Just (p, (trimTitle etitle, author, trim edate, edoi, a))
+                  Just a -> return $ Just (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi, a))
            else return Nothing
 
 -- nested JSON object: eg 'jq .message.abstract'
