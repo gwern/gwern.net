@@ -18,9 +18,19 @@ if [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && 
        [ -z $(pgrep "hakyll") ];
 then
     set -e
+    bold() { echo -e "\033[1m"$@"\033[0m"; }
+    ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
+    wrap() { OUTPUT=$($1 2>&1)
+             WARN="$2"
+             if [ -n "$OUTPUT" ]; then
+                 echo -e "\e[41m$WARN\e[0m":
+                 echo -e "$OUTPUT";
+             fi; }
+
     cd ~/wiki/ && (git status &)
 
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
+    bold "Building directory indexes..."
     runhaskell -istatic/build/ static/build/generateDirectory.hs docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ \
                docs/ai/poetry/ docs/algernon/ docs/anime/ docs/aspirin/ \
                docs/biology/ docs/bitcoin/ docs/bitcoin/pirateat40/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
@@ -43,12 +53,14 @@ then
     # Cleanup pre:
     rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
 
+    bold "Building Hakyll..."
     # Build:
     ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling an optimized version to build
     ghc -tmpdir /tmp/ -Wall -optl-fuse-ld=gold -rtsopts -threaded -O2 --make hakyll.hs
     ## Parallelization:
     N="$(if [ ${#} == 0 ]; then echo 8; else echo "$1"; fi)"
     cd ../../ # go to site root
+    bold "Building site..."
     ./static/build/hakyll build +RTS -N"$N" -RTS || exit 1
     # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
     rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
@@ -56,6 +68,7 @@ then
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So... a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-2"> <section id="statistics"/' ./_site/index
 
+    bold "Building sitemap.xml..."
     ## generate a sitemap file for search engines:
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
@@ -68,7 +81,6 @@ then
      echo "</urlset>") >> ./_site/sitemap.xml
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
-    bold() { echo -e "\033[1m"$@"\033[0m";
     bold "Generating syntax-highlighted versions of source code files..."
     syntaxHighlight() {
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" )
@@ -109,13 +121,6 @@ then
 
     # Testing compilation results:
     set +e
-    ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
-    wrap() { OUTPUT=$($1 2>&1)
-             WARN="$2"
-             if [ -n "$OUTPUT" ]; then
-                 echo -e "\e[41m$WARN\e[0m":
-                 echo -e "$OUTPUT";
-             fi; }
 
     λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 13040 ] && echo "$VISIBLE_N" && exit 1; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
@@ -208,10 +213,11 @@ then
     rsync --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
     set +e
 
+    bold "Expiring updated files..."
     # expire CloudFlare cache to avoid hassle of manual expiration:
     EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | fgrep -v 'images/thumbnails/' | sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | sort) https://www.gwern.net/sitemap.xml https://www.gwern.net/index"
     for URL in $EXPIRE; do
-        bold -n "Expiring: $URL "
+        echo -n "Expiring: $URL "
         curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
             --header "X-Auth-Email:gwern@gwern.net" \
             --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
@@ -226,6 +232,7 @@ then
     $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"
 
     # Testing post-sync:
+    bold "Checking MIME types, redirects, content..."
     c() { curl --compressed --silent --output /dev/null --head "$@"; }
     λ(){ cr() { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
          cr 'https://www.gwern.net/dnm-archives' 'https://www.gwern.net/DNM-archives'
@@ -315,6 +322,7 @@ then
     rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ || true
 
     # Testing files, post-sync
+    bold "Checking for file anomalies..."
     λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'docs/www/') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png' ; }
     wrap λ "Duplicate file check"
 
@@ -327,6 +335,7 @@ then
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v -e images/thumbnails/ -e metadata/annotations/; }
     wrap λ "No files should have double hyphens or tildes in their names."
 
+    bold "Checking for HTML/PDF/image anomalies..."
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
                          parallel --max-args=400 "fgrep --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" | sort)"
@@ -387,6 +396,7 @@ then
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ $(date +"%d") == "1" ]; then
 
+        bold "Checking all MIME types..."
         PAGES=$(cd ~/wiki/ && find . -type f -name "*.page" | sed -e 's/\.\///' -e 's/\.page$//' | sort)
         c() { curl --compressed --silent --output /dev/null --head "$@"; }
         for PAGE in $PAGES; do
@@ -400,6 +410,7 @@ then
 
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ $(date +"%j") == "002" ]; then
+        bold "Checking all URLs for redirects..."
         for URL in $(find . -name "*.page" | parallel runhaskell -istatic/build/ static/build/link-extractor.hs | \
                          egrep -e '^/' | sort -u); do
             echo "$URL"
