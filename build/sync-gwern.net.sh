@@ -68,7 +68,8 @@ then
      echo "</urlset>") >> ./_site/sitemap.xml
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
-    echo "Generating syntax-highlighted versions of source code files..."
+    bold() { echo -e "\033[1m"$@"\033[0m";
+    bold "Generating syntax-highlighted versions of source code files..."
     syntaxHighlight() {
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" )
         for FILE in "$@"; do
@@ -87,7 +88,7 @@ then
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
-    echo "Compiling LaTeX HTML into static CSS..."
+    bold "Compiling LaTeX HTML into static CSS..."
     staticCompileMathJax () {
         if [[ $(fgrep '<span class="math inline"' "$@") ]]; then
             TARGET=$(mktemp /tmp/XXXXXXX.html)
@@ -125,6 +126,9 @@ then
          [ "$COMPILED_BYTES" -le 41000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size"
 
+    λ(){ fgrep '\\' ./static/css/*.css; }
+    wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
+
     λ(){ find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel fgrep --with-filename --color=always '!Wikipedia'; }
     wrap λ "Stray interwiki links"
 
@@ -153,7 +157,7 @@ then
                -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' \
                -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e '<p><p>' -e '</p></p>' \
                -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<figure-inline' -e '<small></small>' \
-               -e '\]\(/' -e '-, ' -e '<abstract abstract-type="toc">' -e '- pdftk' -e 'thumb|' -- ./metadata/*.yaml; }
+               -e '\]\(/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb\|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
@@ -193,13 +197,13 @@ then
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg docs/*), just force a hash-based sync every time:
-    echo "Syncing static/..."
+    bold "Syncing static/..."
     rsync --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@78.46.86.149:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie non-generated files):
-    echo "Syncing pages..."
+    bold "Syncing pages..."
     rsync --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
     ## Randomize sync type - usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
-    echo "Syncing everything else..."
+    bold "Syncing everything else..."
     SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi;
     rsync --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
     set +e
@@ -207,7 +211,7 @@ then
     # expire CloudFlare cache to avoid hassle of manual expiration:
     EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | fgrep -v 'images/thumbnails/' | sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | sort) https://www.gwern.net/sitemap.xml https://www.gwern.net/index"
     for URL in $EXPIRE; do
-        echo -n "Expiring: $URL "
+        bold -n "Expiring: $URL "
         curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
             --header "X-Auth-Email:gwern@gwern.net" \
             --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
@@ -410,7 +414,7 @@ then
         done
     fi
 
-    echo "Sync successful"
+    bold "Sync successful"
 else
-    echo "Dependencies missing or Hakyll already running?"
+    echo "\e[41mDependencies missing or Hakyll already running?\e[0m"
 fi

@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-13 19:38:56 gwern"
+When:  Time-stamp: "2021-02-18 14:02:56 gwern"
 License: CC-0
 -}
 
@@ -355,7 +355,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                              return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
-pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-Date", "-DOI", p]
+pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
            if BL.length mb > 0 then
              do let (etitle:eauthor:edate:edoi:_) = lines $ U.toString mb
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
@@ -367,7 +367,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 case aMaybe of
                   Nothing -> return Nothing
-                  Just a -> return $ Just (p, (trimTitle etitle, author, trim edate, edoi, a))
+                  Just a -> return $ Just (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi, a))
            else return Nothing
 
 -- nested JSON object: eg 'jq .message.abstract'
@@ -537,6 +537,8 @@ cleanAbstractsHTML t = trim $
     , ("<strong>Abstract</strong>:        ", "")
     , ("<abstract abstract-type=\"summary\"><br/>", "")
     , ("<abstract abstract-type=\"toc\">", "")
+    , ("<abstract abstract-type=\"editor\">", "")
+    , ("<abstract abstract-type=\"synopsis\">", "")
     , ("<strong>SUMMARY</jats:title>", "")
     , ("<strong>Abstract</jats:title>", "")
     , ("<strong>Abstract</strong><br/>", "")
@@ -669,6 +671,45 @@ cleanAbstractsHTML t = trim $
     , ("</h3><br/>", "</h3>")
     , ("<br/><h3>", "<h3>")
     , ("\91Keywords: ", "<strong>\91Keywords</strong>: ")
+    , (" (4/8 ", " (4⁄8 ")
+    , (" (4/8 ", " (4⁄8 ")
+    , (" (5/8 ", " (5⁄8 ")
+    , (" (5/8 ", " (5⁄8 ")
+    , (" (5/8 ", " (5⁄8 ")
+    , (" 1/2 ", " 1⁄2 ")
+    , (" 1/4 ", " 1⁄4 ")
+    , (" 2/3 ", " 2⁄3 ")
+    , (" 4/5 ", " 4⁄5 ")
+    , (" 5/8 ", " 5⁄8 ")
+    , (" 5/9 ", " 5⁄9 ")
+    , (" 6/13 ", " 6⁄13 ")
+    , (" 7/13 ", " 7⁄13 ")
+    , (" 8/13 ", " 8⁄13 ")
+    , (" 9/13 ", " 9⁄13 ")
+    , (" 15/16 ", " 15⁄16 ")
+    , (" 5/16 ", " 5⁄16 ")
+    , (" 5/8 ", " 5⁄8 ")
+    , (" 15/20 ", " 15⁄20 ")
+    , (" (23/96) ", " (23⁄96) ")
+    , (" (24/50) ", " (24⁄50) ")
+    , (" (30/96) ", " (30⁄96) ")
+    , (" (35/96) ", " (35⁄96) ")
+    , (" (39/50) ", " (39⁄50) ")
+    , (" (41/50) ", " (41⁄50) ")
+    , (" (43/50) ", " (43⁄50) ")
+    , (" (48/96) ", " (48⁄96) ")
+    , (" (50/96) ", " (50⁄96) ")
+    , (" (6/96), ", " (6⁄96), ")
+    , (" (68/96) ", " (68⁄96) ")
+    , (" (90/96) ", " (90⁄96) ")
+    , (" 11/90 ", " 11⁄90 ")
+    , (" 33/96 ", " 33⁄96 ")
+    , (" 42/50 ", " 42⁄50 ")
+    , ("(11/31)", "(11⁄31)")
+    , ("(9/11)", "(9⁄11)")
+    , ("(2/7)", "(2⁄7)")
+    , ("(28/31)", "(28⁄31)")
+    , ("(9/10)", "(9⁄10)")
     , ("10(-10)", "10<sup>−10</sup>")
     , ("10(-11)", "10<sup>−11</sup>")
     , ("10(-13)", "10<sup>−13</sup>")
@@ -695,6 +736,8 @@ cleanAbstractsHTML t = trim $
     , (" = .",    " = 0.")
     , (" gf ", " <em>gf</em> ")
     , (" gc ", " <em>gc</em> ")
+    , ("<i><em>h</em><sup>2</sup></i>", "<em>h</em><sup>2</sup>")
+    , ("<i><em>h</em><sup>2</sup><sub>SNP</sub></i>", "<em>h</em><sup>2</sup><sub>SNP</sub>")
     , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
@@ -731,6 +774,7 @@ cleanAbstractsHTML t = trim $
     , (" N=",     " <em>N</em> = ")
     , ("\40p=",     "\40<em>p</em> = ")
     , (" n=",     " <em>n</em> = ")
+    , (" p&lt;", " <em>p</em> &lt; ")
     , ("p = 0",   "<em>p</em> = 0")
     , (" P=",     " <em>p</em> = ")
     , (" P = ",   " <em>p</em> = ")
@@ -760,6 +804,8 @@ cleanAbstractsHTML t = trim $
     , ("ml-1", "ml<sup>−1</sup>")
     , ("Cmax", "C<sub>max</sub>")
     , ("<small></small>", "")
+    , ("Per- formance", "Performance")
+    , ("lan- guage", "language")
     , ("\173", "") -- we do soft hyphenation at compile-time to keep the data sources clean & readable, and benefit from any upgrades
       ]
 
