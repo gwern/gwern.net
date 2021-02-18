@@ -607,7 +607,7 @@ Extracts = {
 			titleHTML: 		referenceElement.innerHTML.trimQuotes(),
 			authorHTML:		(authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
 			dateHTML:		(dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
-			abstractHTML:	referenceEntry.querySelector("blockquote").innerHTML
+			abstractHTML:	referenceEntry.querySelector("blockquote div").innerHTML
 		};
 	},
 
