@@ -3173,9 +3173,11 @@ body.directory-index #disqus_thread {
     flex-flow: row;
     align-items: center;
     width: 100%;
-    overflow: hidden;
     cursor: grab;
     z-index: 11;
+}
+.popup.has-title-bar.mini-title-bar .popframe-title-bar {
+    overflow: hidden;
 }
 .popup.grabbed .popframe-title-bar,
 .popup.dragging .popframe-title-bar,
@@ -3237,7 +3239,7 @@ body.directory-index #disqus_thread {
     font-weight: inherit;
     font-style: inherit;
     line-height: 0;
-    margin: 0 1px;
+    margin: 0 1px 0 0;
     padding: 4px;
     height: 100%;
     flex: 0 0 1.5rem;
@@ -3277,9 +3279,11 @@ body.directory-index #disqus_thread {
     position: absolute;
     top: var(--popup-title-bar-height);
     background-color: var(--GW-popups-popup-title-bar-background-color);
-    display: flex;
-    flex-flow: row wrap;
-    max-width: calc(3 * (1px + var(--popup-title-bar-height)));
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-gap: 1px;
+    padding: 0 1px 1px 0;
+    background-color: var(--GW-popups-popup-border-color);
     visibility: hidden;
     opacity: 0.0;
     transition:
@@ -3291,13 +3295,14 @@ body.directory-index #disqus_thread {
     visibility: visible;
     opacity: 1.0;
 }
-
 .popup .popframe-title-bar .submenu button {
-    height: var(--popup-title-bar-height);
-    border-style: solid;
-    border-width: 0 1px 1px 0;
-    border-color: var(--GW-popups-popup-border-color);
+    background-color: var(--GW-popups-popup-title-bar-background-color);
+    border: none;
     margin: 0;
+}
+.popup .popframe-title-bar .submenu button svg {
+    height: calc(var(--popup-title-bar-button-size) - 8px);
+    width: calc(var(--popup-title-bar-button-size) - 8px);
 }
 
 /*┌────────────────────┐*/
