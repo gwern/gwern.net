@@ -2131,7 +2131,7 @@ span.inflationAdjusted {
     position: absolute;
     top: 0;
     right: 100%;
-    padding: 0.625em;
+    padding: 0.60em;
     box-sizing: border-box;
 }
 
@@ -2140,12 +2140,13 @@ span.inflationAdjusted {
 }
 .admonition.note::before {
     content: url('/static/img/icons/arrow-right-white.svg');
-    padding: 0.75em;
+    padding: 0.85em;
 }
 .admonition.warn::before,
 .admonition.warning::before {
     content: url('/static/img/icons/exclamation-triangle-white.svg');
     padding-top: 0.75em;
+    padding: 0.5em;
 }
 .admonition.error::before {
     content: url('/static/img/icons/skull-crossbones-white.svg');
@@ -2812,7 +2813,7 @@ body.directory-index #disqus_thread {
 /**************/
 
 .popframe .popframe-title-link::after {
-	display: none;
+    display: none;
 }
 
 .popframe .popframe-title-link-archived::after {
@@ -3266,7 +3267,7 @@ body.directory-index #disqus_thread {
 
 .popup.mini-title-bar button.zoom-button,
 .popup.mini-title-bar button.options-button {
-	display: none;
+    display: none;
 }
 
 /*  Submenus of buttons in the popup title bar.
@@ -3540,11 +3541,11 @@ body.directory-index #disqus_thread {
     max-width: calc(var(--GW-popups-popup-max-width) - 2 * var(--GW-popups-popup-border-width));
     max-height: calc(var(--GW-popups-popup-max-height) - 2 * var(--GW-popups-popup-border-width) - var(--popup-title-bar-height));
     object-fit: contain;
-	background-color: var(--GW-popups-popup-border-color);
+    background-color: var(--GW-popups-popup-border-color);
 }
 .popup.image img.invertible,
 .popup.image img.invertible-auto {
-	background-color: var(--GW-body-background-color);
+    background-color: var(--GW-body-background-color);
 }
 
 /*  Loading spinner.
