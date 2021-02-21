@@ -27,7 +27,7 @@ then
                  echo -e "$OUTPUT";
              fi; }
 
-    cd ~/wiki/ && (git status &)
+    cd ~/wiki/ && git status
 
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
     bold "Building directory indexes..."
@@ -48,6 +48,10 @@ then
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
                docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ &
 
+    bold "Updating annotations..."
+    ghci -v0 -istatic/build/ ./static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; return $ length md; }' &> /dev/null
+
+    bold "Check/update VCS..."
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/
     # Cleanup pre:
@@ -160,9 +164,10 @@ then
     wrap λ "Check possible typo in YAML metadata database"
     λ(){ egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' \
                -e '<dd>' -e '<dl>' -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '<abstract' \
-               -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e '<p><p>' -e '</p></p>' \
-               -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<figure-inline' -e '<small></small>' \
-               -e '\]\(/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb\|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' -- ./metadata/*.yaml; }
+               -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' \
+               -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref=' \
+               -e '\]\(/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb\|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' \
+               -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
@@ -340,13 +345,13 @@ then
                          parallel --max-args=400 "fgrep --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS;
-         do grep --before-context=3 "$BROKEN_HTML" metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
+         do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
          done; }
     wrap λ "Archives of broken links"
 
     λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" | sort | parallel file | grep -v 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
-             echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" metadata/archive.hs;
+             echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
     wrap λ "Corrupted or broken PDFs"
 
@@ -406,6 +411,10 @@ then
             SIZE=$(curl --max-redirs 0 --compressed --silent "https://www.gwern.net/$PAGE" | wc --bytes)
             if [ "$SIZE" -lt 7500 ]; then echo "\e[41m$PAGE\e[0m : $SIZE : $MIME" && exit 2; fi
         done
+    fi
+    # if the end of the month, expire all of the annotations to get rid of stale ones:
+    if [ $(date +"%d") == "31" ]; then
+        rm ./metadata/annotations/*
     fi
 
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
