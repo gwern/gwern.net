@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-18 14:02:56 gwern"
+When:  Time-stamp: "2021-02-20 22:54:31 gwern"
 License: CC-0
 -}
 
@@ -76,7 +76,7 @@ readLinkMetadata = do
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
              let urls = map (\(u,_) -> u) custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
-             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?')) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
@@ -528,6 +528,8 @@ cleanAbstractsHTML t = trim $
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
     , (" </sec>", "")
+    , ("<title>", "")
+    , ("</title>", "")
     , ("   <title/>    <p>", "<p>")
     , ("  <p>", "<p>")
     , ("<br/><h3>", "<h3>")
@@ -547,6 +549,10 @@ cleanAbstractsHTML t = trim $
     , ("Alzheimer9", "Alzheimer'")
     , ("<br/> <br/>", "</br>")
     , ("1.<p>", "<p>")
+    , ("<list list-type=\"bullet\">", "<ul>")
+    , ("</list>", "</ul>")
+    , ("</list-item>", "</li>")
+    , ("<list-item>", "<li>")
     , ("<p> ", "<p>")
     , (" <p>", "<p>")
     , ("</p> ", "</p>")
@@ -562,6 +568,14 @@ cleanAbstractsHTML t = trim $
     , ("<jats:sec><br/>", "")
     , ("</jats:sec><br/>", "")
     , ("  </sec> <br/>", "")
+    , ("<p><sec id=\"sec001\"></p>", "")
+    , ("<p><sec id=\"sec002\"></p>", "")
+    , ("<p><sec id=\"sec003\"></p>", "")
+    , ("<p><sec id=\"sec004\"></p>", "")
+    , ("<p><sec id=\"sec005\"></p>", "")
+    , ("<p><sec id=\"sec006\"></p>", "")
+    , ("<sec sec-type=\"headed\">", "")
+    , ("<p><sec sec-type=\"headed\"></p>", "")
     , ("</strong></p>    <p>", "</strong> ")
     , ("</title>", ":</strong></p>")
     , ("<title>", "<p><strong>")
@@ -742,17 +756,27 @@ cleanAbstractsHTML t = trim $
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("h(2)",    "<em>h</em><sup>2</sup>")
-    , ("r(g)",    "<em>r</em><sub<em>g</em></sub>")
-    , (" rg ", " <em>r</em><sub<em>g</em></sub> ")
-    , (" rg=", " <em>r</em><sub<em>g</em></sub> = ")
-    , (" rg = ", " <em>r</em><sub<em>g</em></sub> = ")
-    , ("(rg)", "(<em>r</em><sub<em>g</em></sub>)")
+    , ("r(g)",    "<em>r</em><sub><em>g</em></sub>")
+    , (" rg ", " <em>r</em><sub><em>g</em></sub> ")
+    , (" rg=", " <em>r</em><sub><em>g</em></sub> = ")
+    , (" rg = ", " <em>r</em><sub><em>g</em></sub> = ")
+    , ("(rg)", "(<em>r</em><sub><em>g</em></sub>)")
     , ("-&gt;", "→")
     , ("r=", "<em>r</em> = ")
     , ("r>", "<em>r</em> > ")
     , (" r<", " <em>r</em> < ")
     , ("r≥", "<em>r</em> ≥ ")
     , ("r≤", "<em>r</em> ≤ ")
+    , ("<var>", "<em>")
+    , ("</var>", "</em>")
+    , ("<wbr />", "")
+    , ("<wbr/>", "")
+    , ("<wbr>", "")
+    , ("<wbr />&#8203;", "")
+    , ("<wbr></wbr>", "")
+    , ("<wbr></wbr>\8203", "")
+    , ("<abbr>", "<span>")
+    , ("</abbr>", "</span>")
     , ("beta=", "β = ")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
     , ("\40r=",     "\40<em>r</em> = ")
@@ -801,6 +825,7 @@ cleanAbstractsHTML t = trim $
     , (" 3x", " 3×")
     , ("<p> ", "<p>")
     , ("+/-", "±")
+    , ("<code class=\"mw-highlight mw-highlight-lang-bash mw-content-ltr\" dir=\"ltr\">", "<code>")
     , ("ml-1", "ml<sup>−1</sup>")
     , ("Cmax", "C<sub>max</sub>")
     , ("<small></small>", "")
