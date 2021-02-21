@@ -235,6 +235,7 @@
     --GW-popups-popup-title-bar-background-focused-color: #3e3e3e;
     --GW-popups-popup-title-bar-button-focused-color: #a6a6a6;
     --GW-popups-popup-title-bar-button-focused-color-hover: #fff;
+    --GW-popups-popup-title-bar-submenu-box-shadow-color: #494949;
 	--GW-popups-popup-title-focused-color: #fff;
     --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
 

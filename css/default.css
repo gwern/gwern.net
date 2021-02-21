@@ -3282,13 +3282,18 @@ body.directory-index #disqus_thread {
     display: grid;
     grid-template-columns: auto auto auto;
     grid-gap: 1px;
-    padding: 0 1px 1px 0;
+    padding: 0 1px 1px 1px;
     background-color: var(--GW-popups-popup-border-color);
     visibility: hidden;
+    box-shadow: 
+        1px 1px 0 0 var(--GW-popups-popup-title-bar-submenu-box-shadow-color);
     opacity: 0.0;
     transition:
         visibility 0.1s ease 0.2s,
         opacity 0.1s ease 0.2s;
+}
+.popup .popframe-title-bar .zoom-button + .submenu {
+    left: -1px;
 }
 .popup .popframe-title-bar .submenu:hover,
 .popup .popframe-title-bar .has-submenu:hover + .submenu {
