@@ -799,13 +799,7 @@ Popups = {
 			button.buttonAction = (event) => {
 				event.stopPropagation();
 
-				let popup = event.target.closest(".popup");
-
-				Popups.unpinPopup(popup);
-				Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
-					Popups.clearPopupTimers(popupInStack.spawningTarget);
-					Popups.despawnPopup(popupInStack);
-				});
+				Popups.despawnPopup(event.target.closest(".popup"));
 			};
 
 			return button;
