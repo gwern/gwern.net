@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-20 22:54:31 gwern"
+When:  Time-stamp: "2021-02-21 16:49:21 gwern"
 License: CC-0
 -}
 
@@ -104,7 +104,6 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs
-                                             -- let pandoc = walk parseRawBlock $ Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
                                              void $ createAnnotations md pandoc
                                              let annotationPandoc = walk (hasAnnotation md True) pandoc
@@ -161,18 +160,6 @@ annotateLink' md target =
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
--- goddamn it Pandoc, why can't you read the very HTML you just wrote‽
--- hasAnnotation md idp x@(RawBlock (Format "html") h) = if not ("href=" `T.isInfixOf` h) then x else
---                                                   let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
---                                                    case markdown of
---                                                      Left e -> error (show x ++ ": " ++ show e)
---                                                      Right markdown' -> let p@(Pandoc _ _) = walk (hasAnnotation md idp) markdown' in
---                                                                           let p' = runPure $ do html <- writeHtml5String def{writerExtensions = pandocExtensions} p
---                                                                                                 let html' = T.pack $ restoreFloatRight (T.unpack h) (T.unpack html)
---                                                                                                 return $ RawBlock (Format "html") html'
---                                                                           in case p' of
---                                                                             Left e -> error (show x ++ ": " ++ show e)
---                                                                             Right p'' -> p''
 hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,b,c) e (f,g)) =
@@ -188,20 +175,12 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
 
           hasAnnotationInline _ _ y = y
 
-parseAllRaw :: Pandoc -> Pandoc
-parseAllRaw pandoc = walk parseRawBlock pandoc
 parseRawBlock :: Block -> Block
 parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
                                           case markdown of
                                             Left e -> error (show x ++ ": " ++ show e)
                                             Right (Pandoc _ markdown') -> Div nullAttr markdown'
 parseRawBlock x = x
--- parseRawInline :: Inline -> Inline
--- parseRawInline x@(RawInline (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
---                                           case markdown of
---                                             Left e -> error (show x ++ ": " ++ show e)
---                                             Right (Pandoc _ markdown') -> Span nullAttr markdown'
--- parseRawInline x = x
 
 generateAnnotationBlock :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
 generateAnnotationBlock (f, ann) = case ann of
@@ -524,9 +503,45 @@ cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML t = trim $
   -- regexp substitutions:
   (\s -> subRegex (mkRegex "([.0-9]+)x") s "\\1×") $
+  (\s -> subRegex (mkRegex "=-\\.([.0-9]+)") s " = -0.\\1") $
   -- simple string substitutions:
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
+    , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
+    , ("<sup></sup>", "")
+    , ("<sub></sub>", "")
+    -- math substitutions:
+    , ("<span class=\"texhtml \">O(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
+    , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
+    , ("$O(log n)$", "𝒪(log <em>n</em>)")
+    , ("$\\mathcal{O}(log n)$", "𝒪(log <em>n</em>)")
+    , ("$\\mathrm{sinc}(ax)$", "sinc(<em>ax</em>)")
+    , ("<span class=\"texhtml \">\\mathrm{sinc}(ax)</span>", "sinc(<em>ax</em>)")
+    , ("$\\mathrm{sinc}(x)=\\sin(x)/x$", "sinc(<em>x</em>) = sin(<em>x</em>)⁄<em>x</em>")
+    , ("$x$", "<em>x</em>")
+    , ("$\\mathrm{sinc}(0)=1$", "sinc(0) = 1")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">n</span>", "<em>n</em>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">x</span>", "<em>x</em>")
+    , ("<span><span class=\"texhtml mvar\" style=\"font-style:italic\">π</span></span>", "<em>π</em>")
+    , ("<span class=\"texhtml \"><i>a</i> + <i>b i</i></span>", "<em>a</em> + <em>b i</em>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">a</span>", "<em>a</em>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">b</span>", "<em>b</em>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">i</span>", "<em>i</em>")
+    , ("<span class=\"texhtml \">ℂ</span>", "ℂ")
+    , ("<span class=\"texhtml \"><strong>C</strong></span>", "<strong>C</strong>")
+    , ("<span class=\"texhtml \"><i>x</i><sup>2</sup> + 1 = 0</span>", "<em>x</em><sup>2</sup> + 1 = 0")
+    , ("<span class=\"texhtml \">2 + 3<i>i</i></span>", "2 + 3<em>i</em>")
+    , ("<span class=\"texhtml \"><i>Y</i> = ln(<i>X</i>)</span>", "<em>Y</em> = ln(<em>X</em>)")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">Y</span>", "<em>Y</em>")
+    , ("<span class=\"texhtml \"><i>X</i> = exp(<i>Y</i>)</span>", "<em>X</em> = exp(<em>Y</em>)")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">p</span>", "<em>p</em>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">n</span>", "<em>n</em>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">π</span>", "<em>π</em>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\"><strong>c</strong></span>", "<strong><em>c</em></strong>")
+    , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">c</span>", "<em>c</em>")
+    , ("$f(x; x_0,\\gamma)$", "<em>f(x; x<sub>0</sub>,γ")
+    , ("$(x_0,\\gamma)$", "<em>(x<sub>0</sub>, γ)</em>")
+    -- rest:
     , (" </sec>", "")
     , ("<title>", "")
     , ("</title>", "")
@@ -534,6 +549,7 @@ cleanAbstractsHTML t = trim $
     , ("  <p>", "<p>")
     , ("<br/><h3>", "<h3>")
     , ("</p><p>", "</p> <p>")
+    , ("<jats:title>SUMMARY</jats:title>", "")
     , ("<strong>ABSTRACT</strong><br/>              <p>", "<p>")
     , ("</strong><p>", "</strong>: <p>")
     , ("<strong>Abstract</strong>:        ", "")
@@ -574,6 +590,14 @@ cleanAbstractsHTML t = trim $
     , ("<p><sec id=\"sec004\"></p>", "")
     , ("<p><sec id=\"sec005\"></p>", "")
     , ("<p><sec id=\"sec006\"></p>", "")
+    , ("<sec id=\"st1\">", "")
+    , ("<sec id=\"st2\">", "")
+    , ("<sec id=\"st3\">", "")
+    , ("<sec id=\"sb1a\">", "")
+    , ("<sec id=\"sb1b\">", "")
+    , ("<sec id=\"sb1c\">", "")
+    , ("<sec id=\"sb1d\">", "")
+    , ("<sec id=\"sb1e\">", "")
     , ("<sec sec-type=\"headed\">", "")
     , ("<p><sec sec-type=\"headed\"></p>", "")
     , ("</strong></p>    <p>", "</strong> ")
@@ -614,11 +638,14 @@ cleanAbstractsHTML t = trim $
     , ("</jats:title>", "</strong>")
     , ("<jats:p xml:lang=\"en\">", "<p>")
     , ("<jats:p>", "<p>")
+    , (" <i> </i>", " ") -- Wikipedia {{ety}} weirdness, but just in Ancient Greek instances?
     , ("<jats:italics>", "<em>")
     , ("</jats:italics>", "</em>")
     , ("<jats:italic>", "<em>")
     , ("</jats:italic>", "</em>")
     , ("<italic>", "<em>")
+    , ("</ italic>", "</em>")
+    , ("< /italic>", "</em>")
     , ("</italic>", "</em>")
     , ("< /i>", "</i>")
     , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "<p>")
@@ -756,19 +783,21 @@ cleanAbstractsHTML t = trim $
     , (" h2",     " <em>h</em><sup>2</sup>")
     , ("h2 ",     "<em>h</em><sup>2</sup> ")
     , ("h(2)",    "<em>h</em><sup>2</sup>")
+    , ("<em>r</em> <sub>g</sub>", "<em>r</em><sub>g</sub>")
     , ("r(g)",    "<em>r</em><sub><em>g</em></sub>")
     , (" rg ", " <em>r</em><sub><em>g</em></sub> ")
     , (" rg=", " <em>r</em><sub><em>g</em></sub> = ")
     , (" rg = ", " <em>r</em><sub><em>g</em></sub> = ")
     , ("(rg)", "(<em>r</em><sub><em>g</em></sub>)")
     , ("-&gt;", "→")
-    , ("r=", "<em>r</em> = ")
-    , ("r>", "<em>r</em> > ")
+    , (" r=", "<em>r</em> = ")
+    , (" r>", "<em>r</em> > ")
     , (" r<", " <em>r</em> < ")
     , ("r≥", "<em>r</em> ≥ ")
     , ("r≤", "<em>r</em> ≤ ")
     , ("<var>", "<em>")
     , ("</var>", "</em>")
+    , ("<code class=\"mw-highlight mw-highlight-lang-text mw-content-ltr\" dir=\"ltr\"", "<code")
     , ("<wbr />", "")
     , ("<wbr/>", "")
     , ("<wbr>", "")
@@ -777,6 +806,10 @@ cleanAbstractsHTML t = trim $
     , ("<wbr></wbr>\8203", "")
     , ("<abbr>", "<span>")
     , ("</abbr>", "</span>")
+    , ("<ext-link ext-link-type=\"uri\"", "<a")
+    , ("<ext-link ext-link-type=\"uri\" xlink:href=", "<a href=")
+    , ("xlink:type=\"simple\"", "")
+    , ("</ext-link>", "</a>")
     , ("beta=", "β = ")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
     , ("\40r=",     "\40<em>r</em> = ")
@@ -831,6 +864,8 @@ cleanAbstractsHTML t = trim $
     , ("<small></small>", "")
     , ("Per- formance", "Performance")
     , ("lan- guage", "language")
+    , ("\t\t", "")
+    , ("\t\t\t\t\t", "")
     , ("\173", "") -- we do soft hyphenation at compile-time to keep the data sources clean & readable, and benefit from any upgrades
       ]
 
