@@ -11,61 +11,2537 @@
 
     <title>404 Not Found</title>
 
-    <link rel="stylesheet" type="text/css" href="/static/css/colors-dark.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/colors.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/dark-mode-adjustments.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/dark-mode.css" id="inlined-dark-mode-styles" />
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/initial.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/links.css" />
-    <!-- Dark mode: before anything else loads, snoop user cookies & browser variables for dark mode preference and immediately toggle sets of CSS color variables/classes to avoid any 'flash of white' or delayed loading. Note: CSS falls back to the media-query browser/OS variable preference, so still works if JS is blocked! (The JS is only necessary for the theme switcher widget allowing 'force light'/'force dark' options. If users block JS, set the dark mode preference, and are unhappy when they get dark mode, well, they made their bed and must lie in it.)  -->
-    <script>
-    /*  Create global 'GW' object, if need be.
+    <!-- CSS+JS inline for speed -->
+<style id="inlined-styles-colors">
+:root {
+    /*  General.
         */
-    if (typeof window.GW == "undefined")
-            window.GW = { };
-    GW.temp = { };
+    --GW-body-background-color: #fff;
+    --GW-body-text-color: #000;
+    --GW-body-link-color: #272727;
+    --GW-body-link-hover-color: #888;
 
-    /*  Debug output.
+    /*  Selection.
         */
-    function GWLog (string) {
-        if (GW.loggingEnabled || localStorage.getItem("logging-enabled") == "true")
-            console.log(string);
+    --GW-text-selection-background-color: #333;
+    --GW-text-selection-color: #fff;
+
+    /*  Link underlining.
+        */
+    --GW-link-underline-background-color: var(--GW-body-background-color);
+    --GW-link-underline-gradient-line-color: #333;
+    --GW-link-underline-gradient-line-color-hover: #999;
+
+    /*  Blockquotes.
+        */
+    --GW-blockquote-border-color-level-one: #ccc;
+    --GW-blockquote-border-color-level-two: #c4c4c4;
+    --GW-blockquote-border-color-level-three: #b3b3b3;
+    --GW-blockquote-border-color-level-four: #a6a6a6;
+    --GW-blockquote-background-color-level-one: #f8f8f8;
+    --GW-blockquote-background-color-level-two: #e6e6e6;
+    --GW-blockquote-background-color-level-three: #d8d8d8;
+
+    /*  Abstracts.
+        */
+    --GW-abstract-border-color: #bbb;
+    --GW-abstract-background-color: var(--GW-blockquote-background-color-level-one);
+
+    /*  Sidebar.
+        */
+    --GW-sidebar-horizontal-rule-color: #aaa;
+    --GW-sidebar-mobile-link-border-color: #000;
+
+    /*  Table of contents.
+        */
+    --GW-TOC-border-color: #ccc;
+    --GW-TOC-background-color: #f8f8f8;
+    --GW-TOC-link-hover-background-color: #ececec;
+    --GW-TOC-link-hover-color: #000;
+    --GW-TOC-link-hover-indicator-bar-color: #ccc;
+    --GW-TOC-number-color: #909090;
+    --GW-TOC-number-hover-color: #313131;
+
+    /*  Collapse blocks.
+        */
+	--GW-collapse-summary-blockquote-hover-color: #eee;
+	--GW-collapse-disclosure-button-color: #eee;
+	--GW-collapse-disclosure-button-hover-color: #ddd;
+	--GW-collapse-disclosure-button-top-part-text-color: #bbb;
+	--GW-collapse-disclosure-button-bottom-part-text-color: #aaa;
+	--GW-collapse-disclosure-button-text-hover-color: #fff;
+
+    /*  Headings.
+        */
+    --GW-H1-box-shadow-background-color: var(--GW-body-background-color);
+    --GW-H1-box-shadow-line-color: #888;
+    --GW-H2-bottom-border-color: #888;
+
+    /*  Comments.
+        */
+    --GW-comment-section-top-border-color: #999;
+
+    /*  Lists.
+        */
+    --GW-bulleted-list-marker-color: #808080;
+
+    /*  Figures.
+        */
+    --GW-figure-outline-color: #888;
+    --GW-figure-caption-outline-color: #888;
+
+    /*  Epigraphs.
+        */
+    --GW-epigraph-quotation-mark-color: #808080;
+
+    /*  Footnotes.
+        */
+    --GW-footnote-border-color: #aaa;
+    --GW-footnote-highlighted-border-color: #aaa;
+    --GW-footnotes-section-top-rule-color: #ccc;
+    --GW-footnote-backlink-border-color: #000;
+    --GW-footnote-backlink-border-hover-color: #999;
+    --GW-footnote-backlink-after-bordered-block-background-color: var(--GW-body-background-color);
+
+    /*  Footnote references.
+        */
+    --GW-footnote-ref-highlight-box-shadow-color: #aaa;
+    --GW-footnote-ref-highlight-background-color: rgba(255,255,255,0.75);
+
+    /*  Sidenotes.
+        */
+    --GW-sidenote-highlight-background-color: var(--GW-body-background-color);
+    --GW-sidenote-highlight-box-shadow-color: #aaa;
+    --GW-sidenote-border-color: #aaa;
+    --GW-sidenote-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-sidenote-scrollbar-thumb-color: #aaa;
+    --GW-sidenote-scrollbar-thumb-hover-color: #999;
+    --GW-sidenote-self-link-border-color: #aaa;
+
+    /*  Tables.
+        */
+    --GW-table-border-color: #000;
+    --GW-table-full-width-background-color: var(--GW-body-background-color);
+    --GW-table-caption-border-color: #000;
+    --GW-table-row-horizontal-border-color: #000;
+    --GW-table-cell-vertical-border-color: var(--GW-body-background-color);
+    --GW-table-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-table-scrollbar-thumb-color: #aaa;
+    --GW-table-scrollbar-thumb-hover-color: #999;
+    --GW-table-scrollbar-border-color: #000;
+    --GW-table-column-heading-hover-background-color: #e2f0f2;
+    --GW-table-sorted-column-heading-background-color: #8bd0ed;
+    --GW-table-sorted-column-heading-text-color: #fff;
+    --GW-table-sorted-column-heading-text-shadow-color: #000;
+    --GW-table-zebra-stripe-alternate-row-background-color: #f6f6f6;
+    --GW-table-row-hover-outline-color: #000;
+
+    /*  Code blocks.
+        */
+    --GW-code-element-border-color: #c8c8c8;
+    --GW-code-element-background-color: #fafafa;
+    --GW-pre-element-border-color: #c8c8c8;
+    --GW-pre-element-background-color: #fafafa;
+    --GW-pre-element-scrollbar-track-color: #fafafa;
+    --GW-pre-element-scrollbar-thumb-color: #ccc;
+    --GW-pre-element-scrollbar-thumb-hover-color: #999;
+
+    /*  Syntax highlight theme.
+        */
+    --GW-syntax-highlight-color-normal: #1f1c1b;
+    --GW-syntax-highlight-color-attribute: #002561;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #666666;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-extension: #888888;
+    --GW-syntax-highlight-color-comment: #888888;
+    --GW-syntax-highlight-color-control-flow: #003900;
+    --GW-syntax-highlight-color-keyword: #002561;
+    --GW-syntax-highlight-color-operator: #002561;
+    --GW-syntax-highlight-color-special-char: #607880;
+    --GW-syntax-highlight-color-built-in: #002561;
+    --GW-syntax-highlight-color-function: #002561;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #bf0303;
+    --GW-syntax-highlight-color-error: #ff0000;
+    --GW-syntax-highlight-color-import: #777777;
+    --GW-syntax-highlight-color-special-string: #666666;
+
+    /*  Math.
+        */
+    --GW-math-block-background-color: #f6f6f6;
+    --GW-math-block-scrollbar-border-color: #ccc;
+    --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-math-block-scrollbar-thumb-color: #ccc;
+    --GW-math-block-scrollbar-thumb-hover-color: #999;
+
+    /*  Drop caps.
+        */
+    --GW-drop-caps-yinit-color: #0d0d0d;
+    --GW-drop-caps-yinit-text-shadow-color: #777;
+    --GW-drop-caps-de-zs-color: #1b1b1b;
+    --GW-drop-caps-cheshire-color: #191919;
+    --GW-drop-caps-kanzlei-color: #191919;
+
+    /*  Admonitions.
+        */
+    --GW-admonition-default-left-border-color: #909090;
+    --GW-admonition-default-background-color: #d8d8d8;
+    --GW-admonition-tip-left-border-color: #d8d8d8;
+    --GW-admonition-tip-background-color: #f0f0f0;
+    --GW-admonition-warning-left-border-color: #5a5a5a;
+    --GW-admonition-warning-background-color: #9a9a9a;
+    --GW-admonition-warning-text-color: #fff;
+    --GW-admonition-warning-title-background-color: #5a5a5a;
+    --GW-admonition-warning-icon-color: #fff;
+    --GW-admonition-error-left-border-color: #2d2d2d;
+    --GW-admonition-error-background-color: #5a5a5a;
+    --GW-admonition-error-text-color: #fff;
+    --GW-admonition-error-title-background-color: #2d2d2d;
+    --GW-admonition-error-icon-color: #fff;
+    --GW-admonition-reversed-link-color: #ddd;
+    --GW-admonition-reversed-link-color-hover: #ccc;
+    --GW-admonition-reversed-link-underline-gradient-line-color: #ccc;
+    --GW-admonition-reversed-link-underline-gradient-line-color-hover: #bbb;
+    --GW-admonition-reversed-footnote-ref-highlight-background-color: rgba(90,90,90,0.75);
+
+    /*  Sequential nav UI.
+        */
+    --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
+
+    /*  Links.
+        */
+    --GW-definition-annotation-text-color: #444;
+
+    /*  Page-specific styles.
+        */
+    --GW-index-page-bottom-ornament-line-color: #808080;
+
+	/*	Pop-frames (popups or popins).
+		*/
+    --GW-raw-code-popframe-line-highlight-background-color: #ffd;
+    --GW-raw-code-popframe-line-hightlight-border-color: #ddd;
+    --GW-raw-code-popframe-line-number-color: #aaa;
+    --GW-raw-code-popframe-line-number-divider-color: #ccc;
+
+    /*  Popups.
+        */
+    --GW-popups-body-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+
+    --GW-popups-popup-border-color: #ccc;
+    --GW-popups-box-shadow-color: #ccc;
+    --GW-popups-popup-border-focused-color: #aaa;
+    --GW-popups-box-shadow-focused-color: #aaa;
+
+    --GW-popups-popup-title-bar-background-color: #f6f6f6;
+    --GW-popups-popup-title-bar-button-color: #bbb;
+    --GW-popups-popup-title-bar-button-color-hover: #000;
+	--GW-popups-popup-title-color: #aaa;
+    --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
+    --GW-popups-popup-title-bar-background-focused-color: #e6e6e6;
+    --GW-popups-popup-title-bar-button-focused-color: #777;
+    --GW-popups-popup-title-bar-button-focused-color-hover: #000;
+    --GW-popups-popup-title-bar-submenu-box-shadow-color: #ddd;
+	--GW-popups-popup-title-focused-color: #000;
+    --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
+
+    --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
+
+    --GW-popups-popup-scrollbar-thumb-color: #ddd;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #bbb;
+    --GW-popups-popup-scrollbar-thumb-focused-color: #ccc;
+    --GW-popups-popup-scrollbar-thumb-hover-focused-color: #999;
+
+    --GW-popups-popup-options-dialog-backdrop-background-color: rgba(255,255,255,0.95);
+    --GW-popups-popup-options-dialog-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-options-dialog-border-color: #aaa;
+    --GW-popups-popup-options-dialog-box-shadow-color: #444;
+    --GW-popups-popup-options-dialog-horizontal-rule-color: #ccc;
+    --GW-popups-popup-options-dialog-button-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-options-dialog-button-text-color: #000;
+    --GW-popups-popup-options-dialog-button-border-color: #000;
+    --GW-popups-popup-options-dialog-button-hover-box-shadow-color: #000;
+    --GW-popups-popup-options-dialog-option-button-explanation-text-color: #777;
+    --GW-popups-popup-options-dialog-option-button-hover-text-color: #777;
+    --GW-popups-popup-options-dialog-radio-button-border-color: #000;
+    --GW-popups-show-popup-options-dialog-button-color: #999;
+
+    /*  Popins.
+        */
+    --GW-popins-body-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-border-color: #aaa;
+    --GW-popins-box-shadow-color: #aaa;
+    --GW-popins-popin-title-bar-background-color: #fff;
+    --GW-popins-popin-title-bar-button-color: #777;
+    --GW-popins-popin-scrollbar-thumb-color: #ccc;
+    --GW-popins-popin-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-popins-popin-scrollbar-thumb-hover-color: #999;
+
+    /*  Image focus.
+        */
+    --GW-image-focus-image-hover-drop-shadow-color: #777;
+
+    /*  Mode selector (light/dark mode).
+        */
+    --GW-mode-selector-background-color: var(--GW-body-background-color);
+    --GW-mode-selector-border-hover-color: #aaa;
+    --GW-mode-selector-button-text-color: #777;
+    --GW-mode-selector-button-hover-text-color: #000;
+
+	/*	“Back to top” link.
+		*/
+	--GW-back-to-top-link-color: #ccc;
+	--GW-back-to-top-link-hover-color: #999;
+}
+</style>
+<style id="inlined-styles">
+/*********/
+/* FONTS */
+/*********/
+/* fonts are now loaded from /static/css/fonts.css */
+
+/**********/
+/* COLORS */
+/**********/
+/* colors are now in /static/css/colors.css or dark-mode.css */
+
+/*************/
+/* VARIABLES */
+/*************/
+
+:root {
+	--GW-serif-font-stack: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Times New Roman", "Droid Serif", "Times", serif;
+	--GW-sans-serif-font-stack: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	--GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", Consolas, Courier, monospace;
+
+    --GW-body-text-font-size: 1rem;
+}
+
+/***********/
+/* GENERAL */
+/***********/
+
+html {
+	padding: 0;
+	margin: 0;
+	background-color: var(--GW-body-background-color);
+	color: var(--GW-body-text-color);
+	font-weight: 400;
+	font-family: var(--GW-serif-font-stack);
+}
+
+body {
+	max-width: 1120px;
+
+    font-size: var(--GW-body-text-font-size);
+}
+
+@media only screen and (max-width: 649px) {
+	html {
+		font-size: 18px;
+	}
+}
+
+@media only screen and (min-width: 650px) {
+	body {
+		padding: 0 15px 0 5px;
+		margin: 0 auto;
+	}
+	@media only screen and (min-width: 1185px) {
+		body {
+			padding: 0 60px 0 5px;
+		}
+	}
+	main {
+		min-height: 100vh;
+		display: flex;
+		flex-flow: column;
+	}
+	/*  Breakpoint for sidenotes.
+		*/
+	@media only screen and (min-width: 1761px) {
+		main {
+			position: relative;
+			right: 40px;
+		}
+	}
+	article {
+		flex: 1 1 auto;
+	}
+	#sidebar {
+		position: absolute;
+	}
+	header,
+	article {
+		margin-left: 155px;
+	}
+	@media only screen and (max-width: 1200px) {
+		header,
+		article {
+			margin-left: 145px;
+		}
+	}
+	@media only screen and (max-width: 1120px) {
+		header,
+		article {
+			margin-left: 140px;
+		}
+	}
+	@media only screen and (max-width: 1040px) {
+		header,
+		article {
+			margin-left: 135px;
+		}
+	}
+	@media only screen and (max-width: 960px) {
+		header,
+		article {
+			margin-left: 130px;
+		}
+	}
+}
+
+@media only screen and (max-width: 649px) {
+	body {
+		margin: 0 20px;
+	}
+}
+
+svg {
+	fill: currentColor;
+}
+
+/***********/
+/* SIDEBAR */
+/***********/
+
+#sidebar a {
+	display: block;
+}
+
+@media only screen and (min-width: 650px) {
+	#sidebar {
+		font-variant: small-caps;
+		padding: 0 40px 0 10px;
+		width: 100px;
+	}
+	#sidebar a#logo {
+		margin: 1em 0 2em 0;
+	}
+	#sidebar a#logo svg {
+		width: 64px;
+	}
+	#sidebar a.new,
+	#sidebar a.patreon {
+		border-top: 1px dotted var(--GW-sidebar-horizontal-rule-color);
+	}
+	#sidebar a.new {
+		padding-top: 0.45em;
+		margin-top: 0.55em;
+	}
+	#sidebar a.patreon {
+		padding-top: 0.6em;
+		margin-top: 0.55em;
+		font-size: 0.9em;
+		white-space: nowrap;
+		line-height: 1.35;
+	}
+}
+
+@media only screen and (max-width: 649px) {
+	#sidebar {
+		justify-content: center;
+		margin: 1.4em 0 0.5em 0;
+	}
+	#sidebar a {
+		border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
+		padding: 4px 10px 3px 10px;
+		text-align: center;
+		margin: 1px;
+	}
+	#sidebar a#logo {
+		padding: 8px 5px 3px 5px;
+	}
+	#sidebar,
+	#sidebar-links {
+		display: flex;
+	}
+	#sidebar-links {
+		flex-flow: row wrap;
+		flex: 1 1 100%;
+		margin: 0.5em 0 0 0;
+	}
+	#sidebar a.site,
+	#sidebar a.links {
+		flex: 1 1 40%;
+	}
+	#sidebar a.new,
+	#sidebar a.mail {
+		flex: 1 1 auto;
+	}
+	#sidebar a.patreon {
+		display: none;
+	}
+	#sidebar #logo {
+		margin: calc(0.5em + 1px) 1px 1px 0;
+	}
+	#sidebar #logo svg {
+		width: 2.5rem;
+	}
+}
+
+/***************/
+/* PAGE HEADER */
+/***************/
+
+header {
+	overflow: auto;
+}
+
+header h1 {
+	margin: 0.75em 0;
+	text-align: center;
+	text-transform: none;
+	font-variant: small-caps;
+	font-size: 2.5em;
+	line-height: 1.15;
+	font-weight: 600;
+	letter-spacing: -1px;
+}
+
+@media only screen and (max-width: 649px) {
+	header h1 {
+		font-size: 2em;
+	}
+}
+
+/***********************/
+/* PAGE METADATA BLOCK */
+/***********************/
+
+@media only screen and (max-width: 649px) {
+	#page-metadata {
+		text-align: center;
+	}
+}
+
+#page-metadata hr {
+	display: none;
+}
+
+#page-metadata {
+	margin: 0 0 2rem 0;
+	overflow: auto;
+	font-size: 0.95em;
+	line-height: 1.5;
+}
+#page-metadata p {
+	text-align: left;
+}
+
+/* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
+#page-metadata #page-description {
+	display: block;
+	margin: 0 auto 0.75em auto;
+	font-style: italic;
+	text-align: justify;
+}
+#page-metadata #page-description em {
+	font-style: normal;
+}
+
+#page-metadata #page-description ~ * {
+	font-size: 0.9em;
+}
+
+#page-metadata #page-description + br {
+	display: none;
+}
+
+#page-metadata-block span:nth-of-type(n+3) {
+	white-space: nowrap;
+}
+
+/* interpunct separators for the metadata fields; looks nicer than semicolons or slashes */
+#page-metadata-block > span:not(:last-child)::after {
+    content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
+    display: inline-block;
+    margin: 0 0.35em 0 0.65em;
+}
+
+#page-tags,
+#page-metadata-block {
+	hyphens: none;
+}
+
+/*=--------=*/
+/*= /index =*/
+/*=--------=*/
+
+/* on the index page, we hide article-related formatting, begging, comments, to make it more compact & classy */
+body.index #sidebar a.patreon,
+body.tags #sidebar a.patreon,
+body.index #TOC,
+body.index #page-metadata,
+body.index #comments,
+body.index #disqus_thread,
+body.index header {
+	display: none;
+}
+
+/*  No index self-link. */
+body.index #sidebar a#logo {
+	pointer-events: none;
+}
+
+/*  Make the sections reflow; better than fixed-width tables. */
+body.index article section {
+	display: inline-block;
+	vertical-align: top;
+}
+
+/*  Abstract is not a real abstract, just an introduction, no need for the abstract formatting.
+	*/
+body.index .abstract {
+	padding: 0;
+	border: none;
+	margin: 0;
+	box-shadow: none;
+}
+
+@media only screen and (min-width: 1200px) {
+	/*  Leave enough horizontal room to show multiple sections simultaneously, table-like */
+	body.index #markdownBody {
+		width: 1350px;
+		max-width: calc(50vw + 420px);
+	}
+	body.index p,
+	body.index hr {
+		max-width: 970px;
+	}
+}
+
+/*  Add some vertical padding for the introduction.
+	*/
+body.index #markdownBody {
+	padding-top: 15px;
+}
+
+/*  Headings on the home page.
+	*/
+body.index #markdownBody h1 {
+	margin: 1.125em 0 0 0;
+}
+
+/*  Lists on the home page.
+	*/
+body.index #markdownBody li,
+body.index #markdownBody li p {
+    text-align: left;
+}
+body.index #markdownBody ul,
+body.tags #markdownBody ul {
+	margin: 1em 3em 0 0;
+	padding: 0 0 0 1.375em;
+}
+body.index #markdownBody li > ul,
+body.tags #markdownBody li > ul {
+	margin: 0.25em 0 0.25em 0;
+}
+body.index #markdownBody li,
+body.tags #markdownBody li {
+	margin-top: 0;
+}
+body.index #markdownBody ul > li:nth-of-type(n+2) {
+	margin: 0;
+}
+
+
+@media only screen and (max-width: 649px) {
+	body.index #sidebar #logo {
+		border: 1px dotted transparent;
+		align-self: flex-start;
+		padding: 7px 5px 6px 5px;
+	}
+	body.index #markdownBody section {
+		max-width: 100%;
+	}
+	body.index #markdownBody ul,
+	body.tags #markdownBody ul {
+		overflow-wrap: break-word;
+		margin-right: 0;
+	}
+	body.index #markdownBody li,
+	body.tags #markdownBody li {
+		padding: 1px 0;
+		margin: 2px 0 0 0;
+	}
+	body.index #markdownBody ul > li::before,
+	body.tags #markdownBody ul > li::before {
+		top: 0.25em;
+	}
+}
+
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+#TOC {
+	border: 1px solid var(--GW-TOC-border-color);
+	background-color: var(--GW-TOC-background-color);
+	font-family: var(--GW-sans-serif-font-stack);
+	margin: 0 2rem 1.5rem 0;
+	line-height: 1.25;
+	padding: 10px 10px 2px 14px;
+	position: relative;
+	z-index: 11;
+}
+
+#TOC:empty {
+	display: none;
+}
+
+/*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
+	*/
+@media only screen and (max-width: 1280px) {
+	#TOC {
+		font-size: 0.95rem;
+	}
+}
+
+@media only screen and (max-width: 1200px) {
+	#TOC {
+		font-size: 0.90rem;
+	}
+}
+
+@media only screen and (max-width: 1120px) {
+	#TOC {
+		font-size: 0.85rem;
+		margin: 0 1.5rem 1.25rem 0;
+	}
+}
+
+@media only screen and (max-width: 1040px) {
+	#TOC {
+		font-size: 0.80rem;
+		margin: 0 1.25rem 1rem 0;
+	}
+}
+
+@media only screen and (max-width: 960px) {
+	#TOC {
+		margin: 0 1rem 1rem 0;
+	}
+}
+
+@media only screen and (min-width: 900px) {
+	#TOC {
+		float: left;
+		max-width: 285px;
+	}
+}
+
+@media only screen and (max-width: 900px) {
+	#TOC {
+		float: none;
+		margin: 2em auto;
+		font-size: 1rem;
+	}
+	#TOC > ul > li > ul {
+		column-count: 2;
+	}
+}
+
+@media only screen and (max-width: 649px) {
+	#TOC a {
+		display: inline-block;
+	}
+	#TOC > ul > li > ul {
+		column-count: 1;
+	}
+	#TOC li li a {
+		padding: 0 0 1px 0;
+	}
+	#TOC li li li a {
+		padding: 0 0 2px 0;
+	}
+	#TOC li li li li a {
+		padding: 0 0 3px 0;
+	}
+	#TOC li li li li a {
+		padding: 0 0 4px 0;
+	}
+}
+
+/*=-----------------=*/
+/*= TOC list layout =*/
+/*=-----------------=*/
+
+#TOC ul {
+	list-style-type: none;
+	padding-left: 0em;
+	margin-bottom: 0;
+	margin-top: 4px;
+	padding-left: 1.4em;
+	text-indent: 0;
+	padding: 0;
+	overflow: unset;
+}
+
+#TOC ul ul {
+	list-style-type: none;
+	padding-left: 0.7em;
+	margin-top: 2px;
+}
+
+#TOC li {
+	font-weight: bold;
+	margin: 5px 0 10px 0;
+	padding-left: 1.125em;
+	position: relative;
+	overflow-wrap: break-word;
+}
+
+#TOC li li {
+	margin-bottom: 0;
+	font-weight: normal;
+	font-size: 0.9em;
+}
+
+#TOC p {
+	margin-top: 9px;
+	margin-bottom: 3px;
+}
+
+/*=------------------=*/
+/*= TOC link styling =*/
+/*=------------------=*/
+
+#TOC a {
+	border: 0;
+	display: block;
+	position: relative;
+	padding: 0 0.25rem 0 0;
+}
+
+#TOC a:hover {
+	background-color: var(--GW-TOC-link-hover-background-color);
+	color: var(--GW-TOC-link-hover-color);
+}
+#TOC a:hover::after {
+	content: "";
+	display: inline-block;
+	position: absolute;
+	left: 100%;
+	top: 0;
+	background-color: var(--GW-TOC-link-hover-indicator-bar-color);
+	width: 0.25em;
+	height: 100%;
+}
+
+/*=--------------------------=*/
+/*= Inline code in TOC links =*/
+/*=--------------------------=*/
+
+#TOC code {
+	font-family: inherit;
+	font-size: inherit;
+	border: none;
+	padding: 0;
+	background-color: inherit;
+}
+
+/*=-------------------------------=*/
+/*= Wikipedia-style TOC numbering =*/
+/*=-------------------------------=*/
+
+#TOC > ul {
+	counter-reset: htoc_1;
+}
+#TOC > ul > li::before {
+	counter-increment: htoc_1;
+	content: counter(htoc_1) "\2006  ";
+}
+#TOC > ul ul {
+	counter-reset: htoc_2;
+}
+#TOC > ul ul li::before {
+	counter-increment: htoc_2;
+	content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
+}
+#TOC > ul ul ul {
+	counter-reset: htoc_3;
+}
+#TOC > ul ul ul li::before {
+	counter-increment: htoc_3;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
+}
+#TOC > ul ul ul ul {
+	counter-reset: htoc_4;
+}
+#TOC > ul ul ul ul li::before {
+	counter-increment: htoc_4;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
+}
+#TOC > ul ul ul ul ul {
+	counter-reset: htoc_5;
+}
+#TOC > ul ul ul ul ul li::before {
+	counter-increment: htoc_5;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
+}
+#TOC > ul ul ul ul ul ul {
+	counter-reset: htoc_6;
+}
+#TOC > ul ul ul ul ul ul li::before {
+	counter-increment: htoc_6;
+	content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
+}
+#TOC ul li::before {
+	position: absolute;
+	right: calc(100% - 1em);
+	left: unset;
+	width: 111px;
+	text-align: right;
+	font-weight: normal;
+	pointer-events: none;
+	color: var(--GW-TOC-number-color);
+}
+#TOC ul li:hover::before {
+	color: var(--GW-TOC-number-hover-color);
+}
+
+/* The table of contents is a *table*, so align */
+#TOC {
+	font-variant-numeric: tabular-nums;
+}
+
+/****************/
+/* MAIN CONTENT */
+/****************/
+
+.markdownBody {
+	/*  Try to avoid scrollbars on paragraphs: prevents long unbroken
+		un-hyphenatable lines from causing H-scrolling
+		*/
+	overflow-wrap: break-word;
+}
+
+/*  Breakpoint for sidenotes.
+	*/
+@media only screen and (min-width: 1761px) {
+	#markdownBody {
+		position: relative;
+	}
+}
+
+@media only screen and (min-width: 650px) {
+	@media only screen and (max-width: 1000px) {
+	/*  Replaces A/B-test-set average value; the wider the screen, the more
+		line-height is necessary, and no one size suits all, so set 3 brackets
+		of increasing height.
+		*/
+		.markdownBody {
+			line-height: 1.45;
+		}
+	}
+	@media only screen and (min-width: 1001px) and (max-width: 1200px) {
+		.markdownBody {
+			line-height: 1.5;
+		}
+	}
+	@media only screen and (min-width: 1201px) {
+		.markdownBody {
+			line-height: 1.55;
+		}
+	}
+}
+
+/*  Use justified text (words get broken/hyphenated as necessary to avoid a
+	'ragged margin'), undoing the default of 'flush left, ragged' right (see
+	https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
+
+	WARNING: 'auto' hyphenation does not work in Chrome desktop due to long-standing inability/refusal:
+	https://bugs.chromium.org/p/chromium/issues/detail?id=47083 https://bugs.chromium.org/p/chromium/issues/detail?id=605840 https://bugs.chromium.org/p/chromium/issues/detail?id=652964
+	/images/design/2019-02-19-meme-distractedboyfriend-chromehyphenation.jpg
+
+	To work around Chrome failure, we use Edward Kmett's Haskell-ification of the TeX algorithm & dictionaries ( https://hackage.haskell.org/package/hyphenation ) to run a Hakyll compilation pass to insert soft hyphens. There is one bad side-effect: soft hyphens are often preserved in copy-paste, cluttering text, so a copy-paste JS listener in rewrite.js deletes all fancy hyphens from copy-pastes.
+	*/
+.markdownBody p,
+.markdownBody li {
+	text-align: justify;
+	-webkit-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+}
+
+/*  Cute 'old-style' numerals, look a little nicer inline in text, and available natively in the SS fonts:
+	https://practicaltypography.com/alternate-figures.html#oldstyle-figures
+	*/
+html {
+	font-variant-numeric: oldstyle-nums;
+}
+
+.abstract > blockquote {
+	margin: 0 0 1.5em 0;
+	background-color: var(--GW-abstract-background-color);
+	border-color: var(--GW-abstract-border-color);
+	padding: 0.9rem 1.25rem 0.95rem 1.25rem;
+	clear: none;
+}
+
+/* auto-smallcaps the first line of the introduction (= the first `<p>` after an 'abstract' div); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
+.abstract + p::first-line,
+#markdownBody > p:first-child::first-line,
+.markdownBody #page-metadata + p::first-line {
+	font-feature-settings: 'smcp';
+}
+
+h1 {
+	margin: 0.6em 0 0.5em -0.75rem;
+	font-weight: bold;
+	position: relative;
+}
+
+@media only screen and (max-width: 650px) {
+	h1 {
+		margin: 1.25em 0 0.5em 0;
+	}
+}
+
+/*=----------------=*/
+/*= Heading levels =*/
+/*=----------------=*/
+h1 {
+	font-feature-settings: 'smcp';
+	font-size: 1.75em;
+	line-height: 1.25;
+	letter-spacing: -0.75px;
+}
+
+/*************/
+/* SIDENOTES */
+/*************/
+
+/*  Hide sidenote columns on narrow viewports.
+    */
+@media only screen and (max-width: 1760px) {
+    #sidenote-column-left,
+    #sidenote-column-right {
+        display: none;
+    }
+}
+
+/*=--------------=*/
+/*= Margin notes =*/
+/*=--------------=*/
+
+/*  On wide viewports, hide margin note until it is styled as a sidenote (i.e,
+    until it gets the `.sidenote` class applied to it).
+    */
+@media only screen and (min-width: 1761px) {
+	.marginnote {
+		display: none;
+	}
+}
+
+/*********/
+/* LINKS */
+/*********/
+
+a {
+	color: var(--GW-body-link-color); /* off-black */
+	text-decoration: none;
+}
+
+/*=------------------------=*/
+/*= Fancy link underlining =*/
+/*=------------------------=*/
+
+/*  Tufte CSS for underlining (https://github.com/edwardtufte/tufte-css)
+	The advantage of all this CSS linenoise compared to the previous 'text-decoration: none; border-bottom: 1px Solid grey;' solution from http://devhints.wordpress.com/2006/10/24/css-links-with-different-color-underlines/
+	is the 'skip-ink': when dealing with characters with 'descenders', like 'y', 'g', 'p', 'q' etc, with regular underlining the bottom stroke overlaps with the line and it's harder to read;
+	by adding this text-shadow stuff and backgrounding, a little break is made in the underline to add contrast and keep the descender fully visible and outlined. (The downside is that the overlapping text-shadows can also slightly damage the rendering of slashes & parentheses, which come too close and get partially erased.)
+
+	Unfortunately, we don't want to add underlines to links in the TOC because it clutters it (all the lines are links and are in small font), so we have to avoid styling the TOC, which is difficult.
+	I got around this by adding in the Hakyll template an additional <div> just for the body of the Markdown content, excluding the TOC, and changing the Tufte CSS to target *that* instead.
+
+May be able at some point to simplify this using regular link underlining, since CSS4's `text-decoration-skip-ink` by default avoids overlapping with text descenders (but as of Oct 2019, no Edge/IE or Safari support, and only the latest Firefox 70 supports it; maybe in a few years...): https://developer.mozilla.org/en-US/docs/Web/CSS/text-decoration-skip-ink#Browser_Compatibility https://www.caniuse.com/#feat=mdn-css_properties_text-decoration-skip-ink (Right now, Firefox skip-ink looks quite bad: it doesn't skip enough ink, defeating the point, and also positions the underline badly!)
+*/
+
+.markdownBody a:link,
+.markdownBody span.defnMetadata,
+div#footer a {
+	text-decoration: none;
+	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+	background-size: 1px 1px;
+	background-repeat: repeat-x;
+	background-position: 0% calc(100% - 0.1em);
+
+	/*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
+	font-variant-numeric: lining-nums;
+}
+.markdownBody a:link,
+.markdownBody a:link *,
+span.defnMetadata,
+span.defnMetadata * {
+	text-shadow:
+		 0	    0.05em  var(--GW-link-underline-background-color),
+		 0.05em 0.05em  var(--GW-link-underline-background-color),
+		-0.05em 0.05em  var(--GW-link-underline-background-color),
+		 0.17em 0.05em  var(--GW-link-underline-background-color),
+		-0.17em 0.05em  var(--GW-link-underline-background-color),
+		 0.17em 0	    var(--GW-link-underline-background-color),
+		-0.17em 0	    var(--GW-link-underline-background-color);
+}
+.markdownBody a:hover {
+	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
+}
+
+/* eliminate the blurring of headers and links when selecting by overriding the text-shadow: */
+::selection {
+	text-shadow: none;
+	background: var(--GW-text-selection-background-color);
+	color: var(--GW-text-selection-color);
+}
+
+/*  Prevent code block background color and border from obscuring link
+	underlining, for inline <code> elements in links.
+	*/
+a code {
+	border-bottom-width: 0;
+	word-break: normal;
+	background-color: transparent;
+}
+
+/**************/
+/* PARAGRAPHS */
+/**************/
+
+p {
+	margin: 0;
+}
+p + p {
+	text-indent: 2.5em;
+}
+p + figure[class^='float-'] + p {
+    text-indent: 2.5em;
+}
+@media only screen and (max-width: 649px) {
+	p + p {
+		text-indent: 1em;
+	}
+	p + figure[class^='float-'] + p {
+		text-indent: 1em;
+	}
+}
+
+/***************/
+/* BLOCKQUOTES */
+/***************/
+/* additional blockquote styling done in default.css */
+
+blockquote {
+	--GW-link-underline-background-color: var(--GW-blockquote-background-color);
+
+	margin: 1.625em 0 1.75em 0;
+	border: 1px solid var(--GW-blockquote-border-color);
+	background-color: var(--GW-blockquote-background-color);
+	font-size: 0.95em;
+	padding: 1em 1.25em;
+}
+
+/*	Three-level of blockquote emphasis (darkening).
+	*/
+blockquote,
+blockquote blockquote blockquote blockquote {
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-one);
+}
+blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-one);
+}
+blockquote blockquote blockquote blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-four);
+}
+
+blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-two);
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-two);
+}
+
+blockquote blockquote blockquote,
+blockquote blockquote blockquote blockquote blockquote blockquote {
+	--GW-blockquote-border-color: var(--GW-blockquote-border-color-level-three);
+	--GW-blockquote-background-color: var(--GW-blockquote-background-color-level-three);
+}
+
+/*=--------------------=*/
+/*= Various edge cases =*/
+/*=--------------------=*/
+
+@media only screen and (min-width: 650px) {
+    .abstract blockquote {
+        overflow: hidden;
+    }
+}
+@media only screen and (max-width: 649px) {
+    /* even less horizontal is available on mobile! */
+    blockquote {
+        margin: 1.25em 0 1.5em 0;
+		padding: 0.75em 1em;
+    }
+}
+
+p + blockquote {
+    margin-top: 1em;
+}
+
+/***************/
+/* CODE BLOCKS */
+/***************/
+
+pre {
+    overflow: auto;
+}
+
+/*	Full-width code blocks.
+	*/
+.full-width-code-block-wrapper {
+	max-width: -moz-fit-content;
+	max-width: fit-content;
+	margin: auto;
+	position: relative;
+	z-index: 1;
+}
+.full-width-code-block-wrapper pre {
+	padding-right: 1px;
+}
+
+/********/
+/* MATH */
+/********/
+
+.mjpage__block {
+    display: block;
+    overflow: auto;
+}
+
+/**********/
+/* TABLES */
+/**********/
+
+.table-wrapper {
+    margin: 2em 0 2.125em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-sizing: border-box;
+}
+
+/*=-------------------=*/
+/*= Full-width tables =*/
+/*=-------------------=*/
+
+.table-wrapper.full-width {
+    position: relative;
+    z-index: 1;
+}
+.table-wrapper.full-width table {
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 0 auto;
+}
+
+/***********/
+/* FIGURES */
+/***********/
+
+figure img,
+figure video {
+    display: block;
+    max-height: calc(100vh - 8em);
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    margin: 0 auto;
+}
+
+/********/
+/* MISC */
+/********/
+
+/*  enable standard Pandoc attribute-based syntax for small-caps like '[foo]{.smallcaps}'; see https://pandoc.org/MANUAL.html#small-caps
+	*/
+span.smallcaps {
+	font-feature-settings: 'smcp';
+}
+
+/* Enable SSfP smallcaps for auto-annotated abbreviations/acronyms */
+span.smallcaps-auto {
+	font-feature-settings: 'smcp', 'c2sc';
+	font-variant-numeric: tabular-nums;
+}
+
+/*************/
+/* DARK MODE */
+/*************/
+/* see /static/js/darkmode.js and /static/css/dark-mode.css; this allows the user to toggle at runtime */
+</style>
+<style id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)">
+:root {
+    /*  General.
+        */
+    --GW-body-background-color: #000;
+    --GW-body-text-color: #fff;
+    --GW-body-link-color: #e5e5e5;
+    --GW-body-link-hover-color: #999;
+
+    /*  Selection.
+        */
+    --GW-text-selection-background-color: #dcdcdc;
+    --GW-text-selection-color: #000;
+
+    /*  Link underlining.
+        */
+    --GW-link-underline-background-color: var(--GW-body-background-color);
+    --GW-link-underline-gradient-line-color: #dcdcdc;
+    --GW-link-underline-gradient-line-color-hover: #8b8b8b;
+
+    /*  Blockquotes.
+        */
+    --GW-blockquote-border-color-level-one: #5c5c5c;
+    --GW-blockquote-border-color-level-two: #646464;
+    --GW-blockquote-border-color-level-three: #747474;
+    --GW-blockquote-border-color-level-four: #7f7f7f;
+    --GW-blockquote-background-color-level-one: #212121;
+    --GW-blockquote-background-color-level-two: #3e3e3e;
+    --GW-blockquote-background-color-level-three: #4f4f4f;
+
+    /*  Abstracts.
+        */
+    --GW-abstract-border-color: #6c6c6c;
+    --GW-abstract-background-color: var(--GW-blockquote-background-color-level-one);
+
+    /*  Sidebar.
+        */
+    --GW-sidebar-horizontal-rule-color: #7c7c7c;
+    --GW-sidebar-mobile-link-border-color: #fff;
+
+    /*  Table of contents.
+        */
+    --GW-TOC-border-color: #5c5c5c;
+    --GW-TOC-background-color: #212121;
+    --GW-TOC-link-hover-background-color: #363636;
+    --GW-TOC-link-hover-color: #fff;
+    --GW-TOC-link-hover-indicator-bar-color: #5c5c5c;
+    --GW-TOC-number-color: #929292;
+    --GW-TOC-number-hover-color: #ddd;
+
+    /*  Collapse blocks.
+        */
+	--GW-collapse-summary-blockquote-hover-color: #333;
+	--GW-collapse-disclosure-button-color: #333;
+	--GW-collapse-disclosure-button-hover-color: #494949;
+	--GW-collapse-disclosure-button-top-part-text-color: #6c6c6c;
+	--GW-collapse-disclosure-button-bottom-part-text-color: #7c7c7c;
+	--GW-collapse-disclosure-button-text-hover-color: #000;
+
+    /*  Headings.
+        */
+    --GW-H1-box-shadow-background-color: var(--GW-body-background-color);
+    --GW-H1-box-shadow-line-color: #999;
+    --GW-H2-bottom-border-color: #999;
+
+    /*  Comments.
+        */
+    --GW-comment-section-top-border-color: #8b8b8b;
+
+    /*  Lists.
+        */
+    --GW-bulleted-list-marker-color: #9f9f9f;
+
+    /*  Figures.
+        */
+    --GW-figure-outline-color: #999;
+    --GW-figure-caption-outline-color: #999;
+
+    /*  Epigraphs.
+        */
+    --GW-epigraph-quotation-mark-color: #9f9f9f;
+
+    /*  Footnotes.
+        */
+    --GW-footnote-border-color: #7c7c7c;
+    --GW-footnote-highlighted-border-color: #7c7c7c;
+    --GW-footnotes-section-top-rule-color: #5c5c5c;
+    --GW-footnote-backlink-border-color: #fff;
+    --GW-footnote-backlink-border-hover-color: #8b8b8b;
+    --GW-footnote-backlink-after-bordered-block-background-color: var(--GW-body-background-color);
+
+    /*  Footnote references.
+        */
+    --GW-footnote-ref-highlight-box-shadow-color: #7c7c7c;
+    --GW-footnote-ref-highlight-background-color: rgba(0, 0, 0, 0.75);
+
+    /*  Sidenotes.
+        */
+    --GW-sidenote-highlight-background-color: var(--GW-body-background-color);
+    --GW-sidenote-highlight-box-shadow-color: #7c7c7c;
+    --GW-sidenote-border-color: #7c7c7c;
+    --GW-sidenote-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-sidenote-scrollbar-thumb-color: #7c7c7c;
+    --GW-sidenote-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-sidenote-self-link-border-color: #7c7c7c;
+
+    /*  Tables.
+        */
+    --GW-table-border-color: #fff;
+    --GW-table-full-width-background-color: var(--GW-body-background-color);
+    --GW-table-caption-border-color: #fff;
+    --GW-table-row-horizontal-border-color: #fff;
+    --GW-table-cell-vertical-border-color: var(--GW-body-background-color);
+    --GW-table-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-table-scrollbar-thumb-color: #7c7c7c;
+    --GW-table-scrollbar-thumb-hover-color: #8b8b8b;
+    --GW-table-scrollbar-border-color: #fff;
+    --GW-table-column-heading-hover-background-color: #2b3637;
+    --GW-table-sorted-column-heading-background-color: #166983;
+    --GW-table-sorted-column-heading-text-color: #000;
+    --GW-table-sorted-column-heading-text-shadow-color: #fff;
+    --GW-table-zebra-stripe-alternate-row-background-color: #252525;
+    --GW-table-row-hover-outline-color: #fff;
+
+    /*  Code blocks.
+        */
+    --GW-code-element-border-color: #606060;
+    --GW-code-element-background-color: #1d1d1d;
+    --GW-pre-element-border-color: #606060;
+    --GW-pre-element-background-color: #1d1d1d;
+    --GW-pre-element-scrollbar-track-color: #1d1d1d;
+    --GW-pre-element-scrollbar-thumb-color: #5c5c5c;
+    --GW-pre-element-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Syntax highlight theme.
+        */
+    --GW-syntax-highlight-color-normal: #f1edec;
+    --GW-syntax-highlight-color-attribute: #d8deff;
+    --GW-syntax-highlight-color-data-type: inherit;
+    --GW-syntax-highlight-color-variable: #b4b4b4;
+    --GW-syntax-highlight-color-other: inherit;
+    --GW-syntax-highlight-color-preprocessor: inherit;
+    --GW-syntax-highlight-color-extension: #999;
+    --GW-syntax-highlight-color-comment: #999;
+    --GW-syntax-highlight-color-control-flow: #b6edaa;
+    --GW-syntax-highlight-color-keyword: #d8deff;
+    --GW-syntax-highlight-color-operator: #d8deff;
+    --GW-syntax-highlight-color-special-char: #94adb6;
+    --GW-syntax-highlight-color-built-in: #d8deff;
+    --GW-syntax-highlight-color-function: #d8deff;
+    --GW-syntax-highlight-color-constant: inherit;
+    --GW-syntax-highlight-color-base-n: inherit;
+    --GW-syntax-highlight-color-dec-val: inherit;
+    --GW-syntax-highlight-color-float: inherit;
+    --GW-syntax-highlight-color-information: inherit;
+    --GW-syntax-highlight-color-char: inherit;
+    --GW-syntax-highlight-color-string: inherit;
+    --GW-syntax-highlight-color-verbatim-string: inherit;
+    --GW-syntax-highlight-color-alert: #ff815c;
+    --GW-syntax-highlight-color-error: #ff4727;
+    --GW-syntax-highlight-color-import: #a6a6a6;
+    --GW-syntax-highlight-color-special-string: #b4b4b4;
+
+    /*  Math.
+        */
+    --GW-math-block-background-color: #252525;
+    --GW-math-block-scrollbar-border-color: #5c5c5c;
+    --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-math-block-scrollbar-thumb-color: #5c5c5c;
+    --GW-math-block-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Drop caps.
+        */
+    --GW-drop-caps-yinit-color: #f9f9f9;
+    --GW-drop-caps-yinit-text-shadow-color: #a6a6a6;
+    --GW-drop-caps-de-zs-color: #efefef;
+    --GW-drop-caps-cheshire-color: #f1f1f1;
+    --GW-drop-caps-kanzlei-color: #f1f1f1;
+
+    /*  Admonitions.
+        */
+    --GW-admonition-default-left-border-color: #929292;
+    --GW-admonition-default-background-color: #4f4f4f;
+    --GW-admonition-tip-left-border-color: #4f4f4f;
+    --GW-admonition-tip-background-color: #303030;
+    --GW-admonition-warning-left-border-color: #bdbdbd;
+    --GW-admonition-warning-background-color: #8a8a8a;
+    --GW-admonition-warning-text-color: #000;
+    --GW-admonition-warning-title-background-color: #bdbdbd;
+    --GW-admonition-warning-icon-color: #000;
+    --GW-admonition-error-left-border-color: #e1e1e1;
+    --GW-admonition-error-background-color: #bdbdbd;
+    --GW-admonition-error-text-color: #000;
+    --GW-admonition-error-title-background-color: #e1e1e1;
+    --GW-admonition-error-icon-color: #000;
+    --GW-admonition-reversed-link-color: #494949;
+    --GW-admonition-reversed-link-color-hover: #5c5c5c;
+    --GW-admonition-reversed-link-underline-gradient-line-color: #5c5c5c;
+    --GW-admonition-reversed-link-underline-gradient-line-color-hover: #6c6c6c;
+    --GW-admonition-reversed-footnote-ref-highlight-background-color: rgba(189, 189, 189, 0.75);
+
+    /*  Sequential nav UI.
+        */
+    --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
+
+    /*  Links.
+        */
+    --GW-definition-annotation-text-color: #cecece;
+
+    /*  Page-specific styles.
+        */
+    --GW-index-page-bottom-ornament-line-color: #9f9f9f;
+
+	/*	Pop-frames (popups or popins).
+		*/
+    --GW-raw-code-popframe-line-highlight-background-color: #181700;
+    --GW-raw-code-popframe-line-hightlight-border-color: #494949;
+    --GW-raw-code-popframe-line-number-color: #7c7c7c;
+    --GW-raw-code-popframe-line-number-divider-color: #5c5c5c;
+
+    /*  Popups.
+        */
+    --GW-popups-body-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-background-color: var(--GW-body-background-color);
+
+    --GW-popups-popup-border-color: #5c5c5c;
+    --GW-popups-box-shadow-color: #5c5c5c;
+    --GW-popups-popup-border-focused-color: #7c7c7c;
+    --GW-popups-box-shadow-focused-color: #7c7c7c;
+
+    --GW-popups-popup-title-bar-background-color: #252525;
+    --GW-popups-popup-title-bar-button-color: #6c6c6c;
+    --GW-popups-popup-title-bar-button-color-hover: #fff;
+	--GW-popups-popup-title-color: #7c7c7c;
+    --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
+    --GW-popups-popup-title-bar-background-focused-color: #3e3e3e;
+    --GW-popups-popup-title-bar-button-focused-color: #a6a6a6;
+    --GW-popups-popup-title-bar-button-focused-color-hover: #fff;
+    --GW-popups-popup-title-bar-submenu-box-shadow-color: #494949;
+	--GW-popups-popup-title-focused-color: #fff;
+    --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
+
+    --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
+
+    --GW-popups-popup-scrollbar-thumb-color: #494949;
+    --GW-popups-popup-scrollbar-thumb-hover-color: #6c6c6c;
+    --GW-popups-popup-scrollbar-thumb-focused-color: #5c5c5c;
+    --GW-popups-popup-scrollbar-thumb-hover-focused-color: #8b8b8b;
+
+    --GW-popups-popup-options-dialog-backdrop-background-color: rgba(0, 0, 0, 0.95);
+    --GW-popups-popup-options-dialog-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-options-dialog-border-color: #7c7c7c;
+    --GW-popups-popup-options-dialog-box-shadow-color: #cecece;
+    --GW-popups-popup-options-dialog-horizontal-rule-color: #5c5c5c;
+    --GW-popups-popup-options-dialog-button-background-color: var(--GW-body-background-color);
+    --GW-popups-popup-options-dialog-button-text-color: #fff;
+    --GW-popups-popup-options-dialog-button-border-color: #fff;
+    --GW-popups-popup-options-dialog-button-hover-box-shadow-color: #fff;
+    --GW-popups-popup-options-dialog-option-button-explanation-text-color: #a6a6a6;
+    --GW-popups-popup-options-dialog-option-button-hover-text-color: #a6a6a6;
+    --GW-popups-popup-options-dialog-radio-button-border-color: #fff;
+    --GW-popups-show-popup-options-dialog-button-color: #8b8b8b;
+
+    /*  Popins.
+        */
+    --GW-popins-body-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-background-color: var(--GW-body-background-color);
+    --GW-popins-popin-border-color: #7c7c7c;
+    --GW-popins-box-shadow-color: #7c7c7c;
+    --GW-popins-popin-title-bar-background-color: #000;
+    --GW-popins-popin-title-bar-button-color: #a6a6a6;
+    --GW-popins-popin-scrollbar-thumb-color: #5c5c5c;
+    --GW-popins-popin-scrollbar-track-color: var(--GW-body-background-color);
+    --GW-popins-popin-scrollbar-thumb-hover-color: #8b8b8b;
+
+    /*  Image focus.
+        */
+    --GW-image-focus-image-hover-drop-shadow-color: #a6a6a6;
+
+    /*  Mode selector (light/dark mode).
+        */
+    --GW-mode-selector-background-color: var(--GW-body-background-color);
+    --GW-mode-selector-border-hover-color: #7c7c7c;
+    --GW-mode-selector-button-text-color: #a6a6a6;
+    --GW-mode-selector-button-hover-text-color: #fff;
+
+	/*	“Back to top” link.
+		*/
+	--GW-back-to-top-link-color: #5c5c5c;
+	--GW-back-to-top-link-hover-color: #8b8b8b;
+}
+:root {
+	/*	Adjust background color to prevent pixels from turning off.
+		*/
+	--GW-body-background-color: #010101;
+
+	/*	Adjust this one color in the syntax highlighting color scheme to make it
+		less saturated. (The automatic inversion algorithm doesn’t quite handle
+		it in the way we want.)
+		*/
+    --GW-syntax-highlight-color-control-flow: #cce1c8;
+}
+
+/*	The ‘fill’ attribute of the SVGs is modified in dark mode.
+	(We cannot use an invert filter because we don’t want to invert the whole
+	 element, only the background-image.)
+	*/
+.collapse .disclosure-button::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%235C5C5C"/></svg>');
+}
+.collapse .disclosure-button:hover::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%23000"/></svg>');
+}
+.collapse .disclosure-button:checked::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%235C5C5C"/></svg>');
+}
+.collapse .disclosure-button:checked:hover::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23000"/></svg>');
+}
+
+/*	The ‘celestial symbol’ horizonal rules are SVGs and must be inverted.
+	*/
+hr::after,
+.horizontalRule-nth-0 hr::after {
+    opacity: 1;
+    filter: invert(1) drop-shadow(0 0 0 currentColor);
+}
+.horizontalRule-nth-1 hr::after {
+    opacity: 0.75;
+    filter: invert(1);
+}
+.horizontalRule-nth-2 hr::after {
+    opacity: 0.85;
+    filter: invert(1);
+}
+
+/*	Drop cap opacity adjustment.
+	*/
+body.drop-caps-goudy #markdownBody > p:first-child::first-letter,
+body.drop-caps-goudy .abstract + p::first-letter,
+body.drop-caps-goudy #markdownBody > .epigraph:first-child + p::first-letter,
+#markdownBody .drop-cap-goudy::first-letter,
+#markdownBody .drop-cap-goudy > p::first-letter {
+    opacity: 0.95;
+}
+
+/*	Admonition icons.
+	*/
+.admonition.tip::before,
+.admonition.note::before,
+.admonition.warn::before,
+.admonition.warning::before,
+.admonition.error::before {
+    filter: invert(1);
+}
+
+div.admonition.warn,
+div.admonition.warning,
+div.admonition.error {
+    --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
+}
+
+/*	List bullets are SVGs and have to be inverted.
+	*/
+ul > li::before {
+    filter: invert(1);
+}
+
+/*	Exclusion for TOC entries.
+	*/
+#TOC ul > li::before {
+    filter: none;
+}
+
+/*	For sortable table column headings, we use dark versions of the up/down/both
+	arrow icons.
+	*/
+th.tablesorter-header {
+    background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
+}
+th.tablesorter-headerAsc {
+    background-image: url('/static/img/tablesorter/tablesorter-asc-dark.gif');
+}
+th.tablesorter-headerDesc {
+    background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
+}
+
+/*	The pixel-grid-checkerboard pattern of these scroll bars is created by GIF
+	background-images; we use alternate versions of the images in dark mode.
+	*/
+.table-wrapper::-webkit-scrollbar-thumb {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
+}
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
+}
+
+.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
+}
+.sidenote.cut-off .sidenote-outer-wrapper::-webkit-scrollbar-thumb:hover {
+    background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
+}
+
+/*	Images that are marked as invertible by the server are inverted,
+	hue-rotated, and desaturated. Other (non-invertible) images are merely
+	desaturated. Hovering over an image restores it to its original state.
+	*/
+img.invertible,
+img.invertible-auto {
+    filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
+}
+img:not(.invertible):not(.invertible-auto) {
+    filter: grayscale(50%);
+}
+img,
+img.invertible,
+img.invertible-auto {
+    transition: filter 0.25s ease;
+}
+img:hover,
+img.invertible:hover,
+img.invertible-auto:hover {
+    filter: none;
+    transition: filter 0s ease 0.25s;
+}
+
+/*	The loading spinner for object popups (image, iframe, object) is inverted
+	and made more visible in dark mode.
+	*/
+.popupdiv.loading::before {
+	filter: invert(1);
+	opacity: 0.4;
+}
+
+/*	“Loading failed” messages for object popups.
+	*/
+.popupdiv.loading-failed::after {
+	opacity: 0.4;
+}
+
+/*	The mode selector is adjusted to be better visible in dark mode, and its
+	button icons inverted.
+	*/
+div#mode-selector {
+    opacity: 0.6;
+}
+div#mode-selector button::before {
+	filter: invert(1);
+	opacity: 0.45;
+}
+div#mode-selector button.select-mode-light::before {
+	opacity: 0.55;
+}
+
+/*	The dotted underline for Wikipedia and definition links is created by a
+	pixel-grid-checkerboard background-image. We use an alternate version of
+	this image in dark mode.
+	*/
+.markdownBody a[href*='wikipedia.org'].docMetadata:hover,
+.markdownBody a[href*='wikimedia.org'].docMetadata:hover,
+.markdownBody a[href*='wiktionary.org'].docMetadata:hover,
+.markdownBody a[href*='wikimediafoundation.org'].docMetadata:hover,
+.markdownBody a[href*='wikisource.org'].docMetadata:hover,
+.markdownBody span.defnMetadata:hover {
+    background-image: var(--GW-dotted-underline-hover-dark-background-image);
+}
+
+/*	All SVG linkicons have to be inverted.
+	*/
+a.link-self.identifier-link-up::after,
+a.link-self.identifier-link-down::after,
+a[href$$='.pdf' i]::after,
+a[href$$='/pdf' i]::after,
+a[href*='/pdf/' i]::after,
+a[href$$='type=pdf' i]::after,
+a[href*='.pdf#' i]::after,
+a[href*='pdfs.semanticscholar.org' i]::after,
+a[href$$='.epub' i]::after,
+a[href*='citeseerx.ist.psu.edu' i]::after,
+a[href*='eprint.iacr.org' i]::after,
+a[href$$='.opml' i]::after,
+a[href$$='.txt' i]::after,
+a[href$$='.xml' i]::after,
+a[href$$='.css' i]::after,
+a[href$$='.hs' i]::after,
+a[href$$='.js' i]::after,
+a[href$$='.json' i]::after,
+a[href$$='.jsonl' i]::after,
+a[href^='/'][href$$='.php' i]::after,
+a[href$$='.conf' i]::after,
+a[href$$='.sh' i]::after,
+a[href$$='.R' i]::after,
+a[href$$='.patch' i]::after,
+a[href$$='.diff' i]::after,
+a[href^="/static/" i][href$$=".html" i]::after,
+a[href$$='.doc' i]::after,
+a[href$$='.docx' i]::after,
+a[href*='docs.google.com' i]::after,
+a[href$$='.xls' i]::after,
+a[href$$='.xlsx' i]::after,
+a[href$$='.ods' i]::after,
+a[href$$='.csv' i]::after,
+a[href$$='.gif' i]::after,
+a[href$$='.bmp' i]::after,
+a[href$$='.ico' i]::after,
+a[href$$='.jpg' i]::after,
+a[href$$='.jpeg' i]::after,
+a[href$$='.png' i]::after,
+a[href$$='.svg' i]::after,
+a[href$$='.xcf' i]::after,
+a[href*='imgur.com']::after,
+a[href$$='.mp3' i]::after,
+a[href$$='.wav' i]::after,
+a[href$$='.flac' i]::after,
+a[href$$='.ogg' i]::after,
+a[href$$='.rm' i]::after,
+a[href$$='.swf' i]::after,
+a[href$$='.avi' i]::after,
+a[href$$='.mp4' i]::after,
+a[href$$='.webm' i]::after,
+a[href$$='.tar' i]::after,
+a[href$$='.zip' i]::after,
+a[href$$='.xz'  i]::after,
+a[href$$='.img' i]::after,
+a[href$$='.bin' i]::after,
+a[href$$='.pkl' i]::after,
+a[href$$='.onnx' i]::after,
+a[href$$='.pt' i]::after,
+a[href$$='.ebt' i]::after,
+a[href$$='.mdb' i]::after,
+a[href$$='.mht' i]::after,
+a[href$$='.ttf' i]::after,
+a[href*='biorxiv.org']::after,
+a[href*='medrxiv.org']::after,
+a[href*='substack.com']::after,
+a[href*='scholar.google.com']::after,
+a[href*='plosone.org']::after,
+a[href*='plosmedicine.org']::after,
+a[href*='plos.org']::after,
+a[href*='www.plos']::after,
+a[href*='patreon.com']::after,
+a[href*='uptontea.com']::after,
+a[href*='wired.com']::after,
+a[href*='washingtonpost.com']::after,
+a[href*='nytimes.com']::after,
+a[href*='nlm.nih.gov']::after,
+a[href*='newyorker.com']::after,
+a[href*='theguardian.com']::after,
+a[href*='www.guardian.co.uk']::after,
+a[href*='reddit.com']::after,
+a[href*='paulgraham.com']::after,
+a[href*='ycombinator.com']::after,
+a[href*='intelligence.org']::after,
+a[href*='deepmind']::after,
+a[href*='docs/.*/*.pdf#deepmind']::after,
+a[href*='openai']::after,
+a[href$$='.pdf#openai']::after,
+a[href*='distill.pub']::after,
+a[href*='twitter.com']::after,
+a[href*='nitter.net']::after,
+a[href*='erowid.org']::after,
+a[href*='wikipedia.org']::after,
+a[href*='wikimedia.org']::after,
+a[href*='wiktionary.org']::after,
+a[href*='wikimediafoundation.org']::after,
+a[href*='wikisource.org']::after,
+a[href*='youtube.com']::after,
+a[href*='youtu.be']::after,
+a[href*='soundcloud.com']::after,
+a[href*='bandcamp.com']::after,
+a[href*='overflow.net']::after,
+a[href*='overflow.com']::after,
+a[href*='stackexchange.com']::after,
+a[href*='amazon.com']::after,
+a[href*='amazon.co.']::after,
+a[href*='amzn.com'  ]::after,
+a[href*='github.com']::after,
+a[href*='dropbox.com']::after,
+a[href*='dropboxusercontent.com']::after,
+a[href*='mega.nz']::after,
+a[href*='webcitation.org'   ]::after,
+a[href*='mementoweb.org'    ]::after,
+a[href*='archive.org'       ]::after,
+a[href*='archive-it.org'    ]::after,
+a[href*='archiveteam.org'   ]::after,
+a[href*='waybackmachine.org']::after,
+a.local-archive-link::after,
+a[href*="tumblr.com"]::after,
+a[href*="t.umblr.com"]::after,
+a[href*="#facebook"]::after,
+a[href*="#facebook"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*facebook']::after,
+a[href*="facebook.com"]::after,
+a[href*="bitcointalk.org"]::after,
+a[href*="bitcoin.it"]::after,
+a[href*="www.google.com"]::after,
+a[href*="#google"]::after,
+a[href*="#org=google"]::after,
+a[href*="#google"][href*="arxiv.org"]::after,
+a[href*="#org=google"][href*="arxiv.org"]::after,
+a[href*='docs/.*/*.pdf#.*google']::after,
+a[href*='docs/.*/*.pdf#org=google']::after {
+    filter: invert(1);
+}
+</style>
+<script>
+/*  Create global 'GW' object, if need be.
+    */
+if (typeof window.GW == "undefined")
+    window.GW = { };
+
+/*****************/
+/* MEDIA QUERIES */
+/*****************/
+
+GW.mediaQueries = {
+    mobileWidth:           matchMedia("(max-width: 650px)"),
+    systemDarkModeActive:  matchMedia("(prefers-color-scheme: dark)"),
+    hoverAvailable:        matchMedia("only screen and (hover: hover) and (pointer: fine)"),
+    portraitOrientation:   matchMedia("(orientation: portrait)")
+};
+
+GW.isMobile = () => {
+	/*  We consider a client to be mobile if one of two conditions obtain:
+		1. JavaScript detects touch capability, AND viewport is narrow; or,
+		2. CSS does NOT detect hover capability.
+		*/
+	return (   (   ('ontouchstart' in document.documentElement)
+				&& GW.mediaQueries.mobileWidth.matches)
+			|| !GW.mediaQueries.hoverAvailable.matches);
+};
+
+GW.isFirefox = () => {
+	return (navigator.userAgent.indexOf("Firefox") > 0);
+};
+
+/********************/
+/* DEBUGGING OUTPUT */
+/********************/
+
+GW.logLevel = localStorage.getItem("gw-log-level") || 0;
+GW.logSourcePadLength = 18;
+GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
+
+function GWLog (string, source = "", level = 1) {
+    if (GW.logLevel < level) return;
+
+    let time = Date.now();
+    let ms = `$${(time % 1000)}`.padStart(3,'0');
+    let timestamp = `[$${GW.dateTimeFormat.format(time)}.$${ms}]  `;
+    let sourcestamp = (source > "" ? `[$${source}]` : `[ ]`).padEnd(GW.logSourcePadLength, ' ');
+
+    console.log(timestamp + sourcestamp + string);
+}
+GW.setLogLevel = (level, permanently = false) => {
+    if (permanently)
+        localStorage.setItem("gw-log-level", level);
+
+    GW.logLevel = level;
+};
+
+/***********/
+/* HELPERS */
+/***********/
+
+/*	Because encodeURIComponent does not conform to RFC 3986; see MDN docs.
+	*/
+function fixedEncodeURIComponent(str) {
+	return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+		return '%' + c.charCodeAt(0).toString(16);
+	});
+}
+
+/*	Helper function for AJAX, by kronusaturn
+	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
+	*/
+function urlEncodeQuery(params) {
+	return (Object.keys(params)).map(x => (`$${x}=$${ fixedEncodeURIComponent(params[x]) }`)).join("&");
+}
+
+/*	Helper function for AJAX, by kronusaturn
+	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
+	*/
+function doAjax(options) {
+	let req = new XMLHttpRequest();
+	req.addEventListener("load", (event) => {
+		if (event.target.status < 400) {
+			if (options["onSuccess"]) options.onSuccess(event);
+		} else {
+			if (options["onFailure"]) options.onFailure(event);
+		}
+	});
+	let method = (options["method"] || "GET");
+	let location = (options.location || document.location) + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
+	req.open(method, location);
+	if (options["method"] == "POST") {
+		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		req.send(urlEncodeQuery(options.params));
+	} else {
+		req.send();
+	}
+}
+
+/*  Adds an event listener to a button (or other clickable element), attaching
+    it to both ‘click’ and ‘keyup’ events (for use with keyboard navigation).
+    Optionally also attaches the listener to the ‘mousedown’ event, making the
+    element activate on mouse down instead of mouse up.
+    */
+Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
+    let ael = this.activateEventListener = (event) => {
+    	if (event.button === 0 || event.key === ' ')
+    		fn(event);
+    };
+    if (includeMouseDown) this.addEventListener("mousedown", ael);
+    this.addEventListener("click", ael);
+    this.addEventListener("keyup", ael);
+}
+
+/*	Swap classes on the given element.
+	First argument is an array with two string elements (the classes).
+	Second argument is 0 or 1 (index of class to add; the other is removed).
+	*/
+Element.prototype.swapClasses = function (classes, whichToAdd) {
+	this.classList.add(classes[whichToAdd]);
+	this.classList.remove(classes[1 - whichToAdd]);
+};
+
+/*	Returns true if the given rects intersect, false otherwise.
+	*/
+function doRectsIntersect(rectA, rectB) {
+    return (rectA.top < rectB.bottom &&
+            rectA.bottom > rectB.top &&
+            rectA.left < rectB.right &&
+            rectA.right > rectB.left);
+}
+
+/*  Returns true if the given element intersects the given rect,
+	false otherwise.
+    */
+function isWithinRect(element, rect) {
+	return doRectsIntersect(element.getBoundingClientRect(), rect);
+}
+
+/*  Returns true if the given element intersects the viewport, false otherwise.
+    */
+function isOnScreen (element) {
+    return isWithinRect(element, new DOMRect(0, 0, window.innerWidth, window.innerHeight));
+}
+
+/*	Returns the string trimmed of opening/closing quotes.
+	*/
+String.prototype.trimQuotes = function () {
+	return this.replace(/^["'“‘]?(.+?)["'”’]?$$/, '$$1');
+};
+
+/*  Returns true if the string begins with any of the given prefixes.
+    */
+String.prototype.startsWithAnyOf = function (prefixes) {
+    for (prefix of prefixes)
+        if (this.startsWith(prefix))
+            return true;
+    return false;
+}
+
+/*  Returns true if the string ends with any of the given suffixes.
+    */
+String.prototype.endsWithAnyOf = function (suffixes) {
+    for (suffix of suffixes)
+        if (this.endsWith(suffix))
+            return true;
+    return false;
+}
+
+/*  Returns true if the string includes any of the given substrings.
+    */
+String.prototype.includesAnyOf = function (substrings) {
+    for (substring of substrings)
+        if (this.includes(substring))
+            return true
+    return false;
+}
+
+/*  Remove given item from array.
+	*/
+Array.prototype.remove = function (item) {
+    let index = this.indexOf(item);
+    if (index !== -1)
+        this.splice(index, 1);
+};
+
+/*  Remove from array the first item that passes the provided test function.
+	The test function should take an array item and return true/false.
+	*/
+Array.prototype.removeIf = function (test) {
+    let index = this.findIndex(test);
+    if (index !== -1)
+        this.splice(index, 1);
+};
+
+/*  Run the given function immediately if the page is already loaded, or add
+    a listener to run it as soon as the page loads.
+    */
+function doWhenPageLoaded(f) {
+    if (document.readyState == "complete")
+        f();
+    else
+        window.addEventListener("load", () => { f(); });
+}
+
+/*  Run the given function immediately if the page content has already loaded
+	(DOMContentLoaded event has fired), or add a listener to run it as soon as
+	the event fires.
+    */
+function doWhenDOMContentLoaded(f) {
+    if (GW.DOMContentLoaded == true)
+        f();
+    else
+        window.addEventListener("DOMContentLoaded", () => { f(); });
+}
+
+/*  Given an HTML string, creates an element from that HTML, adds it to
+    #ui-elements-container (creating the latter if it does not exist), and
+    returns the created element.
+    */
+function addUIElement(element_html) {
+    let ui_elements_container = document.querySelector("#ui-elements-container");
+    if (!ui_elements_container) {
+        ui_elements_container = document.createElement("div");
+        ui_elements_container.id = "ui-elements-container";
+        document.querySelector("body").appendChild(ui_elements_container);
     }
 
-    /*  Set specified color mode (auto, light, dark).
-        */
-    function setMode(modeOption) {
-        GWLog("setMode");
+    ui_elements_container.insertAdjacentHTML("beforeend", element_html);
+    return ui_elements_container.lastElementChild;
+}
 
-        // Inject the appropriate styles.
-        let darkModeStyles = document.querySelector("#inlined-dark-mode-styles");
-        if (modeOption == 'auto') {
-            darkModeStyles.media = "all and (prefers-color-scheme: dark)";
-        } else if (modeOption == 'dark') {
-            darkModeStyles.media = "all";
+GW.scrollListeners = { };
+/*  Adds a scroll event listener to the page.
+    */
+function addScrollListener(fn, name) {
+    let wrapper = (event) => {
+        requestAnimationFrame(() => {
+            fn(event);
+            document.addEventListener("scroll", wrapper, { once: true, passive: true });
+        });
+    }
+    document.addEventListener("scroll", wrapper, { once: true, passive: true });
+
+    // Retain a reference to the scroll listener, if a name is provided.
+    if (typeof name != "undefined") {
+        GW.scrollListeners[name] = wrapper;
+    }
+}
+/*	Removes a named scroll event listener from the page.
+	*/
+function removeScrollListener(name) {
+	let wrapper = GW.scrollListeners[name];
+	if (wrapper) {
+		document.removeEventListener("scroll", wrapper);
+		GW.scrollListeners[name] = null;
+	}
+}
+
+/*	Returns val, or def if val == defval. (By default, defval is -1.)
+	(In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
+	*/
+function defval(def, val, defval = -1) {
+	return (val == defval) ? def : val;
+}
+
+/*	Returns val, or min if val < min, or max if val > max.
+	(In other words, clamps val to [min,max].)
+	*/
+function valMinMax(val, min, max) {
+	return Math.max(Math.min(val, max), min);
+}
+
+/************************/
+/* ACTIVE MEDIA QUERIES */
+/************************/
+
+/*  This function provides two slightly different versions of its functionality,
+    depending on how many arguments it gets.
+
+    If one function is given (in addition to the media query and its name), it
+    is called whenever the media query changes (in either direction).
+
+    If two functions are given (in addition to the media query and its name),
+    then the first function is called whenever the media query starts matching,
+    and the second function is called whenever the media query stops matching.
+
+    If you want to call a function for a change in one direction only, pass an
+    empty closure (NOT null!) as one of the function arguments.
+
+    There is also an optional fifth argument. This should be a function to be
+    called when the active media query is canceled.
+    */
+function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = null, whenCanceledDo = null) {
+    if (typeof GW.mediaQueryResponders == "undefined")
+        GW.mediaQueryResponders = { };
+
+    let mediaQueryResponder = (event, canceling = false) => {
+        if (canceling) {
+            GWLog(`Canceling media query “$${name}”`, "media queries", 1);
+
+            if (whenCanceledDo != null)
+                whenCanceledDo(mediaQuery);
         } else {
-            darkModeStyles.media = "not all";
-        }
+            let matches = (typeof event == "undefined") ? mediaQuery.matches : event.matches;
 
-        // Update selector state.
-        if (window.updateModeSelectorState)
-            updateModeSelectorState();
+            GWLog(`Media query “$${name}” triggered (matches: $${matches ? "YES" : "NO"})`, "media queries", 1);
+
+            if (otherwiseDo == null || matches) ifMatchesOrAlwaysDo(mediaQuery);
+            else otherwiseDo(mediaQuery);
+        }
+    };
+    mediaQueryResponder();
+    mediaQuery.addListener(mediaQueryResponder);
+
+    GW.mediaQueryResponders[name] = mediaQueryResponder;
+}
+
+/*  Deactivates and discards an active media query, after calling the function
+    that was passed as the whenCanceledDo parameter when the media query was
+    added.
+    */
+function cancelDoWhenMatchMedia(name) {
+    GW.mediaQueryResponders[name](null, true);
+
+    for ([ key, mediaQuery ] of Object.entries(GW.mediaQueries))
+        mediaQuery.removeListener(GW.mediaQueryResponders[name]);
+
+    GW.mediaQueryResponders[name] = null;
+}
+
+/*****************/
+/* NOTIFICATIONS */
+/*****************/
+/*  Options object may have members:
+
+        `once` (boolean; does the handler get removed after being called?)
+        `phase` (string; in [e.g. "rewrite"], before [e.g. "<rewrite"], or after
+        		 [e.g. ">rewrite"] which phase of that event’s handlers does the
+        		 given handler get called?)
+    */
+GW.notificationCenter = {
+	eventHandlers: { },
+	handlerPhaseOrders: {
+		"GW.contentDidLoad": [ "rewrite", "eventListeners" ]
+	},
+	addHandlerForEvent: (eventName, f, options = { }) => {
+		if (GW.notificationCenter.eventHandlers[eventName] == null)
+			GW.notificationCenter.eventHandlers[eventName] = [ ];
+
+		let handlers = GW.notificationCenter.eventHandlers[eventName];
+		if (handlers.findIndex(handler => handler.f == f) !== -1)
+			return;
+
+		let insertAt = handlers.length;
+
+		let phaseOrder = GW.notificationCenter.handlerPhaseOrders[eventName];
+		if (phaseOrder)
+			options.phase = (options.phase || "");
+		if (options.phase && phaseOrder) {
+			let targetPhase = options.phase.match(/^([<>]?)(.+)/)[2];
+			let targetPhaseOrder = defval(phaseOrder.length, phaseOrder.indexOf(targetPhase), -1);
+
+			let phaseAt = (index) => {
+				if (index >= handlers.length) return null;
+				let parts = handlers[index].options.phase.match(/^([<>]?)(.+)/);
+				return {
+					phase: parts[2],
+					before: (parts[1] == "<"),
+					after: (parts[1] == ">")
+				};
+			};
+
+			if (options.phase.startsWith("<")) {
+				for (var i = 0; i < handlers.length; i++) {
+					if (phaseAt(i).phase == targetPhase && !phaseAt(i).before)
+						break;
+					if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(i).phase))
+						break;
+				}
+				insertAt = i;
+			} else if (options.phase.startsWith(">")) {
+				for (var j = handlers.length - 1; j > -1; j--) {
+					if (phaseAt(j).phase == targetPhase) {
+						j++;
+						break;
+					}
+					if (phaseOrder.slice(0, targetPhaseOrder - 1).includes(phaseAt(j).phase)) {
+						j++;
+						break;
+					}
+				}
+				insertAt = j;
+			} else {
+				for (var k = 0; k < handlers.length; k++) {
+					if (phaseAt(k).phase == targetPhase && phaseAt(k).after)
+						break;
+					if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(k).phase))
+						break;
+				}
+				insertAt = k;
+			}
+		}
+
+		GW.notificationCenter.eventHandlers[eventName].splice(insertAt, 0, { f: f, options: options });
+	},
+	removeHandlerForEvent: (eventName, f, options = { }) => {
+		if (GW.notificationCenter.eventHandlers[eventName] == null)
+			return;
+
+		GW.notificationCenter.eventHandlers[eventName].removeIf(handler => handler.f == f);
+	},
+	removeAllHandlersForEvent: (eventName) => {
+		GW.notificationCenter.eventHandlers[eventName] = null;
+	},
+	fireEvent: (eventName, eventInfo) => {
+		/*  The ‘16’ here is the width of the date field plus spacing.
+			The “Source:” text is manually padded to be as wide as “[notification]”.
+			*/
+		GWLog(`Event “$${eventName}” fired.` + `$${(
+			(eventInfo && eventInfo.source)
+			? ("\n" + "".padStart(16, ' ') + "       Source:".padEnd(GW.logSourcePadLength, ' ') + eventInfo.source)
+			: ""
+		)}`, "notification");
+
+		if (GW.notificationCenter.eventHandlers[eventName] == null)
+			return;
+
+		for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
+			let handler = GW.notificationCenter.eventHandlers[eventName][i];
+			if (handler.options.condition && !handler.options.condition(eventInfo))
+				continue;
+			handler.f(eventInfo);
+			if (handler.options.once) {
+				GW.notificationCenter.eventHandlers[eventName].splice(i, 1);
+				i--;
+			}
+		}
+	}
+};
+
+/****************/
+/* SCROLL STATE */
+/****************/
+
+GW.scrollState = {
+	lastScrollTop:				window.pageYOffset || document.documentElement.scrollTop,
+	unbrokenDownScrollDistance:	0,
+	unbrokenUpScrollDistance:	0
+};
+
+function updateScrollState(event) {
+    GWLog("updateScrollState", "gw.js", 3);
+
+    let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop)
+    	? (GW.scrollState.unbrokenDownScrollDistance + newScrollTop - GW.scrollState.lastScrollTop)
+    	: 0;
+    GW.scrollState.unbrokenUpScrollDistance = (newScrollTop < GW.scrollState.lastScrollTop)
+    	? (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - newScrollTop)
+    	: 0;
+    GW.scrollState.lastScrollTop = newScrollTop;
+}
+addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+
+/*	Toggles whether the page is scrollable.
+	*/
+function isPageScrollingEnabled() {
+	return !(document.documentElement.classList.contains("no-scroll"));
+}
+function togglePageScrolling(enable) {
+	if (typeof enable == "undefined")
+		enable = document.documentElement.classList.contains("no-scroll");
+
+	let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
+
+	if (enable && !isPageScrollingEnabled()) {
+		document.documentElement.classList.toggle("no-scroll", false);
+		removeScrollListener("preventScroll");
+		addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+	} else if (!enable && isPageScrollingEnabled()) {
+		document.documentElement.classList.toggle("no-scroll", true);
+		addScrollListener(preventScroll, "preventScroll");
+		removeScrollListener("updateScrollStateScrollListener");
+	}
+}
+
+/******************/
+/* BROWSER EVENTS */
+/******************/
+
+GW.DOMContentLoaded = false;
+
+GWLog("document.readyState." + document.readyState, "browser event");
+window.addEventListener("DOMContentLoaded", () => {
+    GWLog("window.DOMContentLoaded", "browser event");
+    GW.DOMContentLoaded = true;
+    GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+		source: "DOMContentLoaded",
+		document: document.firstElementChild,
+		isMainDocument: true,
+		needsRewrite: true,
+		clickable: true,
+		collapseAllowed: true,
+		isCollapseBlock: false,
+		isFullPage: true,
+		location: new URL(location.href),
+		fullWidthPossible: true
+    });
+});
+window.addEventListener("load", () => {
+    GWLog("window.load", "browser event");
+});
+document.addEventListener("readystatechange", () => {
+    GWLog("document.readyState." + document.readyState, "browser event");
+});
+</script>
+<script>
+/*	This code is part of darkmode.js by Said Achmiz.
+	See the file `darkmode.js` for license and more information.
+	*/
+
+/*	Dark mode: before anything else loads, check browser localStorage for dark
+	mode preference and immediately toggle sets of CSS color variables/classes
+	to avoid any 'flash of white' or delayed loading. Note: CSS falls back to
+	the media-query browser/OS variable preference, so still works if JS is
+	blocked! (The JS is only necessary for the theme switcher widget allowing
+	'force light'/'force dark' options. If users block JS, set the dark mode
+	preference, and are unhappy when they get dark mode, well, they made their
+	bed and must lie in it.)
+	*/
+
+/*  Set specified color mode (auto, light, dark).
+    */
+function setMode(modeOption) {
+    GWLog("setMode", "darkmode.js", 1);
+
+    // Inject the appropriate styles.
+    let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");
+    if (darkModeStyles == null) return;
+    if (modeOption == 'auto') {
+        darkModeStyles.media = "all and (prefers-color-scheme: dark)";
+    } else if (modeOption == 'dark') {
+        darkModeStyles.media = "all";
+    } else {
+        darkModeStyles.media = "not all";
     }
 
-    // Get saved mode setting (or default).
-    let currentMode = localStorage.getItem("selected-mode") || 'auto';
+    // Update selector state.
+    if (window.updateModeSelectorState)
+	    updateModeSelectorState();
+}
 
-    // Activate saved mode.
-    setMode(currentMode);
-    </script>
+// Get saved mode setting (or default).
+let currentMode = localStorage.getItem("selected-mode") || 'auto';
+
+// Activate saved mode.
+setMode(currentMode);
+</script>
+
+    <!-- fetch the title & body fonts immediately to avoid re-rendering -->
+    <link rel="preload" as="style"      href="/static/css/default.css" />
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Regular.ttf"          as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf"    as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssp/SourceSansPro-BASIC-Semibold.ttf"         as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf"           as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf"        as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf"       as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-SemiboldItalic.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf"  as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ssfp/SourceSerifPro-BASIC-BoldItalic.ttf"     as="font" type="font/ttf" crossorigin="anonymous">
+    <link rel="preload" href="/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf"        as="font" type="font/otf" crossorigin="anonymous">
+    <!-- Full font CSS is loaded in footer. Here, inline only the minimal set of font CSS needed for initial screen, for speed: -->
+    <style>
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 400;
+        font-style: normal;
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-Regular.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 400;
+        font-style: italic;
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-RegularItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap;
+    }
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 600;
+        font-style: normal;
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-Semibold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Serif Pro';
+        font-weight: 700;
+        font-style: normal;
+        src: url('/static/font/ssfp/SourceSerifPro-BASIC-Bold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+
+    @font-face {
+        font-family: 'Source Sans Pro';
+        font-weight: 400;
+        font-style: normal;
+        src: url('/static/font/ssp/SourceSansPro-BASIC-Regular.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Sans Pro';
+        font-weight: 400;
+        font-style: italic;
+        src: url('/static/font/ssp/SourceSansPro-BASIC-RegularItalic.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    @font-face {
+        font-family: 'Source Sans Pro';
+        font-weight: 700;
+        font-style: normal;
+        src: url('/static/font/ssp/SourceSansPro-BASIC-Bold.ttf') format('truetype');
+        unicode-range: U+0020-007E, U+2010, U+2013-2014, U+2018-2019, U+201C-201D;
+        font-display: swap
+    }
+    </style>
 
 
     <link rel="icon" type="image/x-icon" href="/static/img/favicon.png" />
   </head>
   <body>
     <article>
+      <div id="markdownBody" class="markdownBody">
       <h1>404 Error: Page Not Found</h1>
       <blockquote><p><em>"Every shrub, every tree&mdash;<br />if one has not forgotten<br />where they were planted&mdash;<br />has beneath the fallen snow<br />some vestige of its form."</em><br />
           —<a href="https://en.wikipedia.org/wiki/Sh%C5%8Dtetsu" title="WP: Shōtetsu (正徹, 1381–1459 CE) was a Japanese poet during the Muromachi period, and is considered to have been the last poet in the courtly waka tradition; a number of his disciples were important in the development of the renga art form, which led to the haiku.">Shōtetsu</a></p>
@@ -279,10 +2755,27 @@
       <li><a href="/Justifications">On Justifications</a></li>
       <li><a href="/newsletter/2018/01">January 2018 news</a></li>
     </ul>
+    </div>
     </article>
 
+        <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
+    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1613365249" />
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1613947933" />
+    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1613677732" />
+
+	<!-- JS library for spawning popups -->
+    <script src="/static/js/popups.js?v=1613947464" defer></script>
+    <script src="/static/js/popins.js?v=1612774682" defer></script>
+    <!-- JS library for annotating hyperlinks with introduction/summary from various sources; not lazy-loaded as (almost) all pages have popups -->
+    <script src="/static/js/extracts.js?v=1613677667" defer></script>
+    <script src="/static/js/extracts-options.js?v=1611861281" defer></script>
+
+    <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. cover source-code block listings too (for large R sections especially); 3. type setting stuff -->
+    <script src="/static/js/typography.js?v=1610757690" defer></script>
+    <script src="/static/js/rewrite.js?v=1611899261" defer></script>
+
     <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
-    <script src="/static/js/darkmode.js" defer></script>
+    <script src="/static/js/darkmode.js?v=1611247005" defer></script>
 
     <!-- Async load Google Analytics  -->
     <script id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" async></script>
