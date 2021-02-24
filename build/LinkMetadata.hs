@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-21 16:49:21 gwern"
+When:  Time-stamp: "2021-02-22 21:11:49 gwern"
 License: CC-0
 -}
 
@@ -538,7 +538,12 @@ cleanAbstractsHTML t = trim $
     , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">n</span>", "<em>n</em>")
     , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">π</span>", "<em>π</em>")
     , ("<span class=\"texhtml mvar\" style=\"font-style:italic\"><strong>c</strong></span>", "<strong><em>c</em></strong>")
+    , ("<span class=\"texhtml \"><strong>C</strong></span>", "<strong>C</strong>")
     , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">c</span>", "<em>c</em>")
+    , ("<math>A</math>", "<em>A</em>")
+    , ("<math>B</math>", "<em>B</em>")
+    , ("<math>C</math>", "<em>C</em>")
+    , ("<math>S</math>", "<em>S</em>")
     , ("$f(x; x_0,\\gamma)$", "<em>f(x; x<sub>0</sub>,γ")
     , ("$(x_0,\\gamma)$", "<em>(x<sub>0</sub>, γ)</em>")
     -- rest:
@@ -864,6 +869,7 @@ cleanAbstractsHTML t = trim $
     , ("<small></small>", "")
     , ("Per- formance", "Performance")
     , ("lan- guage", "language")
+    , ("pro-posed", "proposed")
     , ("\t\t", "")
     , ("\t\t\t\t\t", "")
     , ("\173", "") -- we do soft hyphenation at compile-time to keep the data sources clean & readable, and benefit from any upgrades
