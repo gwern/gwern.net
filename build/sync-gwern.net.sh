@@ -171,6 +171,9 @@ then
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
+    λ(){ egrep --color=always -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -- ./metadata/*.yaml; }
+    wrap λ "Missing superscripts in YAML metadata database"
+
     λ(){ egrep -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage,image hotlinking, non-absolute relative image paths in YAML metadata database"
 

@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-22 21:11:49 gwern"
+When:  Time-stamp: "2021-02-25 11:03:10 gwern"
 License: CC-0
 -}
 
@@ -436,6 +436,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                  let author = initializeAuthors $ intercalate ", " $ filter (/="") $ map (\(TagOpen _ (a:b)) -> if snd a == "DC.Contributor" then snd $ head b else "") metas
                                  let doi = concatMap (\(TagOpen _ (a:b)) -> if snd a == "citation_doi" then snd $ head b else "") metas
                                  let abstract = cleanAbstractsHTML $
+                                                 replace "\n" " " $ -- many WP entries have hidden/stray newlines inside paragraphs, which if deleted, just cause runtogether errors, like "one of the most important American poets of the 20th century.Cummings is associated" etc.
                                                  concatMap (\(TagOpen _ (a:_:c)) ->
                                                                       if snd a == "citation_abstract" then snd $ head c else "") metas
                                  return $ Just (p, (title, author, date, doi, abstract))
@@ -863,6 +864,17 @@ cleanAbstractsHTML t = trim $
     , (" 3x", " 3×")
     , ("<p> ", "<p>")
     , ("+/-", "±")
+    , ("11th", "11<sup>th</sup>")
+    , ("12th", "12<sup>th</sup>")
+    , ("13th", "13<sup>th</sup>")
+    , ("14th", "14<sup>th</sup>")
+    , ("15th", "15<sup>th</sup>")
+    , ("16th", "16<sup>th</sup>")
+    , ("17th", "17<sup>th</sup>")
+    , ("18th", "18<sup>th</sup>")
+    , ("19th", "19<sup>th</sup>")
+    , ("20th", "20<sup>th</sup>")
+    , ("21st", "21<sup>st</sup>")
     , ("<code class=\"mw-highlight mw-highlight-lang-bash mw-content-ltr\" dir=\"ltr\">", "<code>")
     , ("ml-1", "ml<sup>−1</sup>")
     , ("Cmax", "C<sub>max</sub>")
