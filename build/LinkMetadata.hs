@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-25 22:06:40 gwern"
+When:  Time-stamp: "2021-02-26 10:44:32 gwern"
 License: CC-0
 -}
 
@@ -331,7 +331,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return Nothing else
                           do let (title:author:date:doi:abstract) = parsed
-                             return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
+                             return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, trim $ replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
 
 pdf :: Path -> IO (Maybe (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
@@ -878,6 +878,20 @@ cleanAbstractsHTML t = trim $
     , ("19th", "19<sup>th</sup>")
     , ("20th", "20<sup>th</sup>")
     , ("21st", "21<sup>st</sup>")
+    , ("\"21st", "\"21<sup>st</sup>")
+    , ("early-12th", "early-12<sup>th</sup>")
+    , ("mid-21st", "mid-21<sup>st</sup>")
+    , ("early-20th-century", "early-20<sup>th</sup>-century")
+    , ("<i>25th", "<i>25<sup>th</sup>")
+    , (">15th", ">15<sup>th</sup>")
+    , ("mid-17th", "mid-17<sup>th</sup>")
+    , ("mid-16th", "mid-16<sup>th</sup>")
+    , (">21st", ">21st")
+    , ("–19th", "–19<sup>th</sup>")
+    , ("late-20th", "late-20<sup>th</sup>")
+    , ("64,000th", "64,000<sup>th</sup>")
+    , ("(5th", "(5<sup>th</sup>")
+    , ("(12th", "(12<sup>th</sup>")
     , ("<code class=\"mw-highlight mw-highlight-lang-bash mw-content-ltr\" dir=\"ltr\">", "<code>")
     , ("ml-1", "ml<sup>−1</sup>")
     , ("Cmax", "C<sub>max</sub>")
