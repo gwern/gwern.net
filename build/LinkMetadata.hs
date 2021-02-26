@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-25 11:03:10 gwern"
+When:  Time-stamp: "2021-02-25 22:06:40 gwern"
 License: CC-0
 -}
 
@@ -505,6 +505,9 @@ cleanAbstractsHTML t = trim $
   -- regexp substitutions:
   (\s -> subRegex (mkRegex "([.0-9]+)x") s "\\1×") $
   (\s -> subRegex (mkRegex "=-\\.([.0-9]+)") s " = -0.\\1") $
+  (\s -> subRegex (mkRegex " ([0-9]*[02456789])th") s " \\1<sup>th</sup>") $
+  (\s -> subRegex (mkRegex " ([0-9]*[1])st") s        " \\1<sup>st</sup>") $
+  (\s -> subRegex (mkRegex " ([0-9]*[3])rd") s        " \\1<sup>rd</sup>") $
   -- simple string substitutions:
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
