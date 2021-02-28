@@ -8,7 +8,7 @@ if (typeof window.GW == "undefined")
 /*****************/
 
 GW.mediaQueries = {
-    mobileWidth:           matchMedia("(max-width: 650px)"),
+    mobileWidth:           matchMedia("(max-width: 649px)"),
     systemDarkModeActive:  matchMedia("(prefers-color-scheme: dark)"),
     hoverAvailable:        matchMedia("only screen and (hover: hover) and (pointer: fine)"),
     portraitOrientation:   matchMedia("(orientation: portrait)")

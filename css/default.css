@@ -306,7 +306,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: bold;
     position: relative;
 }
-@media only screen and (max-width: 650px) {
+@media only screen and (max-width: 649px) {
     h1, h2, h3, h4, h5, h6 {
         margin: 1.25em 0 0.5em 0;
     }
@@ -2310,6 +2310,11 @@ body.directory-index article::before {
         left: calc(80px + (100% - 1185px)/2);
     }
 }
+@media only screen and (max-width: 649px) {
+	body.index #back-to-top {
+		left: unset;
+	}
+}
 
 /*=---------------=*/
 /*= /Book-reviews =*/
@@ -4248,7 +4253,7 @@ body.directory-index #disqus_thread {
         right: calc(60px + (100% - 1185px) / 2);
     }
 }
-@media only screen and (max-width: 650px) {
+@media only screen and (max-width: 649px) {
     #back-to-top {
         left: unset;
         right: 1rem;
