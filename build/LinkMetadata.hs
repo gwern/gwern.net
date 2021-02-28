@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-26 10:44:32 gwern"
+When:  Time-stamp: "2021-02-27 20:39:09 gwern"
 License: CC-0
 -}
 
@@ -556,6 +556,8 @@ cleanAbstractsHTML t = trim $
     , ("</title>", "")
     , ("   <title/>    <p>", "<p>")
     , ("  <p>", "<p>")
+    , ("</h3>", "</strong></p>")
+    , ("<h3>", "<p><strong>")
     , ("<br/><h3>", "<h3>")
     , ("</p><p>", "</p> <p>")
     , ("<jats:title>SUMMARY</jats:title>", "")
@@ -621,6 +623,7 @@ cleanAbstractsHTML t = trim $
     , (" -- ", "&mdash;")
     , ("---", "&mdash;")
     , (" - ", "—")
+    , (" — ", "—")
     , ("<p>Background: ", "<p><strong>Background</strong>: ")
     , ("<p>Methods: ", "<p><strong>Methods</strong>: ")
     , ("<p>Outcomes: ", "<p><strong>Outcomes</strong>: ")
@@ -855,6 +858,8 @@ cleanAbstractsHTML t = trim $
     , (" p < ",   " <em>p</em> < ")
     , (" p<",     " <em>p</em> < ")
     , (" p<.",    " <em>p</em> < 0.")
+    , ("(P < 0.", "(<em>p</em> < 0.")
+    , ("(P < .", "(<em>p</em> < 0.")
     , ("\40P=",     "\40<em>p</em> = ")
     , ("P-value", "<em>p</em>-value")
     , ("p-value", "<em>p</em>-value")

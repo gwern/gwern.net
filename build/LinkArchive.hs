@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-02-18 22:41:21 gwern"
+When:  Time-stamp: "2021-02-27 19:37:25 gwern"
 License: CC-0
 -}
 
@@ -761,6 +761,8 @@ whiteList url
       , "simplify.so" -- service
       , "old.reddit.com/r/IncreasinglyVerbose" -- service/updated
       , "old.reddit.com/r/mlscaling/" -- service/updated
+      , "old.reddit.com/r/Parahumans/" -- service/updated
+      , "old.reddit.com/domain/gameprogrammingpatterns.com/" -- service/updated
       , "ctan.org/pkg/" -- stable
       , "magicemail.io" -- service
       , "parametric.press/issue-01/unraveling" -- doesn't archive the interactive right
