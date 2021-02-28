@@ -505,10 +505,11 @@ function addSpecialLinkClasses(loadEventInfo) {
 
 		if (loadEventInfo.location && link.pathname == loadEventInfo.location.pathname) {
 			link.classList.toggle("link-self", true);
-		} else if (link.pathname.substr(1).match(/[\/\.]/) == null) {
-			link.classList.toggle("link-local", true);
 		} else {
-			link.classList.remove("link-self", "link-local");
+			link.classList.remove("link-self");
+
+			if (link.pathname.substr(1).match(/[\.]/) == null)
+				link.classList.toggle("link-local", true);
 		}
 	});
 }
