@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-01 12:53:01 gwern"
+When:  Time-stamp: "2021-03-01 16:50:26 gwern"
 License: CC-0
 -}
 
@@ -386,7 +386,7 @@ wikipedia p
                    (status2,_,bAbstract) <- runShellCommand "./" Nothing "wikipediaExtract.sh" [p''']
                    let wpAbstract = U.toString bAbstract
 
-                   when ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bsPreview) $ error ("Linked to a Wikipedia disambiguation page! " ++ p)
+                   when ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bsPreview && not ("disambiguation"`isInfixOf`p)) $ error ("Linked to a Wikipedia disambiguation page! " ++ p)
                    today <- fmap (take 10 . show) $ TC.getCurrentTime -- create dates like "2020-08-31"
                    case (status1,status2) of
                      (ExitFailure _, _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return Nothing
@@ -420,8 +420,8 @@ downloadWPThumbnail href = do
     runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
   -- try running it again because of occasional download glitches, otherwise error out:
   fileSize <- getFileSize f
-  when (fileSize == 0) $ void $ do
-    runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+  when (fileSize == 0) $ do
+    void $ runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
     fileSize' <- getFileSize f
     when (fileSize' == 0) $ error $ "Failed to download file: " ++ href ++ " : " ++ f
   let ext = map toLower $ takeExtension f
@@ -516,6 +516,10 @@ processArxivAbstract u a = let cleaned = runPure $ do
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML t = trim $
   -- regexp substitutions:
+  (\s -> subRegex (mkRegex "([a-zA-Z]) – ([[:punct:]])") s "\\1—\\2") $ -- en dash errors in WP abstracts: usually meant em-dash. eg 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
+  (\s -> subRegex (mkRegex "([[:punct:]]) – ([a-zA-Z])") s "\\1—\\2") $
+  (\s -> subRegex (mkRegex "([a-zA-Z]) – ([a-zA-Z])") s "\\1—\\2") $ -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
+  (\s -> subRegex (mkRegex "([a-zA-Z]) - ([a-zA-Z])") s "\\1—\\2") $ -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
   (\s -> subRegex (mkRegex "([.0-9]+)x") s "\\1×") $
   (\s -> subRegex (mkRegex "=-\\.([.0-9]+)") s " = -0.\\1") $
   (\s -> subRegex (mkRegex " ([0-9]*[02456789])th") s " \\1<sup>th</sup>") $
@@ -886,17 +890,17 @@ cleanAbstractsHTML t = trim $
     , (" 3x", " 3×")
     , ("<p> ", "<p>")
     , ("+/-", "±")
-    , ("11th", "11<sup>th</sup>")
-    , ("12th", "12<sup>th</sup>")
-    , ("13th", "13<sup>th</sup>")
-    , ("14th", "14<sup>th</sup>")
-    , ("15th", "15<sup>th</sup>")
-    , ("16th", "16<sup>th</sup>")
-    , ("17th", "17<sup>th</sup>")
-    , ("18th", "18<sup>th</sup>")
-    , ("19th", "19<sup>th</sup>")
-    , ("20th", "20<sup>th</sup>")
-    , ("21st", "21<sup>st</sup>")
+    , (" 11th", " 11<sup>th</sup>")
+    , (" 12th", " 12<sup>th</sup>")
+    , (" 13th", " 13<sup>th</sup>")
+    , (" 14th", " 14<sup>th</sup>")
+    , (" 15th", " 15<sup>th</sup>")
+    , (" 16th", " 16<sup>th</sup>")
+    , (" 17th", " 17<sup>th</sup>")
+    , (" 18th", " 18<sup>th</sup>")
+    , (" 19th", " 19<sup>th</sup>")
+    , (" 20th", " 20<sup>th</sup>")
+    , (" 21st", " 21<sup>st</sup>")
     , ("\"21st", "\"21<sup>st</sup>")
     , ("early-12th", "early-12<sup>th</sup>")
     , ("mid-21st", "mid-21<sup>st</sup>")
