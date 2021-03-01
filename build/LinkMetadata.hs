@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-28 21:45:24 gwern"
+When:  Time-stamp: "2021-03-01 12:53:01 gwern"
 License: CC-0
 -}
 
@@ -32,7 +32,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, getFileSize)
 import System.FilePath (takeBaseName, takeFileName, takeExtension)
 import Data.List.Utils (replace, split, uniq)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
@@ -418,6 +418,12 @@ downloadWPThumbnail href = do
   filep <- doesFileExist f
   when (not filep ) $ void $
     runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+  -- try running it again because of occasional download glitches, otherwise error out:
+  fileSize <- getFileSize f
+  when (fileSize == 0) $ void $ do
+    runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+    fileSize' <- getFileSize f
+    when (fileSize' == 0) $ error $ "Failed to download file: " ++ href ++ " : " ++ f
   let ext = map toLower $ takeExtension f
   if ext == ".png" then do -- lossily optimize using my pngnq/mozjpeg scripts:
                      void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [f]
