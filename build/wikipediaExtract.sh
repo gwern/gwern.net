@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-02-28 19:31:04 gwern"
+# When:  Time-stamp: "2021-03-01 12:49:45 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -41,6 +41,9 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
     # getting the raw image URL to hotlink or localize is too hard, so we'll just omit images beyond the thumbnail:
     egrep -v -e '^\[\[File\:' | \
 
+    # convert math templates like '{{mvar|x}}' to '<em>x</em>':
+    sed -e 's/{{mvar|\(.\)}}/<em>\1<\/em>/g' | \
+
     # MediaWiki templates & tables are not supported by Pandoc and will crash it, so strip those out: targeting '{{', '{-', '|-', ' |' etc
     # sed -e 's/^{{.*}}$//g' -e '/^{{/,/^}}/d' -e '/^{|/,/^|}/d' | \
     # egrep -v -e '^\|-' -e '^[[:blank:]]\+\|' -e '^\|' -e '^{' -e '^}' | \
@@ -55,7 +58,7 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
         -e "s/{{'}}/'/g" -e "s/{{' \"}}/'\"/g" -e 's/<ref .*<\/p>$/<\/p>/g' -e 's/{{cite .*<\/p>$/<\/p>/g' -e 's/<ref>\*//g' | \
 
     # 10 block elements (generally `<p>`/`<h1-3>`s) appears like a nice length on the ones I checked:
-    head -10;
+    head -7;
 
 # note truncation for reader: they can click on the title of the popup if they want to see the full original WP article.
 echo "<p>…</p>"
