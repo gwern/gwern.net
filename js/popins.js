@@ -168,6 +168,9 @@ Popins = {
 	},
 	setPopFrameContent: (popin, contentHTML) => {
 		popin.contentView.innerHTML = contentHTML;
+		requestAnimationFrame(() => {
+			Popins.setPopinHeight(popin);
+		});
 		return (contentHTML > "");
 	},
 	rootDocument: document.firstElementChild,
@@ -226,10 +229,19 @@ Popins = {
 			target.parentElement.insertBefore(target.popin, target.nextSibling);
 		}
 
+		//  Set height.
+		requestAnimationFrame(() => {
+			Popins.setPopinHeight(target.popin);
+		});
+
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open");
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
+	},
+	setPopinHeight: (popin) => {
+		popin.scrollView.style.height = popin.contentView.offsetHeight + "px";
+		popin.style.height = popin.scrollView.offsetHeight + (2.0 * parseFloat(getComputedStyle(popin).borderTopWidth)) + "px";
 	},
 	removePopin: (popin) => {
 		GWLog("Popins.removePopin", "popins.js", 2);
