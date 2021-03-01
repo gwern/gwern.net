@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-01 12:49:45 gwern"
+# When:  Time-stamp: "2021-03-01 17:05:51 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -44,7 +44,7 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
     # convert math templates like '{{mvar|x}}' to '<em>x</em>':
     sed -e 's/{{mvar|\(.\)}}/<em>\1<\/em>/g' | \
 
-    # MediaWiki templates & tables are not supported by Pandoc and will crash it, so strip those out: targeting '{{', '{-', '|-', ' |' etc
+    # MediaWiki templates & tables are not supported by Pandoc and will crash it, so strip those out: targeting '{{', '{-', '|-', ' |' etc ## TODO: parsing templates is really complex and regexps don't work too well so many pages get messed up or have garbage in them, but on the other hand, if we don't strip at all, Pandoc may crash on templates/tables... right now, we fall back to the simplistic Preview API version. We'll see if crashes are rare enough to make that the best tradeoff.
     # sed -e 's/^{{.*}}$//g' -e '/^{{/,/^}}/d' -e '/^{|/,/^|}/d' | \
     # egrep -v -e '^\|-' -e '^[[:blank:]]\+\|' -e '^\|' -e '^{' -e '^}' | \
 
@@ -52,13 +52,14 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
     pandoc --mathjax -f mediawiki -t html | \
 
     # but we do need to delete the footnotes, rewrite the relative links to absolute links to En, delete extraneous 'title=' parameters, clean up stray templates & references:
-    sed -e 's/<a href\="#fn.*" class\="footnote-ref" id\="fnref.*" role\="doc-noteref"><sup>.*<\/sup><\/a>//g' \
-        -e 's/<a href="\([[:graph:]]\+\)" title="wikilink">/<a href="https:\/\/en.wikipedia.org\/wiki\/\1" title="wikilink">/g' \
+    sed -e 's/<a href\="#fn[0-9]\+" class\="footnote-ref" id\="fnref[0-9]\+" role\="doc-noteref"><sup>[0-9]\+<\/sup><\/a>//g' \
+        -e 's/<a href="\([[:graph:]]\+\)" title="wikilink">/<a href="https:\/\/en.wikipedia.org\/wiki\/\u\1" title="wikilink">/g' \
         -e 's/ title="wikilink"//g' \
-        -e "s/{{'}}/'/g" -e "s/{{' \"}}/'\"/g" -e 's/<ref .*<\/p>$/<\/p>/g' -e 's/{{cite .*<\/p>$/<\/p>/g' -e 's/<ref>\*//g' | \
+        -e "s/{{'}}/'/g" -e "s/{{' \"}}/'\"/g"  -e 's/<ref .*<\/p>$/<\/p>/g' -e 's/{{cite .*<\/p>$/<\/p>/g' -e 's/<ref>\*//g' | \
+    fgrep -v -e '{{' -e '}}' -e '<br />' | \
 
     # 10 block elements (generally `<p>`/`<h1-3>`s) appears like a nice length on the ones I checked:
-    head -7;
+    head -4;
 
 # note truncation for reader: they can click on the title of the popup if they want to see the full original WP article.
 echo "<p>…</p>"
