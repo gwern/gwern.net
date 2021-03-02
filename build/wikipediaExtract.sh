@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-02 17:11:46 gwern"
+# When:  Time-stamp: "2021-03-02 17:51:43 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -36,8 +36,9 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
     # getting the raw image URL to hotlink or localize is too hard, so we'll just omit images beyond the thumbnail:
     egrep -v -e '^\[\[File\:' | \
 
-    # convert math templates like '{{mvar|x}}' to '<em>x</em>':
-    sed -e 's/{{mvar|\(.\)}}/<em>\1<\/em>/g' | \
+    # convert math templates like the single-variable `{{mvar|x}}` to `<em>x</em>`, and the inline math `{{math|1=''f''<sub>1</sub> = 0, ..., ''f''<sub>''h''</sub> = 0}}` (which requires non-greedy regexps because spaces are inside it and just matching `{{math|.*}}` will chomp up all following templates) to just that:
+    sed -e 's/{{mvar|\([[:graph:]]\+\)}}/<em>\1<\/em>/g' | \
+        perl -pi -e  's/\{\{math\|(.*?)}}/\1/g' | \
 
     # MediaWiki templates & tables are not supported by Pandoc and will crash it, so strip those out: targeting '{{', '{-', '|-', ' |' etc ## TODO: parsing templates is really complex and regexps don't work too well so many pages get messed up or have garbage in them, but on the other hand, if we don't strip at all, Pandoc may crash on templates/tables... right now, we fall back to the simplistic Preview API version. We'll see if crashes are rare enough to make that the best tradeoff.
     # sed -e 's/^{{.*}}$//g' -e '/^{{/,/^}}/d' -e '/^{|/,/^|}/d' | \
