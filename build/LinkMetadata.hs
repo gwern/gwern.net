@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-01 16:50:26 gwern"
+When:  Time-stamp: "2021-03-02 13:58:47 gwern"
 License: CC-0
 -}
 
@@ -372,21 +372,21 @@ doi2Abstract doi = if length doi < 7 then return Nothing
 data WP = WP { title :: !String, extract_html :: !String, thumbnail :: Maybe Object } deriving (Show,Generic)
 instance FromJSON WP
 wikipedia p
-  | "https://en.wikipedia.org/wiki/Special" `isPrefixOf` p = return Nothing
-  | "https://en.wikipedia.org/wiki/User:" `isPrefixOf` p = return Nothing
-  | "https://en.wikipedia.org/wiki/Talk:" `isPrefixOf` p = return Nothing
-  | "https://en.wikipedia.org/wiki/Category:" `isPrefixOf` p = return Nothing
-  | otherwise = do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
-                   let p'' = [toUpper (head p')] ++ tail p'
-                   let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
-                   let rq = "https://en.wikipedia.org/api/rest_v1/page/summary/"++p'''++"?redirect=true"
-                   -- get the thumbnail+disambig status from the Page Preview API, and get the introduction HTML from the old API via wikipediaExtract.sh (see that for discussion of the limitations of the Page Preview API and why I have to do it the hard way)
-                   -- NOTE: `--location` is required or redirects will not be followed by *curl*; '?redirect=true' only makes the *API* follow redirects
-                   (status1,_,bsPreview) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", rq, "--user-agent", "gwern+wikipediascraping@gwern.net"]
-                   (status2,_,bAbstract) <- runShellCommand "./" Nothing "wikipediaExtract.sh" [p''']
-                   let wpAbstract = U.toString bAbstract
+ | "https://en.wikipedia.org/wiki/Special" `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/User:" `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Talk:" `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Category:" `isPrefixOf` p = return Nothing
+ | otherwise = do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
+                  let p'' = [toUpper (head p')] ++ tail p'
+                  let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
+                  let rq = "https://en.wikipedia.org/api/rest_v1/page/summary/"++p'''++"?redirect=true"
+                  -- get the thumbnail+disambig status from the Page Preview API, and get the introduction HTML from the old API via wikipediaExtract.sh (see that for discussion of the limitations of the Page Preview API and why I have to do it the hard way)
+                  -- NOTE: `--location` is required or redirects will not be followed by *curl*; '?redirect=true' only makes the *API* follow redirects
+                  (status1,_,bsPreview) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", rq, "--user-agent", "gwern+wikipediascraping@gwern.net"]
+                  (status2,_,bAbstract) <- runShellCommand "./" Nothing "wikipediaExtract.sh" [p''']
+                  let wpAbstract = U.toString bAbstract
 
-                   when ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bsPreview && not ("disambiguation"`isInfixOf`p)) $ error ("Linked to a Wikipedia disambiguation page! " ++ p)
+                  if ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bsPreview || ("disambiguation"`isInfixOf`p)) then hPutStrLn stderr ("Linked to a Wikipedia disambiguation page! " ++ p) >> return Nothing else do
                    today <- fmap (take 10 . show) $ TC.getCurrentTime -- create dates like "2020-08-31"
                    case (status1,status2) of
                      (ExitFailure _, _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return Nothing
@@ -396,7 +396,7 @@ wikipedia p
                                Left e -> hPutStrLn stderr ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
                                Right wp -> do
                                               let wpAbstractFallback = extract_html wp
-                                              let wpAbstract' = if ("<code>|" `isInfixOf` wpAbstract || "</code><code>" `isInfixOf` wpAbstract || wpAbstract == "<p>…</p>\n") then wpAbstractFallback else wpAbstract
+                                              let wpAbstract' = if ("<code>|" `isInfixOf` wpAbstract || "</code><code>" `isInfixOf` wpAbstract || wpAbstract == "<p>…</p>\n" || wpAbstract == "<p>…</p>") then wpAbstractFallback else wpAbstract
                                               let wpTitle = title wp
                                               wpThumbnail <- case thumbnail wp of
                                                      Nothing -> return ""
