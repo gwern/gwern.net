@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-02 15:18:01 gwern"
+# When:  Time-stamp: "2021-03-02 15:23:28 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -59,4 +59,4 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
     fgrep -v -e '{{' -e '}}' -e '<br />' | \
 
     # truncate to first section or so:
-    ./truncatePandoc.hs 3;
+    runhaskell -istatic/build/ static/build/truncatePandoc.hs 3;

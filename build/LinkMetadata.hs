@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-02 13:58:47 gwern"
+When:  Time-stamp: "2021-03-02 15:38:05 gwern"
 License: CC-0
 -}
 
@@ -396,7 +396,7 @@ wikipedia p
                                Left e -> hPutStrLn stderr ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
                                Right wp -> do
                                               let wpAbstractFallback = extract_html wp
-                                              let wpAbstract' = if ("<code>|" `isInfixOf` wpAbstract || "</code><code>" `isInfixOf` wpAbstract || wpAbstract == "<p>…</p>\n" || wpAbstract == "<p>…</p>") then wpAbstractFallback else wpAbstract
+                                              let wpAbstract' = if ("<code>|" `isInfixOf` wpAbstract || "</code><code>" `isInfixOf` wpAbstract || wpAbstract == "<p>…</p>\n" || wpAbstract == "<p>…</p>" || wpAbstract == "" || wpAbstract == " <p>…</p>" || wpAbstract == "\n") then wpAbstractFallback else wpAbstract
                                               let wpTitle = title wp
                                               wpThumbnail <- case thumbnail wp of
                                                      Nothing -> return ""
