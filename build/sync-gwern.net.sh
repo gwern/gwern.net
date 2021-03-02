@@ -169,7 +169,7 @@ then
                -e 'fnref' -e '<figure class="invertible">' -e '</a<' -e 'href="%5Bhttps' -e '<jats:inline-graphic' -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref='  \
                -e '\]\(/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb\|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' \
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' -e "\. '$" \
-               -e '[a-zA-Z]\.[0-9]+ [A-Z]' -- ./metadata/*.yaml; }
+               -e '[a-zA-Z]\.[0-9]+ [A-Z]' -e '{{' -e '<<' -e '<<' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }

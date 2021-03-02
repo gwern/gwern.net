@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-02-27 20:39:09 gwern"
+When:  Time-stamp: "2021-03-01 16:50:26 gwern"
 License: CC-0
 -}
 
@@ -32,7 +32,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import qualified Data.Text as T (append, isInfixOf, head, unpack, pack, Text)
 import Data.FileStore.Utils (runShellCommand)
 import System.Exit (ExitCode(ExitFailure))
-import System.Directory (doesFileExist)
+import System.Directory (doesFileExist, getFileSize)
 import System.FilePath (takeBaseName, takeFileName, takeExtension)
 import Data.List.Utils (replace, split, uniq)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
@@ -376,21 +376,28 @@ wikipedia p
   | "https://en.wikipedia.org/wiki/User:" `isPrefixOf` p = return Nothing
   | "https://en.wikipedia.org/wiki/Talk:" `isPrefixOf` p = return Nothing
   | "https://en.wikipedia.org/wiki/Category:" `isPrefixOf` p = return Nothing
-  | otherwise = do let p' = replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
+  | otherwise = do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                    let p'' = [toUpper (head p')] ++ tail p'
                    let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
                    let rq = "https://en.wikipedia.org/api/rest_v1/page/summary/"++p'''++"?redirect=true"
-                   -- `--location` is required or redirects will not be followed by *curl*; '?redirect=true' only makes the *API* follow redirects
-                   (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", rq, "--user-agent", "gwern+wikipediascraping@gwern.net"]
-                   when ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bs) $ error ("Linked to a Wikipedia disambiguation page! " ++ p)
+                   -- get the thumbnail+disambig status from the Page Preview API, and get the introduction HTML from the old API via wikipediaExtract.sh (see that for discussion of the limitations of the Page Preview API and why I have to do it the hard way)
+                   -- NOTE: `--location` is required or redirects will not be followed by *curl*; '?redirect=true' only makes the *API* follow redirects
+                   (status1,_,bsPreview) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", rq, "--user-agent", "gwern+wikipediascraping@gwern.net"]
+                   (status2,_,bAbstract) <- runShellCommand "./" Nothing "wikipediaExtract.sh" [p''']
+                   let wpAbstract = U.toString bAbstract
+
+                   when ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bsPreview && not ("disambiguation"`isInfixOf`p)) $ error ("Linked to a Wikipedia disambiguation page! " ++ p)
                    today <- fmap (take 10 . show) $ TC.getCurrentTime -- create dates like "2020-08-31"
-                   case status of
-                     ExitFailure _ -> hPutStrLn stderr ("Wikipedia tooltip failed: " ++ p''') >> return Nothing
-                     _ -> let j = eitherDecode bs :: Either String WP
+                   case (status1,status2) of
+                     (ExitFailure _, _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return Nothing
+                     (_, ExitFailure _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return Nothing
+                     (_,_) -> let j = eitherDecode bsPreview :: Either String WP
                           in case j of
                                Left e -> hPutStrLn stderr ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
-                               Right wp -> do let wpTitle = title wp
-                                              let wpAbstract = extract_html wp
+                               Right wp -> do
+                                              let wpAbstractFallback = extract_html wp
+                                              let wpAbstract' = if ("<code>|" `isInfixOf` wpAbstract || "</code><code>" `isInfixOf` wpAbstract || wpAbstract == "<p>…</p>\n") then wpAbstractFallback else wpAbstract
+                                              let wpTitle = title wp
                                               wpThumbnail <- case thumbnail wp of
                                                      Nothing -> return ""
                                                      Just thumbnailObject -> case (HM.lookup "source" thumbnailObject) of
@@ -402,8 +409,8 @@ wikipedia p
                                                                                                         return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (replace "%20" " " $ replace "%2F" "/" $ urlEncode newThumbnail) ++ "\" alt=\"Wikipedia thumbnail image of '" ++ urlEncode wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
-                                                                                                          let wpAbstract' = cleanAbstractsHTML wpAbstract in
-                                                                                                          wpThumbnail ++ wpAbstract'))
+                                                                                                          let wpAbstract'' = cleanAbstractsHTML wpAbstract' in
+                                                                                                          wpThumbnail ++ wpAbstract''))
 
 downloadWPThumbnail :: FilePath -> IO FilePath
 downloadWPThumbnail href = do
@@ -411,6 +418,12 @@ downloadWPThumbnail href = do
   filep <- doesFileExist f
   when (not filep ) $ void $
     runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+  -- try running it again because of occasional download glitches, otherwise error out:
+  fileSize <- getFileSize f
+  when (fileSize == 0) $ do
+    void $ runShellCommand "./" Nothing "curl" ["--location", "--silent", "--user-agent", "gwern+wikipediascraping@gwern.net", href, "--output", f]
+    fileSize' <- getFileSize f
+    when (fileSize' == 0) $ error $ "Failed to download file: " ++ href ++ " : " ++ f
   let ext = map toLower $ takeExtension f
   if ext == ".png" then do -- lossily optimize using my pngnq/mozjpeg scripts:
                      void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [f]
@@ -503,6 +516,10 @@ processArxivAbstract u a = let cleaned = runPure $ do
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML t = trim $
   -- regexp substitutions:
+  (\s -> subRegex (mkRegex "([a-zA-Z]) – ([[:punct:]])") s "\\1—\\2") $ -- en dash errors in WP abstracts: usually meant em-dash. eg 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
+  (\s -> subRegex (mkRegex "([[:punct:]]) – ([a-zA-Z])") s "\\1—\\2") $
+  (\s -> subRegex (mkRegex "([a-zA-Z]) – ([a-zA-Z])") s "\\1—\\2") $ -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
+  (\s -> subRegex (mkRegex "([a-zA-Z]) - ([a-zA-Z])") s "\\1—\\2") $ -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
   (\s -> subRegex (mkRegex "([.0-9]+)x") s "\\1×") $
   (\s -> subRegex (mkRegex "=-\\.([.0-9]+)") s " = -0.\\1") $
   (\s -> subRegex (mkRegex " ([0-9]*[02456789])th") s " \\1<sup>th</sup>") $
@@ -556,6 +573,10 @@ cleanAbstractsHTML t = trim $
     , ("</title>", "")
     , ("   <title/>    <p>", "<p>")
     , ("  <p>", "<p>")
+    , (" h2",     " <em>h</em><sup>2</sup>")
+    , ("h(2)",    "<em>h</em><sup>2</sup>")
+    , ("</h2>", "</strong></p>")
+    , ("<h2>", "<p><strong>")
     , ("</h3>", "</strong></p>")
     , ("<h3>", "<p><strong>")
     , ("<br/><h3>", "<h3>")
@@ -792,9 +813,6 @@ cleanAbstractsHTML t = trim $
     , ("<i><em>h</em><sup>2</sup></i>", "<em>h</em><sup>2</sup>")
     , ("<i><em>h</em><sup>2</sup><sub>SNP</sub></i>", "<em>h</em><sup>2</sup><sub>SNP</sub>")
     , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
-    , (" h2",     " <em>h</em><sup>2</sup>")
-    , ("h2 ",     "<em>h</em><sup>2</sup> ")
-    , ("h(2)",    "<em>h</em><sup>2</sup>")
     , ("<em>r</em> <sub>g</sub>", "<em>r</em><sub>g</sub>")
     , ("r(g)",    "<em>r</em><sub><em>g</em></sub>")
     , (" rg ", " <em>r</em><sub><em>g</em></sub> ")
@@ -872,17 +890,17 @@ cleanAbstractsHTML t = trim $
     , (" 3x", " 3×")
     , ("<p> ", "<p>")
     , ("+/-", "±")
-    , ("11th", "11<sup>th</sup>")
-    , ("12th", "12<sup>th</sup>")
-    , ("13th", "13<sup>th</sup>")
-    , ("14th", "14<sup>th</sup>")
-    , ("15th", "15<sup>th</sup>")
-    , ("16th", "16<sup>th</sup>")
-    , ("17th", "17<sup>th</sup>")
-    , ("18th", "18<sup>th</sup>")
-    , ("19th", "19<sup>th</sup>")
-    , ("20th", "20<sup>th</sup>")
-    , ("21st", "21<sup>st</sup>")
+    , (" 11th", " 11<sup>th</sup>")
+    , (" 12th", " 12<sup>th</sup>")
+    , (" 13th", " 13<sup>th</sup>")
+    , (" 14th", " 14<sup>th</sup>")
+    , (" 15th", " 15<sup>th</sup>")
+    , (" 16th", " 16<sup>th</sup>")
+    , (" 17th", " 17<sup>th</sup>")
+    , (" 18th", " 18<sup>th</sup>")
+    , (" 19th", " 19<sup>th</sup>")
+    , (" 20th", " 20<sup>th</sup>")
+    , (" 21st", " 21<sup>st</sup>")
     , ("\"21st", "\"21<sup>st</sup>")
     , ("early-12th", "early-12<sup>th</sup>")
     , ("mid-21st", "mid-21<sup>st</sup>")
