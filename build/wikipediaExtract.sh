@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-02 15:23:28 gwern"
+# When:  Time-stamp: "2021-03-02 16:32:20 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -53,6 +53,7 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
 
     # but we do need to delete the footnotes, rewrite the relative links to absolute links to En, delete extraneous 'title=' parameters, clean up stray templates & references:
     sed -e 's/<a href\="#fn[0-9]\+" class\="footnote-ref" id\="fnref[0-9]\+" role\="doc-noteref"><sup>[0-9]\+<\/sup><\/a>//g' \
+        -e 's/<a href\="#[[:graph:]]\+" title="wikilink">\([[:graph:]]\+\)<\/a>/<strong>\1<\/strong>/g' \
         -e 's/<a href="\([[:graph:]]\+\)" title="wikilink">/<a href="https:\/\/en.wikipedia.org\/wiki\/\u\1" title="wikilink">/g' \
         -e 's/ title="wikilink"//g' \
         -e "s/{{'}}/'/g" -e "s/{{' \"}}/'\"/g"  -e 's/<ref .*<\/p>$/<\/p>/g' -e 's/{{cite .*<\/p>$/<\/p>/g' -e 's/<ref>\*//g' | \
