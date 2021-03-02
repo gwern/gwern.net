@@ -7,9 +7,9 @@
 
 module Main where
 
-import Text.Pandoc (def, extensionsFromList, queryWith, readerExtensions, readMarkdown, runIOorExplode,
+import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
                      pandocExtensions, Inline(Link), Pandoc)
-import Data.Text as T (append, drop, pack, unlines, Text)
+import Data.Text as T (append,  pack, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStr)
 import System.Environment (getArgs)
 
@@ -17,7 +17,7 @@ import System.Environment (getArgs)
 main :: IO ()
 main = do
   fs <- getArgs
-  let printfilename = (fs !! 0) == "--print-filenames"
+  let printfilename = (head fs) == "--print-filenames"
   let fs' = if printfilename then Prelude.drop 1 fs else fs
   mapM_ (printURLs printfilename) fs'
 
@@ -25,17 +25,17 @@ main = do
 printURLs :: Bool -> FilePath -> IO ()
 printURLs printfilename file = do
   input <- TIO.readFile file
-  converted <- extractLinks input
+  let converted = extractLinks input
   if printfilename then TIO.putStr $ T.unlines $ Prelude.map (\url -> (T.pack file) `T.append` ":" `T.append` url) converted else
-     TIO.putStr $ T.unlines $ converted
+     TIO.putStr $ T.unlines converted
 
 -- | Read one Text string and return its URLs (as Strings)
-extractLinks :: Text -> IO [T.Text]
-extractLinks txt = runIOorExplode $
-  -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
-  do parsed <- readMarkdown def{readerExtensions = pandocExtensions } txt
-     let links = extractURLs parsed
-     return links
+extractLinks :: Text -> [T.Text]
+extractLinks txt = let parsedEither = runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
+                        -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
+                   in case parsedEither of
+                              Left _ -> []
+                              Right links -> extractURLs links
 
 -- | Read 1 Pandoc AST and return its URLs as Strings
 extractURLs :: Pandoc -> [T.Text]
