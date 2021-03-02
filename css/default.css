@@ -2809,14 +2809,14 @@ body.directory-index #disqus_thread {
     max-width: unset;
 }
 
-.popframe blockquote:first-child,
-.popframe .table-wrapper:first-child,
-.popframe div.sourceCode:first-child pre {
+.popframe .popframe-content-view > blockquote:first-child,
+.popframe .popframe-content-view > .table-wrapper:first-child,
+.popframe .popframe-content-view > div.sourceCode:first-child pre {
     margin-top: calc(3em/9);
 }
-.popframe blockquote:last-child,
-.popframe .table-wrapper:last-child,
-.popframe div.sourceCode:last-child pre {
+.popframe .popframe-content-view > blockquote:last-child,
+.popframe .popframe-content-view > .table-wrapper:last-child,
+.popframe .popframe-content-view > div.sourceCode:last-child pre {
     margin-bottom: calc(1em/9);
 }
 
