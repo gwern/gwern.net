@@ -52,7 +52,7 @@ then
     ghci -v0 -istatic/build/ ./static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; return $ length md; }' &> /dev/null
 
     bold "Check/update VCS..."
-    cd ./static/ # && (git status; git pull; git push &)
+    cd ./static/ && (git status; git pull; git push &)
     cd ./build/
     # Cleanup pre:
     rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
