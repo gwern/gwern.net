@@ -563,9 +563,9 @@ Extracts = {
 				Popups.spawnPopup(target);
 			} else if (Extracts.popFrameProvider == Popins) {
 				Extracts.fillPopFrame(target.popin);
-				Extracts.rewritePopinContent(target.popin);
-
 				target.popin.classList.toggle("loading", false);
+
+				Extracts.rewritePopinContent(target.popin);
 			}
 		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 
@@ -1109,13 +1109,6 @@ Extracts = {
 		//  Add ‘markdownBody’ class.
 		popin.contentView.classList.add("markdownBody");
 
-		/*  Situationally prevent spawning of citation links: do not spawn 
-			footnote popin if the {side|foot}note it points to is visible.
-			*/
-// 		if (   Extracts.isCitation(target) 
-// 			&& Array.from(allNotesForCitation(target)).findIndex(note => Popins.isVisible(note)) != -1)
-// 			return null;
-
 		//  Attempt to load annotation, if need be.
 		if (   Extracts.isExtractLink(target)
 			|| Extracts.isDefinition(target)) {
@@ -1176,15 +1169,6 @@ Extracts = {
 
 			//  Remove extraneous classes from images in image popins.
 			image.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
-		}
-
-		//  Allow for floated figures at the start of abstract.
-		if (   Extracts.isExtractLink(target)
-			|| Extracts.isDefinition(target)) {
-			let initialFigure = popin.querySelector(".annotation-abstract > figure.float-right:first-child");
-			if (initialFigure) {
-				popin.contentView.insertBefore(initialFigure, popin.contentView.firstElementChild);
-			}
 		}
 
 		//  Rectify margin note style.

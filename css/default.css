@@ -38,6 +38,7 @@
     --GW-popups-image-popup-min-size: 64px;
 
     --GW-popins-popin-max-height: 50vh;
+    --GW-popins-popin-min-height: 120px;
     --GW-popins-popin-border-width: 3px;
     --GW-popins-popin-title-bar-height: 1.5rem;
 }
@@ -3902,8 +3903,9 @@ body.directory-index #disqus_thread {
     float: left;
     width: 100%;
     max-height: var(--GW-popins-popin-max-height);
+    min-height: var(--GW-popins-popin-min-height);
     overflow: visible;
-    z-index: 1;
+    z-index: 11;
 
     margin: 1em 0;
 
@@ -3923,9 +3925,10 @@ body.directory-index #disqus_thread {
 
 .popin .popframe-title-bar {
     position: absolute;
-    right: -3px;
+    right: calc(-1 * var(--GW-popins-popin-border-width));
     bottom: calc(100%);
     height: calc(var(--GW-popins-popin-border-width) + var(--GW-popins-popin-title-bar-height));
+	max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)));
     border-style: double;
     border-color: var(--GW-popins-popin-border-color);
     border-width:  var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
@@ -3947,20 +3950,25 @@ body.directory-index #disqus_thread {
 /*  Popin title.
     */
 .popin .popframe-title {
+    display: flex;
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
     flex: 1 1 100%;
-    /*  Extra 1.5rem padding on left to accommodate extra button. */
     padding: 0 1rem;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
     text-decoration: none;
     text-align: center;
     text-indent: 0;
 }
 .popin .popframe-title::after {
     display: none;
+}
+
+.popin .popframe-title-link {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /*  Buttons in the popin title bar.
@@ -4107,6 +4115,10 @@ body.directory-index #disqus_thread {
 /*│ Footnote popins. │*/
 /*└──────────────────┘*/
 
+.popin.footnote {
+	min-height: unset;
+}
+
 /*┌──────────────────────────┐*/
 /*│ Citation context popins. │*/
 /*└──────────────────────────┘*/
@@ -4164,10 +4176,47 @@ body.directory-index #disqus_thread {
     width: 100%;
 }
 
+/*=---------------=*/
+/*= POPIN CONTENT =*/
+/*=---------------=*/
+/*  Adjustments for styles in popins.
+    */
+
+/*┌──────────────┐*/
+/*│ Style reset. │*/
+/*└──────────────┘*/
+
+.popin {
+	white-space: normal;
+	font-weight: normal;
+	font-style: normal;
+    font-size: var(--GW-body-text-font-size);
+    text-align: unset;
+}
+
+/*┌───────────────────────┐*/
+/*│ Specific adjustments. │*/
+/*└───────────────────────┘*/
+
+.popin .markdownBody p {
+	text-align: justify;
+}
+
+/*	Page metadata block in local page embed popups.
+	*/
+.popin #page-metadata-block span:nth-of-type(3) {
+	white-space: normal;
+	display: block;
+}
+.popin #page-metadata-block > span:nth-child(n+2)::after {
+	content: none;
+}
+
 /*********************/
 /* SEQUENTIAL NAV UI */
 /*********************/
 /* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg ) */
+
 @media only screen and (max-width: 649px) {
     #navigation { display: none; }
 }
