@@ -600,6 +600,50 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	cleanUpImageAltText(info);
 }, { phase: "rewrite", condition: (info) => info.needsRewrite });
 
+/*************/
+/* DROP CAPS */
+/*************/
+
+/*******************************************************/
+/*	Apply classes to blocks that should have a drop cap.
+	*/
+function applyDropCapsClasses(loadEventInfo) {
+	GWLog("applyDropCapsClasses", "rewrite.js", 1);
+
+// 	if (loadEventInfo.isMainDocument) {
+		//	In the main document, add ‘drop-cap-’ class to requisite blocks.
+		let dropCapBlocksSelector = ".markdownBody > p:first-child, .markdownBody > .epigraph:first-child + p, .markdownBody .abstract + p";
+		let dropCapClass = Array.from(loadEventInfo.document.querySelector("body").classList).find(cssClass => cssClass.startsWith("drop-caps-"));
+		if (dropCapClass) {
+			dropCapClass = dropCapClass.replace("-caps-", "-cap-");
+			loadEventInfo.document.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
+				/*	Only add page-global drop cap class to blocks that don’t
+					already have a drop cap class of their own.
+					*/
+				if (Array.from(dropCapBlock.classList).findIndex(cssClass => cssClass.startsWith("drop-cap-")) == -1)
+					dropCapBlock.classList.add(dropCapClass);
+			});
+		}
+// 	} else {
+		//	In injected content, strip ‘drop-cap-’ classes from all blocks.
+// 		loadEventInfo.document.querySelectorAll("*[class*='drop-cap-']").forEach(dropCapBlock => {
+// 			dropCapBlock.classList.forEach(cssClass => {
+// 				if (cssClass.startsWith("drop-cap-"))
+// 					dropCapBlock.classList.remove(cssClass);
+// 			});
+// 		});
+// 	}
+}
+
+/******************************************/
+/*	Add content load handler for drop caps.
+	*/
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processDropCaps = (info) => {
+	GWLog("GW.rewriteFunctions.processDropCaps", "rewrite.js", 2);
+
+	applyDropCapsClasses(info);
+}, { phase: "rewrite", condition: (info) => (info.needsRewrite && info.isMainDocument) });
+
 /********************/
 /* BACK TO TOP LINK */
 /********************/
