@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-02 15:38:05 gwern"
+When:  Time-stamp: "2021-03-03 13:19:24 gwern"
 License: CC-0
 -}
 
@@ -39,6 +39,7 @@ import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, 
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
+import Text.Regex.Posix ((=~))
 import Data.Maybe (Maybe)
 import Data.Text.IO as TIO (readFile, writeFile)
 import System.IO (stderr, hPutStrLn)
@@ -242,12 +243,9 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
-                                           -- check very quickly whether the path/key is already in newest on-disk version, to avoid potential duplicate instances
-                                           -- (duplicates do not cause errors, but they bloat the file, and the existence of duplicates makes it harder to lint & edit)
-                                           newest <- TIO.readFile "metadata/auto.yaml"
-                                           when (not $ T.pack ("\n- - " ++ l ++ "\n") `T.isInfixOf` newest) $
-                                              do let newYaml = Y.encode [(l,t,a,d,di,abst)]
-                                                 B.appendFile "metadata/auto.yaml" newYaml
+                                           -- we do deduplication in rewriteLinkMetadata (when constructing the Map) on startup, so no need to check here, just blind write:
+                                           let newYaml = Y.encode [(l,t,a,d,di,abst)]
+                                           B.appendFile "metadata/auto.yaml" newYaml
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
 restoreFloatRight :: String -> String -> String
@@ -372,10 +370,27 @@ doi2Abstract doi = if length doi < 7 then return Nothing
 data WP = WP { title :: !String, extract_html :: !String, thumbnail :: Maybe Object } deriving (Show,Generic)
 instance FromJSON WP
 wikipedia p
- | "https://en.wikipedia.org/wiki/Special" `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/User:" `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Talk:" `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Category:" `isPrefixOf` p = return Nothing
+ -- Namespaces to skip:
+ | "https://en.wikipedia.org/wiki/Special"     `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/User:"       `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Talk:"       `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Category:"   `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Wikipedia:"  `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/File:"       `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Talk:"       `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Template:"   `isPrefixOf` p = return Nothing
+ -- Content articles to skip:
+ | "https://en.wikipedia.org/wiki/List_of_" `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Table_of_" `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/AD_"      `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/BC_"      `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/17776_"   `isPrefixOf` p = return Nothing
+ | "#cite_note-"                            `isInfixOf`  p = return Nothing
+ | "_century"                               `isSuffixOf` p = return Nothing
+ | p =~ ("[0-9][0-9][0-9][0-9]_in_[a-zA-Z]+"::String) = return Nothing -- '1490_in_Poetry'
+ | p =~ ("[0-9][0-9][0-9][0-9]s_in_[a-zA-Z]+"::String)= return Nothing -- '1500s_in_architecture'
+ | p =~ ("[0-9]+"::String)= return Nothing -- number/year articles
+ | p =~ ("[[:graph:]]#[[:graph:]]#"::String)= return Nothing -- redirects cause weirdnesses with target links, eg 'https://en.wikipedia.org/wiki/17776_Troska#201#801#801'
  | otherwise = do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
                   let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
