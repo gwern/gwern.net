@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-01 17:05:51 gwern"
+# When:  Time-stamp: "2021-03-02 15:23:28 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -58,8 +58,5 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
         -e "s/{{'}}/'/g" -e "s/{{' \"}}/'\"/g"  -e 's/<ref .*<\/p>$/<\/p>/g' -e 's/{{cite .*<\/p>$/<\/p>/g' -e 's/<ref>\*//g' | \
     fgrep -v -e '{{' -e '}}' -e '<br />' | \
 
-    # 10 block elements (generally `<p>`/`<h1-3>`s) appears like a nice length on the ones I checked:
-    head -4;
-
-# note truncation for reader: they can click on the title of the popup if they want to see the full original WP article.
-echo "<p>…</p>"
+    # truncate to first section or so:
+    runhaskell -istatic/build/ static/build/truncatePandoc.hs 3;
