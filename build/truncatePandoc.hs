@@ -1,11 +1,11 @@
 #!/usr/bin/env runhaskell
 -- dependencies: libghc-pandoc-dev
 
--- usage: './truncatePandoc.hs n'; parses HTML5 input into Pandoc Markdown AST, takes the first _n_ block-level elements, appends an ellipsis to denote truncation if truncation was necessary, and compiles back to HTML5
+-- usage: './truncatePandoc.hs n'; parses HTML5 input into Pandoc Markdown AST, deletes headers, takes the first _n_ block-level elements, appends an ellipsis to denote truncation if truncation was necessary, and compiles back to HTML5
 
 module Main where
 
-import Text.Pandoc (readerExtensions, writerExtensions, Pandoc(Pandoc), pandocExtensions, def, runPure, nullMeta, readHtml, writeHtml5String, Block(Para), Inline(Str))
+import Text.Pandoc (readerExtensions, writerExtensions, Pandoc(Pandoc), pandocExtensions, def, runPure, nullMeta, readHtml, writeHtml5String, Block(Para, Header), Inline(Str))
 import System.Environment (getArgs)
 import System.IO (getContents)
 import qualified Data.Text as T (pack)
@@ -21,10 +21,10 @@ main = do trunc:_ <- getArgs
                                      case pandocMaybe of
                                        Left err -> Debug.Trace.trace (show err) (Pandoc nullMeta [])
                                        Right pandoc -> pandoc
+          let blocks' = filter (\b -> case b of { Header{} -> False; _ -> True; }) blocks
+          let blocks'' = take truncationLength blocks' ++ if length blocks' > truncationLength then [Para [Str $ T.pack "…"]] else []
 
-          let blocks' = take truncationLength blocks ++ if length blocks > truncationLength then [Para [Str $ T.pack "…"]] else []
-
-          let docEither =  runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc m blocks')
+          let docEither =  runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc m blocks'')
           case docEither of
-            Left e -> error $ show e ++ show blocks'
+            Left e -> error $ show e ++ show blocks''
             Right doc' -> TIO.putStrLn doc'
