@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-02 21:41:22 gwern"
+# When:  Time-stamp: "2021-03-03 15:38:45 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -53,4 +53,7 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
         -e 's/ src="\/\// src="https:\/\//g' -e 's/ srcset="\/\// srcset="https:\/\//g' \
         -e 's/<span class="mw-ref reference" id="cite_ref-[[:graph:]]\+"><a href="#cite_note-[[:graph:]]\+-[0-9]\+" style="counter-reset: mw-Ref [0-9]\+;"><span class="mw-reflink-text">\[[0-9]\+\]<\/span><\/a><\/span>//g' \
         -e 's/<span class="mw-ref reference" id="cite_ref-[0-9]\+"><a href="#cite_note-[0-9]\+" style="counter-reset: mw-Ref [0-9]\+;"><span class="mw-reflink-text">\[[0-9]\+\]<\/span><\/a><\/span>//g' \
-        -e 's/<span id="cite_ref-[[:graph:]]\+" class="mw-ref reference"><a href="#cite_note-[[:graph:]]\+"><span class="mw-reflink-text">\[[0-9]\+\]<\/span><\/a><\/span>//g'
+        -e 's/<span id="cite_ref-[[:graph:]]\+" class="mw-ref reference"><a href="#cite_note-[[:graph:]]\+"><span class="mw-reflink-text">\[[0-9]\+\]<\/span><\/a><\/span>//g' \
+        -e 's/<span class="mw-ref reference"><a href="#cite_note-[[:graph:]]\+"><span class="mw-reflink-text">\[[[:graph:]]\+\]<\/span><\/a><\/span><\/span>//g' \
+        -e 's/<span id="cite_ref-[[:graph:]]\+" class="mw-ref reference"><a href="#cite_note-[[:graph:]]\+"><span class="mw-reflink-text">\[[[:graph:]]\+ [[:graph:]]\+\]<\/span><\/a><\/span>//g' \
+        -e 's/<span class="mw-ref reference"><a href="#cite_note[[:graph:]]\+"><span class="mw-reflink-text">\[[[:graph:]]\+\]<\/span><\/a><\/span>//g'
