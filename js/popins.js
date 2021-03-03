@@ -221,6 +221,11 @@ Popins = {
 
 		//  Inject the popin.
 		if (containingDocument.popin) {
+			/*  Save the parent popup’s scroll state when pushing it down the 
+				‘stack’.
+				*/
+			containingDocument.popin.lastScrollTop = containingDocument.popin.scrollView.scrollTop;
+
 			containingDocument.popin.parentElement.insertBefore(target.popin, containingDocument.popin);
 		} else {
 			target.parentElement.insertBefore(target.popin, target.nextSibling);
@@ -234,8 +239,15 @@ Popins = {
 	removePopin: (popin) => {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
+		//  If there’s another popin in the ‘stack’ below this one…
+		let popinBelow = (popin.nextElementSibling && popin.nextElementSibling.classList.contains("popin")) ? popin.nextElementSibling : null;
+
 		//  Remove popin from page.
 		popin.remove();
+
+		//  … restore its scroll state.
+		if (popinBelow)
+			popinBelow.scrollView.scrollTop = popinBelow.lastScrollTop;
 
 		//  Detach popin from its spawning target.
 		Popins.detachPopinFromTarget(popin);
