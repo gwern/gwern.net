@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-03 15:47:07 gwern"
+When:  Time-stamp: "2021-03-03 15:52:10 gwern"
 License: CC-0
 -}
 
@@ -376,6 +376,7 @@ wikipedia p
  | "https://en.wikipedia.org/wiki/Talk:"          `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/Category:"      `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/Wikipedia:"     `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Wikipedia_talk:"`isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/File:"          `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/Talk:"          `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/Template:"      `isPrefixOf` p = return Nothing
@@ -393,7 +394,7 @@ wikipedia p
  | p =~ ("[0-9][0-9][0-9][0-9]_in_[a-zA-Z]+"::String)                        = return Nothing -- '1490_in_Poetry'
  | p =~ ("[0-9][0-9][0-9][0-9]s_in_[a-zA-Z]+"::String)                       = return Nothing -- '1500s_in_architecture'
  | p =~ ("^[0-9]+"::String) = return Nothing -- number/year articles
- | p =~ ("[[:graph:]]+#[[:graph:]]+#"::String)                               = return Nothing -- redirects cause weirdnesses with target links, eg 'https://en.wikipedia.org/wiki/17776_Troska#201#801#801'
+ | p =~ ("[[:graph:]]+#[[:graph:]]+#"::String)                               = return Nothing -- redirects cause weirdness with target links, eg 'https://en.wikipedia.org/wiki/17776_Troska#201#801#801'
  | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Winter_Olympics"::String) = return Nothing -- hundreds of sports pages for every Olympics...
  | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Summer_Olympics"::String) = return Nothing
  | "_century" `isSuffixOf` p = return Nothing
