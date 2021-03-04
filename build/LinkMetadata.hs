@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-04 11:51:24 gwern"
+When:  Time-stamp: "2021-03-04 14:59:32 gwern"
 License: CC-0
 -}
 
@@ -400,18 +400,22 @@ wikipedia p
  | "Football"   `isInfixOf` p = return Nothing
  | "NFL"        `isInfixOf` p = return Nothing
  | "NBA"        `isInfixOf` p = return Nothing
- | "Bowl"        `isInfixOf` p = return Nothing
+ | "Bowl"       `isInfixOf` p = return Nothing
+ | "Olympic"    `isInfixOf` p = return Nothing
  | p =~ ("[0-9][0-9][0-9][0-9]_in_[a-zA-Z]+"::String)                        = return Nothing -- '1490_in_Poetry'
  | p =~ ("[0-9][0-9][0-9][0-9]s_in_[a-zA-Z]+"::String)                       = return Nothing -- '1500s_in_architecture'
  | p =~ ("^[0-9]+"::String) = return Nothing -- number/year articles
  | p =~ ("[[:graph:]]+#[[:graph:]]+#"::String)                               = return Nothing -- redirects cause weirdness with target links, eg 'https://en.wikipedia.org/wiki/17776_Troska#201#801#801'
  | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Winter_Olympics"::String) = return Nothing -- hundreds of sports pages for every Olympics...
  | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Summer_Olympics"::String) = return Nothing
- | "_century" `isSuffixOf` p = return Nothing
- | "_season"  `isSuffixOf` p = return Nothing
+ | "_century"     `isSuffixOf` p = return Nothing
+ | "_season"      `isSuffixOf` p = return Nothing
  | "_Tournament"  `isSuffixOf` p = return Nothing
- | "_Game"  `isSuffixOf` p = return Nothing
- | "_Series"  `isSuffixOf` p = return Nothing
+ | "_Game"        `isSuffixOf` p = return Nothing
+ | "_Series"      `isSuffixOf` p = return Nothing
+ | "_draft"       `isSuffixOf` p = return Nothing
+ | "_(safety)"    `isSuffixOf` p = return Nothing
+ | "driver)"    `isSuffixOf` p = return Nothing
  | otherwise = do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
                   let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
@@ -561,6 +565,7 @@ cleanAbstractsHTML t = trim $
   (\s -> subRegex (mkRegex " ([0-9]*[02456789])th") s " \\1<sup>th</sup>") $
   (\s -> subRegex (mkRegex " ([0-9]*[1])st") s        " \\1<sup>st</sup>") $
   (\s -> subRegex (mkRegex " ([0-9]*[3])rd") s        " \\1<sup>rd</sup>") $
+  (\s -> subRegex (mkRegex " \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)") s "") $ -- rm AERA classification tags they stick into the Crossref abstracts
   -- simple string substitutions:
   foldr (\(a,b) -> replace a b) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
@@ -955,6 +960,8 @@ cleanAbstractsHTML t = trim $
     , ("ml-1", "ml<sup>−1</sup>")
     , ("Cmax", "C<sub>max</sub>")
     , ("<small></small>", "")
+    , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
+    , (" et al. ", " et al ")
     , ("Per- formance", "Performance")
     , ("lan- guage", "language")
     , ("pro-posed", "proposed")

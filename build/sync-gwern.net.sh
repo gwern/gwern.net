@@ -86,7 +86,7 @@ then
 
     # turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>"
     bold "Adding non-breaking spaces..."
-    nonbreakSpace () {  sed -e 's/\([a-Z]\) et al \([1-2]\)/\1 et al \2/g' "$@"; }
+    nonbreakSpace () {  sed -i -e 's/\([a-zA-Z]\) et al \([1-2]\)/\1 et al \2/g' "$@"; }; export -f nonbreakSpace;
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel nonbreakSpace || true
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
