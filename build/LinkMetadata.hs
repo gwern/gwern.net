@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-03 19:58:59 gwern"
+When:  Time-stamp: "2021-03-04 11:51:24 gwern"
 License: CC-0
 -}
 
@@ -392,8 +392,15 @@ wikipedia p
  | "https://en.wikipedia.org/wiki/BC_"       `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/17776_"    `isPrefixOf` p = return Nothing
  | "#cite_note-"                             `isInfixOf`  p = return Nothing
- | "_election" `isInfixOf` p = return Nothing
- | "_ballot"   `isInfixOf` p = return Nothing
+ | "_election"  `isInfixOf` p = return Nothing
+ | "_ballot"    `isInfixOf` p = return Nothing
+ | "basketball" `isInfixOf` p = return Nothing
+ | "football"   `isInfixOf` p = return Nothing
+ | "Basketball" `isInfixOf` p = return Nothing
+ | "Football"   `isInfixOf` p = return Nothing
+ | "NFL"        `isInfixOf` p = return Nothing
+ | "NBA"        `isInfixOf` p = return Nothing
+ | "Bowl"        `isInfixOf` p = return Nothing
  | p =~ ("[0-9][0-9][0-9][0-9]_in_[a-zA-Z]+"::String)                        = return Nothing -- '1490_in_Poetry'
  | p =~ ("[0-9][0-9][0-9][0-9]s_in_[a-zA-Z]+"::String)                       = return Nothing -- '1500s_in_architecture'
  | p =~ ("^[0-9]+"::String) = return Nothing -- number/year articles
@@ -401,6 +408,10 @@ wikipedia p
  | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Winter_Olympics"::String) = return Nothing -- hundreds of sports pages for every Olympics...
  | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Summer_Olympics"::String) = return Nothing
  | "_century" `isSuffixOf` p = return Nothing
+ | "_season"  `isSuffixOf` p = return Nothing
+ | "_Tournament"  `isSuffixOf` p = return Nothing
+ | "_Game"  `isSuffixOf` p = return Nothing
+ | "_Series"  `isSuffixOf` p = return Nothing
  | otherwise = do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
                   let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
