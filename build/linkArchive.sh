@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2021-01-30 12:04:01 gwern"
+# When:  Time-stamp: "2021-03-03 10:58:20 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs: we ask ArchiveBox to save a URL,
@@ -84,6 +84,10 @@ if [[ -z "$FILE" ]]; then
                     --browser-extensions $(find ~/.config/chromium/Default/Extensions/* -maxdepth 0 -type d) \
                     --user-agent "$USER_AGENT" \
                     --browser-load-max-time "240000" \
+                    --load-deferred-images-max-idle-time "20000" \
+                    --max-resource-size 50 \
+                    --browser-wait-until "networkidle2" \
+                    --browser-height "10000" \
                     "$1" "$TARGET" 1>&2
 
             if [[ -f "$TARGET" ]]; then
