@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-03 15:52:10 gwern"
+When:  Time-stamp: "2021-03-03 19:58:59 gwern"
 License: CC-0
 -}
 
@@ -13,6 +13,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation) where
 
+import Control.Concurrent (forkIO)
 import Control.Monad (when, void)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
@@ -157,7 +158,7 @@ annotateLink' md target =
                        Just y@(f,m@(_,_,_,_,e)) -> do
                                        when (e=="") $ hPutStrLn stderr (f ++ ": " ++ show target ++ ": " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
-                                       writeLinkMetadata target'' m >> return True
+                                       forkIO (writeLinkMetadata target'' m) >> return True
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
@@ -381,6 +382,8 @@ wikipedia p
  | "https://en.wikipedia.org/wiki/Talk:"          `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/Template:"      `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/Template_talk:" `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Help:"          `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Help_talk:"     `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/w/index.php"         `isPrefixOf` p = return Nothing
  -- Content articles to skip:
  | "https://en.wikipedia.org/wiki/List_of_"  `isPrefixOf` p = return Nothing
