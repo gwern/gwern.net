@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-04 14:59:32 gwern"
+When:  Time-stamp: "2021-03-04 17:53:55 gwern"
 License: CC-0
 -}
 
@@ -24,7 +24,7 @@ import GHC.Generics (Generic)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (empty, filter, filterWithKey, keys, fromList, toList, lookup, traverseWithKey, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
@@ -134,13 +134,13 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
-createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink' md) $ queryWith extractLink markdown
+createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md) $ queryWith extractLink markdown
   where extractLink :: Inline -> [String]
         extractLink (Link _ _ (path, _)) = [T.unpack path]
         extractLink _ = []
 
-annotateLink' :: Metadata -> String -> IO Bool
-annotateLink' md target =
+annotateLink :: Metadata -> String -> IO Bool
+annotateLink md target =
   do when (target=="") $ error (show target)
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
      -- the leading '/' indicates this is a local Gwern.net file
@@ -151,7 +151,7 @@ annotateLink' md target =
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
        Just _  -> return False
-       Nothing -> do new <- linkDispatcher target''
+       Nothing -> do new <- linkDispatcher md target''
                      case new of
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations
                        Nothing -> writeLinkMetadata target'' ("", "", "", "", "") >> return False
@@ -236,7 +236,7 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
 rewriteLinkMetadata yaml = do old <- readYaml yaml
-                              let new = M.fromList old :: Metadata -- NOTE: constructing a Map datastructure automatically sorts/dedupes
+                              let new = M.fromList old :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
                               let newYaml = Y.encode $ map (\(a,(b,c,d,e,f)) -> (a,b,c,d,e,f)) $ -- flatten [(Path, (String, String, String, String, String))]
                                     M.toList new
                               B.writeFile yaml newYaml
@@ -302,20 +302,21 @@ generateID url author date
                                                      firstAuthorSurname ++ "-" ++ year ++ suffix'
   where url' = replace "?" "definition-" url -- definition links, like '?Portia' or '?Killing-Rabbits' are invalid HTML selectors, so substitute there to a final ID like eg '#gwern-definition-portia'
 
-linkDispatcher, wikipedia, gwern, arxiv, biorxiv, pubmed :: Path -> IO (Maybe (Path, MetadataItem))
-linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia l
-                 | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
-                 | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
-                 | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
-                 | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
-                 -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
-                 | "journals.plos.org" `isInfixOf` l = pubmed l
-                 | "plosbiology.org" `isInfixOf` l = pubmed l
-                 | "ploscompbiology.org" `isInfixOf` l = pubmed l
-                 | "plosgenetics.org" `isInfixOf` l = pubmed l
-                 | "plosmedicine.org" `isInfixOf` l = pubmed l
-                 | "plosone.org" `isInfixOf` l = pubmed l
-                 | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern $ tail l else return Nothing
+linkDispatcher, wikipedia :: Metadata -> Path -> IO (Maybe (Path, MetadataItem))
+gwern, arxiv, biorxiv, pubmed :: Path -> IO (Maybe (Path, MetadataItem))
+linkDispatcher md  l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia md l
+                     | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
+                     | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
+                     | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
+                     | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
+                     -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
+                     | "journals.plos.org" `isInfixOf` l = pubmed l
+                     | "plosbiology.org" `isInfixOf` l = pubmed l
+                     | "ploscompbiology.org" `isInfixOf` l = pubmed l
+                     | "plosgenetics.org" `isInfixOf` l = pubmed l
+                     | "plosmedicine.org" `isInfixOf` l = pubmed l
+                     | "plosone.org" `isInfixOf` l = pubmed l
+                     | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern $ tail l else return Nothing
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
@@ -370,7 +371,7 @@ doi2Abstract doi = if length doi < 7 then return Nothing
 -- WP REST API: https://en.wikipedia.org/api/rest_v1/#/Page_content/get_page_summary_title
 data WP = WP { title :: !String, extract_html :: !String, thumbnail :: Maybe Object } deriving (Show,Generic)
 instance FromJSON WP
-wikipedia p
+wikipedia md p
  -- Namespaces to skip:
  | "https://en.wikipedia.org/wiki/Special"        `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/User:"          `isPrefixOf` p = return Nothing
@@ -416,7 +417,8 @@ wikipedia p
  | "_draft"       `isSuffixOf` p = return Nothing
  | "_(safety)"    `isSuffixOf` p = return Nothing
  | "driver)"    `isSuffixOf` p = return Nothing
- | otherwise = do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
+ | checkDepth md p =
+               do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
                   let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
                   let rq = "https://en.wikipedia.org/api/rest_v1/page/summary/"++p'''++"?redirect=true"
@@ -451,6 +453,26 @@ wikipedia p
                                               return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract'' = cleanAbstractsHTML wpAbstract' in
                                                                                                           wpThumbnail ++ wpAbstract''))
+  | otherwise = return Nothing
+-- If we followed every Wikipedia link, WP interlinking, even in just the first introduction section (see extractWikipedia.sh), leads to an enormous exponential explosion, which would take forever. As cool as it would be to make every single link popup-able, no matter how many dozens of popups deep one is wikiwalking, no one will use it. So we need to limit the depth. This is hard because all annotations live in a flat memoized database and nothing 'remembers' whether they were recursive or not. calculated locally using the database: look up the parent URL and see if anyone calls...
+-- it, recursively, to figure out what implicit link depth you're now at. probably be ridiculously slow though
+-- (ie if you are generate a new WP extract 'Foo', then if you look through the entire database, and no entries call 'Foo', then it must be a
+-- gwern.net page calling you and you're at depth 0; if you look up 'Foo' and the 'Bar' entry calls 'Foo' and no one calls 'Bar', then you are at
+-- depth 1 (one level of indirection from the original WP link on gwern.net): Foo is called by Bar called by gwern.net; if 'Bar' is called by 'Baz', and no one calls 'Baz', then you...
+-- ...must be at depth 2: a gwern.net page calls Baz, which calls Bar, which calls Foo; and so on)
+-- (it'd be slow but maybe scanning over hundreds of megabytes of in-RAM text isn't too slow and it's worthwhile to avoid modifying the entire codebase)
+checkDepth :: Metadata -> Path -> Bool
+checkDepth md p = let mdWP = M.filterWithKey (\k _ -> "https://en.wikipedia.org/" `isPrefixOf` k) md in
+                      let linkPresent = M.filter (\(_, _, _, _, abtract) -> p `isInfixOf` abtract) mdWP in
+                        if  linkPresent == M.empty then True -- we are at depth 0, being called from gwern.net (ie this is for the first popup), so go ahead & crawl it
+                          else let p' = head $ M.keys linkPresent in
+                                 let linkPresent' = M.filter (\(_, _, _, _, abtract) -> p' `isInfixOf` abtract) mdWP in
+                                   if linkPresent' == M.empty then True -- we are at depth 1: our caller is called from gwern.net (this is for a popup for a popup)
+                                                             else let p'' = head $ M.keys linkPresent' in
+                                                                    let linkPresent'' = M.filter (\(_, _, _, _, abtract) -> p'' `isInfixOf` abtract) mdWP in
+          if linkPresent'' == M.empty then True -- depth 2 (a popup in a popup in a popup), but we'll stop there for now due to the exponential explosion
+                                                   else False
+
 
 downloadWPThumbnail :: FilePath -> IO FilePath
 downloadWPThumbnail href = do
