@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-05 19:04:59 gwern"
+When:  Time-stamp: "2021-03-05 23:59:02 gwern"
 License: CC-0
 -}
 
@@ -140,9 +140,9 @@ createAnnotations md rmd (Pandoc _ markdown) = mapM_ (annotateLink md rmd) $ que
 -- parse a Metadata database's values to extract all present URLs, and create a set of present URLs which will be queried by the Wikipedia recursion; we could scan over the Metadata values instead, but that leads to quadratic amounts of value scanning where it could instead be a constant-time lookup in a set (hashmap). We want to do this at the top-level, at most once per document, to amortize the O(n) scan we initially must do.
 extractLinkMapFromKeys :: Metadata -> HM.HashMap String String
 extractLinkMapFromKeys md = HM.fromListWith (\_ b -> b) $ expand $ map (\(k, (_,_,_,_,a)) -> (k, extractLinksFromHTML a)) $ M.toList md
-    where -- unfold keys for a 1:1 map: expand [("Foo", ["bar", "baz", "quux"])] → [("Foo","bar"),("Foo","baz"),("Foo","quux")]
-          expand :: [(a,[b])] -> [(a,b)]
-          expand = concatMap (\(a, bs) -> zip (repeat a) bs)
+    where -- unfold keys for a 1:1 map: expand [("Foo", ["bar", "baz", "quux"])] → [("bar","Foo"),("baz","Foo"),("quux","Foo")]
+          expand :: [(a,[b])] -> [(b,a)]
+          expand = concatMap (\(a, bs) -> zip bs (repeat a) )
 
 extractLinksFromHTML :: String -> [String]
 extractLinksFromHTML e = let pandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack e) in
@@ -448,6 +448,7 @@ wikipedia md rmd p
  | "driver)"      `isSuffixOf` p = return Nothing
  | "_station"     `isSuffixOf` p = return Nothing
  | "_U-Bahn)"     `isSuffixOf` p = return Nothing
+ | "_(number)"    `isSuffixOf` p = return Nothing
  | checkDepth md rmd p =
                do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
@@ -499,10 +500,10 @@ checkDepth md rmd p =
                           else let p' = fromJust linkPresent in
                                  let linkPresent' = HM.lookup p' rmd in
                                    if isNothing linkPresent' then True -- we are at depth 1: our caller is called from gwern.net (this is for a popup for a popup)
-                                                             else let p'' = fromJust  linkPresent' in
+                                                             else let p'' = fromJust linkPresent' in
                                                                     let linkPresent'' = HM.lookup p'' rmd in
-          if isNothing linkPresent'' then True -- depth 2 (a popup in a popup in a popup), but we'll stop there for now due to the exponential explosion
-                                                   else False
+                                                                      if isNothing linkPresent'' then True -- depth 2 (a popup in a popup in a popup), but we'll stop there for now due to the exponential explosion
+                                                                      else False
 
 
 downloadWPThumbnail :: FilePath -> IO FilePath
