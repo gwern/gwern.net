@@ -22,6 +22,18 @@ Extracts = {
 	annotationsBasePathname: "/metadata/annotations/",
 	annotationLoadHoverDelay: 25,
 
+	/*	For each target-match-function/clean-selector pair, if an annotated 
+		target is matched by the match function, remove all elements within the
+		abstract that match the selector.
+		*/
+	annotationAbstractCleanPatterns: [
+		[
+			(target) => (   target.hostname == "en.wikipedia.org" 
+						 && /\/wiki\/.+/.test(target.pathname)),
+			".mw-ref, .hatnote, .box-Expand_language"
+		]
+	],
+
 	/*	Target containers.
 		*/
 	contentContainersSelector: ".markdownBody, #TOC, #page-metadata, #sidebar",
@@ -110,6 +122,7 @@ Extracts = {
 
 		Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, restoreTarget);
     },
+
     cleanup: () => {
 		GWLog("Extracts.cleanup", "extracts.js", 1);
 
@@ -139,6 +152,7 @@ Extracts = {
 
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
+
     addTargetsWithin: (container) => {
  		GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
@@ -148,6 +162,7 @@ Extracts = {
     		Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin);
     	}
     },
+
     setUpAnnotationLoadEventWithin: (container) => {
 		GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts.js", 1);
 
@@ -195,6 +210,7 @@ Extracts = {
 		
 		}
     },
+
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
@@ -538,6 +554,19 @@ Extracts = {
 			}
 		});
     },
+
+	/*	Clean the abstract of an annotation pop-frame, according to the
+		annotationAbstractCleanPatterns.
+		*/
+	cleanAnnotationAbstractInPopFrame: (popFrame) => {
+		let target = popFrame.spawningTarget;
+		for ([ testFunction, cleanPattern ] of Extracts.annotationAbstractCleanPatterns) {
+			if (testFunction(target))
+				popFrame.querySelector(".annotation-abstract").querySelectorAll(cleanPattern).forEach(element => {
+					element.remove();
+				});
+		}
+	},
 
 	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
 		its annotation (fragment) loads.
@@ -1171,6 +1200,10 @@ Extracts = {
 			image.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
 		}
 
+		//  Clean abstract of annotations.
+		if (Extracts.isExtractLink(target) || Extracts.isDefinition(target))
+			Extracts.cleanAnnotationAbstractInPopFrame(popin);
+
 		//  Rectify margin note style.
 		popin.querySelectorAll(".marginnote").forEach(marginNote => {
 			marginNote.swapClasses([ "inline", "sidenote" ], 0);
@@ -1319,11 +1352,6 @@ Extracts = {
 		if (Extracts.isTOCLink(target)) {
 			//  Designate section links spawned by the TOC (for special styling).
 			popup.classList.add("toc-section");
-		} else if (Extracts.isLocalCodeFileLink(target)) {
-			//  Remove click listener from code popups, to allow selection.
-// 			GW.notificationCenter.addHandlerForEvent("Popups.popupDidSpawn", (info) => {
-// 				popup.removeEventListener("click", Popups.popupClicked);
-// 			}, { once: true });
 		} else if (Extracts.isCitation(target)) {
 			/*  Add event listeners to highlight citation when its footnote
 				popup is spawned.
@@ -1427,6 +1455,10 @@ Extracts = {
 			if (popup.querySelector("img[width][height]"))
 				popup.classList.add("dimensions-specified");
 		}
+
+		//  Clean abstract of annotations.
+		if (Extracts.isExtractLink(target) || Extracts.isDefinition(target))
+			Extracts.cleanAnnotationAbstractInPopFrame(popup);
 
 		//  Ensure no reflow due to figures.
 		popup.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
