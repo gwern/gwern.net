@@ -954,6 +954,8 @@ Extracts = {
 		} else if (/(.+?)\.wikipedia\.org/.test(url.hostname) == true) {
 			url.protocol = "https:";
 			url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
+			if (!url.hash)
+				url.hash = "#bodyContent";
 		} else {
 			url.protocol = "https:";
 		}
