@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-05 12:07:39 gwern"
+When:  Time-stamp: "2021-03-05 16:06:31 gwern"
 License: CC-0
 -}
 
@@ -139,7 +139,7 @@ createAnnotations md rmd (Pandoc _ markdown) = mapM_ (annotateLink md rmd) $ que
 
 -- parse a Metadata database's values to extract all present URLs, and create a set of present URLs which will be queried by the Wikipedia recursion; we could scan over the Metadata values instead, but that leads to quadratic amounts of value scanning where it could instead be a constant-time lookup in a set (hashmap). We want to do this at the top-level, at most once per document, to amortize the O(n) scan we initially must do.
 extractLinkMapFromKeys :: Metadata -> HM.HashMap String String
-extractLinkMapFromKeys md = HM.fromListWith (\_ b -> b) $ expand $ M.toList $ M.map (\(_,_,_,_,a) -> extractLinksFromHTML a) md
+extractLinkMapFromKeys md = HM.fromListWith (\_ b -> b) $ expand $ map (\(k, (_,_,_,_,a)) -> (k, extractLinksFromHTML a)) $ M.toList md
     where -- unfold keys for a 1:1 map: expand [("Foo", ["bar", "baz", "quux"])] → [("Foo","bar"),("Foo","baz"),("Foo","quux")]
           expand :: [(a,[b])] -> [(a,b)]
           expand = concatMap (\(a, bs) -> zip (repeat a) bs)
@@ -410,6 +410,9 @@ wikipedia md rmd p
  | "#cite_note-"                             `isInfixOf`  p = return Nothing
  | "_election"  `isInfixOf` p = return Nothing
  | "_ballot"    `isInfixOf` p = return Nothing
+ | "_championship"    `isInfixOf` p = return Nothing
+ | "_Championship"    `isInfixOf` p = return Nothing
+ | "_Cup"    `isInfixOf` p = return Nothing
  | "basketball" `isInfixOf` p = return Nothing
  | "football"   `isInfixOf` p = return Nothing
  | "Basketball" `isInfixOf` p = return Nothing
@@ -418,6 +421,8 @@ wikipedia md rmd p
  | "NBA"        `isInfixOf` p = return Nothing
  | "Bowl"       `isInfixOf` p = return Nothing
  | "Olympic"    `isInfixOf` p = return Nothing
+ | "cricket"    `isInfixOf` p = return Nothing
+ | "Cricket"    `isInfixOf` p = return Nothing
  | p =~ ("#ref_[a-z1-9]$"::String)                                           = return Nothing -- skip ref self-links
  | p =~ ("#cnote_[a-z1-9]$"::String)                                         = return Nothing
  | p =~ ("#endnote_[a-z1-9]$"::String)                                       = return Nothing
