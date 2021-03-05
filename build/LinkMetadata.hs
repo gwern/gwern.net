@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-04 17:53:55 gwern"
+When:  Time-stamp: "2021-03-05 12:07:39 gwern"
 License: CC-0
 -}
 
@@ -11,7 +11,7 @@ License: CC-0
 -- 3. bugs in packages: the WMF API omits the need for `-L` in curl but somehow their live demo works anyway (?!); rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation) where
+module LinkMetadata (isLocalLink, readLinkMetadata, extractLinkMapFromKeys, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation) where
 
 import Control.Concurrent (forkIO)
 import Control.Monad (when, void)
@@ -19,12 +19,12 @@ import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import Data.Aeson (eitherDecode, FromJSON, Object, Value(String))
-import qualified Data.HashMap.Strict as HM (lookup)
+import qualified Data.HashMap.Strict as HM (fromListWith, lookup, HashMap)
 import GHC.Generics (Generic)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.Containers.ListUtils (nubOrd)
 import Data.Char (isAlpha, isNumber, isSpace, toLower, toUpper)
-import qualified Data.Map.Strict as M (empty, filter, filterWithKey, keys, fromList, toList, lookup, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (empty, filter, filterWithKey, keys, fromList, toList, lookup, map, traverseWithKey, union, Map)
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
                     HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
                     WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
@@ -41,7 +41,7 @@ import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import Data.Time.Clock as TC (getCurrentTime)
 import Text.Regex (subRegex, mkRegex)
 import Text.Regex.Posix ((=~))
-import Data.Maybe (Maybe)
+import Data.Maybe (isNothing, fromJust, Maybe)
 import Data.Text.IO as TIO (readFile, writeFile)
 import System.IO (stderr, hPutStrLn)
 import Typography (invertImage, typographyTransform)
@@ -86,17 +86,17 @@ readLinkMetadata = do
              when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
              -- auto-generated cached definitions; can be deleted if gone stale
-             rewriteLinkMetadata "metadata/auto.yaml" -- cleanup first
-             auto <- readYaml "metadata/auto.yaml"
+             rewriteLinkMetadata "/tmp/metadata/auto.yaml" -- cleanup first
+             auto <- readYaml "/tmp/metadata/auto.yaml"
 
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
              return final
 
-writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
-writeAnnotationFragments am md = void $ M.traverseWithKey (writeAnnotationFragment am md) md
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
+writeAnnotationFragments :: ArchiveMetadata -> Metadata -> HM.HashMap String String -> IO ()
+writeAnnotationFragments am md rmd = void $ M.traverseWithKey (writeAnnotationFragment am md rmd) md
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> HM.HashMap String String -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment am md rmd u i@(a,b,c,d,e) = when (length e > 180) $
                                           do let u' = linkCanonicalize u
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
@@ -107,7 +107,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
-                                             void $ createAnnotations md pandoc
+                                             void $ createAnnotations md rmd pandoc
                                              let annotationPandoc = walk (hasAnnotation md True) pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
 
@@ -133,14 +133,29 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                restoreFloatRight orig $ T.unpack fieldHtml
 
 -- walk each page, extract the links, and create annotations as necessary for new links
-createAnnotations :: Metadata -> Pandoc -> IO ()
-createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md) $ queryWith extractLink markdown
-  where extractLink :: Inline -> [String]
-        extractLink (Link _ _ (path, _)) = [T.unpack path]
-        extractLink _ = []
+createAnnotations :: Metadata -> HM.HashMap String String -> Pandoc -> IO ()
+createAnnotations md rmd (Pandoc _ markdown) = mapM_ (annotateLink md rmd) $ queryWith extractLink markdown
 
-annotateLink :: Metadata -> String -> IO Bool
-annotateLink md target =
+
+-- parse a Metadata database's values to extract all present URLs, and create a set of present URLs which will be queried by the Wikipedia recursion; we could scan over the Metadata values instead, but that leads to quadratic amounts of value scanning where it could instead be a constant-time lookup in a set (hashmap). We want to do this at the top-level, at most once per document, to amortize the O(n) scan we initially must do.
+extractLinkMapFromKeys :: Metadata -> HM.HashMap String String
+extractLinkMapFromKeys md = HM.fromListWith (\_ b -> b) $ expand $ M.toList $ M.map (\(_,_,_,_,a) -> extractLinksFromHTML a) md
+    where -- unfold keys for a 1:1 map: expand [("Foo", ["bar", "baz", "quux"])] → [("Foo","bar"),("Foo","baz"),("Foo","quux")]
+          expand :: [(a,[b])] -> [(a,b)]
+          expand = concatMap (\(a, bs) -> zip (repeat a) bs)
+
+extractLinksFromHTML :: String -> [String]
+extractLinksFromHTML e = let pandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack e) in
+                           case pandocMaybe of
+                             Left errr -> error $ e ++ show errr
+                             Right pandoc -> queryWith extractLink pandoc
+
+extractLink :: Inline -> [String]
+extractLink (Link _ _ (path, _)) = [T.unpack path]
+extractLink _ = []
+
+annotateLink :: Metadata -> HM.HashMap String String -> String -> IO Bool
+annotateLink md rmd target =
   do when (target=="") $ error (show target)
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
      -- the leading '/' indicates this is a local Gwern.net file
@@ -151,7 +166,7 @@ annotateLink md target =
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
        Just _  -> return False
-       Nothing -> do new <- linkDispatcher md target''
+       Nothing -> do new <- linkDispatcher md rmd target''
                      case new of
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations
                        Nothing -> writeLinkMetadata target'' ("", "", "", "", "") >> return False
@@ -246,7 +261,7 @@ writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
                                            -- we do deduplication in rewriteLinkMetadata (when constructing the Map) on startup, so no need to check here, just blind write:
                                            let newYaml = Y.encode [(l,t,a,d,di,abst)]
-                                           B.appendFile "metadata/auto.yaml" newYaml
+                                           B.appendFile "/tmp/metadata/auto.yaml" newYaml
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
 restoreFloatRight :: String -> String -> String
@@ -302,9 +317,9 @@ generateID url author date
                                                      firstAuthorSurname ++ "-" ++ year ++ suffix'
   where url' = replace "?" "definition-" url -- definition links, like '?Portia' or '?Killing-Rabbits' are invalid HTML selectors, so substitute there to a final ID like eg '#gwern-definition-portia'
 
-linkDispatcher, wikipedia :: Metadata -> Path -> IO (Maybe (Path, MetadataItem))
+linkDispatcher, wikipedia :: Metadata -> HM.HashMap String String -> Path -> IO (Maybe (Path, MetadataItem))
 gwern, arxiv, biorxiv, pubmed :: Path -> IO (Maybe (Path, MetadataItem))
-linkDispatcher md  l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia md l
+linkDispatcher md rmd  l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia md rmd l
                      | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
                      | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
                      | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
@@ -371,7 +386,7 @@ doi2Abstract doi = if length doi < 7 then return Nothing
 -- WP REST API: https://en.wikipedia.org/api/rest_v1/#/Page_content/get_page_summary_title
 data WP = WP { title :: !String, extract_html :: !String, thumbnail :: Maybe Object } deriving (Show,Generic)
 instance FromJSON WP
-wikipedia md p
+wikipedia md rmd p
  -- Namespaces to skip:
  | "https://en.wikipedia.org/wiki/Special"        `isPrefixOf` p = return Nothing
  | "https://en.wikipedia.org/wiki/User:"          `isPrefixOf` p = return Nothing
@@ -403,6 +418,10 @@ wikipedia md p
  | "NBA"        `isInfixOf` p = return Nothing
  | "Bowl"       `isInfixOf` p = return Nothing
  | "Olympic"    `isInfixOf` p = return Nothing
+ | p =~ ("#ref_[a-z1-9]$"::String)                                           = return Nothing -- skip ref self-links
+ | p =~ ("#cnote_[a-z1-9]$"::String)                                         = return Nothing
+ | p =~ ("#endnote_[a-z1-9]$"::String)                                       = return Nothing
+ | p =~ ("#References$"::String)                                             = return Nothing
  | p =~ ("[0-9][0-9][0-9][0-9]_in_[a-zA-Z]+"::String)                        = return Nothing -- '1490_in_Poetry'
  | p =~ ("[0-9][0-9][0-9][0-9]s_in_[a-zA-Z]+"::String)                       = return Nothing -- '1500s_in_architecture'
  | p =~ ("^[0-9]+"::String) = return Nothing -- number/year articles
@@ -416,8 +435,10 @@ wikipedia md p
  | "_Series"      `isSuffixOf` p = return Nothing
  | "_draft"       `isSuffixOf` p = return Nothing
  | "_(safety)"    `isSuffixOf` p = return Nothing
- | "driver)"    `isSuffixOf` p = return Nothing
- | checkDepth md p =
+ | "driver)"      `isSuffixOf` p = return Nothing
+ | "_station"     `isSuffixOf` p = return Nothing
+ | "_U-Bahn)"     `isSuffixOf` p = return Nothing
+ | checkDepth md rmd p =
                do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
                   let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
@@ -461,16 +482,16 @@ wikipedia md p
 -- depth 1 (one level of indirection from the original WP link on gwern.net): Foo is called by Bar called by gwern.net; if 'Bar' is called by 'Baz', and no one calls 'Baz', then you...
 -- ...must be at depth 2: a gwern.net page calls Baz, which calls Bar, which calls Foo; and so on)
 -- (it'd be slow but maybe scanning over hundreds of megabytes of in-RAM text isn't too slow and it's worthwhile to avoid modifying the entire codebase)
-checkDepth :: Metadata -> Path -> Bool
-checkDepth md p = let mdWP = M.filterWithKey (\k _ -> "https://en.wikipedia.org/" `isPrefixOf` k) md in
-                      let linkPresent = M.filter (\(_, _, _, _, abtract) -> p `isInfixOf` abtract) mdWP in
-                        if  linkPresent == M.empty then True -- we are at depth 0, being called from gwern.net (ie this is for the first popup), so go ahead & crawl it
-                          else let p' = head $ M.keys linkPresent in
-                                 let linkPresent' = M.filter (\(_, _, _, _, abtract) -> p' `isInfixOf` abtract) mdWP in
-                                   if linkPresent' == M.empty then True -- we are at depth 1: our caller is called from gwern.net (this is for a popup for a popup)
-                                                             else let p'' = head $ M.keys linkPresent' in
-                                                                    let linkPresent'' = M.filter (\(_, _, _, _, abtract) -> p'' `isInfixOf` abtract) mdWP in
-          if linkPresent'' == M.empty then True -- depth 2 (a popup in a popup in a popup), but we'll stop there for now due to the exponential explosion
+checkDepth :: Metadata -> HM.HashMap String String -> Path -> Bool
+checkDepth md rmd p =
+                      let linkPresent = HM.lookup p rmd in
+                        if  isNothing linkPresent then True -- we are at depth 0, being called from gwern.net (ie this is for the first popup), so go ahead & crawl it
+                          else let p' = fromJust linkPresent in
+                                 let linkPresent' = HM.lookup p' rmd in
+                                   if isNothing linkPresent' then True -- we are at depth 1: our caller is called from gwern.net (this is for a popup for a popup)
+                                                             else let p'' = fromJust  linkPresent' in
+                                                                    let linkPresent'' = HM.lookup p'' rmd in
+          if isNothing linkPresent'' then True -- depth 2 (a popup in a popup in a popup), but we'll stop there for now due to the exponential explosion
                                                    else False
 
 
