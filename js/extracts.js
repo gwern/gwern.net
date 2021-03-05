@@ -80,7 +80,8 @@ Extracts = {
     	"www.greaterwrong.com", 
     	"greaterwrong.com", 
     	"www.lesswrong.com",
-    	"lesswrong.com" 
+    	"lesswrong.com",
+    	/(.+?)\.wikipedia\.org/
     ],
     blacklistedForeignDomains: [
     ],
@@ -939,7 +940,8 @@ Extracts = {
 		if (  !target.href
 			|| Extracts.isExtractLink(target)) return false;
 
-		return Extracts.qualifyingForeignDomains.includes(target.hostname)
+		return  (   Extracts.qualifyingForeignDomains.includes(target.hostname)
+				 || Extracts.qualifyingForeignDomains.findIndex(domainPattern => (domainPattern instanceof RegExp && domainPattern.test(target.hostname) == true)) != -1)
 			&& !Extracts.blacklistedForeignDomains.includes(target.hostname);
 	},
 	foreignSiteForTarget: (target) => {
@@ -949,6 +951,9 @@ Extracts = {
 			url.protocol = "https:";
 			url.hostname = "www.greaterwrong.com";
 			url.search = "format=preview&theme=classic";
+		} else if (/(.+?)\.wikipedia\.org/.test(url.hostname) == true) {
+			url.protocol = "https:";
+			url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
 		} else {
 			url.protocol = "https:";
 		}
