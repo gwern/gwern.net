@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-05 16:06:31 gwern"
+When:  Time-stamp: "2021-03-05 19:04:59 gwern"
 License: CC-0
 -}
 
@@ -410,6 +410,11 @@ wikipedia md rmd p
  | "#cite_note-"                             `isInfixOf`  p = return Nothing
  | "_election"  `isInfixOf` p = return Nothing
  | "_ballot"    `isInfixOf` p = return Nothing
+ | "_Primary"    `isInfixOf` p = return Nothing
+ | "_primary"    `isInfixOf` p = return Nothing
+ | "_primaries"    `isInfixOf` p = return Nothing
+ | "_Primaries"    `isInfixOf` p = return Nothing
+ | "election"    `isInfixOf` p = return Nothing
  | "_championship"    `isInfixOf` p = return Nothing
  | "_Championship"    `isInfixOf` p = return Nothing
  | "_Cup"    `isInfixOf` p = return Nothing

@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-04 19:55:07 gwern"
+# When:  Time-stamp: "2021-03-05 20:23:55 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -44,6 +44,9 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
 
     # extract just the first section HTML:
     jq -r .sections[0].text | \
+
+    # remove unwanted sections like the extremely-lengthy sidebars, or references:
+    ./static/build/wikipediaFilter.hs | \
 
     # run through Pandoc to clean up the HTML a little, and convert the MediaWiki MathML default (apparently can't be changed in the API query) to MathJax:
     pandoc --mathjax -f html -t html | \
