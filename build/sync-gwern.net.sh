@@ -187,6 +187,9 @@ then
     λ(){ egrep -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage,image hotlinking, non-absolute relative image paths in YAML metadata database"
 
+    λ(){ egrep -e ' significant'  ./metadata/custom.yaml; }
+    wrap λ "Misleading language in custom.yaml"
+
     λ() {
         set +e;
         IFS=$(echo -en "\n\b");

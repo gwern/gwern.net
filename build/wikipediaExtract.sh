@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-05 20:23:55 gwern"
+# When:  Time-stamp: "2021-03-06 11:56:26 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -38,7 +38,7 @@
 set -e
 # set -x
 
-ARTICLE=$(basename "$1")
+ARTICLE=$(basename "$1" | sed -e 's/#.*//') # strip anchors because we always get the same introduction section regardless
 curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
      "https://en.wikipedia.org/api/rest_v1/page/mobile-sections-lead/$ARTICLE" | \
 
@@ -51,8 +51,9 @@ curl --user-agent 'gwern+wikipediascraping@gwern.net' --location --silent \
     # run through Pandoc to clean up the HTML a little, and convert the MediaWiki MathML default (apparently can't be changed in the API query) to MathJax:
     pandoc --mathjax -f html -t html | \
 
-    # but we do need to delete the footnotes/references, and rewrite the relative links to absolute links to En:
+    # but we do need to rewrite the relative links to absolute links to En (substituting in the normalized $ARTICLE for self-link anchors), and delete any footnotes/references that might've escaped wikipediaFilter's cleaning:
     sed -e 's/<a href="\/wiki\/\([[:graph:]]\+\)"/<a href="https:\/\/en.wikipedia.org\/wiki\/\u\1"/g' \
+        -e "s/<a href=\"\(#[[:graph:]]\)/<a href=\"https:\/\/en.wikipedia.org\/wiki\/$ARTICLE\1/g" \
         -e 's/ src="\/\// src="https:\/\//g' -e 's/ srcset="\/\// srcset="https:\/\//g' -e 's/ href="\/\// href="https:\/\//g' \
         -e 's/<span class="mw-ref reference" id="cite_ref-[[:graph:]]\+"><a href="#cite_note-[[:graph:]]\+-[0-9]\+" style="counter-reset: mw-Ref [0-9]\+;"><span class="mw-reflink-text">\[[0-9]\+\]<\/span><\/a><\/span>//g' \
         -e 's/<span class="mw-ref reference" id="cite_ref-[0-9]\+"><a href="#cite_note-[0-9]\+" style="counter-reset: mw-Ref [0-9]\+;"><span class="mw-reflink-text">\[[0-9]\+\]<\/span><\/a><\/span>//g' \
