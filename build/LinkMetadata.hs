@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-05 23:59:02 gwern"
+When:  Time-stamp: "2021-03-06 19:14:50 gwern"
 License: CC-0
 -}
 
@@ -107,7 +107,7 @@ writeAnnotationFragment am md rmd u i@(a,b,c,d,e) = when (length e > 180) $
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
-                                             void $ createAnnotations md rmd pandoc
+                                             void $ createAnnotations md rmd False pandoc
                                              let annotationPandoc = walk (hasAnnotation md True) pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
 
@@ -133,8 +133,8 @@ writeAnnotationFragment am md rmd u i@(a,b,c,d,e) = when (length e > 180) $
                                restoreFloatRight orig $ T.unpack fieldHtml
 
 -- walk each page, extract the links, and create annotations as necessary for new links
-createAnnotations :: Metadata -> HM.HashMap String String -> Pandoc -> IO ()
-createAnnotations md rmd (Pandoc _ markdown) = mapM_ (annotateLink md rmd) $ queryWith extractLink markdown
+createAnnotations :: Metadata -> HM.HashMap String String -> Bool -> Pandoc -> IO ()
+createAnnotations md rmd topLevel (Pandoc _ markdown) = mapM_ (annotateLink md rmd topLevel) $ queryWith extractLink markdown
 
 
 -- parse a Metadata database's values to extract all present URLs, and create a set of present URLs which will be queried by the Wikipedia recursion; we could scan over the Metadata values instead, but that leads to quadratic amounts of value scanning where it could instead be a constant-time lookup in a set (hashmap). We want to do this at the top-level, at most once per document, to amortize the O(n) scan we initially must do.
@@ -154,8 +154,8 @@ extractLink :: Inline -> [String]
 extractLink (Link _ _ (path, _)) = [T.unpack path]
 extractLink _ = []
 
-annotateLink :: Metadata -> HM.HashMap String String -> String -> IO Bool
-annotateLink md rmd target =
+annotateLink :: Metadata -> HM.HashMap String String -> Bool -> String -> IO Bool
+annotateLink md rmd topLevelP target =
   do when (target=="") $ error (show target)
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
      -- the leading '/' indicates this is a local Gwern.net file
@@ -166,11 +166,13 @@ annotateLink md rmd target =
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
        Just _  -> return False
-       Nothing -> do new <- linkDispatcher md rmd target''
+       Nothing -> do new <- linkDispatcher md rmd topLevelP target''
                      case new of
-                       -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations
-                       Nothing -> writeLinkMetadata target'' ("", "", "", "", "") >> return False
-                       Just y@(f,m@(_,_,_,_,e)) -> do
+                       -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
+                       Left Temporary -> return False -- hPutStrLn stderr ("Skipping "++target) >> return False
+                       -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
+                       Left Permanent -> writeLinkMetadata target'' ("", "", "", "", "") >> return False
+                       Right y@(f,m@(_,_,_,_,e)) -> do
                                        when (e=="") $ hPutStrLn stderr (f ++ ": " ++ show target ++ ": " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
                                        forkIO (writeLinkMetadata target'' m) >> return True
@@ -317,9 +319,11 @@ generateID url author date
                                                      firstAuthorSurname ++ "-" ++ year ++ suffix'
   where url' = replace "?" "definition-" url -- definition links, like '?Portia' or '?Killing-Rabbits' are invalid HTML selectors, so substitute there to a final ID like eg '#gwern-definition-portia'
 
-linkDispatcher, wikipedia :: Metadata -> HM.HashMap String String -> Path -> IO (Maybe (Path, MetadataItem))
-gwern, arxiv, biorxiv, pubmed :: Path -> IO (Maybe (Path, MetadataItem))
-linkDispatcher md rmd  l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia md rmd l
+data Failure = Temporary | Permanent
+
+linkDispatcher, wikipedia :: Metadata -> HM.HashMap String String -> Bool -> Path -> IO (Either Failure (Path, MetadataItem))
+gwern, arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
+linkDispatcher md rmd topLevelPred  l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wikipedia md rmd topLevelPred l
                      | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
                      | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
                      | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
@@ -331,7 +335,7 @@ linkDispatcher md rmd  l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = wik
                      | "plosgenetics.org" `isInfixOf` l = pubmed l
                      | "plosmedicine.org" `isInfixOf` l = pubmed l
                      | "plosone.org" `isInfixOf` l = pubmed l
-                     | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern $ tail l else return Nothing
+                     | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern $ tail l else return (Left Permanent)
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
@@ -341,14 +345,14 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
-                ExitFailure err -> (hPutStrLn stderr $ intercalate " : " [l, show status, show err, show mb]) >> return Nothing
+                ExitFailure err -> (hPutStrLn stderr $ intercalate " : " [l, show status, show err, show mb]) >> return (Left Permanent)
                 _ -> do
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
-                        if length parsed < 5 then return Nothing else
+                        if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstract) = parsed
-                             return $ Just (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, trim $ replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, trim $ replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
 
-pdf :: Path -> IO (Maybe (Path, MetadataItem))
+pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
            if BL.length mb > 0 then
              do let (etitle:eauthor:edate:edoi:_) = lines $ U.toString mb
@@ -360,9 +364,9 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 aMaybe <- doi2Abstract edoi
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 case aMaybe of
-                  Nothing -> return Nothing
-                  Just a -> return $ Just (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi, a))
-           else return Nothing
+                  Nothing -> return (Left Permanent)
+                  Just a -> return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi, a))
+           else return (Left Permanent)
 
 -- nested JSON object: eg 'jq .message.abstract'
 data Crossref = Crossref { message :: Message } deriving (Show,Generic)
@@ -386,70 +390,70 @@ doi2Abstract doi = if length doi < 7 then return Nothing
 -- WP REST API: https://en.wikipedia.org/api/rest_v1/#/Page_content/get_page_summary_title
 data WP = WP { title :: !String, extract_html :: !String, thumbnail :: Maybe Object } deriving (Show,Generic)
 instance FromJSON WP
-wikipedia md rmd p
+wikipedia md rmd topLevelPredicate p
  -- Namespaces to skip:
- | "https://en.wikipedia.org/wiki/Special"        `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/User:"          `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Talk:"          `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Category:"      `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Wikipedia:"     `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Wikipedia_talk:"`isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/File:"          `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Talk:"          `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Template:"      `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Template_talk:" `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Help:"          `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Help_talk:"     `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/w/index.php"         `isPrefixOf` p = return Nothing
+ | "https://en.wikipedia.org/wiki/Special"        `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/User:"          `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Talk:"          `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Category:"      `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Wikipedia:"     `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Wikipedia_talk:"`isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/File:"          `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Talk:"          `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Template:"      `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Template_talk:" `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Help:"          `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Help_talk:"     `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/w/index.php"         `isPrefixOf` p = return (Left Permanent)
  -- Content articles to skip:
- | "https://en.wikipedia.org/wiki/List_of_"  `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/Table_of_" `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/AD_"       `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/BC_"       `isPrefixOf` p = return Nothing
- | "https://en.wikipedia.org/wiki/17776_"    `isPrefixOf` p = return Nothing
- | "#cite_note-"                             `isInfixOf`  p = return Nothing
- | "_election"  `isInfixOf` p = return Nothing
- | "_ballot"    `isInfixOf` p = return Nothing
- | "_Primary"    `isInfixOf` p = return Nothing
- | "_primary"    `isInfixOf` p = return Nothing
- | "_primaries"    `isInfixOf` p = return Nothing
- | "_Primaries"    `isInfixOf` p = return Nothing
- | "election"    `isInfixOf` p = return Nothing
- | "_championship"    `isInfixOf` p = return Nothing
- | "_Championship"    `isInfixOf` p = return Nothing
- | "_Cup"    `isInfixOf` p = return Nothing
- | "basketball" `isInfixOf` p = return Nothing
- | "football"   `isInfixOf` p = return Nothing
- | "Basketball" `isInfixOf` p = return Nothing
- | "Football"   `isInfixOf` p = return Nothing
- | "NFL"        `isInfixOf` p = return Nothing
- | "NBA"        `isInfixOf` p = return Nothing
- | "Bowl"       `isInfixOf` p = return Nothing
- | "Olympic"    `isInfixOf` p = return Nothing
- | "cricket"    `isInfixOf` p = return Nothing
- | "Cricket"    `isInfixOf` p = return Nothing
- | p =~ ("#ref_[a-z1-9]$"::String)                                           = return Nothing -- skip ref self-links
- | p =~ ("#cnote_[a-z1-9]$"::String)                                         = return Nothing
- | p =~ ("#endnote_[a-z1-9]$"::String)                                       = return Nothing
- | p =~ ("#References$"::String)                                             = return Nothing
- | p =~ ("[0-9][0-9][0-9][0-9]_in_[a-zA-Z]+"::String)                        = return Nothing -- '1490_in_Poetry'
- | p =~ ("[0-9][0-9][0-9][0-9]s_in_[a-zA-Z]+"::String)                       = return Nothing -- '1500s_in_architecture'
- | p =~ ("^[0-9]+"::String) = return Nothing -- number/year articles
- | p =~ ("[[:graph:]]+#[[:graph:]]+#"::String)                               = return Nothing -- redirects cause weirdness with target links, eg 'https://en.wikipedia.org/wiki/17776_Troska#201#801#801'
- | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Winter_Olympics"::String) = return Nothing -- hundreds of sports pages for every Olympics...
- | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Summer_Olympics"::String) = return Nothing
- | "_century"     `isSuffixOf` p = return Nothing
- | "_season"      `isSuffixOf` p = return Nothing
- | "_Tournament"  `isSuffixOf` p = return Nothing
- | "_Game"        `isSuffixOf` p = return Nothing
- | "_Series"      `isSuffixOf` p = return Nothing
- | "_draft"       `isSuffixOf` p = return Nothing
- | "_(safety)"    `isSuffixOf` p = return Nothing
- | "driver)"      `isSuffixOf` p = return Nothing
- | "_station"     `isSuffixOf` p = return Nothing
- | "_U-Bahn)"     `isSuffixOf` p = return Nothing
- | "_(number)"    `isSuffixOf` p = return Nothing
- | checkDepth md rmd p =
+ | "https://en.wikipedia.org/wiki/List_of_"  `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/Table_of_" `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/AD_"       `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/BC_"       `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/17776_"    `isPrefixOf` p = return (Left Permanent)
+ | "#cite_note-"                             `isInfixOf`  p = return (Left Permanent)
+ | "_election"  `isInfixOf` p = return (Left Permanent)
+ | "_ballot"    `isInfixOf` p = return (Left Permanent)
+ | "_Primary"    `isInfixOf` p = return (Left Permanent)
+ | "_primary"    `isInfixOf` p = return (Left Permanent)
+ | "_primaries"    `isInfixOf` p = return (Left Permanent)
+ | "_Primaries"    `isInfixOf` p = return (Left Permanent)
+ | "election"    `isInfixOf` p = return (Left Permanent)
+ | "_championship"    `isInfixOf` p = return (Left Permanent)
+ | "_Championship"    `isInfixOf` p = return (Left Permanent)
+ | "_Cup"    `isInfixOf` p = return (Left Permanent)
+ | "basketball" `isInfixOf` p = return (Left Permanent)
+ | "football"   `isInfixOf` p = return (Left Permanent)
+ | "Basketball" `isInfixOf` p = return (Left Permanent)
+ | "Football"   `isInfixOf` p = return (Left Permanent)
+ | "NFL"        `isInfixOf` p = return (Left Permanent)
+ | "NBA"        `isInfixOf` p = return (Left Permanent)
+ | "Bowl"       `isInfixOf` p = return (Left Permanent)
+ | "Olympic"    `isInfixOf` p = return (Left Permanent)
+ | "cricket"    `isInfixOf` p = return (Left Permanent)
+ | "Cricket"    `isInfixOf` p = return (Left Permanent)
+ | p =~ ("#ref_[a-z1-9]$"::String)                                           = return (Left Permanent) -- skip ref self-links
+ | p =~ ("#cnote_[a-z1-9]$"::String)                                         = return (Left Permanent)
+ | p =~ ("#endnote_[a-z1-9]$"::String)                                       = return (Left Permanent)
+ | p =~ ("#References$"::String)                                             = return (Left Permanent)
+ | p =~ ("[0-9][0-9][0-9][0-9]_in_[a-zA-Z]+"::String)                        = return (Left Permanent) -- '1490_in_Poetry'
+ | p =~ ("[0-9][0-9][0-9][0-9]s_in_[a-zA-Z]+"::String)                       = return (Left Permanent) -- '1500s_in_architecture'
+ | p =~ ("^[0-9]+"::String) = return (Left Permanent) -- number/year articles
+ | p =~ ("[[:graph:]]+#[[:graph:]]+#"::String)                               = return (Left Permanent) -- redirects cause weirdness with target links, eg 'https://en.wikipedia.org/wiki/17776_Troska#201#801#801'
+ | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Winter_Olympics"::String) = return (Left Permanent) -- hundreds of sports pages for every Olympics...
+ | p =~ ("[[:graph:]]+_at_the_[0-9][0-9][0-9][0-9]_Summer_Olympics"::String) = return (Left Permanent)
+ | "_century"     `isSuffixOf` p = return (Left Permanent)
+ | "_season"      `isSuffixOf` p = return (Left Permanent)
+ | "_Tournament"  `isSuffixOf` p = return (Left Permanent)
+ | "_Game"        `isSuffixOf` p = return (Left Permanent)
+ | "_Series"      `isSuffixOf` p = return (Left Permanent)
+ | "_draft"       `isSuffixOf` p = return (Left Permanent)
+ | "_(safety)"    `isSuffixOf` p = return (Left Permanent)
+ | "driver)"      `isSuffixOf` p = return (Left Permanent)
+ | "_station"     `isSuffixOf` p = return (Left Permanent)
+ | "_U-Bahn)"     `isSuffixOf` p = return (Left Permanent)
+ | "_(number)"    `isSuffixOf` p = return (Left Permanent)
+ | topLevelPredicate || checkDepth md rmd p =
                do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
                   let p''' = if '#' `elem` p'' then head $ split "#" p'' else p''
@@ -460,14 +464,14 @@ wikipedia md rmd p
                   (status2,_,bAbstract) <- runShellCommand "./" Nothing "wikipediaExtract.sh" [p''']
                   let wpAbstract = U.toString bAbstract
 
-                  if ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bsPreview || ("disambiguation"`isInfixOf`p)) then hPutStrLn stderr ("Linked to a Wikipedia disambiguation page! " ++ p) >> return Nothing else do
+                  if ("\"type\":\"disambiguation\"" `isInfixOf` U.toString bsPreview || ("disambiguation"`isInfixOf`p)) then hPutStrLn stderr ("Linked to a Wikipedia disambiguation page! " ++ p) >> return (Left Permanent) else do
                    today <- fmap (take 10 . show) $ TC.getCurrentTime -- create dates like "2020-08-31"
                    case (status1,status2) of
-                     (ExitFailure _, _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return Nothing
-                     (_, ExitFailure _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return Nothing
+                     (ExitFailure _, _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return (Left Temporary)
+                     (_, ExitFailure _) -> hPutStrLn stderr ("Wikipedia annotation failed: " ++ p''' ++ " : " ++ wpAbstract) >> return (Left Temporary)
                      (_,_) -> let j = eitherDecode bsPreview :: Either String WP
                           in case j of
-                               Left e -> hPutStrLn stderr ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return Nothing
+                               Left e -> hPutStrLn stderr ("WP request failed: " ++ e ++ " " ++ p ++ " " ++ p''') >> return (Left Temporary)
                                Right wp -> do
                                               let wpAbstractFallback = extract_html wp
                                               let wpAbstract' = if ("<code>|" `isInfixOf` wpAbstract || "</code><code>" `isInfixOf` wpAbstract || wpAbstract == "<p>…</p>\n" || wpAbstract == "<p>…</p>" || wpAbstract == "" || wpAbstract == " <p>…</p>" || wpAbstract == "\n") then wpAbstractFallback else wpAbstract
@@ -482,10 +486,10 @@ wikipedia md rmd p
                                                                                                         let imgClass = if color then "class=\"invertible-auto\" " else ""
                                                                                                         return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (replace "%20" " " $ replace "%2F" "/" $ urlEncode newThumbnail) ++ "\" alt=\"Wikipedia thumbnail image of '" ++ urlEncode wpTitle ++ "'\" /></figure> ")
                                                                                Just _ -> return ""
-                                              return $ Just (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
+                                              return $ Right (p, (wpTitle, "English Wikipedia", today, "", replace "<br/>" "" $ -- NOTE: after manual review, '<br/>' in WP abstracts seems to almost always be an error in the formatting of the original article, or useless.
                                                                                                           let wpAbstract'' = cleanAbstractsHTML wpAbstract' in
                                                                                                           wpThumbnail ++ wpAbstract''))
-  | otherwise = return Nothing
+  | otherwise = return (Left Temporary)
 -- If we followed every Wikipedia link, WP interlinking, even in just the first introduction section (see extractWikipedia.sh), leads to an enormous exponential explosion, which would take forever. As cool as it would be to make every single link popup-able, no matter how many dozens of popups deep one is wikiwalking, no one will use it. So we need to limit the depth. This is hard because all annotations live in a flat memoized database and nothing 'remembers' whether they were recursive or not. calculated locally using the database: look up the parent URL and see if anyone calls...
 -- it, recursively, to figure out what implicit link depth you're now at. probably be ridiculously slow though
 -- (ie if you are generate a new WP extract 'Foo', then if you look through the entire database, and no entries call 'Foo', then it must be a
@@ -531,22 +535,22 @@ downloadWPThumbnail href = do
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> hPutStrLn stderr ("BioRxiv download failed: " ++ p) >> return Nothing
+                 ExitFailure _ -> hPutStrLn stderr ("BioRxiv download failed: " ++ p) >> return (Left Permanent)
                  _ -> do
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
                         let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Title" then snd $ head b else "") metas
-                        if (title=="") then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return Nothing
+                        if (title=="") then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return (Left Permanent)
                           else do
                                  let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Date" then snd $ head b else "") metas
                                  let author = initializeAuthors $ intercalate ", " $ filter (/="") $ map (\(TagOpen _ (a:b)) -> if snd a == "DC.Contributor" then snd $ head b else "") metas
                                  let doi = concatMap (\(TagOpen _ (a:b)) -> if snd a == "citation_doi" then snd $ head b else "") metas
                                  let abstract = cleanAbstractsHTML $
-                                                 replace "\n" " " $ -- many WP entries have hidden/stray newlines inside paragraphs, which if deleted, just cause runtogether errors, like "one of the most important American poets of the 20th century.Cummings is associated" etc.
+                                                 replace "\n" " " $ -- many WP entries have hidden/stray newlines inside paragraphs, which if deleted, just cause run-together errors, like "one of the most important American poets of the 20th century.Cummings is associated" etc.
                                                  concatMap (\(TagOpen _ (a:_:c)) ->
                                                                       if snd a == "citation_abstract" then snd $ head c else "") metas
-                                 return $ Just (p, (title, author, date, doi, abstract))
+                                 return $ Right (p, (title, author, date, doi, abstract))
 
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
@@ -555,14 +559,14 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                threadDelay 10000000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long 10s delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return Nothing
+                 ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Permanent)
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          let title = trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          let doi = findTxt $ fst $ element "arxiv:doi" tags
                          let abs = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
-                         return $ Just (url, (title,authors,published,doi,abs))
+                         return $ Right (url, (title,authors,published,doi,abs))
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
 findTxt :: [Tag String] -> String
@@ -1030,14 +1034,14 @@ trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (
 
 -- gwern :: Path -> IO (Maybe (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
-        | "#" `isInfixOf` p = return Nothing -- section links require custom annotations; we can't scrape any abstract/summary for them easily
-        | or (map (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"]) = return Nothing -- skip potentially very large archives
+        | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
+        | or (map (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"]) = return (Left Permanent) -- skip potentially very large archives
         | otherwise =
             let p' = replace "https://www.gwern.net/" "" p in
             do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"]
 
                case status of
-                 ExitFailure _ -> hPutStrLn stderr ("Gwern.net download failed: " ++ p) >> return Nothing
+                 ExitFailure _ -> hPutStrLn stderr ("Gwern.net download failed: " ++ p) >> return (Left Temporary)
                  _ -> do
                         let b = U.toString bs
                         let f = parseTags b
@@ -1061,8 +1065,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
                         let abstract'     = if length description > length abstract then description else abstract
                         let abstract'' = if take 3 abstract' == "<p>" then abstract' else "<p>"++abstract'++"</p>"
-                        if abstract'' == "404 Not Found Error: no page by this name!" then return Nothing else
-                          return $ Just (p, (title, author, date, doi, thumbnailFigure++" "++abstract''++" "++keywords'))
+                        if abstract'' == "404 Not Found Error: no page by this name!" then return (Left Temporary) else
+                          return $ Right (p, (title, author, date, doi, thumbnailFigure++" "++abstract''++" "++keywords'))
         where
           dropToBody (TagOpen "body" _) = False
           dropToBody _ = True
