@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-06 19:14:50 gwern"
+When:  Time-stamp: "2021-03-07 11:15:02 gwern"
 License: CC-0
 -}
 
@@ -453,6 +453,10 @@ wikipedia md rmd topLevelPredicate p
  | "_station"     `isSuffixOf` p = return (Left Permanent)
  | "_U-Bahn)"     `isSuffixOf` p = return (Left Permanent)
  | "_(number)"    `isSuffixOf` p = return (Left Permanent)
+ -- EXPERIMENTAL: skip *all* anchor/section links and rely on the popups JS to fetch the specific section/ref to display to the user.
+ -- By default, requesting 'Foo#bar' == 'Foo': the page has a summary, and the summary is the same for every anchor/section/ID/ref etc. Sections don't have summaries, though. Is "show the whole section" the Right Thing?
+ -- Maybe yes: Whenever I link to a section of a WP article, I usually don't mean the entire topic/summary, and when WP articles link, they typically are self-linking (in which case the user will have already seen the intro and definitely wants to read the actual section) or they are probably linking cross-page similarly as me, for a reason. eg if the popup for 'Foo' links in its intro to 'Foo#History' or 'Foo#Destruction', does the reader want to read the intro *again*? Or would they rather jump right to the account of Foo's destruction? Almost certainly the latter. This is especially true in my articles: if I link to https://en.wikipedia.org/wiki/Normal_distribution#Standard_deviation_and_coverage (the context is: "...We can grasp this by looking at the [changes in rarity](!Wikipedia "Normal distribution#Standard deviation and coverage") by standard deviation: someone at 2 deviations is 1 in 22, 3 deviations 1 in 370, 4 = 1 in 15,787 (42x fewer than 3), and 5 = 1 in 1,744,277 (110x fewer than 4)...") is it really helpful to popup a summary saying 'In probability theory, a normal (or Gaussian or Gauss or Laplace–Gauss) distribution is a type of continuous probability distribution for a real-valued random variable....'?
+ | "#" `isInfixOf` p = return (Left Permanent)
  | topLevelPredicate || checkDepth md rmd p =
                do let p' = replace "?" "%3F" $ replace "/" "%2F" $ replace "%20" "_" $ drop 30 p
                   let p'' = [toUpper (head p')] ++ tail p'
