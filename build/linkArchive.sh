@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2021-03-03 10:58:20 gwern"
+# When:  Time-stamp: "2021-03-08 12:18:24 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs: we ask ArchiveBox to save a URL,
@@ -63,12 +63,12 @@ if [[ -z "$FILE" ]]; then
             MIME_LOCAL=$(file "$TARGET" | fgrep 'PDF document, version ') || true
 
             if [[ -f "$TARGET" ]] && [[ -n "$MIME_LOCAL" ]] && [[ ! "$MIME_REMOTE" =~ .*"text/html".* ]] ; then
-                ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
-                source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "$TARGET" "$TARGET" || true
                 mkdir --parents "./docs/www/$DOMAIN/"
                 ## move the PDF into the Gwern.net repo because ArchiveBox doesn't do PDFs:
                 mv "$TARGET" "./docs/www/$DOMAIN/$HASH.pdf"
                 echo -n "/docs/www/$DOMAIN/$HASH.pdf$ANCHOR"
+                ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
+                (source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "./docs/www/$DOMAIN/$HASH.pdf" "./docs/www/$DOMAIN/$HASH.pdf") &
             else
                 echo "Unsuccessful: $1 $HASH" 1>&2
                 exit 1
