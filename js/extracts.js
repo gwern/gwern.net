@@ -19,20 +19,7 @@ Extracts = {
         */
 
 	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
-	annotationsBasePathname: "/metadata/annotations/",
 	annotationLoadHoverDelay: 25,
-
-	/*	For each target-match-function/clean-selector pair, if an annotated 
-		target is matched by the match function, remove all elements within the
-		abstract that match the selector.
-		*/
-	annotationAbstractCleanPatterns: [
-		[
-			(target) => (   target.hostname == "en.wikipedia.org" 
-						 && /\/wiki\/.+/.test(target.pathname)),
-			".mw-ref, .hatnote, .box-Expand_language"
-		]
-	],
 
 	/*	Target containers.
 		*/
@@ -99,7 +86,9 @@ Extracts = {
 
 	rootDocument: document.firstElementChild,
 
-	annotationsWorkspace: null,
+	/******************/
+	/*	Infrastructure.
+		*/
 
 	popFrameProviderName: null,
 	popFrameProvider: null,
@@ -107,6 +96,7 @@ Extracts = {
 	/***********/
 	/*	General.
 		*/
+
     removeTargetsWithin: (container) => {
  		GWLog("Extracts.removeTargetsWithin", "extracts.js", 1);
 
@@ -132,15 +122,9 @@ Extracts = {
 			Extracts.removeTargetsWithin(container);
 		});
 
-		//  Remove staging element for annotations.
-		if (Extracts.annotationsWorkspace)
-			Extracts.annotationsWorkspace.remove();
-
 		//  Remove content load event handlers.
 		[ Extracts.processTargetsOnContentLoad,
 		  Extracts.setUpAnnotationLoadEvent,
-		  Extracts.signalAnnotationLoaded,
-		  Extracts.signalAnnotationLoadFailed
 		  ].forEach(handler => GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", handler));
 
 		if (Extracts.popFrameProvider == Popups) {
@@ -151,6 +135,7 @@ Extracts = {
 		} else {
 		}
 
+		//  Fire cleanup-complete event.
 		GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
 
@@ -178,7 +163,7 @@ Extracts = {
 					let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
 
 					//  Do nothing if the annotation is already loaded.
-					if (Extracts.cachedAnnotationExists(annotationIdentifier))
+					if (Annotations.cachedAnnotationExists(annotationIdentifier))
 						return;
 
 					/*  On hover, start a timer, duration of one-half the 
@@ -187,7 +172,7 @@ Extracts = {
 					annotatedTarget.annotationLoadTimer = setTimeout(() => {
 						/*  ... to load the annotation.
 							*/
-						Extracts.loadAnnotation(annotationIdentifier);
+						Annotations.loadAnnotation(annotationIdentifier);
 					}, (Extracts.annotationLoadHoverDelay));
 				});
 				annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
@@ -221,10 +206,6 @@ Extracts = {
 
 		//  Set service provider object.
 		Extracts.popFrameProvider = window[Extracts.popFrameProviderName];
-
-		//  Inject the staging area for annotations.
-		document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
-		Extracts.annotationsWorkspace = document.querySelector("#annotations-workspace");
 
         if (Extracts.popFrameProvider == Popups) {
             GWLog("Setting up for popups.", "extracts.js", 1);
@@ -263,36 +244,7 @@ Extracts = {
 			}
 		}, { phase: "eventListeners" });
 
-		//	Add handler for if an annotation loads.
-		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.signalAnnotationLoaded = (info) => {
-			GWLog("Extracts.signalAnnotationLoaded", "extracts.js", 2);
-
-			/*  If this is an annotation that’s loaded, we cache it, remove 
-				it from the staging element, and fire the annotationDidLoad
-				event.
-				*/
-			Extracts.cachedAnnotationReferenceEntries[info.identifier] = info.document;
-			info.document.remove();
-
-			GW.notificationCenter.fireEvent("GW.annotationDidLoad", { identifier: info.identifier });
-		}, {
-			phase: ">rewrite",
-			condition: (info) => (info.document.parentElement && info.document.parentElement.id == "annotations-workspace")
-		});
-
-		//	Add handler for if loading an annotation failed.
-		GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Extracts.signalAnnotationLoadFailed = (info) => {
-			GWLog("Extracts.signalAnnotationLoadFailed", "extracts.js", 2);
-
-			/*	If this is an annotation that’s failed to load, then we set
-				the cache value to indicate this, and fire the 
-				annotationLoadDidFail event.
-				*/
-			Extracts.cachedAnnotationReferenceEntries[info.identifier] = "LOADING_FAILED";
-
-			GW.notificationCenter.fireEvent("GW.annotationLoadDidFail", { identifier: info.identifier });
-		}, { condition: (info) => info.document.id == "annotations-workspace" });
-
+		//  Fire setup-complete event.
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
 
@@ -509,71 +461,15 @@ Extracts = {
 		return (target.hostname == location.hostname) ? new URL(location.href) : null;
 	},
 
-	/**************************************************************************/
-	/*  Helpers/objects for targets with annotations (extracts or definitions).
+	/******************************************************************/
+	/*  Helpers for targets with annotations (extracts or definitions).
 		*/
-
-	cachedAnnotationReferenceEntries: { },
-
-    cachedAnnotationExists: (annotationIdentifier) => {
-		let cachedAnnotation = Extracts.cachedAnnotationReferenceEntries[annotationIdentifier];
-		return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
-    },
-
-    loadAnnotation: (annotationIdentifier) => {
-		GWLog("Extracts.loadAnnotation", "extracts.js", 2);
-
-		let annotationURL = new URL("https://" + location.hostname + Extracts.annotationsBasePathname 
-									+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
-
-		doAjax({
-			location: annotationURL.href,
-			onSuccess: (event) => {
-				document.querySelector("#annotations-workspace").insertAdjacentHTML("beforeend", 
-					`<div class="annotation">${event.target.responseText}</div>`);
-				GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
-					source: "Extracts.loadAnnotation",
-					document: Extracts.annotationsWorkspace.lastElementChild, 
-					identifier: annotationIdentifier,
-					isMainDocument: false,
-					needsRewrite: true, 
-					clickable: false, 
-					collapseAllowed: false, 
-					isCollapseBlock: false,
-					isFullPage: false,
-					location: annotationURL,
-					fullWidthPossible: false
-				});
-			},
-			onFailure: (event) => {
-				GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-					source: "Extracts.loadAnnotation",
-					document: Extracts.annotationsWorkspace, 
-					identifier: annotationIdentifier,
-					location: annotationURL
-				});
-			}
-		});
-    },
-
-	/*	Clean the abstract of an annotation pop-frame, according to the
-		annotationAbstractCleanPatterns.
-		*/
-	cleanAnnotationAbstractInPopFrame: (popFrame) => {
-		let target = popFrame.spawningTarget;
-		for ([ testFunction, cleanPattern ] of Extracts.annotationAbstractCleanPatterns) {
-			if (testFunction(target))
-				popFrame.querySelector(".annotation-abstract").querySelectorAll(cleanPattern).forEach(element => {
-					element.remove();
-				});
-		}
-	},
 
 	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
 		its annotation (fragment) loads.
 		*/
-	refreshPopFrameAfterFragmentLoads: (target) => {
-		GWLog("Extracts.refreshPopFrameAfterFragmentLoads", "extracts.js", 2);
+	refreshPopFrameAfterAnnotationLoads: (target) => {
+		GWLog("Extracts.refreshPopFrameAfterAnnotationLoads", "extracts.js", 2);
 
 		target.popFrame.classList.toggle("loading", true);
 
@@ -582,7 +478,7 @@ Extracts = {
 			hasn’t de-spawned already, e.g. if the user moused out of the 
 			target).
 			*/
-		GW.notificationCenter.addHandlerForEvent("GW.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
+		GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
 			GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
 
 			//  If the pop-frame has despawned, don’t respawn it.
@@ -600,7 +496,7 @@ Extracts = {
 		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 
 		//  Add handler for if the fragment load fails.
-		GW.notificationCenter.addHandlerForEvent("GW.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
+		GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
 			GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
 
 			//  If the pop-frame has despawned, don’t respawn it.
@@ -609,36 +505,6 @@ Extracts = {
 
 			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
 		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
-	},
-
-	/*	Used to generate extract and definition pop-frames.
-		*/
-	referenceDataForTarget: (target) => {
-		let referenceEntry = Extracts.cachedAnnotationReferenceEntries[Extracts.targetIdentifier(target)];
-		let referenceElement = referenceEntry.querySelector(Extracts.annotatedTargetSelectors.map(selector => 
-			`.annotation > p ${selector}`
-		).join(", "));
-
-		//  Author list.
-		let authorElement = referenceEntry.querySelector(".author");
-		let authorList;
-		if (authorElement) {
-			authorList = authorElement.textContent.split(", ").slice(0, 3).join(", ");
-			if (authorList.length < authorElement.textContent.length)
-				authorList += " et al";
-		}
-
-		//  Date.
-		let dateElement = referenceEntry.querySelector(".date");
-
-		return {
-			element: 		referenceElement,
-			titleText: 		referenceElement.textContent,
-			titleHTML: 		referenceElement.innerHTML.trimQuotes(),
-			authorHTML:		(authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
-			dateHTML:		(dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
-			abstractHTML:	referenceEntry.querySelector("blockquote div").innerHTML
-		};
 	},
 
 	/***************************************************************************/
@@ -665,77 +531,65 @@ Extracts = {
 		the pop-frame spawned by the given target.
 		*/
 
-	//  Either an extract or a definition.
-	annotationForTarget: (target) => {
-		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
-
-		let annotationIdentifier = Extracts.targetIdentifier(target);
-		if (Extracts.cachedAnnotationReferenceEntries[annotationIdentifier] == null) {
-			Extracts.refreshPopFrameAfterFragmentLoads(target);
-			return `&nbsp;`;
-		} else if (Extracts.cachedAnnotationReferenceEntries[annotationIdentifier] == "LOADING_FAILED") {
-			target.popFrame.classList.add("loading-failed");
-			return `&nbsp;`;
-		}
-
-		if (Extracts.isExtractLink(target)) {
-			return Extracts.extractForTarget(target);
-		} else if (Extracts.isDefinition(target)) {
-			return Extracts.definitionForTarget(target);
-		} else {
-			return ``;
-		}
-	},
-
 	//  Summaries of links to elsewhere.
 	isExtractLink: (target) => {
 		return target.classList.contains("docMetadata");
 	},
-    extractForTarget: (target) => {
-		GWLog("Extracts.extractForTarget", "extracts.js", 2);
-
-		let referenceData = Extracts.referenceDataForTarget(target);
-
-		//  Link to original URL (for archive links).
-        let originalLinkHTML = "";
-        if (   referenceData.element.dataset.urlOriginal != undefined 
-        	&& referenceData.element.dataset.urlOriginal != target.href) {
-            originalLinkHTML = `<span class="originalURL">[<a 
-                       		title="Link to original URL for ‘${referenceData.titleText}’" 
-            				href="${referenceData.element.dataset.urlOriginal}"
-            				target="_new" 
-                       		alt="Original URL for this archived link; may be broken."
-                       			>original</a>]</span>`;
-        }
-
-		//  Extract title/link.
-		let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
-		let titleLinkHTML = `<a 
-								class="${titleLinkClass}" 
-								target="_new" 
-								href="${target.href}" 
-								title="Open ${target.href} in a new window"
-									>${referenceData.titleHTML}</a>`;
-
-        //  The fully constructed extract pop-frame contents.
-        return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
-        	 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
-        	 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
-    },
 
     //  Definitions.
     isDefinition: (target) => {
         return target.classList.contains("defnMetadata");
     },
-    definitionForTarget: (target) => {
-        GWLog("Extracts.definitionForTarget", "extracts.js", 2);
 
-        let referenceData = Extracts.referenceDataForTarget(target);
+	//  Either an extract or a definition.
+	annotationForTarget: (target) => {
+		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
-        return `<p class="data-field title">${referenceData.titleHTML}</p>` 
-        	 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
-        	 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
-    },
+		let annotationIdentifier = Extracts.targetIdentifier(target);
+
+		if (Annotations.cachedAnnotationReferenceEntries[annotationIdentifier] == null) {
+			Extracts.refreshPopFrameAfterAnnotationLoads(target);
+			return `&nbsp;`;
+		} else if (Annotations.cachedAnnotationReferenceEntries[annotationIdentifier] == "LOADING_FAILED") {
+			target.popFrame.classList.add("loading-failed");
+			return `&nbsp;`;
+		}
+
+		let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
+
+		if (Extracts.isDefinition(target)) {
+			//  The fully constructed definition pop-frame contents.
+			return `<p class="data-field title">${referenceData.titleHTML}</p>` 
+				 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
+				 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
+		} else { // if (Extracts.isExtractLink(target))
+			//  Link to original URL (for archive links).
+			let originalLinkHTML = "";
+			if (   referenceData.element.dataset.urlOriginal != undefined 
+				&& referenceData.element.dataset.urlOriginal != target.href) {
+				originalLinkHTML = `<span class="originalURL">[<a 
+								title="Link to original URL for ‘${referenceData.titleText}’" 
+								href="${referenceData.element.dataset.urlOriginal}"
+								target="_new" 
+								alt="Original URL for this archived link; may be broken."
+									>original</a>]</span>`;
+			}
+
+			//  Extract title/link.
+			let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
+			let titleLinkHTML = `<a 
+									class="${titleLinkClass}" 
+									target="_new" 
+									href="${target.href}" 
+									title="Open ${target.href} in a new window"
+										>${referenceData.titleHTML}</a>`;
+
+			//  The fully constructed extract pop-frame contents.
+			return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
+				 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
+				 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
+		}
+	},
 
     //  Videos (both local and remote).
     youtubeId: (href) => {
@@ -1149,8 +1003,8 @@ Extracts = {
 		if (   Extracts.isExtractLink(target)
 			|| Extracts.isDefinition(target)) {
 			let annotationIdentifier = Extracts.targetIdentifier(target);
-			if (!Extracts.cachedAnnotationExists(annotationIdentifier))
-				Extracts.loadAnnotation(annotationIdentifier);
+			if (!Annotations.cachedAnnotationExists(annotationIdentifier))
+				Annotations.loadAnnotation(annotationIdentifier);
 		}
 
 		//  Attempt to fill the popin.
@@ -1206,10 +1060,6 @@ Extracts = {
 			//  Remove extraneous classes from images in image popins.
 			image.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
 		}
-
-		//  Clean abstract of annotations.
-		if (Extracts.isExtractLink(target) || Extracts.isDefinition(target))
-			Extracts.cleanAnnotationAbstractInPopFrame(popin);
 
 		//  Rectify margin note style.
 		popin.querySelectorAll(".marginnote").forEach(marginNote => {
@@ -1462,10 +1312,6 @@ Extracts = {
 			if (popup.querySelector("img[width][height]"))
 				popup.classList.add("dimensions-specified");
 		}
-
-		//  Clean abstract of annotations.
-		if (Extracts.isExtractLink(target) || Extracts.isDefinition(target))
-			Extracts.cleanAnnotationAbstractInPopFrame(popup);
 
 		//  Ensure no reflow due to figures.
 		popup.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
