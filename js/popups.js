@@ -359,6 +359,16 @@ Popups = {
 		return popup.classList.contains("collapsed");
 	},
 
+	collapseOrUncollapsePopup: (popup) => {
+		GWLog("Popups.collapseOrUncollapsePopup", "popups.js", 2);
+
+		if (Popups.popupIsCollapsed(popup)) {
+			Popups.uncollapsePopup(popup);
+		} else {
+			Popups.collapsePopup(popup);
+		}
+	},
+
 	collapsePopup: (popup) => {
 		GWLog("Popups.collapsePopup", "popups.js", 3);
 
@@ -383,8 +393,8 @@ Popups = {
 			popup.titleBar.updateState();
 	},
 
-	unCollapsePopup: (popup) => {
-		GWLog("Popups.unCollapsePopup", "popups.js", 3);
+	uncollapsePopup: (popup) => {
+		GWLog("Popups.uncollapsePopup", "popups.js", 3);
 
 		//  Update class.
 		popup.classList.toggle("collapsed", false);
@@ -423,7 +433,7 @@ Popups = {
 	setPopupTilingControlKeys: (keystring) => {
 		GWLog("Popups.setPopupTilingControlKeys", "popups.js", 1);
 
-		Popups.popupTilingControlKeys = keystring || "aswdqexzfc";
+		Popups.popupTilingControlKeys = keystring || "aswdqexzfcv";
 		localStorage.setItem("popup-tiling-control-keys", Popups.popupTilingControlKeys);
 	},
 
@@ -466,7 +476,7 @@ Popups = {
 
 		//  If the popup is collapsed, expand it.
 		if (Popups.popupIsCollapsed(popup))
-			Popups.unCollapsePopup(popup);
+			Popups.uncollapsePopup(popup);
 
 		//  Update classes.
 		popup.swapClasses([ "zoomed", "restored" ], 0);
@@ -1580,7 +1590,7 @@ Popups = {
 
 		let popup = event.target.closest(".popup");
 		if (Popups.popupIsCollapsed(popup)) {
-			Popups.unCollapsePopup(popup);
+			Popups.uncollapsePopup(popup);
 		} else {
 			Popups.collapsePopup(popup);
 		}
@@ -1664,6 +1674,9 @@ Popups = {
 				break;
 			case Popups.popupTilingControlKeys.substr(9,1):
 				Popups.pinOrUnpinPopup(Popups.focusedPopup());
+				break;
+			case Popups.popupTilingControlKeys.substr(10,1):
+				Popups.collapseOrUncollapsePopup(Popups.focusedPopup());
 				break;
 			default:
 				break;
