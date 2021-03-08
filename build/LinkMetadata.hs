@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-07 11:15:02 gwern"
+When:  Time-stamp: "2021-03-08 18:24:27 gwern"
 License: CC-0
 -}
 
@@ -182,17 +182,22 @@ hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,b,c) e (f,g)) =
-                                                        let f' = linkCanonicalize $ T.unpack f in
-                                                        case M.lookup f' mdb of
-                                                          Nothing               -> y
-                                                          Just (_, _, _, _, "") -> y
-                                                          Just (_,aut,dt,_,abs) -> let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
-                                                            if (length abs < 180) then y else
-                                                              if T.head f == '?' then
-                                                                Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
-                                                                Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
-
+            if "https://en.wikipedia.org/wiki/" `isPrefixOf` (T.unpack f) then addHasAnnotation idBool True y ("","","","","")
+            else
+              let f' = linkCanonicalize $ T.unpack f in
+                case M.lookup f' mdb of
+                  Nothing -> y
+                  Just mi -> addHasAnnotation idBool False y mi
           hasAnnotationInline _ _ y = y
+
+          addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
+          addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,abs) =
+            let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
+              if (length abs < 180) && not forcep then y else
+                if T.head f == '?' then
+                  Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
+                  Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
+          addHasAnnotation _ _ x _ = x
 
 parseRawBlock :: Block -> Block
 parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
@@ -405,6 +410,7 @@ wikipedia md rmd topLevelPredicate p
  | "https://en.wikipedia.org/wiki/Help:"          `isPrefixOf` p = return (Left Permanent)
  | "https://en.wikipedia.org/wiki/Help_talk:"     `isPrefixOf` p = return (Left Permanent)
  | "https://en.wikipedia.org/w/index.php"         `isPrefixOf` p = return (Left Permanent)
+ | "https://en.wikipedia.org/wiki/index.php"         `isPrefixOf` p = return (Left Permanent)
  -- Content articles to skip:
  | "https://en.wikipedia.org/wiki/List_of_"  `isPrefixOf` p = return (Left Permanent)
  | "https://en.wikipedia.org/wiki/Table_of_" `isPrefixOf` p = return (Left Permanent)
@@ -507,11 +513,11 @@ checkDepth md rmd p =
                         if  isNothing linkPresent then True -- we are at depth 0, being called from gwern.net (ie this is for the first popup), so go ahead & crawl it
                           else let p' = fromJust linkPresent in
                                  let linkPresent' = HM.lookup p' rmd in
-                                   if isNothing linkPresent' then True -- we are at depth 1: our caller is called from gwern.net (this is for a popup for a popup)
-                                                             else let p'' = fromJust linkPresent' in
-                                                                    let linkPresent'' = HM.lookup p'' rmd in
-                                                                      if isNothing linkPresent'' then True -- depth 2 (a popup in a popup in a popup), but we'll stop there for now due to the exponential explosion
-                                                                      else False
+                                   if isNothing linkPresent' then False else False --  True -- we are at depth 1: our caller is called from gwern.net (this is for a popup for a popup)
+                                                             -- else let p'' = fromJust linkPresent' in
+                                                                  --   let linkPresent'' = HM.lookup p'' rmd in
+                                                                  --     if isNothing linkPresent'' then True -- depth 2 (a popup in a popup in a popup), but we'll stop there for now due to the exponential explosion
+                                                                  --     else False
 
 
 downloadWPThumbnail :: FilePath -> IO FilePath
