@@ -80,19 +80,54 @@ Annotations = {
 		return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
     },
 
+	annotationForIdentifier: (annotationIdentifier) => {
+		return Annotations.cachedAnnotationReferenceEntries[annotationIdentifier];
+	},
+
     loadAnnotation: (annotationIdentifier) => {
 		GWLog("Annotations.loadAnnotation", "annotations.js", 2);
 
-		let annotationURL = new URL("https://" + location.hostname + Annotations.annotationsBasePathname 
-									+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
+		let annotationURL;
+		if (Annotations.isWikipediaLink(annotationIdentifier)) {
+			//  Wikipedia entry.
+			annotationURL = new URL(annotationIdentifier);
+			let wikiPageName = /\/([^\/]+?)$/.exec(annotationURL.pathname)[1];
+			annotationURL.pathname = `/api/rest_v1/page/mobile-sections-${(annotationURL.hash > "" ? "remaining" : "lead")}/${wikiPageName}`;
+		} else {
+			//  Local annotation.
+			annotationURL = new URL("https://" + location.hostname + Annotations.annotationsBasePathname 
+							+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
+		}
 
 		doAjax({
 			location: annotationURL.href,
 			onSuccess: (event) => {
-				Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${event.target.responseText}</div>`);
+				let responseHTML, response;
+
+				if (Annotations.isWikipediaLink(annotationIdentifier)) {
+					response = JSON.parse(event.target.responseText);
+
+					let targetSection;
+					if (annotationURL.hash)
+						targetSection = response["sections"].find(section => section["anchor"] == annotationURL.hash);
+
+					responseHTML = targetSection ? targetSection["text"] : response["sections"][0]["text"];
+				} else {
+					responseHTML = event.target.responseText
+				}
+
+				Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${responseHTML}</div>`);
+				let annotation = Annotations.annotationsWorkspace.lastElementChild;
+
+				if (Annotations.isWikipediaLink(annotationIdentifier)) {
+					annotation.dataset["titleText"] = response["displaytitle"];
+
+					Annotations.processWikipediaEntry(annotation, annotationURL);
+				}
+
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
 					source: "Annotations.loadAnnotation",
-					document: Annotations.annotationsWorkspace.lastElementChild, 
+					document: annotation, 
 					identifier: annotationIdentifier,
 					isMainDocument: false,
 					needsRewrite: true, 
@@ -120,7 +155,20 @@ Annotations = {
 	referenceDataForAnnotationIdentifier: (annotationIdentifier) => {
 		let referenceEntry = Annotations.cachedAnnotationReferenceEntries[annotationIdentifier];
 
-		return Annotations.referenceDataForLocalAnnotation(referenceEntry);
+		if (Annotations.isWikipediaLink(annotationIdentifier)) {
+			return Annotations.referenceDataForWikipediaEntry(referenceEntry);
+		} else {
+			return Annotations.referenceDataForLocalAnnotation(referenceEntry);
+		}
+	},
+
+	isWikipediaLink: (annotationIdentifier) => {
+		if (/^[\?\/]/.test(annotationIdentifier))
+			return false;
+
+		let url = new URL(annotationIdentifier);
+
+		return (url && /(.+?)\.wikipedia\.org/.test(url.hostname));
 	},
 
 	/*	Annotations generated server-side and hosted locally.
@@ -150,6 +198,57 @@ Annotations = {
 			dateHTML:		(dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
 			abstractHTML:	referenceEntry.querySelector("blockquote div").innerHTML
 		};
+	},
+
+	/*	Wikipedia entries (page summaries or sections).
+		*/
+	referenceDataForWikipediaEntry: (referenceEntry) => {
+		return {
+			element: 		referenceEntry,
+			titleText: 		referenceEntry.dataset["titleText"],
+			titleHTML: 		referenceEntry.dataset["titleText"],
+			authorHTML:		`<span class="data-field author">Wikipedia</span>`,
+			dateHTML:		``,
+			abstractHTML:	referenceEntry.innerHTML
+		};
+	},
+
+	processWikipediaEntry: (annotation, annotationURL) => {
+		//	Remove unwanted elements.
+		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks").forEach(element => {
+			element.remove();
+		});
+
+		//	Remove empty paragraphs.
+		annotation.querySelectorAll("p:empty").forEach(emptyGraf => {
+			emptyGraf.remove();
+		});
+
+		//	Process links.
+		annotation.querySelectorAll("a").forEach(link => {
+			//	Qualify links.
+			if (link.hostname == location.hostname)
+				link.hostname = annotationURL.hostname;
+
+			//	Mark other Wikipedia links as also being annotated.
+			if (/(.+?)\.wikipedia\.org/.test(link.hostname))
+				link.classList.add("docMetadata");
+		});
+
+		//	Strip inline styles.
+		annotation.querySelectorAll("*").forEach(element => {
+			element.removeAttribute("style");
+		});
+
+		//	Un-linkify images.
+		annotation.querySelectorAll("a img").forEach(imageLink => {
+			imageLink.parentElement.outerHTML = imageLink.outerHTML;
+		});
+
+		//	Normalize table cell types.
+		annotation.querySelectorAll("th:not(:only-child)").forEach(cell => {
+			cell.outerHTML = `<td>${cell.innerHTML}</td>`;
+		});
 	}
 };
 

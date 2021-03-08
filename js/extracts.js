@@ -547,10 +547,10 @@ Extracts = {
 
 		let annotationIdentifier = Extracts.targetIdentifier(target);
 
-		if (Annotations.cachedAnnotationReferenceEntries[annotationIdentifier] == null) {
+		if (Annotations.annotationForIdentifier(annotationIdentifier) == null) {
 			Extracts.refreshPopFrameAfterAnnotationLoads(target);
 			return `&nbsp;`;
-		} else if (Annotations.cachedAnnotationReferenceEntries[annotationIdentifier] == "LOADING_FAILED") {
+		} else if (Annotations.annotationForIdentifier(annotationIdentifier) == "LOADING_FAILED") {
 			target.popFrame.classList.add("loading-failed");
 			return `&nbsp;`;
 		}
@@ -585,9 +585,12 @@ Extracts = {
 										>${referenceData.titleHTML}</a>`;
 
 			//  The fully constructed extract pop-frame contents.
+			let abstractSpecialClass = ``;
+			if (Annotations.isWikipediaLink(annotationIdentifier))
+				abstractSpecialClass = "wikipedia-entry";
 			return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
 				 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
-				 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
+				 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
 		}
 	},
 

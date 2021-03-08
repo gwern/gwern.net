@@ -2930,6 +2930,50 @@ body.directory-index #disqus_thread {
     height: 100%;
 }
 
+/*	Wikipedia entries.
+	*/
+.wikipedia-entry .table-wrapper {
+	margin: 1.5em 0 1.5em 0;
+}
+.wikipedia-entry .infobox {
+	font-size: 0.9em;
+}
+.wikipedia-entry .infobox tbody tr:hover {
+	outline: none;
+}
+.wikipedia-entry .infobox th[colspan="2"],
+.wikipedia-entry .infobox td[colspan="2"] {
+	text-align: center;
+}
+.wikipedia-entry .infobox th {
+	border-top: 1px solid var(--GW-table-row-horizontal-border-color);
+}
+.wikipedia-entry .infobox tr:first-of-type th {
+	font-size: 1.25em;
+}
+.wikipedia-entry .infobox td:first-child {
+	font-weight: bold;
+}
+.wikipedia-entry .infobox td ul {
+	margin: 0.25em 0;
+	padding: 0 0 0 1.5em;
+}
+.wikipedia-entry .infobox img {
+	display: block;
+	border: 1px solid var(--GW-figure-outline-color);
+	margin: 0.25em auto 0.75em auto;
+}
+.wikipedia-entry #Timeline-row {
+	display: flex;
+	width: -moz-fit-content;
+	width: fit-content;
+	margin: 0.25em auto;
+}
+.wikipedia-entry th br ~ * {
+	font-weight: normal;
+	font-size: calc((1 / 1.25) * 1em);
+}
+
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
