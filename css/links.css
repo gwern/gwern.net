@@ -66,13 +66,13 @@
     }
 }
 /* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
-span.defnMetadata {
+.markdownBody span.defnMetadata {
     cursor: help;
     color: var(--GW-definition-annotation-text-color);
     background-image: var(--GW-dotted-underline-background-image);
     background-size: 2px 1px;
 }
-span.defnMetadata:hover {
+.markdownBody span.defnMetadata:hover {
     color: var(--GW-body-link-hover-color);
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
