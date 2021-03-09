@@ -84,6 +84,11 @@ Annotations = {
 		return Annotations.cachedAnnotationReferenceEntries[annotationIdentifier];
 	},
 
+	stageAnnotation: (annotationRawHTML) => {
+		Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${annotationRawHTML}</div>`);
+		return Annotations.annotationsWorkspace.lastElementChild;;
+	},
+
     loadAnnotation: (annotationIdentifier) => {
 		GWLog("Annotations.loadAnnotation", "annotations.js", 2);
 
@@ -92,6 +97,7 @@ Annotations = {
 			//  Wikipedia entry.
 			annotationURL = new URL(annotationIdentifier);
 			let wikiPageName = /\/([^\/]+?)$/.exec(annotationURL.pathname)[1];
+			annotationURL.originalPathname = annotationURL.pathname;
 			annotationURL.pathname = `/api/rest_v1/page/mobile-sections-${(annotationURL.hash > "" ? "remaining" : "lead")}/${wikiPageName}`;
 		} else {
 			//  Local annotation.
@@ -102,27 +108,23 @@ Annotations = {
 		doAjax({
 			location: annotationURL.href,
 			onSuccess: (event) => {
-				let responseHTML, response;
-
+				let annotation;
 				if (Annotations.isWikipediaLink(annotationIdentifier)) {
-					response = JSON.parse(event.target.responseText);
+					let response = JSON.parse(event.target.responseText);
 
 					let targetSection;
-					if (annotationURL.hash)
-						targetSection = response["sections"].find(section => section["anchor"] == annotationURL.hash);
+					if (annotationURL.hash > "")
+						targetSection = response["sections"].find(section => section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1));
 
-					responseHTML = targetSection ? targetSection["text"] : response["sections"][0]["text"];
-				} else {
-					responseHTML = event.target.responseText
-				}
+					let responseHTML = targetSection ? targetSection["text"] : response["sections"][0]["text"];
+					annotation = Annotations.stageAnnotation(responseHTML);
 
-				Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${responseHTML}</div>`);
-				let annotation = Annotations.annotationsWorkspace.lastElementChild;
-
-				if (Annotations.isWikipediaLink(annotationIdentifier)) {
-					annotation.dataset["titleText"] = response["displaytitle"];
+					annotation.dataset["titleText"] = (annotationURL.hash > "") ? targetSection["line"] : response["displaytitle"];
+					annotation.dataset["wikiPageName"] = 
 
 					Annotations.processWikipediaEntry(annotation, annotationURL);
+				} else {
+					annotation = Annotations.stageAnnotation(event.target.responseText);
 				}
 
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
@@ -162,6 +164,8 @@ Annotations = {
 		}
 	},
 
+	/*	Returns true iff the given identifier string is a Wikipedia URL.
+		*/
 	isWikipediaLink: (annotationIdentifier) => {
 		if (/^[\?\/]/.test(annotationIdentifier))
 			return false;
@@ -227,6 +231,8 @@ Annotations = {
 		//	Process links.
 		annotation.querySelectorAll("a").forEach(link => {
 			//	Qualify links.
+			if (link.getAttribute("href").startsWith("#"))
+				link.pathname = annotationURL.originalPathname;
 			if (link.hostname == location.hostname)
 				link.hostname = annotationURL.hostname;
 
