@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-08 20:37:10 gwern"
+When:  Time-stamp: "2021-03-08 22:25:29 gwern"
 License: CC-0
 -}
 
@@ -13,37 +13,37 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation) where
 
-import Control.Concurrent (forkIO)
+import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (when, void)
+import Data.Aeson (eitherDecode, FromJSON)
+import Data.Char (isAlpha, isNumber, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import Data.Aeson (eitherDecode, FromJSON)
-import GHC.Generics (Generic)
-import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
-import Data.Containers.ListUtils (nubOrd)
-import Data.Char (isAlpha, isNumber, isSpace, toLower)
 import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey, union, Map)
-import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span),
-                    HTMLMathMethod(MathJax), defaultMathJaxURL, def, readLaTeX, writeHtml5String,
-                    WrapOption(WrapNone), runPure, pandocExtensions, readHtml, writerExtensions, nullAttr, nullMeta,
-                    queryWith, Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
-import Text.Pandoc.Walk (walk, walkM)
 import qualified Data.Text as T (append, head, unpack, pack, Text)
+import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
-import System.Exit (ExitCode(ExitFailure))
-import System.Directory (doesFileExist)
-import System.FilePath (takeBaseName, takeExtension)
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
-import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
-import Data.Yaml as Y (decodeFileEither, encode, ParseException)
-import Text.Regex (subRegex, mkRegex)
 import Data.Maybe (Maybe)
 import Data.Text.IO as TIO (readFile, writeFile)
-import System.IO (stderr, hPutStrLn)
-import Typography (invertImage, typographyTransform)
+import Data.Yaml as Y (decodeFileEither, encode, ParseException)
+import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
-import Control.Concurrent (threadDelay)
+import System.Directory (doesFileExist)
+import System.Exit (ExitCode(ExitFailure))
+import System.FilePath (takeBaseName, takeExtension)
+import System.IO (stderr, hPutStrLn)
+import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
+import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
+                    defaultMathJaxURL, def, readLaTeX, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
+                    readHtml, writerExtensions, nullAttr, nullMeta, queryWith,
+                    Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
+import Text.Pandoc.Walk (walk, walkM)
+import Text.Regex (subRegex, mkRegex)
+
+import Typography (invertImage, typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 
 ----
@@ -73,14 +73,14 @@ readLinkMetadata = do
 
              -- Quality checks:
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
-             let urls = map (\(u,_) -> u) custom
+             let urls = map fst custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
              let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
-             let emptyCheck = filter (\(u,(t,a,_,_,s)) -> any (=="") [u,t,a,s]) custom
-             when (length emptyCheck /= 0) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
+             let emptyCheck = filter (\(u,(t,a,_,_,s)) ->  elem "" [u,t,a,s]) custom
+             when (not (null emptyCheck)) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata "metadata/auto.yaml" -- cleanup first
@@ -162,10 +162,10 @@ annotateLink md target =
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
-hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
+hasAnnotation md idp = walk (hasAnnotationInline md idp)
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (_,_,_) _ (f,_)) =
-            if "https://en.wikipedia.org/wiki/" `isPrefixOf` (T.unpack f) then addHasAnnotation idBool True y ("","","","","")
+            if "https://en.wikipedia.org/wiki/" `isPrefixOf` T.unpack f then addHasAnnotation idBool True y ("","","","","")
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
@@ -174,11 +174,11 @@ hasAnnotation md idp x = walk (hasAnnotationInline md idp) x
           hasAnnotationInline _ _ y = y
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
-          addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,abs) =
+          addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,abstrct) =
             let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
-              if (length abs < 180) && not forcep then y else
+              if (length abstrct < 180) && not forcep then y else
                 if T.head f == '?' then
-                  Span (a', nubOrd (b++["defnMetadata"]), [("original-definition-id",f)]++c) e else
+                  Span (a', nubOrd (b++["defnMetadata"]), ("original-definition-id",f):c) e else
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
           addHasAnnotation _ _ z _ = z
 
@@ -199,7 +199,7 @@ generateAnnotationBlock (f, ann) = case ann of
                                                               let date = if dt=="" then [] else [Str "(", Span ("", ["date"], []) [Str (T.pack dt)], Str ")"] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
                                                                   let link = if head f == '?' then
-                                                                               Span (lid, ["defnMetadata"], [("original-definition-id",T.pack f)]++values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
+                                                                               Span (lid, ["defnMetadata"], ("original-definition-id",T.pack f):values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
                                                                         else
                                                                                Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
@@ -265,7 +265,7 @@ initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' 
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle [] = ""
 trimTitle t = let t' = reverse $ replace " : " ": " $ replace "\n " "" $ trim t in
-                if length t' > 0 then reverse (if head t' == '.' then tail t' else t') else ""
+                if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
@@ -296,12 +296,12 @@ generateID url author date
                              if authorCount == 0 then "" else
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
                                  -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
-                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url' in if not (s=="") && isNumber (head s) then "-" ++ s else "") in
+                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url' in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
                                    let suffix' = if suffix == "-1" then "" else suffix in
                                  filter (/='.') $ map toLower $ if authorCount >= 3 then
                                                  firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
                                                    if authorCount == 2 then
-                                                     let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ (authors !! 1) in
+                                                     let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
                                                        firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix'
                                                    else
                                                      firstAuthorSurname ++ "-" ++ year ++ suffix'
@@ -323,7 +323,7 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Lef
                      | "plosgenetics.org" `isInfixOf` l = pubmed l
                      | "plosmedicine.org" `isInfixOf` l = pubmed l
                      | "plosone.org" `isInfixOf` l = pubmed l
-                     | otherwise = let l' = linkCanonicalize l in if (head l' == '/') then gwern $ tail l else return (Left Permanent)
+                     | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern $ tail l else return (Left Permanent)
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
@@ -333,12 +333,12 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
-                ExitFailure err -> (hPutStrLn stderr $ intercalate " : " [l, show status, show err, show mb]) >> return (Left Permanent)
+                ExitFailure err -> hPutStrLn stderr (intercalate " : " [l, show status, show err, show mb]) >> return (Left Permanent)
                 _ -> do
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
-                          do let (title:author:date:doi:abstract) = parsed
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, trim $ replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstract))
+                          do let (title:author:date:doi:abstrct) = parsed
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, trim $ replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstrct))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
@@ -357,11 +357,11 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
            else return (Left Permanent)
 
 -- nested JSON object: eg 'jq .message.abstract'
-data Crossref = Crossref { message :: Message } deriving (Show,Generic)
+newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
 instance FromJSON Crossref
-data Message = Message { abstract :: Maybe String } deriving (Show,Generic)
+newtype Message = Message { abstract :: Maybe String } deriving (Show,Generic)
 instance FromJSON Message
-doi2Abstract :: [Char] -> IO (Maybe String)
+doi2Abstract :: String -> IO (Maybe String)
 doi2Abstract doi = if length doi < 7 then return Nothing
                    else do (_,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://api.crossref.org/works/"++doi, "--user-agent", "gwern+crossrefscraping@gwern.net"]
                            threadDelay 1000000 -- delay 1s
@@ -383,17 +383,17 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
-                        let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Title" then snd $ head b else "") metas
+                        let title = concatMap (\(TagOpen _ (d:e)) -> if snd d == "DC.Title" then snd $ head e else "") metas
                         if (title=="") then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return (Left Permanent)
                           else do
-                                 let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "DC.Date" then snd $ head b else "") metas
-                                 let author = initializeAuthors $ intercalate ", " $ filter (/="") $ map (\(TagOpen _ (a:b)) -> if snd a == "DC.Contributor" then snd $ head b else "") metas
-                                 let doi = concatMap (\(TagOpen _ (a:b)) -> if snd a == "citation_doi" then snd $ head b else "") metas
-                                 let abstract = cleanAbstractsHTML $
+                                 let date = concatMap (\(TagOpen _ (h:i)) -> if snd h == "DC.Date" then snd $ head i else "") metas
+                                 let author = initializeAuthors $ intercalate ", " $ filter (/="") $ map (\(TagOpen _ (j:k)) -> if snd j == "DC.Contributor" then snd $ head k else "") metas
+                                 let doi = concatMap (\(TagOpen _ (l:m)) -> if snd l == "citation_doi" then snd $ head m else "") metas
+                                 let abstrct = cleanAbstractsHTML $
                                                  replace "\n" " " $ -- many WP entries have hidden/stray newlines inside paragraphs, which if deleted, just cause run-together errors, like "one of the most important American poets of the 20th century.Cummings is associated" etc.
-                                                 concatMap (\(TagOpen _ (a:_:c)) ->
-                                                                      if snd a == "citation_abstract" then snd $ head c else "") metas
-                                 return $ Right (p, (title, author, date, doi, abstract))
+                                                 concatMap (\(TagOpen _ (q:_:s)) ->
+                                                                      if snd q == "citation_abstract" then snd $ head s else "") metas
+                                 return $ Right (p, (title, author, date, doi, abstrct))
 
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
@@ -408,8 +408,8 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          let doi = findTxt $ fst $ element "arxiv:doi" tags
-                         let abs = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
-                         return $ Right (url, (title,authors,published,doi,abs))
+                         let abst = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
+                         return $ Right (url, (title,authors,published,doi,abst))
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
 findTxt :: [Tag String] -> String
@@ -448,8 +448,7 @@ processArxivAbstract u a = let cleaned = runPure $ do
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
                                               replace "%" "\\%" $ replace "\\%" "%" $ replace "$\\%$" "%" $ replace "\n  " "\n\n" a
-                                    html <- writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
-                                    return html
+                                    writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
                  Left e -> error $ u ++ " : " ++ show e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
@@ -468,7 +467,7 @@ cleanAbstractsHTML t = trim $
   (\s -> subRegex (mkRegex " ([0-9]*[3])rd") s        " \\1<sup>rd</sup>") $
   (\s -> subRegex (mkRegex " \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)") s "") $ -- rm AERA classification tags they stick into the Crossref abstracts
   -- simple string substitutions:
-  foldr (\(a,b) -> replace a b) t [
+  foldr (uncurry replace) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
     , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
     , ("<sup></sup>", "")
@@ -878,7 +877,7 @@ trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (
 -- gwern :: Path -> IO (Maybe (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
         | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
-        | or (map (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"]) = return (Left Permanent) -- skip potentially very large archives
+        | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
         | otherwise =
             let p' = replace "https://www.gwern.net/" "" p in
             do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"]
@@ -889,27 +888,27 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
-                        let title = concatMap (\(TagOpen _ (a:b)) -> if snd a == "title" then snd $ head b else "") metas
-                        let date = concatMap (\(TagOpen _ (a:b)) -> if snd a == "dc.date.issued" then snd $ head b else "") metas
-                        let keywords = concatMap (\(TagOpen _ (a:b)) -> if snd a == "keywords" then snd $ head b else "") metas
+                        let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
+                        let date = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
+                        let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
                         let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</p>"
-                        let author = initializeAuthors $ concatMap (\(TagOpen _ (a:b)) -> if snd a == "author" then snd $ head b else "") metas
-                        let thumbnail = if length (filter filterThumbnail metas) >0 then
+                        let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
+                        let thumbnail = if not (any filterThumbnail metas) then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
-                        let thumbnail' = (if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail) :: String
+                        let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
                               let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ (replace "%F" "/" $ urlEncode thumbnail') ++ "\" alt=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ replace "%F" "/" (urlEncode thumbnail') ++ "\" alt=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
 
                         let doi = ""
-                        let abstract      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
-                        let description = concatMap (\(TagOpen _ (a:b)) -> if snd a == "description" then snd $ head b else "") metas
+                        let abstrct      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
+                        let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
-                        let abstract'     = if length description > length abstract then description else abstract
-                        let abstract'' = if take 3 abstract' == "<p>" then abstract' else "<p>"++abstract'++"</p>"
-                        if abstract'' == "404 Not Found Error: no page by this name!" then return (Left Temporary) else
-                          return $ Right (p, (title, author, date, doi, thumbnailFigure++" "++abstract''++" "++keywords'))
+                        let abstrct'     = if length description > length abstrct then description else abstrct
+                        let abstrct'' = if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>"
+                        if abstrct'' == "404 Not Found Error: no page by this name!" then return (Left Temporary) else
+                          return $ Right (p, (title, author, date, doi, thumbnailFigure++" "++abstrct''++" "++keywords'))
         where
           dropToBody (TagOpen "body" _) = False
           dropToBody _ = True
@@ -927,4 +926,4 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
           -- ["statistics","NN","anime","shell","dataset"] ~> "<a href=\"/tags/statistics\">statistics</a>, <a href=\"/tags/NN\">NN</a>, <a href=\"/tags/anime\">anime</a>, <a href=\"/tags/shell\">shell</a>, <a href=\"/tags/dataset\">dataset</a>"
           keywordsToLinks :: String -> String
-          keywordsToLinks = concat . intersperse ", " . map (\k -> "<a title=\"All pages tagged '"++k++"'\"" ++ " href=\"/tags/"++k++"\">"++k++"</a>") . words . replace "," ""
+          keywordsToLinks = intercalate ", " . map (\k -> "<a title=\"All pages tagged '"++k++"'\"" ++ " href=\"/tags/"++k++"\">"++k++"</a>") . words . replace "," ""

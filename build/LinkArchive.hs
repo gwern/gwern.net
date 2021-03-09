@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-03-07 18:21:30 gwern"
+When:  Time-stamp: "2021-03-08 22:27:15 gwern"
 License: CC-0
 -}
 
@@ -35,7 +35,7 @@ There are approximately 30k external links on Gwern.net as of October 2019, of w
 But it'll be worth it to forestall thousands of dying links, regular reader frustration, and a considerable waste of my time every month dealing with the latest broken links.
 -}
 
-{-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 
 import qualified Data.Map.Strict as M
@@ -67,20 +67,20 @@ localizeLink :: ArchiveMetadata -> Inline -> IO Inline
 localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
   if whiteList (T.unpack targetURL) then return x else
     do targetURL' <- rewriteLink adb (T.unpack targetURL)
-       if targetURL' == (T.unpack targetURL) then return x -- no archiving has been done yet, return original
+       if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
        else do -- rewrite & annotate link with local archive:
          let padding = if targetDescription == "" then "" else " "
          let targetDescription' = T.unpack targetDescription ++ padding ++ "(Original URL: " ++ T.unpack targetURL ++ " )"
          -- specify that the rewritten links are mirrors & to be ignored:
          let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original",targetURL)]
-         let archivedLink = Link (identifier, classes++["localArchive"], pairs++archiveAttributes) b (T.pack targetURL', (T.pack targetDescription'))
+         let archivedLink = Link (identifier, classes++["localArchive"], pairs++archiveAttributes) b (T.pack targetURL', T.pack targetDescription')
          return archivedLink
 localizeLink _ x = return x
 
 readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
                          -- check for failed archives:
-                         _ <- mapM (\(p,ami) -> case ami of
+                         mapM_ (\(p,ami) -> case ami of
                                   Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
                                   Right _         -> return ami
                                   Left  _         -> return ami)
@@ -107,7 +107,7 @@ rewriteLink adb url = do
           archive <- archiveURL url
           insertLinkIntoDB (Right archive) url
           return archive
-      Just (Right archive) -> if archive==(Just "") then error ("Error! Tried to return a link to a non-existent archive! " ++ url) else return archive
+      Just (Right archive) -> if archive == Just "" then error ("Error! Tried to return a link to a non-existent archive! " ++ url) else return archive
 
 archiveDelay :: Integer
 archiveDelay = 110
@@ -119,7 +119,7 @@ insertLinkIntoDB a url = do adb <- readArchiveMetadata
                             renameFile temp "metadata/archive.hs"
 
 currentDay :: IO Integer
-currentDay = fmap (toModifiedJulianDay . utctDay) $ Data.Time.Clock.getCurrentTime
+currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
 
 -- take a URL, archive it, and if successful return the hashed path
 archiveURL :: String -> IO (Maybe Path)
