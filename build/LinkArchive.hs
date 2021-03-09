@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-03-08 22:27:15 gwern"
+When:  Time-stamp: "2021-03-09 12:26:36 gwern"
 License: CC-0
 -}
 
@@ -38,19 +38,19 @@ But it'll be worth it to forestall thousands of dying links, regular reader frus
 {-# LANGUAGE OverloadedStrings #-}
 module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 
-import qualified Data.Map.Strict as M
+import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
 import Data.Maybe (fromMaybe)
-import Text.Pandoc (Inline(..))
-import qualified Data.Text.IO as TIO
-import qualified Data.Text as T
+import Text.Pandoc (Inline(Link))
+import qualified Data.Text.IO as TIO (readFile)
+import qualified Data.Text as T (pack, unpack)
 import Text.Show.Pretty (ppShow)
 import System.Directory (renameFile)
 import System.IO.Temp (writeSystemTempFile)
 import Data.Time.Calendar (toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.FileStore.Utils (runShellCommand)
-import qualified Data.ByteString.Lazy.UTF8 as U
+import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import System.IO (stderr, hPutStrLn)
 
@@ -82,7 +82,10 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
                          -- check for failed archives:
                          mapM_ (\(p,ami) -> case ami of
                                   Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
-                                  Right _         -> return ami
+                                  Right (Just u)  -> if not ("http" `isPrefixOf` p) then
+                                                       error $ "Error! Invalid archive link? " ++ show p ++ show u ++ show ami
+                                                       else return ami
+                                  Right Nothing   -> return ami
                                   Left  _         -> return ami)
                               pdl
                          return $ M.fromList pdl
