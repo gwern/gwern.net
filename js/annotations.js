@@ -47,7 +47,7 @@ Annotations = {
 				it from the staging element, and fire the annotationDidLoad
 				event.
 				*/
-			Annotations.cachedAnnotationReferenceEntries[info.identifier] = info.document;
+			Annotations.cachedAnnotations[info.identifier] = info.document;
 			info.document.remove();
 
 			GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: info.identifier });
@@ -64,7 +64,7 @@ Annotations = {
 				the cache value to indicate this, and fire the 
 				annotationLoadDidFail event.
 				*/
-			Annotations.cachedAnnotationReferenceEntries[info.identifier] = "LOADING_FAILED";
+			Annotations.cachedAnnotations[info.identifier] = "LOADING_FAILED";
 
 			GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: info.identifier });
 		}, { condition: (info) => info.document == Annotations.annotationsWorkspace });
@@ -73,22 +73,36 @@ Annotations = {
 		GW.notificationCenter.fireEvent("Annotations.setupDidComplete");
 	},
 
-	cachedAnnotationReferenceEntries: { },
+	/*	Storage for retrieved and cached annotations.
+		*/
+	cachedAnnotations: { },
 
+	/*	Returns true iff a processed and cached annotation exists for the given
+		identifier string.
+		*/
     cachedAnnotationExists: (annotationIdentifier) => {
-		let cachedAnnotation = Annotations.cachedAnnotationReferenceEntries[annotationIdentifier];
+		let cachedAnnotation = Annotations.cachedAnnotations[annotationIdentifier];
 		return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
     },
 
+	/*	Returns a cached annotation for a given identifier string, or else
+		either “LOADING_FAILED” (if loading the annotation was attempted but
+		failed) or null (if the annotation has not been loaded).
+		*/
 	annotationForIdentifier: (annotationIdentifier) => {
-		return Annotations.cachedAnnotationReferenceEntries[annotationIdentifier];
+		return Annotations.cachedAnnotations[annotationIdentifier];
 	},
 
+	/*	Construct a usable DOM object from the raw HTML of an annotation,
+		by inserting it as a child of the annotations workspace element.
+		*/
 	stageAnnotation: (annotationRawHTML) => {
 		Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${annotationRawHTML}</div>`);
 		return Annotations.annotationsWorkspace.lastElementChild;;
 	},
 
+	/*	Load, stage, and process the annotation for the given identifier string.
+		*/
     loadAnnotation: (annotationIdentifier) => {
 		GWLog("Annotations.loadAnnotation", "annotations.js", 2);
 
@@ -155,7 +169,7 @@ Annotations = {
 	/*	Used to generate extracts and definitions.
 		*/
 	referenceDataForAnnotationIdentifier: (annotationIdentifier) => {
-		let referenceEntry = Annotations.cachedAnnotationReferenceEntries[annotationIdentifier];
+		let referenceEntry = Annotations.cachedAnnotations[annotationIdentifier];
 
 		if (Annotations.isWikipediaLink(annotationIdentifier)) {
 			return Annotations.referenceDataForWikipediaEntry(referenceEntry);
@@ -217,6 +231,8 @@ Annotations = {
 		};
 	},
 
+	/*	Process an already-staged annotation retrieved from a Wikipedia entry.
+		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
 		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks").forEach(element => {
@@ -255,6 +271,32 @@ Annotations = {
 		annotation.querySelectorAll("th:not(:only-child)").forEach(cell => {
 			cell.outerHTML = `<td>${cell.innerHTML}</td>`;
 		});
+
+		//	Separate out the thumbnail and float it.
+		let thumbnail = annotation.querySelector(".mw-default-size img");
+		if (thumbnail) {
+			//	Save reference to the thumbnail’s containing element.
+			let thumbnailContainer = thumbnail.parentElement;
+
+			//	Create the figure and move the thumbnail into it.
+			let figure = document.createElement("figure");
+			figure.classList.add("float-right");
+			figure.appendChild(thumbnail);
+
+			//	Create the caption, if need be.
+			let caption = annotation.querySelector(".mw-default-size + div");
+			if (caption) {
+				let figcaption = document.createElement("figcaption");
+				figcaption.innerHTML = caption.innerHTML;
+				figure.appendChild(figcaption);
+			}
+
+			//	Insert the figure as the first child of the annotation.
+			annotation.insertBefore(figure, annotation.firstElementChild);
+
+			//	Remove the whole row where the thumbnail was.
+			thumbnailContainer.closest("tr").remove();
+		}
 	}
 };
 
