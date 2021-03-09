@@ -3,7 +3,7 @@
 # wikipediaExtract.sh: download a English Wikipedia article's MediaWiki sources through the old API, and compile the introduction into HTML suitable for popup annotations
 # Author: Gwern Branwen
 # Date: 2021-02-28
-# When:  Time-stamp: "2021-03-08 11:50:43 gwern"
+# When:  Time-stamp: "2021-03-08 19:04:30 gwern"
 # License: CC-0
 #
 # Shell script to take an WP article and extract the introduction.
@@ -16,14 +16,8 @@
 # Example:
 #
 #    $ ./static/build/wikipediaExtract.sh 'https://en.wikipedia.org/wiki/Dog' # NOTE: or just 'Dog'
-#      <p>The <a href="https://en.wikipedia.org/wiki/Domestication" title="Domestication">domestic</a> <strong>dog</strong> (<em>Canis familiaris</em> when considered a separate <a href="https://en.wikipedia.org/wiki/Species" title="Species">species</a> or <em>Canis lupus familiaris</em> when considered a <a href="https://en.wikipedia.org/wiki/Subspecies" title="Subspecies">subspecies</a> of the <a href="https://en.wikipedia.org/wiki/Wolf" title="Wolf">wolf</a>) is a <a href="https://en.wikipedia.org/wiki/Canina_(subtribe)" title="Canina (subtribe)">wolf-like canid</a> that can be found distributed around the world. The dog descended from an ancient, now-extinct wolf with the modern <a href="https://en.wikipedia.org/wiki/Wolf" title="Wolf">wolf</a> being the dog's nearest living relative. The dog was the first species to be domesticated by <a href="https://en.wikipedia.org/wiki/Hunter–gatherers" class="mw-redirect" title="Hunter–gatherers">hunter–gatherers</a> more than 15,000 years ago, which predates agriculture. Their <a href="https://en.wikipedia.org/wiki/Human–canine_bond" title="Human–canine bond">long association with humans</a> has led dogs to be uniquely attuned to human behavior and they can thrive on a starch-rich diet that would be inadequate for other canids.</p>
-#      <div class="hatnote navigation-not-searchable" role="note" about="#mwt1">
-#      This article is about the domestic dog. For related species known as "dogs", see <a href="https://en.wikipedia.org/wiki/Canidae" title="Canidae">Canidae</a>. For other uses, see <a href="https://en.wikipedia.org/wiki/Dog_(disambiguation)" class="mw-disambig" title="Dog (disambiguation)">Dog (disambiguation)</a>.
-#      </div>
-#      <div class="hatnote navigation-not-searchable" role="note" about="#mwt2">
-#      "Pooch" redirects here. For other uses, see <a href="https://en.wikipedia.org/wiki/Pooch_(disambiguation)" class="mw-disambig" title="Pooch (disambiguation)">Pooch (disambiguation)</a>.
-#      </div>
-#      <div class="shortdescription nomobile noexcerpt noprint searchaux" style="display:none" about="#mwt8">
+#      <p>The domestic <strong>dog</strong> (<em>Canis familiaris</em> or <em>Canis lupus familiaris</em>) is a <a href="https://en.wikipedia.org/wiki/Domestication" title="Domestication">domesticated</a> form of <a href="https://en.wikipedia.org/wiki/Wolf" title="Wolf">wolf</a>. The dog descended from an ancient, extinct wolf, with the modern <a href="https://en.wikipedia.org/wiki/Wolf" title="Wolf">wolf</a> being the dog's nearest living relative. The dog was the first species to be domesticated by <a href="https://en.wikipedia.org/wiki/Hunter–gatherers" class="mw-redirect" title="Hunter–gatherers">hunter–gatherers</a> more than 15,000 years ago, which predates agriculture. Their <a href="https://en.wikipedia.org/wiki/Human–canine_bond" title="Human–canine bond">long association with humans</a> has led dogs to be uniquely attuned to human behavior, cosmopolitan distribution, and are able to thrive on a starch-rich diet that would be inadequate for other canids.</p>
+#      <div class="shortdescription nomobile noexcerpt noprint searchaux" about="#mwt8" style="display:none">
 #      Domesticated canid species
 #      </div>
 #      <p><span> </span></p>
@@ -31,6 +25,14 @@
 #      </p>
 #      <div style="font-size: 85%;">
 #      Temporal range: At least 14,200 years ago – present
+#      </div>
+#      <p><span><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Collage_of_Nine_Dogs.jpg/300px-Collage_of_Nine_Dogs.jpg" srcset="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Collage_of_Nine_Dogs.jpg/450px-Collage_of_Nine_Dogs.jpg 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Collage_of_Nine_Dogs.jpg/600px-Collage_of_Nine_Dogs.jpg 2x" width="300" height="264" /></span></p>
+#      <div style="text-align: center">
+#      <a href="https://en.wikipedia.org/wiki/Conservation_status" title="Conservation status">Conservation status</a>
+#      </div>
+#      <div style="text-align: center">
+#      Domesticated <span class="small"></span>
+#      </div>
 #      ...
 #
 # Requires: Pandoc, jq, curl, sed

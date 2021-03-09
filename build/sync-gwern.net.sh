@@ -48,9 +48,6 @@ then
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
                docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ &
 
-    bold "Updating annotations..."
-    ghci -v0 -istatic/build/ ./static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; return $ length md; }' &> /dev/null
-
     bold "Check/update VCS..."
     cd ./static/ && (git status; git pull; git push &)
     cd ./build/
@@ -194,7 +191,7 @@ then
         set +e;
         IFS=$(echo -en "\n\b");
         PAGES="$(find . -type f -name "*.page" | grep -v -e '_site/' -e 'Book-reviews' | sort -u)"
-        OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find ./metadata/annotations/ -name "*.html")"
+        OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -name "*.html")"
         for PAGE in $PAGES $OTHERS ./static/404.html; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \

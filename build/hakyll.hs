@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-03-06 13:02:02 gwern"
+When: Time-stamp: "2021-03-08 18:57:38 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -37,7 +37,6 @@ Explanations:
 import Control.Exception (onException)
 import Control.Monad (when, void)
 import Data.Char (toLower)
-import qualified Data.HashMap.Strict as HM (HashMap)
 import Data.List (isPrefixOf, nubBy, sort)
 import Data.Maybe (fromMaybe, isNothing)
 import Data.Monoid ((<>))
@@ -66,7 +65,7 @@ import qualified Data.Text as T
 
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
-import LinkMetadata (isLocalLink, readLinkMetadata, extractLinkMapFromKeys, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
+import LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 
@@ -80,9 +79,8 @@ main = hakyll $ do
              -- popup metadata:
              preprocess $ print ("Popups parsing..." :: String)
              meta <- preprocess readLinkMetadata
-             preprocess $ print ("Building reverse-link database..." :: String)
-             let rmeta = extractLinkMapFromKeys meta
-             preprocess $ writeAnnotationFragments am meta rmeta
+             preprocess $ print ("Writing annotations..." :: String)
+             preprocess $ writeAnnotationFragments am meta
 
              preprocess $ print ("Begin site compilation..." :: String)
              match "**.page" $ do
@@ -92,7 +90,7 @@ main = hakyll $ do
                           setExtension ""
                  -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
                  let readerOptions = defaultHakyllReaderOptions
-                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta rmeta am)
+                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am)
                      >>= loadAndApplyTemplate "static/templates/default.html" (postCtx tags)
                      >>= imgUrls
 
@@ -235,10 +233,10 @@ postCtx tags =
                               Left _          -> return "N/A"
                               Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
-pandocTransform :: Metadata -> HM.HashMap String String -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md rmd adb p =
+pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
+pandocTransform md adb p =
                            do let pw = walk convertInterwikiLinks p
-                              _ <- createAnnotations md rmd True pw
+                              _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . addAmazonAffiliate)) $ pb
                               let pbth = isLocalLink $ walk headerSelflink pbt
