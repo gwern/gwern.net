@@ -1059,6 +1059,11 @@ Extracts = {
 		if (popin.titleBar)
 			popin.titleBar.querySelector(".popframe-title").innerHTML = Extracts.titleForPopFrame(popin);
 
+		//	Mark Wikipedia entries.
+		if (   Extracts.isExtractLink(target)
+			&& popin.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
+			popin.contentView.classList.add("wikipedia-entry");
+
 		//  Special handling for image popins.
 		if (Extracts.isLocalImageLink(target)) {
 			let image = popin.querySelector("img");
@@ -1287,6 +1292,11 @@ Extracts = {
 		GWLog("Extracts.rewritePopupContent", "extracts.js", 2);
 
 		let target = popup.spawningTarget;
+
+		//	Mark Wikipedia entries.
+		if (   Extracts.isExtractLink(target)
+			&& popup.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
+			popup.contentView.classList.add("wikipedia-entry");
 
 		//  Highlight citation in popup.
 		if (Extracts.isCitationBackLink(target)) {

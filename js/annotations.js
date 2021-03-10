@@ -235,8 +235,13 @@ Annotations = {
 		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
-		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks").forEach(element => {
+		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr").forEach(element => {
 			element.remove();
+		});
+
+		//	Remove location maps (they don’t work right).
+		annotation.querySelectorAll(".locmap").forEach(locmap => {
+			locmap.closest("tr").remove();
 		});
 
 		//	Remove empty paragraphs.
@@ -272,9 +277,16 @@ Annotations = {
 			cell.outerHTML = `<td>${cell.innerHTML}</td>`;
 		});
 
+		//	Re-position ‘hatnote’.
+		let hatnote = annotation.querySelector(".hatnote");
+		if (hatnote) {
+			annotation.insertAdjacentHTML("afterbegin", `<p class="hatnote">${hatnote.innerHTML}</p>`);
+			hatnote.remove();
+		}
+
 		//	Separate out the thumbnail and float it.
-		let thumbnail = annotation.querySelector(".mw-default-size img");
-		if (thumbnail) {
+		let thumbnail = annotation.querySelector("img");
+		if (thumbnail && thumbnail.closest("table")) {
 			//	Save reference to the thumbnail’s containing element.
 			let thumbnailContainer = thumbnail.parentElement;
 
@@ -285,7 +297,7 @@ Annotations = {
 
 			//	Create the caption, if need be.
 			let caption = annotation.querySelector(".mw-default-size + div");
-			if (caption) {
+			if (caption && caption.textContent > "") {
 				let figcaption = document.createElement("figcaption");
 				figcaption.innerHTML = caption.innerHTML;
 				figure.appendChild(figcaption);
@@ -294,8 +306,21 @@ Annotations = {
 			//	Insert the figure as the first child of the annotation.
 			annotation.insertBefore(figure, annotation.firstElementChild);
 
+			//	Rectify classes.
+			thumbnailContainer.closest("table").classList.toggle("infobox", true);
+
 			//	Remove the whole row where the thumbnail was.
 			thumbnailContainer.closest("tr").remove();
+		} else if (thumbnail && thumbnail.closest("figure")) {
+			let figure = thumbnail.closest("figure");
+
+			//	Insert the figure as the first child of the annotation.
+			annotation.insertBefore(figure, annotation.firstElementChild);
+			figure.classList.add("float-right");
+
+			let caption = figure.querySelector("figcaption");
+			if (caption.textContent == "")
+				caption.remove();
 		}
 	}
 };
