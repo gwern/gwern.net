@@ -297,7 +297,7 @@ Annotations = {
 
 			//	Create the caption, if need be.
 			let caption = annotation.querySelector(".mw-default-size + div");
-			if (caption) {
+			if (caption && caption.textContent > "") {
 				let figcaption = document.createElement("figcaption");
 				figcaption.innerHTML = caption.innerHTML;
 				figure.appendChild(figcaption);
@@ -317,6 +317,10 @@ Annotations = {
 			//	Insert the figure as the first child of the annotation.
 			annotation.insertBefore(figure, annotation.firstElementChild);
 			figure.classList.add("float-right");
+
+			let caption = figure.querySelector("figcaption");
+			if (caption.textContent == "")
+				caption.remove();
 		}
 	}
 };
