@@ -235,8 +235,13 @@ Annotations = {
 		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
-		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks").forEach(element => {
+		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr").forEach(element => {
 			element.remove();
+		});
+
+		//	Remove location maps (they don’t work right).
+		annotation.querySelectorAll(".locmap").forEach(locmap => {
+			locmap.closest("tr").remove();
 		});
 
 		//	Remove empty paragraphs.
@@ -273,8 +278,8 @@ Annotations = {
 		});
 
 		//	Separate out the thumbnail and float it.
-		let thumbnail = annotation.querySelector(".mw-default-size img");
-		if (thumbnail) {
+		let thumbnail = annotation.querySelector("img");
+		if (thumbnail && thumbnail.closest("table")) {
 			//	Save reference to the thumbnail’s containing element.
 			let thumbnailContainer = thumbnail.parentElement;
 
@@ -293,6 +298,9 @@ Annotations = {
 
 			//	Insert the figure as the first child of the annotation.
 			annotation.insertBefore(figure, annotation.firstElementChild);
+
+			//	Rectify classes.
+			thumbnailContainer.closest("table").classList.toggle("infobox", true);
 
 			//	Remove the whole row where the thumbnail was.
 			thumbnailContainer.closest("tr").remove();

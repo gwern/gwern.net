@@ -2934,6 +2934,7 @@ body.directory-index #disqus_thread {
 	*/
 .wikipedia-entry .table-wrapper {
 	margin: 1.5em 0 1.5em 0;
+	clear: both;
 }
 .wikipedia-entry .infobox {
 	font-size: 0.9em;
@@ -2958,10 +2959,8 @@ body.directory-index #disqus_thread {
 	margin: 0.25em 0;
 	padding: 0 0 0 1.5em;
 }
-.wikipedia-entry .infobox img {
-	display: block;
-	border: 1px solid var(--GW-figure-outline-color);
-	margin: 0.25em auto 0.75em auto;
+.popframe.annotation .popframe-content-view.wikipedia-entry > figure.float-right {
+    margin: 0.125em 0 0.75em 1.5em;
 }
 .wikipedia-entry #Timeline-row {
 	display: flex;
