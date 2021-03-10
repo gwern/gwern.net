@@ -3460,9 +3460,9 @@ body.directory-index #disqus_thread {
     content: "Loading failed.";
     position: absolute;
     left: 0;
-    top: 0;
+    top: var(--popup-title-bar-height);
     width: 100%;
-    height: 100%;
+    height: calc(100% - var(--popup-title-bar-height) - 1px);
     display: flex;
     justify-content: center;
     align-items: center;
