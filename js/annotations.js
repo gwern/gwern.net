@@ -235,7 +235,7 @@ Annotations = {
 		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
-		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr").forEach(element => {
+		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote").forEach(element => {
 			element.remove();
 		});
 
@@ -276,13 +276,6 @@ Annotations = {
 		annotation.querySelectorAll("th:not(:only-child)").forEach(cell => {
 			cell.outerHTML = `<td>${cell.innerHTML}</td>`;
 		});
-
-		//	Re-position ‘hatnote’.
-		let hatnote = annotation.querySelector(".hatnote");
-		if (hatnote) {
-			annotation.insertAdjacentHTML("afterbegin", `<p class="hatnote">${hatnote.innerHTML}</p>`);
-			hatnote.remove();
-		}
 
 		//	Separate out the thumbnail and float it.
 		let thumbnail = annotation.querySelector("img");
