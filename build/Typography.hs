@@ -69,7 +69,7 @@ typographyTransform = walk breakSlashes . walk hyphenate . -- work around the Ra
 -- We exclude headers because on Gwern.net, headers are uppercase already, which makes auto-smallcaps look odd. So we skip header Block elements before doing the replacement on all other Block elements
 smallcapsfy :: Block -> Block
 smallcapsfy h@Header{} = h
-smallcapsfy x          = walk (smallcapsfyInline) x
+smallcapsfy x          = walk smallcapsfyInline x
 smallcapsfyInline, smallcapsfyInlineCleanup :: Inline -> Inline
 smallcapsfyInline x@(Str s) = let rewrite = go s in if s /= rewrite then RawInline "html" rewrite else x
   where
@@ -145,7 +145,7 @@ hyphenate x@Header{}    = x
 hyphenate x@Table{}     = x
 hyphenate x = walk hyphenateInline x
 hyphenateInline :: Inline -> Inline
-hyphenateInline x@(Span (id, classes, keys) xs) = if "math" `elem` classes then x else Span (id, classes, keys) (walk hyphenateInline xs)
+hyphenateInline x@(Span (ident, classes, keys) xs) = if "math" `elem` classes then x else Span (ident, classes, keys) (walk hyphenateInline xs)
 hyphenateInline x@(Str s) = if T.any (=='\173') s || T.any (=='\\') s then x else -- U+00AD SOFT HYPHEN, HTML: &#173; &shy;
                               Str $ T.replace "-\173" "-" $ -- odd edge-case exposed on Safari: because hyphenator breaks on hyphens (why?), interspersing the soft hyphen results in *two* hyphens being displayed should the line break there! since the regular hyphen already ensures a line-break opportunity
                                                             -- the soft hyphen is unnecessary, so just delete it.
@@ -164,19 +164,20 @@ hyphenateInline x = x
 -- Look at mean color of image, 0-1: if it's close to 0, then it's a monochrome-ish white-heavy image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check every image for color, and set an 'invertible-auto' HTML class on the ones which are low. We can manually specify a 'invertible' class on images which don't pass the heuristic but should.
 invertImageInline :: Inline -> IO Inline
 invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
-                                       let p' = T.unpack p
-                                       let p'' = if head p' == '/' then tail p' else p'
-                                       (color,_,_) <- invertImage p''
+                                       (color,_,_) <- invertFile p
                                        if not color || notInvertibleP classes then return x else
                                          return (Image (htmlid, "invertible-auto":classes, kvs++[("loading","lazy")]) xs (p,t))
 invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) = if not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then
                                                           return x else
-                                                            do let p' = T.unpack p
-                                                               let p'' = if head p' == '/' then tail p' else p'
-                                                               (color,_,_) <- invertImage p''
+                                                            do (color,_,_) <- invertFile p
                                                                if not color || notInvertibleP classes then return x else
                                                                  return (Link (htmlid, "invertible-auto":classes, kvs) xs (p,t))
 invertImageInline x = return x
+
+invertFile :: T.Text -> IO (Bool, String, String)
+invertFile p = do let p' = T.unpack p
+                  let p'' = if head p' == '/' then tail p' else p'
+                  invertImage p''
 
 notInvertibleP :: [T.Text] -> Bool
 notInvertibleP classes = "invertible-not" `elem` classes
@@ -220,7 +221,7 @@ invertImagePreview f = do utcFile <- getModificationTime f
 imageMagickColor :: FilePath -> FilePath -> IO Float
 imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
                            case status of
-                             ExitFailure err -> (putStrLn $ f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
+                             ExitFailure err ->  putStrLn (f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
                              _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
                                      return color
 
@@ -229,14 +230,16 @@ imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "conver
 -- most cases will all be the same, so we take the first line of whatever dimensions 'identify' returns.
 imageMagickDimensions :: FilePath -> IO (String,String)
 imageMagickDimensions f =
-  let f' = if "/" `isPrefixOf` f && not ("/tmp" `isPrefixOf` f) then tail f else
-             if "https://www.gwern.net/" `isPrefixOf` f then drop 22 f
-             else f in
-                          do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
-                             case status of
-                               ExitFailure _ -> error f
-                               _ -> do let [height, width] = words $ head $ lines $ (B8.unpack bs)
-                                       return (height, width)
+  let f'
+        | "/" `isPrefixOf` f && not ("/tmp" `isPrefixOf` f) = tail f
+        | "https://www.gwern.net/" `isPrefixOf` f = drop 22 f
+        | otherwise = f
+  in
+    do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
+       case status of
+         ExitFailure _ -> error f
+         _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
+                             return (height, width)
 
 -------------------------------------------
 
