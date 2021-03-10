@@ -277,6 +277,11 @@ Annotations = {
 			cell.outerHTML = `<td>${cell.innerHTML}</td>`;
 		});
 
+		//	Rectify table classes.
+		annotation.querySelectorAll("table.sidebar").forEach(table => {
+			table.classList.toggle("infobox", true);
+		});
+
 		//	Separate out the thumbnail and float it.
 		let thumbnail = annotation.querySelector("img");
 		if (thumbnail && thumbnail.closest("table")) {
