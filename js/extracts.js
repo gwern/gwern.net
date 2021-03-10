@@ -392,6 +392,9 @@ Extracts = {
 			}
 			popFrameTitleText = decodeURIComponent(popFrameTitleText);
 
+			if (target.hash > "")
+				popFrameTitleText = "&#x00a7; " + popFrameTitleText;
+
 			//  For local-archive links, include archive link with original.
 			if (target.dataset.urlOriginal) {
 				popFrameTitle = `<a 
