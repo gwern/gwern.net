@@ -2943,7 +2943,9 @@ body.directory-index #disqus_thread {
 	outline: none;
 }
 .wikipedia-entry .infobox th[colspan="2"],
-.wikipedia-entry .infobox td[colspan="2"] {
+.wikipedia-entry .infobox td[colspan="2"],
+.wikipedia-entry .infobox th.sidebar-title,
+.wikipedia-entry .infobox th.sidebar-heading {
 	text-align: center;
 }
 .wikipedia-entry .infobox th {
