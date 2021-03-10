@@ -311,6 +311,12 @@ Annotations = {
 
 			//	Remove the whole row where the thumbnail was.
 			thumbnailContainer.closest("tr").remove();
+		} else if (thumbnail && thumbnail.closest("figure")) {
+			let figure = thumbnail.closest("figure");
+
+			//	Insert the figure as the first child of the annotation.
+			annotation.insertBefore(figure, annotation.firstElementChild);
+			figure.classList.add("float-right");
 		}
 	}
 };
