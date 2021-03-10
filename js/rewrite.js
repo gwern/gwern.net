@@ -148,12 +148,17 @@ function wrapFullWidthPreBlocks(loadEventInfo) {
 	let fullWidthClass = "full-width";
 	let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
 	loadEventInfo.document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
-		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1)
+		if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1) {
 			fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
-		else
-			fullWidthPre.outerHTML = `<div class="${fullWidthClass}">` + fullWidthPre.outerHTML + `</div>`;
-
-		fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
+			fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
+		} else {
+			fullWidthPre.parentElement.innerHTML = 
+				  `<div class="${fullWidthInnerWrapperClass}">` 
+				+ `<div class="${fullWidthClass}">` 
+				+ fullWidthPre.parentElement.innerHTML 
+				+ `</div>`
+				+ `</div>`;
+		}
 	});
 }
 
