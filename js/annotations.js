@@ -277,6 +277,13 @@ Annotations = {
 			cell.outerHTML = `<td>${cell.innerHTML}</td>`;
 		});
 
+		//	Re-position ‘hatnote’.
+		let hatnote = annotation.querySelector(".hatnote");
+		if (hatnote) {
+			annotation.insertAdjacentHTML("afterbegin", `<p class="hatnote">${hatnote.innerHTML}</p>`);
+			hatnote.remove();
+		}
+
 		//	Separate out the thumbnail and float it.
 		let thumbnail = annotation.querySelector("img");
 		if (thumbnail && thumbnail.closest("table")) {

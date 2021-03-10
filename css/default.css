@@ -2972,6 +2972,10 @@ body.directory-index #disqus_thread {
 	font-weight: normal;
 	font-size: calc((1 / 1.25) * 1em);
 }
+.wikipedia-entry .hatnote {
+	margin: 0 0 0.75em 0;
+	font-style: italic;
+}
 
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
