@@ -127,14 +127,24 @@ Annotations = {
 					let response = JSON.parse(event.target.responseText);
 
 					let targetSection;
-					if (annotationURL.hash > "")
+					if (annotationURL.hash > "") {
 						targetSection = response["sections"].find(section => section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1));
+
+						if (!targetSection) {
+							GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
+								source: "Annotations.loadAnnotation",
+								document: Annotations.annotationsWorkspace, 
+								identifier: annotationIdentifier,
+								location: annotationURL
+							});
+							return;
+						}
+					}
 
 					let responseHTML = targetSection ? targetSection["text"] : response["sections"][0]["text"];
 					annotation = Annotations.stageAnnotation(responseHTML);
 
 					annotation.dataset["titleText"] = (annotationURL.hash > "") ? targetSection["line"] : response["displaytitle"];
-					annotation.dataset["wikiPageName"] = 
 
 					Annotations.processWikipediaEntry(annotation, annotationURL);
 				} else {
@@ -235,7 +245,7 @@ Annotations = {
 		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
-		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote").forEach(element => {
+		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote, .portal, .penicon").forEach(element => {
 			element.remove();
 		});
 
@@ -260,6 +270,10 @@ Annotations = {
 			//	Mark other Wikipedia links as also being annotated.
 			if (/(.+?)\.wikipedia\.org/.test(link.hostname))
 				link.classList.add("docMetadata");
+
+			//  Mark self-links.
+			if (link.pathname == annotationURL.originalPathname)
+				link.classList.add("link-self");
 		});
 
 		//	Strip inline styles.

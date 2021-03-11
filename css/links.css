@@ -407,6 +407,22 @@ a.link-self::after {
     opacity: 0.72;
 }
 
+/*	Self-links in Wikipedia pop-frames.
+	*/
+.wikipedia-entry a[href*='wikipedia.org'].docMetadata.link-self::after {
+    content: "\00A7"; /* (§) Section sign */
+    margin: 0 1px 0 0;
+    width: 0.7em;
+    font-size: 0.9em;
+    font-style: normal;
+    vertical-align: baseline;
+    background: none;
+    position: relative;
+    bottom: 0.25em;
+    opacity: 0.75;
+    text-align: right;
+}
+
 /*  Dynamically set direction of internal link to an upwards or downwards arrow:
 	*/
 a.link-self.identifier-link-up::after,
