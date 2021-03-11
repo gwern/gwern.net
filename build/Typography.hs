@@ -200,6 +200,7 @@ invertImage f | "https://www.gwern.net/" `isPrefixOf` f = invertImageLocal $ Dat
               | otherwise = invertImageLocal f
 
 invertImageLocal :: FilePath -> IO (Bool, String, String)
+invertImageLocal "" = return (False, "0", "0")
 invertImageLocal f = do c <- imageMagickColor f f
                         (h,w) <- imageMagickDimensions f
                         let invertp = c < invertThreshold

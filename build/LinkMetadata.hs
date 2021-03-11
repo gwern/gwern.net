@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-08 22:25:29 gwern"
+When:  Time-stamp: "2021-03-10 22:27:49 gwern"
 License: CC-0
 -}
 
@@ -896,10 +896,12 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let thumbnail = if not (any filterThumbnail metas) then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
                         let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
+                        let thumbnailText = if not (any filterThumbnailText metas) then
+                                          (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas else "Default gwern.net thumbnail logo (Gothic G icon)."
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
                               let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ replace "%F" "/" (urlEncode thumbnail') ++ "\" alt=\"Gwern.net preview image for '" ++ title ++ "'\" /></figure> ")
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ replace "%F" "/" (urlEncode thumbnail') ++ "\" alt=\"" ++ thumbnailText ++ "'\" /></figure> ")
 
                         let doi = ""
                         let abstrct      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
@@ -923,6 +925,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
           filterAbstract _                         = True
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
+          filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
+          filterThumbnailText _ = False
 
           -- ["statistics","NN","anime","shell","dataset"] ~> "<a href=\"/tags/statistics\">statistics</a>, <a href=\"/tags/NN\">NN</a>, <a href=\"/tags/anime\">anime</a>, <a href=\"/tags/shell\">shell</a>, <a href=\"/tags/dataset\">dataset</a>"
           keywordsToLinks :: String -> String
