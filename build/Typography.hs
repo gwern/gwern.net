@@ -18,6 +18,7 @@ import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
 import qualified Data.Text as T (any, append, isInfixOf, isSuffixOf, pack, unpack, replace, Text)
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
+import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
 
 import Data.FileStore.Utils (runShellCommand)
@@ -27,7 +28,7 @@ import Text.Pandoc (Inline(..), Block(..), Pandoc)
 import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk breakSlashes . walk hyphenate . -- work around the RawBlock/RawInline trapdoor by running hyphenation *first*; breakSlashes doesn't care, but if we run hyphenate afterwards, individual phrases like "classification/categorization" will get <wbr>s but not soft-hyphens.
+typographyTransform = walk (breakSlashes . breakEquals . hyphenate) . -- work around the RawBlock/RawInline trapdoor by running hyphenation *first*; breakSlashes doesn't care, but if we run hyphenate afterwards, individual phrases like "classification/categorization" will get <wbr>s but not soft-hyphens.
                        walk smallcapsfyInlineCleanup . walk smallcapsfy . rulersCycle 3
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
@@ -123,6 +124,18 @@ breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>'))
                                  RawInline "html" (T.replace " /<wbr> " " / " $ T.replace " /<wbr>" " /" $ T.replace "/<wbr> " "/ " $ -- fix redundant <wbr>s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
                                                    T.replace "/" "/<wbr>" s) else x
 breakSlashesInline x = x
+
+breakEquals :: Block -> Block
+breakEquals x@CodeBlock{} = x
+breakEquals x@RawBlock{}  = x
+breakEquals x@Header{}    = x
+breakEquals x@Table{}     = x
+breakEquals x = walk breakEqualsInline x
+breakEqualsInline :: Inline -> Inline
+breakEqualsInline (Str s) = let s' = T.unpack s in Str $ T.pack $ subRegex equalsRegex s' " \\1 \\2"
+breakEqualsInline x = x
+equalsRegex :: R.Regex
+equalsRegex = mkRegex "([=≠])([a-zA-Z0-9])"
 
 -------------------------------------------
 
