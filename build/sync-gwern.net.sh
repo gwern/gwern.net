@@ -86,9 +86,11 @@ then
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>monthly<\/changefreq><\/url>/'
      echo "</urlset>") >> ./_site/sitemap.xml
 
-    # turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>"
+    # turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); add non-breaking space to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; · &NoBreak; · WJ))
     bold "Adding non-breaking spaces…"
-    nonbreakSpace () {  sed -i -e 's/\([a-zA-Z]\) et al \([1-2]\)/\1 et al \2/g' "$@"; }; export -f nonbreakSpace;
+    nonbreakSpace () { sed -i -e 's/\([a-zA-Z]\) et al \([1-2]\)/\1 et al \2/g' \
+                              -e 's/<\/a>;/<\/a>\&NoBreak;;/g' -e 's/<\/a>,/<\/a>\&NoBreak;,/g' -e 's/<\/a>./<\/a>\&NoBreak;./g' -e 's/<\/a>\//<\/a>\&NoBreak;\//g' \
+                            "$@"; }; export -f nonbreakSpace;
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel nonbreakSpace || true
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
@@ -251,6 +253,7 @@ then
             --header "Content-Type: application/json" \
             --data "{\"files\":[\"$URL\"]}" > /dev/null; ) &
     done
+    echo
 
     # test a random page modified in the past month for W3 validation errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
     CHECK_RANDOM=$(find . -type f -mtime -31 -name "*.page" | sed -e 's/\.page//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' \
@@ -413,7 +416,7 @@ then
     wrap λ "Compress JPGs to ≤65% quality"
 
     ## Find JPGS which are too wide (1600px is an entire screen width on even widee monitors, which is too large for a figure/illustration):
-    λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | fgrep --invert-match -e 'images/ai/gpt/2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e 'images/gan/2020-05-22-caji9-deviantart-stylegan-ahegao.png' | sort); do
+    λ() { for IMAGE in $(find ./images/ -type f -name "*.jpg" -or -name "*.png" | fgrep --invert-match -e 'images/ai/gpt/2020-07-19-oceaninthemiddleofanisland-gpt3-chinesepoetrytranslation.png' -e 'images/gan/2020-05-22-caji9-deviantart-stylegan-ahegao.png' -e 'images/ai/2021-meme-virginvschad-journalpapervsblogpost.png' | sort); do
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W"; fi;
           done; }
