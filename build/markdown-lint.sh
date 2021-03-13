@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-02-27 21:42:06 gwern"
+# When:  Time-stamp: "2021-03-12 21:01:00 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -144,10 +144,12 @@ do
         [ "$(grep -E '^title: '       "$PAGE" | wc --char)" -ge 60 ] && echo -e '\e[41mWARNING\e[0m: "title:" metadata too long.'
         [ "$(grep -E '^description: ' "$PAGE" | wc --char)" -le 90 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too short.'
         [ "$(grep -E '^description: ' "$PAGE" | wc --char)" -ge 320 ] && echo -e '\e[41mWARNING\e[0m: "description:" metadata too long.'
-        [ "$(grep -E '^modified: 20'  "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "modified:" metadata is missing.'
         [ "$(grep -E '^next: '        "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "next:" metadata is missing.'
         [ "$(grep -E '^previous: '    "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "previous:" metadata is missing.'
         [ "$(grep -E '^thumbnail: '   "$PAGE" | wc --char)" -le 20 ] && echo -e '\e[41mWARNING\e[0m: No thumbnail/illustration defined.'
+
+        # skip on newsletters since their URLs are always being modified:
+        [[ ! $PAGE =~ "newsletter/" ]] && [ "$(grep -E '^modified: 20'  "$PAGE" | wc --char)" -eq  0 ] && echo -e '\e[41mWARNING\e[0m: "modified:" metadata is missing.'
 
         λ() { markdown-length-checker.hs "$PAGE";}
         wrap λ "Source code line lengths"
@@ -201,7 +203,7 @@ do
         wrap λ "image hotlinking deprecated; impolite, and slows page loads & site compiles"
 
         # Note links which need to be annotated (probably most of them...)
-        λ() { link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e '#link-bibliography' | runhaskell -istatic/build/ static/build/link-prioritize.hs; }
+        λ() { link-extractor.hs "$PAGE" | egrep -v -e '^\!' -e '^\$' -e '^/docs/.*txt' -e '.xz$' -e '^#' -e '.patch$' -e '.jpg$' -e '.png$' -e 'news.ycombinator.com' -e 'old.reddit.com' -e 'youtube.com' -e 'amazon.com' -e 'bandcamp.com' -e 'dropbox.com' -e 'vocadb.net' -e 'twitter.com' -e '#link-bibliography' -e 'https://en.wikipedia.org/wiki' | runhaskell -istatic/build/ static/build/link-prioritize.hs; }
         wrap λ "Link annotations required"
 
         # we use link annotations on URLs to warn readers about PDFs; if a URL ends in 'pdf', it gets a PDF icon. What about URLs which redirect to or serve PDF?

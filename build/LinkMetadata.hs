@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-10 22:27:49 gwern"
+When:  Time-stamp: "2021-03-12 19:10:34 gwern"
 License: CC-0
 -}
 
@@ -402,7 +402,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                threadDelay 10000000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long 10s delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Permanent)
+                 ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          let title = trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
