@@ -592,7 +592,7 @@ function cleanUpImageAltText(loadEventInfo) {
 	GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
 	loadEventInfo.document.querySelectorAll("img[alt]").forEach(image => {
-		image.alt = decodeURIComponent(image.alt);
+		image.alt = decodeURIComponent(image.alt.replace(/%(?![A-Fa-f0-9]{2})/g, "%25"));
 	});
 }
 
