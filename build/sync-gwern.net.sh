@@ -51,6 +51,9 @@ then
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
                docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ &
 
+    bold "Updating annotations..."
+    ghci -v0 -istatic/build/ ./static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; return $ length md; }' &> /dev/null
+
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
     cd ./build/
@@ -190,6 +193,12 @@ then
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
     wrap λ "Markdown hyphen problems in YAML metadata database"
+
+    λ(){ egrep --color=always -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/*.yaml; }
+    wrap λ "Wikipedia annotations in YAML metadata database, but will be ignored by popups! Override with non-WP URL?"
+
+    λ(){ egrep --color=always -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
+    wrap λ "Wrong filepaths in YAML metadata database - missing prefix?"
 
     λ(){ egrep --color=always -e '[0-9]*[02456789]th' -e '[0-9]*[3]rd' -e '[0-9]*[2]nd' -e '[0-9]*[1]st'  -- ./metadata/*.yaml | \
              fgrep -v -e '%' -e figure -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
