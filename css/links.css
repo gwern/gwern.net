@@ -1416,16 +1416,6 @@ a[href*='wikimediafoundation.org'].docMetadata::after,
 a[href*='wikisource.org'].docMetadata::after {
     content: none;
 }
-/*  TEMPORARY!!
-    Dotted underlines for WP links in popups.
-    */
-.popframe a[href*='wikipedia.org'].docMetadata,
-.popframe a[href*='wikimedia.org'].docMetadata,
-.popframe a[href*='wiktionary.org'].docMetadata,
-.popframe a[href*='wikimediafoundation.org'].docMetadata,
-.popframe a[href*='wikisource.org'].docMetadata {
-    text-decoration: dotted underline;
-}
 a[href*='wikipedia.org']::after, /* primary user: en.wikipedia.org */
 a[href*='wikimedia.org']::after, /* secondary user: meta.wikimedia.org */
 a[href*='wiktionary.org']::after, /* primary user: en.wiktionary.org */
