@@ -1278,6 +1278,8 @@ span.smallcaps-auto {
 	font-feature-settings: 'smcp', 'c2sc';
 	font-variant-numeric: tabular-nums;
 }
+/* Reduce text-shadow overlap partially erasing letters next to smallcaps: eg in `["microCOVID project"](https://www.microcovid.org/)`, the 'o' in 'micro' will be partially erased and look like a 'c' without some sort of extra spacing */
+a > .smallcaps-auto { margin-left: 0.7px; }
 
 /*************/
 /* DARK MODE */
