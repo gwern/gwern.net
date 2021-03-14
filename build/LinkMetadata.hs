@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-12 19:10:34 gwern"
+When:  Time-stamp: "2021-03-14 16:05:11 gwern"
 License: CC-0
 -}
 
@@ -466,6 +466,9 @@ cleanAbstractsHTML t = trim $
   (\s -> subRegex (mkRegex " ([0-9]*[1])st") s        " \\1<sup>st</sup>") $
   (\s -> subRegex (mkRegex " ([0-9]*[3])rd") s        " \\1<sup>rd</sup>") $
   (\s -> subRegex (mkRegex " \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)") s "") $ -- rm AERA classification tags they stick into the Crossref abstracts
+  -- math regexes
+  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$") s        "\\1 × \\2^\\3^") $
+  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$") s        "\\1 × \\2^\\3^") $
   -- simple string substitutions:
   foldr (uncurry replace) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
@@ -508,6 +511,8 @@ cleanAbstractsHTML t = trim $
     , ("<math>S</math>", "<em>S</em>")
     , ("$f(x; x_0,\\gamma)$", "<em>f(x; x<sub>0</sub>,γ")
     , ("$(x_0,\\gamma)$", "<em>(x<sub>0</sub>, γ)</em>")
+    , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
+    , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
     -- rest:
     , (" </sec>", "")
     , ("<title>", "")
@@ -586,6 +591,10 @@ cleanAbstractsHTML t = trim $
     , ("---", "&mdash;")
     , (" - ", "—")
     , (" — ", "—")
+    , ("statistical significance", "statistical-significance")
+    , ("statistically significant", "statistically-significant")
+    , ("clinical significance", "clinical-significance")
+    , ("clinically significant", "clinically-significant")
     , ("<p>Background: ", "<p><strong>Background</strong>: ")
     , ("<p>Methods: ", "<p><strong>Methods</strong>: ")
     , ("<p>Outcomes: ", "<p><strong>Outcomes</strong>: ")

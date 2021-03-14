@@ -138,6 +138,10 @@ then
     export -f staticCompileMathJax
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel staticCompileMathJax || true
     find ./_site/metadata/annotations/ -name "*.html" | sort | parallel staticCompileMathJax || true
+    λ(){ find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | \
+        parallel fgrep -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
+        fgrep -v -e 'docs/cs/1955-nash' -e 'Backstop'; }
+    wrap λ "Warning: unauthorized LaTeX users."
 
     # Testing compilation results:
     set +e
@@ -405,6 +409,7 @@ then
     λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
                                                 -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
                                                 -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
+                                                -e %3FDaicon-videos.html \
              | parallel file | fgrep --invert-match -e 'HTML document, ' -e 'ASCII text'; }
     wrap λ "Corrupted HTMLs"
 
