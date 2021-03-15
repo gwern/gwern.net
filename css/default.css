@@ -722,7 +722,7 @@ figure audio {
 figcaption {
     font-size: 0.9375em;
     font-weight: bold;
-    line-height: 1.45;
+    line-height: 1.50;
     margin: auto;
     padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
     width: -moz-fit-content;
@@ -3346,7 +3346,7 @@ body.directory-index #disqus_thread {
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     overflow: auto;
-    line-height: 1.45;
+    line-height: 1.50;
 }
 
 /*┌─────────────────┐*/
@@ -3382,7 +3382,7 @@ body.directory-index #disqus_thread {
 
 .popup.zoomed.full .popframe-content-view {
     font-size: 1em;
-    line-height: 1.55;
+    line-height: 1.60;
 }
 
 .popup.object.zoomed .popframe-content-view,
