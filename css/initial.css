@@ -646,17 +646,17 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 		of increasing height.
 		*/
 		.markdownBody {
-			line-height: 1.45;
+			line-height: 1.50;
 		}
 	}
 	@media only screen and (min-width: 1001px) and (max-width: 1200px) {
 		.markdownBody {
-			line-height: 1.5;
+			line-height: 1.55;
 		}
 	}
 	@media only screen and (min-width: 1201px) {
 		.markdownBody {
-			line-height: 1.55;
+			line-height: 1.60;
 		}
 	}
 }

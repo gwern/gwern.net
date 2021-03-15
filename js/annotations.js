@@ -245,7 +245,7 @@ Annotations = {
 		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
-		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote, .portal, .penicon").forEach(element => {
+		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote, .portal, .penicon, .reference").forEach(element => {
 			element.remove();
 		});
 
