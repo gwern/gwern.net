@@ -161,10 +161,10 @@ then
        for PAGE in $PAGEs; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
     wrap λ "Smallcaps-auto regression"
 
-    λ(){ PAGES=$(find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/')
-         for PAGE in $PAGEs; do fgrep --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
-                                     fgrep -v -e 'docs/cs/1955-nash' -e 'Backstop'; done; }
-    wrap λ "Warning: unauthorized LaTeX users."
+    λ(){ PAGES="$(find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
+         for PAGE in $PAGES; do fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' "$PAGE" | \
+                                     fgrep --invert-match -e 'docs/cs/1955-nash' -e 'Backstop' -e 'Death-Note-Anonymity' -e 'Differences' ; done; }
+    wrap λ "Warning: unauthorized LaTeX users"
 
     λ(){ find ./ -name "*.page" -type f -exec egrep --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
     wrap λ "Incorrect drop caps"
