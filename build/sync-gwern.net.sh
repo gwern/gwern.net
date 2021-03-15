@@ -138,10 +138,6 @@ then
     export -f staticCompileMathJax
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel staticCompileMathJax || true
     find ./_site/metadata/annotations/ -name "*.html" | sort | parallel staticCompileMathJax || true
-    λ(){ find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/' | \
-        parallel fgrep -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
-        fgrep -v -e 'docs/cs/1955-nash' -e 'Backstop'; }
-    wrap λ "Warning: unauthorized LaTeX users."
 
     # Testing compilation results:
     set +e
@@ -162,8 +158,13 @@ then
     wrap λ "Stray interwiki links"
 
     λ(){ PAGES=$(find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/')
-       for PAGE in $PAGEs; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done }
+       for PAGE in $PAGEs; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
     wrap λ "Smallcaps-auto regression"
+
+    λ(){ PAGES=$(find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/')
+         for PAGE in $PAGEs; do fgrep --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
+                                     fgrep -v -e 'docs/cs/1955-nash' -e 'Backstop'; done; }
+    wrap λ "Warning: unauthorized LaTeX users."
 
     λ(){ find ./ -name "*.page" -type f -exec egrep --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
     wrap λ "Incorrect drop caps"
