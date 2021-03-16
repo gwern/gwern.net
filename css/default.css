@@ -3208,6 +3208,7 @@ body.directory-index #disqus_thread {
     flex: 0 1 100%;
     line-height: 0;
 }
+.popup .popframe-title,
 .popup .popframe-title span,
 .popup .popframe-title a {
     color: var(--GW-popups-popup-title-color);
