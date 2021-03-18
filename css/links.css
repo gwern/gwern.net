@@ -1018,7 +1018,7 @@ a[href*="www.cell.com"]::after {
     */
 a[href*='biorxiv.org']::after,
 a[href*='medrxiv.org']::after,
-a[href*='substack.com']:not(a[href*='astralcodexten'])::after,
+a[href*='substack.com']:not([href*='astralcodexten'])::after,
 a[href*='scholar.google.com']::after,
 a[href*='plosone.org']::after,
 a[href*='plosmedicine.org']::after,
@@ -1100,7 +1100,7 @@ a[href*='docs/.*/*.pdf#org=google']::after {
     */
 a[href*='biorxiv.org']:hover::after,
 a[href*='medrxiv.org']:hover::after,
-a[href*='substack.com']:not(a[href*='astralcodexten']):hover::after,
+a[href*='substack.com']:not([href*='astralcodexten']):hover::after,
 a[href*='scholar.google.com']:hover::after,
 a[href*='plosone.org']:hover::after,
 a[href*='plosmedicine.org']:hover::after,
@@ -1168,7 +1168,7 @@ a[href*='medrxiv.org']:hover::after {
 
 /*  Substack.
     */
-a[href*='substack.com']:not(a[href*='astralcodexten'])::after { /* primary user: gwern.substack.com */
+a[href*='substack.com']:not([href*='astralcodexten'])::after { /* primary user: gwern.substack.com */
     background-image: url('/static/img/icons/substack.svg');
     height: 0.75em;
     width: 0.75em;
