@@ -710,6 +710,7 @@ h1 {
 @media only screen and (max-width: 649px) {
 	h1 {
 		margin: 1.25em 0 0.5em 0;
+        padding-bottom: 2px;
 	}
 }
 
