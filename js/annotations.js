@@ -29,7 +29,7 @@ Annotations = {
 		GW.notificationCenter.removeHandlerForEvent("GW.contentLoadDidFail", signalAnnotationLoadFailed);
 
 		//  Fire cleanup-complete event.
-		GW.notificationCenter.fireEvent("Annotations.cleanupDidComplete");	
+		GW.notificationCenter.fireEvent("Annotations.cleanupDidComplete");
 	},
 
     setup: () => {
@@ -43,7 +43,7 @@ Annotations = {
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Annotations.signalAnnotationLoaded = (info) => {
 			GWLog("Annotations.signalAnnotationLoaded", "annotations.js", 2);
 
-			/*  If this is an annotation that’s loaded, we cache it, remove 
+			/*  If this is an annotation that’s loaded, we cache it, remove
 				it from the staging element, and fire the annotationDidLoad
 				event.
 				*/
@@ -61,7 +61,7 @@ Annotations = {
 			GWLog("Annotations.signalAnnotationLoadFailed", "annotations.js", 2);
 
 			/*	If this is an annotation that’s failed to load, then we set
-				the cache value to indicate this, and fire the 
+				the cache value to indicate this, and fire the
 				annotationLoadDidFail event.
 				*/
 			Annotations.cachedAnnotations[info.identifier] = "LOADING_FAILED";
@@ -115,7 +115,7 @@ Annotations = {
 			annotationURL.pathname = `/api/rest_v1/page/mobile-sections-${(annotationURL.hash > "" ? "remaining" : "lead")}/${wikiPageName}`;
 		} else {
 			//  Local annotation.
-			annotationURL = new URL("https://" + location.hostname + Annotations.annotationsBasePathname 
+			annotationURL = new URL("https://" + location.hostname + Annotations.annotationsBasePathname
 							+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
 		}
 
@@ -133,7 +133,7 @@ Annotations = {
 						if (!targetSection) {
 							GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
 								source: "Annotations.loadAnnotation",
-								document: Annotations.annotationsWorkspace, 
+								document: Annotations.annotationsWorkspace,
 								identifier: annotationIdentifier,
 								location: annotationURL
 							});
@@ -151,14 +151,14 @@ Annotations = {
 					annotation = Annotations.stageAnnotation(event.target.responseText);
 				}
 
-				GW.notificationCenter.fireEvent("GW.contentDidLoad", { 
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 					source: "Annotations.loadAnnotation",
-					document: annotation, 
+					document: annotation,
 					identifier: annotationIdentifier,
 					isMainDocument: false,
-					needsRewrite: true, 
-					clickable: false, 
-					collapseAllowed: false, 
+					needsRewrite: true,
+					clickable: false,
+					collapseAllowed: false,
 					isCollapseBlock: false,
 					isFullPage: false,
 					location: annotationURL,
@@ -168,7 +168,7 @@ Annotations = {
 			onFailure: (event) => {
 				GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
 					source: "Annotations.loadAnnotation",
-					document: Annotations.annotationsWorkspace, 
+					document: Annotations.annotationsWorkspace,
 					identifier: annotationIdentifier,
 					location: annotationURL
 				});
@@ -202,7 +202,7 @@ Annotations = {
 	/*	Annotations generated server-side and hosted locally.
 		*/
 	referenceDataForLocalAnnotation: (referenceEntry) => {
-		let referenceElement = referenceEntry.querySelector(Annotations.annotationReferenceElementSelectors.map(selector => 
+		let referenceElement = referenceEntry.querySelector(Annotations.annotationReferenceElementSelectors.map(selector =>
 			`${Annotations.annotationReferenceElementSelectorPrefix}${selector}`
 		).join(", "));
 
@@ -245,7 +245,7 @@ Annotations = {
 		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
-		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote, .portal, .penicon, .reference").forEach(element => {
+		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote, .portal, .penicon, .reference, .Template-Fact").forEach(element => {
 			element.remove();
 		});
 
