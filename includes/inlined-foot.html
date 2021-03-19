@@ -1,15 +1,16 @@
     <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
-    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1613268818" />
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1615923802" />
-    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1616105699" />
+    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1613365249" />
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1615908368" />
+    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1616106778" />
 
 	<!-- JS library for spawning popups -->
-    <script src="/static/js/popups.js?v=1615228653" defer></script>
-    <script src="/static/js/popins.js?v=1614739325" defer></script>
+    <script src="/static/js/popups.js?v=1616039393" defer></script>
+    <script src="/static/js/popins.js?v=1614738985" defer></script>
     <!-- JS library for annotating hyperlinks with introduction/summary from various sources; not lazy-loaded as (almost) all pages have popups -->
-    <script src="/static/js/annotations.js?v=1616105958" defer></script>
-    <script src="/static/js/extracts.js?v=1615391333" defer></script>
-    <script src="/static/js/extracts-options.js?v=1611878823" defer></script>
+    <script src="/static/js/annotations.js?v=1616106778" defer></script>
+    <script src="/static/js/extracts.js?v=1616189809" defer></script>
+    <script src="/static/js/extracts-content.js?v=1616189792" defer></script>
+    <script src="/static/js/extracts-options.js?v=1611861281" defer></script>
 
     <!-- Stuff we don’t need on /index gets conditionally loaded: -->
     $if(index)$ $else$
@@ -17,14 +18,14 @@
     <!-- JS library for clickable/zoomable images, for images larger than can be displayed in -->
     <!-- the body: http://share.obormot.net/misc/gwern/image-focus.js http://share.obormot.net/misc/gwern/image-focus.css -->
     <!-- not lazy-loaded due to various bugs -->
-    <script src="/static/js/image-focus.js?v=1611954378" defer></script>
+    <script src="/static/js/image-focus.js?v=1611897114" defer></script>
 
     <!-- sort tables: http://tablesorter.com/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions -->
 	<script>
 	if (document.querySelector("table")) {
 		var js = document.createElement("script");
 		js.type = "text/javascript";
-		js.src = "/static/js/tablesorter.js?v=1609212245";
+		js.src = "/static/js/tablesorter.js?v=1604173830";
 		document.body.appendChild(js);
 	}
 	</script>
@@ -32,9 +33,9 @@
     $endif$
 
     <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. cover source-code block listings too (for large R sections especially); 3. type setting stuff -->
-    <script src="/static/js/typography.js?v=1610806737" defer></script>
-    <script src="/static/js/rewrite.js?v=1615598556" defer></script>
-    <script src="/static/js/collapse.js?v=1611437420" defer></script>
+    <script src="/static/js/typography.js?v=1610757690" defer></script>
+    <script src="/static/js/rewrite.js?v=1615598261" defer></script>
+    <script src="/static/js/collapse.js?v=1611435792" defer></script>
 
     <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
-    <script src="/static/js/darkmode.js?v=1611184974" defer></script>
+    <script src="/static/js/darkmode.js?v=1611247005" defer></script>

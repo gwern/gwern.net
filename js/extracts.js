@@ -60,7 +60,6 @@ Extracts = {
 
 	/*	Misc. configuration.
 		*/
-    imageFileExtensions: [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ],
     videoFileExtensions: [ "mp4" ],
     codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ],
     qualifyingForeignDomains: [ 
@@ -269,7 +268,7 @@ Extracts = {
 		[ "LOCAL_PAGE",  		"isLocalPageLink", 		"has-content",		"localTranscludeForTarget", 	"local-transclude"      ],
 		[ "FOREIGN_SITE", 		"isForeignSiteLink", 	"has-content",	 	"foreignSiteForTarget", 		"foreign-site object"   ]
 	],
-			
+
 	/*	Returns full type info for the given target. This contains the target 
 		type name, the name of the predicate function for identifying targets of
 		that type (e.g., isExtractLink), classes which should be applied to 
@@ -464,6 +463,45 @@ Extracts = {
 		return (target.hostname == location.hostname) ? new URL(location.href) : null;
 	},
 
+	/*	Activate loading spinner for an object pop-frame.
+		*/
+    setLoadingSpinner: (popFrame) => {
+		let target = popFrame.spawningTarget;
+
+		popFrame.classList.toggle("loading", true);
+
+		//  When loading ends (in success or failure)...
+		let objectOfSomeSort = popFrame.querySelector("iframe, object, img, video");
+		if (objectOfSomeSort.tagName == "IFRAME") {
+			//  Iframes do not fire ‘error’ on server error.
+			objectOfSomeSort.onload = (event) => {
+				popFrame.classList.toggle("loading", false);
+
+				/*	We do this for local documents only. Cross-origin 
+					protections prevent us from accessing the content of
+					an iframe with a foreign site, so we do nothing special
+					and simply let the foreign site’s server show its usual
+					404 page (or whatever) if the linked page is not found.
+					*/
+				if (   target.hostname == location.hostname
+					&& Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title)) {
+					popFrame.classList.toggle("loading-failed", true);
+				}
+			};
+		} else {
+			//  Objects & images fire ‘error’ on server error or load fail.
+			objectOfSomeSort.onload = (event) => {
+				popFrame.classList.toggle("loading", false);
+			};
+		}
+		/*  We set an ‘error’ handler for *all* types of entity, even 
+			iframes, just in case.
+			*/
+		objectOfSomeSort.onerror = (event) => {
+			popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+		};
+    },
+
 	/******************************************************************/
 	/*  Helpers for targets with annotations (extracts or definitions).
 		*/
@@ -596,43 +634,6 @@ Extracts = {
 				 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
 		}
 	},
-
-    //  Videos (both local and remote).
-    youtubeId: (href) => {
-        let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        if (match && match[2].length == 11) {
-            return match[2];
-        } else {
-            return null;
-        }
-    },
-    isVideoLink: (target) => {
-        if (!target.href) return false;
-
-        if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
-            return (Extracts.youtubeId(target.href) != null);
-        } else {
-            return false;
-        }
-    },
-    videoForTarget: (target) => {
-        GWLog("Extracts.videoForTarget", "extracts.js", 2);
-
-        let videoId = Extracts.youtubeId(target.href);
-        let videoEmbedURL = `https://www.youtube.com/embed/${videoId}`;
-        let placeholderImgSrc = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-        let srcdocStyles = `<style>` + 
-            `* { padding: 0; margin: 0; overflow: hidden; }` + 
-            `html, body { height: 100%; } ` + 
-            `img, span { position: absolute; width: 100%; top: 0; bottom: 0; margin: auto; } ` + 
-            `span { height: 1.5em; text-align: center; font: 48px/1.5 sans-serif; color: white; text-shadow: 0 0 0.5em black; }` + 
-            `</style>`;
-        let playButtonHTML = `<span class='video-embed-play-button'>&#x25BA;</span>`;
-        let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
-
-        //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-        return `<iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>`;
-    },
 
     //  Citations.
     isCitation: (target) => {
@@ -795,194 +796,6 @@ Extracts = {
 		return `&nbsp;`;
     },
 
-	//  Other websites.
-	isForeignSiteLink: (target) => {
-		if (  !target.href
-			|| Extracts.isExtractLink(target)) return false;
-
-		return  (   Extracts.qualifyingForeignDomains.includes(target.hostname)
-				 || Extracts.qualifyingForeignDomains.findIndex(domainPattern => (domainPattern instanceof RegExp && domainPattern.test(target.hostname) == true)) != -1)
-			&& !Extracts.blacklistedForeignDomains.includes(target.hostname);
-	},
-	foreignSiteForTarget: (target) => {
-		let url = new URL(target.href);
-
-		if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
-			url.protocol = "https:";
-			url.hostname = "www.greaterwrong.com";
-			url.search = "format=preview&theme=classic";
-		} else if (/(.+?)\.wikipedia\.org/.test(url.hostname) == true) {
-			url.protocol = "https:";
-			url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
-			if (!url.hash)
-				url.hash = "#bodyContent";
-		} else {
-			url.protocol = "https:";
-		}
-
-		return `<iframe src="${url.href}" frameborder="0" sandbox></iframe>`;
-	},
-
-	//  Locally hosted videos.
-	isLocalVideoLink: (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname)
-			return false;
-
-		let videoFileURLRegExp = new RegExp(
-			  '(' 
-			+ Extracts.videoFileExtensions.map(ext => `\\.${ext}`).join("|") 
-			+ ')$'
-		, 'i');
-		return (target.pathname.match(videoFileURLRegExp) != null);
-	},
-    localVideoForTarget: (target) => {
-		GWLog("Extracts.localVideoForTarget", "extracts.js", 2);
-
-// 		let width = target.dataset.imageWidth || 0;
-// 		let height = target.dataset.imageHeight || 0;
-// 
-// 		if (width > Extracts.imageMaxWidth) {
-// 			height *= Extracts.imageMaxWidth / width;
-// 			width = Extracts.imageMaxWidth;
-// 		}
-// 		if (height > Extracts.imageMaxHeight) {
-// 			width *= Extracts.imageMaxHeight / height;
-// 			height = Extracts.imageMaxHeight;
-// 		}
-// 
-// 		let styles = ``;
-// 		if (width > 0 && height > 0) {
-// 			styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
-// 		}
-
-        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-//         return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
-        return `<video controls="controls" preload="none">` + 
-        	`<source src="${target.href}">` + 
-			`</video>`;
-    },
-
-	//  Locally hosted images.
-    isLocalImageLink: (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname)
-			return false;
-
-		let imageFileURLRegExp = new RegExp(
-			  '(' 
-			+ Extracts.imageFileExtensions.map(ext => `\\.${ext}`).join("|") 
-			+ ')$'
-		, 'i');
-		return (target.pathname.match(imageFileURLRegExp) != null);
-    },
-    localImageForTarget: (target) => {
-		GWLog("Extracts.localImageForTarget", "extracts.js", 2);
-
-		let width = target.dataset.imageWidth || 0;
-		let height = target.dataset.imageHeight || 0;
-
-		if (width > Extracts.imageMaxWidth) {
-			height *= Extracts.imageMaxWidth / width;
-			width = Extracts.imageMaxWidth;
-		}
-		if (height > Extracts.imageMaxHeight) {
-			width *= Extracts.imageMaxHeight / height;
-			height = Extracts.imageMaxHeight;
-		}
-
-		let styles = ``;
-		if (width > 0 && height > 0)
-			styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
-
-        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-        return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
-    },
-
-	//  Locally hosted documents (html, pdf, etc.).
-    isLocalDocumentLink: (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname
-			|| Extracts.isExtractLink(target))
-			return false;
-
-	    return (   target.pathname.startsWith("/docs/www/")
-	            || (   target.pathname.startsWith("/docs/")
-	                && target.pathname.match(/\.(html|pdf)$/i) != null));
-    },
-    localDocumentForTarget: (target) => {
-		GWLog("Extracts.localDocumentForTarget", "extracts.js", 2);
-
-		if (target.href.match(/\.pdf(#|$)/) != null) {
-			let data = target.href + (target.href.includes("#") ? "&" : "#") + "view=FitH";
-			return `<object data="${data}"></object>`;
-		} else {
-			return `<iframe src="${target.href}" frameborder="0" sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe>`;
-		}
-    },
-
-	//  Locally hosted code files (css, js, hs, etc.).
-    isLocalCodeFileLink: (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname
-			|| Extracts.isExtractLink(target))
-			return false;
-
-		let codeFileURLRegExp = new RegExp(
-			  '(' 
-			+ Extracts.codeFileExtensions.map(ext => `\\.${ext}`).join("|") 
-			+ ')$'
-		, 'i');
-		return (target.pathname.match(codeFileURLRegExp) != null);
-    },
-	/*  We first try to retrieve a syntax-highlighted version of the given code 
-		file, stored on the server as an HTML fragment. If present, we embed 
-		that. If there’s no such fragment, then we just embed the contents of 
-		the actual code file, in a <pre>-wrapped <code> element.
-		*/
-    localCodeFileForTarget: (target) => {
-		GWLog("Extracts.localCodeFileForTarget", "extracts.js", 2);
-
-		let setPopFrameContent = Popups.setPopFrameContent;
-
-		target.popFrame.classList.toggle("loading", true);
-		doAjax({
-			location: target.href + ".html",
-			onSuccess: (event) => {
-				if (!target.popFrame)
-					return;
-
-				target.popFrame.classList.toggle("loading", false);
-				setPopFrameContent(target.popFrame, event.target.responseText);
-			},
-			onFailure: (event) => {
-				doAjax({
-					location: target.href,
-					onSuccess: (event) => {
-						if (!target.popFrame)
-							return;
-
-						target.popFrame.classList.toggle("loading", false);
-
-						let htmlEncodedResponse = event.target.responseText.replace(/[<>]/g, c => ('&#' + c.charCodeAt(0) + ';'));
-						let lines = htmlEncodedResponse.split("\n");
-						htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
-
-						setPopFrameContent(target.popFrame, `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`);
-					},
-					onFailure: (event) => {
-						if (!target.popFrame)
-							return;
-
-						target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-					}
-				});
-			}
-		});
-
-		return `&nbsp;`;
-    },	
-
 	/**********/
 	/*	Popins.
 		*/
@@ -1041,6 +854,12 @@ Extracts = {
 			}
 		}
 
+		//  Special handling for certain popin types.
+		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
+		let specialPrepareFunction = Extracts[`preparePopin_${targetTypeName}`] || Extracts[`preparePopFrame_${targetTypeName}`];
+		if (specialPrepareFunction)
+			specialPrepareFunction(popin);
+
 		/*  If we’re waiting for content to be loaded into the popin 
 			asynchronously, then there’s no need to do rewrites for now.
 			*/
@@ -1064,13 +883,11 @@ Extracts = {
 			&& popin.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
 			popin.contentView.classList.add("wikipedia-entry");
 
-		//  Special handling for image popins.
-		if (Extracts.isLocalImageLink(target)) {
-			let image = popin.querySelector("img");
-
-			//  Remove extraneous classes from images in image popins.
-			image.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
-		}
+		//  Special handling for certain popin types.
+		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
+		let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
+		if (specialRewriteFunction)
+			specialRewriteFunction(popin);
 
 		//  Rectify margin note style.
 		popin.querySelectorAll(".marginnote").forEach(marginNote => {
@@ -1104,45 +921,6 @@ Extracts = {
 				location: Extracts.locationForTarget(target),
 				fullWidthPossible: false
 			});
-		}
-
-		//  Loading spinners.
-		if (   Extracts.isLocalDocumentLink(target)
-			|| Extracts.isForeignSiteLink(target)
-			|| Extracts.isLocalImageLink(target)
-			|| Extracts.isLocalVideoLink(target)
-			) {
-			popin.classList.toggle("loading", true);
-
-			//  When loading ends (in success or failure)...
-			let objectOfSomeSort = popin.querySelector("iframe, object, img, video");
-			if (objectOfSomeSort.tagName == "IFRAME") {
-				//  Iframes do not fire ‘error’ on server error.
-				objectOfSomeSort.onload = (event) => {
-					popin.classList.toggle("loading", false);
-
-					/*	We do this for local documents only. Cross-origin 
-						protections prevent us from accessing the content of
-						an iframe with a foreign site, so we do nothing special
-						and simply let the foreign site’s server show its usual
-						404 page (or whatever) if the linked page is not found.
-						*/
-					if (   target.hostname == location.hostname
-						&& Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title))
-						popin.classList.toggle("loading-failed", true);
-				};
-			} else {
-				//  Objects & images fire ‘error’ on server error or load fail.
-				objectOfSomeSort.onload = (event) => {
-					popin.classList.toggle("loading", false);
-				};
-			}
-			/*  We set an ‘error’ handler for *all* types of entity, even 
-				iframes, just in case.
-				*/
-			objectOfSomeSort.onerror = (event) => {
-				popin.swapClasses([ "loading", "loading-failed" ], 1);
-			};
 		}
     },
    
@@ -1273,11 +1051,15 @@ Extracts = {
 		}
 
 		//  Some kinds of popups get an alternate form of title bar.
-		if (   Extracts.isLocalImageLink(target)
-			|| Extracts.isLocalVideoLink(target)
-			|| Extracts.isCitation(target)
+		if (   Extracts.isCitation(target)
 			|| Extracts.isCitationBackLink(target))
-			popup.classList.add("mini-title-bar");	
+			popup.classList.add("mini-title-bar");
+
+		//  Special handling for certain popup types.
+		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
+		let specialPrepareFunction = Extracts[`preparePopup_${targetTypeName}`] || Extracts[`preparePopup_${targetTypeName}`];
+		if (specialPrepareFunction)
+			specialPrepareFunction(popup);
 
 		/*  If we’re waiting for content to be loaded into the popup 
 			asynchronously, then there’s no need to do rewrites for now.
@@ -1320,14 +1102,11 @@ Extracts = {
 			});
 		}
 
-		//  Special handling for image popups.
-		if (Extracts.isLocalImageLink(target)) {
-			//  Remove extraneous classes from images in image popups.
-			popup.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popup");
-
-			if (popup.querySelector("img[width][height]"))
-				popup.classList.add("dimensions-specified");
-		}
+		//  Special handling for certain popup types.
+		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
+		let specialRewriteFunction = Extracts[`rewritePopupContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
+		if (specialRewriteFunction)
+			specialRewriteFunction(popup);
 
 		//  Ensure no reflow due to figures.
 		popup.querySelectorAll("figure[class^='float-'] img[width]").forEach(img => {
@@ -1379,56 +1158,6 @@ Extracts = {
 				location: Extracts.locationForTarget(target),
 				fullWidthPossible: false
 			});
-		}
-
-		//  For locally archived web pages, set title of popup from page title.
-		if (Extracts.isLocalDocumentLink(target)) {
-			let iframe = popup.querySelector("iframe");
-			if (iframe) {
-				iframe.addEventListener("load", (event) => {
-					popup.titleBar.querySelector(".popframe-title-link").innerHTML = iframe.contentDocument.title;
-				});
-			}
-		}
-
-		//  Loading spinners.
-		if (   Extracts.isLocalDocumentLink(target)
-			|| Extracts.isForeignSiteLink(target)
-			|| Extracts.isLocalImageLink(target)
-			|| Extracts.isLocalVideoLink(target)
-			) {
-			popup.classList.toggle("loading", true);
-
-			//  When loading ends (in success or failure)...
-			let objectOfSomeSort = popup.querySelector("iframe, object, img, video");
-			if (objectOfSomeSort.tagName == "IFRAME") {
-				//  Iframes do not fire ‘error’ on server error.
-				objectOfSomeSort.onload = (event) => {
-					popup.classList.toggle("loading", false);
-
-					/*	We do this for local documents only. Cross-origin 
-						protections prevent us from accessing the content of
-						an iframe with a foreign site, so we do nothing special
-						and simply let the foreign site’s server show its usual
-						404 page (or whatever) if the linked page is not found.
-						*/
-					if (   target.hostname == location.hostname
-						&& Extracts.server404PageTitles.includes(objectOfSomeSort.contentDocument.title)) {
-						popup.classList.toggle("loading-failed", true);
-					}
-				};
-			} else {
-				//  Objects & images fire ‘error’ on server error or load fail.
-				objectOfSomeSort.onload = (event) => {
-					popup.classList.toggle("loading", false);
-				};
-			}
-			/*  We set an ‘error’ handler for *all* types of entity, even 
-				iframes, just in case.
-				*/
-			objectOfSomeSort.onerror = (event) => {
-				popup.swapClasses([ "loading", "loading-failed" ], 1);
-			};
 		}
     }
 };
