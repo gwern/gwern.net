@@ -45,6 +45,11 @@ if (window.Extracts) {
 	/*= LOCALLY HOSTED VIDEOS =*/
 	/*=-----------------------=*/
 
+    Extracts.videoFileExtensions = [ "mp4" ];
+
+	Extracts.videoMaxWidth = 634.0;
+	Extracts.videoMaxHeight = 474.0;
+
 	Extracts.isLocalVideoLink = (target) => {
 		if (  !target.href
 			|| target.hostname != location.hostname)
@@ -99,6 +104,9 @@ if (window.Extracts) {
 	/*=-----------------------=*/
 
 	Extracts.imageFileExtensions = [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ];
+
+	Extracts.imageMaxWidth = 634.0;
+	Extracts.imageMaxHeight = 474.0;
 
     Extracts.isLocalImageLink = (target) => {
 		if (  !target.href
@@ -208,6 +216,8 @@ if (window.Extracts) {
 	/*= LOCALLY HOSTED CODE FILES =*/
 	/*=---------------------------=*/
 
+    Extracts.codeFileExtensions = [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ];
+
     Extracts.isLocalCodeFileLink = (target) => {
 		if (  !target.href
 			|| target.hostname != location.hostname
@@ -273,6 +283,17 @@ if (window.Extracts) {
 	/*=----------------=*/
 	/*= OTHER WEBSITES =*/
 	/*=----------------=*/
+
+    Extracts.qualifyingForeignDomains = [ 
+    	"www.greaterwrong.com", 
+    	"greaterwrong.com", 
+    	"www.lesswrong.com",
+    	"lesswrong.com",
+    	/(.+?)\.wikipedia\.org/
+    ];
+
+    Extracts.blacklistedForeignDomains = [
+    ];
 
 	Extracts.isForeignSiteLink = (target) => {
 		if (  !target.href

@@ -60,23 +60,6 @@ Extracts = {
 
 	/*	Misc. configuration.
 		*/
-    videoFileExtensions: [ "mp4" ],
-    codeFileExtensions: [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ],
-    qualifyingForeignDomains: [ 
-    	"www.greaterwrong.com", 
-    	"greaterwrong.com", 
-    	"www.lesswrong.com",
-    	"lesswrong.com",
-    	/(.+?)\.wikipedia\.org/
-    ],
-    blacklistedForeignDomains: [
-    ],
-
-	imageMaxWidth: 634.0,
-	imageMaxHeight: 474.0,
-	videoMaxWidth: 634.0,
-	videoMaxHeight: 474.0,
-
 	server404PageTitles: [
 		"404 Not Found"
 	],
