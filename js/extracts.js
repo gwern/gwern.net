@@ -18,7 +18,7 @@ Extracts = {
     /*  Configuration.
         */
 
-	annotatedTargetSelectors: [ "a.docMetadata", "span.defnMetadata" ],
+	annotatedTargetSelectors: [ "a.docMetadata" ],
 	annotationLoadHoverDelay: 25,
 
 	/*	Target containers.
@@ -28,7 +28,7 @@ Extracts = {
 	/*	Targets.
 		*/
     targets: {
-		targetElementsSelector: "a[href], span.defnMetadata", 
+		targetElementsSelector: "a[href]", 
 		excludedElementsSelector: [
 			".section-self-link",
 			".footnote-self-link",
@@ -238,12 +238,11 @@ Extracts = {
 		*/
 
 	/*	This array defines the types of ‘targets’ (i.e., annotated links,
-		definitions, links pointing to available content such as images or code
-		files, citations, etc.) that Extracts supports.
+		links pointing to available content such as images or code files, 
+		citations, etc.) that Extracts supports.
 		*/
 	targetTypeDefinitions: [
-		[ "EXTRACT",  			"isExtractLink",		"has-annotation", 	"annotationForTarget", 			"extract annotation"    ],
-		[ "DEFINITION",  		"isDefinition",			"has-annotation",	"annotationForTarget", 			"definition annotation" ],
+		[ "ANNOTATION",  		"isAnnotatedLink",		"has-annotation", 	"annotationForTarget", 			"annotation"            ],
 		[ "CITATION",  			"isCitation", 			null, 				"citationForTarget",		 	"footnote"              ],
 		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"citationBackLinkForTarget", 	"citation-context"      ],
 		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"          ],
@@ -257,7 +256,7 @@ Extracts = {
 
 	/*	Returns full type info for the given target. This contains the target 
 		type name, the name of the predicate function for identifying targets of
-		that type (e.g., isExtractLink), classes which should be applied to 
+		that type (e.g., isAnnotatedLink), classes which should be applied to 
 		targets of that type during initial processing, the fill functions to
 		fill popups and popins of that type, and the classes which should be 
 		applied to pop-frames of that type.
@@ -278,14 +277,11 @@ Extracts = {
 		return null;
 	},
 
-	/*	Returns the target identifier: the definition ID (for definitions), or
-		the original URL (for locally archived pages), or the relative url
-		(for local links), or the full URL (for foreign links).
+	/*	Returns the target identifier: the original URL (for locally archived 
+		pages), or the relative url (for local links), or the full URL (for 
+		foreign links).
 		*/
 	targetIdentifier: (target) => {
-		if (!target.href)
-			return target.dataset.originalDefinitionId;
-
 		return    target.dataset.urlOriginal 
 			   || (target.hostname == location.hostname
 			   	   ? target.pathname + target.hash
@@ -301,7 +297,7 @@ Extracts = {
 	},
 
 	/*	This function qualifies anchorlinks in transcluded content (i.e., other
-		pages on the site, as well as extracts describing other pages on the 
+		pages on the site, as well as annotations describing other pages on the 
 		site), by rewriting their href attributes to include the path of the 
 		target (link) that spawned the pop-frame that contains the transcluded 
 		content.
@@ -349,60 +345,54 @@ Extracts = {
 
 		let popFrameTitle;
 
-		if (Extracts.isDefinition(target)) {
-			popFrameTitle = Extracts.popFrameHasLoaded(popFrame)
-							? `<span>${popFrame.querySelector(".data-field.title").textContent}</span>`
-							: `<span>${target.dataset.originalDefinitionId}</span>`;
-		} else {
-			let popFrameTitleText;
-			if (Extracts.isExtractLink(target)) {
-					popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
-										? popFrame.querySelector(".data-field.title").textContent
-										: popFrameTitleText = target.pathname + target.hash;
-			} else if (target.hostname == location.hostname) {
-				if (target.dataset.urlOriginal) {
-					popFrameTitleText = target.dataset.urlOriginal;
-				} else if (target.pathname == location.pathname) {
-					let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(decodeURIComponent(target.hash)));
-					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-										? nearestBlockElement.firstElementChild.textContent
-										: target.hash;
-				} else {
-					popFrameTitleText = popFrame.classList.contains("external-page-embed")
-										? target.pathname
-										: (target.pathname + target.hash);
-				}
-			} else {
-				popFrameTitleText = target.href;
-			}
-			popFrameTitleText = decodeURIComponent(popFrameTitleText);
-
-			if (target.hash > "")
-				popFrameTitleText = "&#x00a7; " + popFrameTitleText;
-
-			//  For local-archive links, include archive link with original.
+		let popFrameTitleText;
+		if (Extracts.isAnnotatedLink(target)) {
+				popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
+									? popFrame.querySelector(".data-field.title").textContent
+									: popFrameTitleText = target.pathname + target.hash;
+		} else if (target.hostname == location.hostname) {
 			if (target.dataset.urlOriginal) {
-				popFrameTitle = `<a 
-						class="popframe-title-link-archived"
-						href="${target.href}"
-						title="Open ${target.href} in a new window"
-						target="_blank"
-							>[ARCHIVED]</a>` +
-					`<span class="separator">·</span>` +
-					`<a 
-						class="popframe-title-link"
-						href="${target.dataset.urlOriginal}"
-						title="Open ${target.dataset.urlOriginal} in a new window"
-						target="_blank"
-							>${popFrameTitleText}</a>`;
+				popFrameTitleText = target.dataset.urlOriginal;
+			} else if (target.pathname == location.pathname) {
+				let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(decodeURIComponent(target.hash)));
+				popFrameTitleText = nearestBlockElement.tagName == "SECTION"
+									? nearestBlockElement.firstElementChild.textContent
+									: target.hash;
 			} else {
-				popFrameTitle = `<a 
-					class="popframe-title-link"
+				popFrameTitleText = popFrame.classList.contains("external-page-embed")
+									? target.pathname
+									: (target.pathname + target.hash);
+			}
+		} else {
+			popFrameTitleText = target.href;
+		}
+		popFrameTitleText = decodeURIComponent(popFrameTitleText);
+
+		if (target.hash > "")
+			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
+
+		//  For local-archive links, include archive link with original.
+		if (target.dataset.urlOriginal) {
+			popFrameTitle = `<a 
+					class="popframe-title-link-archived"
 					href="${target.href}"
 					title="Open ${target.href} in a new window"
 					target="_blank"
+						>[ARCHIVED]</a>` +
+				`<span class="separator">·</span>` +
+				`<a 
+					class="popframe-title-link"
+					href="${target.dataset.urlOriginal}"
+					title="Open ${target.dataset.urlOriginal} in a new window"
+					target="_blank"
 						>${popFrameTitleText}</a>`;
-			}
+		} else {
+			popFrameTitle = `<a 
+				class="popframe-title-link"
+				href="${target.href}"
+				title="Open ${target.href} in a new window"
+				target="_blank"
+					>${popFrameTitleText}</a>`;
 		}
 
 		return popFrameTitle;
@@ -488,8 +478,8 @@ Extracts = {
 		};
     },
 
-	/******************************************************************/
-	/*  Helpers for targets with annotations (extracts or definitions).
+	/****************************************/
+	/*  Helpers for targets with annotations.
 		*/
 
 	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
@@ -559,16 +549,11 @@ Extracts = {
 		*/
 
 	//  Summaries of links to elsewhere.
-	isExtractLink: (target) => {
+	isAnnotatedLink: (target) => {
 		return target.classList.contains("docMetadata");
 	},
 
-    //  Definitions.
-    isDefinition: (target) => {
-        return target.classList.contains("defnMetadata");
-    },
-
-	//  Either an extract or a definition.
+	//  An annotation for a link.
 	annotationForTarget: (target) => {
 		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
 
@@ -584,47 +569,40 @@ Extracts = {
 
 		let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
-		if (Extracts.isDefinition(target)) {
-			//  The fully constructed definition pop-frame contents.
-			return `<p class="data-field title">${referenceData.titleHTML}</p>` 
-				 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
-				 + `<div class="data-field annotation-abstract">${referenceData.abstractHTML}</div>`;
-		} else { // if (Extracts.isExtractLink(target))
-			//  Link to original URL (for archive links).
-			let originalLinkHTML = "";
-			if (   referenceData.element.dataset.urlOriginal != undefined 
-				&& referenceData.element.dataset.urlOriginal != target.href) {
-				originalLinkHTML = `<span class="originalURL">[<a 
-								title="Link to original URL for ‘${referenceData.titleText}’" 
-								href="${referenceData.element.dataset.urlOriginal}"
-								target="_new" 
-								alt="Original URL for this archived link; may be broken."
-									>original</a>]</span>`;
-			}
-
-			//  Extract title/link.
-			let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
-			let titleLinkHTML = `<a 
-									class="${titleLinkClass}" 
-									target="_new" 
-									href="${target.href}" 
-									title="Open ${target.href} in a new window"
-										>${referenceData.titleHTML}</a>`;
-
-			//  The fully constructed extract pop-frame contents.
-			let abstractSpecialClass = ``;
-			if (Annotations.isWikipediaLink(annotationIdentifier))
-				abstractSpecialClass = "wikipedia-entry";
-			return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
-				 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
-				 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
+		//  Link to original URL (for archive links).
+		let originalLinkHTML = "";
+		if (   referenceData.element.dataset.urlOriginal != undefined 
+			&& referenceData.element.dataset.urlOriginal != target.href) {
+			originalLinkHTML = `<span class="originalURL">[<a 
+							title="Link to original URL for ‘${referenceData.titleText}’" 
+							href="${referenceData.element.dataset.urlOriginal}"
+							target="_new" 
+							alt="Original URL for this archived link; may be broken."
+								>original</a>]</span>`;
 		}
+
+		//  Extract title/link.
+		let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
+		let titleLinkHTML = `<a 
+								class="${titleLinkClass}" 
+								target="_new" 
+								href="${target.href}" 
+								title="Open ${target.href} in a new window"
+									>${referenceData.titleHTML}</a>`;
+
+		//  The fully constructed annotation pop-frame contents.
+		let abstractSpecialClass = ``;
+		if (Annotations.isWikipediaLink(annotationIdentifier))
+			abstractSpecialClass = "wikipedia-entry";
+		return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
+			 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
+			 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
 	},
 
 	//  Local links (to sections of the current page, or other site pages).
     isLocalPageLink: (target) => {
 		if (  !target.href
-			|| Extracts.isExtractLink(target))
+			|| Extracts.isAnnotatedLink(target))
 			return false;
 
 		if (target.hostname != location.hostname)
@@ -801,8 +779,7 @@ Extracts = {
 		let target = popin.spawningTarget;
 
 		//  Attempt to load annotation, if need be.
-		if (   Extracts.isExtractLink(target)
-			|| Extracts.isDefinition(target)) {
+		if (   Extracts.isAnnotatedLink(target)) {
 			let annotationIdentifier = Extracts.targetIdentifier(target);
 			if (!Annotations.cachedAnnotationExists(annotationIdentifier))
 				Annotations.loadAnnotation(annotationIdentifier);
@@ -851,7 +828,7 @@ Extracts = {
 			popin.titleBar.querySelector(".popframe-title").innerHTML = Extracts.titleForPopFrame(popin);
 
 		//	Mark Wikipedia entries.
-		if (   Extracts.isExtractLink(target)
+		if (   Extracts.isAnnotatedLink(target)
 			&& popin.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
 			popin.contentView.classList.add("wikipedia-entry");
 
@@ -866,8 +843,8 @@ Extracts = {
 			marginNote.swapClasses([ "inline", "sidenote" ], 0);
 		});
 
-		//  Qualify internal links in extracts.
-		if (   Extracts.isExtractLink(target) 
+		//  Qualify internal links in annotations.
+		if (   Extracts.isAnnotatedLink(target) 
 			&& target.hostname == location.hostname) {
 			Extracts.qualifyLinksInPopFrame(target.popFrame);
 		}
@@ -876,8 +853,7 @@ Extracts = {
 			sort, then fire a contentDidLoad event to trigger any necessary
 			rewrites.
 			*/
-		if (   Extracts.isExtractLink(target)
-			|| Extracts.isDefinition(target)
+		if (   Extracts.isAnnotatedLink(target)
 			|| Extracts.isLocalPageLink(target)
 			) {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
@@ -993,7 +969,7 @@ Extracts = {
 		let target = popup.spawningTarget;
 
 		//	Mark Wikipedia entries.
-		if (   Extracts.isExtractLink(target)
+		if (   Extracts.isAnnotatedLink(target)
 			&& popup.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
 			popup.contentView.classList.add("wikipedia-entry");
 
@@ -1012,8 +988,7 @@ Extracts = {
 		});
 
 		//  Allow for floated figures at the start of abstract.
-		if (   Extracts.isExtractLink(target)
-			|| Extracts.isDefinition(target)) {
+		if (   Extracts.isAnnotatedLink(target)) {
 			let initialFigure = popup.querySelector(".annotation-abstract > figure.float-right:first-child");
 			if (initialFigure) {
 				popup.contentView.insertBefore(initialFigure, popup.contentView.firstElementChild);
@@ -1025,8 +1000,8 @@ Extracts = {
 			marginNote.swapClasses([ "inline", "sidenote" ], 0);
 		});
 
-		//  Qualify internal links in extracts.
-		if (   Extracts.isExtractLink(target) 
+		//  Qualify internal links in annotations.
+		if (   Extracts.isAnnotatedLink(target) 
 			&& target.hostname == location.hostname) {
 			Extracts.qualifyLinksInPopFrame(target.popFrame);
 		}
@@ -1035,8 +1010,7 @@ Extracts = {
 			sort, then fire a contentDidLoad event to trigger any necessary
 			rewrites.
 			*/
-		if (   Extracts.isExtractLink(target)
-			|| Extracts.isDefinition(target)
+		if (   Extracts.isAnnotatedLink(target)
 			|| Extracts.isLocalPageLink(target)
 			) {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {

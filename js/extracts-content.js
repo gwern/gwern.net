@@ -315,7 +315,7 @@ if (window.Extracts) {
     Extracts.isLocalDocumentLink = (target) => {
 		if (  !target.href
 			|| target.hostname != location.hostname
-			|| Extracts.isExtractLink(target))
+			|| Extracts.isAnnotatedLink(target))
 			return false;
 
 	    return (   target.pathname.startsWith("/docs/www/")
@@ -356,7 +356,7 @@ if (window.Extracts) {
     Extracts.isLocalCodeFileLink = (target) => {
 		if (  !target.href
 			|| target.hostname != location.hostname
-			|| Extracts.isExtractLink(target))
+			|| Extracts.isAnnotatedLink(target))
 			return false;
 
 		let codeFileURLRegExp = new RegExp(
@@ -432,7 +432,7 @@ if (window.Extracts) {
 
 	Extracts.isForeignSiteLink = (target) => {
 		if (  !target.href
-			|| Extracts.isExtractLink(target)) return false;
+			|| Extracts.isAnnotatedLink(target)) return false;
 
 		return  (   Extracts.qualifyingForeignDomains.includes(target.hostname)
 				 || Extracts.qualifyingForeignDomains.findIndex(domainPattern => (domainPattern instanceof RegExp && domainPattern.test(target.hostname) == true)) != -1)
