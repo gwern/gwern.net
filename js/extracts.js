@@ -779,6 +779,30 @@ Extracts = {
 		return `&nbsp;`;
     },
 
+	/***************************/
+	/*	Pop-frames (in general).
+		*/
+
+	preparePopFrame: (popFrame) => {
+		GWLog("Extracts.preparePopup", "extracts.js", 2);
+
+		let target = popFrame.spawningTarget;
+
+		//  Import the class(es) of the target.
+		popFrame.classList.add(...target.classList);
+		//  We then remove some of the imported classes.
+		popFrame.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popup");
+
+		//  Add ‘markdownBody’ class.
+		popFrame.contentView.classList.add("markdownBody");
+
+		//  Attempt to fill the popup.
+		if (Extracts.fillPopFrame(popFrame) == false)
+			return null;
+
+		return popFrame;
+	},
+
 	/**********/
 	/*	Popins.
 		*/
@@ -793,14 +817,6 @@ Extracts = {
 
 		let target = popin.spawningTarget;
 
-		//  Import the class(es) of the target.
-		popin.classList.add(...target.classList);
-		//  We then remove some of the imported classes.
-		popin.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popin");
-
-		//  Add ‘markdownBody’ class.
-		popin.contentView.classList.add("markdownBody");
-
 		//  Attempt to load annotation, if need be.
 		if (   Extracts.isExtractLink(target)
 			|| Extracts.isDefinition(target)) {
@@ -809,32 +825,21 @@ Extracts = {
 				Annotations.loadAnnotation(annotationIdentifier);
 		}
 
-		//  Attempt to fill the popin.
-		if (Extracts.fillPopFrame(popin) == false)
+		//  Call generic prepare function.
+		if ((popin = Extracts.preparePopFrame(popin)) == null)
 			return null;
 
 		//  Add popin title bar contents.
 		let popinTitle = Extracts.titleForPopFrame(popin);
 		if (popinTitle) {
-			//  Add the title.
-			popinTitle = `<span class="popframe-title">${popinTitle}</span>`;
-			popin.titleBarContents.push(popinTitle);
-
-			//  Add the close button.
-			popin.titleBarContents.push(Popins.titleBarComponents.closeButton());
+			popin.titleBarContents = [
+				`<span class="popframe-title">${popinTitle}</span>`,
+				Popins.titleBarComponents.closeButton()
+			];
 
 			//  Add the options button.
-			if (Extracts.popinOptionsEnabled) {
-				let showPopinOptionsDialogButton = Popins.titleBarComponents.optionsButton();
-				showPopinOptionsDialogButton.addActivateEvent((event) => {
-					event.stopPropagation();
-
-					Extracts.showPopinOptionsDialog();
-				});
-				showPopinOptionsDialogButton.title = "Show popin options (enable/disable popins)";
-				showPopinOptionsDialogButton.classList.add("show-popin-options-dialog");
-				popup.titleBarContents.push(showPopinOptionsDialogButton);
-			}
+			if (Extracts.popinOptionsEnabled)
+				popup.titleBarContents.push(Extracts.showPopinOptionsDialogPopinTitleBarButton());
 		}
 
 		//  Special handling for certain popin types.
@@ -958,14 +963,6 @@ Extracts = {
 			return existingPopup;
 		}
 
-		//  Import the class(es) of the target.
-		popup.classList.add(...target.classList);
-		//  We then remove some of the imported classes.
-		popup.classList.remove("has-annotation", "has-content", "link-self", "link-local", "spawns-popup");
-
-		//  Add ‘markdownBody’ class.
-		popup.contentView.classList.add("markdownBody");
-
 		/*  Situationally prevent spawning of citation and citation-context 
 			links: do not spawn footnote popup if the {side|foot}note it points 
 			to is visible, and do not spawn citation context popup if citation 
@@ -976,6 +973,31 @@ Extracts = {
 			|| (   Extracts.isCitationBackLink(target) 
 				&& Popups.isVisible(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash)))))
 			return null;
+
+
+		//  Call generic prepare function.
+		if ((popup = Extracts.preparePopFrame(popup)) == null)
+			return null;
+
+		//  Add popup title bar contents.
+		let popupTitle = Extracts.titleForPopFrame(popup);
+		if (popupTitle) {
+			popup.titleBarContents = [
+				Popups.titleBarComponents.closeButton(),
+				Popups.titleBarComponents.zoomButton().enableSubmenu(),
+				Popups.titleBarComponents.pinButton(),
+				`<span class="popframe-title">${popupTitle}</span>`
+			];
+
+			//  Add the options button.
+			if (Extracts.popupOptionsEnabled)
+				popup.titleBarContents.push(Extracts.showPopupOptionsDialogPopupTitleBarButton());
+		}
+
+		//  Some kinds of popups get an alternate form of title bar.
+		if (   Extracts.isCitation(target)
+			|| Extracts.isCitationBackLink(target))
+			popup.classList.add("mini-title-bar");
 
 		//  Various special handling.
 		if (Extracts.isTOCLink(target)) {
@@ -995,48 +1017,6 @@ Extracts = {
 				target.classList.toggle("highlighted", false);
 			});
 		}
-
-		//  Attempt to fill the popup.
-		if (Extracts.fillPopFrame(popup) == false)
-			return null;
-
-		//  Add popup title bar contents.
-		let popupTitle = Extracts.titleForPopFrame(popup);
-		if (popupTitle) {
-			//  Zero out existing title bar contents.
-			popup.titleBarContents = [ ];
-
-			//  Add the close, zoom, and pin buttons.
-			popup.titleBarContents.push(
-				Popups.titleBarComponents.closeButton(),
-				Popups.titleBarComponents.zoomButton().enableSubmenu(),
-				Popups.titleBarComponents.pinButton()
-			);
-
-			//  Add the title.
-			popupTitle = `<span class="popframe-title">${popupTitle}</span>`;
-			popup.titleBarContents.push(popupTitle);
-
-			//  Add the options button.
-			if (Extracts.popupOptionsEnabled) {
-				let showPopupOptionsDialogButton = Popups.titleBarComponents.optionsButton();
-
-				showPopupOptionsDialogButton.addActivateEvent((event) => {
-					event.stopPropagation();
-
-					Extracts.showPopupOptionsDialog();
-				});
-				showPopupOptionsDialogButton.title = "Show popup options (enable/disable popups)";
-				showPopupOptionsDialogButton.classList.add("show-popup-options-dialog");
-
-				popup.titleBarContents.push(showPopupOptionsDialogButton);
-			}
-		}
-
-		//  Some kinds of popups get an alternate form of title bar.
-		if (   Extracts.isCitation(target)
-			|| Extracts.isCitationBackLink(target))
-			popup.classList.add("mini-title-bar");
 
 		//  Special handling for certain popup types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
