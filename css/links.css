@@ -1540,12 +1540,12 @@ a.local-archive-link:hover::after {
 }
 /*  Archive link in extracts.
     */
-.extract .iaMirror a[href*='webcitation.org'   ]::after,
-.extract .iaMirror a[href*='mementoweb.org'    ]::after,
-.extract .iaMirror a[href*='archive.org'       ]::after,
-.extract .iaMirror a[href*='archive-it.org'    ]::after,
-.extract .iaMirror a[href*='archiveteam.org'   ]::after,
-.extract .iaMirror a[href*='waybackmachine.org']::after {
+.annotation .iaMirror a[href*='webcitation.org'   ]::after,
+.annotation .iaMirror a[href*='mementoweb.org'    ]::after,
+.annotation .iaMirror a[href*='archive.org'       ]::after,
+.annotation .iaMirror a[href*='archive-it.org'    ]::after,
+.annotation .iaMirror a[href*='archiveteam.org'   ]::after,
+.annotation .iaMirror a[href*='waybackmachine.org']::after {
     background-image: url('/static/img/icons/internetarchive.svg');
     height: 0.9em;
     width: 0.9em;
