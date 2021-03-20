@@ -316,7 +316,7 @@ Extracts = {
 					href="${target.dataset.urlOriginal}"
 					title="Open ${target.dataset.urlOriginal} in a new window"
 					target="_blank"
-						>${popFrameTitleText}</a>`;
+						>${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
 		} else {
 			popFrameTitle = `<a 
 				class="popframe-title-link"
