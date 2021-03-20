@@ -108,7 +108,7 @@ table th.tablesorter-headerDesc {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
 }
 
-/*	Images that are marked as invertible by the server are inverted, 
+/*	Images that are marked as invertible by the server are inverted,
 	hue-rotated, and desaturated. Other (non-invertible) images are merely
 	desaturated. Hovering over an image restores it to its original state.
 	*/
@@ -159,16 +159,15 @@ div#mode-selector button.select-mode-light::before {
 	opacity: 0.55;
 }
 
-/*	The dotted underline for Wikipedia and definition links is created by a
-	pixel-grid-checkerboard background-image. We use an alternate version of 
+/*	The dotted underline for Wikipedia links is created by a
+	pixel-grid-checkerboard background-image. We use an alternate version of
 	this image in dark mode.
 	*/
 .markdownBody a[href*='wikipedia.org'].docMetadata:hover,
 .markdownBody a[href*='wikimedia.org'].docMetadata:hover,
 .markdownBody a[href*='wiktionary.org'].docMetadata:hover,
 .markdownBody a[href*='wikimediafoundation.org'].docMetadata:hover,
-.markdownBody a[href*='wikisource.org'].docMetadata:hover,
-.markdownBody span.defnMetadata:hover {
+.markdownBody a[href*='wikisource.org'].docMetadata:hover {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 

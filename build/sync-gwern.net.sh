@@ -49,7 +49,8 @@ then
                docs/statistics/comparison/ docs/statistics/decision/ docs/statistics/meta-analysis/ docs/statistics/order/ \
                docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
-               docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ &
+               docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ notes/ fiction/ haskell/ newsletter/ newsletter/2013/ newsletter/2014/ \
+               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ zeo/ &
 
     bold "Updating annotations..."
     ghci -v0 -istatic/build/ ./static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; return $ length md; }' &> /dev/null

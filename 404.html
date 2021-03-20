@@ -217,10 +217,6 @@
         */
     --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
-    /*  Links.
-        */
-    --GW-definition-annotation-text-color: #444;
-
     /*  Page-specific styles.
         */
     --GW-index-page-bottom-ornament-line-color: #808080;
@@ -1081,7 +1077,6 @@ May be able at some point to simplify this using regular link underlining, since
 */
 
 .markdownBody a:link,
-.markdownBody span.defnMetadata,
 div#footer a {
 	text-decoration: none;
 	background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
@@ -1093,9 +1088,7 @@ div#footer a {
 	font-variant-numeric: lining-nums;
 }
 .markdownBody a:link,
-.markdownBody a:link *,
-span.defnMetadata,
-span.defnMetadata * {
+.markdownBody a:link * {
 	text-shadow:
 		 0	    0.05em  var(--GW-link-underline-background-color),
 		 0.05em 0.05em  var(--GW-link-underline-background-color),
@@ -1503,10 +1496,6 @@ span.smallcaps-auto {
         */
     --GW-sequential-nav-link-background-color: var(--GW-body-background-color);
 
-    /*  Links.
-        */
-    --GW-definition-annotation-text-color: #cecece;
-
     /*  Page-specific styles.
         */
     --GW-index-page-bottom-ornament-line-color: #9f9f9f;
@@ -1753,7 +1742,7 @@ div#mode-selector button.select-mode-light::before {
 	opacity: 0.55;
 }
 
-/*	The dotted underline for Wikipedia and definition links is created by a
+/*	The dotted underline for Wikipedia links is created by a
 	pixel-grid-checkerboard background-image. We use an alternate version of
 	this image in dark mode.
 	*/
@@ -1761,8 +1750,7 @@ div#mode-selector button.select-mode-light::before {
 .markdownBody a[href*='wikimedia.org'].docMetadata:hover,
 .markdownBody a[href*='wiktionary.org'].docMetadata:hover,
 .markdownBody a[href*='wikimediafoundation.org'].docMetadata:hover,
-.markdownBody a[href*='wikisource.org'].docMetadata:hover,
-.markdownBody span.defnMetadata:hover {
+.markdownBody a[href*='wikisource.org'].docMetadata:hover {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 

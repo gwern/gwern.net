@@ -65,17 +65,6 @@
         content: none;
     }
 }
-/* For 'definition' annotations, we don't do a solid underline but a dotted, to signal that it's not an actual clickable hyperlink, but something similar-ish. */
-.markdownBody span.defnMetadata {
-    cursor: help;
-    color: var(--GW-definition-annotation-text-color);
-    background-image: var(--GW-dotted-underline-background-image);
-    background-size: 2px 1px;
-}
-.markdownBody span.defnMetadata:hover {
-    color: var(--GW-body-link-hover-color);
-    background-image: var(--GW-dotted-underline-hover-background-image);
-}
 
 /******************************************************************************/
 /* The philosophy of link icons is that the hyperlink text & surrounding context often leaves much out, which would be impossible to express inline conveniently (such as filetypes like PDF: a link being PDF is no longer a big deal for desktop readers, whose browser will open them quickly, natively, and render accurately, but due to the unfortunate state of mobile PDF viewing, mobile readers still care and may prefer not to open a PDF).

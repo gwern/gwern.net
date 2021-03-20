@@ -4,7 +4,7 @@ Annotations = {
         */
 
 	annotationsBasePathname: "/metadata/annotations/",
-	annotationReferenceElementSelectors: [ "a.docMetadata", "span.defnMetadata" ],
+	annotationReferenceElementSelectors: [ "a.docMetadata" ],
 	annotationReferenceElementSelectorPrefix: ".annotation > p ",
 
 	/******************/
@@ -176,7 +176,7 @@ Annotations = {
 		});
     },
 
-	/*	Used to generate extracts and definitions.
+	/*	Used to generate extracts.
 		*/
 	referenceDataForAnnotationIdentifier: (annotationIdentifier) => {
 		let referenceEntry = Annotations.cachedAnnotations[annotationIdentifier];

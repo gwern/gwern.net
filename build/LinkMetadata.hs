@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-14 16:05:11 gwern"
+When:  Time-stamp: "2021-03-19 23:13:33 gwern"
 License: CC-0
 -}
 
@@ -21,7 +21,7 @@ import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey, union, Map)
-import qualified Data.Text as T (append, head, unpack, pack, Text)
+import qualified Data.Text as T (append, unpack, pack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
@@ -75,7 +75,7 @@ readLinkMetadata = do
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
              let urls = map fst custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
-             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/' || head u == '?') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
@@ -177,8 +177,6 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
           addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,abstrct) =
             let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
               if (length abstrct < 180) && not forcep then y else
-                if T.head f == '?' then
-                  Span (a', nubOrd (b++["defnMetadata"]), ("original-definition-id",f):c) e else
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
           addHasAnnotation _ _ z _ = z
 
@@ -198,10 +196,8 @@ generateAnnotationBlock (f, ann) = case ann of
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Str "(", Span ("", ["date"], []) [Str (T.pack dt)], Str ")"] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
-                                                                  let link = if head f == '?' then
-                                                                               Span (lid, ["defnMetadata"], ("original-definition-id",T.pack f):values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")]
-                                                                        else
-                                                                               Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
+                                                                  let link =
+                                                                             Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
                                                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
                                                                      let abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
@@ -288,7 +284,7 @@ generateID url author date
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- eg '/Faces' = '#gwern-faces'
-  | "Gwern Branwen" == author = T.pack (trim $ replace "." "-" $ replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url')
+  | "Gwern Branwen" == author = T.pack (trim $ replace "." "-" $ replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url)
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
                            let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
@@ -296,7 +292,7 @@ generateID url author date
                              if authorCount == 0 then "" else
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
                                  -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
-                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url' in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
+                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
                                    let suffix' = if suffix == "-1" then "" else suffix in
                                  filter (/='.') $ map toLower $ if authorCount >= 3 then
                                                  firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
@@ -305,9 +301,8 @@ generateID url author date
                                                        firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix'
                                                    else
                                                      firstAuthorSurname ++ "-" ++ year ++ suffix'
-  where url' = replace "?" "definition-" url -- definition links, like '?Portia' or '?Killing-Rabbits' are invalid HTML selectors, so substitute there to a final ID like eg '#gwern-definition-portia'
 
-data Failure = Temporary | Permanent
+data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern, arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
@@ -887,6 +882,7 @@ trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (
 gwern p | ".pdf" `isInfixOf` p = pdf p
         | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
+        | "notes/" `isPrefixOf` p = return (Left Permanent) -- notes are supposed to popup as cross-page section popups, we want to forbid any auto-annotation.
         | otherwise =
             let p' = replace "https://www.gwern.net/" "" p in
             do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"]
