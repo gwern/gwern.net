@@ -1,4 +1,133 @@
 if (window.Extracts) {
+	/*=-----------=*/
+	/*= CITATIONS =*/
+	/*=-----------=*/
+
+    Extracts.isCitation = (target) => {
+		return target.classList.contains("footnote-ref");
+	};
+
+    Extracts.citationForTarget = (target) => {
+        GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
+
+		return Extracts.localTranscludeForTarget(target, (blockElement) => {
+			return target.hash.startsWith("#sn")
+				   ? blockElement.querySelector(".sidenote-inner-wrapper").innerHTML
+				   : blockElement.innerHTML;
+		});
+	};
+
+	Extracts.preparePopup_CITATION = (popup) => {
+		let target = popup.spawningTarget;
+
+		/*  Do not spawn footnote popup if the {side|foot}note it points to is 
+			visible.
+			*/
+		if (Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
+			return null;
+
+		//  Mini title bar.
+		popup.classList.add("mini-title-bar");
+
+		/*  Add event listeners to highlight citation when its footnote
+			popup is hovered over.
+			*/
+		popup.addEventListener("mouseenter", (event) => {
+			target.classList.toggle("highlighted", true);
+		});
+		popup.addEventListener("mouseleave", (event) => {
+			target.classList.toggle("highlighted", false);
+		});
+		GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", Extracts.footnotePopupDespawnHandler = (info) => {
+			target.classList.toggle("highlighted", false);
+		});
+
+		return popup;
+	};
+
+	Extracts.rewritePopFrameContent_CITATION = (popFrame) => {
+		let target = popFrame.spawningTarget;
+
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "Extracts.rewritePopFrameContent_CITATION",
+			document: popFrame.contentView,
+			isMainDocument: false,
+			needsRewrite: false, 
+			clickable: false, 
+			collapseAllowed: false, 
+			isCollapseBlock: false,
+			isFullPage: false,
+			location: Extracts.locationForTarget(target),
+			fullWidthPossible: false
+		});
+	};
+
+	/*=---------------------=*/
+	/*= CITATIONS BACKLINKS =*/
+	/*=---------------------=*/
+
+    Extracts.isCitationBackLink = (target) => {
+	    return target.classList.contains("footnote-back");
+    };
+
+    Extracts.citationBackLinkForTarget = (target) => {
+        GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
+
+		return Extracts.localTranscludeForTarget(target);
+	};
+
+	Extracts.testTarget_CITATION_BACK_LINK = (target) => {
+		return (Extracts.popFrameProvider != Popins);
+	};
+
+	Extracts.preparePopup_CITATION_BACK_LINK = (popup) => {
+		let target = popup.spawningTarget;
+
+		//  Do not spawn citation context popup if citation is visible.
+		if (Popups.isVisible(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash))))
+			return null;
+
+		//  Mini title bar.
+		popup.classList.add("mini-title-bar");
+
+		return popup;
+	};
+
+	Extracts.rewritePopupContent_CITATION_BACK_LINK = (popup) => {
+		let target = popup.spawningTarget;
+
+		//  Highlight citation in popup.
+		/*  Remove the .targeted class from a targeted citation (if any)
+			inside the popup (to prevent confusion with the citation that
+			the spawning link points to, which will be highlighted).
+			*/
+		popup.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
+			targetedCitation.classList.remove("targeted");
+		});
+		//  In the popup, the citation for which context is being shown.
+		let citationInPopup = popup.querySelector(decodeURIComponent(target.hash));
+		//  Highlight the citation.
+		citationInPopup.classList.add("targeted");
+		//  Scroll to the citation.
+		requestAnimationFrame(() => {
+			Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(citationInPopup, popup);
+		});
+
+		//  Fire a contentDidLoad event.
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
+			document: popup.contentView,
+			isMainDocument: false,
+			needsRewrite: false, 
+			clickable: false, 
+			collapseAllowed: false, 
+			isCollapseBlock: false,
+			isFullPage: false,
+			location: Extracts.locationForTarget(target),
+			fullWidthPossible: false
+		});
+	}
+
 	/*=---------------=*/
 	/*= REMOTE VIDEOS =*/
 	/*=---------------=*/
@@ -91,7 +220,10 @@ if (window.Extracts) {
     };
 
 	Extracts.preparePopup_LOCAL_VIDEO = (popup) => {
-		popup.classList.add("mini-title-bar");	
+		//  Mini title bar.
+		popup.classList.add("mini-title-bar");
+
+		return popup;
 	};
 
 	Extracts.rewritePopFrameContent_LOCAL_VIDEO = (popFrame) => {
@@ -145,7 +277,10 @@ if (window.Extracts) {
     };
 
 	Extracts.preparePopup_LOCAL_IMAGE = (popup) => {
-		popup.classList.add("mini-title-bar");	
+		//  Mini title bar.
+		popup.classList.add("mini-title-bar");
+
+		return popup;
 	};
 
 	Extracts.rewritePopFrameContent_LOCAL_IMAGE = (popFrame) => {

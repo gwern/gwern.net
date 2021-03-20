@@ -40,8 +40,11 @@ Extracts = {
 			if (targetTypeInfo) {
 				//  Not all types of popups are available as popins also.
 				if (   Extracts.popFrameProvider == Popins
-					&& (   Extracts.isCitationBackLink(target)
-						|| Extracts.isTOCLink(target)))
+					&& (   Extracts.isTOCLink(target)))
+					return false;
+
+				let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
+				if (specialTestFunction && specialTestFunction(target) == false)
 					return false;
 
 				//  Do not allow pop-frames to spawn themselves.
@@ -241,8 +244,8 @@ Extracts = {
 	targetTypeDefinitions: [
 		[ "EXTRACT",  			"isExtractLink",		"has-annotation", 	"annotationForTarget", 			"extract annotation"    ],
 		[ "DEFINITION",  		"isDefinition",			"has-annotation",	"annotationForTarget", 			"definition annotation" ],
-		[ "CITATION",  			"isCitation", 			null, 				"localTranscludeForTarget", 	"footnote"              ],
-		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"localTranscludeForTarget", 	"citation-context"      ],
+		[ "CITATION",  			"isCitation", 			null, 				"citationForTarget",		 	"footnote"              ],
+		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"citationBackLinkForTarget", 	"citation-context"      ],
 		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"          ],
 		[ "LOCAL_VIDEO", 		"isLocalVideoLink", 	"has-content", 		"localVideoForTarget", 			"video object"          ],
 		[ "LOCAL_IMAGE", 		"isLocalImageLink", 	"has-content", 		"localImageForTarget", 			"image object"          ],
@@ -618,16 +621,6 @@ Extracts = {
 		}
 	},
 
-    //  Citations.
-    isCitation: (target) => {
-		return target.classList.contains("footnote-ref");
-	},
-
-	//  Context surrounding a citation (displayed on footnote-back links).
-    isCitationBackLink: (target) => {
-	    return target.classList.contains("footnote-back");
-    },
-
 	//  Local links (to sections of the current page, or other site pages).
     isLocalPageLink: (target) => {
 		if (  !target.href
@@ -648,8 +641,17 @@ Extracts = {
 				|| target.hash > "");
 	},
 
-    localTranscludeForTarget: (target) => {
+	localTranscludeForTarget: (target, unwrapFunction) => {
 		GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
+
+		if (unwrapFunction == null)
+			unwrapFunction = (blockElement) => {
+				if (blockElement.tagName == "SECTION") {
+					return blockElement.innerHTML;
+				} else {
+					return blockElement.outerHTML;
+				}
+			};
 
 		/*	Check to see if the target location matches an already-displayed 
 			page (which can be the root page of the window).
@@ -660,33 +662,12 @@ Extracts = {
 				anchorlink because if it were not, the target would not be
 				active.)
 				*/
-			return Extracts.sectionEmbedForTarget(target, fullTargetDocument);
+	        return unwrapFunction(Extracts.nearestBlockElement(fullTargetDocument.querySelector(decodeURIComponent(target.hash))));
 		} else {
 			//  Otherwise, display the entire linked page.
-			target.popFrame.classList.add("external-page-embed");
 			return Extracts.externalPageEmbedForTarget(target);
 		}
 	},
-
-	//  Sections of the current page.
-    sectionEmbedForTarget: (target, fullTargetDocument) => {
-		GWLog("Extracts.sectionEmbedForTarget", "extracts.js", 2);
-
-        let nearestBlockElement = Extracts.nearestBlockElement(fullTargetDocument.querySelector(decodeURIComponent(target.hash)));
-
-		//  Unwrap sections and {foot|side}notes from their containers.
-		if (nearestBlockElement.tagName == "SECTION") {
-			return nearestBlockElement.innerHTML;
-		} else if (Extracts.isCitation(target)) {
-			if (target.hash.startsWith("#sn")) {
-				return nearestBlockElement.querySelector(".sidenote-inner-wrapper").innerHTML;
-			} else {
-				return nearestBlockElement.innerHTML;
-			}
-		} else {
-			return nearestBlockElement.outerHTML;
-		}
-    },
 
 	//  TOC links.
 	isTOCLink: (target) => {
@@ -698,6 +679,8 @@ Extracts = {
     cachedPageTitles: { },
     externalPageEmbedForTarget: (target) => {
 		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
+
+		target.popFrame.classList.add("external-page-embed");
 
 		let fillPopFrame = (markdownBody) => {
 			GWLog("Filling pop-frame...", "extracts.js", 2);
@@ -846,7 +829,8 @@ Extracts = {
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
 		let specialPrepareFunction = Extracts[`preparePopin_${targetTypeName}`] || Extracts[`preparePopFrame_${targetTypeName}`];
 		if (specialPrepareFunction)
-			specialPrepareFunction(popin);
+			if ((popin = specialPrepareFunction(popin)) == null)
+				return null;
 
 		/*  If we’re waiting for content to be loaded into the popin 
 			asynchronously, then there’s no need to do rewrites for now.
@@ -895,7 +879,6 @@ Extracts = {
 		if (   Extracts.isExtractLink(target)
 			|| Extracts.isDefinition(target)
 			|| Extracts.isLocalPageLink(target)
-			|| Extracts.isCitation(target)
 			) {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.preparePopin",
@@ -963,18 +946,6 @@ Extracts = {
 			return existingPopup;
 		}
 
-		/*  Situationally prevent spawning of citation and citation-context 
-			links: do not spawn footnote popup if the {side|foot}note it points 
-			to is visible, and do not spawn citation context popup if citation 
-			is visible.
-			*/
-		if (   (   Extracts.isCitation(target) 
-				&& Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
-			|| (   Extracts.isCitationBackLink(target) 
-				&& Popups.isVisible(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash)))))
-			return null;
-
-
 		//  Call generic prepare function.
 		if ((popup = Extracts.preparePopFrame(popup)) == null)
 			return null;
@@ -994,35 +965,18 @@ Extracts = {
 				popup.titleBarContents.push(Extracts.showPopupOptionsDialogPopupTitleBarButton());
 		}
 
-		//  Some kinds of popups get an alternate form of title bar.
-		if (   Extracts.isCitation(target)
-			|| Extracts.isCitationBackLink(target))
-			popup.classList.add("mini-title-bar");
-
 		//  Various special handling.
 		if (Extracts.isTOCLink(target)) {
 			//  Designate section links spawned by the TOC (for special styling).
 			popup.classList.add("toc-section");
-		} else if (Extracts.isCitation(target)) {
-			/*  Add event listeners to highlight citation when its footnote
-				popup is spawned.
-				*/
-			popup.addEventListener("mouseenter", (event) => {
-				target.classList.toggle("highlighted", true);
-			});
-			popup.addEventListener("mouseleave", (event) => {
-				target.classList.toggle("highlighted", false);
-			});
-			GW.notificationCenter.addHandlerForEvent("Popups.popupWillDespawn", Extracts.footnotePopupDespawnHandler = (info) => {
-				target.classList.toggle("highlighted", false);
-			});
 		}
 
 		//  Special handling for certain popup types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
 		let specialPrepareFunction = Extracts[`preparePopup_${targetTypeName}`] || Extracts[`preparePopup_${targetTypeName}`];
 		if (specialPrepareFunction)
-			specialPrepareFunction(popup);
+			if ((popup = specialPrepareFunction(popup)) == null)
+				return null;
 
 		/*  If we’re waiting for content to be loaded into the popup 
 			asynchronously, then there’s no need to do rewrites for now.
@@ -1042,28 +996,6 @@ Extracts = {
 		if (   Extracts.isExtractLink(target)
 			&& popup.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
 			popup.contentView.classList.add("wikipedia-entry");
-
-		//  Highlight citation in popup.
-		if (Extracts.isCitationBackLink(target)) {
-			/*  Remove the .targeted class from a targeted citation (if any)
-				inside the popup (to prevent confusion with the citation that
-				the spawning link points to, which will be highlighted).
-				*/
-			popup.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
-				targetedCitation.classList.remove("targeted");
-			});
-
-			//  In the popup, the citation for which context is being shown.
-			let citationInPopup = popup.querySelector(decodeURIComponent(target.hash));
-
-			//  Highlight the citation.
-			citationInPopup.classList.add("targeted");
-
-			//  Scroll to the citation.
-			requestAnimationFrame(() => {
-				Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(citationInPopup, popup);
-			});
-		}
 
 		//  Special handling for certain popup types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
@@ -1106,8 +1038,6 @@ Extracts = {
 		if (   Extracts.isExtractLink(target)
 			|| Extracts.isDefinition(target)
 			|| Extracts.isLocalPageLink(target)
-			|| Extracts.isCitation(target)
-			|| Extracts.isCitationBackLink(target)
 			) {
 			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 				source: "Extracts.preparePopup",
