@@ -1,0 +1,211 @@
+if (window.Extracts) {
+	/*=-------------=*/
+	/*= ANNOTATIONS =*/
+	/*=-------------=*/
+
+	Extracts.targetTypeDefinitions.insertBefore([
+		"ANNOTATION",
+		"isAnnotatedLink",
+		"has-annotation",
+		"annotationForTarget",
+		"annotation"
+	], (def => def[0] == "LOCAL_PAGE"));
+
+	Extracts.annotatedTargetSelectors = [ "a.docMetadata" ];
+
+	Extracts.isAnnotatedLink = (target) => {
+		return target.classList.contains("docMetadata");
+	};
+
+	//  An annotation for a link.
+	Extracts.annotationForTarget = (target) => {
+		GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
+
+		let annotationIdentifier = Extracts.targetIdentifier(target);
+
+		if (Annotations.annotationForIdentifier(annotationIdentifier) == null) {
+			Extracts.refreshPopFrameAfterAnnotationLoads(target);
+			return `&nbsp;`;
+		} else if (Annotations.annotationForIdentifier(annotationIdentifier) == "LOADING_FAILED") {
+			target.popFrame.classList.add("loading-failed");
+			return `&nbsp;`;
+		}
+
+		let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
+
+		//  Link to original URL (for archive links).
+		let originalLinkHTML = "";
+		if (   referenceData.element.dataset.urlOriginal != undefined 
+			&& referenceData.element.dataset.urlOriginal != target.href) {
+			originalLinkHTML = `<span class="originalURL">[<a 
+							title="Link to original URL for ‘${referenceData.titleText}’" 
+							href="${referenceData.element.dataset.urlOriginal}"
+							target="_new" 
+							alt="Original URL for this archived link; may be broken."
+								>original</a>]</span>`;
+		}
+
+		//  Extract title/link.
+		let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
+		let titleLinkHTML = `<a 
+								class="${titleLinkClass}" 
+								target="_new" 
+								href="${target.href}" 
+								title="Open ${target.href} in a new window"
+									>${referenceData.titleHTML}</a>`;
+
+		//  The fully constructed annotation pop-frame contents.
+		let abstractSpecialClass = ``;
+		if (Annotations.isWikipediaLink(annotationIdentifier))
+			abstractSpecialClass = "wikipedia-entry";
+		return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
+			 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
+			 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
+	};
+
+	Extracts.rewritePopFrameContent_ANNOTATION = (popFrame) => {
+		let target = popFrame.spawningTarget;
+
+		//	Mark Wikipedia entries.
+		if (popFrame.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
+			popFrame.contentView.classList.add("wikipedia-entry");
+
+		//  Qualify internal links.
+		if (target.hostname == location.hostname)
+			Extracts.qualifyLinksInPopFrame(popFrame);
+
+		//  Allow for floated figures at the start of abstract.
+		let initialFigure = popFrame.querySelector(".annotation-abstract > figure.float-right:first-child");
+		if (initialFigure)
+			popFrame.contentView.insertBefore(initialFigure, popFrame.contentView.firstElementChild);
+
+		//  Fire contentDidLoad event.
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "Extracts.rewritePopFrameContent_ANNOTATION",
+			document: popFrame.contentView,
+			isMainDocument: false,
+			needsRewrite: false, 
+			clickable: false, 
+			collapseAllowed: false, 
+			isCollapseBlock: false,
+			isFullPage: false,
+			location: Extracts.locationForTarget(target),
+			fullWidthPossible: false
+		});
+	};
+
+	/*=----------------------=*/
+	/*= ANNOTATIONS: HELPERS =*/
+	/*=----------------------=*/
+
+	Extracts.annotationLoadHoverDelay = 25;
+
+    Extracts.setUpAnnotationLoadEventWithin = (container) => {
+		GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts-annotations.js", 1);
+
+		//  Get all the annotated targets in the container.
+		let allAnnotatedTargetsInContainer = Array.from(container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
+
+		if (Extracts.popFrameProvider == Popups) {
+			//  Add hover event listeners to all the annotated targets.
+			allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+				annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
+					//  Get the unique identifier of the annotation for the target.
+					let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+
+					//  Do nothing if the annotation is already loaded.
+					if (Annotations.cachedAnnotationExists(annotationIdentifier))
+						return;
+
+					/*  On hover, start a timer, duration of one-half the 
+						popup trigger delay...
+						*/
+					annotatedTarget.annotationLoadTimer = setTimeout(() => {
+						/*  ... to load the annotation.
+							*/
+						Annotations.loadAnnotation(annotationIdentifier);
+					}, (Extracts.annotationLoadHoverDelay));
+				});
+				annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
+					/*  Cancel timer on mouseout (no need to commence a load
+						on a merely transient hover).
+						*/
+					clearTimeout(annotatedTarget.annotationLoadTimer);
+				});
+			});
+
+			/*  Set up handler to remove hover event listeners from all
+				the annotated targets in the document.
+				*/
+			GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+				allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+					annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
+					annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
+				});
+			}, { once: true });
+		} else { // if (Extracts.popFrameProvider == Popins)
+			//  Add click event listeners to all the annotated targets.
+			allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+				annotatedTarget.addEventListener("click", annotatedTarget.annotationLoad_click = (event) => {
+					//  Get the unique identifier of the annotation for the target.
+					let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+
+					//  Do nothing if the annotation is already loaded.
+					if (!Annotations.cachedAnnotationExists(annotationIdentifier))
+						Annotations.loadAnnotation(annotationIdentifier);
+				});
+			});
+
+			/*  Set up handler to remove click event listeners from all
+				the annotated targets in the document.
+				*/
+			GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
+				allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
+					annotatedTarget.removeEventListener("click", annotatedTarget.annotationLoad_click);
+				});
+			}, { once: true });
+		}
+    };
+
+	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
+		its annotation (fragment) loads.
+		*/
+	Extracts.refreshPopFrameAfterAnnotationLoads = (target) => {
+		GWLog("Extracts.refreshPopFrameAfterAnnotationLoads", "extracts-annotations.js", 2);
+
+		target.popFrame.classList.toggle("loading", true);
+
+		/*	We set up an event handler for when the fragment loads, and respawn 
+			the popup / re-inject the popin, after it spawns (if it 
+			hasn’t de-spawned already, e.g. if the user moused out of the 
+			target).
+			*/
+		GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
+			GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
+
+			//  If the pop-frame has despawned, don’t respawn it.
+			if (!target.popFrame)
+				return;
+
+			if (Extracts.popFrameProvider == Popups) {
+				Popups.spawnPopup(target);
+			} else if (Extracts.popFrameProvider == Popins) {
+				Extracts.fillPopFrame(target.popin);
+				target.popin.classList.toggle("loading", false);
+
+				Extracts.rewritePopinContent(target.popin);
+			}
+		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
+
+		//  Add handler for if the fragment load fails.
+		GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
+			GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
+
+			//  If the pop-frame has despawned, don’t respawn it.
+			if (!target.popFrame)
+				return;
+
+			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
+	};
+}
