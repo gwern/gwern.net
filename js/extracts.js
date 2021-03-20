@@ -14,13 +14,6 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 Extracts = {
-    /*****************/
-    /*  Configuration.
-        */
-
-	annotatedTargetSelectors: [ "a.docMetadata" ],
-	annotationLoadHoverDelay: 25,
-
 	/*	Target containers.
 		*/
 	contentContainersSelector: ".markdownBody, #TOC, #page-metadata, #sidebar",
@@ -38,11 +31,6 @@ Extracts = {
 		testTarget: (target) => {
 			let targetTypeInfo = Extracts.targetTypeInfo(target);
 			if (targetTypeInfo) {
-				//  Not all types of popups are available as popins also.
-				if (   Extracts.popFrameProvider == Popins
-					&& (   Extracts.isTOCLink(target)))
-					return false;
-
 				let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
 				if (specialTestFunction && specialTestFunction(target) == false)
 					return false;
@@ -134,54 +122,6 @@ Extracts = {
     	}
     },
 
-    setUpAnnotationLoadEventWithin: (container) => {
-		GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts.js", 1);
-
-		//  Get all the annotated targets in the container.
-		let allAnnotatedTargetsInContainer = Array.from(container.querySelectorAll(Extracts.annotatedTargetSelectors.join(", ")));
-
-		if (Extracts.popFrameProvider == Popups) {
-			//  Add hover event listeners to all the annotated targets.
-			allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-				annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
-					//  Get the unique identifier of the annotation for the target.
-					let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
-
-					//  Do nothing if the annotation is already loaded.
-					if (Annotations.cachedAnnotationExists(annotationIdentifier))
-						return;
-
-					/*  On hover, start a timer, duration of one-half the 
-						popup trigger delay...
-						*/
-					annotatedTarget.annotationLoadTimer = setTimeout(() => {
-						/*  ... to load the annotation.
-							*/
-						Annotations.loadAnnotation(annotationIdentifier);
-					}, (Extracts.annotationLoadHoverDelay));
-				});
-				annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
-					/*  Cancel timer on mouseout (no need to commence a load
-						on a merely transient hover).
-						*/
-					clearTimeout(annotatedTarget.annotationLoadTimer);
-				});
-			});
-
-			/*  Set up handler to remove hover event listeners from all
-				the annotated targets in the document.
-				*/
-			GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
-				allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-					annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
-					annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
-				});
-			}, { once: true });
-		} else {
-		
-		}
-    },
-
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
@@ -242,16 +182,7 @@ Extracts = {
 		citations, etc.) that Extracts supports.
 		*/
 	targetTypeDefinitions: [
-		[ "ANNOTATION",  		"isAnnotatedLink",		"has-annotation", 	"annotationForTarget", 			"annotation"            ],
-		[ "CITATION",  			"isCitation", 			null, 				"citationForTarget",		 	"footnote"              ],
-		[ "CITATION_BACK_LINK",	"isCitationBackLink", 	null, 				"citationBackLinkForTarget", 	"citation-context"      ],
-		[ "VIDEO",  			"isVideoLink", 			"has-content", 		"videoForTarget", 				"video object"          ],
-		[ "LOCAL_VIDEO", 		"isLocalVideoLink", 	"has-content", 		"localVideoForTarget", 			"video object"          ],
-		[ "LOCAL_IMAGE", 		"isLocalImageLink", 	"has-content", 		"localImageForTarget", 			"image object"          ],
-		[ "LOCAL_DOCUMENT", 	"isLocalDocumentLink", 	"has-content", 		"localDocumentForTarget", 		"local-document object" ],
-		[ "LOCAL_CODE_FILE", 	"isLocalCodeFileLink", 	"has-content", 		"localCodeFileForTarget", 		"local-code-file"       ],
 		[ "LOCAL_PAGE",  		"isLocalPageLink", 		"has-content",		"localTranscludeForTarget", 	"local-transclude"      ],
-		[ "FOREIGN_SITE", 		"isForeignSiteLink", 	"has-content",	 	"foreignSiteForTarget", 		"foreign-site object"   ]
 	],
 
 	/*	Returns full type info for the given target. This contains the target 
@@ -478,52 +409,6 @@ Extracts = {
 		};
     },
 
-	/****************************************/
-	/*  Helpers for targets with annotations.
-		*/
-
-	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
-		its annotation (fragment) loads.
-		*/
-	refreshPopFrameAfterAnnotationLoads: (target) => {
-		GWLog("Extracts.refreshPopFrameAfterAnnotationLoads", "extracts.js", 2);
-
-		target.popFrame.classList.toggle("loading", true);
-
-		/*	We set up an event handler for when the fragment loads, and respawn 
-			the popup / re-inject the popin, after it spawns (if it 
-			hasn’t de-spawned already, e.g. if the user moused out of the 
-			target).
-			*/
-		GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {
-			GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
-
-			//  If the pop-frame has despawned, don’t respawn it.
-			if (!target.popFrame)
-				return;
-
-			if (Extracts.popFrameProvider == Popups) {
-				Popups.spawnPopup(target);
-			} else if (Extracts.popFrameProvider == Popins) {
-				Extracts.fillPopFrame(target.popin);
-				target.popin.classList.toggle("loading", false);
-
-				Extracts.rewritePopinContent(target.popin);
-			}
-		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
-
-		//  Add handler for if the fragment load fails.
-		GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
-			GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
-
-			//  If the pop-frame has despawned, don’t respawn it.
-			if (!target.popFrame)
-				return;
-
-			target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
-	},
-
 	/***************************************************************************/
 	/*  The target-testing and pop-frame-filling functions in this section
 		come in sets, which define and implement classes of pop-frames 
@@ -548,64 +433,10 @@ Extracts = {
 		the pop-frame spawned by the given target.
 		*/
 
-	//  Summaries of links to elsewhere.
-	isAnnotatedLink: (target) => {
-		return target.classList.contains("docMetadata");
-	},
-
-	//  An annotation for a link.
-	annotationForTarget: (target) => {
-		GWLog("Extracts.annotationForTarget", "extracts.js", 2);
-
-		let annotationIdentifier = Extracts.targetIdentifier(target);
-
-		if (Annotations.annotationForIdentifier(annotationIdentifier) == null) {
-			Extracts.refreshPopFrameAfterAnnotationLoads(target);
-			return `&nbsp;`;
-		} else if (Annotations.annotationForIdentifier(annotationIdentifier) == "LOADING_FAILED") {
-			target.popFrame.classList.add("loading-failed");
-			return `&nbsp;`;
-		}
-
-		let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
-
-		//  Link to original URL (for archive links).
-		let originalLinkHTML = "";
-		if (   referenceData.element.dataset.urlOriginal != undefined 
-			&& referenceData.element.dataset.urlOriginal != target.href) {
-			originalLinkHTML = `<span class="originalURL">[<a 
-							title="Link to original URL for ‘${referenceData.titleText}’" 
-							href="${referenceData.element.dataset.urlOriginal}"
-							target="_new" 
-							alt="Original URL for this archived link; may be broken."
-								>original</a>]</span>`;
-		}
-
-		//  Extract title/link.
-		let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
-		let titleLinkHTML = `<a 
-								class="${titleLinkClass}" 
-								target="_new" 
-								href="${target.href}" 
-								title="Open ${target.href} in a new window"
-									>${referenceData.titleHTML}</a>`;
-
-		//  The fully constructed annotation pop-frame contents.
-		let abstractSpecialClass = ``;
-		if (Annotations.isWikipediaLink(annotationIdentifier))
-			abstractSpecialClass = "wikipedia-entry";
-		return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
-			 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
-			 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
-	},
-
 	//  Local links (to sections of the current page, or other site pages).
     isLocalPageLink: (target) => {
-		if (  !target.href
+		if (   target.hostname != location.hostname
 			|| Extracts.isAnnotatedLink(target))
-			return false;
-
-		if (target.hostname != location.hostname)
 			return false;
 
 		/*  If it has a period in it, it’s not a page, but is something else,
@@ -650,6 +481,42 @@ Extracts = {
 	//  TOC links.
 	isTOCLink: (target) => {
 		return (target.closest("#TOC") != null);
+	},
+
+	testTarget_LOCAL_PAGE: (target) => {
+		return (!(Extracts.popFrameProvider == Popins && Extracts.isTOCLink(target)));
+	},
+
+	preparePopup_LOCAL_PAGE: (popup) => {
+		let target = popup.spawningTarget;
+
+		//  Designate section links spawned by the TOC (for special styling).
+		if (Extracts.isTOCLink(target))
+			popup.classList.add("toc-section");
+
+		return popup;
+	},
+
+	rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
+		let target = popFrame.spawningTarget;
+
+		//  Rectify margin note style.
+		popFrame.querySelectorAll(".marginnote").forEach(marginNote => {
+			marginNote.swapClasses([ "inline", "sidenote" ], 0);
+		});
+
+		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
+			document: popFrame.contentView,
+			isMainDocument: false,
+			needsRewrite: false, 
+			clickable: false, 
+			collapseAllowed: false, 
+			isCollapseBlock: false,
+			isFullPage: false,
+			location: Extracts.locationForTarget(target),
+			fullWidthPossible: false
+		});
 	},
 
 	//  Other site pages.
@@ -745,7 +612,7 @@ Extracts = {
 		*/
 
 	preparePopFrame: (popFrame) => {
-		GWLog("Extracts.preparePopup", "extracts.js", 2);
+		GWLog("Extracts.preparePopFrame", "extracts.js", 2);
 
 		let target = popFrame.spawningTarget;
 
@@ -777,13 +644,6 @@ Extracts = {
 		GWLog("Extracts.preparePopin", "extracts.js", 2);
 
 		let target = popin.spawningTarget;
-
-		//  Attempt to load annotation, if need be.
-		if (   Extracts.isAnnotatedLink(target)) {
-			let annotationIdentifier = Extracts.targetIdentifier(target);
-			if (!Annotations.cachedAnnotationExists(annotationIdentifier))
-				Annotations.loadAnnotation(annotationIdentifier);
-		}
 
 		//  Call generic prepare function.
 		if ((popin = Extracts.preparePopFrame(popin)) == null)
@@ -827,48 +687,11 @@ Extracts = {
 		if (popin.titleBar)
 			popin.titleBar.querySelector(".popframe-title").innerHTML = Extracts.titleForPopFrame(popin);
 
-		//	Mark Wikipedia entries.
-		if (   Extracts.isAnnotatedLink(target)
-			&& popin.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
-			popin.contentView.classList.add("wikipedia-entry");
-
 		//  Special handling for certain popin types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
 		let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
 		if (specialRewriteFunction)
 			specialRewriteFunction(popin);
-
-		//  Rectify margin note style.
-		popin.querySelectorAll(".marginnote").forEach(marginNote => {
-			marginNote.swapClasses([ "inline", "sidenote" ], 0);
-		});
-
-		//  Qualify internal links in annotations.
-		if (   Extracts.isAnnotatedLink(target) 
-			&& target.hostname == location.hostname) {
-			Extracts.qualifyLinksInPopFrame(target.popFrame);
-		}
-
-		/*  If the popin is of a type that contains local HTML content of some
-			sort, then fire a contentDidLoad event to trigger any necessary
-			rewrites.
-			*/
-		if (   Extracts.isAnnotatedLink(target)
-			|| Extracts.isLocalPageLink(target)
-			) {
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-				source: "Extracts.preparePopin",
-				document: popin.contentView,
-				isMainDocument: false,
-				needsRewrite: false, 
-				clickable: false, 
-				collapseAllowed: false, 
-				isCollapseBlock: false,
-				isFullPage: false,
-				location: Extracts.locationForTarget(target),
-				fullWidthPossible: false
-			});
-		}
     },
    
 	/**********/
@@ -941,12 +764,6 @@ Extracts = {
 				popup.titleBarContents.push(Extracts.showPopupOptionsDialogPopupTitleBarButton());
 		}
 
-		//  Various special handling.
-		if (Extracts.isTOCLink(target)) {
-			//  Designate section links spawned by the TOC (for special styling).
-			popup.classList.add("toc-section");
-		}
-
 		//  Special handling for certain popup types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
 		let specialPrepareFunction = Extracts[`preparePopup_${targetTypeName}`] || Extracts[`preparePopup_${targetTypeName}`];
@@ -968,11 +785,6 @@ Extracts = {
 
 		let target = popup.spawningTarget;
 
-		//	Mark Wikipedia entries.
-		if (   Extracts.isAnnotatedLink(target)
-			&& popup.querySelector(".annotation-abstract").classList.contains("wikipedia-entry"))
-			popup.contentView.classList.add("wikipedia-entry");
-
 		//  Special handling for certain popup types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
 		let specialRewriteFunction = Extracts[`rewritePopupContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
@@ -986,46 +798,6 @@ Extracts = {
 				img.style.maxHeight = "unset";
 			}
 		});
-
-		//  Allow for floated figures at the start of abstract.
-		if (   Extracts.isAnnotatedLink(target)) {
-			let initialFigure = popup.querySelector(".annotation-abstract > figure.float-right:first-child");
-			if (initialFigure) {
-				popup.contentView.insertBefore(initialFigure, popup.contentView.firstElementChild);
-			}
-		}
-
-		//  Rectify margin note style.
-		popup.querySelectorAll(".marginnote").forEach(marginNote => {
-			marginNote.swapClasses([ "inline", "sidenote" ], 0);
-		});
-
-		//  Qualify internal links in annotations.
-		if (   Extracts.isAnnotatedLink(target) 
-			&& target.hostname == location.hostname) {
-			Extracts.qualifyLinksInPopFrame(target.popFrame);
-		}
-
-		/*  If the popup is of a type that contains local HTML content of some
-			sort, then fire a contentDidLoad event to trigger any necessary
-			rewrites.
-			*/
-		if (   Extracts.isAnnotatedLink(target)
-			|| Extracts.isLocalPageLink(target)
-			) {
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-				source: "Extracts.preparePopup",
-				document: popup.contentView,
-				isMainDocument: false,
-				needsRewrite: false, 
-				clickable: false, 
-				collapseAllowed: false, 
-				isCollapseBlock: false,
-				isFullPage: false,
-				location: Extracts.locationForTarget(target),
-				fullWidthPossible: false
-			});
-		}
     }
 };
 

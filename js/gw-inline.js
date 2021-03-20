@@ -191,6 +191,19 @@ Array.prototype.removeIf = function (test) {
         this.splice(index, 1);
 };
 
+/*	Insert the given item into the array just before the first item that passes
+	the provided test function. If no item passes the test function, append the
+	item to the end of the array.
+	*/
+Array.prototype.insertBefore = function (item, test) {
+	let index = this.findIndex(test);
+	if (index === -1) {
+		this.push(item);
+	} else {
+		this.splice(index, 0, item);
+	}
+};
+
 /*  Run the given function immediately if the page is already loaded, or add
     a listener to run it as soon as the page loads.
     */

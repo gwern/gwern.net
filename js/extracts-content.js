@@ -3,6 +3,14 @@ if (window.Extracts) {
 	/*= CITATIONS =*/
 	/*=-----------=*/
 
+	Extracts.targetTypeDefinitions.insertBefore([
+		"CITATION",
+		"isCitation",
+		null,
+		"citationForTarget",
+		"footnote"
+	], (def => def[0] == "LOCAL_PAGE"));
+
     Extracts.isCitation = (target) => {
 		return target.classList.contains("footnote-ref");
 	};
@@ -65,6 +73,14 @@ if (window.Extracts) {
 	/*=---------------------=*/
 	/*= CITATIONS BACKLINKS =*/
 	/*=---------------------=*/
+
+	Extracts.targetTypeDefinitions.insertBefore([
+		"CITATION_BACK_LINK",
+		"isCitationBackLink",
+		null,
+		"citationBackLinkForTarget",
+		"citation-context"
+	], (def => def[0] == "LOCAL_PAGE"));
 
     Extracts.isCitationBackLink = (target) => {
 	    return target.classList.contains("footnote-back");
@@ -132,6 +148,14 @@ if (window.Extracts) {
 	/*= REMOTE VIDEOS =*/
 	/*=---------------=*/
 
+	Extracts.targetTypeDefinitions.insertBefore([
+		"VIDEO",
+		"isVideoLink",
+		"has-content",
+		"videoForTarget",
+		"video object"
+	], (def => def[0] == "LOCAL_PAGE"));
+
     Extracts.youtubeId = (href) => {
         let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
         if (match && match[2].length == 11) {
@@ -142,7 +166,8 @@ if (window.Extracts) {
     };
 
     Extracts.isVideoLink = (target) => {
-        if (!target.href) return false;
+        if (Extracts.isAnnotatedLink(target))
+        	return false;
 
         if ([ "www.youtube.com", "youtube.com", "youtu.be" ].includes(target.hostname)) {
             return (Extracts.youtubeId(target.href) != null);
@@ -174,14 +199,22 @@ if (window.Extracts) {
 	/*= LOCALLY HOSTED VIDEOS =*/
 	/*=-----------------------=*/
 
+	Extracts.targetTypeDefinitions.insertBefore([
+		"LOCAL_VIDEO",
+		"isLocalVideoLink",
+		"has-content",
+		"localVideoForTarget",
+		"video object"
+	], (def => def[0] == "LOCAL_PAGE"));
+
     Extracts.videoFileExtensions = [ "mp4" ];
 
 	Extracts.videoMaxWidth = 634.0;
 	Extracts.videoMaxHeight = 474.0;
 
 	Extracts.isLocalVideoLink = (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname)
+		if (   target.hostname != location.hostname
+			|| Extracts.isAnnotatedLink(target))
 			return false;
 
 		let videoFileURLRegExp = new RegExp(
@@ -235,14 +268,22 @@ if (window.Extracts) {
 	/*= LOCALLY HOSTED IMAGES =*/
 	/*=-----------------------=*/
 
+	Extracts.targetTypeDefinitions.insertBefore([
+		"LOCAL_IMAGE",
+		"isLocalImageLink",
+		"has-content",
+		"localImageForTarget",
+		"image object"
+	], (def => def[0] == "LOCAL_PAGE"));
+
 	Extracts.imageFileExtensions = [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ];
 
 	Extracts.imageMaxWidth = 634.0;
 	Extracts.imageMaxHeight = 474.0;
 
     Extracts.isLocalImageLink = (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname)
+		if (   target.hostname != location.hostname
+			|| Extracts.isAnnotatedLink(target))
 			return false;
 
 		let imageFileURLRegExp = new RegExp(
@@ -312,9 +353,16 @@ if (window.Extracts) {
 	/*= LOCALLY HOSTED DOCUMENTS =*/
 	/*=--------------------------=*/
 
+	Extracts.targetTypeDefinitions.insertBefore([
+		"LOCAL_DOCUMENT",
+		"isLocalDocumentLink",
+		"has-content",
+		"localDocumentForTarget",
+		"local-document object"
+	], (def => def[0] == "LOCAL_PAGE"));
+
     Extracts.isLocalDocumentLink = (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname
+		if (   target.hostname != location.hostname
 			|| Extracts.isAnnotatedLink(target))
 			return false;
 
@@ -351,11 +399,18 @@ if (window.Extracts) {
 	/*= LOCALLY HOSTED CODE FILES =*/
 	/*=---------------------------=*/
 
+	Extracts.targetTypeDefinitions.insertBefore([
+		"LOCAL_CODE_FILE",
+		"isLocalCodeFileLink",
+		"has-content",
+		"localCodeFileForTarget",
+		"local-code-file"
+	], (def => def[0] == "LOCAL_PAGE"));
+
     Extracts.codeFileExtensions = [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html" ];
 
     Extracts.isLocalCodeFileLink = (target) => {
-		if (  !target.href
-			|| target.hostname != location.hostname
+		if (   target.hostname != location.hostname
 			|| Extracts.isAnnotatedLink(target))
 			return false;
 
@@ -419,6 +474,14 @@ if (window.Extracts) {
 	/*= OTHER WEBSITES =*/
 	/*=----------------=*/
 
+	Extracts.targetTypeDefinitions.insertBefore([ 
+		"FOREIGN_SITE",
+		"isForeignSiteLink",
+		"has-content",
+		"foreignSiteForTarget",
+		"foreign-site object"
+	], (def => def[0] == "LOCAL_PAGE"));
+
     Extracts.qualifyingForeignDomains = [ 
     	"www.greaterwrong.com", 
     	"greaterwrong.com", 
@@ -431,8 +494,8 @@ if (window.Extracts) {
     ];
 
 	Extracts.isForeignSiteLink = (target) => {
-		if (  !target.href
-			|| Extracts.isAnnotatedLink(target)) return false;
+		if (Extracts.isAnnotatedLink(target))
+			return false;
 
 		return  (   Extracts.qualifyingForeignDomains.includes(target.hostname)
 				 || Extracts.qualifyingForeignDomains.findIndex(domainPattern => (domainPattern instanceof RegExp && domainPattern.test(target.hostname) == true)) != -1)

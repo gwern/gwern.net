@@ -14,6 +14,7 @@ Popins = {
 		//  Remove all remnant popins.
 		//  TODO: this
 	},
+
 	setup: () => {
 		GWLog("Popins.setup", "popins.js", 1);
 
@@ -22,6 +23,7 @@ Popins = {
 
 		GW.notificationCenter.fireEvent("Popins.setupDidComplete");
 	},
+
 	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
@@ -56,11 +58,13 @@ Popins = {
 			target.classList.toggle("spawns-popin", true);
 		});
 	},
+
 	addTargets: (targets, prepareFunction, targetPrepareFunction = null) => {
 		GWLog("Popins.addTargets", "popins.js", 1);
 
 		Popins.addTargetsWithin(document, targets, prepareFunction, targetPrepareFunction);
 	},
+
 	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
@@ -98,6 +102,7 @@ Popins = {
 				targetRestoreFunction(target);
 		});
 	},
+
 	removeTargets: (targets, targetRestoreFunction = null) => {
 		GWLog("Popins.removeTargets", "popins.js", 1);
 
@@ -118,6 +123,7 @@ Popins = {
 			};
 			return button;
 		},
+
 		closeButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
 			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M193.94 256L296.5 153.44l21.15-21.15c3.12-3.12 3.12-8.19 0-11.31l-22.63-22.63c-3.12-3.12-8.19-3.12-11.31 0L160 222.06 36.29 98.34c-3.12-3.12-8.19-3.12-11.31 0L2.34 120.97c-3.12 3.12-3.12 8.19 0 11.31L126.06 256 2.34 379.71c-3.12 3.12-3.12 8.19 0 11.31l22.63 22.63c3.12 3.12 8.19 3.12 11.31 0L160 289.94 262.56 392.5l21.15 21.15c3.12 3.12 8.19 3.12 11.31 0l22.63-22.63c3.12-3.12 3.12-8.19 0-11.31L193.94 256z"/></svg>`;
@@ -133,6 +139,7 @@ Popins = {
 			};
 			return button;
 		},
+
 		optionsButton: () => {
 			let button = Popins.titleBarComponents.genericButton();
 			button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 20 20"><g transform="translate(10 10)"><path id="a" d="M1.5-10h-3l-1 6.5h5m0 7h-5l1 6.5h3"/><use transform="rotate(45)" xlink:href="#a"/><use transform="rotate(90)" xlink:href="#a"/><use transform="rotate(135)" xlink:href="#a"/></g><path d="M10 2.5a7.5 7.5 0 000 15 7.5 7.5 0 000-15v4a3.5 3.5 0 010 7 3.5 3.5 0 010-7"/></svg>`;
@@ -166,15 +173,19 @@ Popins = {
 		popin.titleBarContents = [ ];
 		return popin;
 	},
+
 	setPopFrameContent: (popin, contentHTML) => {
 		popin.contentView.innerHTML = contentHTML;
 		return (contentHTML > "");
 	},
+
 	rootDocument: document.firstElementChild,
+
 	containingDocumentForTarget: (target) => {
 		let containingPopin = target.closest(".popin");
 		return (containingPopin ? containingPopin.contentView : Popins.rootDocument);
 	},
+
 	injectPopinForTarget: (target) => {
 		GWLog("Popins.injectPopinForTarget", "popins.js", 2);
 
@@ -236,6 +247,7 @@ Popins = {
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
+
 	removePopin: (popin) => {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
@@ -252,6 +264,7 @@ Popins = {
 		//  Detach popin from its spawning target.
 		Popins.detachPopinFromTarget(popin);
 	},
+
 	detachPopinFromTarget: (popin) => {
 		GWLog("Popins.detachPopinFromTarget", "popins.js", 2);
 
