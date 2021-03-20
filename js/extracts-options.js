@@ -1,8 +1,45 @@
 if (window.Extracts) {
+	/*	Popins.
+		*/
+
+// 	Extracts.popinOptionsEnabled = true;
+
+	Extracts.showPopinOptionsDialogPopinTitleBarButton = () => {
+		let button = Popins.titleBarComponents.optionsButton();
+
+		button.addActivateEvent((event) => {
+			event.stopPropagation();
+
+			Extracts.showPopinOptionsDialog();
+		});
+
+		button.title = "Show popin options (enable/disable popins)";
+		button.classList.add("show-popin-options-dialog");
+
+		return button;
+	};
+
+	/*	Popups.
+		*/
+
 	Extracts.popupOptionsEnabled = true;
 
 	Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	Extracts.popupOptionsDialog = null;
+
+	Extracts.showPopupOptionsDialogPopupTitleBarButton = () => {
+		let button = Popups.titleBarComponents.optionsButton();
+
+		button.addActivateEvent((event) => {
+			event.stopPropagation();
+
+			Extracts.showPopupOptionsDialog();
+		});
+		button.title = "Show popup options (enable/disable popups)";
+		button.classList.add("show-popup-options-dialog");
+
+		return button;
+	};
 
 	Extracts.disableExtractPopups = () => {
 		GWLog("Extracts.disableExtractPopups", "extracts.js", 1);
