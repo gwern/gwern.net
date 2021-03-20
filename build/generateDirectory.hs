@@ -5,6 +5,7 @@ module Main where
 
 import Control.Monad (filterM, when)
 import Data.List (isPrefixOf, isSuffixOf, sort)
+import Data.List.Utils (replace)
 import Data.Time (getCurrentTime)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile)
 import System.Environment (getArgs)
@@ -80,10 +81,10 @@ listFiles m d = do direntries <- listDirectory d
                    let direntries' = map (\entry -> "/"++d++entry) direntries
 
                    directories <- filterM (doesDirectoryExist . tail) direntries'
-                   let directories' = map (\d -> d++"/index") directories
+                   let directories' = sort $ map (\d -> d++"/index") directories
 
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (not . isSuffixOf ".tar") .  filter (/=("/"++d++"index.page"))) files
+                   let files'          = (sort . map (replace ".page" "") . filter (not . isSuffixOf ".tar") .  filter (/=("/"++d++"index.page"))) files
                    let fileAnnotations = map (lookupFallback m) files'
 
                    return $ directories' ++ fileAnnotations
