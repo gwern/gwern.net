@@ -6,7 +6,6 @@ module Main where
 import Control.Monad (filterM, when)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import Data.List.Utils (replace)
-import Data.Time (getCurrentTime)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
@@ -23,16 +22,15 @@ main :: IO ()
 main = do dirs <- getArgs
           let dirs' = map (\dir -> if "./" `isPrefixOf` dir then drop 2 dir else dir) dirs
 
-          today <- fmap (take 10 . show) Data.Time.getCurrentTime
           meta <- readLinkMetadata
 
-          mapM_ (generateDirectory meta today) dirs'
+          mapM_ (generateDirectory meta) dirs'
 
-generateDirectory :: Metadata -> String -> FilePath -> IO ()
-generateDirectory mta tdy dir'' = do
+generateDirectory :: Metadata -> FilePath -> IO ()
+generateDirectory mta dir'' = do
   pairs <- listFiles mta dir''
 
-  let header = generateYAMLHeader dir'' tdy
+  let header = generateYAMLHeader dir''
   let body = [BulletList (map generateListItems pairs)]
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
@@ -52,13 +50,12 @@ generateDirectory mta tdy dir'' = do
                      do contentsOld <- readFile target
                         when (contentsNew /= contentsOld) $ renameFile t target
 
-generateYAMLHeader :: FilePath -> String -> String
-generateYAMLHeader d tdy = "---\n" ++
+generateYAMLHeader :: FilePath -> String
+generateYAMLHeader     d = "---\n" ++
                            "title: /" ++ d ++ " Directory Listing\n" ++
                            "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>.\n" ++
                            "tags: meta\n" ++
                            "created: 2009-01-01\n" ++
-                           "modified: " ++ tdy ++ "\n" ++
                            "status: in progress\n" ++
                            "confidence: log\n" ++
                            "importance: 0\n" ++
