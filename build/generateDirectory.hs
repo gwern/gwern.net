@@ -33,14 +33,14 @@ generateDirectory mta tdy dir'' = do
   pairs <- listFiles mta dir''
 
   let header = generateYAMLHeader dir'' tdy
-  let body = [BulletList (map (generateListItems) pairs)]
+  let body = [BulletList (map generateListItems pairs)]
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
 
   case p of
     Left e   -> hPrint stderr e
     -- compare with the old version, and update if there are any differences:
-    Right p' -> do let contentsNew = header ++ (T.unpack p') ++ generateYAMLFooter
+    Right p' -> do let contentsNew = header ++ T.unpack p' ++ generateYAMLFooter
                    t <- writeSystemTempFile "index" contentsNew
 
                    let target = dir'' ++ "index.page"
@@ -81,7 +81,7 @@ listFiles m d = do direntries <- listDirectory d
                    let direntries' = map (\entry -> "/"++d++entry) direntries
 
                    directories <- filterM (doesDirectoryExist . tail) direntries'
-                   let directories' = sort $ map (\d -> d++"/index") directories
+                   let directories' = sort $ map (++"/index") directories
 
                    files <- filterM (doesFileExist . tail) direntries'
                    let files'          = (sort . map (replace ".page" "") . filter (not . isSuffixOf ".tar") .  filter (/=("/"++d++"index.page"))) files
@@ -96,7 +96,8 @@ lookupFallback m u = case M.lookup u m of
                        Just ("","","","","") -> tryPrefix
                        Just _ -> u
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
-                                           if M.size possibles > 0 then fst $ head $ M.toList possibles else u
+                                           let u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u in
+                                             if ".page" `isSuffixOf` u' then u else u'
 
 generateListItems :: FilePath -> [Block]
 generateListItems f  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
