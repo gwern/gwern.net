@@ -356,11 +356,11 @@ Extracts = {
 			if (!containingPopup)
 				return null;
 
-			let popupForTargetDocument = containingPopup.popupStack.find(popup => (   popup.classList.contains("external-page-embed") 
-																				   && popup.spawningTarget.pathname == target.pathname));
+			let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("external-page-embed") 
+																				  && popup.spawningTarget.pathname == target.pathname));
 			return popupForTargetDocument ? popupForTargetDocument.contentView : null;
 		} else {
-		
+			//  TODO: THIS!!!
 		}
 	},
 
@@ -703,11 +703,9 @@ Extracts = {
 	},
 
 	spawnedPopupMatchingTarget: (target) => {
-		let parentPopup = target.closest(".popup");
 		return Popups.allSpawnedPopups().find(popup => 
 				   Extracts.targetsMatch(target, popup.spawningTarget) 
-				&& Popups.popupIsEphemeral(popup)
-		);
+				&& Popups.popupIsEphemeral(popup));
 	},
 
 	//  Called by popups.js when adding a target.
