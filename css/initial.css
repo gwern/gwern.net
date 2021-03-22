@@ -709,9 +709,17 @@ h1 {
     }
 }
 
+/*	Lazy-load below-fold sections in supported browsers.
+	*/
+section.level1:nth-of-type(n+4) {
+	content-visibility: auto;
+	contain-intrinsic-size: 200vh;
+}
+
 /*=----------------=*/
 /*= Heading levels =*/
 /*=----------------=*/
+
 h1 {
     font-feature-settings: 'smcp';
     font-size: 1.75em;

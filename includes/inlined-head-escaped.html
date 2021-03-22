@@ -998,7 +998,9 @@ h1 {
     }
 }
 
-section.level1:nth-of-type(n+2) {
+/*	Lazy-load below-fold sections in supported browsers.
+	*/
+section.level1:nth-of-type(n+4) {
 	content-visibility: auto;
 	contain-intrinsic-size: 200vh;
 }
