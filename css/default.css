@@ -2984,7 +2984,7 @@ body.directory-index #disqus_thread {
 /*└──────────────────────┘*/
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
-.popframe.footnote a.footnote-back {
+.popframe.footnote:not(.external-page-embed) a.footnote-back {
     display: none;
 }
 
