@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-03-08 18:57:38 gwern"
+When: Time-stamp: "2021-03-22 18:42:10 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -331,7 +331,8 @@ staticImg x@(TagOpen "img" xs) = do
          -- No images should be more than a screen in height either, so we'll set a maximum of 1400
          let width' =  show ((read width::Int) `min` 1400)
          let height' = show ((read height::Int) `min` 1400)
-         return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load all images
+         return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load & async render all images
+                                        ("decoding", "async"),
                                         ("height", height'), ("width", width')]++xs)))
       else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
