@@ -189,7 +189,7 @@ Popups = {
 	/*  Popup spawning & despawning.
 		*/
 
-	newPopup: () => {
+	newPopup: (target) => {
 		GWLog("Popups.newPopup", "popups.js", 2);
 
 		let popup = document.createElement("div");
@@ -199,6 +199,10 @@ Popups = {
 		popup.contentView = popup.querySelector(".popframe-content-view");
 		popup.contentView.popup = popup.scrollView.popup = popup;
 		popup.titleBarContents = [ ];
+
+		//  Give the popup a reference to the target.
+		popup.spawningTarget = target;
+
 		return popup;
 	},
 
@@ -214,18 +218,21 @@ Popups = {
 		if (Popups.popupContainer == null)
 			return;
 
-		//  Despawn existing popup, if any.
-		if (target.popup)
-			Popups.despawnPopup(target.popup);
+		//  Save existing popup, if any.
+		let existingPopup = target.popup;
 
 		//  Create the new popup.
-		target.popFrame = target.popup = Popups.newPopup();
+		target.popFrame = target.popup = Popups.newPopup(target);
 
-		//  Give the popup a reference to the target.
-		target.popup.spawningTarget = target;
+		//  Prepare the newly created popup for spawning.
+		target.popFrame = target.popup = target.preparePopup(target.popup);
 
-		// Prepare the newly created popup for spawning.
-		if (!(target.popFrame = target.popup = target.preparePopup(target.popup)))
+		//  Despawn old popup, if need be.
+		if (existingPopup && existingPopup != target.popup)
+			Popups.despawnPopup(existingPopup);
+
+		//  If preparation failed, we’re done here.
+		if (target.popup == null)
 			return;
 
 		//  If title bar contents are provided, add a title bar (if needed).
