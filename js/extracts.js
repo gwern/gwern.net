@@ -546,7 +546,8 @@ Extracts = {
 		//  Scroll to the target.
 		if (target.hash > "")
 			requestAnimationFrame(() => {
-				Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(popFrame.querySelector(decodeURIComponent(target.hash)));
+				if (popFrame)
+					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(popFrame.querySelector(decodeURIComponent(target.hash)));
 			});
 	},
 
