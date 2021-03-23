@@ -182,7 +182,7 @@ Popups = {
 
 	scrollElementIntoViewInPopFrame: (element) => {
 		let popup = element.closest(".popup");
-		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.scrollView.getBoundingClientRect().top;
+		popup.scrollView.scrollTop = element.getBoundingClientRect().top - popup.contentView.getBoundingClientRect().top;
 	},
 
 	/*******************************/
