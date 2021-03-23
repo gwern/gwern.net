@@ -508,7 +508,10 @@ function addSpecialLinkClasses(loadEventInfo) {
 			|| link.closest(".section-self-link, .footnote-ref, .footnote-back, .footnote-self-link, .sidenote-self-link"))
 			return;
 
-		if (loadEventInfo.location && link.pathname == loadEventInfo.location.pathname) {
+		if (   loadEventInfo.location 
+			&& link.pathname == loadEventInfo.location.pathname
+			&& (   loadEventInfo.document == Extracts.rootDocument
+				|| loadEventInfo.document.closest(".popframe").classList.contains("local-transclude"))) {
 			link.classList.toggle("link-self", true);
 		} else {
 			link.classList.remove("link-self");
