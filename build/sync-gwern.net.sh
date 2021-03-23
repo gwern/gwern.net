@@ -14,7 +14,7 @@
 if [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
           -n $(command -v tidy) && -n $(command -v linkchecker) && -n $(command -v du) && -n $(command -v rm) && -n $(command -v find) && \
           -n $(command -v fdupes) && -n $(command -v urlencode) && -n $(command -v sed) && -n $(command -v parallel) && -n $(command -v xargs) && \
-          -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && \
+          -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v pdftotext) && \
           -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage) && -n $(command -v static/build/link-extractor.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
@@ -127,7 +127,7 @@ then
     staticCompileMathJax () {
         if [[ $(fgrep '<span class="math inline"' "$@") ]]; then
             TARGET=$(mktemp /tmp/XXXXXXX.html)
-            cat "$@" | ~/src/node_modules/mathjax-node-page/bin/mjpage --output CommonHTML --fontURL '/static/font/mathjax' | \
+            cat "$@" | nice ~/src/node_modules/mathjax-node-page/bin/mjpage --output CommonHTML --fontURL '/static/font/mathjax' | \
             ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,
             ## but it potentially blocks rendering without a 'font-display: swap;' parameter (which is perfectly safe since the user won't see any math early on)
                 sed -e 's/^\@font-face {/\@font-face {font-display: swap; /' >> "$TARGET";
@@ -166,7 +166,8 @@ then
 
     λ(){ PAGES="$(find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
          for PAGE in $PAGES; do fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' "$PAGE" | \
-                                     fgrep --invert-match -e 'docs/cs/1955-nash' -e 'Backstop' -e 'Death-Note-Anonymity' -e 'Differences' ; done; }
+                                     fgrep --invert-match -e 'docs/cs/1955-nash' -e 'Backstop' -e 'Death-Note-Anonymity' -e 'Differences' \
+                                                          -e 'Lorem' ; done; }
     wrap λ "Warning: unauthorized LaTeX users"
 
     λ(){ find ./ -name "*.page" -type f -exec egrep --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
@@ -230,7 +231,7 @@ then
                              -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
                              -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \
                              -e 'Warning: missing <!DOCTYPE> declaration' -e 'Warning: inserting implicit <body>' \
-                             -e "Warning: inserting missing 'title' element" )
+                             -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' )
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
         done;
         set -e; }
@@ -399,6 +400,21 @@ then
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
     wrap λ "Corrupted or broken PDFs"
+
+    λ(){
+        checkSpamHeader() {
+            HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | \
+                         fgrep -e 'INFORMATION TO USERS' -e 'Your use of the JSTOR archive indicates your acceptance of JSTOR' \
+                               -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
+                               -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
+                               -e 'Additional services and information for ' -e 'Access to this document was granted through an Emerald subscription' \
+                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers')
+            if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
+        }
+        export -f checkSpamHeader
+        find ./docs/ -type f -name "*.pdf" | fgrep -v -e 'docs/www/' | sort | parallel checkSpamHeader
+    }
+    wrap λ "Remove junk from PDF & add metadata"
 
     λ(){ find ./ -type f -name "*.jpg" | parallel file | fgrep --invert-match 'JPEG image data'; }
     wrap λ "Corrupted JPGs"
