@@ -14,7 +14,7 @@
 if [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
           -n $(command -v tidy) && -n $(command -v linkchecker) && -n $(command -v du) && -n $(command -v rm) && -n $(command -v find) && \
           -n $(command -v fdupes) && -n $(command -v urlencode) && -n $(command -v sed) && -n $(command -v parallel) && -n $(command -v xargs) && \
-          -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && \
+          -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v pdftotext) && \
           -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage) && -n $(command -v static/build/link-extractor.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
@@ -400,6 +400,21 @@ then
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
     wrap λ "Corrupted or broken PDFs"
+
+    λ(){
+        checkSpamHeader() {
+            HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | \
+                         fgrep -e 'INFORMATION TO USERS' -e 'Your use of the JSTOR archive indicates your acceptance of JSTOR' \
+                               -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
+                               -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
+                               -e 'Additional services and information for ' -e 'Access to this document was granted through an Emerald subscription' \
+                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers')
+            if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
+        }
+        export -f checkSpamHeader
+        find ./docs/ -type f -name "*.pdf" | fgrep -v -e 'docs/www/' | sort | parallel checkSpamHeader
+    }
+    wrap λ "Remove junk from PDF & add metadata"
 
     λ(){ find ./ -type f -name "*.jpg" | parallel file | fgrep --invert-match 'JPEG image data'; }
     wrap λ "Corrupted JPGs"
