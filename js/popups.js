@@ -218,21 +218,15 @@ Popups = {
 		if (Popups.popupContainer == null)
 			return;
 
-		//  Save existing popup, if any.
-		let existingPopup = target.popup;
+		//  Despawn existing popup, if any.
+		if (target.popup)
+			Popups.despawnPopup(target.popup);
 
 		//  Create the new popup.
 		target.popFrame = target.popup = Popups.newPopup(target);
 
 		//  Prepare the newly created popup for spawning.
-		target.popFrame = target.popup = target.preparePopup(target.popup);
-
-		//  Despawn old popup, if need be.
-		if (existingPopup && existingPopup != target.popup)
-			Popups.despawnPopup(existingPopup);
-
-		//  If preparation failed, we’re done here.
-		if (target.popup == null)
+		if (!(target.popFrame = target.popup = target.preparePopup(target.popup)))
 			return;
 
 		//  If title bar contents are provided, add a title bar (if needed).

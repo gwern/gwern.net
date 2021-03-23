@@ -289,10 +289,17 @@ Extracts = {
 				popFrameTitleText = nearestBlockElement.tagName == "SECTION"
 									? nearestBlockElement.firstElementChild.textContent
 									: target.hash;
+			} else if (popFrame.classList.contains("local-transclude")) {
+				if (popFrame.classList.contains("external-page-embed")) {
+					popFrameTitleText = Extracts.cachedPageTitles[target.pathname] || target.pathname;
+				} else {
+					let nearestBlockElement = Extracts.nearestBlockElement(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash)));
+					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
+										? (nearestBlockElement.firstElementChild.textContent + ` (${Extracts.cachedPageTitles[target.pathname] || target.pathname})`)
+										: (target.pathname + target.hash);
+				}
 			} else {
-				popFrameTitleText = popFrame.classList.contains("external-page-embed")
-									? target.pathname
-									: (target.pathname + target.hash);
+				popFrameTitleText = target.pathname + target.hash;
 			}
 		} else {
 			popFrameTitleText = target.href;
@@ -497,6 +504,9 @@ Extracts = {
 	rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
 		let target = popFrame.spawningTarget;
 
+		//  Qualify internal links in the pop-frame.
+		Extracts.qualifyLinksInPopFrame(target.popFrame);
+
 		//  Rectify margin note style.
 		popFrame.querySelectorAll(".marginnote").forEach(marginNote => {
 			marginNote.swapClasses([ "inline", "sidenote" ], 0);
@@ -532,6 +542,12 @@ Extracts = {
 			location: Extracts.locationForTarget(target),
 			fullWidthPossible: false
 		});
+
+		//  Scroll to the target.
+		if (target.hash > "")
+			requestAnimationFrame(() => {
+				Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(popFrame.querySelector(decodeURIComponent(target.hash)));
+			});
 	},
 
 	//  Other site pages.
@@ -540,57 +556,14 @@ Extracts = {
     externalPageEmbedForTarget: (target) => {
 		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
 
+		//  Mark the pop-frame as an external page embed.
 		target.popFrame.classList.add("external-page-embed");
 
-		let fillPopFrame = (markdownBody) => {
-			GWLog("Filling pop-frame...", "extracts.js", 2);
-
-			Extracts.popFrameProvider.setPopFrameContent(target.popFrame, markdownBody.innerHTML);
-
-			//  Give the pop-frame an identifying class.
-			target.popFrame.classList.toggle("page-" + target.pathname.substring(1), true);
-
-			//  Set the pop-frame title.
-			if (target.popFrame.titleBar)
-				target.popFrame.titleBar.querySelector(".popframe-title-link").innerHTML = Extracts.cachedPageTitles[target.pathname];
-
-			//  First, qualify internal links in the pop-frame.
-			Extracts.qualifyLinksInPopFrame(target.popFrame);
-
-			/*  Then, trigger the rewrite pass by firing the requisite event.
-				(This will also activate spawning targets in the embedded page.)
-				*/
-			GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-				source: "Extracts.externalPageEmbedForTarget",
-				document: target.popFrame.contentView, 
-				isMainDocument: false,
-				needsRewrite: true, 
-				clickable: false, 
-				collapseAllowed: false, 
-				isCollapseBlock: false,
-				isFullPage: true,
-				location: Extracts.locationForTarget(target),
-				fullWidthPossible: false
-			});
-
-			//  Do additional rewriting, if any.
-			if (Extracts.popFrameProvider == Popups)
-				Extracts.rewritePopupContent(target.popup);
-			else // if (Extracts.popFrameProvider == Popins)
-				Extracts.rewritePopinContent(target.popin);
-
-			//  Scroll to the target.
-			if (target.hash > "")
-				Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(target.popFrame.querySelector(decodeURIComponent(target.hash)));
-		};
-
 		if (Extracts.cachedPages[target.pathname]) {
-			target.popFrame.classList.toggle("loading", true);
-			requestAnimationFrame(() => {
-				target.popFrame.classList.toggle("loading", false);
+			//  Give the pop-frame an identifying class.
+			target.popFrame.classList.toggle("external-page-embed", "page-" + target.pathname.substring(1), true);
 
-				fillPopFrame(Extracts.cachedPages[target.pathname]);
-			});
+			return Extracts.cachedPages[target.pathname].innerHTML;
 		} else {
 			target.popFrame.classList.toggle("loading", true);
 			doAjax({
@@ -598,8 +571,6 @@ Extracts = {
 				onSuccess: (event) => {
 					if (!target.popFrame)
 						return;
-
-					target.popFrame.classList.toggle("loading", false);
 
 					//  Inject the whole page into the pop-frame at first.
 					Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
@@ -613,8 +584,29 @@ Extracts = {
 					//  Get the page title.
 					Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
 
-					//  Inject the content into the pop-frame.
-					fillPopFrame(Extracts.cachedPages[target.pathname]);
+					/*  Trigger the rewrite pass by firing the requisite event.
+						*/
+					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+						source: "Extracts.externalPageEmbedForTarget",
+						document: target.popFrame.contentView, 
+						isMainDocument: false,
+						needsRewrite: true, 
+						clickable: false, 
+						collapseAllowed: false, 
+						isCollapseBlock: false,
+						isFullPage: true,
+						location: Extracts.locationForTarget(target),
+						fullWidthPossible: false
+					});
+
+					if (Extracts.popFrameProvider == Popups) {
+						Popups.spawnPopup(target);
+					} else if (Extracts.popFrameProvider == Popins) {
+						Extracts.fillPopFrame(target.popin);
+						target.popin.classList.toggle("loading", false);
+
+						Extracts.rewritePopinContent(target.popin);
+					}
 				},
 				onFailure: (event) => {
 					if (!target.popFrame)
