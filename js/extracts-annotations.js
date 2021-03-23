@@ -63,6 +63,47 @@ if (window.Extracts) {
 			 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
 	};
 
+	Extracts.titleForPopFrame_ANNOTATION = (popFrame) => {
+		let target = popFrame.spawningTarget;
+
+		let popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
+								? popFrame.querySelector(".data-field.title").textContent
+								: target.pathname + target.hash;
+
+		//  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
+		if (   target.hash > "" 
+			&& (   target.hostname == location.hostname 
+				|| Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
+			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
+
+		let popFrameTitle;
+		if (target.dataset.urlOriginal) {
+			//  For local-archive links, include archive link with original.
+			popFrameTitle = `<a 
+					class="popframe-title-link-archived"
+					href="${target.href}"
+					title="Open ${target.href} in a new window"
+					target="_blank"
+						>[ARCHIVED]</a>` +
+				`<span class="separator">·</span>` +
+				`<a 
+					class="popframe-title-link"
+					href="${target.dataset.urlOriginal}"
+					title="Open ${target.dataset.urlOriginal} in a new window"
+					target="_blank"
+						>${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
+		} else {
+			popFrameTitle = `<a 
+				class="popframe-title-link"
+				href="${target.href}"
+				title="Open ${target.href} in a new window"
+				target="_blank"
+					>${popFrameTitleText}</a>`;
+		}
+
+		return popFrameTitle;
+	};
+
 	Extracts.rewritePopFrameContent_ANNOTATION = (popFrame) => {
 		let target = popFrame.spawningTarget;
 

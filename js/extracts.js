@@ -274,66 +274,21 @@ Extracts = {
 	titleForPopFrame: (popFrame) => {
 		let target = popFrame.spawningTarget;
 
-		let popFrameTitle;
-
-		let popFrameTitleText;
-		if (Extracts.isAnnotatedLink(target)) {
-				popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
-									? popFrame.querySelector(".data-field.title").textContent
-									: popFrameTitleText = target.pathname + target.hash;
-		} else if (target.hostname == location.hostname) {
-			if (target.dataset.urlOriginal) {
-				popFrameTitleText = target.dataset.urlOriginal;
-			} else if (target.pathname == location.pathname) {
-				let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(decodeURIComponent(target.hash)));
-				popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-									? nearestBlockElement.firstElementChild.textContent
-									: target.hash;
-			} else if (popFrame.classList.contains("local-transclude")) {
-				if (popFrame.classList.contains("external-page-embed")) {
-					popFrameTitleText = Extracts.cachedPageTitles[target.pathname] || target.pathname;
-				} else {
-					let nearestBlockElement = Extracts.nearestBlockElement(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash)));
-					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-										? (nearestBlockElement.firstElementChild.textContent + ` (${Extracts.cachedPageTitles[target.pathname] || target.pathname})`)
-										: (target.pathname + target.hash);
-				}
-			} else {
-				popFrameTitleText = target.pathname + target.hash;
-			}
-		} else {
-			popFrameTitleText = target.href;
-		}
-		popFrameTitleText = decodeURIComponent(popFrameTitleText);
-
-		if (target.hash > "" && !popFrame.classList.contains("external-page-embed"))
-			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
-
-		//  For local-archive links, include archive link with original.
-		if (target.dataset.urlOriginal) {
-			popFrameTitle = `<a 
-					class="popframe-title-link-archived"
-					href="${target.href}"
-					title="Open ${target.href} in a new window"
-					target="_blank"
-						>[ARCHIVED]</a>` +
-				`<span class="separator">·</span>` +
-				`<a 
-					class="popframe-title-link"
-					href="${target.dataset.urlOriginal}"
-					title="Open ${target.dataset.urlOriginal} in a new window"
-					target="_blank"
-						>${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
-		} else {
-			popFrameTitle = `<a 
+		//  Special handling for certain popup types.
+		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
+		let specialTitleFunction = (Extracts.popFrameProvider == Popups 
+									? Extracts[`titleForPopup_${targetTypeName}`] 
+									: Extracts[`titleForPopin_${targetTypeName}`])
+								|| Extracts[`titleForPopFrame_${targetTypeName}`];
+		if (specialTitleFunction)
+			return specialTitleFunction(popFrame);
+		else
+			return `<a 
 				class="popframe-title-link"
 				href="${target.href}"
 				title="Open ${target.href} in a new window"
 				target="_blank"
-					>${popFrameTitleText}</a>`;
-		}
-
-		return popFrameTitle;
+					>${target.href}</a>`;
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
@@ -498,6 +453,45 @@ Extracts = {
 			popup.classList.add("toc-section");
 
 		return popup;
+	},
+
+	titleForPopFrame_LOCAL_PAGE: (popFrame) => {
+		let target = popFrame.spawningTarget;
+
+		let popFrameTitleText;
+		if (target.pathname == location.pathname) {
+			//  Sections of the current page.
+			let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(decodeURIComponent(target.hash)));
+			popFrameTitleText = nearestBlockElement.tagName == "SECTION"
+								? nearestBlockElement.firstElementChild.textContent
+								: target.hash;
+		} else {
+			if (popFrame.classList.contains("external-page-embed")) {
+				//  Entire other pages.
+				popFrameTitleText = Extracts.cachedPageTitles[target.pathname] || target.pathname;
+			} else {
+				//  Sections of other pages.
+				let nearestBlockElement = Extracts.nearestBlockElement(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash)));
+				popFrameTitleText = nearestBlockElement.tagName == "SECTION"
+									? (nearestBlockElement.firstElementChild.textContent + ` (${Extracts.cachedPageTitles[target.pathname] || target.pathname})`)
+									: (target.pathname + target.hash);
+			}
+		}
+
+		//  Mark sections with ‘§’ symbol.
+		if (target.hash > "" && !popFrame.classList.contains("external-page-embed"))
+			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
+
+		//  Construct title link.
+		let popFrameTitle;
+		popFrameTitle = `<a 
+			class="popframe-title-link"
+			href="${target.href}"
+			title="Open ${target.href} in a new window"
+			target="_blank"
+				>${popFrameTitleText}</a>`;
+
+		return popFrameTitle;
 	},
 
 	rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
@@ -785,7 +779,7 @@ Extracts = {
 
 		//  Special handling for certain popup types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-		let specialPrepareFunction = Extracts[`preparePopup_${targetTypeName}`] || Extracts[`preparePopup_${targetTypeName}`];
+		let specialPrepareFunction = Extracts[`preparePopup_${targetTypeName}`] || Extracts[`preparePopFrame_${targetTypeName}`];
 		if (specialPrepareFunction)
 			if ((popup = specialPrepareFunction(popup)) == null)
 				return null;
