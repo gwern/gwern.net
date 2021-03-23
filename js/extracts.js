@@ -352,10 +352,6 @@ Extracts = {
 			return Extracts.rootDocument;
 
 		if (Extracts.popFrameProvider == Popups) {
-			let containingPopup = target.closest(".popup");
-			if (!containingPopup)
-				return null;
-
 			let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("external-page-embed") 
 																				  && popup.spawningTarget.pathname == target.pathname));
 			return popupForTargetDocument ? popupForTargetDocument.contentView : null;
@@ -367,7 +363,8 @@ Extracts = {
 	/*	Returns the location (a URL object) of the document for a given target.
 		*/
 	locationForTarget: (target) => {
-		return (target.hostname == location.hostname) ? new URL(location.href) : null;
+		return new URL(target.href);
+// 		return (target.hostname == location.hostname) ? new URL(location.href) : null;
 	},
 
 	/*	Activate loading spinner for an object pop-frame.
@@ -505,6 +502,24 @@ Extracts = {
 			marginNote.swapClasses([ "inline", "sidenote" ], 0);
 		});
 
+		popFrame.querySelectorAll("a").forEach(link => {
+			if (   link.hostname == target.hostname
+				&& link.pathname == target.pathname
+				&& link.hash > "") {
+				link.onclick = () => { return false; };
+				link.addActivateEvent((event) => {
+					let hashTarget = popFrame.querySelector(decodeURIComponent(link.hash));
+					if (hashTarget) {
+						Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget);
+						return false;
+					} else {
+						return true;
+					}
+				});
+			}
+		});
+
+		//  Fire a contentDidLoad event.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
 			document: popFrame.contentView,
@@ -554,9 +569,15 @@ Extracts = {
 				collapseAllowed: false, 
 				isCollapseBlock: false,
 				isFullPage: true,
-				location: new URL(target.href),
+				location: Extracts.locationForTarget(target),
 				fullWidthPossible: false
 			});
+
+			//  Do additional rewriting, if any.
+			if (Extracts.popFrameProvider == Popups)
+				Extracts.rewritePopupContent(target.popup);
+			else // if (Extracts.popFrameProvider == Popins)
+				Extracts.rewritePopinContent(target.popin);
 
 			//  Scroll to the target.
 			if (target.hash > "")
