@@ -482,16 +482,12 @@ Extracts = {
 		if (target.hash > "" && !popFrame.classList.contains("external-page-embed"))
 			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
-		//  Construct title link.
-		let popFrameTitle;
-		popFrameTitle = `<a 
+		return `<a 
 			class="popframe-title-link"
 			href="${target.href}"
 			title="Open ${target.href} in a new window"
 			target="_blank"
 				>${popFrameTitleText}</a>`;
-
-		return popFrameTitle;
 	},
 
 	rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
