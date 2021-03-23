@@ -56,6 +56,7 @@ if (window.Extracts) {
 	Extracts.rewritePopFrameContent_CITATION = (popFrame) => {
 		let target = popFrame.spawningTarget;
 
+		//  Fire a contentDidLoad event.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "Extracts.rewritePopFrameContent_CITATION",
 			document: popFrame.contentView,
@@ -441,6 +442,12 @@ if (window.Extracts) {
 
 				target.popFrame.classList.toggle("loading", false);
 				setPopFrameContent(target.popFrame, event.target.responseText);
+
+				//  Do additional rewriting, if any.
+				if (Extracts.popFrameProvider == Popups)
+					Extracts.rewritePopupContent(target.popup);
+				else // if (Extracts.popFrameProvider == Popins)
+					Extracts.rewritePopinContent(target.popin);
 			},
 			onFailure: (event) => {
 				doAjax({
@@ -456,6 +463,12 @@ if (window.Extracts) {
 						htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
 
 						setPopFrameContent(target.popFrame, `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`);
+
+						//  Do additional rewriting, if any.
+						if (Extracts.popFrameProvider == Popups)
+							Extracts.rewritePopupContent(target.popup);
+						else // if (Extracts.popFrameProvider == Popins)
+							Extracts.rewritePopinContent(target.popin);
 					},
 					onFailure: (event) => {
 						if (!target.popFrame)
