@@ -306,7 +306,7 @@ Extracts = {
 		}
 		popFrameTitleText = decodeURIComponent(popFrameTitleText);
 
-		if (target.hash > "")
+		if (target.hash > "" && !popFrame.classList.contains("external-page-embed"))
 			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
 		//  For local-archive links, include archive link with original.
@@ -371,7 +371,6 @@ Extracts = {
 		*/
 	locationForTarget: (target) => {
 		return new URL(target.href);
-// 		return (target.hostname == location.hostname) ? new URL(location.href) : null;
 	},
 
 	/*	Activate loading spinner for an object pop-frame.
@@ -512,6 +511,7 @@ Extracts = {
 			marginNote.swapClasses([ "inline", "sidenote" ], 0);
 		});
 
+		//  Make anchorlinks scroll pop-frame instead of opening normally.
 		popFrame.querySelectorAll("a").forEach(link => {
 			if (   link.hostname == target.hostname
 				&& link.pathname == target.pathname
@@ -544,7 +544,7 @@ Extracts = {
 		});
 
 		//  Scroll to the target.
-		if (target.hash > "")
+		if (target.hash > "" && popFrame.classList.contains("external-page-embed"))
 			requestAnimationFrame(() => {
 				if (popFrame)
 					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(popFrame.querySelector(decodeURIComponent(target.hash)));
@@ -600,6 +600,7 @@ Extracts = {
 						fullWidthPossible: false
 					});
 
+					//  Re-spawn, or fill and rewrite, the pop-frame.
 					if (Extracts.popFrameProvider == Popups) {
 						Popups.spawnPopup(target);
 					} else if (Extracts.popFrameProvider == Popins) {

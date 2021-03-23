@@ -167,7 +167,7 @@ Popups = {
 	},
 
 	allSpawnedPopups: () => {
-		return Array.from(Popups.popupContainer.children);
+		return Array.from(Popups.popupContainer.children).filter(popup => !popup.classList.contains("fading"));
 	},
 
 	/****************************************/
