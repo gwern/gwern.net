@@ -554,6 +554,62 @@ Extracts = {
 	//  Other site pages.
     cachedPages: { },
     cachedPageTitles: { },
+    refreshPopFrameAfterLocalPageLoads: (target) => {
+		GWLog("Extracts.refreshPopFrameAfterLocalPageLoads", "extracts.js", 2);
+
+		target.popFrame.classList.toggle("loading", true);
+
+		doAjax({
+			location: target.href,
+			onSuccess: (event) => {
+				if (!target.popFrame)
+					return;
+
+				//  Inject the whole page into the pop-frame at first.
+				Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
+
+				//  The content is the page body plus the metadata block.
+				Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
+				let pageMetadata = target.popFrame.querySelector("#page-metadata");
+				if (pageMetadata)
+					Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
+
+				//  Get the page title.
+				Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
+
+				/*  Trigger the rewrite pass by firing the requisite event.
+					*/
+				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+					source: "Extracts.externalPageEmbedForTarget",
+					document: target.popFrame.contentView, 
+					isMainDocument: false,
+					needsRewrite: true, 
+					clickable: false, 
+					collapseAllowed: false, 
+					isCollapseBlock: false,
+					isFullPage: true,
+					location: Extracts.locationForTarget(target),
+					fullWidthPossible: false
+				});
+
+				//  Re-spawn, or fill and rewrite, the pop-frame.
+				if (Extracts.popFrameProvider == Popups) {
+					Popups.spawnPopup(target);
+				} else if (Extracts.popFrameProvider == Popins) {
+					Extracts.fillPopFrame(target.popin);
+					target.popin.classList.toggle("loading", false);
+
+					Extracts.rewritePopinContent(target.popin);
+				}
+			},
+			onFailure: (event) => {
+				if (!target.popFrame)
+					return;
+
+				target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+			}
+		});
+    },
     externalPageEmbedForTarget: (target) => {
 		GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
 
@@ -566,60 +622,10 @@ Extracts = {
 
 			return Extracts.cachedPages[target.pathname].innerHTML;
 		} else {
-			target.popFrame.classList.toggle("loading", true);
-			doAjax({
-				location: target.href,
-				onSuccess: (event) => {
-					if (!target.popFrame)
-						return;
+			Extracts.refreshPopFrameAfterLocalPageLoads(target);
 
-					//  Inject the whole page into the pop-frame at first.
-					Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
-
-					//  The content is the page body plus the metadata block.
-					Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
-					let pageMetadata = target.popFrame.querySelector("#page-metadata");
-					if (pageMetadata)
-						Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
-
-					//  Get the page title.
-					Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
-
-					/*  Trigger the rewrite pass by firing the requisite event.
-						*/
-					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-						source: "Extracts.externalPageEmbedForTarget",
-						document: target.popFrame.contentView, 
-						isMainDocument: false,
-						needsRewrite: true, 
-						clickable: false, 
-						collapseAllowed: false, 
-						isCollapseBlock: false,
-						isFullPage: true,
-						location: Extracts.locationForTarget(target),
-						fullWidthPossible: false
-					});
-
-					//  Re-spawn, or fill and rewrite, the pop-frame.
-					if (Extracts.popFrameProvider == Popups) {
-						Popups.spawnPopup(target);
-					} else if (Extracts.popFrameProvider == Popins) {
-						Extracts.fillPopFrame(target.popin);
-						target.popin.classList.toggle("loading", false);
-
-						Extracts.rewritePopinContent(target.popin);
-					}
-				},
-				onFailure: (event) => {
-					if (!target.popFrame)
-						return;
-
-					target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-				}
-			});
+			return `&nbsp;`;
 		}
-
-		return `&nbsp;`;
     },
 
 	/***************************/
