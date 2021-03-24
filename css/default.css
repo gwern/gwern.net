@@ -2777,6 +2777,11 @@ body.directory-index #disqus_thread {
 /*  Adjustments for styles in pop-frames.
     */
 
+.popframe ul,
+.popframe ol {
+	overflow: unset;
+}
+
 .popframe:not(.zoomed) p + p {
     text-indent: 1.25em;
 }
@@ -2820,6 +2825,14 @@ body.directory-index #disqus_thread {
     margin-bottom: calc(1em/9);
 }
 
+.popframe .popframe-content-view > hr:first-child {
+    display: none;
+}
+
+.popframe .footnote-self-link {
+    display: none;
+}
+
 /*  Drop caps in pop-frames.
     */
 .popframe.markdownBody .drop-cap-goudy > p,
@@ -2849,14 +2862,6 @@ body.directory-index #disqus_thread {
     */
 .popframe .marginnote {
     display: initial;
-}
-
-.popframe .popframe-content-view > hr:first-child {
-    display: none;
-}
-
-.popframe .footnote-self-link {
-    display: none;
 }
 
 /*=-----------------=*/
