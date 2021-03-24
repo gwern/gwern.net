@@ -3925,6 +3925,7 @@ body.directory-index #disqus_thread {
     border-color: var(--GW-popins-popin-border-color);
     border-width:  var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
     background-color: var(--GW-popins-popin-title-bar-background-color);
+    --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
     display: flex;
     flex-flow: row;
     align-items: center;
@@ -4037,6 +4038,7 @@ body.directory-index #disqus_thread {
 
 .popin .popframe-content-view {
     background-color: var(--GW-popins-popin-background-color);
+    --GW-link-underline-background-color: var(--GW-popins-popin-title-bar-background-color);
     font-size: 0.9em;
     padding: calc(7em/9) 1em calc(8em/9) 1em;
     overflow: auto;
