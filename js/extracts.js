@@ -317,8 +317,11 @@ Extracts = {
 			let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("external-page-embed") 
 																				  && popup.spawningTarget.pathname == target.pathname));
 			return popupForTargetDocument ? popupForTargetDocument.contentView : null;
-		} else {
-			//  TODO: THIS!!!
+		} else if (Extracts.popFrameProvider == Popins) {
+			let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("external-page-embed") 
+																				  && popin.spawningTarget.pathname == target.pathname)
+																				  && Extracts.popFrameHasLoaded(popin));
+			return popinForTargetDocument ? popinForTargetDocument.contentView : null;
 		}
 	},
 

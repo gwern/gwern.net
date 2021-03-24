@@ -25,6 +25,19 @@ if (window.Extracts) {
 		});
 	};
 
+	Extracts.titleForPopFrame_CITATION = (popFrame) => {
+		let target = popFrame.spawningTarget;
+		let footnoteNumber = target.querySelector("sup").textContent;
+		let popFrameTitleText = `Footnote #${footnoteNumber}`;
+
+		return `<a 
+			class="popframe-title-link"
+			href="${target.href}"
+			title="Open ${target.href} in a new window"
+			target="_blank"
+				>${popFrameTitleText}</a>`;
+	};
+
 	Extracts.preparePopup_CITATION = (popup) => {
 		let target = popup.spawningTarget;
 

@@ -114,6 +114,11 @@ Popins = {
 		return (containingPopin ? containingPopin.contentView : Popins.rootDocument);
 	},
 
+	allSpawnedPopins: () => {
+		//  TODO: make this more efficient! (keep a running array or somesuch)
+		return Array.from(document.querySelectorAll(".popin"));
+	},
+
 	/********************/
 	/*	Popin title bars.
 		*/
