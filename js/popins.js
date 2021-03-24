@@ -192,7 +192,7 @@ Popins = {
 		popin.titleBarContents = [ ];
 
 		//  Give the popin a reference to the target.
-		target.popin.spawningTarget = target;
+		popin.spawningTarget = target;
 
 		return popin;
 	},
