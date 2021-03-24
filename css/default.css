@@ -3920,7 +3920,7 @@ body.directory-index #disqus_thread {
     right: calc(-1 * var(--GW-popins-popin-border-width));
     bottom: calc(100%);
     height: calc(var(--GW-popins-popin-border-width) + var(--GW-popins-popin-title-bar-height));
-	max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)));
+	max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)) - 2em);
     border-style: double;
     border-color: var(--GW-popins-popin-border-color);
     border-width:  var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
@@ -3996,6 +3996,27 @@ body.directory-index #disqus_thread {
 .popin .popframe-title-bar-button:disabled {
     pointer-events: none;
     opacity: 0.35;
+}
+
+/*	Popin stack counter.
+	*/
+.popin-stack-counter {
+	position: absolute;
+	right: calc(100% + var(--GW-popins-popin-border-width));
+	bottom: var(--GW-popins-popin-border-width);
+	height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 3px);
+    padding: 0 0.5em;
+	background-color: inherit;
+	border-style: solid;
+	border-color: var(--GW-popins-popin-border-color);
+	border-width: 1px 0 0 1px;
+	font-family: var(--GW-sans-serif-font-stack);
+	font-size: 0.8rem;
+	font-weight: normal;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: default;
 }
 
 /*┌────────────────────┐*/

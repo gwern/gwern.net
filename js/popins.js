@@ -119,6 +119,18 @@ Popins = {
 		return Array.from(document.querySelectorAll(".popin"));
 	},
 
+	popinStackNumber: (popin) => {
+		//  If there’s another popin in the ‘stack’ below this one…
+		let popinBelow = (   popin.nextElementSibling 
+						  && popin.nextElementSibling.classList.contains("popin")) 
+						 ? popin.nextElementSibling 
+						 : null;
+		if (popinBelow)
+			return parseInt(popinBelow.titleBar.stackCounter.textContent) + 1;
+		else
+			return 1;
+	},
+
 	/********************/
 	/*	Popin title bars.
 		*/
@@ -132,6 +144,17 @@ Popins = {
 		popin.titleBar = document.createElement("div");
 		popin.titleBar.classList.add("popframe-title-bar");
 		popin.insertBefore(popin.titleBar, popin.firstElementChild);
+
+		//  Add popin stack counter.
+		popin.titleBar.stackCounter = document.createElement("span");
+		popin.titleBar.stackCounter.classList.add("popin-stack-counter");
+		requestAnimationFrame(() => {
+			let popinStackNumber = Popins.popinStackNumber(popin);
+			popin.titleBar.stackCounter.textContent = popinStackNumber;
+			if (popinStackNumber == 1)
+				popin.titleBar.stackCounter.style.display = "none";
+		});
+		popin.titleBar.appendChild(popin.titleBar.stackCounter);
 
 		//  Add the provided title bar contents (buttons, title, etc.).
 		popin.titleBarContents.forEach(elementOrHTML => {
