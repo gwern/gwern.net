@@ -8,6 +8,9 @@ Popins = {
 	/******************/
 	/*	Implementation.
 		*/
+
+	rootDocument: document.firstElementChild,
+
 	cleanup: () => {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
@@ -59,12 +62,6 @@ Popins = {
 		});
 	},
 
-	addTargets: (targets, prepareFunction, targetPrepareFunction = null) => {
-		GWLog("Popins.addTargets", "popins.js", 1);
-
-		Popins.addTargetsWithin(document, targets, prepareFunction, targetPrepareFunction);
-	},
-
 	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
@@ -103,17 +100,49 @@ Popins = {
 		});
 	},
 
-	removeTargets: (targets, targetRestoreFunction = null) => {
-		GWLog("Popins.removeTargets", "popins.js", 1);
-
-		Popins.removeTargetsWithin(document, targets, targetRestoreFunction);
-	},
+	/***********/
+	/*	Helpers.
+		*/
 
 	scrollElementIntoViewInPopFrame: (element) => {
 		let popin = element.closest(".popin");
 		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.scrollView.getBoundingClientRect().top;
 	},
 
+	containingDocumentForTarget: (target) => {
+		let containingPopin = target.closest(".popin");
+		return (containingPopin ? containingPopin.contentView : Popins.rootDocument);
+	},
+
+	/********************/
+	/*	Popin title bars.
+		*/
+
+	//  Add title bar to a popin which has a populated .titleBarContents.
+	addTitleBarToPopin: (popin) => {
+		//  Set class ‘has-title-bar’ on the popin.
+		popin.classList.add("has-title-bar");
+
+		//  Create and inject the title bar element.
+		popin.titleBar = document.createElement("div");
+		popin.titleBar.classList.add("popframe-title-bar");
+		popin.insertBefore(popin.titleBar, popin.firstElementChild);
+
+		//  Add the provided title bar contents (buttons, title, etc.).
+		popin.titleBarContents.forEach(elementOrHTML => {
+			if (typeof elementOrHTML == "string") {
+				popin.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
+			} else {
+				popin.titleBar.appendChild(elementOrHTML);
+			}
+			let newlyAddedElement = popin.titleBar.lastElementChild;
+
+			if (newlyAddedElement.buttonAction)
+				newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
+		});
+	},
+
+	//  Elements and methods related to popin title bars.
 	titleBarComponents: {
 		genericButton: () => {
 			let button = document.createElement("BUTTON");
@@ -147,21 +176,11 @@ Popins = {
 		}
 	},
 
-	targetClicked: (event) => {
-		event.preventDefault();
+	/******************/
+	/*	Popin spawning.
+		*/
 
-		let target = event.target.closest(".spawns-popin");
-
-		if (target.classList.contains("popin-open")) {
-			Popins.removePopin(target.popin);
-		} else {
-			Popins.injectPopinForTarget(target);
-		}
-
-		document.activeElement.blur();
-	},
-
-	newPopin: () => {
+	newPopin: (target) => {
 		GWLog("Popins.newPopin", "popins.js", 2);
 
 		let popin = document.createElement("div");
@@ -171,6 +190,10 @@ Popins = {
 		popin.contentView = popin.querySelector(".popframe-content-view");
 		popin.contentView.popin = popin.scrollView.popin = popin;
 		popin.titleBarContents = [ ];
+
+		//  Give the popin a reference to the target.
+		target.popin.spawningTarget = target;
+
 		return popin;
 	},
 
@@ -179,21 +202,11 @@ Popins = {
 		return (contentHTML > "");
 	},
 
-	rootDocument: document.firstElementChild,
-
-	containingDocumentForTarget: (target) => {
-		let containingPopin = target.closest(".popin");
-		return (containingPopin ? containingPopin.contentView : Popins.rootDocument);
-	},
-
 	injectPopinForTarget: (target) => {
 		GWLog("Popins.injectPopinForTarget", "popins.js", 2);
 
 		//  Create the new popin.
-		target.popFrame = target.popin = Popins.newPopin();
-
-		//  Give the popin a reference to the target.
-		target.popin.spawningTarget = target;
+		target.popFrame = target.popin = Popins.newPopin(target);
 
 		// Prepare the newly created popin for injection.
 		if (!(target.popFrame = target.popin = target.preparePopin(target.popin)))
@@ -202,24 +215,8 @@ Popins = {
 		/*  If title bar contents are provided, create and inject the popin
 			title bar, and set class `has-title-bar` on the popin.
 			*/
-		if (target.popin.titleBarContents.length > 0) {
-			target.popin.classList.add("has-title-bar");
-
-			target.popin.titleBar = document.createElement("div");
-			target.popin.titleBar.classList.add("popframe-title-bar");
-			target.popin.insertBefore(target.popin.titleBar, target.popin.firstElementChild);
-
-			target.popin.titleBarContents.forEach(elementOrHTML => {
-				if (typeof elementOrHTML == "string") {
-					target.popin.titleBar.insertAdjacentHTML("beforeend", elementOrHTML);
-				} else {
-					target.popin.titleBar.appendChild(elementOrHTML);
-				}
-				let newlyAddedElement = target.popin.titleBar.lastElementChild;
-				if (newlyAddedElement.buttonAction)
-					newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
-			});
-		}
+		if (target.popin.titleBarContents.length > 0)
+			Popins.addTitleBarToPopin(target.popin);
 
 		//  Get containing document.
 		let containingDocument = Popins.containingDocumentForTarget(target);
@@ -252,7 +249,10 @@ Popins = {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
 		//  If there’s another popin in the ‘stack’ below this one…
-		let popinBelow = (popin.nextElementSibling && popin.nextElementSibling.classList.contains("popin")) ? popin.nextElementSibling : null;
+		let popinBelow = (   popin.nextElementSibling 
+						  && popin.nextElementSibling.classList.contains("popin")) 
+						 ? popin.nextElementSibling 
+						 : null;
 
 		//  Remove popin from page.
 		popin.remove();
@@ -271,6 +271,26 @@ Popins = {
 		popin.spawningTarget.popin = null;
 		popin.spawningTarget.popFrame = null;
 		popin.spawningTarget.classList.toggle("popin-open", false);
+	},
+
+	/*******************/
+	/*	Event listeners.
+		*/
+
+	targetClicked: (event) => {
+		GWLog("Popins.targetClicked", "popins.js", 2);
+
+		event.preventDefault();
+
+		let target = event.target.closest(".spawns-popin");
+
+		if (target.classList.contains("popin-open")) {
+			Popins.removePopin(target.popin);
+		} else {
+			Popins.injectPopinForTarget(target);
+		}
+
+		document.activeElement.blur();
 	},
 };
 

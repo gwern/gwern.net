@@ -36,6 +36,7 @@ Popups = {
 		//  Remove Escape key event listener.
 		document.removeEventListener("keyup", Popups.keyUp);
 	},
+
 	setup: () => {
 		GWLog("Popups.setup", "popups.js", 1);
 
@@ -62,6 +63,7 @@ Popups = {
 
 		GW.notificationCenter.fireEvent("Popups.setupDidComplete");
 	},
+
 	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
@@ -98,6 +100,7 @@ Popups = {
 			target.classList.toggle("spawns-popup", true);
 		});
 	},
+
 	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
@@ -703,7 +706,7 @@ Popups = {
 	addTitleBarToPopup: (popup) => {
 		GWLog("Popups.addTitleBarToPopup", "popups.js", 2);
 
-		//  Set class `has-title-bar` on the popup.
+		//  Set class ‘has-title-bar’ on the popup.
 		popup.classList.add("has-title-bar");
 
 		//  Create and inject the title bar element.
