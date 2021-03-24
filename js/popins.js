@@ -106,7 +106,7 @@ Popins = {
 
 	scrollElementIntoViewInPopFrame: (element) => {
 		let popin = element.closest(".popin");
-		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.scrollView.getBoundingClientRect().top;
+		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.contentView.getBoundingClientRect().top;
 	},
 
 	containingDocumentForTarget: (target) => {

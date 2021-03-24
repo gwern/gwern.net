@@ -501,24 +501,6 @@ Extracts = {
 			marginNote.swapClasses([ "inline", "sidenote" ], 0);
 		});
 
-		//  Make anchorlinks scroll pop-frame instead of opening normally.
-		popFrame.querySelectorAll("a").forEach(link => {
-			if (   link.hostname == target.hostname
-				&& link.pathname == target.pathname
-				&& link.hash > "") {
-				link.onclick = () => { return false; };
-				link.addActivateEvent((event) => {
-					let hashTarget = popFrame.querySelector(decodeURIComponent(link.hash));
-					if (hashTarget) {
-						Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(hashTarget);
-						return false;
-					} else {
-						return true;
-					}
-				});
-			}
-		});
-
 		//  Fire a contentDidLoad event.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
@@ -539,6 +521,57 @@ Extracts = {
 				if (popFrame)
 					Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(popFrame.querySelector(decodeURIComponent(target.hash)));
 			});
+	},
+
+	rewritePopinContent_LOCAL_PAGE: (popin) => {
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
+
+		let target = popin.spawningTarget;
+
+		/*  Make non-popin-spawning anchorlinks scroll popin instead of opening 
+			normally.
+			*/
+		popin.querySelectorAll("a").forEach(link => {
+			if (   link.hostname == target.hostname
+				&& link.pathname == target.pathname
+				&& link.hash > ""
+				&& link.classList.contains("no-popin")) {
+				link.onclick = () => { return false; };
+				link.addActivateEvent((event) => {
+					let hashTarget = popin.querySelector(decodeURIComponent(link.hash));
+					if (hashTarget) {
+						Popins.scrollElementIntoViewInPopFrame(hashTarget);
+						return false;
+					} else {
+						return true;
+					}
+				});
+			}
+		});
+	},
+
+	rewritePopupContent_LOCAL_PAGE: (popup) => {
+		Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
+
+		let target = popup.spawningTarget;
+
+		//  Make anchorlinks scroll popup instead of opening normally.
+		popup.querySelectorAll("a").forEach(link => {
+			if (   link.hostname == target.hostname
+				&& link.pathname == target.pathname
+				&& link.hash > "") {
+				link.onclick = () => { return false; };
+				link.addActivateEvent((event) => {
+					let hashTarget = popup.querySelector(decodeURIComponent(link.hash));
+					if (hashTarget) {
+						Popups.scrollElementIntoViewInPopFrame(hashTarget);
+						return false;
+					} else {
+						return true;
+					}
+				});
+			}
+		});
 	},
 
 	//  Other site pages.
