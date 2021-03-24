@@ -512,12 +512,9 @@ function addSpecialLinkClasses(loadEventInfo) {
 			&& link.pathname == loadEventInfo.location.pathname
 			&& (   loadEventInfo.document == Extracts.rootDocument
 				|| loadEventInfo.document.closest(".popframe").classList.contains("local-transclude"))) {
-			link.classList.toggle("link-self", true);
-		} else {
-			link.classList.remove("link-self");
-
-			if (link.pathname.substr(1).match(/[\.]/) == null)
-				link.classList.toggle("link-local", true);
+			link.swapClasses([ "link-self", "link-local" ], 0);
+		} else if (link.pathname.substr(1).match(/[\.]/) == null) {
+			link.swapClasses([ "link-self", "link-local" ], 1);
 		}
 	});
 }
