@@ -626,6 +626,10 @@ Extracts = {
 					target.popin.classList.toggle("loading", false);
 
 					Extracts.rewritePopinContent(target.popin);
+
+					requestAnimationFrame(() => {
+						Popins.scrollPopinIntoView(target.popin);
+					});
 				}
 			},
 			onFailure: (event) => {
@@ -739,6 +743,16 @@ Extracts = {
 		let specialRewriteFunction = Extracts[`rewritePopinContent_${targetTypeName}`] || Extracts[`rewritePopFrameContent_${targetTypeName}`];
 		if (specialRewriteFunction)
 			specialRewriteFunction(popin);
+
+		//  For object popins, scroll popin into view once object loads.
+		let objectOfSomeSort = popin.querySelector("iframe, object, img, video");
+		if (objectOfSomeSort) {
+			objectOfSomeSort.addEventListener("load", (event) => {
+				requestAnimationFrame(() => {
+					Popins.scrollPopinIntoView(popin);
+				});
+			});
+		}
     },
    
 	/**********/

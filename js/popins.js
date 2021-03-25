@@ -15,7 +15,9 @@ Popins = {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
 		//  Remove all remnant popins.
-		//  TODO: this
+		Popins.allSpawnedPopins().forEach(popin => {
+			Popins.removePopin(popin);
+		});
 	},
 
 	setup: () => {
@@ -268,9 +270,24 @@ Popins = {
 		}
 
 		//  Mark target as having an open popin associated with it.
-		target.classList.add("popin-open");
+		target.classList.add("popin-open", "highlighted");
+
+		//  Scroll page so that entire popin is visible, if need be.
+		requestAnimationFrame(() => {
+			Popins.scrollPopinIntoView(target.popin);
+		});
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
+	},
+
+	scrollPopinIntoView: (popin) => {
+		let popinViewportRect = popin.getBoundingClientRect();
+
+		if (popinViewportRect.bottom > window.innerHeight) {
+			window.scrollBy(0, (window.innerHeight * 0.1) + popinViewportRect.bottom - window.innerHeight);
+		} else if (popinViewportRect.top < 0) {
+			window.scrollBy(0, (window.innerHeight * -0.1) + popinViewportRect.top);
+		}
 	},
 
 	removePopin: (popin) => {
@@ -298,7 +315,7 @@ Popins = {
 
 		popin.spawningTarget.popin = null;
 		popin.spawningTarget.popFrame = null;
-		popin.spawningTarget.classList.toggle("popin-open", false);
+		popin.spawningTarget.classList.remove("popin-open", "highlighted");
 	},
 
 	/*******************/
@@ -313,7 +330,9 @@ Popins = {
 		let target = event.target.closest(".spawns-popin");
 
 		if (target.classList.contains("popin-open")) {
-			Popins.removePopin(target.popin);
+			Popins.allSpawnedPopins().forEach(popin => {
+				Popins.removePopin(popin);
+			});
 		} else {
 			Popins.injectPopinForTarget(target);
 		}

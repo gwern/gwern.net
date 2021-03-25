@@ -267,6 +267,7 @@
     --GW-popins-popin-scrollbar-thumb-color: #ccc;
     --GW-popins-popin-scrollbar-track-color: var(--GW-body-background-color);
     --GW-popins-popin-scrollbar-thumb-hover-color: #999;
+    --GW-popins-popin-stack-counter-text-color: #fff;
 
     /*  Image focus.
         */
