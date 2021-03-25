@@ -576,7 +576,10 @@ ol {
     list-style-type: none;
     margin: 1.25em 0 1.5em 0;
     padding: 0 0 0 2.5em;
-    overflow: hidden;
+}
+#markdownBody ul,
+#markdownBody ol {
+	display: flow-root;
 }
 li > ul,
 li > ol {
@@ -2868,9 +2871,9 @@ body.directory-index #disqus_thread {
 /*= POP-FRAME TYPES =*/
 /*=-----------------=*/
 
-/*┌──────────────────────────────────┐*/
-/*│ Extract & definition pop-frames. │*/
-/*└──────────────────────────────────┘*/
+/*┌────────────────────────┐*/
+/*│ Annotation pop-frames. │*/
+/*└────────────────────────┘*/
 
 /*  Data fields.
     */
@@ -3075,11 +3078,10 @@ body.directory-index #disqus_thread {
 /*┌────────────────────┐*/
 /*│ Object pop-frames. │*/
 /*└────────────────────┘*/
-
 /*  “Object pop-frames”: videos, images, PDFs, archived web pages, etc.
     */
+
 .popframe.object .popframe-content-view {
-    background-color: var(--GW-object-popup-background-color);
     padding: 0;
 }
 
@@ -3098,6 +3100,63 @@ body.directory-index #disqus_thread {
     */
 .popframe.image.loading-failed::after {
     content: "Image not found.";
+}
+
+/*┌───────────────────┐*/
+/*│ Video pop-frames. │*/
+/*└───────────────────┘*/
+
+/*  “Loading failed” message.
+    */
+.popframe.video.loading-failed::after {
+    content: "Video not found.";
+}
+
+/*┌───────────────────┐*/
+/*│ Audio pop-frames. │*/
+/*└───────────────────┘*/
+
+/*  “Loading failed” message.
+    */
+.popframe.video.loading-failed::after {
+    content: "Audio file not found.";
+}
+
+/*┌────────────────────────────┐*/
+/*│ Local document pop-frames. │*/
+/*└────────────────────────────┘*/
+
+/*  “Loading failed” message.
+    */
+.popframe.local-document.loading-failed::after {
+    content: "File not found.";
+}
+
+/*┌──────────────────────────────┐*/
+/*│ Local transclude pop-frames. │*/
+/*└──────────────────────────────┘*/
+
+.popframe.local-transclude .popframe-content-view {
+    overflow-x: hidden;
+}
+
+.popframe.local-transclude .popframe-content-view > h1:first-child,
+.popframe.local-transclude .popframe-content-view > h2:first-child,
+.popframe.local-transclude .popframe-content-view > h3:first-child,
+.popframe.local-transclude .popframe-content-view > h4:first-child,
+.popframe.local-transclude .popframe-content-view > h5:first-child,
+.popframe.local-transclude .popframe-content-view > h6:first-child {
+    margin-top: 0;
+}
+
+.popframe #page-metadata {
+    margin: 0;
+    overflow: visible;
+}
+.popframe #page-metadata::after {
+    content: "";
+    display: block;
+    border-bottom: 1px dotted currentColor;
 }
 
 /**********/
@@ -3489,9 +3548,9 @@ body.directory-index #disqus_thread {
 /*= POPUP TYPES =*/
 /*=-------------=*/
 
-/*┌──────────────────────────────┐*/
-/*│ Extract & definition popups. │*/
-/*└──────────────────────────────┘*/
+/*┌────────────────────┐*/
+/*│ Annotation popups. │*/
+/*└────────────────────┘*/
 
 .popup.annotation {
     min-width: var(--GW-popups-annotation-popup-min-width);
@@ -3501,7 +3560,6 @@ body.directory-index #disqus_thread {
 /*┌──────────────────┐*/
 /*│ Footnote popups. │*/
 /*└──────────────────┘*/
-/* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
 /*┌──────────────────────────┐*/
 /*│ Citation context popups. │*/
@@ -3520,11 +3578,13 @@ body.directory-index #disqus_thread {
 /*│ Object popups. │*/
 /*└────────────────┘*/
 
-/*  “Object popups”: videos, images, PDFs, archived web pages, etc.
-    */
 .popup.object {
     width: var(--GW-popups-popup-max-width);
     height: var(--GW-popups-popup-max-height);
+}
+
+.popframe.object .popframe-content-view {
+    background-color: var(--GW-object-popup-background-color);
 }
 
 .popup.object iframe,
@@ -3590,48 +3650,17 @@ body.directory-index #disqus_thread {
     height: var(--GW-popups-video-iframe-height);
 }
 
-/*  “Loading failed” message.
-    */
-.popup.video.loading-failed::after {
-    content: "Video not found.";
-}
-
 /*┌───────────────┐*/
 /*│ Audio popups. │*/
 /*└───────────────┘*/
-
-/*  “Loading failed” message.
-    */
-.popup.video.loading-failed::after {
-    content: "Audio file not found.";
-}
 
 /*┌────────────────────────┐*/
 /*│ Local document popups. │*/
 /*└────────────────────────┘*/
 
-/*  “Loading failed” message.
-    */
-.popup.local-document.loading-failed::after {
-    content: "File not found.";
-}
-
 /*┌──────────────────────────┐*/
 /*│ Local transclude popups. │*/
 /*└──────────────────────────┘*/
-
-.popup.local-transclude .popframe-content-view {
-    overflow-x: hidden;
-}
-
-.popup.local-transclude .popframe-content-view > h1:first-child,
-.popup.local-transclude .popframe-content-view > h2:first-child,
-.popup.local-transclude .popframe-content-view > h3:first-child,
-.popup.local-transclude .popframe-content-view > h4:first-child,
-.popup.local-transclude .popframe-content-view > h5:first-child,
-.popup.local-transclude .popframe-content-view > h6:first-child {
-    margin-top: 0;
-}
 
 /*  Table of contents popups.
     */
@@ -3646,15 +3675,8 @@ body.directory-index #disqus_thread {
     height: var(--GW-popups-popup-max-height);
 }
 
-.popup #page-metadata {
-    margin: 0;
-    overflow: visible;
-}
 .popup #page-metadata::after {
-    content: "";
-    display: block;
     width: calc(100% + 2em);
-    border-bottom: 1px dotted currentColor;
     margin: 1em -1em 1.125em -1em;
 }
 
@@ -4133,6 +4155,7 @@ body.directory-index #disqus_thread {
 		var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--GW-popins-popin-background-color);
 	background-image: none !important;
 	display: inline-block;
+    text-align: left;
     text-indent: 0;
 }
 .popin-open:not(.footnote-ref)::before,
@@ -4150,9 +4173,9 @@ body.directory-index #disqus_thread {
 /*= POPIN TYPES =*/
 /*=-------------=*/
 
-/*┌──────────────────────────────┐*/
-/*│ Extract & definition popins. │*/
-/*└──────────────────────────────┘*/
+/*┌────────────────────┐*/
+/*│ Annotation popins. │*/
+/*└────────────────────┘*/
 
 /*┌──────────────────┐*/
 /*│ Footnote popins. │*/
@@ -4178,9 +4201,6 @@ body.directory-index #disqus_thread {
 /*│ Object popins. │*/
 /*└────────────────┘*/
 
-/*  “Object popins”: videos, images, PDFs, archived web pages, etc.
-    */
-
 .popin.object iframe,
 .popin.object object {
     width: 100%;
@@ -4196,19 +4216,9 @@ body.directory-index #disqus_thread {
     max-height: calc(var(--GW-popins-popin-max-height) - 2 * var(--GW-popins-popin-border-width) - var(--popin-title-bar-height));
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*┌───────────────┐*/
+/*│ Video popins. │*/
+/*└───────────────┘*/
 
 .popin.video-popin {
     padding: 0;
@@ -4217,6 +4227,23 @@ body.directory-index #disqus_thread {
 .popin.video-popin iframe {
     display: block;
     width: 100%;
+}
+
+/*┌───────────────┐*/
+/*│ Audio popins. │*/
+/*└───────────────┘*/
+
+/*┌────────────────────────┐*/
+/*│ Local document popins. │*/
+/*└────────────────────────┘*/
+
+/*┌──────────────────────────┐*/
+/*│ Local transclude popins. │*/
+/*└──────────────────────────┘*/
+
+.popin #page-metadata::after {
+    width: calc(100% + 1em);
+    margin: 1em -1em 1.125em 0;
 }
 
 /*=---------------=*/
