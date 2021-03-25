@@ -4006,7 +4006,7 @@ body.directory-index #disqus_thread {
 	bottom: var(--GW-popins-popin-border-width);
 	height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 3px);
     padding: 0 0.5em;
-	background-color: inherit;
+	background-color: var(--GW-popins-popin-border-color);
 	border-style: solid;
 	border-color: var(--GW-popins-popin-border-color);
 	border-width: 1px 0 0 1px;
@@ -4017,6 +4017,7 @@ body.directory-index #disqus_thread {
 	justify-content: center;
 	align-items: center;
 	cursor: default;
+	color: var(--GW-popins-popin-stack-counter-text-color);
 }
 
 /*┌────────────────────┐*/
@@ -4116,6 +4117,31 @@ body.directory-index #disqus_thread {
     font-weight: bold;
     text-transform: uppercase;
     opacity: 0.35;
+}
+
+/*┌───────────────────────────┐*/
+/*│ Links with an open popin. │*/
+/*└───────────────────────────┘*/
+
+.popin-open:not(.footnote-ref),
+.popin-open:not(.footnote-ref):hover {
+	background-color: var(--GW-popins-popin-background-color);
+	--GW-link-underline-background-color: var(--GW-popins-popin-background-color);
+	--popin-open-highlight-box-shadow-x-offset: 2px;
+	box-shadow:
+		var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--GW-popins-popin-background-color);
+	background-image: none !important;
+	display: inline-block;
+}
+.popin-open:not(.footnote-ref)::before,
+.popin-open:not(.footnote-ref):hover::before {
+	background-image: none;
+	width: calc(100% + 2 * var(--GW-popins-popin-border-width));
+	height: calc(100% + 2 * var(--GW-popins-popin-border-width));
+	border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
+	left: calc(var(--popin-open-highlight-box-shadow-x-offset) - (2 * var(--GW-popins-popin-border-width)));
+	bottom: calc(0px - (2 * var(--GW-popins-popin-border-width)));
+	top: unset;
 }
 
 /*=-------------=*/

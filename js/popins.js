@@ -268,7 +268,7 @@ Popins = {
 		}
 
 		//  Mark target as having an open popin associated with it.
-		target.classList.add("popin-open");
+		target.classList.add("popin-open", "highlighted");
 
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
@@ -298,7 +298,7 @@ Popins = {
 
 		popin.spawningTarget.popin = null;
 		popin.spawningTarget.popFrame = null;
-		popin.spawningTarget.classList.toggle("popin-open", false);
+		popin.spawningTarget.classList.remove("popin-open", "highlighted");
 	},
 
 	/*******************/
