@@ -746,11 +746,13 @@ Extracts = {
 
 		//  For object popins, scroll popin into view once object loads.
 		let objectOfSomeSort = popin.querySelector("iframe, object, img, video");
-		objectOfSomeSort.addEventListener("load", (event) => {
-			requestAnimationFrame(() => {
-				Popins.scrollPopinIntoView(popin);
+		if (objectOfSomeSort) {
+			objectOfSomeSort.addEventListener("load", (event) => {
+				requestAnimationFrame(() => {
+					Popins.scrollPopinIntoView(popin);
+				});
 			});
-		});
+		}
     },
    
 	/**********/
