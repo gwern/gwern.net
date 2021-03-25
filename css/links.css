@@ -560,6 +560,7 @@ a[href*="neweva.blog103.fc2.com"]::after {
     bottom: 0.25em;
     opacity: 0.83;
     padding: 0;
+    background-image: none;
     background-size: unset;
 }
 
