@@ -15,7 +15,9 @@ Popins = {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
 		//  Remove all remnant popins.
-		//  TODO: this
+		Popins.allSpawnedPopins().forEach(popin => {
+			Popins.removePopin(popin);
+		});
 	},
 
 	setup: () => {
