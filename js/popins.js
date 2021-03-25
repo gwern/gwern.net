@@ -270,7 +270,22 @@ Popins = {
 		//  Mark target as having an open popin associated with it.
 		target.classList.add("popin-open", "highlighted");
 
+		//  Scroll page so that entire popin is visible, if need be.
+		requestAnimationFrame(() => {
+			Popins.scrollPopinIntoView(target.popin);
+		});
+
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
+	},
+
+	scrollPopinIntoView: (popin) => {
+		let popinViewportRect = popin.getBoundingClientRect();
+
+		if (popinViewportRect.bottom > window.innerHeight) {
+			window.scrollBy(0, (window.innerHeight * 0.1) + popinViewportRect.bottom - window.innerHeight);
+		} else if (popinViewportRect.top < 0) {
+			window.scrollBy(0, (window.innerHeight * -0.1) + popinViewportRect.top);
+		}
 	},
 
 	removePopin: (popin) => {

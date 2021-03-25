@@ -235,6 +235,10 @@ if (window.Extracts) {
 				target.popin.classList.toggle("loading", false);
 
 				Extracts.rewritePopinContent(target.popin);
+
+				requestAnimationFrame(() => {
+					Popins.scrollPopinIntoView(target.popin);
+				});
 			}
 		}, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 

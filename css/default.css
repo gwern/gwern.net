@@ -4016,6 +4016,7 @@ body.directory-index #disqus_thread {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+    text-indent: 0;
 	cursor: default;
 	color: var(--GW-popins-popin-stack-counter-text-color);
 }
@@ -4132,6 +4133,7 @@ body.directory-index #disqus_thread {
 		var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--GW-popins-popin-background-color);
 	background-image: none !important;
 	display: inline-block;
+    text-indent: 0;
 }
 .popin-open:not(.footnote-ref)::before,
 .popin-open:not(.footnote-ref):hover::before {
