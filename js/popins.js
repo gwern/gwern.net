@@ -328,7 +328,9 @@ Popins = {
 		let target = event.target.closest(".spawns-popin");
 
 		if (target.classList.contains("popin-open")) {
-			Popins.removePopin(target.popin);
+			Popins.allSpawnedPopins().forEach(popin => {
+				Popins.removePopin(popin);
+			});
 		} else {
 			Popins.injectPopinForTarget(target);
 		}
