@@ -125,10 +125,6 @@ Extracts = {
     setup: () => {
 		GWLog("Extracts.setup", "extracts.js", 1);
 
-		//  TEMPORARY!!
-		if (GW.isMobile())
-			return;
-
 		//  Set service provider object.
 		Extracts.popFrameProvider = window[Extracts.popFrameProviderName];
 
