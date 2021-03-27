@@ -440,8 +440,15 @@ Extracts = {
 		return (target.closest("#TOC") != null);
 	},
 
+	//  Links in the sidebar.
+	isSidebarLink: (target) => {
+		return (target.closest("#sidebar") != null);
+	},
+
 	testTarget_LOCAL_PAGE: (target) => {
-		return (!(Extracts.popFrameProvider == Popins && Extracts.isTOCLink(target)));
+		return (!(   Extracts.popFrameProvider == Popins 
+				  && (   Extracts.isTOCLink(target)
+				  	  || Extracts.isSidebarLink(target))));
 	},
 
 	preparePopup_LOCAL_PAGE: (popup) => {
