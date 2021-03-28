@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-28 15:35:07 gwern"
+When:  Time-stamp: "2021-03-28 16:54:08 gwern"
 License: CC-0
 -}
 
@@ -75,7 +75,7 @@ readLinkMetadata = do
              -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
              let urls = map fst custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
-             let brokenUrls = filter (\u -> not (head u == 'h' || head u == '/') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
@@ -139,7 +139,7 @@ createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md) $ queryWith e
 
 annotateLink :: Metadata -> String -> IO Bool
 annotateLink md target =
-  do when (target=="") $ error (show target)
+  do when (null target) $ error (show target)
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
      -- the leading '/' indicates this is a local Gwern.net file
      let target' = replace "https://www.gwern.net/" "/" target
@@ -318,6 +318,7 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Lef
                      | "plosgenetics.org" `isInfixOf` l = pubmed l
                      | "plosmedicine.org" `isInfixOf` l = pubmed l
                      | "plosone.org" `isInfixOf` l = pubmed l
+                     | null l = return (Left Permanent)
                      | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern $ tail l else return (Left Permanent)
 
 linkCanonicalize :: String -> String
