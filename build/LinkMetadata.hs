@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-28 20:20:23 gwern"
+When:  Time-stamp: "2021-03-29 16:52:33 gwern"
 License: CC-0
 -}
 
@@ -463,8 +463,11 @@ cleanAbstractsHTML t = trim $
   (\s -> subRegex (mkRegex " ([0-9]*[3])rd") s        " \\1<sup>rd</sup>") $
   (\s -> subRegex (mkRegex " \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)") s "") $ -- rm AERA classification tags they stick into the Crossref abstracts
   -- math regexes
-  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$") s        "\\1 × \\2^\\3^") $
-  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$") s        "\\1 × \\2^\\3^") $
+  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$")             s "\\1 × \\2^\\3^") $
+  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$")       s "\\1 × \\2^\\3^") $
+  (\s -> subRegex (mkRegex "<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\times\\\\\\)</span>") s "\\1×") $ -- '<span class="math inline">\(1.5\times\)</span>'
+  (\s -> subRegex (mkRegex "<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>") s "×") $ -- '<span class="math inline">\(\times\)</span>'
+  (\s -> subRegex (mkRegex "<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>") s "\\1<sup>\\2</sup>") $ -- '<span class="math inline">\(10^4\)</span>'
   -- simple string substitutions:
   foldr (uncurry replace) t [
     ("<span style=\"font-weight:normal\"> </span>", "")
@@ -501,6 +504,7 @@ cleanAbstractsHTML t = trim $
     , ("<span class=\"texhtml mvar\" style=\"font-style:italic\"><strong>c</strong></span>", "<strong><em>c</em></strong>")
     , ("<span class=\"texhtml \"><strong>C</strong></span>", "<strong>C</strong>")
     , ("<span class=\"texhtml mvar\" style=\"font-style:italic\">c</span>", "<em>c</em>")
+    , ("<span class=\"math inline\">\\(\\times\\)</span>", "×")
     , ("<math>A</math>", "<em>A</em>")
     , ("<math>B</math>", "<em>B</em>")
     , ("<math>C</math>", "<em>C</em>")
@@ -587,6 +591,38 @@ cleanAbstractsHTML t = trim $
     , ("---", "&mdash;")
     , (" - ", "—")
     , (" — ", "—")
+    , ("was significantly diminished", "was statistically-significantly diminished")
+    , ("decreased significantly", "decreased statistically-significantly")
+    , ("is significantly better than", "is statistically-significantly better than")
+    , (" significant increase", " statistically-significant increase")
+    , (" significantly less", " statistically-significantly less")
+    , (" significantly more", " statistically-significantly more")
+    , ("boundary of significance", "boundary of statistical-significance")
+    , ("robustly significant", "robustly statistically-significant")
+    , (" significant trend", " statistically-significant trend")
+    , (" non-significant trend", " non-statistically-significant trend")
+    , (" significant difference", " statistically-significant difference")
+    , (" significant genetic correlation", " statistically-significant genetic correlation")
+    , (" significant allele-phenotype associations", " statistically-significant allele-phenotype associations")
+    , (" significant association", " statistically-significant association")
+    , (" significant correlation", " statistically-significant correlation")
+    , ("the significant SNPs", "the statistically-significant SNPs")
+    , (" significantly associated", " statistically-significantly associated")
+    , (" significantly correlated", " statistically-significantly correlated")
+    , (" significantly higher (", " statistically-significantly higher (")
+    , (" significant interaction effect", "  statistically-significant interaction effect")
+    , (" significant effect", " statistically-significant effect")
+    , (" significance testing", " statistical-significance testing")
+    , ("nominally significant", "nominally statistically-significant")
+    , (" nonsignificant result", " nonsignificant result")
+    , (" significant excess", " statistically-significant excess")
+    , (" significantly enriched", " statistically-significantly enriched")
+    , ("levels of significance", "levels of significance")
+    , (" significant at the ", " statistically-significant at the ")
+    , ("statistical significance", "statistical-significance")
+    , ("statistically significant", "statistically-significant")
+    , ("genome-wide significance", "genome-wide statistical-significance")
+    , ("genome-wide significant", "genome-wide statistically-significant")
     , ("statistical significance", "statistical-significance")
     , ("statistically significant", "statistically-significant")
     , ("clinical significance", "clinical-significance")
@@ -802,6 +838,15 @@ cleanAbstractsHTML t = trim $
     , ("( ns = ", "(<em>ns</em> = ")
     , ("( n = ", "(<em>n</em> = ")
     , ("n = ", "<em>n</em> = ")
+    , ("(p = ", "(<em>p</em> = ")
+    , (" p&lt;", " <em>p < ")
+    , (" p&gt;", " <em>p > ")
+    , (" p&gte;", " <em>p ≥ ")
+    , (" p&lte;", " <em>p ≤ ")
+    , (" P&lt;", " <em>p < ")
+    , (" P&gt;", " <em>p > ")
+    , (" P&gte;", " <em>p ≥ ")
+    , (" P&lte;", " <em>p ≤ ")
     , ("<em>p</em> = .", "<em>p</em> = 0.")
     , ("<em>p</em> < .", "<em>p</em> < 0.")
     , (" N=",     " <em>N</em> = ")
