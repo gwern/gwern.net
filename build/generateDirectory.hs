@@ -38,7 +38,7 @@ generateDirectory mta dir'' = do
   case p of
     Left e   -> hPrint stderr e
     -- compare with the old version, and update if there are any differences:
-    Right p' -> do let contentsNew = header ++ T.unpack p' ++ generateYAMLFooter
+    Right p' -> do let contentsNew = header ++ T.unpack p'
                    t <- writeSystemTempFile "index" contentsNew
 
                    let target = dir'' ++ "index.page"
@@ -67,11 +67,7 @@ generateYAMLHeader     d = "---\n" ++
                            "</div>\n" ++
                            "\n" ++
                            "# Files\n" ++
-                           "\n" ++
-                           "<div class=\"columns\">" ++
                            "\n"
-generateYAMLFooter :: String
-generateYAMLFooter = "</div>"
 
 listFiles :: Metadata -> FilePath -> IO [(FilePath,MetadataItem)]
 listFiles m d = do direntries <- listDirectory d
