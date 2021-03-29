@@ -51,23 +51,23 @@ generateDirectory mta dir'' = do
                         when (contentsNew /= contentsOld) $ renameFile t target
 
 generateYAMLHeader :: FilePath -> String
-generateYAMLHeader     d = "---\n" ++
-                           "title: /" ++ d ++ " Directory Listing\n" ++
-                           "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>.\n" ++
-                           "tags: meta\n" ++
-                           "created: 2009-01-01\n" ++
-                           "status: in progress\n" ++
-                           "confidence: log\n" ++
-                           "importance: 0\n" ++
-                           "cssExtension: directory-index\n" ++
-                           "...\n" ++
-                           "\n" ++
-                           "<div class=\"abstract\">\n" ++
-                           "> <code>/" ++ d ++ "</code> directory contents:\n" ++
-                           "</div>\n" ++
-                           "\n" ++
-                           "# Files\n" ++
-                           "\n"
+generateYAMLHeader d = "---\n" ++
+                       "title: /" ++ d ++ " Directory Listing\n" ++
+                       "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>.\n" ++
+                       "tags: meta\n" ++
+                       "created: 2009-01-01\n" ++
+                       "status: in progress\n" ++
+                       "confidence: log\n" ++
+                       "importance: 0\n" ++
+                       "cssExtension: directory-index\n" ++
+                       "...\n" ++
+                       "\n" ++
+                       "<div class=\"abstract\">\n" ++
+                       "> <code>/" ++ d ++ "</code> directory contents:\n" ++
+                       "</div>\n" ++
+                       "\n" ++
+                       "# Files\n" ++
+                       "\n"
 
 listFiles :: Metadata -> FilePath -> IO [(FilePath,MetadataItem)]
 listFiles m d = do direntries <- listDirectory d
@@ -96,7 +96,14 @@ generateListItems :: (FilePath,MetadataItem) -> [Block]
 generateListItems (f,("",_,_,_,_))  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
                          [Para [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")]]
 generateListItems (f,(tle,aut,dt,_,abst)) =
-  [Para [Link nullAttr [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),
-          Str ",", Space, Str (T.pack aut), Space, Str (T.pack $ "("++dt++")"), Str ":"],
+  -- render annotation as: (skipping DOIs)
+  --
+  -- > `2010-lucretius-dererumnatura.pdf`: "On The Nature of Things", Lucretius (55BC-01-01):
+  -- >
+  -- > > A poem on the Epicurean model of the world...
+  [Para [Code nullAttr (T.pack f), Str ":", Space,
+          Link nullAttr [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),  Str ",", Space,
+          Str (T.pack aut), Space,
+          Str (T.pack $ "("++dt++")"), Str ":"],
    BlockQuote [RawBlock (Format "html") (T.pack abst)]
   ]
