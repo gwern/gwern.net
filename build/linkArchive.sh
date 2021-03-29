@@ -3,15 +3,14 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2021-03-08 12:18:24 gwern"
+# When:  Time-stamp: "2021-03-28 10:35:22 gwern"
 # License: CC-0
 #
-# Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs: we ask ArchiveBox to save a URL,
-# extract the location of the static serialized HTML, and symlink it to the wiki's `./docs/www/$DOMAIN/$SHA1($URL).html`;
+# Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
+# extract the location of the static serialized HTML, and move it to the wiki's `./docs/www/$DOMAIN/$SHA1($URL).html`;
 # if the MIME type indicates a PDF, we download & host locally.
 #
 # Example:
-# ## original AB file: /home/gwern/www/ArchiveBox/archive/1581204108.580/output.html
 # $ linkArchive.sh "https://www.framerated.co.uk/the-haunting-1963/" →
 #   /home/gwern/wiki/docs/www/www.framerated.co.uk/31900688e194a1ffa443c2895aaab8f8513370f3.html
 #
@@ -25,7 +24,7 @@
 # set -e
 # set -x
 
-USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
+USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0"
 
 TARGET=""
 ## NOTE: anchor-handling is tricky. We need to drop everything after '#' because it's technically not part of the
@@ -41,18 +40,19 @@ fi
 FILE=$(ls -U "docs/www/$DOMAIN/$HASH."* 2> /dev/null) || true
 if [[ -z "$FILE" ]]; then
 
+    URL=$(echo "$@" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/docs/www/arxiv.org/`).
     ## 404?
     HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" \
-                          --write-out '%{http_code}' --silent -L -o /dev/null "$@" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
+                          --write-out '%{http_code}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
     if [[ "$HTTP_STATUS" == "404" ]]; then
         echo "Unsuccessful: $1 $HASH" 1>&2
         exit 1
     else
         # Remote HTML, which might actually be a PDF:
         MIME_REMOTE=$(timeout 20s curl --user-agent "$USER_AGENT" \
-                          --write-out '%{content_type}' --silent -L -o /dev/null "$@" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
+                          --write-out '%{content_type}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
 
-        if [[ "$@" =~ .*'.pdf'.* || "$@" =~ .*'_pdf'.* || "$@" =~ '#pdf'.* || "$MIME_REMOTE" =~ "application/pdf".* \
+        if [[ "$URL" =~ .*'.pdf'.* || "$URL" =~ .*'_pdf'.* || "$URL" =~ '#pdf'.* || "$MIME_REMOTE" =~ "application/pdf".* \
                   || "$MIME_REMOTE" =~ "application/octet-stream".* ]]; then
 
             timeout --kill-after=120s 120s wget --user-agent="$USER_AGENT" \
@@ -64,7 +64,7 @@ if [[ -z "$FILE" ]]; then
 
             if [[ -f "$TARGET" ]] && [[ -n "$MIME_LOCAL" ]] && [[ ! "$MIME_REMOTE" =~ .*"text/html".* ]] ; then
                 mkdir --parents "./docs/www/$DOMAIN/"
-                ## move the PDF into the Gwern.net repo because ArchiveBox doesn't do PDFs:
+                ## move the PDF into the Gwern.net repo:
                 mv "$TARGET" "./docs/www/$DOMAIN/$HASH.pdf"
                 echo -n "/docs/www/$DOMAIN/$HASH.pdf$ANCHOR"
                 ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
@@ -80,7 +80,7 @@ if [[ -z "$FILE" ]]; then
             # WARNING: for me single-file emits misleading errors about needing to 'npm install' the browser, but
             # apparently you're supposed to `--browser-executable-path` workaround that, which is documented only in a bug report
             timeout --kill-after=240s 240s \
-                    ~/src/SingleFile/cli/single-file --browser-executable-path "$(which chromium-browser)" --compress-CSS --remove-scripts false \
+                    ~/src/SingleFile/cli/single-file --browser-executable-path "$(command -v chromium-browser)" --compress-CSS --remove-scripts false \
                     --browser-extensions $(find ~/.config/chromium/Default/Extensions/* -maxdepth 0 -type d) \
                     --user-agent "$USER_AGENT" \
                     --browser-load-max-time "240000" \

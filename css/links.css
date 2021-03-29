@@ -155,6 +155,7 @@ a[href$='.rm' i]::after,
 /*  Video */
 a[href$='.swf' i]::after,
 a[href$='.mp4' i]::after,
+a[href$='.mkv' i]::after,
 a[href$='.webm' i]::after,
 /*  Archives */
 a[href$='.tar' i]::after,
@@ -238,6 +239,7 @@ a[href$='.rm' i]:hover::after,
 /*  Video */
 a[href$='.swf' i]:hover::after,
 a[href$='.mp4' i]:hover::after,
+a[href$='.mkv' i]:hover::after,
 a[href$='.webm' i]:hover::after,
 /*  Archives */
 a[href$='.tar' i]:hover::after,
@@ -348,6 +350,7 @@ a[href$='.ogg' i]::after {
  */
 a[href$='.swf' i]::after,
 a[href$='.mp4' i]::after,
+a[href$='.mkv' i]::after,
 a[href$='.webm' i]::after {
     background-image: url('/static/img/icons/file-video.svg');
 }
