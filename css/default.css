@@ -4177,6 +4177,15 @@ body.directory-index #disqus_thread {
 /*│ Annotation popins. │*/
 /*└────────────────────┘*/
 
+@media only screen and (max-width: 649px) {
+	.popin .annotation-abstract figure:first-child {
+		margin-top: 1.75em;
+	}
+	.popin .annotation-abstract.wikipedia-entry figure:first-child {
+		margin-top: 1.5em;
+	}
+}
+
 /*┌──────────────────┐*/
 /*│ Footnote popins. │*/
 /*└──────────────────┘*/
