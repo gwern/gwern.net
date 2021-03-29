@@ -62,10 +62,6 @@ generateYAMLHeader d = "---\n" ++
                        "cssExtension: directory-index\n" ++
                        "...\n" ++
                        "\n" ++
-                       "<div class=\"abstract\">\n" ++
-                       "> <code>/" ++ d ++ "</code> directory contents:\n" ++
-                       "</div>\n" ++
-                       "\n" ++
                        "# Files\n" ++
                        "\n"
 
