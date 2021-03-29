@@ -115,10 +115,14 @@ if (window.Extracts) {
 		if (target.hostname == location.hostname)
 			Extracts.qualifyLinksInPopFrame(popFrame);
 
-		//  Allow for floated figures at the start of abstract.
-		let initialFigure = popFrame.querySelector(".annotation-abstract > figure.float-right:first-child");
-		if (initialFigure)
-			popFrame.contentView.insertBefore(initialFigure, popFrame.contentView.firstElementChild);
+		/*  Allow for floated figures at the start of abstract
+			(only on sufficiently wide viewports).
+			*/
+		if (!(GW.mediaQueries.mobileWidth.matches)) {
+			let initialFigure = popFrame.querySelector(".annotation-abstract > figure.float-right:first-child");
+			if (initialFigure)
+				popFrame.contentView.insertBefore(initialFigure, popFrame.contentView.firstElementChild);
+		}
 
 		//  Fire contentDidLoad event.
 		GW.notificationCenter.fireEvent("GW.contentDidLoad", {
