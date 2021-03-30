@@ -94,12 +94,13 @@ generateListItems (f,("",_,_,_,_))  = let f' = if "index" `isSuffixOf` f then ta
 generateListItems (f,(tle,aut,dt,_,abst)) =
   -- render annotation as: (skipping DOIs)
   --
-  -- > `2010-lucretius-dererumnatura.pdf`: "On The Nature of Things", Lucretius (55BC-01-01):
+  -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philo/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  [Para [Code nullAttr (T.pack f), Str ":", Space,
-          Link nullAttr [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),  Str ",", Space,
-          Str (T.pack aut), Space,
-          Str (T.pack $ "("++dt++")"), Str ":"],
+  [Para [Link nullAttr [
+            Code nullAttr (T.pack $ takeFileName f), Str ":", Space,
+            RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),  Str ",", Space,
+         Str (T.pack aut), Space,
+         Str (T.pack $ "("++dt++")"), Str ":"],
    BlockQuote [parseRawBlock $ RawBlock (Format "html") (T.pack abst)]
   ]
