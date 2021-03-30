@@ -86,7 +86,7 @@ lookupFallback m u = case M.lookup u m of
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
                                            let u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u in
-                                             if ".page" `isSuffixOf` u' then (u, ("","","","","")) else (u', ("","","","",""))
+                                             if ".page" `isSuffixOf` u' then (u, ("","","","","")) else if u==u' then (u, ("","","","","")) else lookupFallback m u'
 
 generateListItems :: (FilePath,MetadataItem) -> [Block]
 generateListItems (f,("",_,_,_,_))  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
