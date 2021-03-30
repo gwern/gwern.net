@@ -396,6 +396,11 @@ if (window.Extracts) {
 		}
     };
 
+	Extracts.testTarget_LOCAL_DOCUMENT = (target) => {
+		return (!(   Extracts.popFrameProvider == Popins 
+				  && target.href.match(/\.pdf(#|$)/) != null));
+	};
+
 	Extracts.rewritePopFrameContent_LOCAL_DOCUMENT = (popFrame) => {
 		//  Set title of popup from page title.
 		let iframe = popFrame.querySelector("iframe");
