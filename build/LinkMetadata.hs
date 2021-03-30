@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-29 16:52:33 gwern"
+When:  Time-stamp: "2021-03-29 22:28:11 gwern"
 License: CC-0
 -}
 
@@ -11,7 +11,7 @@ License: CC-0
 -- 3. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation) where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (when, void)
@@ -562,12 +562,27 @@ cleanAbstractsHTML t = trim $
     , ("<jats:sec><br/>", "")
     , ("</jats:sec><br/>", "")
     , ("  </sec> <br/>", "")
-    , ("<p><sec id=\"sec001\"></p>", "")
-    , ("<p><sec id=\"sec002\"></p>", "")
-    , ("<p><sec id=\"sec003\"></p>", "")
-    , ("<p><sec id=\"sec004\"></p>", "")
-    , ("<p><sec id=\"sec005\"></p>", "")
-    , ("<p><sec id=\"sec006\"></p>", "")
+    , ("<sec id=\"sec001\">  ", "")
+    , ("<sec id=\"sec002\">  ", "")
+    , ("<sec id=\"sec003\">  ", "")
+    , ("<sec id=\"sec004\">  ", "")
+    , ("<sec id=\"sec005\">  ", "")
+    , ("<sec id=\"sec006\">  ", "")
+    , ("<sec id=\"sec007\">  ", "")
+    , ("<sec id=\"sec008\">  ", "")
+    , ("<sec id=\"sec009\">  ", "")
+    , ("<sec id=\"sec010\">  ", "")
+    , ("<sec id=\"sec001\">  ", "")
+    , ("<sec id=\"sec002\">  ", "")
+    , ("<sec id=\"sec003\">  ", "")
+    , ("<sec id=\"sec004\">  ", "")
+    , ("<sec id=\"sec005\">  ", "")
+    , ("<sec id=\"sec006\">  ", "")
+    , ("<sec id=\"sec007\">  ", "")
+    , ("<sec id=\"sec008\">  ", "")
+    , ("<sec id=\"sec009\">  ", "")
+    , ("<sec id=\"sec010\">  ", "")
+    , ("<sec id=\"english\">  ", "")
     , ("<sec id=\"st1\">", "")
     , ("<sec id=\"st2\">", "")
     , ("<sec id=\"st3\">", "")
@@ -929,7 +944,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
         | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
         | "notes/" `isPrefixOf` p = return (Left Permanent) -- notes are supposed to popup as cross-page section popups, we want to forbid any auto-annotation.
-        | "/index" `isSuffixOf` p = return (Left Permanent)
+        | "/index" `isSuffixOf` p || p == "index" = return (Left Permanent) -- likewise: the directory index pages are useful only as cross-page popups, to browse
         | otherwise =
             let p' = replace "https://www.gwern.net/" "" p in
             do hPutStrLn stderr p'

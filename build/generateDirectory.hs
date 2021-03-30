@@ -16,7 +16,7 @@ import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 
-import LinkMetadata (readLinkMetadata, Metadata, MetadataItem)
+import LinkMetadata (parseRawBlock, readLinkMetadata, Metadata, MetadataItem)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -101,5 +101,5 @@ generateListItems (f,(tle,aut,dt,_,abst)) =
           Link nullAttr [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),  Str ",", Space,
           Str (T.pack aut), Space,
           Str (T.pack $ "("++dt++")"), Str ":"],
-   BlockQuote [RawBlock (Format "html") (T.pack abst)]
+   BlockQuote [parseRawBlock $ RawBlock (Format "html") (T.pack abst)]
   ]
