@@ -3,8 +3,7 @@
 -- Module for typographic enhancements of text:
 -- 1. adding smallcaps to capitalized phrases
 -- 2. adding line-break tags (`<wbr>`) to slashes so web browsers break at slashes in text
--- 3. adding soft hyphens to enable hyphenation on broken web browsers like Google Chrome
--- 4. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a cycling pattern, like `class="ruler-1"`/`class="ruler-2"`/`class="ruler-3"`/`class="ruler-1"`..., like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal rulers and other block elements within each section, it is not possible to do the usual trick like with blockquotes/lists).
+-- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a cycling pattern, like `class="ruler-1"`/`class="ruler-2"`/`class="ruler-3"`/`class="ruler-1"`..., like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal rulers and other block elements within each section, it is not possible to do the usual trick like with blockquotes/lists).
 module Typography where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
@@ -22,13 +21,12 @@ import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
 
 import Data.FileStore.Utils (runShellCommand)
-import qualified Text.Hyphenation as H (hyphenate, hyphenatorLeftMin, english_US)
 
 import Text.Pandoc (Inline(..), Block(..), Pandoc)
 import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk (breakSlashes . breakEquals . hyphenate) . -- work around the RawBlock/RawInline trapdoor by running hyphenation *first*; breakSlashes doesn't care, but if we run hyphenate afterwards, individual phrases like "classification/categorization" will get <wbr>s but not soft-hyphens.
+typographyTransform = walk (breakSlashes . breakEquals) .
                        walk smallcapsfyInlineCleanup . walk smallcapsfy . rulersCycle 3
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
@@ -83,7 +81,7 @@ smallcapsfyInline x@(Str s) = let rewrite = go s in if s /= rewrite then RawInli
                                          `T.append` "<span class=\"smallcaps-auto\">"`T.append` (T.pack matched) `T.append` "</span>"
                                          `T.append` go (T.pack after)
 smallcapsfyInline x = x
--- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg if we scrape a Gwern.net abstract (which will already be smallcaps/hyphenated) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
+-- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg if we scrape a Gwern.net abstract (which will already be smallcaps) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
 smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) [y@(RawInline _ t)]) = if "<span class=\"smallcaps-auto\">" `T.isInfixOf` t then y else x
 smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"],_) (y@(Span (_,["smallcaps-auto"],_) _):_)) = y
 smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) _) = x
@@ -109,7 +107,7 @@ smallcapsfyRegex = R.makeRegex
 
 -------------------------------------------
 
--- add '<wbr>' (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://www.gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking & hyphenation is incompetent, sadly).
+-- add '<wbr>' (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://www.gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking is incompetent, sadly).
 -- WARNING: this will affect link texts like '[AC/DC](!Wikipedia)', so make sure you do the rewrite after the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for possible HTML and bails out to avoid damaging it
 breakSlashes :: Block -> Block
 -- skip CodeBlock/RawBlock/Header/Table: enabling line-breaking on slashes there is a bad idea or not possible:
@@ -136,41 +134,6 @@ breakEqualsInline (Str s) = let s' = T.unpack s in Str $ T.pack $ subRegex equal
 breakEqualsInline x = x
 equalsRegex :: R.Regex
 equalsRegex = mkRegex "([=≠])([a-zA-Z0-9])"
-
--------------------------------------------
-
--- Why try to support fully-justified text when desktop Chrome makes it so hard, the soft hyphen hack does come with costs (bloated HTML source, copy-paste issues, bots misbehaving, unfixable edge-cases like X.org middle-click-to-copy), and few will notice? Isn't fully-justified (rather than the usual left-justified ragged-right) rather fussy and excessive? Sure, designers and the like *claim* it looks better, but why believe them? Do we really like it for any reason other than typography tradition and it being associated with professionally-typeset books? Perhaps we'd find the hyphens and split-up words to be confusing clutter if not for inertia and historical reasons. Should we do it because it's hard and to show off?
---
--- After thinking about it, I think there is a principled justification for full-justification. (It is not a large or impressive reason, but we shouldn't expect it to be: there's only so much that different ways of fiddling with line length can do, after all. But it is a reason.) Ragged margins create lines of varying lengths, and can lead to visual artifacts like zig-zag snakes down the side, a staccato sense from the alternating long/short lines, or just blobby chunks of whitespace ("...a grey and muddled pattern of isolated spats..."); none of these apparent structures, however, *means* anything. They are brute facts, chance accident of whatever words and punctuation happened to be used and their interaction. Fully-justified text has no misleading ebb and flow on the ragged edge, nor any noticeable differences in densities, and fewer hacks like s t r e t c h e d out text; someone reading fully-justified text would have a much harder time guessing where they are reading solely from a blurry outline of the text.
---
--- In design, we want uniformity, and to show only "differences that make a difference"; "form follows function" implies that lack of form should follow lack of function (or to put it another way, if 'differences in form follow differences in function', then 'lack of difference in form should follow from lack of difference in function'). In Tufte's terms, a good data visualization or chart avoids 'chart junk' and maximizes 'data-ink ratio' by making all variations map onto variation in the underlying data; if two pixels are drawn at different X/Y locations, that's because they differ on two variables; if they differ in color, then they differ on a third variable as well; and so on. But they do not change positions, colors, icon shapes or whatever at random, arbitrarily. A motto for the designer: "show differences that make a difference, and hide differences that don't."
---
--- Usually, we are concerned with *adding* variation which reflects the structure & semantics of the document: splitting text into logical paragraphs, lists, footnotes, sections, subtitles, and so on. Full-justification happens to be a case where we are *removing* pseudo-structure. (This is somewhat unusual because our tools, like our fonts, generally have done such a good job of hiding such low-level irregularities - we don't notice how they do things like size or kerning right, avoiding similar problems at other scales.) Full-justification doesn't necessarily do a perfect job of removing bad variation (it can worsen 'rivers'), but few things are perfect, and full-justification does greatly even out text density and make a more uniform 'color'.
---
--- NOTE: while this does use English dictionaries from TeX which attempts to implement *Knuth-Liang hyphenation* (https://en.wikipedia.org/wiki/Hyphenation_algorithm) to specify where acceptable word-breaks are, it does not mean that browsers are now implementing *Knuth-Plass line-breaking* (https://www.gwern.net/docs/design/1981-knuth.pdf http://defoe.sourceforge.net/folio/knuth-plass.html), which attempts to choose which subset of the available word-breaks minimizes overall line length and word spacing and number of word-breaks, and may also do additional 'microtypography' (https://en.wikipedia.org/wiki/Microtypography https://www.gwern.net/docs/design/2000-thanh.pdf) tricks like adjusting the spacing between letters (https://en.wikipedia.org/wiki/Tracking_(typography)). Because web browsers won't ever implement this (for various historical & standards-related reasons)†, and because it is impossible to do it statically without knowing the final width (requiring either server or client-side processing for the specific browser & screen size), to do full TeX-level line-breaking would require additional JS* along the lines of Bram Stein's https://github.com/bramstein/typeset / https://github.com/robertknight/tex-linebreak / https://www.npmjs.com/package/@lovepop/typesetter
---
--- * well, unless you apply BRUTE STRENGTH like https://mpetroff.net/2020/05/pre-calculated-line-breaks-for-html-css/ and precompute the permitted breaks for *every possible column width*!
--- † but https://www.w3.org/TR/css-text-4/#text-wrap https://bugzilla.mozilla.org/show_bug.cgi?id=630181 https://www.caniuse.com/?search=pretty ? Good luck...
-hyphenate :: Block -> Block
-hyphenate x@CodeBlock{} = x
-hyphenate x@RawBlock{}  = x
-hyphenate x@Header{}    = x
-hyphenate x@Table{}     = x
-hyphenate x = walk hyphenateInline x
-hyphenateInline :: Inline -> Inline
-hyphenateInline x@(Span (ident, classes, keys) xs) = if "math" `elem` classes then x else Span (ident, classes, keys) (walk hyphenateInline xs)
-hyphenateInline x@(Str s) = if T.any (=='\173') s || T.any (=='\\') s then x else -- U+00AD SOFT HYPHEN, HTML: &#173; &shy;
-                              Str $ T.replace "-\173" "-" $ -- odd edge-case exposed on Safari: because hyphenator breaks on hyphens (why?), interspersing the soft hyphen results in *two* hyphens being displayed should the line break there! since the regular hyphen already ensures a line-break opportunity
-                                                            -- the soft hyphen is unnecessary, so just delete it.
-                                                            -- https://github.com/ekmett/hyphenation/issues/16
-                              -- preserve font ligatures at vshabanov's suggestion: "f"++"filjt" (SSfP supports these)
-                              T.replace "f\173f" "ff" $
-                              T.replace "f\173i" "fi" $
-                              T.replace "f\173l" "fl" $
-                              T.replace "f\173j" "fj" $
-                              T.replace "f\173t" "ft" $
-                              T.pack $ unwords $ map (intercalate "\173" . H.hyphenate H.english_US{H.hyphenatorLeftMin=2}) $ words $ T.unpack s
-hyphenateInline x = x
 
 -------------------------------------------
 

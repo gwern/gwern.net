@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-30 20:45:20 gwern"
+When:  Time-stamp: "2021-03-31 08:39:57 gwern"
 License: CC-0
 -}
 
@@ -100,7 +100,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
                                              let titleHtml    = typesetHtmlField "" a
                                              let authorHtml   = typesetHtmlField "" b
-                                             -- obviously no point in hyphenating/smallcapsing date/DOI, so skip those
+                                             -- obviously no point in smallcapsing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
@@ -933,7 +933,7 @@ cleanAbstractsHTML t = trim $
     , ("pro-posed", "proposed")
     , ("\t\t", "")
     , ("\t\t\t\t\t", "")
-    , ("\173", "") -- we do soft hyphenation at compile-time to keep the data sources clean & readable, and benefit from any upgrades
+    , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
       ]
 
 trim :: String -> String
