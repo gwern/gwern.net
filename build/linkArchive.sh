@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2021-03-28 10:35:22 gwern"
+# When:  Time-stamp: "2021-03-31 11:05:12 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -38,8 +38,9 @@ if [[ -n $(echo "$1" | fgrep '#') ]]; then
 fi
 
 FILE=$(ls -U "docs/www/$DOMAIN/$HASH."* 2> /dev/null) || true
-if [[ -z "$FILE" ]]; then
-
+if [[ -n "$FILE" ]]; then
+    echo -n "/$FILE$ANCHOR"
+else
     URL=$(echo "$@" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/docs/www/arxiv.org/`).
     ## 404?
     HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" \
@@ -107,6 +108,4 @@ if [[ -z "$FILE" ]]; then
             fi
         fi
     fi
-else
-    echo -n "$FILE$ANCHOR"
 fi

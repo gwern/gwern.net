@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-03-28 18:56:58 gwern"
+When:  Time-stamp: "2021-03-31 11:05:32 gwern"
 License: CC-0
 -}
 
@@ -130,7 +130,7 @@ archiveURL :: String -> IO (Maybe Path)
 archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l]
                   case exit of
                      ExitSuccess -> do hPutStrLn stderr ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
-                                       return $ Just $ "/" ++ U.toString stdout
+                                       return $ Just $ U.toString stdout
                      ExitFailure _ -> hPutStrLn stderr (l ++ " : archiving failed: " ++ U.toString stderr') >> return Nothing
 
 -- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of URLs we always archive even if otherwise on a safe domain:
