@@ -35,22 +35,22 @@ if (window.Extracts) {
 
 		//  Link to original URL (for archive links).
 		let originalLinkHTML = "";
-		if (   referenceData.element.dataset.urlOriginal != undefined 
+		if (   referenceData.element.dataset.urlOriginal != undefined
 			&& referenceData.element.dataset.urlOriginal != target.href) {
-			originalLinkHTML = `<span class="originalURL">[<a 
-							title="Link to original URL for ‘${referenceData.titleText}’" 
+			originalLinkHTML = `<span class="originalURL">[<a
+							title="Link to original URL for ‘${referenceData.titleText}’"
 							href="${referenceData.element.dataset.urlOriginal}"
-							target="_new" 
+							target="_new"
 							alt="Original URL for this archived link; may be broken."
 								>original</a>]</span>`;
 		}
 
 		//  Extract title/link.
 		let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
-		let titleLinkHTML = `<a 
-								class="${titleLinkClass}" 
-								target="_new" 
-								href="${target.href}" 
+		let titleLinkHTML = `<a
+								class="${titleLinkClass}"
+								target="_new"
+								href="${target.href}"
 								title="Open ${target.href} in a new window"
 									>${referenceData.titleHTML}</a>`;
 
@@ -58,8 +58,8 @@ if (window.Extracts) {
 		let abstractSpecialClass = ``;
 		if (Annotations.isWikipediaLink(annotationIdentifier))
 			abstractSpecialClass = "wikipedia-entry";
-		return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>` 
-			 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>` 
+		return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>`
+			 + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
 			 + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
 	};
 
@@ -71,29 +71,31 @@ if (window.Extracts) {
 								: target.pathname + target.hash;
 
 		//  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
-		if (   target.hash > "" 
-			&& (   target.hostname == location.hostname 
-				|| Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
+		if (   target.hash > ""
+			&& (   target.hostname == location.hostname
+				   || Annotations.isWikipediaLink(Extracts.targetIdentifier(target)))
+               && // links with an org notation for link icons (eg 'https://arxiv.org/abs/2006.07159#google') should not get a section mark
+            !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"].includes(target.hash))
 			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
 		let popFrameTitle;
 		if (target.dataset.urlOriginal) {
 			//  For local-archive links, include archive link with original.
-			popFrameTitle = `<a 
+			popFrameTitle = `<a
 					class="popframe-title-link-archived"
 					href="${target.href}"
 					title="Open ${target.href} in a new window"
 					target="_blank"
 						>[ARCHIVED]</a>` +
 				`<span class="separator">·</span>` +
-				`<a 
+				`<a
 					class="popframe-title-link"
 					href="${target.dataset.urlOriginal}"
 					title="Open ${target.dataset.urlOriginal} in a new window"
 					target="_blank"
 						>${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
 		} else {
-			popFrameTitle = `<a 
+			popFrameTitle = `<a
 				class="popframe-title-link"
 				href="${target.href}"
 				title="Open ${target.href} in a new window"
@@ -129,9 +131,9 @@ if (window.Extracts) {
 			source: "Extracts.rewritePopFrameContent_ANNOTATION",
 			document: popFrame.contentView,
 			isMainDocument: false,
-			needsRewrite: false, 
-			clickable: false, 
-			collapseAllowed: false, 
+			needsRewrite: false,
+			clickable: false,
+			collapseAllowed: false,
 			isCollapseBlock: false,
 			isFullPage: false,
 			location: Extracts.locationForTarget(target),
@@ -162,7 +164,7 @@ if (window.Extracts) {
 					if (Annotations.cachedAnnotationExists(annotationIdentifier))
 						return;
 
-					/*  On hover, start a timer, duration of one-half the 
+					/*  On hover, start a timer, duration of one-half the
 						popup trigger delay...
 						*/
 					annotatedTarget.annotationLoadTimer = setTimeout(() => {
@@ -212,7 +214,7 @@ if (window.Extracts) {
 		}
     };
 
-	/*	Refresh (respawn or reload) a pop-frame for an annotated target after 
+	/*	Refresh (respawn or reload) a pop-frame for an annotated target after
 		its annotation (fragment) loads.
 		*/
 	Extracts.refreshPopFrameAfterAnnotationLoads = (target) => {
@@ -220,9 +222,9 @@ if (window.Extracts) {
 
 		target.popFrame.classList.toggle("loading", true);
 
-		/*	We set up an event handler for when the fragment loads, and respawn 
-			the popup / re-inject the popin, after it spawns (if it 
-			hasn’t de-spawned already, e.g. if the user moused out of the 
+		/*	We set up an event handler for when the fragment loads, and respawn
+			the popup / re-inject the popin, after it spawns (if it
+			hasn’t de-spawned already, e.g. if the user moused out of the
 			target).
 			*/
 		GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {

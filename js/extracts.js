@@ -21,7 +21,7 @@ Extracts = {
 	/*	Targets.
 		*/
     targets: {
-		targetElementsSelector: "a[href]", 
+		targetElementsSelector: "a[href]",
 		excludedElementsSelector: [
 			".section-self-link",
 			".footnote-self-link",
@@ -146,9 +146,9 @@ Extracts = {
             GWLog("Activating popins.", "extracts.js", 1);
         }
 
-		/*  Add handler to set up targets in loaded content (including 
+		/*  Add handler to set up targets in loaded content (including
 			newly-spawned pop-frames; this allows for recursion), and to
-			add hover/click event listeners to annotated targets, to load 
+			add hover/click event listeners to annotated targets, to load
 			annotations (fragments).
 			*/
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
@@ -174,25 +174,25 @@ Extracts = {
 		*/
 
 	/*	This array defines the types of ‘targets’ (i.e., annotated links,
-		links pointing to available content such as images or code files, 
+		links pointing to available content such as images or code files,
 		citations, etc.) that Extracts supports.
 		*/
 	targetTypeDefinitions: [
 		[ "LOCAL_PAGE",  		"isLocalPageLink", 		"has-content",		"localTranscludeForTarget", 	"local-transclude"      ],
 	],
 
-	/*	Returns full type info for the given target. This contains the target 
+	/*	Returns full type info for the given target. This contains the target
 		type name, the name of the predicate function for identifying targets of
-		that type (e.g., isAnnotatedLink), classes which should be applied to 
+		that type (e.g., isAnnotatedLink), classes which should be applied to
 		targets of that type during initial processing, the fill functions to
-		fill popups and popins of that type, and the classes which should be 
+		fill popups and popins of that type, and the classes which should be
 		applied to pop-frames of that type.
 		*/
 	targetTypeInfo: (target) => {
 		let info = { };
 		for (definition of Extracts.targetTypeDefinitions) {
-			[ 	info.typeName, 
-				info.predicateFunctionName, 
+			[ 	info.typeName,
+				info.predicateFunctionName,
 				info.targetClasses,
 				info.popFrameFillFunctionName,
 				info.popFrameClasses
@@ -204,12 +204,12 @@ Extracts = {
 		return null;
 	},
 
-	/*	Returns the target identifier: the original URL (for locally archived 
-		pages), or the relative url (for local links), or the full URL (for 
+	/*	Returns the target identifier: the original URL (for locally archived
+		pages), or the relative url (for local links), or the full URL (for
 		foreign links).
 		*/
 	targetIdentifier: (target) => {
-		return    target.dataset.urlOriginal 
+		return    target.dataset.urlOriginal
 			   || (target.hostname == location.hostname
 			   	   ? target.pathname + target.hash
 			   	   : target.href);
@@ -224,9 +224,9 @@ Extracts = {
 	},
 
 	/*	This function qualifies anchorlinks in transcluded content (i.e., other
-		pages on the site, as well as annotations describing other pages on the 
-		site), by rewriting their href attributes to include the path of the 
-		target (link) that spawned the pop-frame that contains the transcluded 
+		pages on the site, as well as annotations describing other pages on the
+		site), by rewriting their href attributes to include the path of the
+		target (link) that spawned the pop-frame that contains the transcluded
 		content.
 		*/
     qualifyLinksInPopFrame: (popFrame) => {
@@ -239,7 +239,7 @@ Extracts = {
     	return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
 
-	/*	This function fills a pop-frame for a given target with content. It 
+	/*	This function fills a pop-frame for a given target with content. It
 		returns true if the pop-frame successfully filled, false otherwise.
 		*/
 	fillPopFrame: (popFrame) => {
@@ -272,14 +272,14 @@ Extracts = {
 
 		//  Special handling for certain popup types.
 		let targetTypeName = Extracts.targetTypeInfo(target).typeName;
-		let specialTitleFunction = (Extracts.popFrameProvider == Popups 
-									? Extracts[`titleForPopup_${targetTypeName}`] 
+		let specialTitleFunction = (Extracts.popFrameProvider == Popups
+									? Extracts[`titleForPopup_${targetTypeName}`]
 									: Extracts[`titleForPopin_${targetTypeName}`])
 								|| Extracts[`titleForPopFrame_${targetTypeName}`];
 		if (specialTitleFunction)
 			return specialTitleFunction(popFrame);
 		else
-			return `<a 
+			return `<a
 				class="popframe-title-link"
 				href="${target.href}"
 				title="Open ${target.href} in a new window"
@@ -288,18 +288,18 @@ Extracts = {
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
-		on the same website (displayed to the user in popups, or injected in 
+		on the same website (displayed to the user in popups, or injected in
 		block flow as popins), and the (almost-)seamless handling of local links
-		in such transcluded content in the same way that they’re handled in the 
+		in such transcluded content in the same way that they’re handled in the
 		root document (i.e., the actual page loaded in the browser window). This
 		permits us to have truly recursive popups with unlimited recursion depth
 		and no loss of functionality.
 
-		For any given target element, targetDocument() asks: to what local 
+		For any given target element, targetDocument() asks: to what local
 		document does the link refer?
 
 		This may be either the root document, or an entire other page that was
-		transcluded wholesale and embedded as a pop-frame (of class 
+		transcluded wholesale and embedded as a pop-frame (of class
 		‘external-page-embed’).
 		*/
 	targetDocument: (target) => {
@@ -310,11 +310,11 @@ Extracts = {
 			return Extracts.rootDocument;
 
 		if (Extracts.popFrameProvider == Popups) {
-			let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("external-page-embed") 
+			let popupForTargetDocument = Popups.allSpawnedPopups().find(popup => (   popup.classList.contains("external-page-embed")
 																				  && popup.spawningTarget.pathname == target.pathname));
 			return popupForTargetDocument ? popupForTargetDocument.contentView : null;
 		} else if (Extracts.popFrameProvider == Popins) {
-			let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("external-page-embed") 
+			let popinForTargetDocument = Popins.allSpawnedPopins().find(popin => (   popin.classList.contains("external-page-embed")
 																				  && popin.spawningTarget.pathname == target.pathname)
 																				  && Extracts.popFrameHasLoaded(popin));
 			return popinForTargetDocument ? popinForTargetDocument.contentView : null;
@@ -341,7 +341,7 @@ Extracts = {
 			objectOfSomeSort.onload = (event) => {
 				popFrame.classList.toggle("loading", false);
 
-				/*	We do this for local documents only. Cross-origin 
+				/*	We do this for local documents only. Cross-origin
 					protections prevent us from accessing the content of
 					an iframe with a foreign site, so we do nothing special
 					and simply let the foreign site’s server show its usual
@@ -358,7 +358,7 @@ Extracts = {
 				popFrame.classList.toggle("loading", false);
 			};
 		}
-		/*  We set an ‘error’ handler for *all* types of entity, even 
+		/*  We set an ‘error’ handler for *all* types of entity, even
 			iframes, just in case.
 			*/
 		objectOfSomeSort.onerror = (event) => {
@@ -368,24 +368,24 @@ Extracts = {
 
 	/***************************************************************************/
 	/*  The target-testing and pop-frame-filling functions in this section
-		come in sets, which define and implement classes of pop-frames 
-		(whether those be popups, or popins, etc.). (These classes are things 
+		come in sets, which define and implement classes of pop-frames
+		(whether those be popups, or popins, etc.). (These classes are things
 		like “a link that has a statically generated extract provided for it”,
 		“a link to a locally archived web page”, “an anchorlink to a section of
 		the current page”, and so on.)
 
-		Each set contains a testing function, which is called by 
-		testTarget() to determine if the target (link, etc.) is eligible for 
-		processing, and is also called by fillPopFrame() to find the 
-		appropriate filling function for a pop-frame spawned by a given 
+		Each set contains a testing function, which is called by
+		testTarget() to determine if the target (link, etc.) is eligible for
+		processing, and is also called by fillPopFrame() to find the
+		appropriate filling function for a pop-frame spawned by a given
 		target. The testing function takes a target element and examines its
 		href or other properties, and returns true if the target is a member of
 		that class of targets, false otherwise.
 
 		Each set also contains the corresponding filling function, which
-		is called by fillPopFrame() (chosen on the basis of the return values 
-		of the testing functions, and the specified order in which they’re 
-		called). The filling function takes a target element and returns a 
+		is called by fillPopFrame() (chosen on the basis of the return values
+		of the testing functions, and the specified order in which they’re
+		called). The filling function takes a target element and returns a
 		string which comprises the HTML contents that should be injected into
 		the pop-frame spawned by the given target.
 		*/
@@ -419,12 +419,12 @@ Extracts = {
 				}
 			};
 
-		/*	Check to see if the target location matches an already-displayed 
+		/*	Check to see if the target location matches an already-displayed
 			page (which can be the root page of the window).
 			*/
 		let fullTargetDocument = Extracts.targetDocument(target);
 		if (fullTargetDocument) {
-			/*  If it does, display the section. (We know it must be an 
+			/*  If it does, display the section. (We know it must be an
 				anchorlink because if it were not, the target would not be
 				active.)
 				*/
@@ -446,7 +446,7 @@ Extracts = {
 	},
 
 	testTarget_LOCAL_PAGE: (target) => {
-		return (!(   Extracts.popFrameProvider == Popins 
+		return (!(   Extracts.popFrameProvider == Popins
 				  && (   Extracts.isTOCLink(target)
 				  	  || Extracts.isSidebarLink(target))));
 	},
@@ -485,10 +485,12 @@ Extracts = {
 		}
 
 		//  Mark sections with ‘§’ symbol.
-		if (target.hash > "" && !popFrame.classList.contains("external-page-embed"))
+		if (target.hash > "" && !popFrame.classList.contains("external-page-embed" &&
+            // links with an org notation for link icons (eg 'https://arxiv.org/abs/2006.07159#google') should not get a section mark
+            !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"].includes(target.hash)))
 			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
-		return `<a 
+		return `<a
 			class="popframe-title-link"
 			href="${target.href}"
 			title="Open ${target.href} in a new window"
@@ -512,9 +514,9 @@ Extracts = {
 			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
 			document: popFrame.contentView,
 			isMainDocument: false,
-			needsRewrite: false, 
-			clickable: false, 
-			collapseAllowed: false, 
+			needsRewrite: false,
+			clickable: false,
+			collapseAllowed: false,
 			isCollapseBlock: false,
 			isFullPage: false,
 			location: Extracts.locationForTarget(target),
@@ -534,7 +536,7 @@ Extracts = {
 
 		let target = popin.spawningTarget;
 
-		/*  Make non-popin-spawning anchorlinks scroll popin instead of opening 
+		/*  Make non-popin-spawning anchorlinks scroll popin instead of opening
 			normally.
 			*/
 		popin.querySelectorAll("a").forEach(link => {
@@ -610,11 +612,11 @@ Extracts = {
 					*/
 				GW.notificationCenter.fireEvent("GW.contentDidLoad", {
 					source: "Extracts.externalPageEmbedForTarget",
-					document: target.popFrame.contentView, 
+					document: target.popFrame.contentView,
 					isMainDocument: false,
-					needsRewrite: true, 
-					clickable: false, 
-					collapseAllowed: false, 
+					needsRewrite: true,
+					clickable: false,
+					collapseAllowed: false,
 					isCollapseBlock: false,
 					isFullPage: true,
 					location: Extracts.locationForTarget(target),
@@ -689,9 +691,9 @@ Extracts = {
 	/*	Popins.
 		*/
 
-	/*	Called by popins.js just before injecting the popin. This is our chance 
-		to fill the popin with content, and rewrite that content in whatever 
-		ways necessary. After this function exits, the popin will appear on the 
+	/*	Called by popins.js just before injecting the popin. This is our chance
+		to fill the popin with content, and rewrite that content in whatever
+		ways necessary. After this function exits, the popin will appear on the
 		screen.
 		*/
     preparePopin: (popin) => {
@@ -723,7 +725,7 @@ Extracts = {
 			if ((popin = specialPrepareFunction(popin)) == null)
 				return null;
 
-		/*  If we’re waiting for content to be loaded into the popin 
+		/*  If we’re waiting for content to be loaded into the popin
 			asynchronously, then there’s no need to do rewrites for now.
 			*/
 		if (Extracts.popFrameHasLoaded(popin))
@@ -731,7 +733,7 @@ Extracts = {
 
 		return popin;
     },
-     
+
     rewritePopinContent: (popin) => {
 		GWLog("Extracts.rewritePopinContent", "extracts.js", 2);
 
@@ -757,7 +759,7 @@ Extracts = {
 			});
 		}
     },
-   
+
 	/**********/
 	/*	Popups.
 		*/
@@ -767,8 +769,8 @@ Extracts = {
 	},
 
 	spawnedPopupMatchingTarget: (target) => {
-		return Popups.allSpawnedPopups().find(popup => 
-				   Extracts.targetsMatch(target, popup.spawningTarget) 
+		return Popups.allSpawnedPopups().find(popup =>
+				   Extracts.targetsMatch(target, popup.spawningTarget)
 				&& Popups.popupIsEphemeral(popup));
 	},
 
@@ -833,15 +835,15 @@ Extracts = {
 			if ((popup = specialPrepareFunction(popup)) == null)
 				return null;
 
-		/*  If we’re waiting for content to be loaded into the popup 
+		/*  If we’re waiting for content to be loaded into the popup
 			asynchronously, then there’s no need to do rewrites for now.
 			*/
-		if (Extracts.popFrameHasLoaded(popup)) 
+		if (Extracts.popFrameHasLoaded(popup))
 			Extracts.rewritePopupContent(popup);
 
 		return popup;
     },
-    
+
     rewritePopupContent: (popup) => {
 		GWLog("Extracts.rewritePopupContent", "extracts.js", 2);
 

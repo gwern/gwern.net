@@ -9,7 +9,7 @@ module Typography where
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
-import Data.List (intercalate, isPrefixOf)
+import Data.List (isPrefixOf)
 import Data.List.Utils (replace)
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (getModificationTime, removeFile)
