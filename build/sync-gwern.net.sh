@@ -19,6 +19,7 @@ if [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && 
        [ -z "$(pgrep hakyll)" ];
 then
     set -e
+
     bold() { echo -e "\033[1m"$@"\033[0m"; }
     ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
     wrap() { OUTPUT=$($1 2>&1)
@@ -50,10 +51,10 @@ then
                docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
                docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ notes/ fiction/ haskell/ newsletter/ newsletter/2013/ newsletter/2014/ \
-               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ zeo/ &
+               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ zeo/
 
     bold "Updating annotations..."
-    ghci -v0 -istatic/build/ ./static/build/LinkMetadata.hs -e 'do { md <- readLinkMetadata; return $ length md; }' &> /dev/null
+    ghci -v0 -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -197,7 +198,8 @@ then
                -e '<figure-inline' -e '<small></small>' -e '<inline-formula' -e '<inline-graphic' -e '<ahref='  \
                -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' \
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
-               -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -- ./metadata/*.yaml; }
+               -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
+               -e '[Key word' -e '<strong>[Keywords:' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
