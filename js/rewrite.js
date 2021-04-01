@@ -185,22 +185,6 @@ function getSelectionHTML() {
     return container.innerHTML;
 }
 
-/****************************************************************/
-/*	HYPHENS
-	Add copy listener to strip soft hyphens from copy-pasted text 
-	(inserted by compile-time hyphenator).
-	*/
-window.addEventListener("copy", GW.textCopied = (event) => {
-	GWLog("GW.textCopied", "rewrite.js", 2);
-
-    if (event.target.matches("input, textarea")) return;
-    event.preventDefault();
-    const selectedHTML = getSelectionHTML();
-    const selectedText = getSelection().toString();
-    event.clipboardData.setData("text/plain", selectedText.replace(/\u00AD|\u200b/g, ""));
-    event.clipboardData.setData("text/html",  selectedHTML.replace(/\u00AD|\u200b/g, ""));
-});
-
 /*********************/
 /* FULL-WIDTH BLOCKS */
 /*********************/
