@@ -659,12 +659,6 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*  Use justified text (words get broken/hyphenated as necessary to avoid a
     'ragged margin'), undoing the default of 'flush left, ragged' right (see
     https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
-
-    WARNING: 'auto' hyphenation does not work in Chrome desktop due to long-standing inability/refusal:
-    https://bugs.chromium.org/p/chromium/issues/detail?id=47083 https://bugs.chromium.org/p/chromium/issues/detail?id=605840 https://bugs.chromium.org/p/chromium/issues/detail?id=652964
-    /images/design/2019-02-19-meme-distractedboyfriend-chromehyphenation.jpg
-
-    To work around Chrome failure, we use Edward Kmett's Haskell-ification of the TeX algorithm & dictionaries ( https://hackage.haskell.org/package/hyphenation ) to run a Hakyll compilation pass to insert soft hyphens. There is one bad side-effect: soft hyphens are often preserved in copy-paste, cluttering text, so a copy-paste JS listener in rewrite.js deletes all fancy hyphens from copy-pastes.
     */
 .markdownBody p,
 .markdownBody li {
@@ -713,7 +707,7 @@ h1 {
 	Disabled temporarily pending layout redesign to compensate for layout
 	containment. —Obormot 2021-03-21
 	*/
-/* 
+/*
 section.level1:nth-of-type(n+4) {
 	content-visibility: auto;
 	contain-intrinsic-size: 200vh;
