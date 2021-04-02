@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-03-31 08:39:57 gwern"
+When:  Time-stamp: "2021-04-01 20:37:26 gwern"
 License: CC-0
 -}
 
@@ -595,6 +595,7 @@ cleanAbstractsHTML t = trim $
     , ("<p><sec sec-type=\"headed\"></p>", "")
     , ("</strong></p>    <p>", "</strong> ")
     , ("</title>", ":</strong></p>")
+    , ("<title/>", "")
     , ("<title>", "<p><strong>")
     , ("</title><br/>", "</title>")
     , ("<p>\n\n", "<p>")
@@ -855,14 +856,14 @@ cleanAbstractsHTML t = trim $
     , ("( n = ", "(<em>n</em> = ")
     , ("n = ", "<em>n</em> = ")
     , ("(p = ", "(<em>p</em> = ")
-    , (" p&lt;", " <em>p < ")
-    , (" p&gt;", " <em>p > ")
-    , (" p&gte;", " <em>p ≥ ")
-    , (" p&lte;", " <em>p ≤ ")
-    , (" P&lt;", " <em>p < ")
-    , (" P&gt;", " <em>p > ")
-    , (" P&gte;", " <em>p ≥ ")
-    , (" P&lte;", " <em>p ≤ ")
+    , (" p&lt;", " <em>p</em> < ")
+    , (" p&gt;", " <em>p</em> > ")
+    , (" p&gte;", " <em>p</em> ≥ ")
+    , (" p&lte;", " <em>p</em> ≤ ")
+    , (" P&lt;", " <em>p</em> < ")
+    , (" P&gt;", " <em>p</em> > ")
+    , (" P&gte;", " <em>p</em> ≥ ")
+    , (" P&lte;", " <em>p</em> ≤ ")
     , ("<em>p</em> = .", "<em>p</em> = 0.")
     , ("<em>p</em> < .", "<em>p</em> < 0.")
     , (" N=",     " <em>N</em> = ")
@@ -897,6 +898,7 @@ cleanAbstractsHTML t = trim $
     , (" 3x", " 3×")
     , ("<p> ", "<p>")
     , ("+/-", "±")
+    , ("<sup>~</sup>", "~")
     , (" 11th", " 11<sup>th</sup>")
     , (" 12th", " 12<sup>th</sup>")
     , (" 13th", " 13<sup>th</sup>")
@@ -929,6 +931,8 @@ cleanAbstractsHTML t = trim $
     , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
     , (" et al. ", " et al ")
     , ("Per- formance", "Performance")
+    , ("per- formance", "performance")
+    , ("one- or five-shot", "one-shot or five-shot")
     , ("lan- guage", "language")
     , ("pro-posed", "proposed")
     , ("\t\t", "")
