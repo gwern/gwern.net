@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Interwiki (convertInterwikiLinks, inlinesToString) where
 
-import qualified Data.Map as M
-import Text.Pandoc
-import qualified Data.Text as T
+import qualified Data.Map as M (fromList, lookup, Map)
+import Text.Pandoc (Inline(..))
+import qualified Data.Text as T (append, concat, head, tail, take, toUpper, pack, unpack, Text)
 import Data.List.Utils (replace)
 import Network.HTTP (urlEncode)
 

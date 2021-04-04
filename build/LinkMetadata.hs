@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-04 11:56:19 gwern"
+When:  Time-stamp: "2021-04-04 12:04:25 gwern"
 License: CC-0
 -}
 
@@ -41,6 +41,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex)
 
+import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (invertImage, typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
@@ -104,7 +105,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
                                              void $ createAnnotations md pandoc
-                                             let annotationPandoc = walk convertInterwikiLinks $ walk (hasAnnotation md True) pandoc
+                                             let annotationPandoc = walk (nominalToRealInflationAdjuster . convertInterwikiLinks) $ walk (hasAnnotation md True) pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
 
                                              let finalHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} localizedPandoc
