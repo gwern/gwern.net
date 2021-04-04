@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-03-12 21:01:00 gwern"
+# When:  Time-stamp: "2021-04-03 20:35:07 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -78,7 +78,8 @@ do
                   -e ']{.dropcaps}' -e '{,smallcaps}' -e '[.smallcaps}' -e '[PMC]{.smallcaps}' -e 'nsheppard' -e '<div class-' \
                   -e '^ > [a-Z]' -e '^  > [a-Z]' -e '^   > [a-Z]' -e '^  - [a-Z]' -e '^   - [a-Z]' \
                   -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/docs/genetic/' \
-                  -e '" ](' -e '!Marin:' -e '](images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' -e '#close' -- "$PAGE"; }
+                  -e '" ](' -e '!Marin:' -e '](images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' \
+                  -e '#close' -e '#page=page' -- "$PAGE"; }
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a long-term div ID)"
 
         λ() { grep --perl-regexp --null-data --only-matching '(?s)\n\<\/div\>\n\n\^\[\!Margin: .....' -- "$PAGE"; }

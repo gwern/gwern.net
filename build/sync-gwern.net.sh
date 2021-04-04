@@ -31,7 +31,8 @@ then
 
     cd ~/wiki/ && git status
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git pull --verbose https://gwern.obormot.net/static/.git)
+    λ () { cd ./static/ && git pull --verbose https://gwern.obormot.net/static/.git; }
+    wrap λ "static/ git update failed; proceeding anyway…" || true
 
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
     bold "Building directory indexes…"
