@@ -200,7 +200,7 @@ then
                -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' \
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
-               -e '[Key word' -e '<strong>[Keywords:' -- ./metadata/*.yaml; }
+               -e '[Key word' -e '<strong>[Keywords:' -e 'href="$' -e ']($2' -e ']($1' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
@@ -225,8 +225,8 @@ then
     λ() {
         set +e;
         IFS=$(echo -en "\n\b");
-        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'Book-reviews' | sort -u)"
-        OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -name "*.html")"
+        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'Book-reviews' -e 'index' | sort -u)"
+        OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404.html; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
