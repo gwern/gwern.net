@@ -31,8 +31,8 @@ then
 
     cd ~/wiki/ && git status
     bold "Pulling infrastructure updates…"
-    λ () { cd ./static/ && git pull --verbose https://gwern.obormot.net/static/.git; }
-    wrap λ "static/ git update failed; proceeding anyway…" || true
+    (cd ./static/ && git pull --verbose https://gwern.obormot.net/static/.git || true)
+
 
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
     bold "Building directory indexes…"
@@ -200,7 +200,7 @@ then
                -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' \
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
-               -e '[Key word' -e '<strong>[Keywords:' -e 'href="$' -e ']($2' -e ']($1' -- ./metadata/*.yaml; }
+               -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e ']($2' -e ']($1' -e 'en.m.wikipedia.org' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
