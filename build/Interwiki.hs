@@ -37,12 +37,12 @@ inlinesToString = T.concat . map go
                -- fall through with a blank:
                _        -> " "::T.Text
 convertInterwikiLinks :: Inline -> Inline
-convertInterwikiLinks x@(Link attr ref (interwiki, article)) =
+convertInterwikiLinks x@(Link attr@(ident, classes, kvs) ref (interwiki, article)) =
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> case article of
-                                  "" -> Link attr ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
-                                  _  -> Link attr ref (url `interwikiurl` article, "")
+                                  "" -> Link attr' ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
+                                  _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else x
             where -- 'https://starwars.wikia.com/wiki/Emperor_Palpatine'
@@ -53,6 +53,7 @@ convertInterwikiLinks x@(Link attr ref (interwiki, article)) =
                                        u `T.append` T.pack (replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
                   deunicode :: String -> String
                   deunicode = map (\c -> if c == '’' then '\'' else c)
+                  attr' = if "docMetadata" `elem` classes then attr else (ident, "docMetadata":classes, kvs)
 convertInterwikiLinks x = x
 -- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
 --   appending to it the article name (suitably URL-escaped, of course).
