@@ -513,6 +513,8 @@ hr::after,
 .horizontalRule-nth-2 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
     width: 30px;
+}
+.horizontalRule-nth-2 {
     filter: drop-shadow(0 0 0 currentColor);
 }
 
