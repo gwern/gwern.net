@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-04 12:04:25 gwern"
+When:  Time-stamp: "2021-04-06 18:58:27 gwern"
 License: CC-0
 -}
 
@@ -509,6 +509,14 @@ cleanAbstractsHTML t = trim $
     , ("<span class=\"math inline\">\\(\\pi\\)</span>", "π")
     , ("<span class=\"math inline\">\\(1,...,n\\)</span>", "1,...,<em>n</em>")
     , ("<span class=\"math inline\">\\(\\pi^*\\)</span>", "π<sup>*</sup>")
+    , ("<span class=\"math inline\">\\(c\\)</span>", "<em>c</em>")
+    , ("<span class=\"math inline\">\\(G\\)</span>", "<em>G</em>")
+    , ("<span class=\"math inline\">\\(\\hbar\\)</span>", "ℏ")
+    , ("<span class=\"math inline\">\\(n\\)</span>", "<em>n</em>")
+    , ("<span class=\"math inline\">\\(n^{-1/2}\\)</span>", "<em>n</em><sup>−1⁄2</sup>")
+    , ("<span class=\"math inline\">\\(n^{-1}\\)</span>", "<em>n</em><sup>−1</sup>")
+    , ("<span class=\"math inline\">\\(n^{-\beta}\\)</span>", "<em>n<sup>−β</sup></em>")
+    , ("<span class=\"math inline\">\\(\\beta&gt;0\\)</span>", "<em>β</em> > 0")
     , ("<math>A</math>", "<em>A</em>")
     , ("<math>B</math>", "<em>B</em>")
     , ("<math>C</math>", "<em>C</em>")
