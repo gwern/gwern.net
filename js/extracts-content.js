@@ -30,7 +30,7 @@ if (window.Extracts) {
 		let footnoteNumber = target.querySelector("sup").textContent;
 		let popFrameTitleText = `Footnote #${footnoteNumber}`;
 
-		return Extracts.standardTitleElementForTarget(target, popFrameTitleText);
+		return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
 	};
 
 	Extracts.preparePopup_CITATION = (popup) => {

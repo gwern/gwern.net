@@ -266,7 +266,7 @@ Extracts = {
 		return !(popFrame.classList.contains("loading") || popFrame.classList.contains("loading-failed"));
 	},
 
-	standardTitleElementForTarget: (target, titleText) => {
+	standardPopFrameTitleElementForTarget: (target, titleText) => {
 		if (typeof titleText == "undefined")
 			titleText = (target.hostname == location.hostname)
 						? target.pathname + target.hash
@@ -293,7 +293,7 @@ Extracts = {
 		if (specialTitleFunction)
 			return specialTitleFunction(popFrame);
 		else
-			return Extracts.standardTitleElementForTarget(target);
+			return Extracts.standardPopFrameTitleElementForTarget(target);
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
@@ -499,7 +499,7 @@ Extracts = {
             !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"].includes(target.hash)))
 			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
-		return Extracts.standardTitleElementForTarget(target, popFrameTitleText);
+		return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
 	},
 
 	rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {

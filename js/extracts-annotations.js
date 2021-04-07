@@ -97,7 +97,7 @@ if (window.Extracts) {
 					target="_blank"
 						>${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
 		} else {
-			return Extracts.standardTitleElementForTarget(target, popFrameTitleText);
+			return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
 		}
 	};
 
