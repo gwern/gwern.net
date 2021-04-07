@@ -54,7 +54,7 @@ generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
                        "title: /" ++ d ++ " Directory Listing\n" ++
                        "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>.\n" ++
-                       "tags: meta\n" ++
+                       "tags: index\n" ++
                        "created: 2009-01-01\n" ++
                        "status: in progress\n" ++
                        "confidence: log\n" ++
