@@ -520,11 +520,12 @@ if (window.Extracts) {
     ];
 
 	Extracts.isForeignSiteLink = (target) => {
-		if (Extracts.isAnnotatedLink(target))
+		if (   target.hostname == location.hostname
+			|| Extracts.isAnnotatedLink(target))
 			return false;
 
-		return  (   Extracts.qualifyingForeignDomains.includes(target.hostname)
-				 || Extracts.qualifyingForeignDomains.findIndex(domainPattern => (domainPattern instanceof RegExp && domainPattern.test(target.hostname) == true)) != -1)
+		return (   Extracts.qualifyingForeignDomains.includes(target.hostname)
+				|| Extracts.qualifyingForeignDomains.findIndex(domainPattern => (domainPattern instanceof RegExp && domainPattern.test(target.hostname) == true)) != -1)
 			&& !Extracts.blacklistedForeignDomains.includes(target.hostname);
 	};
 
