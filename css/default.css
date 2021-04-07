@@ -498,24 +498,22 @@ hr::after {
 }
 hr::after,
 .horizontalRule-nth-0 hr::after {
-    content: url('/static/img/icons/asterism-triplewhitestar.svg');
-    width: 30px;
-}
-.horizontalRule-nth-0 {
-    filter: drop-shadow(0 0 0 currentColor);
+    /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
+    content: url('/static/img/icons/sun-verginasun-black.svg');
+    opacity: 0.85;
+    width: 40px;
 }
 .horizontalRule-nth-1 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Japanese_crest_Tsuki_ni_Hoshi.svg */
+    /* NOTE: alternative moon icon is /static/img/icons/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
     content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
     opacity: 0.90;
     width: 24px;
 }
 .horizontalRule-nth-2 hr::after {
-    /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
-    content: url('/static/img/icons/sun-verginasun-black.svg');
-    /* NOTE: alternative moon icon is /static/img/icons/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
-    opacity: 0.85;
-    width: 40px;
+    content: url('/static/img/icons/asterism-triplewhitestar.svg');
+    width: 30px;
+    filter: drop-shadow(0 0 0 currentColor);
 }
 
 /**********/
