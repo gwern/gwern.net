@@ -30,12 +30,7 @@ if (window.Extracts) {
 		let footnoteNumber = target.querySelector("sup").textContent;
 		let popFrameTitleText = `Footnote #${footnoteNumber}`;
 
-		return `<a 
-			class="popframe-title-link"
-			href="${target.href}"
-			title="Open ${target.href} in a new window"
-			target="_blank"
-				>${popFrameTitleText}</a>`;
+		return Extracts.standardTitleElementForTarget(target, popFrameTitleText);
 	};
 
 	Extracts.preparePopup_CITATION = (popup) => {

@@ -68,20 +68,22 @@ if (window.Extracts) {
 
 		let popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
 								? popFrame.querySelector(".data-field.title").textContent
-								: target.pathname + target.hash;
+								: (Annotations.isWikipediaLink(Extracts.targetIdentifier(target))
+								   ? target.href
+								   : target.pathname + target.hash);
 
 		//  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
 		if (   target.hash > ""
-			&& (   target.hostname == location.hostname
-				   || Annotations.isWikipediaLink(Extracts.targetIdentifier(target)))
-               && // links with an org notation for link icons (eg 'https://arxiv.org/abs/2006.07159#google') should not get a section mark
-            !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"].includes(target.hash))
+			&& (   (   target.hostname == location.hostname
+					   // annotations for local archive links with an org notation for link icons (eg ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook') should not get a section mark
+					&& !([ "alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex" 
+					       ].includes(target.hash))) 
+				|| Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
 			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
-		let popFrameTitle;
 		if (target.dataset.urlOriginal) {
 			//  For local-archive links, include archive link with original.
-			popFrameTitle = `<a
+			return `<a
 					class="popframe-title-link-archived"
 					href="${target.href}"
 					title="Open ${target.href} in a new window"
@@ -95,15 +97,8 @@ if (window.Extracts) {
 					target="_blank"
 						>${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
 		} else {
-			popFrameTitle = `<a
-				class="popframe-title-link"
-				href="${target.href}"
-				title="Open ${target.href} in a new window"
-				target="_blank"
-					>${popFrameTitleText}</a>`;
+			return Extracts.standardTitleElementForTarget(target, popFrameTitleText);
 		}
-
-		return popFrameTitle;
 	};
 
 	Extracts.rewritePopFrameContent_ANNOTATION = (popFrame) => {

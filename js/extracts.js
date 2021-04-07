@@ -266,6 +266,20 @@ Extracts = {
 		return !(popFrame.classList.contains("loading") || popFrame.classList.contains("loading-failed"));
 	},
 
+	standardTitleElementForTarget: (target, titleText) => {
+		if (typeof titleText == "undefined")
+			titleText = (target.hostname == location.hostname)
+						? target.pathname + target.hash
+						: target.href;
+
+		return `<a
+				class="popframe-title-link"
+				href="${target.href}"
+				title="Open ${target.href} in a new window"
+				target="_blank"
+					>${titleText}</a>`
+	},
+
 	//  Returns the contents of the title element for a pop-frame.
 	titleForPopFrame: (popFrame) => {
 		let target = popFrame.spawningTarget;
@@ -279,12 +293,7 @@ Extracts = {
 		if (specialTitleFunction)
 			return specialTitleFunction(popFrame);
 		else
-			return `<a
-				class="popframe-title-link"
-				href="${target.href}"
-				title="Open ${target.href} in a new window"
-				target="_blank"
-					>${target.href}</a>`;
+			return Extracts.standardTitleElementForTarget(target);
 	},
 
 	/*	This function’s purpose is to allow for the transclusion of entire pages
@@ -490,12 +499,7 @@ Extracts = {
             !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"].includes(target.hash)))
 			popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
-		return `<a
-			class="popframe-title-link"
-			href="${target.href}"
-			title="Open ${target.href} in a new window"
-			target="_blank"
-				>${popFrameTitleText}</a>`;
+		return Extracts.standardTitleElementForTarget(target, popFrameTitleText);
 	},
 
 	rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
