@@ -432,7 +432,7 @@ h2 + section > h3:first-child {
 /*= Section heading self-links =*/
 /*=----------------------------=*/
 
-.markdownBody section > :first-child a {
+.markdownBody section > :first-child > a {
     background: none;
 }
 .markdownBody section:not(.collapse) > h1:first-child a,
