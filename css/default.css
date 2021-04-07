@@ -731,6 +731,10 @@ figcaption {
     width: -moz-fit-content;
     width: fit-content;
 }
+figcaption strong {
+	font-weight: inherit;
+	font-variant-caps: small-caps;
+}
 @media only screen and (max-width: 649px) {
     figcaption {
         font-size: 0.875em;
