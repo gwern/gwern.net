@@ -102,9 +102,8 @@ Extracts = {
 
 		if (Extracts.popFrameProvider == Popups) {
 			//  Remove “popups disabled” icon/button, if present.
-			if (Extracts.popupOptionsEnabled) {
+			if (Extracts.popupOptionsEnabled)
 				Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
-			}
 		} else {
 		}
 
@@ -154,20 +153,26 @@ Extracts = {
 		GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
 			GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
 
-			if (info.document.closest(Extracts.contentContainersSelector)) {
-				Extracts.addTargetsWithin(info.document);
-				Extracts.setUpAnnotationLoadEventWithin(info.document);
-			} else {
-				info.document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
-					Extracts.addTargetsWithin(container);
-					Extracts.setUpAnnotationLoadEventWithin(container);
-				});
-			}
+			Extracts.processTargetsInDocument(info.document);
 		}, { phase: "eventListeners" });
 
 		//  Fire setup-complete event.
 		GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
+
+	processTargetsInDocument: (doc = Extracts.rootDocument) => {
+		GWLog("Extracts.processTargetsInDocument", "extracts.js", 2);
+
+		if (doc.closest(Extracts.contentContainersSelector)) {
+			Extracts.addTargetsWithin(doc);
+			Extracts.setUpAnnotationLoadEventWithin(doc);
+		} else {
+			doc.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
+				Extracts.addTargetsWithin(container);
+				Extracts.setUpAnnotationLoadEventWithin(container);
+			});
+		}
+	},
 
 	/***********/
 	/*	Content.
