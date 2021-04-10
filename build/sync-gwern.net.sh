@@ -76,7 +76,7 @@ then
     rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
-    sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-2"> <section id="statistics"/' ./_site/index
+    sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
 
     bold "Building sitemap.xml…"
     ## generate a sitemap file for search engines:
@@ -200,7 +200,7 @@ then
                -e '](/' -e '-, ' -e '<abstract abstract-type="' -e '- pdftk' -e 'thumb|' -e ' - 20[0-9][0-9]:[0-9][0-9]:[0-9][0-9]' \
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
-               -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e ']($2' -e ']($1' -e 'en.m.wikipedia.org' -- ./metadata/*.yaml; }
+               -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e ']($2' -e ']($1' -e 'en.m.wikipedia.org' -e '<em>Figure' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }

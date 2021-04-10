@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-04-05 19:17:20 gwern"
+# When:  Time-stamp: "2021-04-09 14:13:21 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -72,14 +72,14 @@ do
 
         λ() { egp -e '<div id="abstract"' -e '<div id="collapseSummary"' -e '^</div$' -e '^\[\!Margin: ' -e ' n=[[:digit:]]' -e ' n = [[:digit:]]' \
                   -e ']\(/.*#fn[[:digit:]]' -e '[0-9]\.[0-9]*⁄' -e '^\.>' \
-                  -e 'cssExtension: [a-c,e-z]' -e '^R> ' -- "$PAGE";
+                  -e 'cssExtension: [a-c,e-z]' -e '^R> ' -e '^#+ Comments$' -- "$PAGE";
               fgp -e '(www' -e ')www' -e '![](' -e ']()' -e ' )' -e '](//' -e '](/wiki/' -e '](wiki/' -e '——–' -e '——' -e '————–' -e ' --- ' \
                   -e ' percent ' -e "    Pearson'" -e '~~~{.sh}' -e 'library("' -e ' +-' -e ' -+' -e '"collapse Summary"' -e '"CollapseSummary"' -e 'collapseSumary' -e '<!_-' -e ' bu ' \
                   -e ']{.dropcaps}' -e '{,smallcaps}' -e '[.smallcaps}' -e '[PMC]{.smallcaps}' -e 'nsheppard' -e '<div class-' \
                   -e '^ > [a-Z]' -e '^  > [a-Z]' -e '^   > [a-Z]' -e '^  - [a-Z]' -e '^   - [a-Z]' \
                   -e '<p class="drop-cap' -e 'class="drop-caps-' -e ' n_=' -e '~~~{.collape}' -e '~~~~' -e '{.fullwidth}' -e 'Wikiepdia' -e 'Wikipdia' -e '/docs/genetic/' \
                   -e '" ](' -e '!Marin:' -e '](images/' -e '\Mathcal{' -e "''" -e '``' -e ' " ' -e '\mathcal{O}(log' -e 'preload="metadata"' \
-                  -e '#close' -e '#page=page' -- "$PAGE"; }
+                  -e '#close' -e '#page=page' -e '.pdf#section' -e '.pdf#subsection' -- "$PAGE"; }
         wrap λ "look for broken syntax in original Markdown: (NOTE: footnotes should not be linked to because they are unstable; they should either be sections/appendices, or given a long-term div ID)"
 
         λ() { grep --perl-regexp --null-data --only-matching '(?s)\n\<\/div\>\n\n\^\[\!Margin: .....' -- "$PAGE"; }
