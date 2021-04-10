@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-03-31 11:05:32 gwern"
+When:  Time-stamp: "2021-04-10 11:43:30 gwern"
 License: CC-0
 -}
 
@@ -65,7 +65,8 @@ type Path = String
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
 localizeLink :: ArchiveMetadata -> Inline -> IO Inline
 localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
-  if whiteList (T.unpack targetURL) then return x else
+  -- skip local archiving if matches the whitelist, or it has a manual annotation '.localArchive-not' class on it, like `[Foo](!Wikipedia "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first linked, to avoid deletionist content rot)
+  if whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
     do targetURL' <- rewriteLink adb (T.unpack targetURL)
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
        else do -- rewrite & annotate link with local archive:
