@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2021-01-20 11:18:51 gwern"
+# When:  Time-stamp: "2021-04-11 12:29:25 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -99,7 +99,6 @@ if (grepl("plos",args)) {
 
     # DOIs are optional since so many fulltext PMC papers are still missing them
     if (any(c(is.list(title), is.list(author), is.list(date), is.list(abstract)))) {
-
         # fallback to the other fulltext/rentrez path:
 
         pmid <- entrez_search(db = "pubmed", term = pmcidSearch)$ids
@@ -127,6 +126,6 @@ if (grepl("plos",args)) {
     cat(c(author, "\n"))
     cat(c(as.character(date), "\n"))
     if (is.list(doi)) { cat("\n"); } else { cat(c(doi, "\n")) }
-    cat(c(abstract, "\n"))
+    cat(paste0(abstract, sep="\n\n"))
 
 }
