@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-10 19:36:01 gwern"
+When:  Time-stamp: "2021-04-11 14:42:12 gwern"
 License: CC-0
 -}
 
@@ -35,7 +35,7 @@ import System.FilePath (takeBaseName, takeExtension)
 import System.IO (stderr, hPutStrLn)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
-                    defaultMathJaxURL, def, readLaTeX, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
+                    defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
                     readHtml, writerExtensions, nullAttr, nullMeta, queryWith,
                     Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
@@ -334,7 +334,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, trim $ replace "<br/>" " " $ cleanAbstractsHTML $ unlines abstrct))
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, (processPubMedAbstract $ unlines abstrct)))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
@@ -437,6 +437,15 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
                                             in (x:r,rs)
                     | otherwise          = let (r,rs) = closeEl i     xs
                                             in (x:r,rs)
+
+processPubMedAbstract :: String -> String
+processPubMedAbstract abst = let clean = runPure $ do
+                                   pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack abst)
+                                   html <- writeHtml5String def pandoc
+                                   return $ T.unpack html
+                             in case clean of
+                                  Left e -> error $ show e ++ ": " ++ abst
+                                  Right output -> trim $ replace "<br/>" " " $ cleanAbstractsHTML output
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
