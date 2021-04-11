@@ -139,14 +139,17 @@ equalsRegex = mkRegex "([=≠])([a-zA-Z0-9])"
 
 -- Look at mean color of image, 0-1: if it's close to 0, then it's a monochrome-ish white-heavy image. Such images look better in HTML/CSS dark mode when inverted, so we can use this to check every image for color, and set an 'invertible-auto' HTML class on the ones which are low. We can manually specify a 'invertible' class on images which don't pass the heuristic but should.
 invertImageInline :: Inline -> IO Inline
-invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) = do
-                                       (color,_,_) <- invertFile p
-                                       if not color || notInvertibleP classes then return x else
-                                         return (Image (htmlid, "invertible-auto":classes, kvs++[("loading","lazy")]) xs (p,t))
-invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) = if not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) then
+invertImageInline x@(Image (htmlid, classes, kvs) xs (p,t)) =
+  if notInvertibleP classes then
+    return x else do
+                   (color,_,_) <- invertFile p
+                   if not color then return x else
+                     return (Image (htmlid, "invertible-auto":classes, kvs++[("loading","lazy")]) xs (p,t))
+invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) =
+  if notInvertibleP classes || not (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p)  then
                                                           return x else
                                                             do (color,_,_) <- invertFile p
-                                                               if not color || notInvertibleP classes then return x else
+                                                               if not color then return x else
                                                                  return (Link (htmlid, "invertible-auto":classes, kvs) xs (p,t))
 invertImageInline x = return x
 
