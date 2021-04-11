@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-06 18:58:27 gwern"
+When:  Time-stamp: "2021-04-10 19:36:01 gwern"
 License: CC-0
 -}
 
@@ -521,6 +521,16 @@ cleanAbstractsHTML t = trim $
     , ("<math>B</math>", "<em>B</em>")
     , ("<math>C</math>", "<em>C</em>")
     , ("<math>S</math>", "<em>S</em>")
+    , (" O(sqrt(n)) ", " 𝑂(√<em>n</em>) ")
+    , ("O(log n) ", "𝑂(log <em>n</em>) ")
+    , (" O(log n)", " 𝑂(log <em>n</em>)")
+    , (" O(n log n) ", " 𝑂(<em>n</em> log <em>n</em>) ")
+    , ("<span class=\"math inline\">\\(O(K^2 \\log T)\\)</span>", "𝑂(<em>K</em><sup>2</sup> log <em>T</em>)")
+    , ("<span class=\"math inline\">\\(O(K \\log T + K^2 \\log \\log T)\\)</span>", "𝑂(<em>K</em> log <em>T</em> + <em>K</em><sup>2</sup> log log <em>T</em>)")
+    , ("O(N) ", "𝑂(<em>N</em>) ")
+    , (" O(N)", " 𝑂(<em>N</em>)")
+    , (" N pixels", " <em>N</em> pixels")
+    , ("a n layer", "a <em>n</em> layer")
     , ("$f(x; x_0,\\gamma)$", "<em>f(x; x<sub>0</sub>,γ")
     , ("$(x_0,\\gamma)$", "<em>(x<sub>0</sub>, γ)</em>")
     , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
