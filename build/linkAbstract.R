@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2021-04-11 14:29:32 gwern"
+# When:  Time-stamp: "2021-04-12 13:40:47 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -86,16 +86,27 @@ if (grepl("plos",args)) {
 
     pmcidSearch = paste0("PMC", pmcid, "[pmcid]")
 
-    paper <- entrez_search(db="pubmed", term=pmcidSearch)
-    rawXML <- entrez_fetch(db="pubmed", id=paper$id, rettype="xml")
+    paper    <- entrez_search(db="pubmed", term=pmcidSearch)
+    rawXML   <- entrez_fetch(db="pubmed", id=paper$id, rettype="xml")
     fulltext <- parse_pubmed_xml(rawXML)
 
+    # handle section labels, like 'Methods and Materials', 'Conclusion', etc: https://github.com/ropensci/rentrez/issues/170
+    # PMC, turns out, encodes those descriptions into all-uppercase XML 'labels' which are not payload/text, and rentrez by default strips them like it would any other bit of XML metadata. The different sections are then by default collapsed into a single run-on paragraph.
+    # to deal with this, we parse out the special labels, convert them to mixed-case (because `toTitlecase` preserves all-uppercase, we force to lowercase first), surround them with <strong></strong> per gwern.net house style for inline-headings, and combine the section header label and section text pairwise, and intersperse double-newlines to force separate paragraphs when parsed by LinkMetadata.hs as Markdown.
+    # And if there are no section headers, then we just use the abstract as is.
+    library(XML)
+    library(tools)
+    parsed_XML <- entrez_fetch(db="pubmed", id=paper$id, rettype="xml", parsed=TRUE)
+    labels     <- sapply(parsed_XML["//Abstract/AbstractText"], xmlGetAttr, "Label")
+    labelsFormatted <- sapply(tolower(labels), function(s) { paste0("<strong>", toTitleCase(s), "</strong>"); })
+    text       <- sapply(parsed_XML["//Abstract/AbstractText"], xmlValue)
+    combined        <- paste0(paste0(labelsFormatted, rep(": ", length(labelsFormatted)), text), collapse="\n\n")
 
     title    <- fulltext$title
     author   <- fulltext$author
     date     <- fulltext$year
     doi      <- fulltext$doi
-    abstract <- fulltext$abstract
+    abstract <- { if (length(labels) > 1) { combined; } else { fulltext$abstract; } }
 
     # DOIs are optional since so many fulltext PMC papers are still missing them
     if (any(c(is.list(title), is.list(author), is.list(date), is.list(abstract)))) {

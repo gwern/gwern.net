@@ -201,7 +201,7 @@ then
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
                -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e ']($2' -e ']($1' -e 'en.m.wikipedia.org' -e '<em>Figure' \
-               -e '<strongfigure' -- ./metadata/*.yaml; }
+               -e '<strongfigure' -e ' ,' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
