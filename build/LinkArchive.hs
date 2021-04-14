@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-04-11 13:17:58 gwern"
+When:  Time-stamp: "2021-04-13 23:38:00 gwern"
 License: CC-0
 -}
 
@@ -82,7 +82,7 @@ readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
                          -- check for failed archives:
                          mapM_ (\(p,ami) -> case ami of
-                                  Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
+                                  Right (Just "") -> return ami -- error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
                                   Right u@(Just ('/':'/':_)) -> error $ "Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u
                                   Right (Just u)  -> if not ("http" `isPrefixOf` p) then
                                                        error $ "Error! Invalid archive link? " ++ show p ++ show u ++ show ami
@@ -115,7 +115,7 @@ rewriteLink adb url = do
       Just (Right archive) -> if archive == Just "" then error ("Error! Tried to return a link to a non-existent archive! " ++ url) else return archive
 
 archiveDelay :: Integer
-archiveDelay = 110
+archiveDelay = 60
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
@@ -431,7 +431,8 @@ whiteList url
       , "marginalrevolution.com"
       , "clickotron.com"
       , "patrickcollison.com"
-      , "amazon.com"
+      , "amazon.com" -- service
+      , "amzn.to" -- service redirect
       , "amzn.com"
       , "sparkfun.com"
       , "greenspun.com"
@@ -786,6 +787,7 @@ whiteList url
       , "archiveofourown.org" -- blocks archiving
       , "nitter.net/search" -- example/updated
       , "nitter.cc/search" -- example/updated
+      , "nitter.cc" -- service/mirror, low quality (videos don't save)
       , "flashgamehistory.com" -- low quality
       , "thebrowser.com" -- paywall
       , "git.sr.ht" -- service/updated
@@ -796,5 +798,41 @@ whiteList url
       , "hiyo.jp" -- service/defunct
       , "wkhtmltopdf.org" -- stable
       , "www.sumatrapdfreader.org" -- stable
+      , "tradejournalcooperative.com" -- service
+      , "www.openphilanthropy.org" -- stable
+      , "alignmentforum.org" -- stable
+      , "forum.effectivealtruism.org" -- stable
+      , "www.preclinicaltrials.eu" -- service
+      , "disease-connect.org" -- service
+      , "chrome.google.com/webstore/" -- service
+      , "microsoftedge.microsoft.com/addons/" -- service
+      , "magenta.tensorflow.org/music-transformer" -- low quality
+      , "magenta.tensorflow.org/maestro-wave2midi2wave" -- low quality
+      , "magenta.tensorflow.org/piano-transformer" -- low quality
+      , "e621.net" -- service/porn
+      , "www.ctan.org" -- stable
+      , "ideas.repec.org/p/uea/" -- stable (preprint server)
+      , "freakonomicsexperiments.com" -- service
+      , "apps.chiragjpgroup.org/catch/" -- service (interactive stats)
+      , "fdaaa.trialstracker.net/" -- service (interactive stats)
+      , "rottenlibrary.net" -- redundant (mirror of my rotten.com mirror)
+      , "www.justinpinkney.com" -- stable
+      , "ssb.fit" -- service
+      , "course.fast.ai/videos/" -- low quality
+      , "vk.com/alexeyguzey" -- stable
+      , "paulfchristiano.com" -- stable
+      , "ought.org" -- homepage
+      , "theory.cs.berkeley.edu/" -- homepage
+      , "ai-alignment.com" -- stable?
+      , "sideways-view.com" -- stable
+      , "jakewestfall.org/ivy/" -- interactive
+      , "findclone.ru" -- service
+      , "reddit.com/user/shawwwn" -- updated/profile
+      , "www.projectvesta.org" -- homepage
+      , "pygments.org" -- homepage
+      , "test.mensa.no" -- service
+      , "www.queendom.com/tests/" -- service
+      , "brainturk.com" -- service
+      , "www.courtlistener.com/" -- stable
       ] = True
     | otherwise = False
