@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-12 12:03:32 gwern"
+When:  Time-stamp: "2021-04-14 15:17:39 gwern"
 License: CC-0
 -}
 
@@ -33,7 +33,7 @@ import System.Directory (doesFileExist)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeBaseName, takeExtension)
 import System.IO (stderr, hPutStrLn)
-import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderTags, Tag(TagClose, TagOpen, TagText))
+import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
                     readHtml, writerExtensions, nullAttr, nullMeta, queryWith,
@@ -43,7 +43,7 @@ import Text.Regex (subRegex, mkRegex)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
-import Typography (invertImage, typographyTransform)
+import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 
 ----
@@ -232,7 +232,7 @@ readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException 
                 where
                  convertListToMetadata :: [String] -> MetadataList
                  convertListToMetadata [u, t, a, d, di, s] = [(u, (t,a,d,di,s))]
-                 convertListToMetadata e@_ = error $ "Pattern-match failed (too few fields?): " ++ show e
+                 convertListToMetadata e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
@@ -305,7 +305,7 @@ generateID url author date
 data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
-gwern, arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
+arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Left Temporary) -- WP is now handled by annotations.js calling the Mobile WP API
                      | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
                      | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
@@ -319,7 +319,12 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Lef
                      | "plosmedicine.org" `isInfixOf` l = pubmed l
                      | "plosone.org" `isInfixOf` l = pubmed l
                      | null l = return (Left Permanent)
-                     | otherwise = let l' = linkCanonicalize l in if head l' == '/' then gwern $ tail l else return (Left Permanent)
+                     -- locally-hosted PDF?
+                     | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l else return (Left Permanent)
+                     -- We skip Gwern.net pages, because Gwern.net pages are handled as live cross-page popups: if they have an abstract, it'll be visible at the top right under the metadata block, so generating annotations automatically turns out to be unnecessary (and bug prone)
+                     | "/" `isPrefixOf` l || "https://www.gwern.net/" `isPrefixOf` l = return (Left Permanent)
+                     -- And everything else is unhandled:
+                     | otherwise = return (Left Permanent)
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
@@ -974,63 +979,3 @@ cleanAbstractsHTML t = trim $
 trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
   where badChars c = isSpace c || (c=='-')
-
--- gwern :: Path -> IO (Maybe (Path, MetadataItem))
-gwern p | ".pdf" `isInfixOf` p = pdf p
-        | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
-        | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "notes/" `isPrefixOf` p = return (Left Permanent) -- notes are supposed to popup as cross-page section popups, we want to forbid any auto-annotation.
-        | "/index" `isSuffixOf` p || p == "index" = return (Left Permanent) -- likewise: the directory index pages are useful only as cross-page popups, to browse
-        | otherwise =
-            let p' = replace "https://www.gwern.net/" "" p in
-            do hPutStrLn stderr p'
-               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"]
-               case status of
-                 ExitFailure _ -> hPutStrLn stderr ("Gwern.net download failed: " ++ p) >> return (Left Temporary)
-                 _ -> do
-                        let b = U.toString bs
-                        let f = parseTags b
-                        let metas = filter (isTagOpenName "meta") f
-                        let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
-                        let date = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
-                        let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
-                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</p>"
-                        let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
-                        let thumbnail = if not (any filterThumbnail metas) then
-                                          (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
-                        let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
-                        let thumbnailText = if not (any filterThumbnailText metas) then
-                                          (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas else "Default gwern.net thumbnail logo (Gothic G icon)."
-                        thumbnailFigure <- if thumbnail'=="" then return "" else do
-                              (color,h,w) <- invertImage thumbnail'
-                              let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ replace "%F" "/" (urlEncode thumbnail') ++ "\" alt=\"" ++ thumbnailText ++ "'\" /></figure> ")
-
-                        let doi = ""
-                        let abstrct      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
-                        let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
-                        -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
-                        let abstrct'     = if length description > length abstrct then description else abstrct
-                        let abstrct'' = if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>"
-                        if abstrct'' == "404 Not Found Error: no page by this name!" then return (Left Temporary) else
-                          return $ Right (p, (title, author, date, doi, thumbnailFigure++" "++abstrct''++" "++keywords'))
-        where
-          dropToBody (TagOpen "body" _) = False
-          dropToBody _ = True
-          dropToAbstract (TagOpen "div" [("class", "abstract")]) = False
-          dropToAbstract _                                    = True
-          takeToAbstract (TagClose "div") = False
-          takeToAbstract _                = True
-          filterAbstract (TagOpen  "div" _)        = False
-          filterAbstract (TagClose "div")          = False
-          filterAbstract (TagOpen  "blockquote" _) = False
-          filterAbstract (TagClose "blockquote")   = False
-          filterAbstract _                         = True
-          filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
-          filterThumbnail _ = False
-          filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
-          filterThumbnailText _ = False
-
-          -- ["statistics","NN","anime","shell","dataset"] ~> "<a href=\"/tags/statistics\">statistics</a>, <a href=\"/tags/NN\">NN</a>, <a href=\"/tags/anime\">anime</a>, <a href=\"/tags/shell\">shell</a>, <a href=\"/tags/dataset\">dataset</a>"
-          keywordsToLinks :: String -> String
-          keywordsToLinks = intercalate ", " . map (\k -> "<a title=\"All pages tagged '"++k++"'\"" ++ " href=\"/tags/"++k++"\">"++k++"</a>") . words . replace "," ""
