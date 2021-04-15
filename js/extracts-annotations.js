@@ -38,7 +38,7 @@ if (window.Extracts) {
 		if (   referenceData.element.dataset.urlOriginal != undefined
 			&& referenceData.element.dataset.urlOriginal != target.href) {
 			originalLinkHTML = `<span class="originalURL">[<a
-							title="Link to original URL for ‘${referenceData.titleText}’"
+							title="Link to original URL for ‘${referenceData.titleHTML}’"
 							href="${referenceData.element.dataset.urlOriginal}"
 							target="_new"
 							alt="Original URL for this archived link; may be broken."

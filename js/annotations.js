@@ -145,7 +145,7 @@ Annotations = {
 					let responseHTML = targetSection ? targetSection["text"] : response["lead"]["sections"][0]["text"];
 					annotation = Annotations.stageAnnotation(responseHTML);
 
-					annotation.dataset["titleText"] = (annotationURL.hash > "") ? targetSection["line"] : response["lead"]["displaytitle"];
+					annotation.dataset["titleHTML"] = (annotationURL.hash > "") ? targetSection["line"] : response["lead"]["displaytitle"];
 
 					Annotations.processWikipediaEntry(annotation, annotationURL);
 				} else {
@@ -221,7 +221,6 @@ Annotations = {
 
 		return {
 			element: 		referenceElement,
-			titleText: 		referenceElement.textContent,
 			titleHTML: 		referenceElement.innerHTML.trimQuotes(),
 			authorHTML:		(authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
 			dateHTML:		(dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
@@ -234,8 +233,7 @@ Annotations = {
 	referenceDataForWikipediaEntry: (referenceEntry) => {
 		return {
 			element: 		referenceEntry,
-			titleText: 		referenceEntry.dataset["titleText"],
-			titleHTML: 		referenceEntry.dataset["titleText"],
+			titleHTML: 		referenceEntry.dataset["titleHTML"],
 			authorHTML:		`<span class="data-field author">Wikipedia</span>`,
 			dateHTML:		``,
 			abstractHTML:	referenceEntry.innerHTML
