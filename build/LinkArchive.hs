@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-04-13 23:38:00 gwern"
+When:  Time-stamp: "2021-04-15 12:24:00 gwern"
 License: CC-0
 -}
 
@@ -82,7 +82,7 @@ readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
                          -- check for failed archives:
                          mapM_ (\(p,ami) -> case ami of
-                                  Right (Just "") -> return ami -- error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
+                                  Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
                                   Right u@(Just ('/':'/':_)) -> error $ "Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u
                                   Right (Just u)  -> if not ("http" `isPrefixOf` p) then
                                                        error $ "Error! Invalid archive link? " ++ show p ++ show u ++ show ami
@@ -834,5 +834,28 @@ whiteList url
       , "www.queendom.com/tests/" -- service
       , "brainturk.com" -- service
       , "www.courtlistener.com/" -- stable
+      , "console.cloud.google.com" -- cloud service requiring login
+      , "imsdb.com" -- homepage
+      , "www.reg.ru/blog/anime-generation-with-stylegan/" -- mirror of /Faces
+      , "catscan2.toolforge.org" -- interactive/service
+      , "www.mangafox.com/manga" -- service/pirated
+      , "highlightcam.co.nz" -- homepage
+      , "michaelnielsen.org" -- stable/homepage
+      , "juliagalef.com" -- stable/homepage
+      , "opensnp.org" -- service/database
+      , "tzstamp.io" -- service
+      , "ggplot2.tidyverse.org" -- homepage
+      , "fantasticanachronism.com" -- stable
+      , "coderelay.io/fontemon.html" -- interactive
+      , "www.speedtest.net" -- service
+      , "okmij.org" -- stable
+      , "packdeps.haskellers.com" -- service
+      , "meyerweb.com/eric/tools/" -- service
+      , "bifunctor.homelinux.net" -- service
+      , "paste.hskll.org" -- service
+      , "tuftandneedle.com" -- homepage
+      , "www.microcovid.org" -- service
+      , "grantland.com/features/" -- stable
+      , "instant.page" -- stable
       ] = True
     | otherwise = False
