@@ -53,7 +53,8 @@ Annotations = {
 			GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: info.identifier });
 		}, {
 			phase: ">rewrite",
-			condition: (info) => (info.document.parentElement && info.document.parentElement == Annotations.annotationsWorkspace)
+			condition: (info) => (   info.document.parentElement 
+								  && info.document.parentElement == Annotations.annotationsWorkspace)
 		});
 
 		//	Add handler for if loading an annotation failed.
@@ -112,7 +113,7 @@ Annotations = {
 			annotationURL = new URL(annotationIdentifier);
 			let wikiPageName = /\/([^\/]+?)$/.exec(annotationURL.pathname)[1];
 			annotationURL.originalPathname = annotationURL.pathname;
-			annotationURL.pathname = `/api/rest_v1/page/mobile-sections-${(annotationURL.hash > "" ? "remaining" : "lead")}/${wikiPageName}`;
+			annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
 		} else {
 			//  Local annotation.
 			annotationURL = new URL("https://" + location.hostname + Annotations.annotationsBasePathname
@@ -128,7 +129,7 @@ Annotations = {
 
 					let targetSection;
 					if (annotationURL.hash > "") {
-						targetSection = response["sections"].find(section => section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1));
+						targetSection = response["remaining"]["sections"].find(section => section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1));
 
 						if (!targetSection) {
 							GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
@@ -141,10 +142,10 @@ Annotations = {
 						}
 					}
 
-					let responseHTML = targetSection ? targetSection["text"] : response["sections"][0]["text"];
+					let responseHTML = targetSection ? targetSection["text"] : response["lead"]["sections"][0]["text"];
 					annotation = Annotations.stageAnnotation(responseHTML);
 
-					annotation.dataset["titleText"] = (annotationURL.hash > "") ? targetSection["line"] : response["displaytitle"];
+					annotation.dataset["titleText"] = (annotationURL.hash > "") ? targetSection["line"] : response["lead"]["displaytitle"];
 
 					Annotations.processWikipediaEntry(annotation, annotationURL);
 				} else {
@@ -241,11 +242,25 @@ Annotations = {
 		};
 	},
 
+	/*	Elements to excise from a Wikipedia entry.
+		*/
+	wikipediaEntryExtraneousElementSelectors: [
+		".mw-ref",
+		".shortdescription",
+		".plainlinks",
+		"td hr",
+		".hatnote",
+		".portal",
+		".penicon",
+		".reference",
+		".Template-Fact"
+	],
+
 	/*	Process an already-staged annotation retrieved from a Wikipedia entry.
 		*/
 	processWikipediaEntry: (annotation, annotationURL) => {
 		//	Remove unwanted elements.
-		annotation.querySelectorAll(".mw-ref, .shortdescription, .plainlinks, td hr, .hatnote, .portal, .penicon, .reference, .Template-Fact").forEach(element => {
+		annotation.querySelectorAll(Annotations.wikipediaEntryExtraneousElementSelectors.join(", ")).forEach(element => {
 			element.remove();
 		});
 
