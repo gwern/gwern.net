@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-14 15:17:39 gwern"
+When:  Time-stamp: "2021-04-15 21:43:50 gwern"
 License: CC-0
 -}
 
@@ -253,12 +253,17 @@ writeLinkMetadata l i@(t,a,d,di,abst) = do hPutStrLn stderr (l ++ " : " ++ show 
 restoreFloatRight :: String -> String -> String
 restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
 
--- some author lists are absurdly long; stop at a certain length, finish the author list through the current author (comma-delimited), and leave the rest as 'et al':
--- trimAuthors, initializeAuthors, trimTitle :: String -> String
--- trimAuthors a = let maxLength = 58 in if length a < maxLength then a else (take maxLength a) ++ (takeWhile (/=',') (drop maxLength a)) ++ " et al"
-initializeAuthors, trimTitle :: String -> String
-initializeAuthors a' = replace " and " ", " $ subRegex (mkRegex " ([A-Z]) ") a' " \\1. " -- "John H Smith" → "John H. Smith"
+
+-- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
+initializeAuthors :: String -> String
+initializeAuthors a' = replace " and " ", " $ replace ", & " ", " $ replace ", and " ", " $
+                       (\s -> subRegex (mkRegex "([A-Z]\\.)([A-Za-z]+)") s "\\1 \\2") $ -- "A.Smith" → "A. Smith"
+                       (\s -> subRegex (mkRegex "([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)") s "\\1 \\2 \\3") $ -- "A.B. Smith" → "A. B. Smith"
+                       (\s -> subRegex (mkRegex "([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)") s "\\1 \\2 \\3 \\4") $ -- "C.A.B. Smith" → "C. A. B. Smith"
+                       (\s -> subRegex (mkRegex " ([A-Z]) ") s " \\1. ") $ -- "John H Smith" → "John H. Smith"
+                       a'
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
+trimTitle :: String -> String
 trimTitle [] = ""
 trimTitle t = let t' = reverse $ replace " : " ": " $ replace "\n " "" $ trim t in
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
