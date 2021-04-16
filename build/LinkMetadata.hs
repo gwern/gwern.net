@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-16 11:13:31 gwern"
+When:  Time-stamp: "2021-04-16 13:18:49 gwern"
 License: CC-0
 -}
 
@@ -253,66 +253,6 @@ writeLinkMetadata l i@(t,a,d,di,abst) = do hPutStrLn stderr (l ++ " : " ++ show 
                                            let newYaml = Y.encode [(l,t,a,d,di,abst)]
                                            B.appendFile "metadata/auto.yaml" newYaml
 
--- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
-restoreFloatRight :: String -> String -> String
-restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
-
-
--- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
-initializeAuthors :: String -> String
-initializeAuthors a' = replaceMany [(" and ", ", "), (", & ", ", "), (", and ", ", ")] $
-                       sedMany [
-                         ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith" → "A. Smith"
-                         ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith" → "A. B. Smith"
-                         ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
-                         (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith" → "John H. Smith"
-                         ]
-                       a'
--- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
-trimTitle :: String -> String
-trimTitle [] = ""
-trimTitle t = let t' = reverse $ replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
-                if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
-
--- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
---
--- 1. all citations like 'Foo & Bar 1990' or 'Quux et al 2020' should be hyperlinked (either as a internal anchor or fulltext link);
--- 2. annotated links get a predictable anchor ID generated from the metadata, like '#foo-et-al-2020' (ie grab the first 4 characters of the date, check
---    the number of commas in the author field to decide if 'foo 1990' or 'foo & bar 1990' or 'foo et al 1990' etc);
--- 3. duplicate links will, then, generate invalid HTML as two Foo et al 2020s (which must be links per #1) will both define id='#foo-et-al-2020', and this will trigger htmltidy errors/warnings on sync; so, one of them will be manually edited to either point to another instance which
---    is part of a larger discussion/context, or be given a manual ID like id='#foo-et-al-2020-2'. (since the annotation is based on the URL not the
---    ID, this doesn't affect the annotations.)
---
--- so, all citations have a hyperlink, supporting hypertextual reading or readers who didn't happen to
--- memorize the previous use in the page, independent instances of links remain independent while back/forward
--- references pop up the relevant section with the annotated link in context, htmltidy automatically detects links that need to be updated, and a
--- regexp can warn about citation-text which needs to be linkified.
-generateID :: String -> String -> String -> T.Text
-generateID url author date
-  -- shikata ga nai:
-  | author == "" = ""
-  | date   == "" = ""
-  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
-  | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
-  -- eg '/Faces' = '#gwern-faces'
-  | "Gwern Branwen" == author = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
-  -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
-  | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
-                           let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
-                           let authorCount = length authors in
-                             if authorCount == 0 then "" else
-                               let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
-                                 -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
-                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
-                                   let suffix' = if suffix == "-1" then "" else suffix in
-                                 filter (/='.') $ map toLower $ if authorCount >= 3 then
-                                                 firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
-                                                   if authorCount == 2 then
-                                                     let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
-                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix'
-                                                   else
-                                                     firstAuthorSurname ++ "-" ++ year ++ suffix'
-
 data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
@@ -336,11 +276,6 @@ linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Lef
                      | "/" `isPrefixOf` l || "https://www.gwern.net/" `isPrefixOf` l = return (Left Permanent)
                      -- And everything else is unhandled:
                      | otherwise = return (Left Permanent)
-
-linkCanonicalize :: String -> String
-linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
-                   -- | head l == '#' = l
-                   | otherwise = l
 
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
@@ -395,17 +330,18 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
-                        let title = concatMap (\(TagOpen _ (d:e)) -> if snd d == "DC.Title" then snd $ head e else "") metas
+
+                        let title = concat $ parseMetadataTagsoup "DC.Title" metas
                         if (title=="") then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return (Left Permanent)
                           else do
-                                 let date = concatMap (\(TagOpen _ (h:i)) -> if snd h == "DC.Date" then snd $ head i else "") metas
-                                 let author = initializeAuthors $ intercalate ", " $ filter (/="") $ map (\(TagOpen _ (j:k)) -> if snd j == "DC.Contributor" then snd $ head k else "") metas
-                                 let doi = concatMap (\(TagOpen _ (l:m)) -> if snd l == "citation_doi" then snd $ head m else "") metas
-                                 let abstrct = cleanAbstractsHTML $
-                                                 replace "\n" " " $ -- many WP entries have hidden/stray newlines inside paragraphs, which if deleted, just cause run-together errors, like "one of the most important American poets of the 20th century.Cummings is associated" etc.
-                                                 concatMap (\(TagOpen _ (q:_:s)) ->
-                                                                      if snd q == "citation_abstract" then snd $ head s else "") metas
+                                 let date    = concat $ parseMetadataTagsoup "DC.Date" metas
+                                 let doi     = concat $ parseMetadataTagsoup "citation_doi" metas
+                                 let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
+                                 let abstrct = cleanAbstractsHTML $ concat $ parseMetadataTagsoup "citation_abstract" metas
                                  return $ Right (p, (title, author, date, doi, abstrct))
+  where
+    parseMetadataTagsoup :: String -> [Tag String] -> [String]
+    parseMetadataTagsoup key metas = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ head b else "") metas
 
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
@@ -473,6 +409,87 @@ processArxivAbstract u a = let cleaned = runPure $ do
               in case cleaned of
                  Left e -> error $ u ++ " : " ++ show e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
+
+--------------------------------------------
+-- String munging and processing
+--------------------------------------------
+
+-- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
+restoreFloatRight :: String -> String -> String
+restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
+
+-- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
+--
+-- 1. all citations like 'Foo & Bar 1990' or 'Quux et al 2020' should be hyperlinked (either as a internal anchor or fulltext link);
+-- 2. annotated links get a predictable anchor ID generated from the metadata, like '#foo-et-al-2020' (ie grab the first 4 characters of the date, check
+--    the number of commas in the author field to decide if 'foo 1990' or 'foo & bar 1990' or 'foo et al 1990' etc);
+-- 3. duplicate links will, then, generate invalid HTML as two Foo et al 2020s (which must be links per #1) will both define id='#foo-et-al-2020', and this will trigger htmltidy errors/warnings on sync; so, one of them will be manually edited to either point to another instance which
+--    is part of a larger discussion/context, or be given a manual ID like id='#foo-et-al-2020-2'. (since the annotation is based on the URL not the
+--    ID, this doesn't affect the annotations.)
+--
+-- so, all citations have a hyperlink, supporting hypertextual reading or readers who didn't happen to
+-- memorize the previous use in the page, independent instances of links remain independent while back/forward
+-- references pop up the relevant section with the annotated link in context, htmltidy automatically detects links that need to be updated, and a
+-- regexp can warn about citation-text which needs to be linkified.
+generateID :: String -> String -> String -> T.Text
+generateID url author date
+  -- shikata ga nai:
+  | author == "" = ""
+  | date   == "" = ""
+  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
+  | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
+  -- eg '/Faces' = '#gwern-faces'
+  | "Gwern Branwen" == author = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
+  -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
+  | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
+                           let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
+                           let authorCount = length authors in
+                             if authorCount == 0 then "" else
+                               let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
+                                 -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
+                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
+                                   let suffix' = if suffix == "-1" then "" else suffix in
+                                 filter (/='.') $ map toLower $ if authorCount >= 3 then
+                                                 firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
+                                                   if authorCount == 2 then
+                                                     let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
+                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix'
+                                                   else
+                                                     firstAuthorSurname ++ "-" ++ year ++ suffix'
+
+linkCanonicalize :: String -> String
+linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
+                   -- | head l == '#' = l
+                   | otherwise = l
+
+trim :: String -> String
+trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
+  where badChars c = isSpace c || (c=='-')
+
+sed :: String -> String -> (String -> String)
+sed before after s = subRegex (mkRegex before) s after
+sedMany :: [(String,String)] -> (String -> String)
+sedMany regexps s = foldr (uncurry sed) s regexps
+
+replaceMany :: [(String,String)] -> (String -> String)
+replaceMany rewrites s = foldr (uncurry replace) s rewrites
+
+-- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
+initializeAuthors :: String -> String
+initializeAuthors a' = replaceMany [(" and ", ", "), (", & ", ", "), (", and ", ", ")] $
+                       sedMany [
+                         ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith" → "A. Smith"
+                         ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith" → "A. B. Smith"
+                         ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
+                         (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith" → "John H. Smith"
+                         ]
+                       a'
+
+-- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
+trimTitle :: String -> String
+trimTitle [] = ""
+trimTitle t = let t' = reverse $ replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
+                if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML t = trim $
@@ -988,15 +1005,3 @@ cleanAbstractsHTML t = trim $
     , ("\t\t\t\t\t", "")
     , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
       ] t
-
-trim :: String -> String
-trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
-  where badChars c = isSpace c || (c=='-')
-
-sed :: String -> String -> (String -> String)
-sed before after s = subRegex (mkRegex before) s after
-sedMany :: [(String,String)] -> (String -> String)
-sedMany regexps s = foldr (uncurry sed) s regexps
-
-replaceMany :: [(String,String)] -> (String -> String)
-replaceMany rewrites s = foldr (uncurry replace) s rewrites
