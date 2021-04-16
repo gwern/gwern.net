@@ -4,7 +4,7 @@
 -- 1. adding smallcaps to capitalized phrases
 -- 2. adding line-break tags (`<wbr>`) to slashes so web browsers break at slashes in text
 -- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a cycling pattern, like `class="ruler-1"`/`class="ruler-2"`/`class="ruler-3"`/`class="ruler-1"`..., like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal rulers and other block elements within each section, it is not possible to do the usual trick like with blockquotes/lists).
-module Typography (invertImageInline, invertImage, typographyTransform, imageMagickDimensions) where
+module Typography (invertImageInline, typographyTransform, imageMagickDimensions) where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
