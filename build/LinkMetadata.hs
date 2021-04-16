@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-15 21:43:50 gwern"
+When:  Time-stamp: "2021-04-16 11:13:31 gwern"
 License: CC-0
 -}
 
@@ -12,7 +12,7 @@ License: CC-0
 module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock) where
 
 import Control.Concurrent (forkIO, threadDelay)
-import Control.Monad (when, void)
+import Control.Monad (unless, void, when)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isNumber, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
@@ -55,12 +55,12 @@ isLocalLink = walk isLocalLink'
   where isLocalLink' :: Inline -> Inline
         isLocalLink' y@(Link (a,b,c) e (f,g)) =
           let f' = replace "https://www.gwern.net" "" $ T.unpack f in
-            if not ("/" `isPrefixOf` f') then y
-            else
-              if ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f') then y
-              else
-                if takeExtension f' /= "" then y
-                else (Link (a,"link-local":b,c) e (f,g))
+            (if
+                not ("/" `isPrefixOf` f') ||
+              ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
+             then y else
+               (if takeExtension f' /= "" then y else
+                  (Link (a, "link-local" : b, c) e (f, g))))
         isLocalLink' x = x
 
 
@@ -79,8 +79,8 @@ readLinkMetadata = do
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
-             let emptyCheck = filter (\(u,(t,a,_,_,s)) ->  elem "" [u,t,a,s]) custom
-             when (not (null emptyCheck)) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
+             let emptyCheck = filter (\(u,(t,a,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
+             unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata "metadata/auto.yaml" -- cleanup first
@@ -175,7 +175,11 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
           addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,abstrct) =
-            let a' = if not idBool then "" else if a=="" then generateID (T.unpack f) aut dt else a in -- erase link ID?
+           let a'
+                 | not idBool = ""
+                 | a == "" = generateID (T.unpack f) aut dt
+                 | otherwise = a
+           in -- erase link ID?
               if (length abstrct < 180) && not forcep then y else
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
           addHasAnnotation _ _ z _ = z
@@ -200,7 +204,7 @@ generateAnnotationBlock (f, ann) = case ann of
                                                                              Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
                                                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:
-                                                                     let abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || (take 7 abst) == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
+                                                                     let abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || take 7 abst == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
                                                                        -- check that float-right hasn't been deleted by Pandoc again:
                                                                        let abst'' = restoreFloatRight abst abst' in
                                                               [Para
@@ -256,16 +260,18 @@ restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfix
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors a' = replace " and " ", " $ replace ", & " ", " $ replace ", and " ", " $
-                       (\s -> subRegex (mkRegex "([A-Z]\\.)([A-Za-z]+)") s "\\1 \\2") $ -- "A.Smith" → "A. Smith"
-                       (\s -> subRegex (mkRegex "([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)") s "\\1 \\2 \\3") $ -- "A.B. Smith" → "A. B. Smith"
-                       (\s -> subRegex (mkRegex "([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)") s "\\1 \\2 \\3 \\4") $ -- "C.A.B. Smith" → "C. A. B. Smith"
-                       (\s -> subRegex (mkRegex " ([A-Z]) ") s " \\1. ") $ -- "John H Smith" → "John H. Smith"
+initializeAuthors a' = replaceMany [(" and ", ", "), (", & ", ", "), (", and ", ", ")] $
+                       sedMany [
+                         ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith" → "A. Smith"
+                         ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith" → "A. B. Smith"
+                         ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
+                         (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith" → "John H. Smith"
+                         ]
                        a'
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle :: String -> String
 trimTitle [] = ""
-trimTitle t = let t' = reverse $ replace " : " ": " $ replace "\n " "" $ trim t in
+trimTitle t = let t' = reverse $ replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
@@ -289,7 +295,7 @@ generateID url author date
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- eg '/Faces' = '#gwern-faces'
-  | "Gwern Branwen" == author = T.pack (trim $ replace "." "-" $ replace "--" "-" $ replace "/" "-" $ replace "#" "-" $ map toLower $ replace "https://" "" $ replace "https://www.gwern.net/" "" $ "gwern-"++url)
+  | "Gwern Branwen" == author = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
                            let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
@@ -344,7 +350,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, (processPubMedAbstract $ unlines abstrct)))
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, processPubMedAbstract $ unlines abstrct))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
@@ -403,7 +409,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
 
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
-                                 then replace "https://arxiv.org/pdf/" "" $ replace ".pdf" "" url
+                                 then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
                                  else replace "https://arxiv.org/abs/" "" url
                threadDelay 10000000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long 10s delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
@@ -462,7 +468,7 @@ processArxivAbstract :: String -> String -> String
 processArxivAbstract u a = let cleaned = runPure $ do
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
-                                              replace "%" "\\%" $ replace "\\%" "%" $ replace "$\\%$" "%" $ replace "\n  " "\n\n" a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n")] a
                                     writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
                  Left e -> error $ u ++ " : " ++ show e ++ ": " ++ a
@@ -471,24 +477,26 @@ processArxivAbstract u a = let cleaned = runPure $ do
 cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML t = trim $
   -- regexp substitutions:
-  (\s -> subRegex (mkRegex "([a-zA-Z]) – ([[:punct:]])") s "\\1—\\2") $ -- en dash errors in WP abstracts: usually meant em-dash. eg 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
-  (\s -> subRegex (mkRegex "([[:punct:]]) – ([a-zA-Z])") s "\\1—\\2") $
-  (\s -> subRegex (mkRegex "([a-zA-Z]) – ([a-zA-Z])") s "\\1—\\2") $ -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
-  (\s -> subRegex (mkRegex "([a-zA-Z]) - ([a-zA-Z])") s "\\1—\\2") $ -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
-  (\s -> subRegex (mkRegex "([.0-9]+)x") s "\\1×") $
-  (\s -> subRegex (mkRegex "=-\\.([.0-9]+)") s " = -0.\\1") $
-  (\s -> subRegex (mkRegex " ([0-9]*[02456789])th") s " \\1<sup>th</sup>") $
-  (\s -> subRegex (mkRegex " ([0-9]*[1])st") s        " \\1<sup>st</sup>") $
-  (\s -> subRegex (mkRegex " ([0-9]*[3])rd") s        " \\1<sup>rd</sup>") $
-  (\s -> subRegex (mkRegex " \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)") s "") $ -- rm AERA classification tags they stick into the Crossref abstracts
+  sedMany [
+  ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2"), -- en dash errors in WP abstracts: usually meant em-dash. eg 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
+  ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2"),
+  ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
+  ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
+  ("([.0-9]+)x", "\\1×"),
+  ("=-\\.([.0-9]+)", " = -0.\\1"),
+  (" ([0-9]*[02456789])th", " \\1<sup>th</sup>"),
+  (" ([0-9]*[1])st",        " \\1<sup>st</sup>"),
+  (" ([0-9]*[3])rd",        " \\1<sup>rd</sup>"),
+  (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", ""), -- rm AERA classification tags they stick into the Crossref abstracts
   -- math regexes
-  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$")             s "\\1 × \\2^\\3^") $
-  (\s -> subRegex (mkRegex "\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$")       s "\\1 × \\2^\\3^") $
-  (\s -> subRegex (mkRegex "<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\times\\\\\\)</span>") s "\\1×") $ -- '<span class="math inline">\(1.5\times\)</span>'
-  (\s -> subRegex (mkRegex "<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>") s "×") $ -- '<span class="math inline">\(\times\)</span>'
-  (\s -> subRegex (mkRegex "<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>") s "\\1<sup>\\2</sup>") $ -- '<span class="math inline">\(10^4\)</span>'
+  ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^"),
+  ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^"),
+  ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\times\\\\\\)</span>", "\\1×"), -- '<span class="math inline">\(1.5\times\)</span>'
+  ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×"), -- '<span class="math inline">\(\times\)</span>'
+  ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>", "\\1<sup>\\2</sup>") -- '<span class="math inline">\(10^4\)</span>'
+  ] $
   -- simple string substitutions:
-  foldr (uncurry replace) t [
+  replaceMany [
     ("<span style=\"font-weight:normal\"> </span>", "")
     , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
     , ("<sup></sup>", "")
@@ -979,8 +987,16 @@ cleanAbstractsHTML t = trim $
     , ("\t\t", "")
     , ("\t\t\t\t\t", "")
     , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
-      ]
+      ] t
 
 trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
   where badChars c = isSpace c || (c=='-')
+
+sed :: String -> String -> (String -> String)
+sed before after s = subRegex (mkRegex before) s after
+sedMany :: [(String,String)] -> (String -> String)
+sedMany regexps s = foldr (uncurry sed) s regexps
+
+replaceMany :: [(String,String)] -> (String -> String)
+replaceMany rewrites s = foldr (uncurry replace) s rewrites
