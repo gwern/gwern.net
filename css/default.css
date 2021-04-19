@@ -3226,6 +3226,8 @@ body.directory-index #disqus_thread {
     min-width: var(--GW-popups-popup-with-title-bar-min-width);
 }
 
+.popframe-title-link { font-weight: bold; }
+
 .popup .popframe-title-bar {
     position: absolute;
     height: var(--popup-title-bar-height);
@@ -3237,7 +3239,9 @@ body.directory-index #disqus_thread {
     width: 100%;
     cursor: grab;
     z-index: 11;
+    font-weight: bold;
 }
+
 .popup.has-title-bar.mini-title-bar .popframe-title-bar {
     overflow: hidden;
 }
@@ -3348,7 +3352,7 @@ body.directory-index #disqus_thread {
     padding: 0 1px 1px 1px;
     background-color: var(--GW-popups-popup-border-color);
     visibility: hidden;
-    box-shadow: 
+    box-shadow:
         1px 1px 0 0 var(--GW-popups-popup-title-bar-submenu-box-shadow-color);
     opacity: 0.0;
     transition:
