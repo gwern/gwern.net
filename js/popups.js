@@ -15,7 +15,7 @@ Popups = {
     popupBreathingRoomX: 12.0,
     popupBreathingRoomY: 8.0,
 
-    popupTriggerDelay: 200,
+    popupTriggerDelay: 600,
     popupFadeoutDelay: 50,
     popupFadeoutDuration: 250,
 
@@ -49,9 +49,9 @@ Popups = {
             GWLog("Popup container parent element not found. Exiting.", "popups.js", 1);
             return;
         }
-        popupContainerParent.insertAdjacentHTML("beforeend", `<div 
-        	id="${Popups.popupContainerID}" 
-        	class="popup-container" 
+        popupContainerParent.insertAdjacentHTML("beforeend", `<div
+        	id="${Popups.popupContainerID}"
+        	class="popup-container"
         	style="z-index: ${Popups.popupContainerZIndex};"
         		></div>`);
         requestAnimationFrame(() => {
@@ -233,7 +233,7 @@ Popups = {
 			return;
 
 		//  If title bar contents are provided, add a title bar (if needed).
-		if (  !target.popup.titleBar 
+		if (  !target.popup.titleBar
 			&& target.popup.titleBarContents.length > 0)
 			Popups.addTitleBarToPopup(target.popup);
 
@@ -287,13 +287,13 @@ Popups = {
 		popup.addEventListener("mousemove", Popups.popupMouseMove = (event) => {
 			GWLog("Popups.popupMouseMove", "popups.js", 3);
 
-			if (   event.target == popup 
-				&& window.popupBeingDragged == null 
+			if (   event.target == popup
+				&& window.popupBeingDragged == null
 				&& Popups.popupIsResizeable(popup)) {
 				//  Mouse position is relative to the popup’s coordinate system.
 				let edgeOrCorner = Popups.edgeOrCorner(popup, {
-					x: event.clientX - popup.viewportRect.left, 
-					y: event.clientY - popup.viewportRect.top 
+					x: event.clientX - popup.viewportRect.left,
+					y: event.clientY - popup.viewportRect.top
 				});
 
 				//  Set cursor.
@@ -656,16 +656,16 @@ Popups = {
 		//  Make corner drag areas big enough to make a decent mouse target.
 		let cornerHandleSize = Math.min(20.0, (Math.min(popup.viewportRect.width, popup.viewportRect.height) / 3.0));
 
-			   if (   relativeMousePos.x < cornerHandleSize 
+			   if (   relativeMousePos.x < cornerHandleSize
 				   && relativeMousePos.y < cornerHandleSize) {
 			return "corner-top-left";
-		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize 
+		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize
 				   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
 			return "corner-bottom-right";
-		} else if (   relativeMousePos.x < cornerHandleSize 
+		} else if (   relativeMousePos.x < cornerHandleSize
 				   && relativeMousePos.y > popup.viewportRect.height - cornerHandleSize) {
 			return "corner-bottom-left";
-		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize 
+		} else if (   relativeMousePos.x > popup.viewportRect.width - cornerHandleSize
 				   && relativeMousePos.y < cornerHandleSize) {
 			return "corner-top-right";
 		} else if (relativeMousePos.x < cornerHandleSize) {
@@ -728,7 +728,7 @@ Popups = {
 				newlyAddedElement.addActivateEvent(newlyAddedElement.buttonAction);
 
 			//  Add popup-positioning submenu to zoom button.
-			if (   newlyAddedElement.classList.contains("zoom-button") 
+			if (   newlyAddedElement.classList.contains("zoom-button")
 				&& newlyAddedElement.submenuEnabled)
 				Popups.titleBarComponents.addSubmenuToButton(newlyAddedElement, "zoom-button-submenu", Popups.titleBarComponents.popupZoomButtons());
 		});
@@ -911,7 +911,7 @@ Popups = {
 
 				button.swapClasses([ "pin", "unpin" ], (Popups.popupIsPinned(popup) ? 1 : 0));
 
-				button.disabled = !(Popups.popupIsEphemeral(popup)) 
+				button.disabled = !(Popups.popupIsEphemeral(popup))
 							   && !(Popups.popupIsPinned(popup));
 			};
 
@@ -1086,8 +1086,8 @@ Popups = {
 					  >= 0) {
 					//  Above.
 					provisionalPopupYPosition = popupSpawnYOriginForSpawnAbove - popupIntrinsicHeight;
-				} else if (  popupSpawnYOriginForSpawnBelow 
-						   + popupIntrinsicHeight 
+				} else if (  popupSpawnYOriginForSpawnBelow
+						   + popupIntrinsicHeight
 						     <= window.innerHeight) {
 					//  Below.
 					provisionalPopupYPosition = popupSpawnYOriginForSpawnBelow;
@@ -1110,8 +1110,8 @@ Popups = {
 				If so, move it left, until its right edge is flush with
 				the container’s right edge.
 				*/
-			if (  provisionalPopupXPosition 
-				+ popupIntrinsicWidth 
+			if (  provisionalPopupXPosition
+				+ popupIntrinsicWidth
 				  > document.documentElement.offsetWidth) {
 				//  We add 1.0 here to prevent wrapping due to rounding.
 				provisionalPopupXPosition -= (provisionalPopupXPosition + popupIntrinsicWidth - document.documentElement.offsetWidth + 1.0);
@@ -1130,7 +1130,7 @@ Popups = {
 				xPos = parseFloat(popup.dataset.previousXPosition);
 				yPos = parseFloat(popup.dataset.previousYPosition);
 
-				//  Clear saved position.		
+				//  Clear saved position.
 				delete popup.dataset.previousXPosition;
 				delete popup.dataset.previousYPosition;
 
@@ -1171,7 +1171,7 @@ Popups = {
 			document.activeElement.blur();
 		});
 	},
-	
+
 	setPopupViewportRect: (popup, rect) => {
 		GWLog("Popups.setPopupViewportRect", "popups.js", 3);
 
@@ -1300,7 +1300,7 @@ Popups = {
 		let popup = event.target.closest(".popup");
 
 		/*  Make sure we’re clicking on the popup (i.e., its edge) and not
-			on any of the popup’s contained elements; that this is a 
+			on any of the popup’s contained elements; that this is a
 			left-click; and that the popup is pinned or zoomed.
 			*/
 		if (   event.target != popup
@@ -1325,8 +1325,8 @@ Popups = {
 
 		//  Determine direction of resizing.
 		let edgeOrCorner = Popups.edgeOrCorner(popup, {
-			x: event.clientX - popup.viewportRect.left, 
-			y: event.clientY - popup.viewportRect.top 
+			x: event.clientX - popup.viewportRect.left,
+			y: event.clientY - popup.viewportRect.top
 		});
 
 		//  Point where the drag began.
@@ -1516,11 +1516,11 @@ Popups = {
 			let deltaY = event.clientY - dragStartMouseCoordY;
 
 			//  Apply the vector to popup starting position; clamp to screen.
-			newPopupViewportRect.x = valMinMax(popup.viewportRect.left + deltaX, 
-											   0, 
+			newPopupViewportRect.x = valMinMax(popup.viewportRect.left + deltaX,
+											   0,
 											   viewportWidth - popup.viewportRect.width);
-			newPopupViewportRect.y = valMinMax(popup.viewportRect.top + deltaY, 
-											   0, 
+			newPopupViewportRect.y = valMinMax(popup.viewportRect.top + deltaY,
+											   0,
 											   viewportHeight - popup.viewportRect.height);
 
 			//  Set the new popup rect.
@@ -1566,7 +1566,7 @@ Popups = {
 				popup (possibly outside the viewport), treat this
 				as mousing out of the popup.
 				*/
-			if ((  !event.target.closest 
+			if ((  !event.target.closest
 				 || event.target.closest(".popup") == null)
 				&&  Popups.popupIsEphemeral(popup)) {
 				Popups.getPopupAncestorStack(popup).reverse().forEach(popupInStack => {
