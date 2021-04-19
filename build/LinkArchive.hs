@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-04-15 12:24:00 gwern"
+When:  Time-stamp: "2021-04-18 21:47:08 gwern"
 License: CC-0
 -}
 
@@ -857,5 +857,6 @@ whiteList url
       , "www.microcovid.org" -- service
       , "grantland.com/features/" -- stable
       , "instant.page" -- stable
+      , "support.google.com" -- updated
       ] = True
     | otherwise = False
