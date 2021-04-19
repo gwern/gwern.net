@@ -1,19 +1,19 @@
 :root {
-	/*	Adjust background color to prevent pixels from turning off.
-		*/
-	--GW-body-background-color: #010101;
+    /*  Adjust background color to prevent pixels from turning off.
+        */
+    --GW-body-background-color: #010101;
 
-	/*	Adjust this one color in the syntax highlighting color scheme to make it
-		less saturated. (The automatic inversion algorithm doesn’t quite handle
-		it in the way we want.)
-		*/
+    /*  Adjust this one color in the syntax highlighting color scheme to make it
+        less saturated. (The automatic inversion algorithm doesn’t quite handle
+        it in the way we want.)
+        */
     --GW-syntax-highlight-color-control-flow: #cce1c8;
 }
 
-/*	The ‘fill’ attribute of the SVGs is modified in dark mode.
-	(We cannot use an invert filter because we don’t want to invert the whole
-	 element, only the background-image.)
-	*/
+/*  The ‘fill’ attribute of the SVGs is modified in dark mode.
+    (We cannot use an invert filter because we don’t want to invert the whole
+     element, only the background-image.)
+    */
 .collapse .disclosure-button::before {
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path d="M34.52 239.03L228.87 44.69c9.37-9.37 24.57-9.37 33.94 0l22.67 22.67c9.36 9.36 9.37 24.52.04 33.9L131.49 256l154.02 154.75c9.34 9.38 9.32 24.54-.04 33.9l-22.67 22.67c-9.37 9.37-24.57 9.37-33.94 0L34.52 272.97c-9.37-9.37-9.37-24.57 0-33.94z" fill="%235C5C5C"/></svg>');
 }
@@ -27,8 +27,8 @@
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23000"/></svg>');
 }
 
-/*	The ‘celestial symbol’ horizonal rules are SVGs and must be inverted.
-	*/
+/*  The ‘celestial symbol’ horizonal rules are SVGs and must be inverted.
+    */
 hr::after,
 .horizontalRule-nth-0 hr::after {
     opacity: 1;
@@ -43,15 +43,15 @@ hr::after,
     filter: invert(1);
 }
 
-/*	Drop cap opacity adjustment.
-	*/
+/*  Drop cap opacity adjustment.
+    */
 .drop-cap-goudy::first-letter,
 .drop-cap-goudy > p::first-letter {
     opacity: 0.95;
 }
 
-/*	Admonition icons.
-	*/
+/*  Admonition icons.
+    */
 .admonition.tip::before,
 .admonition.note::before,
 .admonition.warn::before,
@@ -66,21 +66,21 @@ div.admonition.error {
     --GW-dotted-underline-background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
-/*	List bullets are SVGs and have to be inverted.
-	*/
+/*  List bullets are SVGs and have to be inverted.
+    */
 ul > li::before {
     filter: invert(1);
 }
 
-/*	Exclusion for TOC entries.
-	*/
+/*  Exclusion for TOC entries.
+    */
 #TOC ul > li::before {
     filter: none;
 }
 
-/*	For sortable table column headings, we use dark versions of the up/down/both
-	arrow icons.
-	*/
+/*  For sortable table column headings, we use dark versions of the up/down/both
+    arrow icons.
+    */
 table th.tablesorter-header {
     background-image: url('/static/img/tablesorter/tablesorter-bg-dark.gif');
 }
@@ -91,9 +91,9 @@ table th.tablesorter-headerDesc {
     background-image: url('/static/img/tablesorter/tablesorter-desc-dark.gif');
 }
 
-/*	The pixel-grid-checkerboard pattern of these scroll bars is created by GIF
-	background-images; we use alternate versions of the images in dark mode.
-	*/
+/*  The pixel-grid-checkerboard pattern of these scroll bars is created by GIF
+    background-images; we use alternate versions of the images in dark mode.
+    */
 .table-wrapper::-webkit-scrollbar-thumb {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAIiIiCwAAAAABAAEAAACBkwAhqgZBQA7');
 }
@@ -108,10 +108,10 @@ table th.tablesorter-headerDesc {
     background-image: url('data:image/gif;base64,R0lGODlhBAAEAPAAMQAAAL+/vywAAAAABAAEAAACBkwAhqgZBQA7');
 }
 
-/*	Images that are marked as invertible by the server are inverted,
-	hue-rotated, and desaturated. Other (non-invertible) images are merely
-	desaturated. Hovering over an image restores it to its original state.
-	*/
+/*  Images that are marked as invertible by the server are inverted,
+    hue-rotated, and desaturated. Other (non-invertible) images are merely
+    desaturated. Hovering over an image restores it to its original state.
+    */
 img.invertible,
 img.invertible-auto {
     filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
@@ -131,38 +131,38 @@ img.invertible-auto:hover {
     transition: filter 0s ease 0.25s;
 }
 
-/*	The loading spinner for object popups (image, iframe, object) is inverted
-	and made more visible in dark mode.
-	*/
+/*  The loading spinner for object popups (image, iframe, object) is inverted
+    and made more visible in dark mode.
+    */
 .popupdiv.loading::before {
-	filter: invert(1);
-	opacity: 0.4;
+    filter: invert(1);
+    opacity: 0.4;
 }
 
-/*	“Loading failed” messages for object popups.
-	*/
+/*  “Loading failed” messages for object popups.
+    */
 .popupdiv.loading-failed::after {
-	opacity: 0.4;
+    opacity: 0.4;
 }
 
-/*	The mode selector is adjusted to be better visible in dark mode, and its
-	button icons inverted.
-	*/
+/*  The mode selector is adjusted to be better visible in dark mode, and its
+    button icons inverted.
+    */
 div#mode-selector {
     opacity: 0.6;
 }
 div#mode-selector button::before {
-	filter: invert(1);
-	opacity: 0.45;
+    filter: invert(1);
+    opacity: 0.45;
 }
 div#mode-selector button.select-mode-light::before {
-	opacity: 0.55;
+    opacity: 0.55;
 }
 
-/*	The dotted underline for Wikipedia links is created by a
-	pixel-grid-checkerboard background-image. We use an alternate version of
-	this image in dark mode.
-	*/
+/*  The dotted underline for Wikipedia links is created by a
+    pixel-grid-checkerboard background-image. We use an alternate version of
+    this image in dark mode.
+    */
 .markdownBody a[href*='wikipedia.org'].docMetadata:hover,
 .markdownBody a[href*='wikimedia.org'].docMetadata:hover,
 .markdownBody a[href*='wiktionary.org'].docMetadata:hover,
@@ -171,8 +171,8 @@ div#mode-selector button.select-mode-light::before {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
-/*	All SVG linkicons have to be inverted.
-	*/
+/*  All SVG linkicons have to be inverted.
+    */
 a.link-self.identifier-link-up::after,
 a.link-self.identifier-link-down::after,
 a[href$='.pdf' i]::after,
@@ -238,7 +238,7 @@ a[href$='.mht' i]::after,
 a[href$='.ttf' i]::after,
 a[href*='biorxiv.org']::after,
 a[href*='medrxiv.org']::after,
-a[href*='substack.com']::after,
+a[href*='substack.com']:not([href*=astralcodexten])::after,
 a[href*='scholar.google.com']::after,
 a[href*='plosone.org']::after,
 a[href*='plosmedicine.org']::after,
