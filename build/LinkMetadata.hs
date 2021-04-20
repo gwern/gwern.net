@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-16 13:18:49 gwern"
+When:  Time-stamp: "2021-04-19 19:43:36 gwern"
 License: CC-0
 -}
 
@@ -561,6 +561,9 @@ cleanAbstractsHTML t = trim $
     , ("<span class=\"math inline\">\\(n^{-1}\\)</span>", "<em>n</em><sup>−1</sup>")
     , ("<span class=\"math inline\">\\(n^{-\beta}\\)</span>", "<em>n<sup>−β</sup></em>")
     , ("<span class=\"math inline\">\\(\\beta&gt;0\\)</span>", "<em>β</em> > 0")
+    , ("<span class=\"math inline\">\\(1,\\!000\\times\\)</span>", "1,000×")
+    , ("<span class=\"math inline\">\\(3,\\!000\\times\\)</span>", "3,000×")
+    , ("<span class=\"math inline\">\\(100,\\!000\\)</span>", "100,000")
     , ("<math>A</math>", "<em>A</em>")
     , ("<math>B</math>", "<em>B</em>")
     , ("<math>C</math>", "<em>C</em>")

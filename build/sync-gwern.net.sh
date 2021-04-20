@@ -169,7 +169,7 @@ then
     λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
          for PAGE in $PAGES; do fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' "$PAGE" | \
                                      fgrep --invert-match -e 'docs/cs/1955-nash' -e 'Backstop' -e 'Death-Note-Anonymity' -e 'Differences' \
-                                                          -e 'Lorem' -e 'Modus' ; done; }
+                                                          -e 'Lorem' -e 'Modus' -e 'Order-statistics' ; done; }
     wrap λ "Warning: unauthorized LaTeX users"
 
     λ(){ find ./ -type f -name "*.page" -type f -exec egrep --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
