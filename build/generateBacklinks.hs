@@ -4,10 +4,10 @@
 module Main where
 
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, readerExtensions,
-                     readHtml, readMarkdown, runPure, writeHtml5String,
-                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
+                     readHtml, readMarkdown, runPure, writeHtml5, writerExtensions, writerTemplate, compileTemplate, runWithDefaultPartials,
+                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str), Template)
 import qualified Data.Text as T (head, pack, unpack, Text)
-import qualified Data.Text.IO as TIO (readFile, writeFile)
+import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isSuffixOf, sort)
 import qualified Data.HashMap.Strict as HM (toList, fromList, traverseWithKey, fromListWith, union, HashMap)
 import System.Directory (createDirectoryIfMissing)
@@ -15,6 +15,8 @@ import Network.HTTP (urlEncode)
 import Data.List.Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
 import Text.Show.Pretty (ppShow)
+import Text.Blaze.Html.Renderer.String (renderHtml)
+import System.IO.Unsafe (unsafePerformIO)
 
 -- | Map over the filenames
 main :: IO ()
@@ -22,7 +24,8 @@ main = do
   bldb <- readBacklinksDB
   createDirectoryIfMissing False "metadata/annotations/backlinks/"
 
-  _ <- HM.traverseWithKey writeOutCallers bldb
+  let t = backTemplate
+  _ <- HM.traverseWithKey (writeOutCallers t) bldb
 
   fs <- fmap lines getContents
 
@@ -35,15 +38,22 @@ main = do
   let bldb' = bldb `HM.union` linksdb
   writeBacklinksDB bldb'
 
-writeOutCallers :: T.Text -> [T.Text] -> IO ()
-writeOutCallers target callers = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html"
-                                    let content = BulletList $
-                                          map (\c -> [Para [Link nullAttr [Str c] (c, "")]]) callers
-                                    let html = let htmlEither = runPure $  writeHtml5String def $ Pandoc nullMeta [content]
+writeOutCallers :: Template T.Text -> T.Text -> [T.Text] -> IO ()
+writeOutCallers tp target callers = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html"
+                                       let content = BulletList $
+                                            map (\c -> [Para [Link nullAttr [Str c] (c, "")]]) callers
+
+                                       let html = let htmlEither = runPure $ writeHtml5 def{writerExtensions = pandocExtensions, writerTemplate=Just tp} $ Pandoc nullMeta [content]
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
-                                    TIO.writeFile f html
+                                       writeFile f $ renderHtml html
+
+backTemplate :: Template T.Text
+backTemplate =
+          either error id $ either (error . show) id $
+        runPure $ runWithDefaultPartials $
+        compileTemplate "" (unsafePerformIO $ TIO.readFile "/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5") -- &%&^%!
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
