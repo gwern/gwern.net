@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-04-17 21:16:44 gwern"
+When: Time-stamp: "2021-04-20 12:34:52 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -58,6 +58,7 @@ import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
                     ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..))
 import Text.Pandoc.Walk (walk, walkM)
+import Network.HTTP (urlEncode)
 
 import Data.List.Utils (replace)
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack)
@@ -219,7 +220,8 @@ postCtx tags =
     constField "cssExtension" "drop-caps-de-zs" <>
     constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
-    escapedTitleField "safeURL"
+    escapedTitleField "safeURL" <>
+    (mapContext (\p -> (urlEncode $ (urlEncode "/") ++ replace ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html'
   where escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
         descField d = field d $ \item -> do
                           metadata <- getMetadata (itemIdentifier item)

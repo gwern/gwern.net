@@ -379,7 +379,7 @@ then
 
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'docs/www/' -e 'metadata/annotations/backlink/') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png' ; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'docs/www/' -e 'metadata/annotations/backlinks/') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png' ; }
     wrap λ "Duplicate file check"
 
     λ() { find . -perm u=r -path '.git' -prune; }
