@@ -4,28 +4,26 @@
 module Main where
 
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, readerExtensions,
-                     readHtml, readMarkdown, runPure, writeHtml5, writerExtensions, writerTemplate, compileTemplate, runWithDefaultPartials,
-                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str), Template)
-import qualified Data.Text as T (head, pack, unpack, Text)
+                     readHtml, readMarkdown, runPure, writeMarkdown, writerExtensions,
+                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
+import qualified Data.Text as T (head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
-import Data.List (isSuffixOf, sort)
+import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.HashMap.Strict as HM (toList, fromList, traverseWithKey, fromListWith, union, HashMap)
 import System.Directory (createDirectoryIfMissing)
-import Network.HTTP (urlEncode)
+import Network.HTTP (urlDecode, urlEncode)
 import Data.List.Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
 import Text.Show.Pretty (ppShow)
-import Text.Blaze.Html.Renderer.String (renderHtml)
-import System.IO.Unsafe (unsafePerformIO)
 
--- | Map over the filenames
+import LinkMetadata (sed, replaceMany)
+
 main :: IO ()
 main = do
   bldb <- readBacklinksDB
   createDirectoryIfMissing False "metadata/annotations/backlinks/"
 
-  let t = backTemplate
-  _ <- HM.traverseWithKey (writeOutCallers t) bldb
+  _ <- HM.traverseWithKey writeOutCallers bldb
 
   fs <- fmap lines getContents
 
@@ -38,29 +36,47 @@ main = do
   let bldb' = bldb `HM.union` linksdb
   writeBacklinksDB bldb'
 
-writeOutCallers :: Template T.Text -> T.Text -> [T.Text] -> IO ()
-writeOutCallers tp target callers = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html"
+writeOutCallers :: T.Text -> [T.Text] -> IO ()
+writeOutCallers target callers    = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html.page"
                                        let content = BulletList $
                                             map (\c -> [Para [Link nullAttr [Str c] (c, "")]]) callers
 
-                                       let html = let htmlEither = runPure $ writeHtml5 def{writerExtensions = pandocExtensions, writerTemplate=Just tp} $ Pandoc nullMeta [content]
-                                                  in case htmlEither of
+                                       let markdown = let markdownEither = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $ Pandoc nullMeta [content]
+                                                  in case markdownEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
-                                       writeFile f $ renderHtml html
+                                       writeFile f $ generateYAMLHeader (urlEncode (T.unpack target))
+                                         ++ T.unpack markdown
 
-backTemplate :: Template T.Text
-backTemplate =
-          either error id $ either (error . show) id $
-        runPure $ runWithDefaultPartials $
-        compileTemplate "" (unsafePerformIO $ TIO.readFile "/home/gwern/bin/bin/pandoc-template-html5-articleedit.html5") -- &%&^%!
+generateYAMLHeader :: FilePath -> String
+generateYAMLHeader d = "---\n" ++
+                       "title: \"" ++ urlDecode d ++ " Backlinks\"\n" ++
+                       "description: \"Bibliography of reverse or backlinks for " ++ urlDecode d ++ "\"\n" ++
+                       "tags: index\n" ++
+                       "created: 2009-01-01\n" ++
+                       "status: in progress\n" ++
+                       "confidence: log\n" ++
+                       "importance: 0\n" ++
+                       "cssExtension: drop-caps-de-zs\n" ++
+                       "...\n" ++
+                       "\n" ++
+                       "# Backlinks\n" ++
+                       "\n"
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
                             let links = filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                   extractLinks md text
-                            return $ zip links
-                                         (repeat $ T.pack $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ replace ".html" "" ("/"++m))
+                            -- print m
+                            -- print links
+                            let caller = repeat $ T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
+                            let called = filter (/=(head caller)) (map (T.pack . replace "/metadata/annotations/" "" . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
+
+                            -- print "called"
+                            -- print called
+                            -- print "caller"
+                            -- print $ head caller
+                            return $ zip called caller
 
 type Backlinks = HM.HashMap T.Text [T.Text]
 

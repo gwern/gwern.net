@@ -59,7 +59,7 @@ generateYAMLHeader d = "---\n" ++
                        "status: in progress\n" ++
                        "confidence: log\n" ++
                        "importance: 0\n" ++
-                       "cssExtension: directory-index\n" ++
+                       "cssExtension: drop-caps-de-zs\n" ++
                        "...\n" ++
                        "\n" ++
                        "# Files\n" ++
