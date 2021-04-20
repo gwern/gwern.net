@@ -3,16 +3,18 @@
 
 module Main where
 
-import Text.Pandoc -- (def, queryWith, readerExtensions, readMarkdown, runPure,
-                     -- pandocExtensions, Inline(Link), Pandoc)
-import qualified Data.Text as T -- (append,  pack, unlines, Text)
-import qualified Data.Text.IO as TIO -- (readFile, putStr)
-import System.Environment -- (getArgs)
-import Data.List
-import qualified Data.HashMap.Strict as HM
-import System.Directory
+import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, readerExtensions,
+                     readHtml, readMarkdown, runPure, writeHtml5String,
+                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
+import qualified Data.Text as T (head, pack, unpack, Text)
+import qualified Data.Text.IO as TIO (readFile, writeFile)
+import Data.List (isSuffixOf, sort)
+import qualified Data.HashMap.Strict as HM (toList, fromList, traverseWithKey, fromListWith, union, HashMap)
+import System.Directory (createDirectoryIfMissing)
 import Network.HTTP (urlEncode)
 import Data.List.Utils (replace)
+import Data.Containers.ListUtils (nubOrd)
+import Text.Show.Pretty (ppShow)
 
 -- | Map over the filenames
 main :: IO ()
@@ -29,7 +31,7 @@ main = do
   let html     = filter (".html" `isSuffixOf` ) fs
   links2 <- mapM (parseFileForLinks False) html
 
-  let linksdb = HM.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ concat $ links1++links2
+  let linksdb = HM.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2
   let bldb' = bldb `HM.union` linksdb
   writeBacklinksDB bldb'
 
@@ -39,22 +41,16 @@ writeOutCallers target callers = do let f = take 274 $ "metadata/annotations/bac
                                           map (\c -> [Para [Link nullAttr [Str c] (c, "")]]) callers
                                     let html = let htmlEither = runPure $  writeHtml5String def $ Pandoc nullMeta [content]
                                                   in case htmlEither of
-                                                              Left e -> error $ (show target) ++ (show callers) ++ (show e)
+                                                              Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
                                     TIO.writeFile f html
 
--- -- | read 1 file and print out its URLs
--- printURLs :: Bool -> FilePath -> IO ()
--- printURLs printfilename file = do
---   input <- TIO.readFile file
---   let converted = extractLinks input
---   if printfilename then TIO.putStr $ T.unlines $ Prelude.map (\url -> (T.pack file) `T.append` ":" `T.append` url) converted else
---      TIO.putStr $ T.unlines converted
-
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
-                            let links = extractLinks md text
-                            return $ zip links (repeat $ T.pack $ (replace ".page" "" $ replace ".html" "" ("/"++m)))
+                            let links = filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
+                                  extractLinks md text
+                            return $ zip links
+                                         (repeat $ T.pack $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ replace ".html" "" ("/"++m))
 
 type Backlinks = HM.HashMap T.Text [T.Text]
 
@@ -64,8 +60,8 @@ readBacklinksDB = do bll <- readFile "metadata/backlinks.hs"
                      return bldb
 writeBacklinksDB :: Backlinks -> IO ()
 writeBacklinksDB bldb = do let bll = HM.toList bldb :: [(T.Text,[T.Text])]
-                           let bll' = map (\(a,b) -> (T.unpack a, map T.unpack b)) bll
-                           writeFile "metadata/backlinks.hs" $ show bll'
+                           let bll' = sort $ map (\(a,b) -> (T.unpack a, map T.unpack b)) bll
+                           writeFile "metadata/backlinks.hs" $ ppShow bll'
 
 -- | Read one Text string and return its URLs (as Strings)
 extractLinks :: Bool -> T.Text -> [T.Text]
