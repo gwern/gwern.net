@@ -29,14 +29,13 @@ then
                  echo -e "$OUTPUT";
              fi; }
 
-    cd ~/wiki/ && git status
+    (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
     (cd ./static/ && git pull --verbose https://gwern.obormot.net/static/.git || true)
 
-
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll use a whitelist of directories which have files which may have decent annotations & be worth browsing:
     bold "Building directory indexes…"
-    runhaskell -istatic/build/ static/build/generateDirectory.hs docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ \
+    (runhaskell -istatic/build/ static/build/generateDirectory.hs docs/ docs/ai/ docs/ai/anime/ docs/ai/music/ \
                docs/ai/poetry/ docs/algernon/ docs/anime/ docs/aspirin/ \
                docs/biology/ docs/bitcoin/ docs/bitcoin/pirateat40/ docs/borges/ docs/catnip/ docs/co2/ docs/conscientiousness/ \
                docs/creatine/ docs/cs/ docs/culture/ docs/design/ docs/dnb/ docs/economics/ docs/elections/ docs/eva/ docs/fiction/ \
@@ -52,10 +51,13 @@ then
                docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
                docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ notes/ fiction/ haskell/ newsletter/ newsletter/2013/ newsletter/2014/ \
-               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ zeo/
+               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ zeo/) &
 
     bold "Updating annotations..."
-    ghci -v0 -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null
+    (runhaskell -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) &
+
+    bold "Updating backlinks..."
+    (ls **/*.page metadata/annotations/*.html | egrep -v '^docs/.*/index.page' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -127,7 +129,7 @@ then
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
     bold "Compiling LaTeX HTML into static CSS…"
     staticCompileMathJax () {
-        if [[ $(fgrep '<span class="math inline"' "$@") ]]; then
+        if [[ $(fgrep -e '<span class="math inline"' -e '<span class="math display"' "$@") ]]; then
             TARGET=$(mktemp /tmp/XXXXXXX.html)
             cat "$@" | nice ~/src/node_modules/mathjax-node-page/bin/mjpage --output CommonHTML --fontURL '/static/font/mathjax' | \
             ## WARNING: experimental CSS optimization: can't figure out where MathJax generates its CSS which is compiled,
@@ -141,8 +143,7 @@ then
         fi
     }
     export -f staticCompileMathJax
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel staticCompileMathJax || true
-    find ./_site/metadata/annotations/ -name "*.html" | sort | parallel staticCompileMathJax || true
+    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';  find ./_site/metadata/annotations/ -name '*.html') | sort | parallel staticCompileMathJax
 
     # Testing compilation results:
     set +e
@@ -162,14 +163,16 @@ then
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel fgrep --with-filename --color=always '!Wikipedia'; }
     wrap λ "Stray interwiki links"
 
-    λ(){ PAGES=$(find ./ -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/')
-       for PAGE in $PAGEs; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
+    λ(){ PAGES=$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/')
+       for PAGE in $PAGES; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
     wrap λ "Smallcaps-auto regression"
 
     λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
-         for PAGE in $PAGES; do fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' "$PAGE" | \
+         echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      fgrep --invert-match -e 'docs/cs/1955-nash' -e 'Backstop' -e 'Death-Note-Anonymity' -e 'Differences' \
-                                                          -e 'Lorem' -e 'Modus' -e 'Order-statistics' ; done; }
+                                                          -e 'Lorem' -e 'Modus' -e 'Order-statistics' -e 'Conscientiousness-and-online-education' \
+                                -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf';
+       }
     wrap λ "Warning: unauthorized LaTeX users"
 
     λ(){ find ./ -type f -name "*.page" -type f -exec egrep --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
@@ -228,7 +231,7 @@ then
         set +e;
         IFS=$(echo -en "\n\b");
         PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'Book-reviews' -e 'index' | sort -u)"
-        OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -name "*.html"; echo index)"
+        OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -maxdepth 1 -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404.html; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
@@ -379,7 +382,7 @@ then
 
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'docs/www/' -e 'metadata/annotations/backlinks/') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png' ; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'docs/www/' -e 'metadata/annotations/backlinks') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png' ; }
     wrap λ "Duplicate file check"
 
     λ() { find . -perm u=r -path '.git' -prune; }
