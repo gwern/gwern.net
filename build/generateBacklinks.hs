@@ -4,26 +4,29 @@
 module Main where
 
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, readerExtensions,
-                     readHtml, readMarkdown, runPure, writeMarkdown, writerExtensions,
+                     readHtml, readMarkdown, runPure, writeHtml5String, writerExtensions,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
+import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.HashMap.Strict as HM (toList, fromList, traverseWithKey, fromListWith, union, HashMap)
-import System.Directory (createDirectoryIfMissing)
+import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import Network.HTTP (urlDecode, urlEncode)
 import Data.List.Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
 import Text.Show.Pretty (ppShow)
+import System.IO.Temp (writeSystemTempFile)
 
-import LinkMetadata (sed, replaceMany)
+import LinkMetadata (sed, hasAnnotation, readLinkMetadata, Metadata)
 
 main :: IO ()
 main = do
   bldb <- readBacklinksDB
+  mdb <- readLinkMetadata
   createDirectoryIfMissing False "metadata/annotations/backlinks/"
 
-  _ <- HM.traverseWithKey writeOutCallers bldb
+  _ <- HM.traverseWithKey (writeOutCallers mdb) bldb
 
   fs <- fmap lines getContents
 
@@ -36,46 +39,37 @@ main = do
   let bldb' = bldb `HM.union` linksdb
   writeBacklinksDB bldb'
 
-writeOutCallers :: T.Text -> [T.Text] -> IO ()
-writeOutCallers target callers    = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html.page"
+writeOutCallers :: Metadata -> T.Text -> [T.Text] -> IO ()
+writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html"
                                        let content = BulletList $
-                                            map (\c -> [Para [Link nullAttr [Str c] (c, "")]]) callers
+                                            map (\c -> [Para [Link nullAttr [Str (if T.head c == '/' then T.tail c else c)] (c, "")]]) callers
 
-                                       let markdown = let markdownEither = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} $ Pandoc nullMeta [content]
-                                                  in case markdownEither of
+                                       let pandoc = walk (hasAnnotation md True) $ Pandoc nullMeta [content]
+                                       let html = let htmlEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} pandoc
+                                                  in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
-                                       writeFile f $ generateYAMLHeader (urlEncode (T.unpack target))
-                                         ++ T.unpack markdown
+                                       updateFile f $ T.unpack html
 
-generateYAMLHeader :: FilePath -> String
-generateYAMLHeader d = "---\n" ++
-                       "title: \"" ++ urlDecode d ++ " Backlinks\"\n" ++
-                       "description: \"Bibliography of reverse or backlinks for " ++ urlDecode d ++ "\"\n" ++
-                       "tags: index\n" ++
-                       "created: 2009-01-01\n" ++
-                       "status: in progress\n" ++
-                       "confidence: log\n" ++
-                       "importance: 0\n" ++
-                       "cssExtension: drop-caps-de-zs\n" ++
-                       "...\n" ++
-                       "\n" ++
-                       "# Backlinks\n" ++
-                       "\n"
+updateFile :: FilePath -> String -> IO ()
+updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-backlinks" contentsNew
+                              existsOld <- doesFileExist f
+                              if not existsOld then
+                                renameFile t f
+                                else
+                                  do contentsOld <- readFile f
+                                     if (contentsNew /= contentsOld) then renameFile t f else removeFile t
+
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
+
                             let links = filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                   extractLinks md text
-                            -- print m
-                            -- print links
-                            let caller = repeat $ T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
-                            let called = filter (/=(head caller)) (map (T.pack . replace "/metadata/annotations/" "" . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
 
-                            -- print "called"
-                            -- print called
-                            -- print "caller"
-                            -- print $ head caller
+                            let caller = repeat $ T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
+                            let called = filter (/= head caller) (map (T.pack . replace "/metadata/annotations/" "" . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
+
                             return $ zip called caller
 
 type Backlinks = HM.HashMap T.Text [T.Text]

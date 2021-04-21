@@ -3,10 +3,10 @@ module Main where
 
 -- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but, because of the flattened-annotation pass in hakyll.hs, it has a 'Link Bibliography' which provides an automatically-annotated directory interface! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
-import Control.Monad (filterM, when)
+import Control.Monad (filterM)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import Data.List.Utils (replace)
-import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile)
+import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile, removeFile)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
@@ -39,16 +39,17 @@ generateDirectory mta dir'' = do
     Left e   -> hPrint stderr e
     -- compare with the old version, and update if there are any differences:
     Right p' -> do let contentsNew = header ++ T.unpack p'
-                   t <- writeSystemTempFile "index" contentsNew
+                   updateFile (dir'' ++ "index.page") contentsNew
 
-                   let target = dir'' ++ "index.page"
-                   existsOld <- doesFileExist target
+updateFile :: FilePath -> String -> IO ()
+updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-directories" contentsNew
+                              existsOld <- doesFileExist f
+                              if not existsOld then
+                                renameFile t f
+                                else
+                                  do contentsOld <- readFile f
+                                     if (contentsNew /= contentsOld) then renameFile t f else removeFile t
 
-                   if not existsOld then
-                     writeFile target contentsNew
-                     else
-                     do contentsOld <- readFile target
-                        when (contentsNew /= contentsOld) $ renameFile t target
 
 generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
