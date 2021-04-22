@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-20 17:59:39 gwern"
+When:  Time-stamp: "2021-04-22 13:03:33 gwern"
 License: CC-0
 -}
 
@@ -500,6 +500,7 @@ cleanAbstractsHTML t = trim $
   ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
   ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
   ("([.0-9]+)x", "\\1×"),
+  ("([.0-9]+)X", "\\1×"),
   ("=-\\.([.0-9]+)", " = -0.\\1"),
   (" ([0-9]*[02456789])th", " \\1<sup>th</sup>"),
   (" ([0-9]*[1])st",        " \\1<sup>st</sup>"),
@@ -574,6 +575,46 @@ cleanAbstractsHTML t = trim $
     , (" O(n log n) ", " 𝑂(<em>n</em> log <em>n</em>) ")
     , ("<span class=\"math inline\">\\(O(K^2 \\log T)\\)</span>", "𝑂(<em>K</em><sup>2</sup> log <em>T</em>)")
     , ("<span class=\"math inline\">\\(O(K \\log T + K^2 \\log \\log T)\\)</span>", "𝑂(<em>K</em> log <em>T</em> + <em>K</em><sup>2</sup> log log <em>T</em>)")
+    , ("<span class=\"math inline\">\\(Q\\)</span>", "<em>Q</em>")
+    , ("<span class=\"math inline\">\\(\\epsilon\\)</span>", "ε")
+    , ("<span class=\"math inline\">\\(\\rightarrow\\)</span>", "→")
+    , ("<span class=\"math inline\">\\(\\leftarrow\\)</span>", "←")
+    , ("<span class=\"math inline\">\\(D\\)</span>", "<em>D</em>")
+    , ("<span class=\"math inline\">\\(G\\)</span>", "<em>G</em>")
+    , ("<span class=\"math inline\">\\(K\\)</span>", "<em>K</em>")
+    , ("<span class=\"math inline\">\\(\\sin\\Theta\\)</span>", "sinΘ")
+    , ("<span class=\"math inline\">\\(\\ell_2\\)</span>", "𝓁<sub>2</sub>")
+    , ("<span class=\"math inline\">\\(l_1\\)</span>", "𝓁<sub>1</sub>")
+    , ("<span class=\"math inline\">\\(2.4\\)</span>", "2.4")
+    , ("<span class=\"math inline\">\\(47.1\\)</span>", "47.1")
+    , ("<span class=\"math inline\">\\(42.5\\)</span>", "42.5")
+    , ("<span class=\"math inline\">\\(f(x) = x \\cdot \\text{sigmoid}(\\beta x)\\)</span>", "<em>f(x)</em> = <em>x</em> × sigmoid(β <em>x</em>)")
+    , ("<span class=\"math inline\">\\(<em>r</em> = 0.99\\)</span>", "<em>r</em> = 0.99")
+    , ("<span class=\"math inline\">\\(0.96\\)</span>", "0.96")
+    , ("<span class=\"math inline\">\\(\\it<br/>performance\\)</span>", "<em>performance</em>")
+    , ("<span class=\"math inline\">\\(\\it and\\)</span>", "<span class=\"math inline\">\\(\\it also\\)</span> <em>and also</em>")
+    , ("<span class=\"math inline\">\\(\\sim\\)</span>", "~")
+    , ("<span class=\"math inline\">\\(\\sim 10^3\\)</span>", "~10<sup>3</sup>")
+    , ("<span class=\"math inline\">\\(5\\%-35\\%\\)</span>", "5%–35%")
+    , ("<span class=\"math inline\">\\(124/144\\)</span>", "124⁄144")
+    , ("<span class=\"math inline\">\\(86\\%\\)</span>", "86%")
+    , ("<span class=\"math inline\">\\(9.3\\%\\)</span>", "9.3%")
+    , ("<span class=\"math inline\">\\(4.5\\%\\)</span>", "4.5%")
+    , ("<span class=\"math inline\">\\(\\textit{Magic: The Gathering}\\)</span>", "<em>Magic: The Gathering</em>")
+    , ("<span class=\"math inline\">\\(\\textit{Magic}\\)</span>", "<em>Magic</em>")
+    , ("<span class=\"math inline\">\\(O(n \\sqrt{n})\\)</span>", "𝑂(<em>n</em> √<em>n</em>)")
+    , ("<span class=\"math inline\">\\(\\textit{Embedded agents}\\)</span>", "<em>Embedded agents</em>")
+    , ("<span class=\"math inline\">\\(\\textit{wirehead}\\)</span>", "<em>wirehead</em>")
+    , ("<span class=\"math inline\">\\(L\\)</span>", "<em>L</em>")
+    , ("<span class=\"math inline\">\\(O(L(\\log L)^{2})\\)</span>", "𝑂(<em>L</em>(log <em>L</em>)<sup>2</sup>)")
+    , ("<span class=\"math inline\">\\(_{16}\\)</span>", "<sub>16</sub>")
+    , ("<span class=\"math inline\">\\(&gt;\\)</span>", "&gt;")
+    , ("<span class=\"math inline\">\\(O(k\\cdot n\\log (n/k))\\)</span>", " 𝑂(<em>k</em> × log(<em>n</em>⁄<em>k</em>))")
+    , ("O(<span class=\"math inline\">\\(L^2\\)</span>", "𝑂(<em>L</em><sup>2</sup>)")
+    , ("<span class=\"math inline\">\\(L\\)</span>", "<em>L</em>")
+    , ("<span class=\"math inline\">\\(N\\)</span>", "<em>N</em>")
+    , ("O(<span class=\"math inline\">\\(L\\log L\\)</span>", "𝑂(<em>L</em> log <em>L</em>)")
+    , ("<span class=\"math inline\">\\(\\Delta^0_n\\)</span>", "Δ<span class=\"supsub\"><sup>0</sup><sub><em>n</em></sub></span>")
     , ("O(N) ", "𝑂(<em>N</em>) ")
     , (" O(N)", " 𝑂(<em>N</em>)")
     , (" N pixels", " <em>N</em> pixels")
