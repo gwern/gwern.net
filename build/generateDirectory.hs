@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
--- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, but, because of the flattened-annotation pass in hakyll.hs, it has a 'Link Bibliography' which provides an automatically-annotated directory interface! Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
+-- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, which gets compiled with Hakyll and gets the usual popup annotations. Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
 import Control.Monad (filterM)
 import Data.List (isPrefixOf, isSuffixOf, sort)
@@ -10,7 +10,7 @@ import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renam
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BlockQuote, BulletList, RawBlock, Para), Inline(Code, Link, Str, Space, RawInline), Format(..), Pandoc(Pandoc))
+                    Block(BlockQuote, BulletList, Header, RawBlock, Para), Inline(Code, Link, Str, Space, RawInline), Format(..), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
@@ -28,10 +28,18 @@ main = do dirs <- getArgs
 
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do
-  pairs <- listFiles mta dir''
+  direntries <- listDirectory dir''
+  let direntries' = map (\entry -> "/"++dir''++entry) direntries
+
+  dirs  <- listDirectories direntries'
+  pairs <- listFiles mta   direntries'
 
   let header = generateYAMLHeader dir''
-  let body = [BulletList (map generateListItems pairs)]
+  let directorySection = generateDirectoryItems dirs
+
+  let fileSection = generateListItems pairs
+  let body = [Header 2 nullAttr [Str "Directories"], directorySection, Header 2 nullAttr [Str "Files"], fileSection]
+
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
 
@@ -48,8 +56,7 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-directories" cont
                                 renameFile t f
                                 else
                                   do contentsOld <- readFile f
-                                     if (contentsNew /= contentsOld) then renameFile t f else removeFile t
-
+                                     if contentsNew /= contentsOld then renameFile t f else removeFile t
 
 generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
@@ -62,22 +69,20 @@ generateYAMLHeader d = "---\n" ++
                        "importance: 0\n" ++
                        "cssExtension: drop-caps-de-zs\n" ++
                        "...\n" ++
-                       "\n" ++
-                       "# Files\n" ++
                        "\n"
 
-listFiles :: Metadata -> FilePath -> IO [(FilePath,MetadataItem)]
-listFiles m d = do direntries <- listDirectory d
-                   let direntries' = map (\entry -> "/"++d++entry) direntries
+listDirectories :: [FilePath] -> IO [FilePath]
+listDirectories direntries' = do
+                       directories <- filterM (doesDirectoryExist . tail) direntries'
+                       let directoriesMi = sort $ map (++"/index") directories
+                       filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
 
-                   directories <- filterM (doesDirectoryExist . tail) direntries'
-                   let directoriesMi = zip (sort $ map (++"/index") directories) (repeat ("","","","",""))
-
+listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem)]
+listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . map (replace ".page" "") . filter (not . isSuffixOf ".tar") .  filter (/=("/"++d++"index.page"))) files
+                   let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
-
-                   return $ directoriesMi ++ fileAnnotationsMi
+                   return fileAnnotationsMi
 
 -- how do we handle files with appended data, like '/docs/rl/2020-bellemare.pdf#google'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
@@ -87,12 +92,23 @@ lookupFallback m u = case M.lookup u m of
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
                                            let u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u in
-                                             if ".page" `isSuffixOf` u' then (u, ("","","","","")) else if u==u' then (u, ("","","","","")) else lookupFallback m u'
+                                               (if (".page" `isSuffixOf` u') || (u == u') then
+                                                  (u, ("", "", "", "", "")) else lookupFallback m u')
 
-generateListItems :: (FilePath,MetadataItem) -> [Block]
-generateListItems (f,("",_,_,_,_))  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
+generateDirectoryItems :: [FilePath] -> Block
+generateDirectoryItems ds = BulletList
+                              $ filter (not . null) $
+                              [Para [Link nullAttr [Str "↑ Parent directory"] ("../index", "Link to parent directory (ascending)")]] :
+                              map generateDirectoryItem ds
+ where generateDirectoryItem :: FilePath -> [Block]
+       generateDirectoryItem d = [Para [Link nullAttr [Code nullAttr (T.pack $ takeDirectory d)] (T.pack d, "")]]
+
+generateListItems :: [(FilePath, MetadataItem)] -> Block
+generateListItems p = BulletList (map generateListItem p)
+generateListItem :: (FilePath,MetadataItem) -> [Block]
+generateListItem (f,("",_,_,_,_))  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
                          [Para [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")]]
-generateListItems (f,(tle,aut,dt,_,abst)) =
+generateListItem (f,(tle,aut,dt,_,abst)) =
   -- render annotation as: (skipping DOIs)
   --
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philo/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
