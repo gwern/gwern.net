@@ -101,7 +101,7 @@ generateDirectoryItems ds = BulletList
                               [Para [Link nullAttr [Str "↑ Parent directory"] ("../index", "Link to parent directory (ascending)")]] :
                               map generateDirectoryItem ds
  where generateDirectoryItem :: FilePath -> [Block]
-       generateDirectoryItem d = [Para [Link nullAttr [Code nullAttr (T.pack $ takeDirectory d)] (T.pack d, "")]]
+       generateDirectoryItem d = [Para [Link nullAttr [Code nullAttr (T.pack $ "↓ " ++ takeDirectory d)] (T.pack d, "")]]
 
 generateListItems :: [(FilePath, MetadataItem)] -> Block
 generateListItems p = BulletList (map generateListItem p)
