@@ -7,7 +7,7 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, reader
                      readHtml, readMarkdown, runPure, writeHtml5String, writerExtensions,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (head, pack, unpack, tail, Text)
+import qualified Data.Text as T (isPrefixOf, isSuffixOf, head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.HashMap.Strict as HM (toList, fromList, traverseWithKey, fromListWith, union, HashMap)
@@ -58,13 +58,13 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-backlinks" conten
                                 renameFile t f
                                 else
                                   do contentsOld <- readFile f
-                                     if (contentsNew /= contentsOld) then renameFile t f else removeFile t
+                                     if contentsNew /= contentsOld then renameFile t f else removeFile t
 
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
 
-                            let links = filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
+                            let links = filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                   extractLinks md text
 
                             let caller = repeat $ T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
@@ -98,3 +98,10 @@ extractURLs = queryWith extractURL
    extractURL :: Inline -> [T.Text]
    extractURL (Link _ _ (u,_)) = [u]
    extractURL _ = []
+
+blackList :: T.Text -> Bool
+blackList f
+  | any (`T.isPrefixOf` f) ["/images/", "https://youtube.com", "https://en.wikipedia.org/wiki/",
+                           "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/", "/tags/", "/docs/www/"] = False
+  | any (`T.isSuffixOf` f) ["/index"] = False
+  | otherwise = True
