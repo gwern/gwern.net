@@ -24,7 +24,7 @@ main = do dirs <- getArgs
 
           meta <- readLinkMetadata
 
-          mapM_ (generateDirectory meta) dirs'
+          mapM_ (generateDirectory meta) dirs'  -- NOTE: while embarrassingly-parallel & trivial to switch to `Control.Monad.Parallel.mapM-`, because of the immensely slow Haskell compilation (due to Pandoc), 2021-04-23 benchmarking suggests that compile+runtime is ~1min slower than `runhaskell` interpretation
 
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do

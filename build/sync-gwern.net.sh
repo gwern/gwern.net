@@ -67,10 +67,10 @@ then
 
     bold "Building Hakyll…"
     # Build:
-    ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling an optimized version to build
-    ghc -tmpdir /tmp/ -Wall -optl-fuse-ld=gold -rtsopts -threaded -O2 --make hakyll.hs
+    ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling:
+    ghc -tmpdir /tmp/ -Wall -rtsopts -threaded --make hakyll.hs
     ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 8; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 16; else echo "$1"; fi)"
     cd ../../ # go to site root
     bold "Building site…"
     ./static/build/hakyll build +RTS -N"$N" -RTS || exit 1
@@ -143,7 +143,7 @@ then
         fi
     }
     export -f staticCompileMathJax
-    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';  find ./_site/metadata/annotations/ -name '*.html') | sort | parallel staticCompileMathJax
+    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotations/ -name '*.html') | sort | parallel staticCompileMathJax
 
     # Testing compilation results:
     set +e
