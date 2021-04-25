@@ -9,25 +9,28 @@
 # When:  Time-stamp: "2019-09-15 14:38:14 gwern"
 # License: CC-0
 
+bold() { echo -e "\033[1m$@\033[0m"; }
+red() { echo -e "\e[41m$@\e[0m"; }
+## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
+wrap() { OUTPUT=$($1 2>&1)
+         WARN="$2"
+         if [ -n "$OUTPUT" ]; then
+             red "$WARN";
+             echo -e "$OUTPUT";
+         fi; }
+
 # key dependencies: GHC, Hakyll, s3cmd, emacs, curl, tidy (HTML5 version), urlencode ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg `npm i -g mathjax-node-page`), parallel, xargs…
 
-if [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
+if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
           -n $(command -v tidy) && -n $(command -v linkchecker) && -n $(command -v du) && -n $(command -v rm) && -n $(command -v find) && \
           -n $(command -v fdupes) && -n $(command -v urlencode) && -n $(command -v sed) && -n $(command -v parallel) && -n $(command -v xargs) && \
           -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v pdftotext) && \
           -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage) && -n $(command -v static/build/link-extractor.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
+    red "Dependencies missing or Hakyll already running?"
+else
     set -e
-
-    bold() { echo -e "\033[1m"$@"\033[0m"; }
-    ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
-    wrap() { OUTPUT=$($1 2>&1)
-             WARN="$2"
-             if [ -n "$OUTPUT" ]; then
-                 echo -e "\e[41m$WARN\e[0m":
-                 echo -e "$OUTPUT";
-             fi; }
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
@@ -139,7 +142,7 @@ then
 
             if [[ -s "$TARGET" ]]; then
                 mv "$TARGET" "$@" && echo "$@ succeeded";
-            else echo -e "\e[41m$@ failed MathJax compilation\e[0m";
+            else red "$@ failed MathJax compilation";
             fi
         fi
     }
@@ -196,7 +199,7 @@ then
     wrap λ "Check possible typo in YAML metadata database"
 
     λ(){ egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
-               -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e ']([0-9]' -- ./metadata/*.yaml;
+               -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' -- ./metadata/*.yaml;
          fgrep --color=always -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
                -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' \
                -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
@@ -478,10 +481,10 @@ then
         c() { curl --compressed --silent --output /dev/null --head "$@"; }
         for PAGE in $PAGES; do
             MIME=$(c --max-redirs 0 --write-out '%{content_type}' "https://www.gwern.net/$PAGE")
-            if [ "$MIME" != "text/html; charset=utf-8" ]; then echo "\e[41m$PAGE\e[0m: $MIME"; exit 2; fi
+            if [ "$MIME" != "text/html; charset=utf-8" ]; then red "$PAGE : $MIME"; exit 2; fi
 
             SIZE=$(curl --max-redirs 0 --compressed --silent "https://www.gwern.net/$PAGE" | wc --bytes)
-            if [ "$SIZE" -lt 7500 ]; then echo "\e[41m$PAGE\e[0m : $SIZE : $MIME" && exit 2; fi
+            if [ "$SIZE" -lt 7500 ]; then red "$PAGE : $SIZE : $MIME" && exit 2; fi
         done
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
@@ -496,17 +499,15 @@ then
                          egrep -e '^/' | sort -u); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://www.gwern.net$URL");
-            if [[ "$MIME" == "" ]]; then echo "\e[41mredirect!\e[0m $URL"; fi;
+            if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
 
         for URL in $(find . -type f -name "*.page" | parallel runhaskell -istatic/build/ static/build/link-extractor.hs | \
                          egrep -e '^https://www.gwern.net' | sort -u); do
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
-            if [[ "$MIME" == "" ]]; then echo "\e[41mredirect!\e[0m $URL"; fi;
+            if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
     fi
 
     bold "Sync successful"
-else
-    echo "\e[41mDependencies missing or Hakyll already running?\e[0m"
 fi
