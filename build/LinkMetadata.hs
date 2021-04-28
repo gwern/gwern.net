@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-27 21:36:48 gwern"
+When:  Time-stamp: "2021-04-28 12:48:30 gwern"
 License: CC-0
 -}
 
@@ -297,7 +297,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                 (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
                 let ecreator = U.toString mb3
-                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator || "pdftk" `isInfixOf` ecreator || "aBBYY" `isInfixOf` ecreator || "FineReader" `isInfixOf` ecreator || "LaTeX" `isInfixOf` ecreator || "hyperref" `isInfixOf` ecreator || "Microsoft" `isInfixOf` ecreator  || "Acrobat" `isInfixOf` ecreator || "ocrmypdf" `isInfixOf` ecreator || "tesseract" `isInfixOf` ecreator || "Windows" `isInfixOf` ecreator ) then eauthor else ecreator
+                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator || "pdftk" `isInfixOf` ecreator || "aBBYY" `isInfixOf` ecreator || "FineReader" `isInfixOf` ecreator || "LaTeX" `isInfixOf` ecreator || "hyperref" `isInfixOf` ecreator || "Microsoft" `isInfixOf` ecreator  || "Acrobat" `isInfixOf` ecreator || "ocrmypdf" `isInfixOf` ecreator || "tesseract" `isInfixOf` ecreator || "Windows" `isInfixOf` ecreator || "JstorPdfGenerator" `isInfixOf` ecreator || "Linux" `isInfixOf` ecreator || "Mozilla" `isInfixOf` ecreator || "Chromium" `isInfixOf` ecreator || "Gecko" `isInfixOf` ecreator ) then eauthor else ecreator
                 hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi'
                 a <- fmap (fromMaybe "") $ doi2Abstract edoi'
                 return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
@@ -480,7 +480,7 @@ replaceMany rewrites s = foldr (uncurry replace) s rewrites
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors a' = replaceMany [(" and ", ", "), (", & ", ", "), (", and ", ", ")] $
+initializeAuthors a' = replaceMany [(" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" , BSc", ","), (" BA(Hons),1"), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", ")] $
                        sedMany [
                          ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith" → "A. Smith"
                          ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith" → "A. B. Smith"
@@ -784,6 +784,8 @@ cleanAbstractsHTML t = trim $
     , ("</jats:title>", "</strong>")
     , ("<jats:p xml:lang=\"en\">", "<p>")
     , ("<jats:p>", "<p>")
+    , ("</Emphasis>", "</em>")
+    , ("<Emphasis Type=\"Italic\">", "<em>")
     , (" <i> </i>", " ") -- Wikipedia {{ety}} weirdness, but just in Ancient Greek instances?
     , ("<jats:italics>", "<em>")
     , ("</jats:italics>", "</em>")
