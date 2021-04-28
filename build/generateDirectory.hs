@@ -118,6 +118,7 @@ generateListItem (f,(tle,aut,dt,_,abst)) =
             Code nullAttr (T.pack $ takeFileName f), Str ":", Space,
             RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),  Str ",", Space,
          Str (T.pack aut), Space,
-         Str (T.pack $ "("++dt++")"), Str ":"],
-   BlockQuote [parseRawBlock $ RawBlock (Format "html") (T.pack abst)]
+         Str (T.pack $ "("++dt++")"), if null abst then Str "" else Str ":"]] ++
+  if null abst then [] else
+    [BlockQuote [parseRawBlock $ RawBlock (Format "html") (T.pack abst)]
   ]
