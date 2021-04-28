@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-23 11:26:55 gwern"
+When:  Time-stamp: "2021-04-27 21:36:48 gwern"
 License: CC-0
 -}
 
@@ -24,7 +24,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
-import Data.Maybe (Maybe)
+import Data.Maybe (Maybe, fromMaybe)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
@@ -288,19 +288,23 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                              return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, processPubMedAbstract $ unlines abstrct))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
-pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date$/$DOI", "-Title", "-Author", "-dateFormat '%F'", "-Date", "-DOI", p]
+pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p]
+           (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p]
            if BL.length mb > 0 then
-             do let (etitle:eauthor:edate:edoi:_) = lines $ U.toString mb
+             do let (etitle:eauthor:edate:_) = lines $ U.toString mb
+                let edoi = lines $ U.toString mb2
+                let edoi' = if null edoi then "" else head edoi
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
-                (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
-                let ecreator = U.toString mb2
-                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator || "pdftk" `isInfixOf` ecreator) then eauthor else ecreator
-                hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi
-                aMaybe <- doi2Abstract edoi
+                (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
+                let ecreator = U.toString mb3
+                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator || "pdftk" `isInfixOf` ecreator || "aBBYY" `isInfixOf` ecreator || "FineReader" `isInfixOf` ecreator || "LaTeX" `isInfixOf` ecreator || "hyperref" `isInfixOf` ecreator || "Microsoft" `isInfixOf` ecreator  || "Acrobat" `isInfixOf` ecreator || "ocrmypdf" `isInfixOf` ecreator || "tesseract" `isInfixOf` ecreator || "Windows" `isInfixOf` ecreator ) then eauthor else ecreator
+                hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi'
+                a <- fmap (fromMaybe "") $ doi2Abstract edoi'
+                return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
-                case aMaybe of
-                  Nothing -> return (Left Permanent)
-                  Just a -> return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi, a))
+                -- case aMaybe of
+                --   Nothing -> return (Left Permanent)
+                --   Just a -> return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
            else return (Left Permanent)
 
 -- nested JSON object: eg 'jq .message.abstract'
@@ -347,7 +351,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
                                  else replace "https://arxiv.org/abs/" "" url
-               threadDelay 10000000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long 10s delay for each request...
+               threadDelay 15000000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long 15s delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
