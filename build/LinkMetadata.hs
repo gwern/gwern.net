@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-28 16:11:37 gwern"
+When:  Time-stamp: "2021-04-28 16:37:47 gwern"
 License: CC-0
 -}
 
@@ -398,12 +398,20 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
 
 processPubMedAbstract :: String -> String
 processPubMedAbstract abst = let clean = runPure $ do
-                                   pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack abst)
+                                   -- strip overly-indented PLOS formatting like:
+                                   -- <abstract>
+                                   --   <sec>
+                                   --     <title>Background</title>
+                                   --     <p>Systematic reviews (SRs) of TCM have become increasingly popular in China and have been published in large numbers. This review provides the first examination of epidemiological characteristics of these SRs as well as compliance with the PRISMA and AMSTAR guidelines.</p>
+                                   --   </sec>
+                                   --   <sec>
+                                   --     <title>Objectives</title>...
+                                   pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack $ sed "^ +" "" abst)
                                    html <- writeHtml5String def pandoc
                                    return $ T.unpack html
                              in case clean of
                                   Left e -> error $ show e ++ ": " ++ abst
-                                  Right output -> trim $ replace "<br/>" " " $ cleanAbstractsHTML output
+                                  Right output -> trim $ replace "<br/>" "" $ cleanAbstractsHTML output
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
@@ -526,6 +534,8 @@ cleanAbstractsHTML t = trim $
     , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
     , ("<sup></sup>", "")
     , ("<sub></sub>", "")
+    , ("<i>", "<em>")
+    , ("</i>", "</em>")
     -- math substitutions:
     , ("<span class=\"texhtml \">O(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
     , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
@@ -631,6 +641,9 @@ cleanAbstractsHTML t = trim $
     , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
     , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
     -- rest:
+    , ("</p><p>", "</p> <p>")
+    , (":</strong></p> <p>", ":</strong> ")
+    , (" :</strong>", ":</strong>")
     , (" </sec>", "")
     , ("<title>", "")
     , ("</title>", "")
@@ -647,6 +660,7 @@ cleanAbstractsHTML t = trim $
     , ("<jats:title>SUMMARY</jats:title>", "")
     , ("<strong>ABSTRACT</strong><br/>              <p>", "<p>")
     , ("</strong><p>", "</strong>: <p>")
+    , ("<p></abstract></p>", "")
     , ("<strong>Abstract</strong>:        ", "")
     , ("<abstract abstract-type=\"summary\"><br/>", "")
     , ("<abstract abstract-type=\"toc\">", "")
@@ -658,7 +672,7 @@ cleanAbstractsHTML t = trim $
     , ("<h3>Abstract:</h3>", "")
     , ("<h3>Summary/Abstract</h3>", "")
     , ("Alzheimer9", "Alzheimer'")
-    , ("<br/> <br/>", "</br>")
+    , ("<br/> <br/>", "<br/>")
     , ("1.<p>", "<p>")
     , ("<list list-type=\"bullet\">", "<ul>")
     , ("</list>", "</ul>")
@@ -673,6 +687,8 @@ cleanAbstractsHTML t = trim $
     , ("<p><br/>", "<p>")
     , ("<p><br />", "<p>")
     , ("</li><br/>", "</li>")
+    , ("<sec>", "")
+    , ("</sec>", "")
     , ("  </sec><br/>  ", "")
     , ("<sec><br/>    ", "")
     , ("</jats:sec>", "")
