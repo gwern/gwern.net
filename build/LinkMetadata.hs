@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-04-28 17:34:06 gwern"
+When:  Time-stamp: "2021-04-28 23:51:56 gwern"
 License: CC-0
 -}
 
@@ -411,7 +411,7 @@ processPubMedAbstract abst = let clean = runPure $ do
                                    return $ T.unpack html
                              in case clean of
                                   Left e -> error $ show e ++ ": " ++ abst
-                                  Right output -> trim $ replace "<br/>" "" $ cleanAbstractsHTML output
+                                  Right output -> cleanAbstractsHTML $ trim $ replace "<br/>" "" $ cleanAbstractsHTML output
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
@@ -641,9 +641,10 @@ cleanAbstractsHTML t = trim $
     , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
     , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
     -- rest:
+    , (":</strong>", "</strong>:")
     , ("</p><p>", "</p> <p>")
-    , (":</strong></p> <p>", ":</strong> ")
-    , (" :</strong>", ":</strong>")
+    , (":</strong></p> <p>", "</strong>: ")
+    , (" :</strong>", "</strong>:")
     , (" </sec>", "")
     , ("<title>", "")
     , ("</title>", "")
@@ -686,6 +687,8 @@ cleanAbstractsHTML t = trim $
     , ("</p> <br/>", "</p>")
     , ("<p><br/>", "<p>")
     , ("<p><br />", "<p>")
+    , ("<p></p>", "")
+    , ("<p></li> </ul> </p>", "</li> </ul>")
     , ("</li><br/>", "</li>")
     , ("<sec>", "")
     , ("</sec>", "")
@@ -724,10 +727,11 @@ cleanAbstractsHTML t = trim $
     , ("<sec id=\"sb1c\">", "")
     , ("<sec id=\"sb1d\">", "")
     , ("<sec id=\"sb1e\">", "")
+    , ("<sec id=\"english\">", "")
     , ("<sec sec-type=\"headed\">", "")
     , ("<p><sec sec-type=\"headed\"></p>", "")
     , ("</strong></p>    <p>", "</strong> ")
-    , ("</title>", ":</strong></p>")
+    , ("</title>", "</strong>:</p>")
     , ("<title/>", "")
     , ("<title>", "<p><strong>")
     , ("</title><br/>", "</title>")
@@ -820,10 +824,19 @@ cleanAbstractsHTML t = trim $
     , ("<h3>Abstract</h3>", "")
     , ("<h3>SUMMARY</h3>", "")
     , ("<h3>Summary</h3>", "")
+    , ("</abstract>", "")
     , ("<abstract>", "")
     , ("<abstract>\n  ", "")
     , ("\n</abstract>", "")
     , ("<p><strong>Abstract</strong>: ", "<p>")
+    , ("<strong>AIM:</strong>", "<strong>Aim</strong>:")
+    , ("<strong>METHODS:</strong>", "<strong>Methods</strong>:")
+    , ("<strong>RESULTS:</strong>", "<strong>Results</strong>:")
+    , ("<strong>CONCLUSION:</strong>", "<strong>Conclusion</strong>:")
+    , ("<strong>AIM</strong>:", "<strong>Aim</strong>:")
+    , ("<strong>METHODS</strong>:", "<strong>Methods</strong>:")
+    , ("<strong>RESULTS</strong>:", "<strong>Results</strong>:")
+    , ("<strong>CONCLUSION</strong>:", "<strong>Conclusion</strong>:")
     , ("\nHighlights: ", "\n<strong>Highlights</strong>: ")
     , ("\nBackground: ", "\n<strong>Background</strong>: ")
     , ("\nAbstract: ", "\n<strong>Abstract</strong>: ")
@@ -1016,6 +1029,18 @@ cleanAbstractsHTML t = trim $
     , (" P<",     " <em>p</em> < ")
     , ("P ≤ ", "<em>p</em> ≤ ")
     , ("\40P<",     "\40<em>p</em> < ")
+    , ("(P≤", "(<em>p</em> ≤ ")
+    , ("(P&lt;", "(<em>p</em> &lt; ")
+    , ("(P&gt;", "(<em>p</em> &gt; ")
+    , ("(P &lt;", "(<em>p</em> &lt;")
+    , ("(P &gt;", "(<em>p</em> &gt;")
+    , ("(p≤", "(<em>p</em> ≤ ")
+    , ("(p&lt;", "(<em>p</em> &lt; ")
+    , ("(p&gt;", "(<em>p</em> &gt; ")
+    , ("(p &lt;", "(<em>p</em> &lt;")
+    , ("(p &gt;", "(<em>p</em> &gt;")
+    , (" p &lt;", " <em>p</em> &lt;")
+    , (" p &gt;", " <em>p</em> &gt;")
     , (" P < ",   " <em>p</em> < ")
     , (" p < ",   " <em>p</em> < ")
     , (" p<",     " <em>p</em> < ")
