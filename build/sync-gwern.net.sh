@@ -60,7 +60,7 @@ else
     (runhaskell -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) &
 
     bold "Updating backlinks..."
-    (ls **/*.page metadata/annotations/*.html | egrep -v '^docs/.*/index.page' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) &
+    (ls **/*.page metadata/annotations/*.html | egrep -v -e '^docs/.*/index.page' -e '_site/' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -211,7 +211,8 @@ else
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
                -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e 'en.m.wikipedia.org' -e '<em>Figure' \
-               -e '<strongfigure' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' -e '<figcaption></figcaption>' -- ./metadata/*.yaml; }
+               -e '<strongfigure' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' \
+               -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
