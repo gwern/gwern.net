@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2021-04-28 16:12:10 gwern"
+# When:  Time-stamp: "2021-04-29 15:26:41 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -53,7 +53,7 @@ if (grepl("plos",args)) {
     library(pubchunks)
     y <- (fulltext %>% ft_collect("author", "title") %>% pub_chunks())$plos[[1]]
     # NOTE: we preserve XML/HTML formatting in the abstract (but not other fields), such as headers or subscripts, by using 'as.character' option
-    abstract <- (fulltext %>% ft_collect("abstract") %>% pub_chunks(extract="as.character"))$plos[[1]]$abstract
+    abstract <- gsub("\\*", "×", (fulltext %>% ft_collect("abstract") %>% pub_chunks(extract="as.character"))$plos[[1]]$abstract)
 
     title <- gsub("\n *", " ", y$title)
     author <- paste(sapply(y$authors, function(a) { paste(a$given_names, a$surname)}), collapse=", ")
