@@ -7,10 +7,11 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, reader
                      readHtml, readMarkdown, runPure, writeHtml5String, writerExtensions,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (isPrefixOf, isSuffixOf, head, pack, unpack, tail, Text)
+import qualified Data.Text as T (append, isPrefixOf, isSuffixOf, head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isSuffixOf, sort)
 import qualified Data.HashMap.Strict as HM (toList, fromList, traverseWithKey, fromListWith, union, HashMap)
+import qualified Data.Map.Strict as M (lookup)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import Network.HTTP (urlDecode, urlEncode)
 import Data.List.Utils (replace)
@@ -18,7 +19,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Text.Show.Pretty (ppShow)
 import System.IO.Temp (writeSystemTempFile)
 
-import LinkMetadata (sed, hasAnnotation, readLinkMetadata, Metadata)
+import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata)
 
 main :: IO ()
 main = do
@@ -41,8 +42,21 @@ main = do
 
 writeOutCallers :: Metadata -> T.Text -> [T.Text] -> IO ()
 writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html"
+                                       -- guess at the anchor ID in the calling page, so the cross-page popup will pop up at the calling site,
+                                       -- rather than merely popping up the entire page (and who knows *where* in it the reverse citation is).
+                                       -- (NOTE: This will fail if the default generated link ID has been overriden to disambiguate, unfortunately, and
+                                       -- it'll just pop up the page as a whole. It would be difficult to rewrite the schema and preserve all
+                                       -- variant overrides...)
+                                       let ident = case M.lookup (T.unpack target) md of
+                                                             Nothing -> ""
+                                                             Just (_,aut,dt,_,_) -> let i = generateID (T.unpack target) aut dt in
+                                                                                      if i=="" then "" else "#" `T.append` i
                                        let content = BulletList $
-                                            map (\c -> [Para [Link nullAttr [Str (if T.head c == '/' then T.tail c else c)] (c, "")]]) callers
+                                            map (\c -> [Para [Link nullAttr
+                                                                  [Str (if T.head c == '/' then T.tail c else c)]
+                                                                  (c`T.append`ident, "")]
+                                                   ]
+                                                ) callers
 
                                        let pandoc = walk (hasAnnotation md True) $ Pandoc nullMeta [content]
                                        let html = let htmlEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} pandoc
