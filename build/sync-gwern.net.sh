@@ -54,7 +54,7 @@ else
                docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
                docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ notes/ fiction/ haskell/ newsletter/ newsletter/2013/ newsletter/2014/ \
-               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ zeo/) &
+               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ reviews/ zeo/) &
 
     bold "Updating annotations..."
     (runhaskell -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) &
@@ -177,7 +177,7 @@ else
                                                           -e 'Lorem' -e 'Modus' -e 'Order-statistics' -e 'Conscientiousness-and-online-education' \
                                 -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
              -e 'The-Existential-Risk-of-Mathematical-Error' -e 'Replication' \
-             -e '%2Fperformance-pay-nobel.html';
+             -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index';
        }
     wrap λ "Warning: unauthorized LaTeX users"
 

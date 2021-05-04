@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-03 17:59:15 gwern"
+When:  Time-stamp: "2021-05-04 10:43:03 gwern"
 License: CC-0
 -}
 
@@ -669,7 +669,7 @@ initializeAuthors :: String -> String
 initializeAuthors a' = replaceMany [(",, ,", ", "), ("; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), ("and ", ","), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", ")] $
                        sedMany [
                          (",$", ""),
-                         (", +", ""),
+                         (", +", ", "),
                          ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith" → "A. Smith"
                          ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith" → "A. B. Smith"
                          ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
@@ -696,6 +696,7 @@ cleanAbstractsHTML t = trim $
   ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2"),
   ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
   ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
+  ("([0-9]) %", "\\1%"),
   ("([.0-9]+)x", "\\1×"),
   ("([.0-9]+)X", "\\1×"),
   ("=-\\.([.0-9]+)", " = -0.\\1"),
@@ -1143,6 +1144,8 @@ cleanAbstractsHTML t = trim $
     , ("<i><em>h</em><sup>2</sup></i>", "<em>h</em><sup>2</sup>")
     , ("<i><em>h</em><sup>2</sup><sub>SNP</sub></i>", "<em>h</em><sup>2</sup><sub>SNP</sub>")
     , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
+    , ("|rA|", "|r<sub>A</sub>|")
+    , ("|rE|", "|r<sub>E</sub>|")
     , ("<em>r</em> <sub>g</sub>", "<em>r</em><sub>g</sub>")
     , ("r(g)",    "<em>r</em><sub><em>g</em></sub>")
     , (" rg ", " <em>r</em><sub><em>g</em></sub> ")
