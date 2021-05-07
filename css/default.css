@@ -2264,7 +2264,7 @@ body.directory-index article::before {
 }
 
 /*=---------------=*/
-/*= /Book-reviews =*/
+/*= /reviews/Books =*/
 /*=---------------=*/
 
 body.book-reviews #markdownBody blockquote {
@@ -2303,7 +2303,7 @@ body.book-reviews h2 + p span:first-of-type:hover {
 }
 
 /*=-------=*/
-/*= /Mead =*/
+/*= /reviews/Mead =*/
 /*=-------=*/
 
 /*  This is for the pictures of mead bottles next to the reviews.
