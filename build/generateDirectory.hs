@@ -4,7 +4,7 @@ module Main where
 -- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, which gets compiled with Hakyll and gets the usual popup annotations. Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
 import Control.Monad (filterM)
-import Data.List (isPrefixOf, isSuffixOf, sort)
+import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort)
 import Data.List.Utils (replace)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile, removeFile)
 import System.Environment (getArgs)
@@ -84,16 +84,22 @@ listFiles m direntries' = do
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    return fileAnnotationsMi
 
--- how do we handle files with appended data, like '/docs/rl/2020-bellemare.pdf#google'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
+-- how do we handle files with appended data, which are linked like '/docs/rl/2020-bellemare.pdf#google' but exist as files as '/docs/rl/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
-                       Just ("","","","","") -> tryPrefix
+                       Just ("",_,_,_,_) -> tryPrefix
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
                                            let u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u in
-                                               (if (".page" `isSuffixOf` u') || (u == u') then
-                                                  (u, ("", "", "", "", "")) else lookupFallback m u')
+                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", "")) else
+                                                  -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
+                                                  -- '/reviews/Cat-Sense.page' will trigger a fallback to /reviews/Cat-Sense#fuzz-testing'; the
+                                                  -- longer hit will also be empty, usually, and so not better. We check for that case and return
+                                                  -- the original path and not the longer path.
+                                                  let possibleFallback = lookupFallback m u' in
+                                                    if snd possibleFallback == ("", "", "", "", "") then (u, ("", "", "", "", "")) else
+                                                      (u',snd possibleFallback))
 
 generateDirectoryItems :: [FilePath] -> Block
 generateDirectoryItems ds = BulletList
