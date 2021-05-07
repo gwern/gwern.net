@@ -57,7 +57,7 @@ else
                newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ reviews/ zeo/) &
 
     bold "Updating annotations..."
-    (runhaskell -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) &
+    (ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) &
 
     bold "Updating backlinks..."
     (ls **/*.page metadata/annotations/*.html | egrep -v -e '^docs/.*/index.page' -e '_site/' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) &
@@ -196,6 +196,9 @@ else
     λ(){ egrep --color=always '<div class="admonition .*">[^$]' **/*.page; }
     wrap λ "Broken admonition paragraph."
 
+    λ(){ egrep --color=always '^"~/' ./static/redirects/nginx.conf; }
+    wrap λ "Warning: tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
+
     λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
 
@@ -305,6 +308,7 @@ else
          cr 'https://www.gwern.net/docs/dnb/1978-zimmer.pdf' 'https://www.gwern.net/docs/music-distraction/1978-zimmer.pdf'
          cr 'https://www.gwern.net/AB%20testing' 'https://www.gwern.net/AB-testing'
          cr 'https://www.gwern.net/Archiving%20URLs.html' 'https://www.gwern.net/Archiving-URLs'
+         cr 'https://www.gwern.net/Book-reviews' 'https://www.gwern.net/reviews/Books'
          cr 'https://www.gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://www.gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3'; }
     wrap λ "Check that some redirects go where they should"
     λ() { cm() { [[ "$1" != $(c --write-out '%{content_type}' "$2") ]] && echo "$1" "$2"; }
@@ -358,6 +362,11 @@ else
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/cs/2012-terencetao-anonymity.html'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/index'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Attention'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Faster'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Movies'
           cm "text/markdown; charset=utf-8" 'https://www.gwern.net/2014-spirulina.page'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/docs/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/redirects/nginx.conf'
