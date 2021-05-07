@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-06 18:13:45 gwern"
+When:  Time-stamp: "2021-05-07 13:11:17 gwern"
 License: CC-0
 -}
 
@@ -12,7 +12,7 @@ License: CC-0
 module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID) where
 
 import Control.Concurrent (forkIO, threadDelay)
-import Control.Monad (unless, void, when)
+import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isNumber, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
@@ -76,6 +76,11 @@ readLinkMetadata = do
              let urls = map fst custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
              let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
+             -- all custom annotations should correspond to an existing file (auto.yaml may have stale entries, but custom.yaml should never! This indicates a renamed or missing file.)
+             let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urls
+             forM_ files (\f -> do exist <- doesFileExist f
+                                   when (not exist) $ error ("Custom annotation error: file does not exist? " ++ f))
+
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
