@@ -173,11 +173,11 @@ else
 
     λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
          echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
-                                     fgrep --invert-match -e 'docs/cs/1955-nash' -e 'Backstop' -e 'Death-Note-Anonymity' -e 'Differences' \
-                                                          -e 'Lorem' -e 'Modus' -e 'Order-statistics' -e 'Conscientiousness-and-online-education' \
+                                     fgrep --invert-match -e '/docs/cs/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
+                                                          -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
                                 -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
-             -e 'The-Existential-Risk-of-Mathematical-Error' -e 'Replication' \
-             -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index';
+             -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
+             -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip;
        }
     wrap λ "Warning: unauthorized LaTeX users"
 
@@ -240,7 +240,7 @@ else
     λ() {
         set +e;
         IFS=$(echo -en "\n\b");
-        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'Book-reviews' -e 'index' | sort -u)"
+        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' | sort -u)"
         OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -maxdepth 1 -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404.html; do
             HTML="${PAGE%.page}"

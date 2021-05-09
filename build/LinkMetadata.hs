@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-07 13:11:17 gwern"
+When:  Time-stamp: "2021-05-08 11:26:33 gwern"
 License: CC-0
 -}
 
@@ -302,7 +302,7 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
                 -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                 (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
                 let ecreator = U.toString mb3
-                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator || "pdftk" `isInfixOf` ecreator || "aBBYY" `isInfixOf` ecreator || "FineReader" `isInfixOf` ecreator || "LaTeX" `isInfixOf` ecreator || "hyperref" `isInfixOf` ecreator || "Microsoft" `isInfixOf` ecreator  || "Acrobat" `isInfixOf` ecreator || "ocrmypdf" `isInfixOf` ecreator || "tesseract" `isInfixOf` ecreator || "Windows" `isInfixOf` ecreator || "JstorPdfGenerator" `isInfixOf` ecreator || "Linux" `isInfixOf` ecreator || "Mozilla" `isInfixOf` ecreator || "Chromium" `isInfixOf` ecreator || "Gecko" `isInfixOf` ecreator || "QuarkXPress" `isInfixOf` ecreator || "LaserWriter" `isInfixOf` ecreator || "AppleWorks" `isInfixOf` ecreator || "PDF" `isInfixOf` ecreator || "Apache" `isInfixOf` ecreator ) then eauthor else ecreator
+                let author = initializeAuthors $ trim $ if (length eauthor > length ecreator) || ("Adobe" `isInfixOf` ecreator || "InDesign" `isInfixOf` ecreator || "Arbortext" `isInfixOf` ecreator || "Unicode" `isInfixOf` ecreator || "Total Publishing" `isInfixOf` ecreator || "pdftk" `isInfixOf` ecreator || "aBBYY" `isInfixOf` ecreator || "FineReader" `isInfixOf` ecreator || "LaTeX" `isInfixOf` ecreator || "hyperref" `isInfixOf` ecreator || "Microsoft" `isInfixOf` ecreator  || "Acrobat" `isInfixOf` ecreator || "ocrmypdf" `isInfixOf` ecreator || "tesseract" `isInfixOf` ecreator || "Windows" `isInfixOf` ecreator || "JstorPdfGenerator" `isInfixOf` ecreator || "Linux" `isInfixOf` ecreator || "Mozilla" `isInfixOf` ecreator || "Chromium" `isInfixOf` ecreator || "Gecko" `isInfixOf` ecreator || "QuarkXPress" `isInfixOf` ecreator || "LaserWriter" `isInfixOf` ecreator || "AppleWorks" `isInfixOf` ecreator || "PDF" `isInfixOf` ecreator || "Apache" `isInfixOf` ecreator || "Word" == ecreator ) then eauthor else ecreator
                 hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi'
                 a <- fmap (fromMaybe "") $ doi2Abstract edoi'
                 return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
