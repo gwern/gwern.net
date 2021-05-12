@@ -54,13 +54,13 @@ else
                docs/statistics/peerreview/ docs/sunkcosts/ docs/tcs/ docs/tea/ docs/technology/ docs/terrorism/ docs/tominaga/ \
                docs/touhou/ docs/traffic/ docs/transhumanism/ docs/vitamind/ docs/wikipedia/ docs/xrisks/ docs/zeo/ \
                docs/longnow/ docs/lwsurvey/ docs/sr/pickard/ notes/ fiction/ haskell/ newsletter/ newsletter/2013/ newsletter/2014/ \
-               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ reviews/ zeo/) &
+               newsletter/2015/ newsletter/2016/ newsletter/2017/ newsletter/2018/ newsletter/2019/ newsletter/2020/ newsletter/2021/ reviews/ zeo/) # &
 
     bold "Updating annotations..."
-    (ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) &
+    (ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) # &
 
     bold "Updating backlinks..."
-    (ls **/*.page metadata/annotations/*.html | egrep -v -e '^docs/.*/index.page' -e '_site/' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) &
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '^./docs/.*/index.page' -e '_site/' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) # &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
