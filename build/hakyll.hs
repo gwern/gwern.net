@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-04-20 12:34:52 gwern"
+When: Time-stamp: "2021-05-11 21:48:16 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -221,7 +221,7 @@ postCtx tags =
     constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
-    (mapContext (\p -> (urlEncode $ (urlEncode "/") ++ replace ".page" ".html" p)) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html'
+    (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/' then urlEncode "/" else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
   where escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
         descField d = field d $ \item -> do
                           metadata <- getMetadata (itemIdentifier item)
