@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-12 21:43:05 gwern"
+When:  Time-stamp: "2021-05-13 12:36:47 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID) where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -31,13 +31,13 @@ import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
 import System.Directory (doesFileExist)
 import System.Exit (ExitCode(ExitFailure))
-import System.FilePath (takeBaseName, takeExtension)
+import System.FilePath (takeBaseName, takeExtension, takeFileName)
 import System.IO (stderr, hPutStrLn)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
                     readHtml, writerExtensions, nullAttr, nullMeta, queryWith,
-                    Inline(Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
+                    Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex)
 
@@ -96,15 +96,11 @@ readLinkMetadata = do
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
-writeAnnotationFragments am md = void $ M.traverseWithKey (\p mi -> do
-                                                             let backLink = "/metadata/annotations/backlinks/" ++
-                                                                   (urlEncode (p++".html"))
-                                                             backLinkExists <- doesFileExist $ tail backLink
-                                                             let backLink' = if backLinkExists then backLink else ""
-                                                             void $ forkIO $ writeAnnotationFragment am md p mi backLink') md
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> Path -> IO ()
-writeAnnotationFragment am md u i@(a,b,c,d,e) bl = when (length e > 180) $
+writeAnnotationFragments am md = void $ M.traverseWithKey (\p mi -> void $ forkIO $ writeAnnotationFragment am md p mi) md
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                           do let u' = linkCanonicalize u
+                                             bl <- getBackLink u'
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
                                              when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
@@ -113,7 +109,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) bl = when (length e > 180) $
                                              -- obviously no point in smallcapsing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml)) bl
+                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock False (u', Just (titleHtml,authorHtml,c,d,abstractHtml)) bl
                                              void $ createAnnotations md pandoc
                                              let annotationPandoc = walk (nominalToRealInflationAdjuster . convertInterwikiLinks) $ walk (hasAnnotation md True) pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
@@ -138,6 +134,15 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) bl = when (length e > 180) $
                              Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
                                                     let (Right fieldHtml) = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta fieldPandoc') in
                                restoreFloatRight orig $ T.unpack fieldHtml
+
+getBackLink :: FilePath -> IO FilePath
+getBackLink p = do let backLinkRaw = "/metadata/annotations/backlinks/" ++
+                                                                   urlEncode (p++".html")
+                   backLinkExists <- doesFileExist $ tail backLinkRaw
+                   -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg `/metadata/annotations/backlinks/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/backlinks/%2Fdocs%2Frl%2Findex.html`)
+                   let backLink' = if not backLinkExists then "" else "/metadata/annotations/backlinks/" ++
+                         urlEncode (concatMap (\t -> if t=='/' then urlEncode "/" else [t]) (p++".html"))
+                   return backLink'
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -201,16 +206,17 @@ parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml
                                             Right (Pandoc _ markdown') -> Div nullAttr markdown'
 parseRawBlock x = x
 
-generateAnnotationBlock :: (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> [Block]
-generateAnnotationBlock (f, ann) blp = case ann of
+generateAnnotationBlock :: Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> [Block]
+generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (_,    _, _,_ ,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID in
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
-                                                                let backlink = if blp=="" then [] else [Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations/backlinks/'What links here'/'incoming link'/'inbound link'/inlink/'inward link'/citation for this page (the list of other pages which link to this URL).")]] in
+                                                                let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations/backlinks/'What links here'/'incoming link'/'inbound link'/inlink/'inward link'/citation for this page (the list of other pages which link to this URL).")]] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
+                                                                  let linkPrefix = if rawUrlp then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
                                                                   let link =
                                                                              Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
@@ -219,9 +225,8 @@ generateAnnotationBlock (f, ann) blp = case ann of
                                                                        -- check that float-right hasn't been deleted by Pandoc again:
                                                                        let abst'' = restoreFloatRight abst abst' in
                                                               [Para
-                                                                ([link,
-                                                                  Str ","] ++ author ++ date ++ backlink ++ [Str ":"]),
-                                                           BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
+                                                                (linkPrefix ++ [link,Str ","] ++ author ++ [Str "("] ++ date ++ backlink ++ [Str ")"] ++ [Str ":"]),
+                                                                BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                                            ]
                              where
                                nonAnnotatedLink :: [Block]

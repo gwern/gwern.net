@@ -10,13 +10,13 @@ import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renam
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BlockQuote, BulletList, Header, RawBlock, Para), Inline(Code, Link, Str, Space, RawInline), Format(..), Pandoc(Pandoc))
+                    Block(BulletList, Header, Para), Inline(Code, Link, Space, Span, Str), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 
-import LinkMetadata (parseRawBlock, readLinkMetadata, Metadata, MetadataItem)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, Metadata, MetadataItem)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -77,12 +77,15 @@ listDirectories direntries' = do
                        let directoriesMi = sort $ map (++"/index") directories
                        filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
 
-listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem)]
+listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter (not . isSuffixOf ".tar") ) files
+                   backlinks <- mapM getBackLink files'
                    let fileAnnotationsMi = map (lookupFallback m) files'
-                   return fileAnnotationsMi
+
+                   return $ zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
+
 
 -- how do we handle files with appended data, which are linked like '/docs/rl/2020-bellemare.pdf#google' but exist as files as '/docs/rl/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
@@ -109,22 +112,19 @@ generateDirectoryItems ds = BulletList
  where generateDirectoryItem :: FilePath -> [Block]
        generateDirectoryItem d = [Para [Link nullAttr [Code nullAttr (T.pack $ "↓ " ++ takeDirectory d)] (T.pack d, "")]]
 
-generateListItems :: [(FilePath, MetadataItem)] -> Block
+generateListItems :: [(FilePath, MetadataItem,FilePath)] -> Block
 generateListItems p = BulletList (map generateListItem p)
-generateListItem :: (FilePath,MetadataItem) -> [Block]
-generateListItem (f,("",_,_,_,_))  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
-                         [Para [Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "")]]
-generateListItem (f,(tle,aut,dt,_,abst)) =
+generateListItem :: (FilePath,MetadataItem,FilePath) -> [Block]
+generateListItem (f,(t,aut,_,_,""),bl)  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
+                                            let author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)] in
+                                          let backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks/'What links here'/'incoming link'/'inbound link'/inlink/'inward link'/citation for this page (the list of other pages which link to this URL).")], Str ")"] in
+                                            if t=="" then [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : (author ++ backlink))]
+                                            else [Para (Code nullAttr (T.pack f') : (Link nullAttr [Str ":", Space, Str "“", Str (T.pack t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
+
+generateListItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
   --
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philo/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  [Para [Link nullAttr [
-            Code nullAttr (T.pack $ takeFileName f), Str ":", Space,
-            RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,""),  Str ",", Space,
-         Str (T.pack aut), Space,
-         Str (T.pack $ "("++dt++")"), if null abst then Str "" else Str ":"]] ++
-  if null abst then [] else
-    [BlockQuote [parseRawBlock $ RawBlock (Format "html") (T.pack abst)]
-  ]
+  generateAnnotationBlock True (f,Just a) bl
