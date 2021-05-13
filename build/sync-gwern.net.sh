@@ -225,14 +225,17 @@ else
     wrap λ "Wikipedia annotations in YAML metadata database, but will be ignored by popups! Override with non-WP URL?"
 
     λ(){ egrep --color=always -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
-    wrap λ "Wrong filepaths in YAML metadata database - missing prefix?"
+    wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
+
+    λ(){ fgrep --color=always -e 'backlinks/' -e 'metadata/annotations/' -- ./metadata/backlinks.hs; }
+    wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
     λ(){ egrep --color=always -e '[0-9]*[02456789]th' -e '[0-9]*[3]rd' -e '[0-9]*[2]nd' -e '[0-9]*[1]st'  -- ./metadata/*.yaml | \
              fgrep -v -e '%' -e figure -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
     wrap λ "Missing superscripts in YAML metadata database"
 
     λ(){ egrep --color=always -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
-    wrap λ "Check <figure> vs <img> usage,image hotlinking, non-absolute relative image paths in YAML metadata database"
+    wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"
 
     λ(){ fgrep --color=always -e ' significant'  ./metadata/custom.yaml; }
     wrap λ "Misleading language in custom.yaml"
@@ -276,7 +279,7 @@ else
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie non-generated files):
     bold "Syncing pages…"
     rsync --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
-    ## Randomize sync type - usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
+    ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi;
     rsync --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
@@ -463,7 +466,7 @@ else
          find ./ -type f -name "*.pdf" | parallel checkEncryption; }
     wrap λ "'Encrypted' PDFs (fix with pdftk: `pdftk $PDF input_pw output foo.pdf`)" &
 
-    ## DjVu is deprecated (due to SEO - no search engines will crawl DjVu, turns out!):
+    ## DjVu is deprecated (due to SEO: no search engines will crawl DjVu, turns out!):
     λ(){ find ./ -type f -name "*.djvu"; }
     wrap λ "DjVu detected (convert to PDF)"
 

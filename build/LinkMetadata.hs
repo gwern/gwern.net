@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-11 17:58:28 gwern"
+When:  Time-stamp: "2021-05-12 21:43:05 gwern"
 License: CC-0
 -}
 
@@ -96,9 +96,14 @@ readLinkMetadata = do
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
-writeAnnotationFragments am md = void $ M.traverseWithKey (\p mi -> void $ forkIO $ writeAnnotationFragment am md p mi) md
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
+writeAnnotationFragments am md = void $ M.traverseWithKey (\p mi -> do
+                                                             let backLink = "/metadata/annotations/backlinks/" ++
+                                                                   (urlEncode (p++".html"))
+                                                             backLinkExists <- doesFileExist $ tail backLink
+                                                             let backLink' = if backLinkExists then backLink else ""
+                                                             void $ forkIO $ writeAnnotationFragment am md p mi backLink') md
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> Path -> IO ()
+writeAnnotationFragment am md u i@(a,b,c,d,e) bl = when (length e > 180) $
                                           do let u' = linkCanonicalize u
                                              let filepath = "metadata/annotations/" ++ urlEncode u' ++ ".html"
                                              let filepath' = take 274 filepath
@@ -108,7 +113,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              -- obviously no point in smallcapsing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml))
+                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock (u', Just (titleHtml,authorHtml,c,d,abstractHtml)) bl
                                              void $ createAnnotations md pandoc
                                              let annotationPandoc = walk (nominalToRealInflationAdjuster . convertInterwikiLinks) $ walk (hasAnnotation md True) pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
@@ -196,14 +201,15 @@ parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml
                                             Right (Pandoc _ markdown') -> Div nullAttr markdown'
 parseRawBlock x = x
 
-generateAnnotationBlock :: (FilePath, Maybe LinkMetadata.MetadataItem) -> [Block]
-generateAnnotationBlock (f, ann) = case ann of
+generateAnnotationBlock :: (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> [Block]
+generateAnnotationBlock (f, ann) blp = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _, _,_ ,_) -> nonAnnotatedLink
                               Just (_,    _, _,_ ,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID in
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
-                                                              let date = if dt=="" then [] else [Str "(", Span ("", ["date"], []) [Str (T.pack dt)], Str ")"] in
+                                                              let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
+                                                                let backlink = if blp=="" then [] else [Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations/backlinks/'What links here'/'incoming link'/'inbound link'/inlink/'inward link'/citation for this page (the list of other pages which link to this URL).")]] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
                                                                   let link =
                                                                              Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
@@ -214,7 +220,7 @@ generateAnnotationBlock (f, ann) = case ann of
                                                                        let abst'' = restoreFloatRight abst abst' in
                                                               [Para
                                                                 ([link,
-                                                                  Str ","] ++ author ++ date ++ [Str ":"]),
+                                                                  Str ","] ++ author ++ date ++ backlink ++ [Str ":"]),
                                                            BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                                            ]
                              where
@@ -262,25 +268,26 @@ data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcher l | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Left Temporary) -- WP is now handled by annotations.js calling the Mobile WP API
-                     | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
-                     | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
-                     | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
-                     | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
+linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l = return (Left Permanent)
+                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Left Temporary) -- WP is now handled by annotations.js calling the Mobile WP API
+                 | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
+                 | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
+                 | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
+                 | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
                      -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
-                     | "journals.plos.org" `isInfixOf` l = pubmed l
-                     | "plosbiology.org" `isInfixOf` l = pubmed l
-                     | "ploscompbiology.org" `isInfixOf` l = pubmed l
-                     | "plosgenetics.org" `isInfixOf` l = pubmed l
-                     | "plosmedicine.org" `isInfixOf` l = pubmed l
-                     | "plosone.org" `isInfixOf` l = pubmed l
-                     | null l = return (Left Permanent)
-                     -- locally-hosted PDF?
-                     | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l else return (Left Permanent)
-                     -- We skip Gwern.net pages, because Gwern.net pages are handled as live cross-page popups: if they have an abstract, it'll be visible at the top right under the metadata block, so generating annotations automatically turns out to be unnecessary (and bug prone)
-                     | "/" `isPrefixOf` l || "https://www.gwern.net/" `isPrefixOf` l = return (Left Permanent)
-                     -- And everything else is unhandled:
-                     | otherwise = return (Left Permanent)
+                 | "journals.plos.org" `isInfixOf` l = pubmed l
+                 | "plosbiology.org" `isInfixOf` l = pubmed l
+                 | "ploscompbiology.org" `isInfixOf` l = pubmed l
+                 | "plosgenetics.org" `isInfixOf` l = pubmed l
+                 | "plosmedicine.org" `isInfixOf` l = pubmed l
+                 | "plosone.org" `isInfixOf` l = pubmed l
+                 | null l = return (Left Permanent)
+                 -- locally-hosted PDF?
+                 | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l else return (Left Permanent)
+                 -- We skip Gwern.net pages, because Gwern.net pages are handled as live cross-page popups: if they have an abstract, it'll be visible at the top right under the metadata block, so generating annotations automatically turns out to be unnecessary (and bug prone)
+                 | "/" `isPrefixOf` l || "https://www.gwern.net/" `isPrefixOf` l = return (Left Permanent)
+                 -- And everything else is unhandled:
+                 | otherwise = return (Left Permanent)
 
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
