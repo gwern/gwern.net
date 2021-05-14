@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-05-11 12:00:41 gwern"
+When:  Time-stamp: "2021-05-13 20:48:55 gwern"
 License: CC-0
 -}
 
@@ -17,7 +17,7 @@ The implementation strategy is, similar to the [link popups](https://www.gwern.n
 
 Details:
 
-- at compile-time, [`hakyll.hs`](https://www.gwern.net/hakyll.hs) reads the local database, and feeds it into a `localizeLink` function which walks the Pandoc AST and processes all external links
+- at compile-time, [`hakyll.hs`](https://www.gwern.net/static/build/hakyll.hs) reads the local database, and feeds it into a `localizeLink` function which walks the Pandoc AST and processes all external links
 - mirror metadata is stored in a local database (a Haskell association list read in as a [`Data.Map`](https://hackage.haskell.org/package/containers-0.4.0.0/docs/Data-Map.html) for now, like the popup previews) with the schema: `(URL, MIRROR_FILE, FIRST_SEEN, MIRRORED_SUCCESSFULLY)`
 - links are checked against a whitelist of domains to exclude, where mirroring is either unnecessary or undesirable: arxiv.org, Wikipedia, Gwern.net, lesswrong.com, HN, Nature, Youtube etc. (Primary exclusion reasons: services, interactive pages, pages which are too hard to snapshot, pages which are too large due to inline media, domains which are stable & not at linkrot risk, pages which are inherently updated frequently & archiving is not helpful.)
 - links are only mirrored _n_ days after first being seen, giving them time to reach a finalized form (eg blog post discussions); if there is no entry in the database, one is made with the current date as `FIRST_SEEN` and the link is skipped; if an entry with `FIRST_SEEN` exists and the current date is ≥ _n_ days later and `MIRROR_FILE` does not exist, then unless `Failed` is false (indicating the previous mirror attempt failed and it's probably a permanently broken link which must be updated manually), it is mirrored  and rewritten, otherwise, just rewritten

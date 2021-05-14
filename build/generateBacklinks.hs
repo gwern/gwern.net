@@ -9,8 +9,8 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, reader
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
-import Data.List (isPrefixOf, isSuffixOf, sort)
-import qualified Data.HashMap.Strict as HM (toList, fromList, traverseWithKey, fromListWith, union, HashMap)
+import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort)
+import qualified Data.HashMap.Strict as HM (keys, elems, toList, fromList, traverseWithKey, fromListWith, union, HashMap)
 import qualified Data.Map.Strict as M (lookup)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import Network.HTTP (urlDecode, urlEncode)
@@ -18,6 +18,7 @@ import Data.List.Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
 import Text.Show.Pretty (ppShow)
 import System.IO.Temp (writeSystemTempFile)
+import Control.Monad (forM_, unless)
 
 import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata)
 
@@ -27,6 +28,13 @@ main = do
   mdb <- readLinkMetadata
   createDirectoryIfMissing False "metadata/annotations/backlinks/"
 
+  -- check that all backlink targets/callers are valid:
+  let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
+  let files = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $ filter (not . ("tags/"`isInfixOf`)) $ filter ("/"`isPrefixOf`) $ map T.unpack $ HM.keys bldb ++ concat (HM.elems bldb)
+  forM_ files (\f -> do exist <- doesFileExist f
+                        unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
+
+  -- if all are valid, write out:
   _ <- HM.traverseWithKey (writeOutCallers mdb) bldb
 
   fs <- fmap (filter (\f -> not $ "/backlinks/"`isPrefixOf`f) . map (sed "^\\.\\/" "")) $ fmap lines getContents
