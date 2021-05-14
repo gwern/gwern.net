@@ -90,7 +90,7 @@ parseFileForLinks md m = do text <- TIO.readFile m
                                   extractLinks md text
 
                             let caller = filter blackList $ repeat $ T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
-                            let called = filter (/= head caller) (map (T.pack . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
+                            let called = filter (/= head caller) (map (T.pack . takeWhile (/='#') . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
 
                             return $ zip called caller
 
@@ -102,7 +102,7 @@ readBacklinksDB = do bll <- readFile "metadata/backlinks.hs"
                      return bldb
 writeBacklinksDB :: Backlinks -> IO ()
 writeBacklinksDB bldb = do let bll = HM.toList bldb :: [(T.Text,[T.Text])]
-                           let bll' = sort $ map (\(a,b) -> (T.unpack a, map T.unpack b)) bll
+                           let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
                            writeFile "metadata/backlinks.hs" $ ppShow bll'
 
 -- | Read one Text string and return its URLs (as Strings)

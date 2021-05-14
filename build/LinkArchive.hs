@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-05-13 20:48:55 gwern"
+When:  Time-stamp: "2021-05-13 21:42:48 gwern"
 License: CC-0
 -}
 
@@ -13,7 +13,7 @@ As the cost of disk/bandwidth falls while the value of human attention increases
 The local mirror will be a self-contained static HTML copy which cannot linkrot (unless Gwern.net itself goes down in which case the issue is largely moot).
 The local mirrors will, aside from being infinitely more reliable, also be faster for the reader to load & browse, as they will be loaded from the current domain's CDN and are the final DOMs saved using adblock etc (benefiting the large fraction of Gwern.net readers who do not have ad blockers installed).
 
-The implementation strategy is, similar to the [link popups](https://www.gwern.net/LinkMetadata.hs), a Pandoc Hakyll plugin which at Markdown → HTML compile-time traverses the Markdown AST for non-whitelisted external links, looks for a local mirror of each one, create a local mirror via SingleFile (https://github.com/gildas-lormeau/SingleFile/) if necessary, and rewrites the link to point to the local mirror.
+The implementation strategy is, similar to the [link popups](https://www.gwern.net/static/build/LinkMetadata.hs), a Pandoc Hakyll plugin which at Markdown → HTML compile-time traverses the Markdown AST for non-whitelisted external links, looks for a local mirror of each one, create a local mirror via SingleFile (https://github.com/gildas-lormeau/SingleFile/) if necessary, and rewrites the link to point to the local mirror.
 
 Details:
 
