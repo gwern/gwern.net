@@ -10,57 +10,57 @@
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
 .has-annotation,
 .has-content {
-	margin: 0 0.08em;
-	padding-left: 0.3em;
-	position: relative;
+    margin: 0 0.08em;
+    padding-left: 0.3em;
+    position: relative;
 }
 .has-annotation::before,
 .has-content::before {
-	content: " ";
-	position: absolute;
-	width: 0.45em;
-	height: 0.75em;
-	color: transparent;
-	text-shadow: none;
-	top: 0.05em;
+    content: " ";
+    position: absolute;
+    width: 0.45em;
+    height: 0.75em;
+    color: transparent;
+    text-shadow: none;
+    top: 0.05em;
 
-	background-image:
-		linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
-		linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
-	background-size: 1px 1px;
-	background-repeat: repeat-x, repeat-y;
-	background-position: 100% 0, 0 100%;
-	left: 0;
-	overflow: hidden;
+    background-image:
+        linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
+        linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
+    background-size: 1px 1px;
+    background-repeat: repeat-x, repeat-y;
+    background-position: 100% 0, 0 100%;
+    left: 0;
+    overflow: hidden;
 }
 .has-content::before {
-	background-position: 100% 100%, 0 100%;
-	top: unset;
-	bottom: 0.1em;
-	width: 1px;
+    background-position: 100% 100%, 0 100%;
+    top: unset;
+    bottom: 0.1em;
+    width: 1px;
 }
 .has-annotation:hover::before,
 .has-content:hover::before {
-	background-image:
-		linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
-		linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
+    background-image:
+        linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
+        linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
 }
 #TOC .has-content,
 #sidebar .has-content,
 body.index .has-annotation,
 body.index .has-content {
-	margin: 0;
-	padding-left: 0;
-	position: static;
+    margin: 0;
+    padding-left: 0;
+    position: static;
 }
 #TOC .has-content {
-	position: relative;
+    position: relative;
 }
 #TOC .has-content::before,
 #sidebar .has-content::before,
 body.index .has-annotation::before,
 body.index .has-content::before {
-	content: none;
+    content: none;
 }
 
 /******************************************************************************/
@@ -494,7 +494,7 @@ a[href*="filfre.net"]::after,
 a[href*="gainax.co.jp"]::after,
 a[href*="goodreads.com"]::after,
 a[href*="haskell.org"]::after,
-a[href*="haskell.org"]:a[href$=".hs"]::after,
+a[href*="haskell.org"][href$=".hs"]::after,
 a[href*="harney.com"]::after,
 a[href*="justice.gov"]::after,
 a[href*="khara.co.jp"]::after,
