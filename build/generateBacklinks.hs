@@ -37,7 +37,7 @@ main = do
   -- if all are valid, write out:
   _ <- HM.traverseWithKey (writeOutCallers mdb) bldb
 
-  fs <- fmap (filter (\f -> not $ "/backlinks/"`isPrefixOf`f) . map (sed "^\\.\\/" "")) $ fmap lines getContents
+  fs <- fmap (filter (\f -> not $ ("/backlinks/"`isPrefixOf`f || "#"`isPrefixOf`f || ".#"`isPrefixOf`f)) . map (sed "^\\.\\/" "")) $ fmap lines getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs
   links1 <- mapM (parseFileForLinks True) markdown -- NOTE: while embarrassingly-parallel & trivial to switch to `Control.Monad.Parallel.mapM`, because of the immensely slow Haskell compilation (due to Pandoc), 2021-04-23 benchmarking suggests that compile+runtime is ~2min slower than `runhaskell` interpretation

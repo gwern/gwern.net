@@ -177,7 +177,8 @@ else
                                                           -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
                                 -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
              -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
-             -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip';
+             -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
+             -e '/nootropics/Magnesium';
        }
     wrap λ "Warning: unauthorized LaTeX users"
 
