@@ -2263,37 +2263,37 @@ body.directory-index article::before {
 	}
 }
 
-/*=---------------=*/
+/*=----------------=*/
 /*= /reviews/Books =*/
-/*=---------------=*/
+/*=----------------=*/
 
-body.book-reviews #markdownBody blockquote {
+body.reviews-books #markdownBody blockquote {
   clear: none;
 }
-body.book-reviews #markdownBody ol {
+bodyreviews-books #markdownBody ol {
   overflow: unset;
 }
 
-body.book-reviews #markdownBody h2 + p {
+body.reviews-books #markdownBody h2 + p {
     margin: -0.5em 0 1.5em 0;
     display: flex;
     flex-flow: row;
     justify-content: flex-start;
     max-width: 100%;
 }
-body.book-reviews h2 + p span {
+body.reviews-books h2 + p span {
     white-space: nowrap;
 }
-body.book-reviews h2 + p span + span {
+body.reviews-books h2 + p span + span {
     margin-left: 1em;
 }
-body.book-reviews h2 + p span:first-of-type {
+body.reviews-books h2 + p span:first-of-type {
     flex: 0 1 auto;
     max-width: 100%;
     text-overflow: ellipsis;
     overflow: hidden;
 }
-body.book-reviews h2 + p span:first-of-type:hover {
+body.reviews-books h2 + p span:first-of-type:hover {
     overflow: visible;
     white-space: normal;
     text-align: left;
@@ -2302,13 +2302,13 @@ body.book-reviews h2 + p span:first-of-type:hover {
     text-indent: -1.5em;
 }
 
-/*=-------=*/
+/*=---------------=*/
 /*= /reviews/Mead =*/
-/*=-------=*/
+/*=---------------=*/
 
 /*  This is for the pictures of mead bottles next to the reviews.
     */
-body.mead p > img {
+body.reviews-mead p > img {
     float: right;
     max-height: 8em;
     width: auto;
