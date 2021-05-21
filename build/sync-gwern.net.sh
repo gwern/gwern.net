@@ -76,7 +76,7 @@ else
     N="$(if [ ${#} == 0 ]; then echo 16; else echo "$1"; fi)"
     cd ../../ # go to site root
     bold "Building site…"
-    ./static/build/hakyll build +RTS -N"$N" -RTS || exit 1
+    ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
     rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
 
@@ -216,7 +216,7 @@ else
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
                -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e 'en.m.wikipedia.org' -e '<em>Figure' \
                -e '<strongfigure' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' \
-               -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -- ./metadata/*.yaml; }
+               -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
