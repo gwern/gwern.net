@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-05-15 20:29:27 gwern"
+# When:  Time-stamp: "2021-05-22 13:47:14 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -48,13 +48,17 @@ do
                  -e 'http://www.arxiv.org' -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id=' -e 'http://myanimelist.net' \
                  -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
                  -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
-                 -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e tinypic.com -e isteve.com -- "$PAGE";
+                 -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e tinypic.com -e isteve.com -e 'http://www.bmj.com' \
+                 -e 'j-bradford-delong.net'  -- "$PAGE";
            egp -e 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- "$PAGE";}
         wrap λ "find bad URLS, unacceptable/unreliable/risky domains, malformed syntax, unmatched apostrophes"
 
         ## ban articles written by John Hewitt; he endorses the pig-human pseudoscience, lies about research (eg claiming platypus genome proven to be a bird hybrid), and makes bad arguments (eg his criticism of senolytics because senescent cells do not have a single unique universal signature):
         λ(){ fgrep -e 'phys.org' -- "$PAGE" | fgp -v -e '2019-07-cat-science.html' -e '2017-08-cavemen-genetic-checkup.html' -e'2019-12-mouse-pups-born-eggs-derived.html'; }
         wrap λ "Phys.org link detected: make sure John Hewitt didn't write it"
+
+        λ(){ list-columns.hs "$PAGE"; }
+        wrap λ "Add columns wrapper?"
 
         λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }
         wrap λ "check for aggregator-hosted PDFs and host them on Gwern.net to make them visible to Google Scholar/provide backups"
