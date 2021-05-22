@@ -97,6 +97,16 @@ smallcapsfyRegex = R.makeRegex
    "[A-Z][A-Z][A-Z]+(-[[:digit:]]+|[A-Z]+)+|" ++
    -- but we do want to continue across hyphens of all-uppercase strings like "YYYY-MM-DD" or "X-UNITER" or "DALL·E":
    "[A-Z][A-Z][A-Z]+(-[A-Z]+)+|" ++ "[A-Z]+-[A-Z][A-Z][A-Z]+|" ++ "[A-Z]+\183[A-Z]+|" ++
+   -- or slashed acronyms like "TCP/IP": eg
+   -- walk smallcapsfyInline [Str "Connecting using TCP/IP"]
+   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP/IP</span>"]
+   -- walk smallcapsfyInline [Str "Connecting using TCP"]
+   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP</span>"]
+   -- walk smallcapsfyInline [Str "Connecting using IP"]
+   -- → [Str "Connecting using IP"]
+   -- walk smallcapsfyInline [Str "Connecting using TCP IP"]
+   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP</span> IP"]
+   "[A-Z][A-Z][A-Z]+(/[A-Z]+)+|" ++ "[A-Z]+/[A-Z][A-Z][A-Z]+|" ++
    -- special-case AM/PM like "9:30AM" or "1PM" or "5:55 PM" (WARNING: Pandoc will typically parse spaces into 'Space' AST nodes, making it hard to match on things like "5 PM")
    "[[:digit:]]+ ?[AP]M|" ++
    "\\??[AP]M|" ++ -- special-case handling for all the "?AM--?PM" in /Morning-writing:
