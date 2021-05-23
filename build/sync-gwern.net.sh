@@ -302,6 +302,11 @@ else
     # test a random page modified in the past month for W3 validation & dead-link/anchor errors (HTML tidy misses some, it seems, and the W3 validator is difficult to install locally):
     CHECK_RANDOM=$(find . -type f -mtime -31 -name "*.page" | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' \
                        | shuf | head -1 | xargs urlencode)
+    ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
+            --header "X-Auth-Email:gwern@gwern.net" \
+            --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data "{\"files\":[\"$CHECK_RANDOM\"]}" > /dev/null; )
     $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM"
 
     # Testing post-sync:
