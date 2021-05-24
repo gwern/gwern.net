@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-05-23 22:44:30 gwern"
+# When:  Time-stamp: "2021-05-24 09:46:06 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -24,8 +24,7 @@ do
         λ(){ egp '[^[:print:]]' "$PAGE"; }
         wrap λ "File contains unprintable characters"
 
-        λ(){ fgp -e 'http://dl.dropbox' -e 'http://news.ycombinator.com' -e 'http://github.com' \
-                 -e 'http://www.coursera.org' -e '.wiley.com/doi/abs/' -e 'http://www.ncbi.nlm.nih.gov/pubmed/' \
+        λ(){ fgp -e 'http://dl.dropbox' -e '.wiley.com/doi/abs/'  \
                  -e 'www.tandfonline.com/doi/abs/' -e 'jstor.org' -e 'springer.com' -e 'springerlink.com' \
                  -e 'www.mendeley.com' -e 'academia.edu' -e 'researchgate.net' -e 'pdf.yt' \
                  -e 'photobucket' -e 'imgur.com' -e 'hathitrust.org' -e 'emilkirkegaard.dk' -e 'arthurjensen.net' \
@@ -34,8 +33,8 @@ do
                  -e 'http://33bits.org' -e 'https://gwern.net' -e 'https://gwern.net' -e 'web.archive.org/web/2' \
                  -e 'webarchive.org.uk/wayback/' -e 'webcitation.org' -e 'plus.google.com' -e 'www.deepdotweb.com' -e 'raikoth.net' \
                  -e 'drive.google.com/file' -e 'ssrn.com' -e 'ardenm.us' -e 'gnxp.nofe.me' -e 'psycnet.apa.org' \
-                 -e 'wellcomelibrary.org/item/' -e 'dlcs.io/pdf/' -e 'secure.wikimedia.org' -e 'http://en.wikipedia.org' \
-                 -e 'http://biorxiv.org' -e 'https://biorxiv.org' -e 'http://www.biorxiv.org' -e 'http://arxiv.org' \
+                 -e 'wellcomelibrary.org/item/' -e 'dlcs.io/pdf/' -e 'secure.wikimedia.org' \
+                 -e 'https://biorxiv.org' \
                  -e 'fbclid=' -e '?gid=' -e 'twitter.com/#!' -e 'pay.reddit.com' -e 'europepmc.org' -e 'drugcite.com' \
                  -e 'guardian.co.uk' -e 'mlp.wikia.com' -e '฿' -e '!Wikipedia ""' -e 'medium.com' -e 'temcauley.staff.shef.ac.uk' \
                  -e 'yahoo.com' -e 'bloomberg.com' -e '.wsj.com' -e 'extremelongevity.net' -e 'blog.openai.com' \
@@ -43,18 +42,23 @@ do
                  -e 'lesserwrong.com' -e 'au.news.yahoo.com' -e 'northjersey.com' -e 'tribune.com.pk' -e 'idsnews.com' \
                  -e 'catsensebook.com' -e 'whec.com' -e 'www.mercurynews.com' -e 'meetup.com' -e 'www.reddit.com' \
                  -e 'dlcs.io/' -e 'centerforcollegeaffordability.org' -e 'quora.com' -e 'times-news.com' -e 'www.cebp.nl' \
-                 -e '#filmtv' -e 'nybooks.com' -e '<div id="columns">' -e 'http://slatestarcodex.com' -e 'annualreviews.org' \
-                 -e 'dspace.mit.edu' -e 'shirky.com' -e '](http://www.nzherald.co.nz)' -e 'https://www.arxiv.org' -e 'http://arxiv.org' \
-                 -e 'http://www.arxiv.org' -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id=' -e 'http://myanimelist.net' \
+                 -e '#filmtv' -e 'nybooks.com' -e '<div id="columns">' -e 'annualreviews.org' \
+                 -e 'dspace.mit.edu' -e 'shirky.com' -e '](http://www.nzherald.co.nz)' -e 'https://www.arxiv.org' \
+                  -e 'goodreads.com/review/show' -e 'myanimelist.net/reviews.php?id='  \
                  -e 'cloudfront.net' -e 'https://www.amazon.com/s?ie=UTF8&field-isbn=&page=1&rh=i:stripbooks' -e 'http://ltimmelduchamp.com' \
                  -e 'thiswaifudoesnotexist.net)' -e 'thiswaifudoesnotexist.net"' -e 'www.wikilivres.ca' -e 'worldtracker.org' \
-                 -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e tinypic.com -e isteve.com -e 'http://www.bmj.com' \
-                 -e 'j-bradford-delong.net' -e 'http://www.youtube.com' -e 'http://youtu.be' -e "http://www.nature.com/" \
-                 -e "http://www.sciencedirect.com" -e "http://journals.plos.org" -e "http://www.pnas.org" -e "http://www.wsj.com" \
-                 -e "http://link.springer.com" -e "http://www.bbc.com" -e "http://genomebiology.biomedcentral.com" -e "http://www.npr.org" \
-                 -e "http://www.ipscell.com" -e "http://www.newyorker.com" -e "http://www.nytimes.com" -- "$PAGE";
+                 -e 'meaningness.wordpress.com' -e 'ibooksonline.com' -e tinypic.com -e isteve.com -e 'j-bradford-delong.net' -- "$PAGE";
            egp -e 'https://arxiv.org/abs/[0-9]\{4\}\.[0-9]\+v[0-9]' -- "$PAGE";}
         wrap λ "find bad URLS, unacceptable/unreliable/risky domains, malformed syntax, unmatched apostrophes"
+
+        λ(){ fgp  -e 'http://news.ycombinator.com' -e 'http://github.com' -e 'http://www.ncbi.nlm.nih.gov/pubmed/' \
+                  -e 'http://www.coursera.org' -e 'http://en.wikipedia.org' -e 'http://biorxiv.org' -e 'http://www.biorxiv.org' \
+                  -e 'http://arxiv.org' -e 'http://slatestarcodex.com' -e 'http://arxiv.org' -e 'http://www.arxiv.org' \
+                  -e 'http://myanimelist.net' -e 'http://www.bmj.com' -e 'http://www.youtube.com' -e 'http://youtu.be' -e "http://www.nature.com/" \
+                  -e "http://www.sciencedirect.com" -e "http://journals.plos.org" -e "http://www.pnas.org" -e "http://www.wsj.com" \
+                  -e "http://link.springer.com" -e "http://www.bbc.com" -e "http://genomebiology.biomedcentral.com" -e "http://www.npr.org" \
+                  -e "http://www.ipscell.com" -e "http://www.newyorker.com" -e "http://www.nytimes.com" -e 'http://ask.metafilter.com' -e 'http://www.metafilter.com' -- "$PAGE"; }
+        wrap λ "HTTP → HTTPS URLs"
 
         ## ban articles written by John Hewitt; he endorses the pig-human pseudoscience, lies about research (eg claiming platypus genome proven to be a bird hybrid), and makes bad arguments (eg his criticism of senolytics because senescent cells do not have a single unique universal signature):
         λ(){ fgrep -e 'phys.org' -- "$PAGE" | fgp -v -e '2019-07-cat-science.html' -e '2017-08-cavemen-genetic-checkup.html' -e'2019-12-mouse-pups-born-eggs-derived.html'; }
