@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-05-11 21:48:16 gwern"
+When: Time-stamp: "2021-05-23 19:29:15 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -203,7 +203,7 @@ postCtx tags =
     tagsField "tagsHTML" tags <>
     descField "title" <>
     -- descField "description" <> -- constField "description" "N/A" <>
-    -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)!
+    -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.)
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
     dateField "created" "%F" <>

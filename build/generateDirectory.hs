@@ -69,6 +69,7 @@ generateYAMLHeader d = "---\n" ++
                        "confidence: log\n" ++
                        "importance: 0\n" ++
                        "cssExtension: drop-caps-de-zs\n" ++
+                       "index: true\n" ++
                        "...\n" ++
                        "\n"
 
