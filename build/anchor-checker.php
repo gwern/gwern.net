@@ -11,7 +11,7 @@
 // related or neighboring rights to this work.
 //
 // Date: 2021-05-24.
-// Requirements: PHP 7.x.
+// Requirements: PHP 7.x with the standard DOM module.
 
 error_reporting(E_ALL);
 
@@ -30,8 +30,14 @@ function main($files) {
 }
 
 function check_file($file) {
+    $html = file_get_contents($file);
+    // An ugly hack to get around missing HTML5 support tripping up the parser.
+    $html = preg_replace("/<wbr>/", "", $html);
+
+    if (preg_match("/^\s*$/", $html)) return [];
+
     $dom = new DOMDocument();
-    $dom->loadHTMLFile($file, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $dom->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
 
     return check_document($dom);
 }
@@ -49,7 +55,7 @@ function check_document($dom) {
     foreach ($hrefs as $href) {
         $value = trim($href->value);
 
-        if ($value[0] !== "#") continue;
+        if (substr($value, 0, 1) !== "#") continue;
 
         if (!array_key_exists($value, $id_set)) {
             $bad_anchors[] = $value;
