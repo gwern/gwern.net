@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-13 19:12:55 gwern"
+When:  Time-stamp: "2021-05-23 21:48:16 gwern"
 License: CC-0
 -}
 
@@ -472,13 +472,15 @@ restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfix
 generateID :: String -> String -> String -> T.Text
 generateID url author date
   | any (\(u,_) -> u == url) linkIdOverrides = fromJust $ lookup url linkIdOverrides
+  -- eg '/Faces' = '#gwern-faces'
+  | ("Gwern Branwen" == author) ||
+    (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url))
+  = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
+  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
+  | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- shikata ga nai:
   | author == "" = ""
   | date   == "" = ""
-  -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
-  | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
-  -- eg '/Faces' = '#gwern-faces'
-  | "Gwern Branwen" == author = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
   | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
                            let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
@@ -486,8 +488,9 @@ generateID url author date
                              if authorCount == 0 then "" else
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
                                  -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
-                                 let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
-                                   let suffix' = if suffix == "-1" then "" else suffix in
+                                 -- let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
+                                   -- let suffix' = if suffix == "-1" then "" else suffix in
+                                 let suffix' = "" in
                                  filter (/='.') $ map toLower $ if authorCount >= 3 then
                                                  firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
                                                    if authorCount == 2 then
