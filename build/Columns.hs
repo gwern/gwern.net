@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- dependencies: libghc-pandoc-dev
 
--- usage: 'lost-columns.hs [file]'; reads a Pandoc Markdown file and looks for 'skinny tall' lists which are better rendered
+-- usage: 'lost-columns.hs [file]'; reads a Pandoc Markdown (or Pandoc-generated-HTML) file and looks for 'skinny tall' lists which are better rendered
 -- as multiple columns (supported on gwern.net by special CSS triggered by '<div class="columns"></div>' wrappers).
 --
 -- A skinny tall list is defined as a list which is at least 8 items long (so you get at least 2×4 columns—a 2×2 square or 2×3 rectangle looks dumb),
@@ -10,10 +10,11 @@
 --
 -- If a file already has the string '<div class="columns"' in it, it will be presumed to have been manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary reporting of false-positives.
 
-module Main where
+module Columns (listsTooLong, main) where
 
-import Text.Pandoc (def, nullMeta, queryWith, readerExtensions, readMarkdown, runPure,
+import Text.Pandoc (def, nullMeta, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
                     pandocExtensions, writePlain, Block(BulletList, OrderedList), Pandoc(Pandoc))
+import Data.List (isSuffixOf)
 import qualified Data.Text as T (isInfixOf, length, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStrLn)
 import System.Environment (getArgs)
@@ -32,7 +33,7 @@ printLists printfilenamep file = do
   input <- TIO.readFile file
   let preexisting = T.isInfixOf "<div class=\"columns" input
   unless preexisting $
-    do let long = getLongLists input
+    do let long = getLongLists (".html"`isSuffixOf`file) input
        unless (null long) $ do
          when printfilenamep $ putStrLn $ file ++ ":"
          TIO.putStrLn $ T.unlines $ map simplified long
@@ -41,15 +42,18 @@ listLengthMax, sublistsLengthMin :: Int
 listLengthMax = 75
 sublistsLengthMin = 8
 
-getLongLists :: T.Text -> [Block]
-getLongLists txt = let parsedEither = runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
+getLongLists :: Bool -> T.Text -> [Block]
+getLongLists htmlp txt = let parsedEither = if htmlp then runPure $ readHtml def{readerExtensions = pandocExtensions } txt else runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
                         -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
                    in case parsedEither of
                               Left _ -> []
-                              Right pnd -> let lists = extractLists pnd in
+                              Right (Pandoc _ pnd) -> listsTooLong pnd
+
+listsTooLong :: [Block] -> [Block]
+listsTooLong ls = let lists = extractLists ls in
                                              filter (\x -> listLength x < listLengthMax) lists
 
-extractLists :: Pandoc -> [Block]
+extractLists :: [Block] -> [Block]
 extractLists = queryWith extractList
  where
    extractList :: Block -> [Block]

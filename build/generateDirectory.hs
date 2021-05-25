@@ -18,6 +18,7 @@ import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, Metadata, MetadataItem)
+import Columns (listsTooLong)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -25,7 +26,7 @@ main = do dirs <- getArgs
 
           meta <- readLinkMetadata
 
-          mapM_ (generateDirectory meta) dirs'  -- NOTE: while embarrassingly-parallel & trivial to switch to `Control.Monad.Parallel.mapM-`, because of the immensely slow Haskell compilation (due to Pandoc), 2021-04-23 benchmarking suggests that compile+runtime is ~1min slower than `runhaskell` interpretation
+          mapM_ (generateDirectory meta) dirs'  -- NOTE: while embarrassingly-parallel & trivial to switch to `Control.Monad.Parallel.mapM_`, because of the immensely slow Haskell compilation (due to Pandoc), 2021-04-23 benchmarking suggests that compile+runtime is ~1min slower than `runhaskell` interpretation
 
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do
@@ -45,7 +46,12 @@ generateDirectory mta dir'' = do
                  [RawBlock (Format "html") "<div class=\"columns\">\n\n",
                    directorySection,
                    RawBlock (Format "html") "</div>"]) ++
-               [Header 2 nullAttr [Str "Files"], fileSection]
+               [Header 2 nullAttr [Str "Files"]] ++
+                -- for lists, they *may* all be devoid of annotations and short
+                if length (listsTooLong [fileSection]) == 0 then [fileSection] else
+                  [RawBlock (Format "html") "<div class=\"columns\">\n\n",
+                   fileSection,
+                   RawBlock (Format "html") "</div>"]
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
