@@ -5,7 +5,7 @@
 // same file.  Anchors with no element with the corresponding fragment ID
 // are written to stderr prefixed with the filename.
 //
-// Usage: check-anchors.php [file ...]
+// Usage: anchor-checker.php [FILE]...
 //
 // To the extent possible under law, D. Bohdan has waived all copyright and
 // related or neighboring rights to this work.

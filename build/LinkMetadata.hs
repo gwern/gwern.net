@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-23 21:48:16 gwern"
+When:  Time-stamp: "2021-05-24 09:45:16 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Me
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
-import Data.Char (isAlpha, isNumber, isSpace, toLower)
+import Data.Char (isAlpha, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
@@ -31,7 +31,7 @@ import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
 import System.Directory (doesFileExist)
 import System.Exit (ExitCode(ExitFailure))
-import System.FilePath (takeBaseName, takeExtension, takeFileName)
+import System.FilePath (takeExtension, takeFileName)
 import System.IO (stderr, hPutStrLn)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),

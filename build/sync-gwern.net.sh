@@ -218,7 +218,8 @@ else
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
                -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e 'en.m.wikipedia.org' -e '<em>Figure' \
                -e '<strongfigure' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' \
-               -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' -- ./metadata/*.yaml; }
+               -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
+               -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
@@ -315,7 +316,8 @@ else
             --header "Authorization: Bearer $CLOUDFLARE_CACHE_TOKEN" \
             --header "Content-Type: application/json" \
             --data "{\"files\":[\"$CHECK_RANDOM\"]}" > /dev/null; )
-    $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM"
+    # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
+    (sleep 20s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM"; )
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"

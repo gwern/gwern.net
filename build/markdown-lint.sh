@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-05-24 09:46:06 gwern"
+# When:  Time-stamp: "2021-05-25 13:42:58 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -57,7 +57,9 @@ do
                   -e 'http://myanimelist.net' -e 'http://www.bmj.com' -e 'http://www.youtube.com' -e 'http://youtu.be' -e "http://www.nature.com/" \
                   -e "http://www.sciencedirect.com" -e "http://journals.plos.org" -e "http://www.pnas.org" -e "http://www.wsj.com" \
                   -e "http://link.springer.com" -e "http://www.bbc.com" -e "http://genomebiology.biomedcentral.com" -e "http://www.npr.org" \
-                  -e "http://www.ipscell.com" -e "http://www.newyorker.com" -e "http://www.nytimes.com" -e 'http://ask.metafilter.com' -e 'http://www.metafilter.com' -- "$PAGE"; }
+                  -e "http://www.ipscell.com" -e "http://www.newyorker.com" -e "http://www.nytimes.com" -e 'http://ask.metafilter.com' \
+                  -e 'http://www.metafilter.com' -e 'http://www.vanityfair.com' -e  'http://econlog.econlib.org' -e 'http://www.overcomingbias.com' \
+                  -e 'http://www.economist.com' -e 'http://www.theverge.com' -- "$PAGE"; }
         wrap λ "HTTP → HTTPS URLs"
 
         ## ban articles written by John Hewitt; he endorses the pig-human pseudoscience, lies about research (eg claiming platypus genome proven to be a bird hybrid), and makes bad arguments (eg his criticism of senolytics because senescent cells do not have a single unique universal signature):
