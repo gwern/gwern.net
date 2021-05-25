@@ -11,7 +11,7 @@ import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renam
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Header, Para), Inline(Code, Link, Space, Span, Str), Pandoc(Pandoc))
+                    Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Link, Space, Span, Str), Pandoc(Pandoc))
 import qualified Data.Map as M (lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
@@ -39,7 +39,13 @@ generateDirectory mta dir'' = do
   let directorySection = generateDirectoryItems dirs
 
   let fileSection = generateListItems pairs
-  let body = [Header 2 nullAttr [Str "Directories"], directorySection, Header 2 nullAttr [Str "Files"], fileSection]
+  let body = [Header 2 nullAttr [Str "Directories"]] ++
+               -- for pages like ./docs/statistics/index.page where there are 9+ subdirectories, we'd like to multi-column the directory section (we can't for files because there are so many annotations):
+               (if length dirs < 8 then [directorySection] else
+                 [RawBlock (Format "html") "<div class=\"columns\">\n\n",
+                   directorySection,
+                   RawBlock (Format "html") "</div>"]) ++
+               [Header 2 nullAttr [Str "Files"], fileSection]
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
