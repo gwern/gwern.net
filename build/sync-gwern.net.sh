@@ -516,6 +516,11 @@ else
             SIZE=$(curl --max-redirs 0 --compressed --silent "https://www.gwern.net/$PAGE" | wc --bytes)
             if [ "$SIZE" -lt 7500 ]; then red "$PAGE : $SIZE : $MIME" && exit 2; fi
         done
+
+        # check for any pages that could use multi-columns now:
+        λ() { (find . -name "*.page"; find ./metadata/annotations/ -maxdepth 1 -name "*.html") | shuf | \
+            parallel -n 100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
+        wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
     if [ $(date +"%d") == "31" ]; then
