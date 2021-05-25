@@ -206,6 +206,7 @@ invertImagePreview f = do utcFile <- getModificationTime f
                             let f' = f++"-inverted.png"
                             void $ runShellCommand "./" Nothing "convert" ["-negate", f, f']
                             void $ runShellCommand "./" Nothing "firefox" [f']
+                            removeFile f'
                           return ()
 
 imageMagickColor :: FilePath -> FilePath -> IO Float
