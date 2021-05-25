@@ -3,15 +3,18 @@
 -- dependencies: libghc-pandoc-dev
 
 -- usage: 'lost-columns.hs [file]'; reads a Pandoc Markdown file and looks for 'skinny tall' lists which are better rendered
--- as multiple columns (supported on gwern.net by special CSS triggered by '<div class="columns"></div>' wrappers)
+-- as multiple columns (supported on gwern.net by special CSS triggered by '<div class="columns"></div>' wrappers).
+--
 -- A skinny tall list is defined as a list which is at least 8 items long (so you get at least 2×4 columns—a 2×2 square or 2×3 rectangle looks dumb),
 -- and where the individual lines are all <75 characters wide (>half the width of a gwern.net line at the utmost).
+--
+-- If a file already has the string '<div class="columns"' in it, it will be presumed to have been manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary reporting of false-positives.
 
 module Main where
 
 import Text.Pandoc (def, nullMeta, queryWith, readerExtensions, readMarkdown, runPure,
                     pandocExtensions, writePlain, Block(BulletList, OrderedList), Pandoc(Pandoc))
-import qualified Data.Text as T (length, unlines, Text)
+import qualified Data.Text as T (isInfixOf, length, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStrLn)
 import System.Environment (getArgs)
 import Control.Monad (when, unless)
@@ -27,10 +30,12 @@ main = do
 printLists :: Bool -> FilePath -> IO ()
 printLists printfilenamep file = do
   input <- TIO.readFile file
-  let long = getLongLists input
-  unless (null long) $ do
-      when printfilenamep $ putStrLn $ file ++ ":"
-      TIO.putStrLn $ T.unlines $ map simplified long
+  let preexisting = T.isInfixOf "<div class=\"columns" input
+  unless preexisting $
+    do let long = getLongLists input
+       unless (null long) $ do
+         when printfilenamep $ putStrLn $ file ++ ":"
+         TIO.putStrLn $ T.unlines $ map simplified long
 
 listLengthMax, sublistsLengthMin :: Int
 listLengthMax = 75
