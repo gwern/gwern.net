@@ -149,7 +149,7 @@ else
         fi
     }
     export -f staticCompileMathJax
-    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotations/ -name '*.html') | sort | parallel staticCompileMathJax
+    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotations/ -name '*.html') | shuf | parallel --jobs 0 --max-args=1 staticCompileMathJax
 
     # Testing compilation results:
     set +e
@@ -519,7 +519,7 @@ else
 
         # check for any pages that could use multi-columns now:
         λ() { (find . -name "*.page"; find ./metadata/annotations/ -maxdepth 1 -name "*.html") | shuf | \
-            parallel -n 100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
+            parallel --max-args=100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
