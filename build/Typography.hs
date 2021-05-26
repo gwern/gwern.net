@@ -19,6 +19,7 @@ import qualified Data.Text as T (any, append, isInfixOf, isSuffixOf, pack, unpac
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
+import Control.Concurrent (threadDelay)
 
 import Data.FileStore.Utils (runShellCommand)
 
@@ -206,6 +207,7 @@ invertImagePreview f = do utcFile <- getModificationTime f
                             let f' = f++"-inverted.png"
                             void $ runShellCommand "./" Nothing "convert" ["-negate", f, f']
                             void $ runShellCommand "./" Nothing "firefox" [f']
+                            threadDelay 5000000
                             removeFile f'
                           return ()
 
