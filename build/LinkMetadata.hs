@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-26 20:05:23 gwern"
+When:  Time-stamp: "2021-05-26 21:20:18 gwern"
 License: CC-0
 -}
 
@@ -215,7 +215,7 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                               Just (tle,aut,dt,doi,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID in
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
-                                                                let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations/backlinks/'What links here'/'incoming link'/'inbound link'/inlink/'inward link'/citation for this page (the list of other pages which link to this URL).")]] in
+                                                                let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack doi)] in
                                                                   let linkPrefix = if rawUrlp then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
                                                                   let link =
