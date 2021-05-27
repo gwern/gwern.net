@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-05-13 21:42:48 gwern"
+When:  Time-stamp: "2021-05-26 20:31:38 gwern"
 License: CC-0
 -}
 
@@ -859,5 +859,6 @@ whiteList url
       , "instant.page" -- stable
       , "support.google.com" -- updated
       , "competicionmental.appspot.com" -- app/game/interactive
+      , "lair.lighton.ai/akronomicon/" -- updated
       ] = True
     | otherwise = False

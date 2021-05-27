@@ -149,7 +149,7 @@ else
         fi
     }
     export -f staticCompileMathJax
-    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotations/ -name '*.html') | shuf | parallel --jobs 0 --max-args=1 staticCompileMathJax
+    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotations/ -name '*.html') | shuf | parallel --jobs 32 --max-args=1 staticCompileMathJax
 
     # Testing compilation results:
     set +e
@@ -386,6 +386,7 @@ else
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Movies'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/xrisks/1985-hofstadter'
           cm "text/markdown; charset=utf-8" 'https://www.gwern.net/2014-spirulina.page'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/docs/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/redirects/nginx.conf'
