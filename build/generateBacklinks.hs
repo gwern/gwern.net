@@ -125,6 +125,7 @@ blackList :: T.Text -> Bool
 blackList f
   | any (`T.isInfixOf` f) ["/backlinks/"] = False
   | any (`T.isPrefixOf` f) ["/images/", "https://youtube.com", "https://en.wikipedia.org/wiki/",
-                           "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/", "/tags/", "/docs/www/"] = False
+                           "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/", "https://www.youtube.com",
+                           "https://www.amazon.com", "/tags/", "/docs/www/", "/images/", "/metadata/annotations/"] = False
   | any (`T.isSuffixOf` f) ["/index"] = False
   | otherwise = True
