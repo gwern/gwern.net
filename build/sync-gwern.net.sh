@@ -109,8 +109,8 @@ else
                               -e 's/<\/a>;/<\/a>\⁠;/g' -e 's/<\/a>,/<\/a>\⁠,/g' -e 's/<\/a>\./<\/a>\⁠./g' -e 's/<\/a>\//<\/a>\⁠\//g' \
                               -e 's/\/<wbr><a /\/ <a /g' -e 's/\/<wbr>"/\/ "/g' \
                             "$@"; }; export -f nonbreakSpace;
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel nonbreakSpace || true
-    find ./_site/metadata/annotations/ -type f -name "*.html" | sort | parallel nonbreakSpace || true
+    find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
+    find ./_site/metadata/annotations/ -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
     ### We skip .json/.jsonl/.csv because they are too large & Pandoc will choke;
@@ -166,7 +166,7 @@ else
     λ(){ fgrep --color=always '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel fgrep --with-filename --color=always '!Wikipedia'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 fgrep --with-filename --color=always '!Wikipedia'; }
     wrap λ "Stray interwiki links"
 
     λ(){ PAGES=$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/')
@@ -190,10 +190,10 @@ else
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | fgrep -v '.git/FETCH_HEAD'; }
     wrap λ "Empty files"
 
-    λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=5000 "fgrep --color=always --with-filename -- '————–'"; }
+    λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=100 "fgrep --color=always --with-filename -- '————–'"; }
     wrap λ "Broken table"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=5000 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code"
 
     λ(){ egrep --color=always '<div class="admonition .*">[^$]' **/*.page; }
@@ -432,14 +432,14 @@ else
 
     bold "Checking for HTML/PDF/image anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
-                         parallel --max-args=400 "fgrep --ignore-case --files-with-matches \
+                         parallel --max-args=100 "fgrep --ignore-case --files-with-matches \
                          -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS;
          do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
          done; }
     wrap λ "Archives of broken links"
 
-    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" | sort | parallel file | grep -v 'PDF document' | cut -d ':' -f 1)"
+    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" | sort | parallel --max-args=100 file | grep -v 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
@@ -460,10 +460,10 @@ else
     }
     wrap λ "Remove junk from PDF & add metadata"
 
-    λ(){ find ./ -type f -name "*.jpg" | parallel file | fgrep --invert-match 'JPEG image data'; }
+    λ(){ find ./ -type f -name "*.jpg" | parallel --max-args=100 file | fgrep --invert-match 'JPEG image data'; }
     wrap λ "Corrupted JPGs"
 
-    λ(){ find ./ -type f -name "*.png" | parallel file | fgrep --invert-match 'PNG image data'; }
+    λ(){ find ./ -type f -name "*.png" | parallel --max-args=100 file | fgrep --invert-match 'PNG image data'; }
     wrap λ "Corrupted PNGs"
 
     λ(){  find ./ -name "*.png" | fgrep -v '/static/img/' | sort | xargs identify -format '%F %[opaque]\n' | fgrep ' false'; }
@@ -474,7 +474,7 @@ else
                                                 -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
                                                 -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
                                                 -e %3FDaicon-videos.html \
-             | parallel file | fgrep --invert-match -e 'HTML document, ' -e 'ASCII text'; }
+             | parallel --max-args=100 file | fgrep --invert-match -e 'HTML document, ' -e 'ASCII text'; }
     wrap λ "Corrupted HTMLs"
 
     λ(){ checkEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
@@ -491,7 +491,7 @@ else
     λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e './docs/www/' -e './static/404.html' | xargs fgrep --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages"
 
-    λ() { find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel identify | egrep '\.gif\[[0-9]\] '; }
+    λ() { find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel --max-args=100 identify | egrep '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4"
 
     λ() {  find ./ -type f -name "*.jpg" | parallel --max-args=100 "identify -format '%Q %F\n'" {} | sort --numeric-sort | egrep -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100'; }
@@ -531,14 +531,14 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ $(date +"%j") == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.page" | parallel runhaskell -istatic/build/ static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell -istatic/build/ static/build/link-extractor.hs | \
                          egrep -e '^/' | sort -u); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://www.gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
 
-        for URL in $(find . -type f -name "*.page" | parallel runhaskell -istatic/build/ static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell -istatic/build/ static/build/link-extractor.hs | \
                          egrep -e '^https://www.gwern.net' | sort -u); do
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
