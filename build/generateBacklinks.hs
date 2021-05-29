@@ -10,7 +10,7 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort)
-import qualified Data.HashMap.Strict as HM (keys, elems, toList, fromList, traverseWithKey, fromListWith, union, HashMap)
+import qualified Data.HashMap.Strict as HM (empty, keys, elems, toList, fromList, traverseWithKey, fromListWith, union, HashMap)
 import qualified Data.Map.Strict as M (lookup)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import Network.HTTP (urlDecode, urlEncode)
@@ -85,25 +85,25 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-backlinks" conten
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
-
                             let links = filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                   extractLinks md text
 
                             let caller = filter blackList $ repeat $ T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
                             let called = filter (/= head caller) (map (T.pack . takeWhile (/='#') . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
-
                             return $ zip called caller
 
 type Backlinks = HM.HashMap T.Text [T.Text]
 
 readBacklinksDB :: IO Backlinks
 readBacklinksDB = do bll <- readFile "metadata/backlinks.hs"
-                     let bldb = HM.fromList $ map (\(a,b) -> (T.pack a, map T.pack b)) (read bll :: [(String,[String])])
-                     return bldb
+                     if bll=="" then return HM.empty else
+                       let bldb = HM.fromList $ map (\(a,b) -> (T.pack a, map T.pack b)) (read bll :: [(String,[String])]) in
+                         return bldb
 writeBacklinksDB :: Backlinks -> IO ()
 writeBacklinksDB bldb = do let bll = HM.toList bldb :: [(T.Text,[T.Text])]
                            let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
-                           writeFile "metadata/backlinks.hs" $ ppShow bll'
+                           t <- writeSystemTempFile "hakyll-backlinks" $ ppShow bll'
+                           renameFile t "metadata/backlinks.hs"
 
 -- | Read one Text string and return its URLs (as Strings)
 extractLinks :: Bool -> T.Text -> [T.Text]
@@ -124,8 +124,9 @@ extractURLs = queryWith extractURL
 blackList :: T.Text -> Bool
 blackList f
   | any (`T.isInfixOf` f) ["/backlinks/"] = False
-  | any (`T.isPrefixOf` f) ["/images/", "https://youtube.com", "https://en.wikipedia.org/wiki/",
-                           "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/", "https://www.youtube.com",
-                           "https://www.amazon.com", "/tags/", "/docs/www/", "/images/", "/metadata/annotations/"] = False
+  | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/",
+                            -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
+                            "https://wwwyoutube.com/", "https://en.wikipedia.org/wiki/",
+                            "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
   | any (`T.isSuffixOf` f) ["/index"] = False
   | otherwise = True
