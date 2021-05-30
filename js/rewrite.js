@@ -734,7 +734,7 @@ if (location.hash != "") {
   {  brokenHashLog = new URL("https://" + location.hostname + "/static/404.html" +
                                                         "-error-" +
                                                         fixedEncodeURIComponent(location.pathname) +
-                                                        "-" +
+                                                        "--" +
                                                         fixedEncodeURIComponent(location.hash.split('#')[1]));
      doAjax({ location: brokenHashLog,  onSuccess: (e) => {}, onFailure: (e) => {} });
      console.log("Reporting broken hash-anchor: " + brokenHashLog);
@@ -748,7 +748,7 @@ selfLinks.forEach(function(anchor) {
      brokenHashLog = new URL("https://" + location.hostname + "/static/404.html" +
                                                         "-error-" +
                                                         fixedEncodeURIComponent(anchor.pathname) +
-                                                        "-" +
+                                                        "--" +
                                                         fixedEncodeURIComponent(anchor.hash.split('#')[1]));
      doAjax({ location: brokenHashLog,  onSuccess: (e) => {}, onFailure: (e) => {} });
      console.log("Reporting broken hash-anchor: " + brokenHashLog);
