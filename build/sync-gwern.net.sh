@@ -196,8 +196,8 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code"
 
-    λ(){ egrep --color=always '<div class="admonition .*">[^$]' **/*.page; }
-    wrap λ "Broken admonition paragraph."
+    λ(){ egrep --color=always -e '<div class="admonition .*">[^$]' -e '<div class="epigrah">' **/*.page; }
+    wrap λ "Broken admonition paragraph or epigraph."
 
     λ(){ egrep --color=always '^"~/' ./static/redirects/nginx.conf; }
     wrap λ "Warning: tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
