@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-05-28 16:42:07 gwern"
+When:  Time-stamp: "2021-06-01 14:42:06 gwern"
 License: CC-0
 -}
 
@@ -675,7 +675,7 @@ whiteList url
       , "unesdoc.unesco.org" -- low quality
       , "fifteen.ai/" -- service
       , "cran.r-project.org" -- stable
-      , "dormin.org" -- stable? we'll give him a chance
+      , "mattlakeman.org" -- stable? we'll give him a chance
       , "gallica.bnf.fr" -- low quality/interactive
       , "find-more-books.com" -- service
       , "nicovideo.jp" -- service/videos

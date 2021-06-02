@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-05-28 20:55:10 gwern"
+When:  Time-stamp: "2021-06-01 14:45:03 gwern"
 License: CC-0
 -}
 
@@ -577,16 +577,16 @@ generateID url author date
        , ("https://danluu.com/web-bloat/", "luu-web-bloat")
        , ("https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr", "mozdev-abbr")
        , ("https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dfn", "mozdev-dfn")
-       , ("https://dormin.org/2020/01/22/disaster-artist-insanity-is-no-shortcut-to-inspiration/", "dormin-2020-disasterartist")
-       , ("https://dormin.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/", "dormin-2020-hillbillyelegy")
-       , ("https://dormin.org/2020/01/22/peep-show-the-most-realistic-portrayal-of-evil-ive-ever-seen/", "dormin-2020-peepshow")
-       , ("https://dormin.org/2020/01/22/the-new-epidemic-my-experience-of-losing-a-friend-to-heroin/", "dormin-2020-heroin")
-       , ("https://dormin.org/2020/01/22/the-phantoms-pain-a-metal-gear-solid-v-narrative-analysis/", "dormin-2020-metalgearsolidv")
-       , ("https://dormin.org/2020/01/23/everything-you-need-to-know-about-napoleon-bonaparte/", "dormin-2020-napoleon")
-       , ("https://dormin.org/2020/01/23/little-soldiers-inside-the-chinese-education-system/", "dormin-2020-littlesoldiers")
-       , ("https://dormin.org/2020/03/21/against-dog-ownership/", "dormin-2020-against-dog-ownership")
-       , ("https://dormin.org/2020/04/27/explaining-blaming-and-being-very-slightly-sympathetic-toward-enron/", "dormin-2020-enron")
-       , ("https://dormin.org/2020/09/06/a-deep-dive-into-k-pop/", "dormin-2020-kpop")
+       , ("https://mattlakeman.org/2020/01/22/disaster-artist-insanity-is-no-shortcut-to-inspiration/", "matt-lakeman-2020-disasterartist")
+       , ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/", "matt-lakeman-2020-hillbillyelegy")
+       , ("https://mattlakeman.org/2020/01/22/peep-show-the-most-realistic-portrayal-of-evil-ive-ever-seen/", "matt-lakeman-2020-peepshow")
+       , ("https://mattlakeman.org/2020/01/22/the-new-epidemic-my-experience-of-losing-a-friend-to-heroin/", "matt-lakeman-2020-heroin")
+       , ("https://mattlakeman.org/2020/01/22/the-phantoms-pain-a-metal-gear-solid-v-narrative-analysis/", "matt-lakeman-2020-metalgearsolidv")
+       , ("https://mattlakeman.org/2020/01/23/everything-you-need-to-know-about-napoleon-bonaparte/", "matt-lakeman-2020-napoleon")
+       , ("https://mattlakeman.org/2020/01/23/little-soldiers-inside-the-chinese-education-system/", "matt-lakeman-2020-littlesoldiers")
+       , ("https://mattlakeman.org/2020/03/21/against-dog-ownership/", "matt-lakeman-2020-against-dog-ownership")
+       , ("https://mattlakeman.org/2020/04/27/explaining-blaming-and-being-very-slightly-sympathetic-toward-enron/", "matt-lakeman-2020-enron")
+       , ("https://mattlakeman.org/2020/09/06/a-deep-dive-into-k-pop/", "matt-lakeman-2020-kpop")
        , ("https://github.com/arkel23/animesion", "animesion")
        , ("https://github.com/google-research/google-research/tree/master/automl_zero", "real-et-al-2020-github")
        , ("https://github.com/lllyasviel/DanbooRegion", "danbooregion")
