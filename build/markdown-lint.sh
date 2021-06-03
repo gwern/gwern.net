@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-05-25 13:42:58 gwern"
+# When:  Time-stamp: "2021-06-02 21:17:09 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -66,7 +66,7 @@ do
         λ(){ fgrep -e 'phys.org' -- "$PAGE" | fgp -v -e '2019-07-cat-science.html' -e '2017-08-cavemen-genetic-checkup.html' -e'2019-12-mouse-pups-born-eggs-derived.html'; }
         wrap λ "Phys.org link detected: make sure John Hewitt didn't write it"
 
-        λ(){ list-columns.hs "$PAGE"; }
+        λ(){ runhaskell -istatic/build/ static/build/Columns.hs "$PAGE"; }
         wrap λ "Add columns wrapper?"
 
         λ(){ link-extractor.hs "$PAGE" | egp --only-matching -e '^http://.*archive\.org/.*\.pdf$'; }

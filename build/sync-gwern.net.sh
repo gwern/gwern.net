@@ -205,7 +205,8 @@ else
     λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
 
-    λ(){ egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
+    λ(){ fgrep --color=always -e '**' -- ./metadata/custom.yaml;
+        egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' -- ./metadata/*.yaml;
          fgrep --color=always -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
                -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' \
@@ -219,7 +220,7 @@ else
                -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e 'en.m.wikipedia.org' -e '<em>Figure' \
                -e '<strongfigure' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' \
                -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
-               -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -- ./metadata/*.yaml; }
+               -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
@@ -502,7 +503,7 @@ else
               SIZE_W=$(identify -format "%w" "$IMAGE")
               if (( $SIZE_W > 1600  )); then echo "Too wide image: $IMAGE $SIZE_W"; fi;
           done; }
-    wrap λ "Too-wide JPGs (downscale)"
+    wrap λ "Too-wide images (downscale)"
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ $(date +"%d") == "1" ]; then
