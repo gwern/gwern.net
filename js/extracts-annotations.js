@@ -33,7 +33,7 @@ if (window.Extracts) {
 
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
-        let linkTarget = (Extracts.popFrameProvider == Popins) ? `target="_self"` : `target="_new"`;
+        let linkTarget = (Extracts.popFrameProvider == Popins) ? `target="_self"` : ` target="_new" `;
 
         //  Link to original URL (for archive links).
         let originalLinkHTML = "";
@@ -85,7 +85,7 @@ if (window.Extracts) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         if (target.dataset.urlOriginal) {
-            let linkTarget = (Extracts.popFrameProvider == Popins) ? `target="_self"` : `target="_blank`;
+            let linkTarget = (Extracts.popFrameProvider == Popins) ? ` target="_self" ` : ` target="_blank" `;
 
             //  For local-archive links, include archive link with original.
             return `<a
