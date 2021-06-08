@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-06-01 14:45:03 gwern"
+When:  Time-stamp: "2021-06-08 11:04:29 gwern"
 License: CC-0
 -}
 
@@ -853,6 +853,15 @@ cleanAbstractsHTML t = trim $
     , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
     , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
     -- rest:
+    , ("</p> <p>", "</p>\\n<p>")
+    , ("</p><p>", "</p>\\n<p>")
+    , ("</li> <li>", "</li>\\n<li>")
+    , ("</p> <figure>", "</p>\\n<figure>")
+    , ("</figure> <p>", "</figure>\\n<p>")
+    , ("/><figcaption", "/>\\n    <figcaption")
+    , ("</p> <table>", "</p>\\n<table>")
+    , ("</table> <p>", "</table>\\n<p>")
+    , ("</p> <div", "</p>\\n<div")
     , ("<strong>Abstract</strong>: <p>", "<p>")
     , (":</strong>", "</strong>:")
     , ("</p><p>", "</p> <p>")
@@ -957,6 +966,7 @@ cleanAbstractsHTML t = trim $
     , ("---", "&mdash;")
     , (" - ", "—")
     , (" — ", "—")
+    , (" -- ", "—") -- eg 'Darknet Data Mining -- A Canadian Cyber-crime Perspective'
     , ("was significantly diminished", "was statistically-significantly diminished")
     , ("decreased significantly", "decreased statistically-significantly")
     , ("is significantly better than", "is statistically-significantly better than")
