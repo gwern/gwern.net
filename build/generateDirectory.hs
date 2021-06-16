@@ -5,7 +5,7 @@ module Main where
 -- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, which gets compiled with Hakyll and gets the usual popup annotations. Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
 import Control.Monad (filterM)
-import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort)
+import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy)
 import Data.List.Utils (replace)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile, removeFile)
 import System.Environment (getArgs)
@@ -74,7 +74,7 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-directories" cont
 generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
                        "title: /" ++ d ++ " Directory Listing\n" ++
-                       "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>.\n" ++
+                       "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>, most recent first.\n" ++
                        "tags: index\n" ++
                        "created: 2009-01-01\n" ++
                        "status: in progress\n" ++
@@ -98,7 +98,12 @@ listFiles m direntries' = do
                    backlinks <- mapM getBackLink files'
                    let fileAnnotationsMi = map (lookupFallback m) files'
 
-                   return $ zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
+                   return $ reverse $ sortByDate $ -- most recent first: nicer for browsing, especially given that older files typically have no annotations.
+                     zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
+
+-- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
+sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,FilePath)]
+sortByDate = sortBy (\(f,(t,a,d,_,_),_) (f',(t',a',d',_,_),_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
 
 
 -- how do we handle files with appended data, which are linked like '/docs/rl/2020-bellemare.pdf#google' but exist as files as '/docs/rl/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
