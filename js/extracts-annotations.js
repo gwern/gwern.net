@@ -45,7 +45,7 @@ if (window.Extracts) {
                             href="${referenceData.element.dataset.urlOriginal}"` +
                             linkTarget +
                             `alt="Original URL for this archived link; may be broken."
-                                >original</a>]</span>`;
+                                >live</a>]</span>`;
         }
 
         //  Extract title/link.
@@ -61,7 +61,7 @@ if (window.Extracts) {
         let abstractSpecialClass = ``;
         if (Annotations.isWikipediaLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
-        return `<p class="data-field title">${originalLinkHTML}${titleLinkHTML}</p>`
+        return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
              + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
              + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
