@@ -37,11 +37,18 @@ if (window.Extracts) {
 
         //  Link to original URL (for archive links).
         let originalLinkHTML = "";
+        // remove HTML from the title, which may have <em> or <span class="smallcaps"> in it, breaking substitution.
+        function strip(html){
+            let doc = new DOMParser().parseFromString(html, 'text/html');
+            return doc.body.textContent || "";
+        }
+        let titleText = strip(referenceData.titleHTML);
+
         if (   referenceData.element.dataset.urlOriginal != undefined
                && referenceData.element.dataset.urlOriginal != target.href) {
 
             originalLinkHTML = `<span class="originalURL">[<a
-                            title="Link to original URL for ‘${referenceData.titleHTML}’"
+                            title="Link to original URL for ‘${titleText}’"
                             href="${referenceData.element.dataset.urlOriginal}"` +
                             linkTarget +
                             `alt="Original URL for this archived link; may be broken."
@@ -61,7 +68,7 @@ if (window.Extracts) {
         let abstractSpecialClass = ``;
         if (Annotations.isWikipediaLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
-        return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
+        return `<p class="data-field title">${titleLinkHTML} ${originalLinkHTML}</p>`
              + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
              + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
