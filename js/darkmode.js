@@ -1,7 +1,7 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2021-01-20 18:22:54 gwern"
+// When:  Time-stamp: "2021-06-20 17:35:01 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
@@ -174,8 +174,8 @@ function injectModeSelector() {
 			color: transparent;
 			margin: 0;
 			padding: 0;
-			width: 2em;
-			height: 2em;
+			width: 2.1em;
+			height: 2.1em;
 			align-items: center;
 			box-shadow: none;
 			opacity: 0.55;
