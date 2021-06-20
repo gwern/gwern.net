@@ -1036,7 +1036,7 @@ a[href*='openai']::after,
 a[href$='.pdf#openai']::after,
 a[href*='distill.pub']::after,
 a[href*='twitter.com']::after,
-a[href*='nitter.cc']::after,
+a[href*='nitter.hu']::after,
 a[href*='erowid.org']::after,
 a[href*='wikipedia.org']::after,
 a[href*='wikimedia.org']::after,
@@ -1110,7 +1110,7 @@ a[href*='reddit.com']:hover::after,
 a[href*='intelligence.org']:hover::after,
 a[href*='distill.pub']:hover::after,
 a[href*='twitter.com']:hover::after,
-a[href*='nitter.cc']:hover::after,
+a[href*='nitter.hu']:hover::after,
 a[href*='erowid.org']:hover::after,
 a[href*='overflow.net']:hover::after,
 a[href*='overflow.com']:hover::after,
@@ -1363,7 +1363,7 @@ a[href*='distill.pub']::after {
 /*  Twitter.
     */
 a[href*='twitter.com']::after,
-a[href*='nitter.cc']::after {
+a[href*='nitter.hu']::after {
     background-image: url('/static/img/icons/twitter.svg');
     height: 0.75em;
     width: 0.75em;

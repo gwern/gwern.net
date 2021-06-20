@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-06-01 14:42:06 gwern"
+When:  Time-stamp: "2021-06-20 15:57:24 gwern"
 License: CC-0
 -}
 
@@ -786,8 +786,8 @@ whiteList url
       , "www.scottaaronson.com" -- stable
       , "archiveofourown.org" -- blocks archiving
       , "nitter.net/search" -- example/updated
-      , "nitter.cc/search" -- example/updated
-      , "nitter.cc" -- service/mirror, low quality (videos don't save)
+      , "nitter.hu/search" -- example/updated
+      , "nitter.hu" -- service/mirror, low quality (videos don't save)
       , "flashgamehistory.com" -- low quality
       , "thebrowser.com" -- paywall
       , "git.sr.ht" -- service/updated
