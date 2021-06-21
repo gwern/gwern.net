@@ -1573,9 +1573,12 @@ a > .smallcaps-auto { margin-left: 0.7px; }
 	--GW-back-to-top-link-hover-color: #8b8b8b;
 }
 :root {
-    /*  Adjust background color to prevent pixels from turning off.
+    /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
         */
-    --GW-body-background-color: #010101;
+    --GW-body-background-color: #111111;
+
+    /* Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?) */
+    --GW-body-text-color: #f1f1f1;
 
     /*  Adjust this one color in the syntax highlighting color scheme to make it
         less saturated. (The automatic inversion algorithm doesn’t quite handle
@@ -1901,17 +1904,17 @@ GW.mediaQueries = {
 };
 
 GW.isMobile = () => {
-	/*  We consider a client to be mobile if one of two conditions obtain:
-		1. JavaScript detects touch capability, AND viewport is narrow; or,
-		2. CSS does NOT detect hover capability.
-		*/
-	return (   (   ('ontouchstart' in document.documentElement)
-				&& GW.mediaQueries.mobileWidth.matches)
-			|| !GW.mediaQueries.hoverAvailable.matches);
+    /*  We consider a client to be mobile if one of two conditions obtain:
+        1. JavaScript detects touch capability, AND viewport is narrow; or,
+        2. CSS does NOT detect hover capability.
+        */
+    return (   (   ('ontouchstart' in document.documentElement)
+                && GW.mediaQueries.mobileWidth.matches)
+            || !GW.mediaQueries.hoverAvailable.matches);
 };
 
 GW.isFirefox = () => {
-	return (navigator.userAgent.indexOf("Firefox") > 0);
+    return (navigator.userAgent.indexOf("Firefox") > 0);
 };
 
 /********************/
@@ -1943,42 +1946,42 @@ GW.setLogLevel = (level, permanently = false) => {
 /* HELPERS */
 /***********/
 
-/*	Because encodeURIComponent does not conform to RFC 3986; see MDN docs.
-	*/
+/*  Because encodeURIComponent does not conform to RFC 3986; see MDN docs.
+    */
 function fixedEncodeURIComponent(str) {
-	return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
-		return '%' + c.charCodeAt(0).toString(16);
-	});
+    return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+        return '%' + c.charCodeAt(0).toString(16);
+    });
 }
 
-/*	Helper function for AJAX, by kronusaturn
-	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
-	*/
+/*  Helper function for AJAX, by kronusaturn
+    https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
+    */
 function urlEncodeQuery(params) {
-	return (Object.keys(params)).map(x => (`$${x}=$${ fixedEncodeURIComponent(params[x]) }`)).join("&");
+    return (Object.keys(params)).map(x => (`$${x}=$${ fixedEncodeURIComponent(params[x]) }`)).join("&");
 }
 
-/*	Helper function for AJAX, by kronusaturn
-	https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
-	*/
+/*  Helper function for AJAX, by kronusaturn
+    https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
+    */
 function doAjax(options) {
-	let req = new XMLHttpRequest();
-	req.addEventListener("load", (event) => {
-		if (event.target.status < 400) {
-			if (options["onSuccess"]) options.onSuccess(event);
-		} else {
-			if (options["onFailure"]) options.onFailure(event);
-		}
-	});
-	let method = (options["method"] || "GET");
-	let location = (options.location || document.location) + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
-	req.open(method, location);
-	if (options["method"] == "POST") {
-		req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		req.send(urlEncodeQuery(options.params));
-	} else {
-		req.send();
-	}
+    let req = new XMLHttpRequest();
+    req.addEventListener("load", (event) => {
+        if (event.target.status < 400) {
+            if (options["onSuccess"]) options.onSuccess(event);
+        } else {
+            if (options["onFailure"]) options.onFailure(event);
+        }
+    });
+    let method = (options["method"] || "GET");
+    let location = (options.location || document.location) + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
+    req.open(method, location);
+    if (options["method"] == "POST") {
+        req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        req.send(urlEncodeQuery(options.params));
+    } else {
+        req.send();
+    }
 }
 
 /*  Adds an event listener to a button (or other clickable element), attaching
@@ -1987,26 +1990,26 @@ function doAjax(options) {
     element activate on mouse down instead of mouse up.
     */
 Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
-    let ael = this.activateEventListener = (event) => { 
-    	if (event.button === 0 || event.key === ' ') 
-    		fn(event);
+    let ael = this.activateEventListener = (event) => {
+        if (event.button === 0 || event.key === ' ')
+            fn(event);
     };
     if (includeMouseDown) this.addEventListener("mousedown", ael);
     this.addEventListener("click", ael);
     this.addEventListener("keyup", ael);
 }
 
-/*	Swap classes on the given element.
-	First argument is an array with two string elements (the classes).
-	Second argument is 0 or 1 (index of class to add; the other is removed).
-	*/
+/*  Swap classes on the given element.
+    First argument is an array with two string elements (the classes).
+    Second argument is 0 or 1 (index of class to add; the other is removed).
+    */
 Element.prototype.swapClasses = function (classes, whichToAdd) {
-	this.classList.add(classes[whichToAdd]);
-	this.classList.remove(classes[1 - whichToAdd]);
+    this.classList.add(classes[whichToAdd]);
+    this.classList.remove(classes[1 - whichToAdd]);
 };
 
-/*	Returns true if the given rects intersect, false otherwise.
-	*/
+/*  Returns true if the given rects intersect, false otherwise.
+    */
 function doRectsIntersect(rectA, rectB) {
     return (rectA.top < rectB.bottom &&
             rectA.bottom > rectB.top &&
@@ -2014,11 +2017,11 @@ function doRectsIntersect(rectA, rectB) {
             rectA.right > rectB.left);
 }
 
-/*  Returns true if the given element intersects the given rect, 
-	false otherwise.
+/*  Returns true if the given element intersects the given rect,
+    false otherwise.
     */
 function isWithinRect(element, rect) {
-	return doRectsIntersect(element.getBoundingClientRect(), rect);
+    return doRectsIntersect(element.getBoundingClientRect(), rect);
 }
 
 /*  Returns true if the given element intersects the viewport, false otherwise.
@@ -2027,10 +2030,10 @@ function isOnScreen (element) {
     return isWithinRect(element, new DOMRect(0, 0, window.innerWidth, window.innerHeight));
 }
 
-/*	Returns the string trimmed of opening/closing quotes.
-	*/
+/*  Returns the string trimmed of opening/closing quotes.
+    */
 String.prototype.trimQuotes = function () {
-	return this.replace(/^["'“‘]?(.+?)["'”’]?$$/, '$$1');
+    return this.replace(/^["'“‘]?(.+?)["'”’]?$$/, '$$1');
 };
 
 /*  Returns true if the string begins with any of the given prefixes.
@@ -2061,7 +2064,7 @@ String.prototype.includesAnyOf = function (substrings) {
 }
 
 /*  Remove given item from array.
-	*/
+    */
 Array.prototype.remove = function (item) {
     let index = this.indexOf(item);
     if (index !== -1)
@@ -2069,25 +2072,25 @@ Array.prototype.remove = function (item) {
 };
 
 /*  Remove from array the first item that passes the provided test function.
-	The test function should take an array item and return true/false.
-	*/
+    The test function should take an array item and return true/false.
+    */
 Array.prototype.removeIf = function (test) {
     let index = this.findIndex(test);
     if (index !== -1)
         this.splice(index, 1);
 };
 
-/*	Insert the given item into the array just before the first item that passes
-	the provided test function. If no item passes the test function, append the
-	item to the end of the array.
-	*/
+/*  Insert the given item into the array just before the first item that passes
+    the provided test function. If no item passes the test function, append the
+    item to the end of the array.
+    */
 Array.prototype.insertBefore = function (item, test) {
-	let index = this.findIndex(test);
-	if (index === -1) {
-		this.push(item);
-	} else {
-		this.splice(index, 0, item);
-	}
+    let index = this.findIndex(test);
+    if (index === -1) {
+        this.push(item);
+    } else {
+        this.splice(index, 0, item);
+    }
 };
 
 /*  Run the given function immediately if the page is already loaded, or add
@@ -2101,8 +2104,8 @@ function doWhenPageLoaded(f) {
 }
 
 /*  Run the given function immediately if the page content has already loaded
-	(DOMContentLoaded event has fired), or add a listener to run it as soon as 
-	the event fires.
+    (DOMContentLoaded event has fired), or add a listener to run it as soon as
+    the event fires.
     */
 function doWhenDOMContentLoaded(f) {
     if (GW.DOMContentLoaded == true)
@@ -2144,28 +2147,28 @@ function addScrollListener(fn, name) {
         GW.scrollListeners[name] = wrapper;
     }
 }
-/*	Removes a named scroll event listener from the page.
-	*/
+/*  Removes a named scroll event listener from the page.
+    */
 function removeScrollListener(name) {
-	let wrapper = GW.scrollListeners[name];
-	if (wrapper) {
-		document.removeEventListener("scroll", wrapper);
-		GW.scrollListeners[name] = null;
-	}
+    let wrapper = GW.scrollListeners[name];
+    if (wrapper) {
+        document.removeEventListener("scroll", wrapper);
+        GW.scrollListeners[name] = null;
+    }
 }
 
-/*	Returns val, or def if val == defval. (By default, defval is -1.)
-	(In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
-	*/
+/*  Returns val, or def if val == defval. (By default, defval is -1.)
+    (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
+    */
 function defval(def, val, defval = -1) {
-	return (val == defval) ? def : val;
+    return (val == defval) ? def : val;
 }
 
-/*	Returns val, or min if val < min, or max if val > max.
-	(In other words, clamps val to [min,max].)
-	*/
+/*  Returns val, or min if val < min, or max if val > max.
+    (In other words, clamps val to [min,max].)
+    */
 function valMinMax(val, min, max) {
-	return Math.max(Math.min(val, max), min);
+    return Math.max(Math.min(val, max), min);
 }
 
 /************************/
@@ -2233,107 +2236,107 @@ function cancelDoWhenMatchMedia(name) {
 
         `once` (boolean; does the handler get removed after being called?)
         `phase` (string; in [e.g. "rewrite"], before [e.g. "<rewrite"], or after
-        		 [e.g. ">rewrite"] which phase of that event’s handlers does the
-        		 given handler get called?)
+                 [e.g. ">rewrite"] which phase of that event’s handlers does the
+                 given handler get called?)
     */
 GW.notificationCenter = {
-	eventHandlers: { },
-	handlerPhaseOrders: {
-		"GW.contentDidLoad": [ "rewrite", "eventListeners" ]
-	},
-	addHandlerForEvent: (eventName, f, options = { }) => {
-		if (GW.notificationCenter.eventHandlers[eventName] == null)
-			GW.notificationCenter.eventHandlers[eventName] = [ ];
+    eventHandlers: { },
+    handlerPhaseOrders: {
+        "GW.contentDidLoad": [ "rewrite", "eventListeners" ]
+    },
+    addHandlerForEvent: (eventName, f, options = { }) => {
+        if (GW.notificationCenter.eventHandlers[eventName] == null)
+            GW.notificationCenter.eventHandlers[eventName] = [ ];
 
-		let handlers = GW.notificationCenter.eventHandlers[eventName];
-		if (handlers.findIndex(handler => handler.f == f) !== -1)
-			return;
+        let handlers = GW.notificationCenter.eventHandlers[eventName];
+        if (handlers.findIndex(handler => handler.f == f) !== -1)
+            return;
 
-		let insertAt = handlers.length;
+        let insertAt = handlers.length;
 
-		let phaseOrder = GW.notificationCenter.handlerPhaseOrders[eventName];
-		if (phaseOrder)
-			options.phase = (options.phase || "");
-		if (options.phase && phaseOrder) {
-			let targetPhase = options.phase.match(/^([<>]?)(.+)/)[2];
-			let targetPhaseOrder = defval(phaseOrder.length, phaseOrder.indexOf(targetPhase), -1);
+        let phaseOrder = GW.notificationCenter.handlerPhaseOrders[eventName];
+        if (phaseOrder)
+            options.phase = (options.phase || "");
+        if (options.phase && phaseOrder) {
+            let targetPhase = options.phase.match(/^([<>]?)(.+)/)[2];
+            let targetPhaseOrder = defval(phaseOrder.length, phaseOrder.indexOf(targetPhase), -1);
 
-			let phaseAt = (index) => {
-				if (index >= handlers.length) return null;
-				let parts = handlers[index].options.phase.match(/^([<>]?)(.+)/);
-				return {
-					phase: parts[2], 
-					before: (parts[1] == "<"), 
-					after: (parts[1] == ">")
-				};
-			};
+            let phaseAt = (index) => {
+                if (index >= handlers.length) return null;
+                let parts = handlers[index].options.phase.match(/^([<>]?)(.+)/);
+                return {
+                    phase: parts[2],
+                    before: (parts[1] == "<"),
+                    after: (parts[1] == ">")
+                };
+            };
 
-			if (options.phase.startsWith("<")) {
-				for (var i = 0; i < handlers.length; i++) {
-					if (phaseAt(i).phase == targetPhase && !phaseAt(i).before)
-						break;
-					if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(i).phase))
-						break;
-				}
-				insertAt = i;
-			} else if (options.phase.startsWith(">")) {
-				for (var j = handlers.length - 1; j > -1; j--) {
-					if (phaseAt(j).phase == targetPhase) {
-						j++;
-						break;
-					}
-					if (phaseOrder.slice(0, targetPhaseOrder - 1).includes(phaseAt(j).phase)) {
-						j++;
-						break;
-					}
-				}
-				insertAt = j;
-			} else {
-				for (var k = 0; k < handlers.length; k++) {
-					if (phaseAt(k).phase == targetPhase && phaseAt(k).after)
-						break;
-					if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(k).phase))
-						break;
-				}
-				insertAt = k;
-			}
-		}
+            if (options.phase.startsWith("<")) {
+                for (var i = 0; i < handlers.length; i++) {
+                    if (phaseAt(i).phase == targetPhase && !phaseAt(i).before)
+                        break;
+                    if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(i).phase))
+                        break;
+                }
+                insertAt = i;
+            } else if (options.phase.startsWith(">")) {
+                for (var j = handlers.length - 1; j > -1; j--) {
+                    if (phaseAt(j).phase == targetPhase) {
+                        j++;
+                        break;
+                    }
+                    if (phaseOrder.slice(0, targetPhaseOrder - 1).includes(phaseAt(j).phase)) {
+                        j++;
+                        break;
+                    }
+                }
+                insertAt = j;
+            } else {
+                for (var k = 0; k < handlers.length; k++) {
+                    if (phaseAt(k).phase == targetPhase && phaseAt(k).after)
+                        break;
+                    if (phaseOrder.slice(targetPhaseOrder + 1).includes(phaseAt(k).phase))
+                        break;
+                }
+                insertAt = k;
+            }
+        }
 
-		GW.notificationCenter.eventHandlers[eventName].splice(insertAt, 0, { f: f, options: options });
-	},
-	removeHandlerForEvent: (eventName, f, options = { }) => {
-		if (GW.notificationCenter.eventHandlers[eventName] == null)
-			return;
+        GW.notificationCenter.eventHandlers[eventName].splice(insertAt, 0, { f: f, options: options });
+    },
+    removeHandlerForEvent: (eventName, f, options = { }) => {
+        if (GW.notificationCenter.eventHandlers[eventName] == null)
+            return;
 
-		GW.notificationCenter.eventHandlers[eventName].removeIf(handler => handler.f == f);
-	},
-	removeAllHandlersForEvent: (eventName) => {
-		GW.notificationCenter.eventHandlers[eventName] = null;
-	},
-	fireEvent: (eventName, eventInfo) => {
-		/*  The ‘16’ here is the width of the date field plus spacing.
-			The “Source:” text is manually padded to be as wide as “[notification]”.
-			*/
-		GWLog(`Event “$${eventName}” fired.` + `$${(
-			(eventInfo && eventInfo.source) 
-			? ("\n" + "".padStart(16, ' ') + "       Source:".padEnd(GW.logSourcePadLength, ' ') + eventInfo.source) 
-			: ""
-		)}`, "notification");
+        GW.notificationCenter.eventHandlers[eventName].removeIf(handler => handler.f == f);
+    },
+    removeAllHandlersForEvent: (eventName) => {
+        GW.notificationCenter.eventHandlers[eventName] = null;
+    },
+    fireEvent: (eventName, eventInfo) => {
+        /*  The ‘16’ here is the width of the date field plus spacing.
+            The “Source:” text is manually padded to be as wide as “[notification]”.
+            */
+        GWLog(`Event “$${eventName}” fired.` + `$${(
+            (eventInfo && eventInfo.source)
+            ? ("\n" + "".padStart(16, ' ') + "       Source:".padEnd(GW.logSourcePadLength, ' ') + eventInfo.source)
+            : ""
+        )}`, "notification");
 
-		if (GW.notificationCenter.eventHandlers[eventName] == null)
-			return;
+        if (GW.notificationCenter.eventHandlers[eventName] == null)
+            return;
 
-		for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
-			let handler = GW.notificationCenter.eventHandlers[eventName][i];
-			if (handler.options.condition && !handler.options.condition(eventInfo))
-				continue;
-			handler.f(eventInfo);
-			if (handler.options.once) {
-				GW.notificationCenter.eventHandlers[eventName].splice(i, 1);
-				i--;
-			}
-		}
-	}
+        for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
+            let handler = GW.notificationCenter.eventHandlers[eventName][i];
+            if (handler.options.condition && !handler.options.condition(eventInfo))
+                continue;
+            handler.f(eventInfo);
+            if (handler.options.once) {
+                GW.notificationCenter.eventHandlers[eventName].splice(i, 1);
+                i--;
+            }
+        }
+    }
 };
 
 /****************/
@@ -2341,45 +2344,45 @@ GW.notificationCenter = {
 /****************/
 
 GW.scrollState = {
-	lastScrollTop:				window.pageYOffset || document.documentElement.scrollTop,
-	unbrokenDownScrollDistance:	0,
-	unbrokenUpScrollDistance:	0
+    lastScrollTop:              window.pageYOffset || document.documentElement.scrollTop,
+    unbrokenDownScrollDistance: 0,
+    unbrokenUpScrollDistance:   0
 };
 
 function updateScrollState(event) {
     GWLog("updateScrollState", "gw.js", 3);
 
     let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop) 
-    	? (GW.scrollState.unbrokenDownScrollDistance + newScrollTop - GW.scrollState.lastScrollTop) 
-    	: 0;
-    GW.scrollState.unbrokenUpScrollDistance = (newScrollTop < GW.scrollState.lastScrollTop) 
-    	? (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - newScrollTop) 
-    	: 0;
+    GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop)
+        ? (GW.scrollState.unbrokenDownScrollDistance + newScrollTop - GW.scrollState.lastScrollTop)
+        : 0;
+    GW.scrollState.unbrokenUpScrollDistance = (newScrollTop < GW.scrollState.lastScrollTop)
+        ? (GW.scrollState.unbrokenUpScrollDistance + GW.scrollState.lastScrollTop - newScrollTop)
+        : 0;
     GW.scrollState.lastScrollTop = newScrollTop;
 }
 addScrollListener(updateScrollState, "updateScrollStateScrollListener");
 
-/*	Toggles whether the page is scrollable.
-	*/
+/*  Toggles whether the page is scrollable.
+    */
 function isPageScrollingEnabled() {
-	return !(document.documentElement.classList.contains("no-scroll"));
+    return !(document.documentElement.classList.contains("no-scroll"));
 }
 function togglePageScrolling(enable) {
-	if (typeof enable == "undefined")
-		enable = document.documentElement.classList.contains("no-scroll");
+    if (typeof enable == "undefined")
+        enable = document.documentElement.classList.contains("no-scroll");
 
-	let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
+    let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
 
-	if (enable && !isPageScrollingEnabled()) {
-		document.documentElement.classList.toggle("no-scroll", false);
-		removeScrollListener("preventScroll");
-		addScrollListener(updateScrollState, "updateScrollStateScrollListener");
-	} else if (!enable && isPageScrollingEnabled()) {
-		document.documentElement.classList.toggle("no-scroll", true);
-		addScrollListener(preventScroll, "preventScroll");
-		removeScrollListener("updateScrollStateScrollListener");
-	}
+    if (enable && !isPageScrollingEnabled()) {
+        document.documentElement.classList.toggle("no-scroll", false);
+        removeScrollListener("preventScroll");
+        addScrollListener(updateScrollState, "updateScrollStateScrollListener");
+    } else if (!enable && isPageScrollingEnabled()) {
+        document.documentElement.classList.toggle("no-scroll", true);
+        addScrollListener(preventScroll, "preventScroll");
+        removeScrollListener("updateScrollStateScrollListener");
+    }
 }
 
 /******************/
@@ -2393,16 +2396,16 @@ window.addEventListener("DOMContentLoaded", () => {
     GWLog("window.DOMContentLoaded", "browser event");
     GW.DOMContentLoaded = true;
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-		source: "DOMContentLoaded",
-		document: document.firstElementChild, 
-		isMainDocument: true,
-		needsRewrite: true, 
-		clickable: true, 
-		collapseAllowed: true, 
-		isCollapseBlock: false,
-		isFullPage: true,
-		location: new URL(location.href),
-		fullWidthPossible: true
+        source: "DOMContentLoaded",
+        document: document.firstElementChild,
+        isMainDocument: true,
+        needsRewrite: true,
+        clickable: true,
+        collapseAllowed: true,
+        isCollapseBlock: false,
+        isFullPage: true,
+        location: new URL(location.href),
+        fullWidthPossible: true
     });
 });
 window.addEventListener("load", () => {

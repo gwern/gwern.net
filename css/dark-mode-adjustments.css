@@ -1,7 +1,10 @@
 :root {
-    /*  Adjust background color to prevent pixels from turning off.
+    /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
         */
-    --GW-body-background-color: #010101;
+    --GW-body-background-color: #111111;
+
+    /* Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?) */
+    --GW-body-text-color: #f1f1f1;
 
     /*  Adjust this one color in the syntax highlighting color scheme to make it
         less saturated. (The automatic inversion algorithm doesn’t quite handle
