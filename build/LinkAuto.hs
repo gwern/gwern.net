@@ -18,31 +18,35 @@ module LinkAuto (linkAuto, testDoc) where
 --
 -- Dependencies: Pandoc, regex-tdfa
 
-import Data.List (intersperse, nub, sortBy)
-import Text.Pandoc (bottomUp, queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Emph,Link,Image,Code,Space,Span,Str))
+import Data.List (intersperse, intercalate, nub, sortBy)
+import Text.Pandoc (bottomUp, queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Emph,Link,Image,Code,Space,Span,Str), def, writePlain, runPure)
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.PCRE.Heavy as R -- (makeRegex, match, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches
 import Text.Regex.PCRE.Light as RL
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import Control.Monad.State (evalState, get, put, State)
-import qualified Data.Text as T (append, concat, head, length, reverse, strip, Text)
+import qualified Data.Text as T -- (append, concat, head, intersperse, length, reverse, strip, Text)
 import Debug.Trace as Trace
 import Data.String.Conversions (cs)
 import Data.ByteString (ByteString)
+
+
 test :: [Inline]
 test = [Str "bigGAN means", Emph [Str "BIG"], Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Span ("",["smallcaps-auto"],[]) [Str "BERT"], Str "."]
 testDoc :: Pandoc
-testDoc = let doc = Pandoc nullMeta [Para test] in
+testDoc = let doc = Pandoc nullMeta [Para test2] in
             linkAuto doc
+
+test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN."]
 
 -----------
 
 -- Turn first instance of a list of regex matches into hyperlinks in a Pandoc document.
 linkAuto :: Pandoc -> Pandoc
 linkAuto p = -- Trace.trace ("Doc") $ walk (defineLinks customDefinitions) p
-  let customDefinitions' = filterDefinitions p customDefinitions in
+  let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
                -- let master = definitionsToRegexp customDefinitions' in
-                annotateFirstDefinitions $ bottomUp (defineLinks customDefinitions') p
+                annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
 -----------
 
@@ -83,12 +87,14 @@ defineLinks dict = concatMap go . mergeSpaces
                               -- unfortunately, if we move the Space inside the Link, this will look bad when Links get their underlining decoration
                               -- in-browser. So we do this song & dance to figure out if the link was *before* or *after*, remove it from the Link,
                               -- and stick a prefix or suffix replacement Space.
-                              Just (before,matched,after, defn) -> Str before : if T.head matched == ' ' then
-                                                               if T.head (T.reverse matched) == ' ' then
-                                                                  [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
-                                                                 [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")]
-                                                             else
-                                [Link ("",["link-auto"],[]) [Str matched] (defn, "")] ++ go (Str after)
+                              Just (before,matched,after, defn) ->
+                                Str before :
+                                (if T.head matched == ' ' then
+                                                 if T.head (T.reverse matched) == ' ' then
+                                                   [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")] else
+                                                   [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space]
+                                               else [Link ("",["link-auto"],[]) [Str matched] (defn, "")])
+                                ++ go (Str after)
     go x = [x]
 
 -- step through the dictionary (which should be long-first) to find the first matching regexp, since the master regexp blob matched the string
@@ -98,8 +104,8 @@ findRegexMatch ((o,r,u):rs) s =
                                   let match = R.scan r s in
                                     case match of
                                       [] -> findRegexMatch rs s
-                                      (match':_) -> let (a:c:_) = R.split r s in
-                                                    Just (a,fst match', c, u)
+                                      (match':rest) -> let (a:c) = R.split r s in
+                                                    Trace.trace ("\nREST: " ++ show rest ++ "\n") $ Trace.trace ("C: " ++ show c ++ "\n") $ Just (a,fst match', T.concat $ interleave (map fst rest) c, u)
                                   -- case matches of
                                   --   -- zero matches? we move on to the rest of the list of regexps
                                   --   [] -> findRegexMatch rs s
@@ -110,7 +116,12 @@ findRegexMatch ((o,r,u):rs) s =
                                   --   -- x@(a:b:c) -> Just (a,b,T.concat c, u)
                                   --   _ -> findRegexMatch rs s
 
--- pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
+interleave :: [a] -> [a] -> [a]
+interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
+interleave [] [] = []
+interleave _        a        = a
+
+-- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
 mergeSpaces []                     = []
 mergeSpaces (Str x:Str y:xs)       = Str (x`T.append`y):mergeSpaces xs
@@ -130,6 +141,19 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith ex
    extractLink (Link _ _ (path, _)) = [path]
    extractLink _ = []
 
+-- try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
+-- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.
+filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
+filterMatches p definitions  = let plain = simplifiedDoc p
+  in filter (\(_,b,_) -> plain =~ b ) definitions
+
+simplifiedDoc :: Pandoc -> T.Text
+simplifiedDoc p = let md = runPure $ writePlain def p in
+                         case md of
+                           Left _ -> error $ "Failed to render: " ++ show md
+                           Right md' -> md'
+
+
 -- R.makeRegex ("[[:alnum:]]+"::String)
 -- create a single master regexp which matches all possible definition keys, whether 'GAN' or 'reinforcement learning'
 -- definitionsToRegexp :: [(T.Text, b, T.Text)] -> R.Regex
@@ -140,8 +164,8 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith ex
 
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 customDefinitionsR = map (\(a,b) -> (a,
-                                      -- let r = "[[:punct:][:blank:]]"`T.append`a`T.append`"[[:punct:][:blank:]]" in (RL.compile (cs r) []),
-                                      (RL.compile (cs a) []),
+                                      let r = "[[:punct:][:blank:]]"`T.append`a`T.append`"[[:punct:][:blank:]]" in (RL.compile (cs r) []),
+--                                      (RL.compile (cs a) []),
                                                                                                                       b))
                                     --((`T.append`"^"`T.append`a`T.append`"$", b))
 
@@ -397,8 +421,6 @@ customDefinitions = customDefinitionsR $
   , ("Hells", "https://en.wikipedia.org/wiki/Hells_Angels_(manga)")
   , ("Henry Darger", "https://en.wikipedia.org/wiki/Henry_Darger")
   , ("Herbert Hoover", "https://en.wikipedia.org/wiki/Herbert_Hoover")
-  , ("Her", "https://en.wikipedia.org/wiki/Her_(film)")
-  , ("Hero", "https://en.wikipedia.org/wiki/Hero_(2002_film)")
   , ("Hex", "https://en.wikipedia.org/wiki/Hex_(board_game)")
   , ("hidden-variable theories", "https://en.wikipedia.org/wiki/Hidden-variable_theory")
   , ("Hideaki Anno", "https://en.wikipedia.org/wiki/Hideaki_Anno")
@@ -461,7 +483,6 @@ customDefinitions = customDefinitionsR $
   , ("Latent", "https://en.wikipedia.org/wiki/Latent_variable")
   , ("lavaan", "http://lavaan.ugent.be/")
   , ("Lawrence Bragg", "https://en.wikipedia.org/wiki/Lawrence_Bragg")
-  , ("laziness", "https://en.wikipedia.org/wiki/Lazy_evaluation")
   , ("lbpcascade_animeface", "https://github.com/nagadomi/lbpcascade_animeface")
   , ("LD Hub", "http://ldsc.broadinstitute.org/about/")
   , ("Leonard Horner", "https://en.wikipedia.org/wiki/Leonard_Horner")
@@ -558,7 +579,6 @@ customDefinitions = customDefinitionsR $
   , ("OpenAI API", "https://openai.com/blog/openai-api/")
   , ("OpenAI Gym", "https://github.com/openai/gym")
   , ("operant conditioning", "https://en.wikipedia.org/wiki/Operant_conditioning")
-  , ("options", "https://en.wikipedia.org/wiki/Option_(finance)")
   , ("Optogenetics", "https://en.wikipedia.org/wiki/Optogenetics")
   , ("Oritsu Uchugun", "https://en.wikipedia.org/wiki/Oritsu%20Uchugun")
   , ("Osaka Electro-Communication University", "https://en.wikipedia.org/wiki/Osaka%20Electro-Communication%20University")
