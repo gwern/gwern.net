@@ -10,7 +10,7 @@
 --
 -- If a file already has the string '<div class="columns"' in it, it will be presumed to have been manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary reporting of false-positives.
 
-module Columns (listsTooLong, main) where
+module Columns (listsTooLong, main, simplified) where
 
 import Text.Pandoc (def, nullMeta, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
                     pandocExtensions, writePlain, Block(BulletList, OrderedList), Pandoc(Pandoc))

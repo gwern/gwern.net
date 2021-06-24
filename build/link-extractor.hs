@@ -8,11 +8,13 @@
 module Main where
 
 import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
-                     pandocExtensions, Inline(Link), Pandoc)
-import qualified Data.Text as T (append,  head, pack, unlines, Text)
+                     pandocExtensions, Inline(Link), Pandoc, Block(Para))
+import qualified Data.Text as T (append,  head, replace, pack, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStr)
 import System.Environment (getArgs)
 import System.FilePath (takeBaseName)
+
+import Columns (simplified)
 
 -- | Map over the filenames
 main :: IO ()
@@ -48,5 +50,5 @@ extractURLs :: Pandoc -> [T.Text]
 extractURLs = queryWith extractURL
  where
    extractURL :: Inline -> [T.Text]
-   extractURL (Link _ _ (u,_)) = [u]
+   extractURL (Link _ il (u,_)) = [u`T.append`" "`T.append` (T.replace "\n" " " $ simplified $ Para il)]
    extractURL _ = []
