@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-06-20 12:35:44 gwern"
+When:  Time-stamp: "2021-06-23 19:12:10 gwern"
 License: CC-0
 -}
 
@@ -45,6 +45,7 @@ import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
+import LinkAuto (linkAuto)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -111,7 +112,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock False (u', Just (titleHtml,authorHtml,c,d,abstractHtml)) bl
                                              void $ createAnnotations md pandoc
-                                             let annotationPandoc = walk (nominalToRealInflationAdjuster . convertInterwikiLinks) $ walk (hasAnnotation md True) pandoc
+                                             let annotationPandoc = walk (nominalToRealInflationAdjuster . convertInterwikiLinks) $ walk (hasAnnotation md True) $ walk linkAuto $ pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
 
                                              let finalHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} localizedPandoc

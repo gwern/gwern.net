@@ -21,14 +21,16 @@ module LinkAuto (linkAuto, testDoc) where
 import Data.List (intersperse, sortBy)
 import Text.Pandoc (bottomUp, queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Emph,Link,Image,Code,Space,Span,Str))
 import Text.Pandoc.Walk (walkM)
-import Text.Regex.TDFA as R (makeRegex, match, Regex)
+import Text.Regex.TDFA as R (makeRegex, match, Regex, (=~))
 import Text.Regex.TDFA.Text () -- for the `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import Control.Monad.State (evalState, get, put, State)
 import qualified Data.Text as T (append, concat, head, length, reverse, strip, Text)
 
+import Debug.Trace as Trace
+
 test :: [Inline]
-test = [Str "bigGAN means", Emph [Str "BIG"], Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT."]
+test = [Str "bigGAN means", Emph [Str "BIG"], Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Span ("",["smallcaps-auto"],[]) [Str "BERT"], Str "."]
 testDoc :: Pandoc
 testDoc = let doc = Pandoc nullMeta [Para test] in
             linkAuto doc
@@ -38,7 +40,8 @@ testDoc = let doc = Pandoc nullMeta [Para test] in
 -- Turn first instance of a list of regex matches into hyperlinks in a Pandoc document.
 linkAuto :: Pandoc -> Pandoc
 linkAuto p = let customDefinitions' = filterDefinitions p customDefinitions in
-               annotateFirstDefinitions $ bottomUp (defineLinks customDefinitions' (customDefinitionsR customDefinitions')) p
+               let master = definitionsToRegexp customDefinitions' in
+                 annotateFirstDefinitions $ bottomUp (defineLinks customDefinitions' master) p
 
 -----------
 
@@ -58,23 +61,27 @@ annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
 
 -----------
 
-defineLinks :: [(T.Text, T.Text)] -> [(R.Regex, T.Text)] -> [Inline] -> [Inline]
-defineLinks dict dictr = concatMap go . mergeSpaces
+defineLinks :: [(T.Text, R.Regex, T.Text)] -> R.Regex -> [Inline] -> [Inline]
+defineLinks dict masterRegexp = concatMap go . mergeSpaces
   where
-    masterRegexp = definitionsToRegexp dict :: R.Regex -- undefined :: R.Regex --
     go :: Inline -> [Inline]
     go (Str "")  = []
     -- TODO: all these guards don't work; we want to skip recursion into some Inline types to avoid useless markup, but both `bottomUp`/`walk` create links anyway, and `topDown` seems to infinitely loop?
     go x@Link{}  = [x] -- skip links because can't have link inside link
     go x@Image{} = [x] -- likewise
     go x@Code{}  = [x]
+    go (Span a x) = [Span a (concatMap go x)]
     go x@(Str a) = let r@(before,matched,after) = R.match masterRegexp a :: (T.Text,T.Text,T.Text)
                    in if matched==""
                       then [x] -- no acronym anywhere in x
                       else if T.length matched > 90 then error ("Too long LinkAuto match! " ++ show r ++ ": " ++ show a) else
-                             let definition = findRegexMatch dictr matched in
+                             let definition = findRegexMatch dict matched in
                              case definition of
                               Nothing   -> Str (before`T.append`matched) : go (Str after)
+                              -- NOTE: our regexps must delimit on space, which puts the matched space inside `matched` instead of `before`/`after`;
+                              -- unfortunately, if we move the Space inside the Link, this will look bad when Links get their underlining decoration
+                              -- in-browser. So we do this song & dance to figure out if the link was *before* or *after*, remove it from the Link,
+                              -- and stick a prefix or suffix replacement Space.
                               Just defn -> Str before : if T.head matched == ' ' then
                                                                if T.head (T.reverse matched) == ' ' then
                                                                   [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
@@ -85,9 +92,9 @@ defineLinks dict dictr = concatMap go . mergeSpaces
     go x = [x]
 
 -- step through the dictionary (which should be long-first) to find the first matching regexp, since the master regexp blob matched the string
-findRegexMatch :: [(R.Regex, T.Text)] -> T.Text -> Maybe T.Text
+findRegexMatch :: [(T.Text, R.Regex, T.Text)] -> T.Text -> Maybe T.Text
 findRegexMatch [] _ = Nothing
-findRegexMatch ((r,u):rs) s = if R.match r s then Just u else findRegexMatch rs s
+findRegexMatch ((_,r,u):rs) s = if R.match r s then Just u else findRegexMatch rs s
 
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
@@ -101,9 +108,9 @@ mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
 -- take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
 -- This avoids redundancy with links added by hand or other filters.
-filterDefinitions :: Pandoc -> [(a, T.Text)] -> [(a, T.Text)]
+filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith extractLink markdown in
-                                          filter (\(_,linkTarget) -> linkTarget `notElem` allLinks)
+                                          filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)
   where
    extractLink :: Inline -> [T.Text]
    extractLink (Link _ _ (path, _)) = [path]
@@ -111,18 +118,22 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith ex
 
 -- R.makeRegex ("[[:alnum:]]+"::String)
 -- create a single master regexp which matches all possible definition keys, whether 'GAN' or 'reinforcement learning'
-definitionsToRegexp :: [(T.Text, T.Text)] -> R.Regex
+definitionsToRegexp :: [(T.Text, b, T.Text)] -> R.Regex
 definitionsToRegexp = R.makeRegex . T.concat . intersperse "|" .
-                      map ((\r -> "[[:punct:][:blank:]$^]"`T.append`r`T.append`"[[:punct:][:blank:]$^]")
-                            . fst)
+                      map ((\r -> "[[:punct:][:blank:]]"`T.append`r`T.append`"[[:punct:][:blank:]]|"
+                                  `T.append`"^"`T.append`r`T.append`"$")
+                            . (\(a,_,_) -> a))
 
-customDefinitionsR :: [(T.Text, T.Text)] -> [(R.Regex, T.Text)]
-customDefinitionsR = map (\(a,b) -> (R.makeRegex a, b))
+customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
+customDefinitionsR = map (\(a,b) -> (a, R.makeRegex a, b))
 
 -----------
 
-customDefinitions :: [(T.Text, T.Text)]
-customDefinitions = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) -- descending order, longest match to shortest (for regex priority):
+-- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
+-- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
+customDefinitions :: [(T.Text, R.Regex, T.Text)]
+customDefinitions = customDefinitionsR $
+                    sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) -- descending order, longest match to shortest (for regex priority):
   [
   -- valid classes are '[:alnum:]', '[:digit:]', '[:punct:]', '[:alpha:]', '[:graph:]', '[:space:]', '[:blank:]', '[:lower:]', '[:upper:]', '[:cntrl:]', '[:print:]', '[:xdigit:]', '[:word:]'.
   ("GAN", "https://en.wikipedia.org/wiki/Generative_adversarial_network")
