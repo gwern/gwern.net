@@ -91,7 +91,7 @@ simplified :: Block -> T.Text
 simplified i = simplifiedDoc (Pandoc nullMeta [i])
 
 simplifiedDoc :: Pandoc -> T.Text
-simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in
+simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in -- NOTE: it is important to make columns ultra-wide to avoid formatting-newlines being inserted to break up lines mid-phrase, which would defeat matches in LinkAuto.hs.
                          case md of
                            Left _ -> error $ "Failed to render: " ++ show md
                            Right md' -> md'

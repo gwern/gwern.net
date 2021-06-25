@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-06-20 15:57:24 gwern"
+When:  Time-stamp: "2021-06-24 17:01:29 gwern"
 License: CC-0
 -}
 
@@ -742,6 +742,7 @@ whiteList url
       , "hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/" -- large binaries
       , "fursona.app" -- redirect to Google Colab
       , "old.reddit.com/r/reinforcementlearning/search" -- service
+      , "https://old.reddit.com/r/reinforcementlearning/" -- stable
       , "openreview.net" -- stable? or if links break, might be better to link to paper
       , "usesthis.com" -- stable
       , "modafinil-store.com" -- dead
@@ -861,5 +862,6 @@ whiteList url
       , "competicionmental.appspot.com" -- app/game/interactive
       , "lair.lighton.ai/akronomicon/" -- updated
       , "public.tableau.com" -- interactive visualizations
+      , "andyljones.com" -- give a chance
       ] = True
     | otherwise = False
