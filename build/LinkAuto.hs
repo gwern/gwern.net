@@ -8,26 +8,28 @@ module LinkAuto (linkAuto, testDoc) where
 --
 -- Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of greedy rewrites (eg "GAN" vs "BigGAN").
 -- Regexps are sorted by length, longest-first, to further try to prioritize (so "BigGAN" would match before "GAN").
--- For efficiency, we avoid String & conversion as much as possible.
--- A document is queried for URLs and all URLs already present are removed from the rewrite dictionary.
--- Then, all remaining regexps are compiled into a single master regexp, and this is used to grovel through the AST, munging Str/Space nodes together to create single long Str elements; once the master regexp hits, we fall back to checking each original regexp against the string match.
--- The matching string is then rewritten to be a Link with the URL & class `link-auto` for the first regexp that matches.
+-- For efficiency, we avoid String type conversion as much as possible.
+--
+-- A document is queried for URLs and all URLs already present or regexps without plain text matches are removed from the rewrite dictionary.
+-- This usually lets a document be skipped entirely as having no possible non-redundant matches.
+--
+-- Then, we walk the AST, running each remaining regexp against Str nodes.
+-- When there is a match, the matching substring is then rewritten to be a Link with the URL & class `link-auto` for the first regexp that matches.
+--
 -- After the regexp pass, we do an additional cleanup pass. How should we handle the case of a phrase like "GAN" or "GPT-3" appearing potentially scores or hundreds of times in page? Do we really want to  hyperlink *all* of them? Probably not.
 -- For the cleanup pass, we track 'seen' `link-auto` links in a Set, and if a link has been seen before, we remove it.
 -- (In the future, we may drop this clean up pass, if we can find a good way to dynamically hide 'excess' links; one idea is define `.link-auto` CSS to de-style links, and then, on browser screen scroll, use JS to re-link-style the first instance of each URL. So only the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
 --
--- Dependencies: Pandoc, pcre-heavy
+-- Dependencies: Pandoc, regex-tdfa
 
 import Data.List (nub, sortBy)
 import Text.Pandoc (bottomUp, queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Link,Image,Code,Space,Span,Str))
 import Text.Pandoc.Walk (walkM)
-import Text.Regex.PCRE.Heavy as R  (rawMatch, Regex, (=~)) -- (makeRegex, match, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches
-import Text.Regex.PCRE.Light as RL (utf8, compile)
+import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness issues (native Text, and useful splitting), so to save my sanity...
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import Control.Monad.State (evalState, get, put, State)
-import qualified Data.Text as T (append, head, length, reverse, strip, take, drop, Text)
--- import Debug.Trace as Trace
-import Data.String.Conversions (cs)
+import qualified Data.Text as T (append, head, length, reverse, strip, Text)
+import Debug.Trace as Trace
 
 import Columns (simplifiedDoc)
 
@@ -44,7 +46,6 @@ testDoc = let doc = Pandoc nullMeta [Para test2] in
 linkAuto :: Pandoc -> Pandoc
 linkAuto p = -- Trace.trace ("Doc") $ walk (defineLinks customDefinitions) p
   let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
-               -- let master = definitionsToRegexp customDefinitions' in
                 if null customDefinitions' then p else annotateFirstDefinitions $ bottomUp (defineLinks customDefinitions') p
 
 -----------
@@ -69,60 +70,34 @@ defineLinks :: [(T.Text, R.Regex, T.Text)] -> [Inline] -> [Inline]
 defineLinks [] x = x
 defineLinks dict is = concatMap go $ mergeSpaces is
   where
-    go :: Inline -> [Inline]
-    go (Str "")  = []
-    -- TODO: all these guards don't work; we want to skip recursion into some Inline types to avoid useless markup, but both `bottomUp`/`walk` create links anyway, and `topDown` seems to infinitely loop?
-    go x@Link{}  = [x] -- skip links because can't have link inside link
-    go x@Image{} = [x] -- likewise
-    go x@Code{}  = [x]
-    go (Span a x) = [Span a (concatMap go x)]
-    go x@(Str a) = -- let r@(before,matched,after) = R.match masterRegexp a :: (T.Text,T.Text,T.Text)
-                   -- in if matched==""
-                   --    then [x] -- no acronym anywhere in x
-                   --    else if T.length matched > 90 then error ("Too long LinkAuto match! " ++ show r ++ ": " ++ show a) else
-                             let definition = findRegexMatch dict a in
-                             case definition of
-                              Nothing   -> [x] --Str (before`T.append`matched) : go (Str after)
-                              -- NOTE: our regexps must delimit on space, which puts the matched space inside `matched` instead of `before`/`after`;
-                              -- unfortunately, if we move the Space inside the Link, this will look bad when Links get their underlining decoration
-                              -- in-browser. So we do this song & dance to figure out if the link was *before* or *after*, remove it from the Link,
-                              -- and stick a prefix or suffix replacement Space.
-                              Just (before,matched,after, defn) ->
-                                Str before :
-                                (if T.head matched == ' ' then
-                                                 if T.head (T.reverse matched) == ' ' then
-                                                   [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
-                                                   [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")]
-                                               else [Link ("",["link-auto"],[]) [Str matched] (defn, "")])
-                                ++ go (Str after)
-    go x = [x]
+   go :: Inline -> [Inline]
+   go (Str "")   = []
+   -- TODO: all these guards don't work; we want to skip recursion into some Inline types to avoid useless markup, but both `bottomUp`/`walk` create links anyway, and `topDown` seems to infinitely loop?
+   go x@Link{}   = [x] -- skip links because can't have link inside link
+   go x@Image{}  = [x] -- likewise
+   go x@Code{}   = [x]
+   go (Span a x) = [Span a (concatMap go x)]
+   go x@(Str a)  = case (findRegexMatch dict a) of
+                     Nothing   -> [x]
+                     -- NOTE: our regexps must delimit on space, which puts the matched space inside `matched` instead of `before`/`after`;
+                     -- unfortunately, if we move the Space inside the Link, this will look bad when Links get their underlining decoration
+                     -- in-browser. So we do this song & dance to figure out if the link was *before* or *after*, remove it from the Link,
+                     -- and stick a prefix or suffix replacement Space.
+                     Just (before,matched,after, defn) ->
+                       (Str before :
+                        (if T.head matched == ' ' then
+                                        if T.head (T.reverse matched) == ' ' then
+                                          [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
+                                          [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")]
+                                      else [Link ("",["link-auto"],[]) [Str matched] (defn, "")])
+                       ++ go (Str after))
+   go x          = [x]
 
--- step through the dictionary (which should be long-first) to find the first matching regexp, since the master regexp blob matched the string
+-- Recurse through the dictionary (which should be long-first) to find the first matching regexp, since the master regexp blob matched the string.
 findRegexMatch :: [(T.Text, R.Regex, T.Text)] -> T.Text -> Maybe (T.Text, T.Text, T.Text, T.Text)
 findRegexMatch [] _ = Nothing
-findRegexMatch ((_,r,u):rs) s = if not (s =~ r) then findRegexMatch rs s else
-                                  let matchIndices = rawMatch r (cs s) 0 [] in -- we don't need to pass `utf8` to the runtime matcher, as that's only required at the regexp's compile-time?
-                                    case matchIndices of
-                                      Nothing -> findRegexMatch rs s
-                                      Just [] -> findRegexMatch rs s
-                                      -- we only need the first match:
-                                      Just ((beginIndex,endIndex):_) ->
-                                        -- Trace.trace (show y) $ Trace.trace (show s) $ Trace.trace (show x) $ let begin = T.take beginIndex s in
-                                        let begin = T.take beginIndex s in
-                                          let matched = T.take (endIndex - beginIndex) $ T.drop beginIndex s in
-                                            let end = T.drop endIndex s in
-                                              Just (begin, matched, end, u)
-                                      -- (match':rest) -> let (a:c) = R.split r s in
-                                      --               Trace.trace ("\nREST: " ++ show rest ++ "\n") $ Trace.trace ("C: " ++ show c ++ "\n") $ Just (a,fst match', T.concat $ interleave (map fst rest) c, u)
-                                  -- case matches of
-                                  --   -- zero matches? we move on to the rest of the list of regexps
-                                  --   [] -> findRegexMatch rs s
-                                  --   ms -> let (m,index) = head ms
-                                  --   -- [""] -> findRegexMatch rs s
-                                  --   -- ["", ""] -> findRegexMatch rs s
-                                  --   x@(a:b:c) -> Trace.trace ("!" ++ show o ++ "?" ++ show x ++ "!") $ Just (a,b,T.concat c, u)
-                                  --   -- x@(a:b:c) -> Just (a,b,T.concat c, u)
-                                  --   _ -> findRegexMatch rs s
+findRegexMatch y@((_,r,u):rs) s = let (a,b,c) = R.match r s in
+                                   if b/="" then Just (a,b,c,u) else findRegexMatch rs s
 
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
@@ -134,7 +109,7 @@ mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
 mergeSpaces (Str "":xs)            = mergeSpaces xs
 mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
--- take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
+-- Optimization: take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
 -- This avoids redundancy with links added by hand or other filters.
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith extractLink markdown in
@@ -144,25 +119,27 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith ex
    extractLink (Link _ _ (path, _)) = [path]
    extractLink _ = []
 
--- try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
+-- Optimization: try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
 -- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.
 filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterMatches p definitions  = let plain = simplifiedDoc p
-  in filter (\(_,b,_) -> plain =~ b ) definitions
+  in filter (\(_,b,_) -> matchTest b plain) definitions
 
+-- We want to match our given regexps by making them 'word-level' and matching on puncutation/whitespace delimiters. This avoids subword matches, for example, matching 'GAN' in 'StyleGAN' is undesirable.
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 customDefinitionsR = map (\(a,b) -> (a,
-                                      let r = "[[:punct:][:blank:]]"`T.append`a`T.append`"[[:punct:][:blank:]]" in RL.compile (cs r) [utf8],
-                                                                                                                      b))
-                                    --((`T.append`"^"`T.append`a`T.append`"$", b))
+                                      R.makeRegex $ "[[:punct:][:blank:]]"`T.append`a`T.append`"[[:punct:][:blank:]]",
+                                      b))
 
 -----------
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
 customDefinitions :: [(T.Text, R.Regex, T.Text)]
-customDefinitions = customDefinitionsR $
-                    nub $ sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) -- descending order, longest match to shortest (for regex priority):
+customDefinitions = customDefinitionsR $ -- delimit & compile
+                    nub $ -- unique
+                    -- descending order, longest match to shortest (for regex priority):
+                    sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a))
   ([
   ("15\\.ai", "https://fifteen.ai/")
   , ("99 Problems", "https://en.wikipedia.org/wiki/99_Problems")
