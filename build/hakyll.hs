@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-05-23 19:29:15 gwern"
+When: Time-stamp: "2021-06-24 19:01:00 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -69,6 +69,7 @@ import Interwiki (convertInterwikiLinks, inlinesToString)
 import LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
+import LinkAuto (linkAuto)
 
 main :: IO ()
 main = hakyll $ do
@@ -236,7 +237,7 @@ postCtx tags =
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
 pandocTransform md adb p =
-                           do let pw = walk convertInterwikiLinks p
+                           do let pw = walk convertInterwikiLinks $ walk linkAuto p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . addAmazonAffiliate)) $ pb

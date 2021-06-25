@@ -10,10 +10,10 @@
 --
 -- If a file already has the string '<div class="columns"' in it, it will be presumed to have been manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary reporting of false-positives.
 
-module Columns (listsTooLong, main, simplified) where
+module Columns (listsTooLong, main, simplified, simplifiedDoc) where
 
-import Text.Pandoc (def, nullMeta, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
-                    pandocExtensions, writePlain, Block(BulletList, OrderedList), Pandoc(Pandoc))
+import Text.Pandoc -- (def, nullMeta, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
+                   --  pandocExtensions, writePlain, Block(BulletList, OrderedList), Pandoc(Pandoc))
 import Data.List (isSuffixOf)
 import qualified Data.Text as T (isInfixOf, length, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStrLn)
@@ -88,7 +88,10 @@ listSubItemLength :: Block -> Int
 listSubItemLength i = T.length $ simplified i
 
 simplified :: Block -> T.Text
-simplified i = let md = runPure $ writePlain def (Pandoc nullMeta [i]) in
+simplified i = simplifiedDoc (Pandoc nullMeta [i])
+
+simplifiedDoc :: Pandoc -> T.Text
+simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in
                          case md of
                            Left _ -> error $ "Failed to render: " ++ show md
                            Right md' -> md'

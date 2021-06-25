@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, FlexibleContexts, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
 module LinkAuto (linkAuto, testDoc) where
 
 -- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
@@ -16,28 +16,27 @@ module LinkAuto (linkAuto, testDoc) where
 -- For the cleanup pass, we track 'seen' `link-auto` links in a Set, and if a link has been seen before, we remove it.
 -- (In the future, we may drop this clean up pass, if we can find a good way to dynamically hide 'excess' links; one idea is define `.link-auto` CSS to de-style links, and then, on browser screen scroll, use JS to re-link-style the first instance of each URL. So only the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
 --
--- Dependencies: Pandoc, regex-tdfa
+-- Dependencies: Pandoc, pcre-heavy
 
-import Data.List (intersperse, intercalate, nub, sortBy)
-import Text.Pandoc (bottomUp, queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Emph,Link,Image,Code,Space,Span,Str), def, writePlain, runPure)
-import Text.Pandoc.Walk (walkM, walk)
-import Text.Regex.PCRE.Heavy as R -- (makeRegex, match, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches
-import Text.Regex.PCRE.Light as RL
+import Data.List (nub, sortBy)
+import Text.Pandoc (bottomUp, queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Link,Image,Code,Space,Span,Str))
+import Text.Pandoc.Walk (walkM)
+import Text.Regex.PCRE.Heavy as R  (rawMatch, Regex, (=~)) -- (makeRegex, match, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches
+import Text.Regex.PCRE.Light as RL (utf8, compile)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import Control.Monad.State (evalState, get, put, State)
-import qualified Data.Text as T -- (append, concat, head, intersperse, length, reverse, strip, Text)
-import Debug.Trace as Trace
+import qualified Data.Text as T (append, head, length, reverse, strip, take, drop, Text)
+-- import Debug.Trace as Trace
 import Data.String.Conversions (cs)
-import Data.ByteString (ByteString)
 
+import Columns (simplifiedDoc)
 
-test :: [Inline]
-test = [Str "bigGAN means", Emph [Str "BIG"], Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Span ("",["smallcaps-auto"],[]) [Str "BERT"], Str "."]
+test2 :: [Inline]
+test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN."]
+-- test = [Str "bigGAN means", Emph [Str "BIG"], Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Span ("",["smallcaps-auto"],[]) [Str "BERT"], Str "."]
 testDoc :: Pandoc
 testDoc = let doc = Pandoc nullMeta [Para test2] in
             linkAuto doc
-
-test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN."]
 
 -----------
 
@@ -46,7 +45,7 @@ linkAuto :: Pandoc -> Pandoc
 linkAuto p = -- Trace.trace ("Doc") $ walk (defineLinks customDefinitions) p
   let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
                -- let master = definitionsToRegexp customDefinitions' in
-                annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+                if null customDefinitions' then p else annotateFirstDefinitions $ bottomUp (defineLinks customDefinitions') p
 
 -----------
 
@@ -67,7 +66,8 @@ annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
 -----------
 
 defineLinks :: [(T.Text, R.Regex, T.Text)] -> [Inline] -> [Inline]
-defineLinks dict = concatMap go . mergeSpaces
+defineLinks [] x = x
+defineLinks dict is = concatMap go $ mergeSpaces is
   where
     go :: Inline -> [Inline]
     go (Str "")  = []
@@ -91,8 +91,8 @@ defineLinks dict = concatMap go . mergeSpaces
                                 Str before :
                                 (if T.head matched == ' ' then
                                                  if T.head (T.reverse matched) == ' ' then
-                                                   [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")] else
-                                                   [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space]
+                                                   [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
+                                                   [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")]
                                                else [Link ("",["link-auto"],[]) [Str matched] (defn, "")])
                                 ++ go (Str after)
     go x = [x]
@@ -100,12 +100,20 @@ defineLinks dict = concatMap go . mergeSpaces
 -- step through the dictionary (which should be long-first) to find the first matching regexp, since the master regexp blob matched the string
 findRegexMatch :: [(T.Text, R.Regex, T.Text)] -> T.Text -> Maybe (T.Text, T.Text, T.Text, T.Text)
 findRegexMatch [] _ = Nothing
-findRegexMatch ((o,r,u):rs) s =
-                                  let match = R.scan r s in
-                                    case match of
-                                      [] -> findRegexMatch rs s
-                                      (match':rest) -> let (a:c) = R.split r s in
-                                                    Trace.trace ("\nREST: " ++ show rest ++ "\n") $ Trace.trace ("C: " ++ show c ++ "\n") $ Just (a,fst match', T.concat $ interleave (map fst rest) c, u)
+findRegexMatch ((_,r,u):rs) s = if not (s =~ r) then findRegexMatch rs s else
+                                  let matchIndices = rawMatch r (cs s) 0 [] in -- we don't need to pass `utf8` to the runtime matcher, as that's only required at the regexp's compile-time?
+                                    case matchIndices of
+                                      Nothing -> findRegexMatch rs s
+                                      Just [] -> findRegexMatch rs s
+                                      -- we only need the first match:
+                                      Just ((beginIndex,endIndex):_) ->
+                                        -- Trace.trace (show y) $ Trace.trace (show s) $ Trace.trace (show x) $ let begin = T.take beginIndex s in
+                                        let begin = T.take beginIndex s in
+                                          let matched = T.take (endIndex - beginIndex) $ T.drop beginIndex s in
+                                            let end = T.drop endIndex s in
+                                              Just (begin, matched, end, u)
+                                      -- (match':rest) -> let (a:c) = R.split r s in
+                                      --               Trace.trace ("\nREST: " ++ show rest ++ "\n") $ Trace.trace ("C: " ++ show c ++ "\n") $ Just (a,fst match', T.concat $ interleave (map fst rest) c, u)
                                   -- case matches of
                                   --   -- zero matches? we move on to the rest of the list of regexps
                                   --   [] -> findRegexMatch rs s
@@ -115,11 +123,6 @@ findRegexMatch ((o,r,u):rs) s =
                                   --   x@(a:b:c) -> Trace.trace ("!" ++ show o ++ "?" ++ show x ++ "!") $ Just (a,b,T.concat c, u)
                                   --   -- x@(a:b:c) -> Just (a,b,T.concat c, u)
                                   --   _ -> findRegexMatch rs s
-
-interleave :: [a] -> [a] -> [a]
-interleave (a1:a1s) (a2:a2s) = a1:a2:interleave a1s a2s
-interleave [] [] = []
-interleave _        a        = a
 
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
@@ -147,25 +150,9 @@ filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.T
 filterMatches p definitions  = let plain = simplifiedDoc p
   in filter (\(_,b,_) -> plain =~ b ) definitions
 
-simplifiedDoc :: Pandoc -> T.Text
-simplifiedDoc p = let md = runPure $ writePlain def p in
-                         case md of
-                           Left _ -> error $ "Failed to render: " ++ show md
-                           Right md' -> md'
-
-
--- R.makeRegex ("[[:alnum:]]+"::String)
--- create a single master regexp which matches all possible definition keys, whether 'GAN' or 'reinforcement learning'
--- definitionsToRegexp :: [(T.Text, b, T.Text)] -> R.Regex
--- definitionsToRegexp = R.makeRegex . T.concat . intersperse "|" .
---                       map ((\r -> "[[:punct:][:blank:]]"`T.append`r`T.append`"[[:punct:][:blank:]]|"
---                                   `T.append`"^"`T.append`r`T.append`"$")
---                             . (\(a,_,_) -> a))
-
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 customDefinitionsR = map (\(a,b) -> (a,
-                                      let r = "[[:punct:][:blank:]]"`T.append`a`T.append`"[[:punct:][:blank:]]" in (RL.compile (cs r) []),
---                                      (RL.compile (cs a) []),
+                                      let r = "[[:punct:][:blank:]]"`T.append`a`T.append`"[[:punct:][:blank:]]" in RL.compile (cs r) [utf8],
                                                                                                                       b))
                                     --((`T.append`"^"`T.append`a`T.append`"$", b))
 
@@ -177,7 +164,6 @@ customDefinitions :: [(T.Text, R.Regex, T.Text)]
 customDefinitions = customDefinitionsR $
                     nub $ sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) -- descending order, longest match to shortest (for regex priority):
   ([
-  -- valid classes are '[:alnum:]', '[:digit:]', '[:punct:]', '[:alpha:]', '[:graph:]', '[:space:]', '[:blank:]', '[:lower:]', '[:upper:]', '[:cntrl:]', '[:print:]', '[:xdigit:]', '[:word:]'.
   ("15\\.ai", "https://fifteen.ai/")
   , ("99 Problems", "https://en.wikipedia.org/wiki/99_Problems")
   , ("ABalytics", "https://github.com/danmaz74/ABalytics")
@@ -339,7 +325,6 @@ customDefinitions = customDefinitionsR $
   , ("El Ten Eleven", "https://en.wikipedia.org/wiki/El_Ten_Eleven")
   , ("end-to-end", "/notes/End-to-end")
   , ("End-to-end", "/notes/End-to-end")
-  , ("Enhanced", "https://en.wikipedia.org/wiki/Enhanced_weathering")
   , ("entorhinal-hippocampal", "https://en.wikipedia.org/wiki/EC-hippocampus_system")
   , ("E\\. O\\. Wilson", "https://en.wikipedia.org/wiki/E._O._Wilson")
   , ("E\\.O\\. Wilson", "https://en.wikipedia.org/wiki/E._O._Wilson")
@@ -563,16 +548,13 @@ customDefinitions = customDefinitionsR $
   , ("Newgrounds", "https://en.wikipedia.org/wiki/Newgrounds")
   , ("Newman’s Own", "https://en.wikipedia.org/wiki/Newman%27s_Own")
   , ("North Ronaldsay sheep", "https://en.wikipedia.org/wiki/North_Ronaldsay_sheep")
-  , ("noted proponent", "https://en.wikipedia.org/wiki/Drew_McDermott")
   , ("Novo Nordisk", "https://en.wikipedia.org/wiki/Novo_Nordisk")
   , ("nucleus sampling", "https://arxiv.org/abs/1904.09751")
-  , ("Nudge", "https://en.wikipedia.org/wiki/Nudge_theory")
   , ("NVAE", "https://arxiv.org/abs/2007.03898#nvidia")
   , ("OA5", "https://openai.com/projects/five/")
   , ("ocrmypdf", "https://github.com/jbarlow83/OCRmyPDF")
   , ("old-style numerals", "https://en.wikipedia.org/wiki/Text_figures")
   , ("OmniNet", "https://arxiv.org/abs/2103.01075")
-  , ("On 21 October 1967", "https://en.wikipedia.org/wiki/March_on_the_Pentagon")
   , ("Once Upon A Time In The West", "https://en.wikipedia.org/wiki/Once_Upon_a_Time_in_the_West")
   , ("One-Punch Man", "https://en.wikipedia.org/wiki/One-Punch_Man")
   , ("OpenAI 5", "https://openai.com/projects/five/")
@@ -614,7 +596,6 @@ customDefinitions = customDefinitionsR $
   , ("Possession Island", "https://en.wikipedia.org/wiki/%C3%8Ele_de_la_Possession")
   , ("Practical Typography", "https://practicaltypography.com/")
   , ("PredictionBook.com", "https://predictionbook.com/")
-  , ("PredictionBook.com", "http://www.predictionbook.com")
   , ("Predictron", "https://arxiv.org/abs/1612.08810")
   , ("President Obama", "https://en.wikipedia.org/wiki/Barack_Obama")
   , ("ProGAN", "https://arxiv.org/abs/1710.10196")
@@ -632,7 +613,6 @@ customDefinitions = customDefinitionsR $
   , ("Ravelry", "https://en.wikipedia.org/wiki/Ravelry")
   , ("/r/DecisionTheory", "https://old.reddit.com/r/DecisionTheory/")
   , ("Ready Player One", "https://en.wikipedia.org/wiki/Ready_Player_One")
-  , ("Ready Player One", "https://en.wikipedia.org/wiki/Ready_Player_One_(film)")
   , ("REALM", "https://kentonl.com/pub/gltpc.2020.pdf#google")
   , ("RED", "https://en.wikipedia.org/wiki/Red_%282010_film%29")
   , ("Redline", "https://en.wikipedia.org/wiki/Redline_(2009_film)")
@@ -666,7 +646,7 @@ customDefinitions = customDefinitionsR $
   , ("Semaglutide", "https://en.wikipedia.org/wiki/Semaglutide")
   , ("Senolytics", "https://en.wikipedia.org/wiki/Senolytic")
   , ("sequenced the exomes", "https://en.wikipedia.org/wiki/Exome_sequencing")
-  , ("Sestero’s", "https://en.wikipedia.org/wiki/Greg_Sestero")
+  , ("Sestero", "https://en.wikipedia.org/wiki/Greg_Sestero")
   , ("Seymour Cray", "https://en.wikipedia.org/wiki/Seymour_Cray")
   , ("Shadow of the Vampire", "https://en.wikipedia.org/wiki/Shadow_of_the_Vampire")
   , ("Shawn Presser", "https://nitter.hu/theshawwn")
@@ -680,8 +660,7 @@ customDefinitions = customDefinitionsR $
   , ("Sicario", "https://en.wikipedia.org/wiki/Sicario_(2015_film)")
   , ("Siegfried", "https://en.wikipedia.org/wiki/Siegfried_(opera)")
   , ("SimCLR", "https://arxiv.org/abs/2002.05709#google")
-  , ("Simpson’s paradox", "https://en.wikipedia.org/wiki/Simpson%27s_paradox")
-  , ("Simpson’s Paradox", "https://en.wikipedia.org/wiki/Simpson%27s_paradox")
+  , ("Simpson’s [Pp]aradox", "https://en.wikipedia.org/wiki/Simpson%27s_paradox")
   , ("Singin’ In The Rain", "https://en.wikipedia.org/wiki/Singin%27_in_the_Rain")
   , ("SingleFile", "https://github.com/gildas-lormeau/SingleFile/")
   , ("SMPY", "/SMPY")
