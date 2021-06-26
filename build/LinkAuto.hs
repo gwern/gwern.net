@@ -25,10 +25,10 @@ module LinkAuto (linkAuto, testDoc) where
 import Data.List (nub, sortBy)
 import Text.Pandoc -- (queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Link,Image,Code,Space,Span,Str))
 import Text.Pandoc.Walk (walkM, walk)
-import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness issues (native Text, and useful splitting), so to save my sanity...
+import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have bad Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import Control.Monad.State (evalState, get, put, State)
-import qualified Data.Text as T (append, head, length, reverse, strip, Text)
+import qualified Data.Text as T (append, head, length, last, strip, Text)
 import Debug.Trace as Trace
 
 import Columns (simplifiedDoc)
@@ -36,7 +36,7 @@ import Columns (simplifiedDoc)
 test,test2 :: [Inline]
 -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
 test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN. MuZero vs Muesli."]
-test = [Str "bigGAN means", Str "BIG", Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT", Str "."]
+test = [Str "bigGAN means", Space, Str "BIG", Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network","")] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT", Str "."]
 testDoc :: Pandoc
 testDoc = let doc = Pandoc nullMeta [Para test] in
             linkAuto doc
@@ -48,7 +48,7 @@ linkAuto :: Pandoc -> Pandoc
 linkAuto p = -- Trace.trace ("Doc") $ walk (defineLinks customDefinitions) p
   let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
                 -- if null customDefinitions' then p else Trace.trace (show $ map (\(a,_,_) ->a) customDefinitions') $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
-    if null customDefinitions' then p else annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+    if null customDefinitions' then p else cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
 -----------
 
@@ -65,6 +65,19 @@ annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
                          return $ Link (ident,classes++["link-auto-first"],values) il (t,tool)
             else return x
         addFirstDefn x = return x
+
+-- HACK: Somehow we can, very rarely on gwern.net (maybe a dozen cases site-wide) wind up with Links nested inside of Links, despite attempts to block the substitution going too deep in `defineLinks`. This is bad, and also generates invalid HTML of nested <a><a></a></a>s.
+-- I can't figure out what is going on, and this may be related to various weird issues which makes me suspect that Pandoc's traverse operations aren't *quite* defined right.
+-- So, as a workaround, let's walk the AST looking for any nested Links, and erasing the Link wrapper.
+cleanupNestedLinks :: Pandoc -> Pandoc
+cleanupNestedLinks = topDown go
+  where go :: Inline -> Inline
+        go (Link (a,b,c) is (f,g)) =  Link (a,b,c) (walk goDeeper is) (f,g)
+        go x = x
+        -- we must be inside a Link's [Inline], so strip any Links we find for their [Inline] anchor text
+        goDeeper :: Inline -> Inline
+        goDeeper (Link _ is _) = Span nullAttr is
+        goDeeper x = x
 
 -----------
 
@@ -89,10 +102,13 @@ defineLinks dict is = concatMap go $ mergeSpaces is
                        go (Str before) ++ -- NOTE: we need to recurse *before* as well after, because 'findRegexMatch' short-circuits on the first match
                                           -- but there may be a later regexp which would match somewhere in the prefix.
                         (if T.head matched == ' ' then
-                                        if T.head (T.reverse matched) == ' ' then
-                                          [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
+                                        if T.last matched == ' ' then
+                                          [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
                                           [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")]
-                                      else [Link ("",["link-auto"],[]) [Str matched] (defn, "")])
+                                      else if T.last matched == ' ' then
+                                             [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space]
+                                           else
+                                             [Link ("",["link-auto"],[]) [Str matched] (defn, "")])
                        ++ go (Str after)
    go x          = [x]
 
@@ -105,11 +121,14 @@ findRegexMatch y@((_,r,u):rs) s = let (a,b,c) = R.match r s in
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
 mergeSpaces []                     = []
-mergeSpaces (Str x:Str y:xs)       = Str (x`T.append`y):mergeSpaces xs
+mergeSpaces (Str x:Str y:xs)       = mergeSpaces ([Str (x`T.append`y)] ++ xs)
 mergeSpaces (Space:Str x:Space:xs) = mergeSpaces (Str (" "`T.append`x`T.append`" "):xs)
 mergeSpaces (Space:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
 mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
 mergeSpaces (Str "":xs)            = mergeSpaces xs
+-- ???
+-- mergeSpaces ((Quoted DoubleQuote x) : xs) = [Str "“"] ++ mergeSpaces x ++ [Str "”"]  ++ mergeSpaces xs
+-- mergeSpaces ((Quoted SingleQuote x) : xs) = [Str "‘"] ++ mergeSpaces x ++ [Str "’"]  ++ mergeSpaces xs
 mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
 -- Optimization: take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
