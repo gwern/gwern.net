@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-06-25 21:09:45 gwern"
+When:  Time-stamp: "2021-06-26 13:35:14 gwern"
 License: CC-0
 -}
 
@@ -755,6 +755,7 @@ cleanAbstractsHTML t = trim $
     , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
     , ("$O(log n)$", "𝒪(log <em>n</em>)")
     , ("$\\mathcal{O}(log n)$", "𝒪(log <em>n</em>)")
+    , ("<span class=\"math inline\">\\(\\mathcal{O}(n\\log n)\\)</span>", "𝒪(<em>n</em> log <em>n</em>)")
     , ("$\\mathrm{sinc}(ax)$", "sinc(<em>ax</em>)")
     , ("<span class=\"texhtml \">\\mathrm{sinc}(ax)</span>", "sinc(<em>ax</em>)")
     , ("$\\mathrm{sinc}(x)=\\sin(x)/x$", "sinc(<em>x</em>) = sin(<em>x</em>)⁄<em>x</em>")

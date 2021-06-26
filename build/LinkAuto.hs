@@ -1,54 +1,60 @@
 {-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
-module LinkAuto (linkAuto, testDoc) where
+module LinkAuto (linkAuto) where
 
--- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
---
--- This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
--- (Terms like "BERT" or "GPT-3" or "RoBERTa" are too hard to all define manually on every appearance, particularly in abstracts/annotations which themselves may be generated automatically, so it makes more sense to try to do it automatically.)
---
--- Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of greedy rewrites (eg "GAN" vs "BigGAN").
--- Regexps are sorted by length, longest-first, to further try to prioritize (so "BigGAN" would match before "GAN").
--- For efficiency, we avoid String type conversion as much as possible.
---
--- A document is queried for URLs and all URLs already present or regexps without plain text matches are removed from the rewrite dictionary.
--- This usually lets a document be skipped entirely as having no possible non-redundant matches.
---
--- Then, we walk the AST, running each remaining regexp against Str nodes.
--- When there is a match, the matching substring is then rewritten to be a Link with the URL & class `link-auto` for the first regexp that matches.
---
--- After the regexp pass, we do an additional cleanup pass. How should we handle the case of a phrase like "GAN" or "GPT-3" appearing potentially scores or hundreds of times in page? Do we really want to  hyperlink *all* of them? Probably not.
--- For the cleanup pass, we track 'seen' `link-auto` links in a Set, and if a link has been seen before, we remove it.
--- (In the future, we may drop this clean up pass, if we can find a good way to dynamically hide 'excess' links; one idea is define `.link-auto` CSS to de-style links, and then, on browser screen scroll, use JS to re-link-style the first instance of each URL. So only the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
---
--- Dependencies: Pandoc, regex-tdfa
+{- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
+Author: Gwern Branwen
+Date: 2021-06-23
+When:  Time-stamp: "2021-06-26 16:17:11 gwern"
+License: CC-0
 
+This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
+(Terms like "BERT" or "GPT-3" or "RoBERTa" are too hard to all define manually on every appearance, particularly in abstracts/annotations which themselves may be generated automatically, so it makes more sense to try to do it automatically.)
+
+Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of greedy rewrites (eg "GAN" vs "BigGAN").
+Regexps are sorted by length, longest-first, to further try to prioritize (so "BigGAN" would match before "GAN").
+For efficiency, we avoid String type conversion as much as possible.
+
+A document is queried for URLs and all URLs already present or regexps without plain text matches are removed from the rewrite dictionary.
+This usually lets a document be skipped entirely as having no possible non-redundant matches.
+
+Then, we walk the AST, running each remaining regexp against Str nodes.
+When there is a match, the matching substring is then rewritten to be a Link with the URL & class `link-auto` for the first regexp that matches.
+
+After the regexp pass, we do an additional cleanup pass. How should we handle the case of a phrase like "GAN" or "GPT-3" appearing potentially scores or hundreds of times in page? Do we really want to  hyperlink *all* of them? Probably not.
+For the cleanup pass, we track 'seen' `link-auto` links in a Set, and if a link has been seen before, we remove it, leaving the text annotated with a simple Span 'link-auto-skipped' class.
+(In the future, we may drop this clean up pass, if we can find a good way to dynamically hide 'excess' links; one idea is define `.link-auto` CSS to de-style links, and then, on browser screen scroll, use JS to re-link-style the first instance of each URL. So only the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
+
+Bugs: will annotate phrases inside `Header` nodes, which breaks HTML validation.
+
+Dependencies: Pandoc, text, regex-tdfa, /static/build/Columns.hs
+-}
+
+import Data.Char (isPunctuation)
 import Data.List (nub, sortBy)
-import Text.Pandoc -- (queryWith, nullMeta, Pandoc(..), Block(Para), Inline(Link,Image,Code,Space,Span,Str))
+import qualified Data.Set as S (empty, fromList, insert, member, Set)
+import qualified Data.Text as T (append, head, length, last, singleton, tail, init, Text)
+import Control.Monad.State (evalState, get, put, State)
+
+import Text.Pandoc (topDown, queryWith, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str))
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
-import qualified Data.Set as S (empty, fromList, insert, member, Set)
-import Control.Monad.State (evalState, get, put, State)
-import qualified Data.Text as T (append, head, length, last, strip, Text)
-import Debug.Trace as Trace
 
 import Columns (simplifiedDoc)
 
-test,test2 :: [Inline]
--- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
-test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN. MuZero vs Muesli."]
-test = [Str "bigGAN means", Space, Str "BIG", Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network","")] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ")", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT", Str "."]
-testDoc :: Pandoc
-testDoc = let doc = Pandoc nullMeta [Para test] in
-            linkAuto doc
+-- test,test2 :: [Inline]
+-- -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
+-- test2 = [Str "It's a dilemma: at small or easy domains, StyleGAN is much faster (if not better); but at large or hard domains, mode collapse is too risky and endangers the big investment necessary to surpass StyleGAN. MuZero vs Muesli."]
+-- test = [Str "bigGAN means", Space, Str "BIG", Str "GAN; you will have an easier time training a GAN on a good GPU like a P100 or a TPUv3.", Space, Str "(See",Space,Str "WP",Space,Str "on",Space,Link ("",[],[]) [Link ("",[],[]) [Str "GAN"] ("https://en.wikipedia.org/wiki/Generative_adversarial_network","")] ("https://en.wikipedia.org/wiki/Generative_adversarial_network",""),Str ").", Space, Str "Nevertheless, expensive is a GAN. See Barack Obama's presidency. Still, we shouldn't put too much weight on Barack Obama. More efficient is DistilBERT, not to be confused with", Space, Str "BERT", Str "."]
+-- testDoc :: Pandoc
+-- testDoc = let doc = Pandoc nullMeta [Para test] in
+--             linkAuto doc
 
 -----------
 
 -- turn first instance of a list of regex matches into hyperlinks in a Pandoc document. NOTE: this is best run as early as possible, because it is doing raw string matching, and any formatting or changing of phrases may break a match, but after running link syntax rewrites like the interwiki links (otherwise you'll wind up inserting WP links into pages that already have that WP link, just linked as `[foo](!Wikipedia)`.)
 linkAuto :: Pandoc -> Pandoc
-linkAuto p = -- Trace.trace ("Doc") $ walk (defineLinks customDefinitions) p
-  let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
-                -- if null customDefinitions' then p else Trace.trace (show $ map (\(a,_,_) ->a) customDefinitions') $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
-    if null customDefinitions' then p else cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+linkAuto p = let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
+               if null customDefinitions' then p else cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
 -----------
 
@@ -59,7 +65,7 @@ annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
   where addFirstDefn :: Inline -> State (S.Set T.Text) Inline
         addFirstDefn x@(Link (ident,classes,values) il (t,tool)) = if "link-auto" `elem` classes then
             do st <- get
-               if S.member t st then return (Span ("", ["link-auto-skipped"], []) il)
+               if S.member t st then return (Span ("", ["link-auto-skipped"], []) il) -- Useful for debugging to annotate spans of text which *would* have been Links.
                  else do let st' = S.insert t st
                          put st'
                          return $ Link (ident,classes++["link-auto-first"],values) il (t,tool)
@@ -94,20 +100,21 @@ defineLinks dict is = concatMap go $ mergeSpaces is
    go (Span a x) = [Span a (concatMap go x)]
    go x@(Str a)  = case findRegexMatch dict a of
                      Nothing   -> [x]
-                     -- NOTE: our regexps must delimit on space, which puts the matched space inside `matched` instead of `before`/`after`;
-                     -- unfortunately, if we move the Space inside the Link, this will look bad when Links get their underlining decoration
-                     -- in-browser. So we do this song & dance to figure out if the link was *before* or *after*, remove it from the Link,
-                     -- and stick a prefix or suffix replacement Space.
-                     -- TODO: move punctuation outside the link too?
+                     -- NOTE: our regexps must delimit on space/punctuation, which puts the matched character *inside* `matched` instead of `before`/`after`;
+                     -- unfortunately, if we move it inside the Link, this will look bad when Links get their underlining decoration
+                     -- in-browser (if it's a space, it'll be a weird extended underline, and if it's punctuation, it's not usually included in a link and looks inconsistent).
+                     -- So we do this song & dance to figure out if the link was *before* or *after*, remove it from the Link,
+                     -- and stick a prefix or suffix replacement space/punctuation. In retrospect, it might've been better to use capture groups...
                      Just (before,matched,after, defn) ->
                        go (Str before) ++ -- NOTE: we need to recurse *before* as well after, because 'findRegexMatch' short-circuits on the first match
                                           -- but there may be a later regexp which would match somewhere in the prefix.
-                        (if T.head matched == ' ' then
-                                        if T.last matched == ' ' then
-                                          [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space] else
-                                          [Space, Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, "")]
-                                      else if T.last matched == ' ' then
-                                             [Link ("",["link-auto"],[]) [Str $ T.strip matched] (defn, ""), Space]
+                       let frst = T.head matched in let lst = T.last matched in
+                        (if frst == ' ' || isPunctuation frst then
+                                        if lst == ' ' || isPunctuation lst then
+                                          [Str $ T.singleton frst, Link ("",["link-auto"],[]) [Str $ T.init $ T.tail matched] (defn, ""), Str $ T.singleton lst] else
+                                          [Str $ T.singleton frst, Link ("",["link-auto"],[]) [Str $ T.tail matched] (defn, "")]
+                                      else if lst == ' ' || isPunctuation lst then
+                                             [Link ("",["link-auto"],[]) [Str $ T.init matched] (defn, ""), Str $ T.singleton lst]
                                            else
                                              [Link ("",["link-auto"],[]) [Str matched] (defn, "")])
                        ++ go (Str after)
@@ -116,20 +123,17 @@ defineLinks dict is = concatMap go $ mergeSpaces is
 -- Recurse through the dictionary (which should be long-first) to find the first matching regexp, since the master regexp blob matched the string.
 findRegexMatch :: [(T.Text, R.Regex, T.Text)] -> T.Text -> Maybe (T.Text, T.Text, T.Text, T.Text)
 findRegexMatch [] _ = Nothing
-findRegexMatch y@((_,r,u):rs) s = let (a,b,c) = R.match r s in
+findRegexMatch ((_,r,u):rs) s = let (a,b,c) = R.match r s in
                                    if b/="" then Just (a,b,c,u) else findRegexMatch rs s
 
 -- Pandoc breaks up strings as much as possible, like [Str "ABC", Space, "notation"], which makes it impossible to match on them, so we remove Space
 mergeSpaces :: [Inline] -> [Inline]
 mergeSpaces []                     = []
-mergeSpaces (Str x:Str y:xs)       = mergeSpaces ([Str (x`T.append`y)] ++ xs)
+mergeSpaces (Str x:Str y:xs)       = mergeSpaces (Str (x`T.append`y) : xs)
 mergeSpaces (Space:Str x:Space:xs) = mergeSpaces (Str (" "`T.append`x`T.append`" "):xs)
 mergeSpaces (Space:Str x:xs)       = mergeSpaces (Str (" "`T.append`x):xs)
 mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
 mergeSpaces (Str "":xs)            = mergeSpaces xs
--- ???
--- mergeSpaces ((Quoted DoubleQuote x) : xs) = [Str "“"] ++ mergeSpaces x ++ [Str "”"]  ++ mergeSpaces xs
--- mergeSpaces ((Quoted SingleQuote x) : xs) = [Str "‘"] ++ mergeSpaces x ++ [Str "’"]  ++ mergeSpaces xs
 mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
 -- Optimization: take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
@@ -144,11 +148,12 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith ex
 
 -- Optimization: try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
 -- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.
+-- Hypothetically, we can optimize this further: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible to create a 'regexp trie' where the leaves are associated with each original regexp, and search the trie in parallel for all matching leaves.
 filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterMatches p definitions  = let plain = simplifiedDoc p
   in filter (\(_,b,_) -> matchTest b plain) definitions
 
--- We want to match our given regexps by making them 'word-level' and matching on puncutation/whitespace delimiters. This avoids subword matches, for example, matching 'GAN' in 'StyleGAN' is undesirable.
+-- We want to match our given regexps by making them 'word-level' and matching on punctuation/whitespace delimiters. This avoids subword matches, for example, matching 'GAN' in 'StyleGAN' is undesirable.
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 customDefinitionsR = map (\(a,b) -> (a,
                                       R.makeRegex $ "[[:punct:][:blank:]]"`T.append`a`T.append`"[[:punct:][:blank:]]",
@@ -195,7 +200,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Barlow Twins?", "https://arxiv.org/abs/2103.03230#facebook")
   , ("BART", "https://arxiv.org/abs/1910.13461#facebook")
   , ("Baskerville", "https://en.wikipedia.org/wiki/Baskerville")
-    , ("Berkson's paradox", "https://en.wikipedia.org/wiki/Berkson%27s_paradox")
+  , ("Berkson's paradox", "https://en.wikipedia.org/wiki/Berkson%27s_paradox")
   , ("BERT", "https://arxiv.org/abs/1810.04805#google")
   , ("B-heaps?", "https://en.wikipedia.org/wiki/B-heap")
   , ("Bias in Mental Testing", "https://en.wikipedia.org/wiki/Bias_in_Mental_Testing")
@@ -239,6 +244,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Conformer", "https://arxiv.org/abs/2005.08100#google")
   , ("[Cc]onsanguineous marriages?", "https://en.wikipedia.org/wiki/Consanguine_marriage")
   , ("ConViT", "https://arxiv.org/abs/2103.10697#facebook")
+  , ("CPM", "https://arxiv.org/abs/2012.00413")
   , ("CPM-2", "https://arxiv.org/abs/2106.10715")
   , ("CRISPR/Cas9", "https://en.wikipedia.org/wiki/Cas9")
   , ("C\\. ?S\\. ?Lewis", "https://en.wikipedia.org/wiki/C._S._Lewis")
@@ -417,7 +423,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("mathjax-node-page", "https://github.com/pkra/mathjax-node-page/")
   , ("Matthew effects?", "https://en.wikipedia.org/wiki/Matthew_effect")
   , ("McRaven", "https://en.wikipedia.org/wiki/William_H._McRaven")
-  , ("MCTS", "https://en.wikipedia.org/wiki/Monte_Carlo_tree_search")
+  , ("(MCTS|Monte Carlo [Tt]ree [Ss]earch)", "https://en.wikipedia.org/wiki/Monte_Carlo_tree_search")
   , ("Meena", "https://arxiv.org/abs/2001.09977#google")
   , ("MegatronLM", "https://nv-adlr.github.io/MegatronLM")
   , ("MEMORIZE", "http://learning.mpi-sws.org/memorize/")
@@ -625,6 +631,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Your[Mm]orals\\.org", "http://yourmorals.org/")
   , ("[Bb]lessings [Oo]f [Ss]cale", "/Scaling-hypothesis#blessings-of-scale")
   , ("[Ss]caling [Hh]ypothesis", "/Scaling-hypothesis")
+  , ("[Ss]caling [Ll]aws?", "/notes/Scaling")
   , ("[Cc]ommoditize [Yy]our [Cc]omplement", "/Complement")
   , ("[Vv]alue-[Ee]quivalence", "https://arxiv.org/abs/2011.03506#deepmind")
   , ("DistilBERT", "https://arxiv.org/abs/1910.01108")
@@ -634,4 +641,31 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Dd]emand [Cc]haracteristics", "https://en.wikipedia.org/wiki/Demand_characteristics")
   , ("[Ee]pistasis", "https://en.wikipedia.org/wiki/Epistasis")
   , ("Wisconsin Longitudinal Study", "https://www.ssc.wisc.edu/wlsresearch/about/description.php")
+  , ("[Cc]ommon ?[Cc]rawl", "https://en.wikipedia.org/wiki/Common_Crawl")
+  , ("wav2vec 2\\.0", "https://arxiv.org/abs/2006.11477#facebook")
+  , ("Alpha ?Go", "https://en.wikipedia.org/wiki/AlphaGo")
+  , ("(Alpha ?Zero|Alpha0)", "/docs/rl/2018-silver.pdf#deepmind")
+  , ("AlphaGo Master", "https://en.wikipedia.org/wiki/Master_(software)")
+  , ("Libri-Light", "https://arxiv.org/abs/1912.07875#facebook")
+  , ("BLEU-?[0-9]?", "https://en.wikipedia.org/wiki/BLEU")
+  , ("ROUGE", "https://en.wikipedia.org/wiki/ROUGE_(metric)")
+  , ("[Ll]ithium", "https://en.wikipedia.org/wiki/Lithium")
+  , ("[Ll]lithium [Oo]rotate", "https://en.wikipedia.org/wiki/Lithium_orotate")
+  , ("([Ar]modafinil|[Mm]odafinil)", "/Modafinil")
+  , ("[Nn]icotine", "/Nicotine")
+  , ("Zeo", "/Zeo")
+  , ("[Ff]ast Fourier [Tt]ransform", "https://en.wikipedia.org/wiki/Fast_Fourier_transform")
+  , ("(MCMC|[Mm]arkov [Cc]hain [Mm]onte [Cc]arlo", "https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo")
+  , ("Monte Carlo algorithm", "https://en.wikipedia.org/wiki/Monte_Carlo_algorithm")
+  , ("Monte Carlo ?(simulates?|estimates?|simulations?|approximations?|implementations?|methods?)?", "https://en.wikipedia.org/wiki/Monte_Carlo_method")
+  , ("(Hamiltonian Monte Carlo|[Hh]ybrid Monte Carlo)", "https://en.wikipedia.org/wiki/Hamiltonian_Monte_Carlo")
+  , ("AIXI", "https://www.lesswrong.com/tag/aixi")
+  , ("([Bb]andit sampling|[Bb]andit models?|[Mm]ulti-[Aa]rm?e?d [Bb]andit)", "https://en.wikipedia.org/wiki/Multi-armed_bandit")
+  , ("[Rr]andom [Ff]orests?", "https://en.wikipedia.org/wiki/Random_forest")
+  , ("(SVM|[Ss]upport [Vv]ector [Mm]achines?)", "https://en.wikipedia.org/wiki/Support-vector_machine")
+  , ("(LSTM|Long short-term memory)", "https://en.wikipedia.org/wiki/Long_short-term_memory")
+  , ("(RNN|[Rr]ecurrent [Nn]eural [Nn]etwork)", "https://en.wikipedia.org/wiki/Recurrent_neural_network")
+  , ("(CNN|[Cc]onvolutional [Nn]eural [Nn]etwork)", "https://en.wikipedia.org/wiki/Convolutional_neural_network")
+  , ("Hans Moravec", "https://en.wikipedia.org/wiki/Hans_Moravec")
+  , ("Moravec's paradox", "https://en.wikipedia.org/wiki/Moravec%27s_paradox")
   ] :: [(T.Text,T.Text)] )
