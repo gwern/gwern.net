@@ -43,7 +43,7 @@ testDoc = let doc = Pandoc nullMeta [Para test] in
 
 -----------
 
--- turn first instance of a list of regex matches into hyperlinks in a Pandoc document. NOTE: this is best run as early as possible, because it is doing raw string matching, and any formatting or changing of phrases may break a match.
+-- turn first instance of a list of regex matches into hyperlinks in a Pandoc document. NOTE: this is best run as early as possible, because it is doing raw string matching, and any formatting or changing of phrases may break a match, but after running link syntax rewrites like the interwiki links (otherwise you'll wind up inserting WP links into pages that already have that WP link, just linked as `[foo](!Wikipedia)`.)
 linkAuto :: Pandoc -> Pandoc
 linkAuto p = -- Trace.trace ("Doc") $ walk (defineLinks customDefinitions) p
   let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
@@ -98,6 +98,7 @@ defineLinks dict is = concatMap go $ mergeSpaces is
                      -- unfortunately, if we move the Space inside the Link, this will look bad when Links get their underlining decoration
                      -- in-browser. So we do this song & dance to figure out if the link was *before* or *after*, remove it from the Link,
                      -- and stick a prefix or suffix replacement Space.
+                     -- TODO: move punctuation outside the link too?
                      Just (before,matched,after, defn) ->
                        go (Str before) ++ -- NOTE: we need to recurse *before* as well after, because 'findRegexMatch' short-circuits on the first match
                                           -- but there may be a later regexp which would match somewhere in the prefix.
@@ -224,12 +225,11 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Cc]ache-oblivious", "https://en.wikipedia.org/wiki/Cache-oblivious_algorithm")
   , ("[Cc]anned dog food", "https://en.wikipedia.org/wiki/Dog_food#Wet_food")
   , ("[Cc]ard marking", "https://en.wikipedia.org/wiki/Card_marking")
-  , ("Carreyrou", "https://en.wikipedia.org/wiki/John_Carreyrou")
+  , ("John Carreyrou", "https://en.wikipedia.org/wiki/John_Carreyrou")
   , ("Catherynne M. Valente", "https://en.wikipedia.org/wiki/Catherynne_M._Valente")
   , ("CC-12M", "https://arxiv.org/abs/2102.08981#google")
   , ("[Cc]eiling effects?", "https://en.wikipedia.org/wiki/Ceiling_effect_(statistics)")
   , ("[Cc]erebral cortexe?s?", "https://en.wikipedia.org/wiki/Cerebral_cortex")
-  , ("[Cc]haracter designs?", "https://en.wikipedia.org/wiki/Miss_Kobayashi%27s_Dragon_Maid")
   , ("Chiba, Japan", "https://en.wikipedia.org/wiki/Chiba_(city)")
   , ("Christopher Murray", "https://en.wikipedia.org/wiki/Christopher_J.L._Murray")
   , ("citronellol", "https://en.wikipedia.org/wiki/Citronellol")
@@ -267,7 +267,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Demis Hassabis", "https://en.wikipedia.org/wiki/Demis_Hassabis")
   , ("development of the Marcellus Shale", "https://en.wikipedia.org/wiki/Marcellus_natural_gas_trend")
   , ("DFAs?", "https://arxiv.org/abs/1609.01596")
-  , ("Dikötter", "https://en.wikipedia.org/wiki/Frank_Dik%C3%B6tter")
+  , ("Frank Dikötter", "https://en.wikipedia.org/wiki/Frank_Dik%C3%B6tter")
   , ("Disney animators' strike", "https://en.wikipedia.org/wiki/Disney_animators%27_strike")
   , ("[Dd]itche?s?", "https://en.wikipedia.org/wiki/Ditch_(fortification)")
   , ("DLRM", "https://arxiv.org/abs/2104.05158#facebook")
@@ -406,7 +406,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("LD ?Hub", "http://ldsc.broadinstitute.org/about/")
   , ("Leonard Horner", "https://en.wikipedia.org/wiki/Leonard_Horner")
   , ("Le Roy Ladurie", "https://en.wikipedia.org/wiki/Emmanuel_Le_Roy_Ladurie")
-  , ("Less ?Wrong", "https://www.lesswrong.com/")
+  , ("Less ?Wrong", "https://www.lesswrong.com")
   , ("[Ll]evamisole", "https://en.wikipedia.org/wiki/Levamisole")
   , ("Lewis Terman", "https://en.wikipedia.org/wiki/Lewis_Terman")
   , ("linkchecker", "https://github.com/linkchecker/linkchecker")
@@ -480,7 +480,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Oo]ptogenetics?", "https://en.wikipedia.org/wiki/Optogenetics")
   , ("Osaka Electro-Communication University", "https://en.wikipedia.org/wiki/Osaka%20Electro-Communication%20University")
   , ("Osaka University of Arts", "https://en.wikipedia.org/wiki/Osaka%20University%20of%20Arts")
-  , ("[Oo]utside [Vv]iew", "http://wiki.lesswrong.com/wiki/Outside_view")
+  , ("[Oo]utside [Vv]iew", "https://www.lesswrong.com/tag/inside-outside-view")
   , ("Overcoming Bias", "https://www.overcomingbias.com/")
   , ("Owarimonogatari", "https://en.wikipedia.org/wiki/List_of_Monogatari_episodes#Owarimonogatari")
   , ("PaintsTransfer/style2paints", "https://github.com/lllyasviel/style2paints")
