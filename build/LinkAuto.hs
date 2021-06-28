@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-06-27 21:53:23 gwern"
+When:  Time-stamp: "2021-06-28 10:43:47 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -338,7 +338,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("gMLP", "https://arxiv.org/abs/2105.08050#google")
   , ("God [Ii]s [Aa]n Astronaut", "https://en.wikipedia.org/wiki/God_Is_an_Astronaut")
   , ("GODIVA", "https://arxiv.org/abs/2104.14806#microsoft")
-  , ("Go[- ]?Explore", "https://arxiv.org/abs/1901.10995")
+  , ("Go[- ]?Explore", "https://arxiv.org/abs/1901.10995#uber")
   , ("GPipe", "https://arxiv.org/abs/1811.06965#google")
   , ("GPT-1", "https://openai.com/blog/language-unsupervised/")
   , ("GPT-2", "/docs/ai/2019-radford.pdf#openai")
@@ -667,7 +667,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Ff]ast Fourier [Tt]ransform", "https://en.wikipedia.org/wiki/Fast_Fourier_transform")
   , ("(MCMC|[Mm]arkov [Cc]hain [Mm]onte [Cc]arlo)", "https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo")
   , ("Monte Carlo algorithm", "https://en.wikipedia.org/wiki/Monte_Carlo_algorithm")
-  , ("Monte Carlo ?(simulates?|estimates?|simulations?|approximations?|implementations?|methods?)?", "https://en.wikipedia.org/wiki/Monte_Carlo_method")
+  , ("Monte Carlo (simulates?|estimates?|simulations?|approximations?|implementations?|methods?)?", "https://en.wikipedia.org/wiki/Monte_Carlo_method")
   , ("(Hamiltonian Monte Carlo|[Hh]ybrid Monte Carlo)", "https://en.wikipedia.org/wiki/Hamiltonian_Monte_Carlo")
   , ("AIXI", "https://www.lesswrong.com/tag/aixi")
   , ("([Bb]andit sampling|[Bb]andit models?|[Mm]ulti-[Aa]rm?e?d [Bb]andit)", "https://en.wikipedia.org/wiki/Multi-armed_bandit")
@@ -694,10 +694,12 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Oo]ptimal stopping", "https://en.wikipedia.org/wiki/Optimal_stopping")
   , ("([Pp]olygenic [Ss]core|PGS|[Pp]olygenic [Rr]isk [Ss]core|PRS|[Gg]enetic [Rr]isk [Ss]core|GRS|[Gg]enome-[Ww]ide [Ss]core|[Pp]olygenic [Ii]ndex|PGI)", "https://en.wikipedia.org/wiki/Polygenic_score")
   , ("[Cc]ase.?[Cc]ontrol", "https://en.wikipedia.org/wiki/Case%E2%80%93control_study")
-  , ("(PTSD|[Pp]ost.?traumatic stress disorder", "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder")
+  , ("(PTSD|[Pp]ost.?traumatic stress disorder)", "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder")
   , ("(W?GWAS?|[Gg]enome-[Ww]ide [Aa]ssociation [Aa]nalys(is|e|es)|[Gg]enome-[Ww]ide [Aa]ssociation [Ss]tud(y|ies))", "https://en.wikipedia.org/wiki/Genome-wide_association_study")
   , ("Million Veteran Program", "https://www.research.va.gov/mvp/")
   , ("23[A]nd[Mm]e", "https://en.wikipedia.org/wiki/23andMe")
   , ("(EHR|[Ee]lectronic [Hh]ealth [Rr]ecords?)", "https://en.wikipedia.org/wiki/Electronic_health_record")
   , ("(GSEM|[Gg]enomic SEM|[Gg]enomic [Ss]tructural [Ee]quation [Mm]odeling)", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6520146/")
+  , ("(Deep[Mm]ind.?Lab|DM[Ll]ab-30|DM[Ll]ab)", "https://arxiv.org/abs/1612.03801")
+  , ("[Dd]endritic spines?", "https://en.wikipedia.org/wiki/Dendritic_spine")
   ] :: [(T.Text,T.Text)] )
