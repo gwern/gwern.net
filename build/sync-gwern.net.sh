@@ -219,7 +219,7 @@ else
                -e '<sec ' -e '<list' -e '</list>' -e '<wb<em>r</em>' -e '<abb<em>' -e '<ext-link' -e '<title>' -e '</title>' \
                -e ' {{' -e '<<' -e '[Formula: see text]' -e '<p><img' -e '<p> <img' -e '- - /./' -e '[Keyword' -e '[KEYWORD' \
                -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e 'en.m.wikipedia.org' -e '<em>Figure' \
-               -e '<strongfigure' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' \
+               -e '<strongfigure' -e ' ,' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' \
                -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
                -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"

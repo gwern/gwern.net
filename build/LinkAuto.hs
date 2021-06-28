@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-06-27 20:53:20 gwern"
+When:  Time-stamp: "2021-06-27 21:53:23 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -163,6 +163,8 @@ customDefinitionsR = map (\(a,b) -> (a,
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
+-- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
+-- I'm not sure how crazy I want to get with the rewrites, though. The regexp rewriting is expensive since it must look at all text. If you're doing those sorts of other rewrites, it'd generally be more sensible to require them to be marked up explicitly, which is vastly easier to program & more efficient. We'll see.
 customDefinitions :: [(T.Text, R.Regex, T.Text)]
 customDefinitions = customDefinitionsR $ -- delimit & compile
                     nub $ -- unique
@@ -693,4 +695,9 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("([Pp]olygenic [Ss]core|PGS|[Pp]olygenic [Rr]isk [Ss]core|PRS|[Gg]enetic [Rr]isk [Ss]core|GRS|[Gg]enome-[Ww]ide [Ss]core|[Pp]olygenic [Ii]ndex|PGI)", "https://en.wikipedia.org/wiki/Polygenic_score")
   , ("[Cc]ase.?[Cc]ontrol", "https://en.wikipedia.org/wiki/Case%E2%80%93control_study")
   , ("(PTSD|[Pp]ost.?traumatic stress disorder", "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder")
+  , ("(W?GWAS?|[Gg]enome-[Ww]ide [Aa]ssociation [Aa]nalys(is|e|es)|[Gg]enome-[Ww]ide [Aa]ssociation [Ss]tud(y|ies))", "https://en.wikipedia.org/wiki/Genome-wide_association_study")
+  , ("Million Veteran Program", "https://www.research.va.gov/mvp/")
+  , ("23[A]nd[Mm]e", "https://en.wikipedia.org/wiki/23andMe")
+  , ("(EHR|[Ee]lectronic [Hh]ealth [Rr]ecords?)", "https://en.wikipedia.org/wiki/Electronic_health_record")
+  , ("(GSEM|[Gg]enomic SEM|[Gg]enomic [Ss]tructural [Ee]quation [Mm]odeling)", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6520146/")
   ] :: [(T.Text,T.Text)] )
