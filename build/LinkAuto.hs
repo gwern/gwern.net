@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-06-28 10:43:47 gwern"
+When:  Time-stamp: "2021-06-28 21:34:45 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -13,6 +13,8 @@ This is useful for automatically defining concepts, terms, and proper names usin
 Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of greedy rewrites (eg "GAN" vs "BigGAN").
 Regexps are sorted by length, longest-first, to further try to prioritize (so "BigGAN" would match before "GAN").
 For efficiency, we avoid String type conversion as much as possible.
+Regexp matching is done only within a Str node; therefore, mixed-formatting strings will not match.
+If a match is all inside italics/bold/smallcaps (eg 'Emph [Str x]'), then it will match; if a match is split (eg '...Str x1, Emph [Str x2], ...'), then it will fail.
 
 A document is queried for URLs and all URLs already present or regexps without plain text matches are removed from the rewrite dictionary.
 This usually lets a document be skipped entirely as having no possible non-redundant matches.
@@ -163,7 +165,7 @@ customDefinitionsR = map (\(a,b) -> (a,
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
--- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
+-- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as turning into multiple links (eg one link for each word in a phrase), abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
 -- I'm not sure how crazy I want to get with the rewrites, though. The regexp rewriting is expensive since it must look at all text. If you're doing those sorts of other rewrites, it'd generally be more sensible to require them to be marked up explicitly, which is vastly easier to program & more efficient. We'll see.
 customDefinitions :: [(T.Text, R.Regex, T.Text)]
 customDefinitions = customDefinitionsR $ -- delimit & compile
@@ -702,4 +704,6 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("(GSEM|[Gg]enomic SEM|[Gg]enomic [Ss]tructural [Ee]quation [Mm]odeling)", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6520146/")
   , ("(Deep[Mm]ind.?Lab|DM[Ll]ab-30|DM[Ll]ab)", "https://arxiv.org/abs/1612.03801")
   , ("[Dd]endritic spines?", "https://en.wikipedia.org/wiki/Dendritic_spine")
+  , ("[Cc]ontrastive", "https://arxiv.org/abs/2010.05113")
+  , ("[Dd]ouble descent", "https://openai.com/blog/deep-double-descent/")
   ] :: [(T.Text,T.Text)] )
