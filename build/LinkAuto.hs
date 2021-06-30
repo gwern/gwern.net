@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-06-28 21:34:45 gwern"
+When:  Time-stamp: "2021-06-29 20:00:58 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -367,7 +367,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Hsu 2014", "https://arxiv.org/abs/1408.3421")
   , ("Hwang Woo-suk", "https://en.wikipedia.org/wiki/Hwang_Woo-suk")
   , ("[Hh]yalin", "https://en.wikipedia.org/wiki/Hyalin")
-  , ("HyperNetworks", "https://arxiv.org/abs/1609.09106#google")
+  , ("[Hh]yper ?[Nn]etworks", "https://arxiv.org/abs/1609.09106#google")
   , ("ID3", "https://en.wikipedia.org/wiki/ID3_algorithm")
   , ("[Ii]diopathic hypersomnia", "https://en.wikipedia.org/wiki/Idiopathic_hypersomnia")
   , ("iGPT", "https://openai.com/blog/image-gpt/")
@@ -472,11 +472,10 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Newgrounds", "https://en.wikipedia.org/wiki/Newgrounds")
   , ("[Nn]ucleus [Ss]ampling", "https://arxiv.org/abs/1904.09751")
   , ("NVAE", "https://arxiv.org/abs/2007.03898#nvidia")
-  , ("OA ?5", "https://openai.com/projects/five/")
   , ("ocrmypdf", "https://github.com/jbarlow83/OCRmyPDF")
   , ("[Oo]ld-style numerals?", "https://en.wikipedia.org/wiki/Text_figures")
   , ("Omni[Nn]et", "https://arxiv.org/abs/2103.01075")
-  , ("OpenAI 5", "https://openai.com/projects/five/")
+  , ("(OpenAI 5|OA ?5)", "https://openai.com/projects/five/")
   , ("OpenAI API", "https://openai.com/blog/openai-api/")
   , ("OpenAI Gym", "https://github.com/openai/gym")
   , ("[Oo]perant conditioning", "https://en.wikipedia.org/wiki/Operant_conditioning")
@@ -554,7 +553,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("SimC[Ll][Rr]", "https://arxiv.org/abs/2002.05709#google")
   , ("Simpson's [Pp]aradox", "https://en.wikipedia.org/wiki/Simpson%27s_paradox")
   , ("Single[Ff]ile", "https://github.com/gildas-lormeau/SingleFile/")
-  , ("SMPY", "/SMPY")
+  , ("(SMPY|Study [Oo]f Mathematically Precocious Youth)", "/SMPY")
   , ("SMYRF", "https://arxiv.org/abs/2010.05315")
   , ("social[- ]engineering", "https://en.wikipedia.org/wiki/Social_engineering_(security)")
   , ("Source Sans Pro", "https://en.wikipedia.org/wiki/Source_Sans_Pro")
@@ -706,4 +705,15 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Dd]endritic spines?", "https://en.wikipedia.org/wiki/Dendritic_spine")
   , ("[Cc]ontrastive", "https://arxiv.org/abs/2010.05113")
   , ("[Dd]ouble descent", "https://openai.com/blog/deep-double-descent/")
+  , ("[Ff]entanyl", "https://en.wikipedia.org/wiki/Fentanyl")
+  , ("[Cc]arfentanil", "https://en.wikipedia.org/wiki/Carfentanil")
+  , ("[Oo]pioids?", "https://en.wikipedia.org/wiki/Opioid")
+  , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://science.sciencemag.org/content/364/6443/859#deepmind")
+  , ("[Ss]enescen(ce|t).?", "https://en.wikipedia.org/wiki/Cellular_senescence")
+  , ("[Ss]enolytic.?", "https://en.wikipedia.org/wiki/Senolytic")
+  , ("Scott Alexander", "https://astralcodexten.substack.com/")
+  , ("Gaussian process", "https://en.wikipedia.org/wiki/Gaussian_process")
+  , ("OpenAI", "https://en.wikipedia.org/wiki/OpenAI")
+  , ("SPIRAL", "https://arxiv.org/abs/1804.01118#deepmind")
+  , ("([Pp]rompt programming|[Pp]rompt engineering)", "/GPT-3#prompt-programming")
   ] :: [(T.Text,T.Text)] )
