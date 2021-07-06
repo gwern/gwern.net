@@ -166,7 +166,7 @@ else
     λ(){ fgrep --color=always '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 fgrep --with-filename --color=always '!Wikipedia'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!Margin:'; }
     wrap λ "Stray interwiki links"
 
     λ(){ PAGES=$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/')
@@ -221,7 +221,7 @@ else
                -e '[Key word' -e '<strong>[Keywords:' -e 'href="$"' -e 'en.m.wikipedia.org' -e '<em>Figure' \
                -e '<strongfigure' -e ' ,' -e ' ,' -e 'href="Wikipedia"' -e 'href="(' -e '>/em>' -e '<figure>[' \
                -e '<figcaption></figcaption>' -e '&Ouml;' -e '&uuml;' -e '&amp;gt;' -e '&amp;lt;' -e '&amp;ge;' -e '&amp;le;' \
-               -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -- ./metadata/*.yaml; }
+               -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }

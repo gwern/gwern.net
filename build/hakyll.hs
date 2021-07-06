@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-06-25 21:09:28 gwern"
+When: Time-stamp: "2021-07-06 17:34:07 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -237,10 +237,10 @@ postCtx tags =
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
 pandocTransform md adb p =
-                           do let pw = walk linkAuto $ walk convertInterwikiLinks p
+                           do let pw = walk linkAuto $ walk (marginNotes . convertInterwikiLinks) p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
-                              let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . marginNotes . addAmazonAffiliate)) $ pb
+                              let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
                               let pbth = isLocalLink $ walk headerSelflink pbt
                               walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) pbth
 
