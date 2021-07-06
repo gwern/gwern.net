@@ -82,10 +82,17 @@
     <!-- Hint at necessary third-party domains -->
     <link rel="preconnect" href="https://www.googletagmanager.com">
 
+    $if(titlePlain)$
+    <meta name="title" content="$titlePlain$">
+    <meta name="citation_title" content="$titlePlain$">
+    <meta name="og:title" content="$titlePlain$">
+    <meta name="twitter:title" content="$titlePlain$">
+    $else$
     <meta name="title" content="$title$">
     <meta name="citation_title" content="$title$">
     <meta name="og:title" content="$title$">
     <meta name="twitter:title" content="$title$">
+    $endif$
     <meta name="generator" content="https://github.com/gwern/gwern.net/">
     <meta name="creator" content="gwern.net">
     $if(author)$
@@ -120,7 +127,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light dark">
 
+    $if(titlePlain)$
+    <title>$titlePlain$ · Gwern.net</title>
+    $else$
     <title>$title$ · Gwern.net</title>
+    $endif$
 
     <link rel="icon" type="image/png" href="/static/img/logo/logo-favicon-small.png" />
     <link rel="apple-touch-icon" type="image/png" href="/static/img/logo/logo-favicon-appletouch.png">
