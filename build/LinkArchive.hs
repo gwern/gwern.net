@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-06-25 20:18:22 gwern"
+When:  Time-stamp: "2021-07-05 21:44:55 gwern"
 License: CC-0
 -}
 
@@ -864,5 +864,9 @@ whiteList url
       , "public.tableau.com" -- interactive visualizations
       , "andyljones.com" -- give a chance
       , "mlcommons.org" -- organization/homepage
+      , "www.eleuther.ai" -- stable
+      , "ieeexplore.ieee.org/abstract/" -- bad quality
+      , "arankomatsuzaki.wordpress.com" -- stable
+      , "www.fimfiction.net" -- stable/homepage
       ] = True
     | otherwise = False

@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-06-30 12:19:40 gwern"
+When:  Time-stamp: "2021-06-30 21:10:56 gwern"
 License: CC-0
 -}
 
@@ -746,6 +746,7 @@ cleanAbstractsHTML t = trim $
   -- simple string substitutions:
   replaceMany [
     ("<span style=\"font-weight:normal\"> </span>", "")
+    , (" the the ", " the ")
     , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
     , ("<sup></sup>", "")
     , ("<sub></sub>", "")

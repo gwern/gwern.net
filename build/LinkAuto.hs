@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-06-30 15:41:27 gwern"
+When:  Time-stamp: "2021-07-06 10:49:20 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -34,7 +34,7 @@ Dependencies: Pandoc, text, regex-tdfa, /static/build/Columns.hs
 import Data.Char (isPunctuation)
 import Data.List (nub, sortBy)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
-import qualified Data.Text as T (append, head, length, last, singleton, tail, init, Text)
+import qualified Data.Text as T (append, head, intercalate, length, last, singleton, tail, init, Text)
 import Control.Monad.State (evalState, get, put, State)
 
 import Text.Pandoc (topDown, queryWith, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str))
@@ -725,4 +725,15 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("(Hans J\\. Eysenck|Hans Jürgen Eysenck|Hans Eysenck|Eysenck[ian]?)", "https://en.wikipedia.org/wiki/Hans_Eysenck")
   , ("(ADHD|[Aa]ttention[ -][Dd]eficit [Hh]yperactivity [Dd]isorder)s?", "https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder")
   , ("(SCZ|[Ss]chizophreni[ac]s?)", "https://en.wikipedia.org/wiki/Schizophrenia")
+  , ("[Ee]verything [Ii]s [Cc]orrelated", "/Everything")
+  , ("(AFQT|ASVAB|Armed Forces Qualification Test|Armed Services Vocational Aptitude Battery)", "https://en.wikipedia.org/wiki/Armed_Services_Vocational_Aptitude_Battery")
+  , ("Project 100,000", "https://en.wikipedia.org/wiki/Project_100,000")
+  , ("Kaplan-Meier", "https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator")
+  , ("inbreeding depression", "https://en.wikipedia.org/wiki/Inbreeding_depression")
+  , ("PILCO", "/docs/rl/2011-deisenroth.pdf")
+  , ("DDPG", "https://arxiv.org/abs/1509.02971#deepmind")
+  , ("(PPO|[Pp]roximal [Pp]olicy [Oo]ptimization)", "https://arxiv.org/abs/1707.06347#openai")
+  , ("(A2C|A3C|[Aa]synchronous [Aa]dvantage [Aa]ctor-[Cc]ritic)", "https://arxiv.org/abs/1602.01783#deepmind")
+  , ("Rainbow", "https://arxiv.org/abs/1710.02298#deepmind")
+  , ("D4PG", "https://arxiv.org/abs/1804.08617#deepmind")
   ] :: [(T.Text,T.Text)] )
