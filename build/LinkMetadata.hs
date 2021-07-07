@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-06-30 21:10:56 gwern"
+When:  Time-stamp: "2021-07-07 12:22:58 gwern"
 License: CC-0
 -}
 
@@ -741,7 +741,8 @@ cleanAbstractsHTML t = trim $
   ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\times\\\\\\)</span>", "\\1×"), -- '<span class="math inline">\(1.5\times\)</span>'
   ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×"), -- '<span class="math inline">\(\times\)</span>'
   ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^4\)</span>'
-  ("et al\\.?,? \\(([0-9]+)\\)", "et al \\1") -- "Foo et al. (1999)", "Foo et al (1999)"
+  ("et al\\.?,? \\(([0-9]+)\\)", "et al \\1"), -- "Foo et al. (1999)", "Foo et al (1999)"
+  ("([A-Z][a-z]+) and ([A-Z][a-z]+),? ([0-9]+)", "\\1 & \\2 \\3") -- 'Foo and Bar 1999', 'Foo and Bar, 1999' → 'Foo & Bar 1999'
   ] $
   -- simple string substitutions:
   replaceMany [
