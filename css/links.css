@@ -463,6 +463,8 @@ body.index a.link-local::after {
     content: none;
 }
 
+body.tags a.link-local::after { content: none; }
+
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
 /*=-------------------------------=*/
