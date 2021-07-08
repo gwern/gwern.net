@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-07-06 17:34:07 gwern"
+When: Time-stamp: "2021-07-08 17:20:43 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -203,7 +203,7 @@ postCtx :: Tags -> Context String
 postCtx tags =
     tagsField "tagsHTML" tags <>
     descField "title" <>
-    -- descField "description" <> -- constField "description" "N/A" <>
+    descField "description" <> -- constField "description" "N/A" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.)
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
@@ -226,13 +226,13 @@ postCtx tags =
   where escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
         descField d = field d $ \item -> do
                           metadata <- getMetadata (itemIdentifier item)
-                          let desc = fromMaybe "N/A" $ lookupString d metadata
+                          let desc = fromMaybe "" $ lookupString d metadata
                           let cleanedDesc = runPure $ do
                                    pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
                                    htmlDesc <- writeHtml5String def pandocDesc
                                    return $ T.unpack htmlDesc
                            in case cleanedDesc of
-                              Left _          -> return "N/A"
+                              Left _          -> return ""
                               Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
