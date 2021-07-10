@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-07 14:54:36 gwern"
+When:  Time-stamp: "2021-07-09 20:00:16 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -738,4 +738,11 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("D4PG", "https://arxiv.org/abs/1804.08617#deepmind")
   , ("([Dd]ark [Nn]et [Mm]arket|[Dd]arknet [Mm]arket|DNM|[Cc]ryptomarket|[Cc]rypto-[Mm]arket)", "https://en.wikipedia.org/wiki/Darknet_market")
   , ("[Mm]aximum [Ll]ikelihood", "https://en.wikipedia.org/wiki/Maximum_likelihood_estimation")
+  , ("BYOL", "https://arxiv.org/abs/2006.07733#deepmind")
+  , ("SimSiam", "https://arxiv.org/abs/2011.10566#facebook")
+  , ("([Ss]elf-[Ss]upervised [Ll]earning|[Ss]emi-[Ss]upervised [Ll]earning)", "https://en.wikipedia.org/wiki/Semi-supervised_learning")
+  , ("([Ee]xponential [Mm]oving [Aa]verages?|EMA)", "https://arxiv.org/abs/1806.04498")
+  , ("[Ww]eight [Dd]ecay", "https://en.wikipedia.org/wiki/Tikhonov_regularization")
+  , ("STL-10", "https://cs.stanford.edu/~acoates/stl10/")
+  , ("(John Tukey|John W\\. Tukey|Tukey)", "https://en.wikipedia.org/wiki/John_Tukey")
   ] :: [(T.Text,T.Text)] )
