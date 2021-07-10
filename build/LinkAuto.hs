@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-09 20:00:16 gwern"
+When:  Time-stamp: "2021-07-10 19:54:40 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -34,7 +34,7 @@ Dependencies: Pandoc, text, regex-tdfa, /static/build/Columns.hs
 import Data.Char (isPunctuation)
 import Data.List (nub, sortBy)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
-import qualified Data.Text as T (append, head, intercalate, length, last, singleton, tail, init, Text)
+import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, Text)
 import Control.Monad.State (evalState, get, put, State)
 
 import Text.Pandoc (topDown, queryWith, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str))
@@ -141,7 +141,7 @@ mergeSpaces (x:xs)                 = x:mergeSpaces xs
 -- Optimization: take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
 -- This avoids redundancy with links added by hand or other filters.
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ queryWith extractLink markdown in
+filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ map (T.replace "https://www.gwern.net/" "/") $ queryWith extractLink markdown in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)
   where
    extractLink :: Inline -> [T.Text]
@@ -745,4 +745,11 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Ww]eight [Dd]ecay", "https://en.wikipedia.org/wiki/Tikhonov_regularization")
   , ("STL-10", "https://cs.stanford.edu/~acoates/stl10/")
   , ("(John Tukey|John W\\. Tukey|Tukey)", "https://en.wikipedia.org/wiki/John_Tukey")
+  , ("[Ss]chizotyp(y|ical)", "https://en.wikipedia.org/wiki/Schizotypy")
+  , ("PNSR", "https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio")
+  , ("SSIM", "https://en.wikipedia.org/wiki/Structural_similarity")
+  , ("(Fr[ée]chet inception distance|FID)", "https://en.wikipedia.org/wiki/Fr%C3%A9chet_inception_distance")
+  , ("AMD", "https://en.wikipedia.org/wiki/Advanced_Micro_Devices")
+  , ("TSMC", "https://en.wikipedia.org/wiki/TSMC")
+  , ("Intel", "https://en.wikipedia.org/wiki/Intel")
   ] :: [(T.Text,T.Text)] )
