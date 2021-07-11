@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-10 19:54:40 gwern"
+When:  Time-stamp: "2021-07-10 20:13:05 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -752,4 +752,5 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("AMD", "https://en.wikipedia.org/wiki/Advanced_Micro_Devices")
   , ("TSMC", "https://en.wikipedia.org/wiki/TSMC")
   , ("Intel", "https://en.wikipedia.org/wiki/Intel")
+  , ("[Mm]etformin", "https://en.wikipedia.org/wiki/Metformin")
   ] :: [(T.Text,T.Text)] )
