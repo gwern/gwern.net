@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-07-10 18:56:21 gwern"
+When:  Time-stamp: "2021-07-12 12:28:39 gwern"
 License: CC-0
 -}
 
@@ -61,7 +61,7 @@ isLocalLink = walk isLocalLink'
               ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
              then y else
                (if takeExtension f' /= "" then y else
-                  (Link (a, "link-local" : b, c) e (f, g))))
+                  Link (a, "link-local" : b, c) e (f, g)))
         isLocalLink' x = x
 
 
@@ -88,6 +88,19 @@ readLinkMetadata = do
              let emptyCheck = filter (\(u,(t,a,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
              unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
+             let balancedQuotes = filter (\(_,(_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
+                                             count > 0 && (count `mod` 2 == 1) ) custom
+             unless (null balancedQuotes) $ error $ "Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
+
+             let balancedBrackets = filter (\(_,(_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '{' || c == '}') abst in
+                                                                     count > 0 && (count `mod` 2 == 1) ) custom
+             unless (null balancedBrackets) $ error $ "Link Annotation Error: unbalanced brackets! " ++ show balancedBrackets
+
+             let balancedParens = filter (\(_,(_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
+                                                                     count > 0 && (count `mod` 2 == 1) ) custom
+             unless (null balancedParens) $ error $ "Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
+
+
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata "metadata/auto.yaml" -- cleanup first
              auto <- readYaml "metadata/auto.yaml"
@@ -112,7 +125,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock False (u', Just (titleHtml,authorHtml,c,d,abstractHtml)) bl
                                              void $ createAnnotations md pandoc
-                                             let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk (linkAuto) $ walk convertInterwikiLinks $ pandoc
+                                             let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk linkAuto $ walk convertInterwikiLinks pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
 
                                              let finalHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} localizedPandoc
