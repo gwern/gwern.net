@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-10 20:13:05 gwern"
+When:  Time-stamp: "2021-07-11 17:07:59 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -215,7 +215,12 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("B-heaps?", "https://en.wikipedia.org/wiki/B-heap")
   , ("Bias in Mental Testing", "https://en.wikipedia.org/wiki/Bias_in_Mental_Testing")
   , ("BigBird", "https://arxiv.org/abs/2007.14062#google")
-  , ("(Big [Ff]ive|OCEAN)", "https://en.wikipedia.org/wiki/Big_Five_personality_traits")
+  , ("(Big [Ff]ive|OCEAN|Big 5)", "https://en.wikipedia.org/wiki/Big_Five_personality_traits")
+  , ("Openness to [Ee]xperience", "https://en.wikipedia.org/wiki/Openness_to_experience")
+  , ("(Extraversion|Introversion)", "https://en.wikipedia.org/wiki/Extraversion_and_introversion")
+  , ("Agreeableness", "https://en.wikipedia.org/wiki/Agreeableness")
+  , ("Neuroticism", "https://en.wikipedia.org/wiki/Neuroticism")
+  , ("Conscientiousness", "https://en.wikipedia.org/wiki/Conscientiousness")
   , ("BigGAN(-deep)s?", "https://arxiv.org/abs/1809.11096")
   , ("[Bb]irthday paradoxe?s?", "https://en.wikipedia.org/wiki/Birthday_problem")
   , ("BiT", "https://arxiv.org/abs/1912.11370#google")
@@ -420,7 +425,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Le Roy Ladurie", "https://en.wikipedia.org/wiki/Emmanuel_Le_Roy_Ladurie")
   , ("Less ?Wrong", "https://www.lesswrong.com")
   , ("[Ll]evamisole", "https://en.wikipedia.org/wiki/Levamisole")
-  , ("Lewis Terman", "https://en.wikipedia.org/wiki/Lewis_Terman")
+  , ("(Lewis Terman|Terman)", "https://en.wikipedia.org/wiki/Lewis_Terman")
   , ("linkchecker", "https://github.com/linkchecker/linkchecker")
   , ("[Ll]iraglutide", "https://en.wikipedia.org/wiki/Liraglutide")
   , ("Lisp [Mm]achines?", "https://en.wikipedia.org/wiki/Lisp_machine")
@@ -753,4 +758,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("TSMC", "https://en.wikipedia.org/wiki/TSMC")
   , ("Intel", "https://en.wikipedia.org/wiki/Intel")
   , ("[Mm]etformin", "https://en.wikipedia.org/wiki/Metformin")
+  , ("([Ss]tructural [Ee]quation [Mm]odel(s|ing)?|SEM)s?", "https://en.wikipedia.org/wiki/Structural_equation_modeling") -- SEM can also refer to 'scanning electron microscope' or 'standard error of the mean' in Gwern.net content, but in practice, those uses seem far rarer
+  , ("(Fermi [Pp]roblem.?|Fermi [Qq]uestion.?)", "https://en.wikipedia.org/wiki/Fermi_problem")
+  , ("(CBT|[Cc]ognitive[ -][Bb]ehaviou?r(al)? [Tt]herap(y|ies))", "https://en.wikipedia.org/wiki/Cognitive_behavioral_therapy")
   ] :: [(T.Text,T.Text)] )

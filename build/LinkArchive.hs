@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-07-10 11:15:01 gwern"
+When:  Time-stamp: "2021-07-10 22:10:38 gwern"
 License: CC-0
 -}
 
@@ -870,5 +870,6 @@ whiteList url
       , "www.fimfiction.net" -- stable/homepage
       , "gaussianbp.github.io" -- interactive
       , "bitcoinbook.cs.princeton.edu" -- homepage
+      , "theme.typora.io" -- stable/updated source code/docs
       ] = True
     | otherwise = False
