@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-07-08 17:20:43 gwern"
+When: Time-stamp: "2021-07-11 20:42:47 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -38,7 +38,7 @@ import Control.Exception (onException)
 import Control.Monad (when, void)
 import Data.Char (toLower)
 import Data.List (isPrefixOf, nubBy, sort)
-import Data.Maybe (fromMaybe, isNothing)
+import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
 import Network.HTTP (urlDecode)
 import System.Directory (doesFileExist)
@@ -49,7 +49,7 @@ import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
                defaultHakyllWriterOptions, fromCapture, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAll, loadAndApplyTemplate, loadBody, makeItem, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess,
-               tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Tags, unsafeCompiler)
+               tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Tags, unsafeCompiler, noResult)
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Pandoc.Shared (blocksToInlines)
@@ -223,17 +223,24 @@ postCtx tags =
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
     (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/' then urlEncode "/" else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
-  where escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
-        descField d = field d $ \item -> do
-                          metadata <- getMetadata (itemIdentifier item)
-                          let desc = fromMaybe "" $ lookupString d metadata
-                          let cleanedDesc = runPure $ do
-                                   pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
-                                   htmlDesc <- writeHtml5String def pandocDesc
-                                   return $ T.unpack htmlDesc
-                           in case cleanedDesc of
-                              Left _          -> return ""
-                              Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
+
+escapedTitleField :: String -> Context a
+escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
+
+descField :: String -> Context a
+descField d = field d $ \item -> do
+                  metadata <- getMetadata (itemIdentifier item)
+                  let descMaybe = lookupString d metadata
+                  case descMaybe of
+                    Nothing -> noResult "no description field"
+                    Just desc ->
+                     let cleanedDesc = runPure $ do
+                              pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
+                              htmlDesc <- writeHtml5String def pandocDesc
+                              return $ T.unpack htmlDesc
+                      in case cleanedDesc of
+                         Left _          -> noResult "no description field"
+                         Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
 pandocTransform md adb p =
