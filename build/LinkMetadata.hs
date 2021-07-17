@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-07-12 12:28:39 gwern"
+When:  Time-stamp: "2021-07-16 21:16:24 gwern"
 License: CC-0
 -}
 
@@ -260,10 +260,12 @@ type MetadataList = [(Path, MetadataItem)]
 type Path = String
 
 readYaml :: Path -> IO MetadataList
-readYaml yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
-                   case file of
-                     Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
-                     Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
+readYaml yaml = do filep <- doesFileExist yaml
+                   if not filep then return [] else do
+                        file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
+                        case file of
+                          Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
+                          Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> MetadataList
                  convertListToMetadata [u, t, a, d, di, s] = [(u, (t,a,d,di,s))]
@@ -320,20 +322,26 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                              return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, processPubMedAbstract $ unlines abstrct))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
-pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p]
-           (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p]
+pdf p = do let p' = takeWhile (/='#') p
+           (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p']
+           (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p']
            if BL.length mb > 0 then
-             do let (etitle:eauthor:edate:_) = (lines $ (\s -> if head s == '\n' then tail s else s) $ replace "\n\n" "\n" $ U.toString mb)
-                let edoi = lines $ U.toString mb2
-                let edoi' = if null edoi then "" else head edoi
-                -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
-                (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p]
-                let ecreator = filterAuthors $ U.toString mb3
-                let eauthor' = filterAuthors eauthor
-                let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
-                hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi'
-                a <- fmap (fromMaybe "") $ doi2Abstract edoi'
-                return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
+             do print mb
+                let results = (lines $ (\s -> if head s == '\n' then tail s else s) $ replace "\n\n" "\n" $ U.toString mb)
+                case results of
+                  d:[] -> return $ Right (p, ("", "", d, "", ""))
+                  (etitle:eauthor:edate:_) -> do
+                    let edoi = lines $ U.toString mb2
+                    let edoi' = if null edoi then "" else head edoi
+                    -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
+                    (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p']
+                    let ecreator = filterAuthors $ U.toString mb3
+                    let eauthor' = filterAuthors eauthor
+                    let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
+                    hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi'
+                    a <- fmap (fromMaybe "") $ doi2Abstract edoi'
+                    return $ Right (p, (trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', a))
+                  _ -> return (Left Permanent)
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 -- case aMaybe of
                 --   Nothing -> return (Left Permanent)
@@ -341,10 +349,10 @@ pdf p = do (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", 
            else return (Left Permanent)
   where
    filterAuthors :: String -> String
-   filterAuthors ea = if any (`isInfixOf`ea) substrings || elem ea wholes then "" else ea
-    where substrings, wholes :: [String]
-          substrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors"]
-          wholes = ["Word", "P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
+   filterAuthors ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
+    where badSubstrings, badWholes :: [String]
+          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors"]
+          badWholes = ["Word", "P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
 
 -- nested JSON object: eg 'jq .message.abstract'
 newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
@@ -458,7 +466,7 @@ processArxivAbstract :: String -> String -> String
 processArxivAbstract u a = let cleaned = runPure $ do
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n")] a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (" ~", " \\sim")] a
                                     writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
                  Left e -> error $ u ++ " : " ++ show e ++ ": " ++ a
@@ -731,6 +739,7 @@ cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML t = trim $
   -- regexp substitutions:
   sedMany [
+  ("([0-9]+)[ -]fold", "\\1×"),
   ("<p><strong>([A-Z][a-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
   ("<p><strong>([A-Z][a-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
   ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
@@ -767,10 +776,14 @@ cleanAbstractsHTML t = trim $
     , ("<i>", "<em>")
     , ("</i>", "</em>")
     -- math substitutions:
+    , ("<span class=\"math inline\">\\(tanh\\)</span>", "<em>tanh</em>")
     , ("<span class=\"texhtml \">O(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
     , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
     , ("$O(log n)$", "𝒪(log <em>n</em>)")
     , ("$\\mathcal{O}(log n)$", "𝒪(log <em>n</em>)")
+    , ("<span class=\"math inline\">\\(\\mathcal{O}(L^2)\\)</span>", "𝑂(<em>L</em><sup>2</sup>)")
+    , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\log(L))\\)</span>", "𝑂(log(<em>L</em>))")
+    , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\sqrt{L})\\)</span>", "𝑂(√<em>L</em>)")
     , ("<span class=\"math inline\">\\(\\mathcal{O}(n\\log n)\\)</span>", "𝒪(<em>n</em> log <em>n</em>)")
     , ("$\\mathrm{sinc}(ax)$", "sinc(<em>ax</em>)")
     , ("<span class=\"texhtml \">\\mathrm{sinc}(ax)</span>", "sinc(<em>ax</em>)")
@@ -1065,6 +1078,7 @@ cleanAbstractsHTML t = trim $
     , ("</italic>", "</em>")
     , ("< /i>", "</i>")
     , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "<p>")
+    , ("<jats:title>Abstract</jats:title><jats:p>The</jats:p>", "")
     , ("<h3>ABSTRACT</h3>", "")
     , ("<h3>Abstract</h3>", "")
     , ("<h3>SUMMARY</h3>", "")
@@ -1241,6 +1255,14 @@ cleanAbstractsHTML t = trim $
     , ("xlink:type=\"simple\"", "")
     , ("</ext-link>", "</a>")
     , ("beta=", "β = ")
+    , (" = 0", " = 0")
+    , (" R2", " R<sup>2</sup>")
+    , ("R2 = ", "R<sup>2</sup> = ")
+    , ("P = ", "<em>p</em> = ")
+    , ("P values", "<em>p</em>-values")
+    , (" P &lt; .", " <em>p</em> &lt; 0.")
+    , (" P &lt;", " <em>p</em> &lt;")
+    , (" P &lt;", " <em>p</em> &lt;")
     , ("≤p≤",     " ≤ <em>p</em> ≤ ")
     , ("\40r=",     "\40<em>r</em> = ")
     , ("\40R=",     "\40<em>r</em> = ")
@@ -1275,6 +1297,7 @@ cleanAbstractsHTML t = trim $
     , ("\40p=",     "\40<em>p</em> = ")
     , (" n=",     " <em>n</em> = ")
     , ("( n=", "( <em>n</em> = ")
+    , ("( <em>p</em>", "(<em>p</em>")
     , (" p&lt;", " <em>p</em> &lt; ")
     , ("p = 0",   "<em>p</em> = 0")
     , (" P=",     " <em>p</em> = ")
@@ -1354,6 +1377,8 @@ cleanAbstractsHTML t = trim $
     , ("one- or five-shot", "one-shot or five-shot")
     , ("lan- guage", "language")
     , ("pro-posed", "proposed")
+    , ("case- control", "case-control")
+    , ("high- g", "high-<em>g</em>")
     , ("\t\t", "")
     , ("\t\t\t\t\t", "")
     , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens

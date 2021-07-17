@@ -451,13 +451,14 @@ else
     wrap λ "Corrupted or broken PDFs"
 
     λ(){
+        export LL="$(curl --silent ifconfig.me)"
         checkSpamHeader() {
             HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | \
                          fgrep -e 'INFORMATION TO USERS' -e 'Your use of the JSTOR archive indicates your acceptance of JSTOR' \
                                -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
                                -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
                                -e 'Additional services and information for ' -e 'Access to this document was granted through an Emerald subscription' \
-                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers')
+                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers' -e "$LL" )
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
