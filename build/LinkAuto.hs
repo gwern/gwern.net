@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-17 20:41:27 gwern"
+When:  Time-stamp: "2021-07-16 21:12:38 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -150,28 +150,12 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ map (T.repla
 
 -- Optimization: try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
 -- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.
--- Hypothetically, we can optimize this further: it may be possible to create a 'regexp trie' where the leaves are associated with each original regexp, and search the trie in parallel for all matching leaves.
+-- Hypothetically, we can optimize this further: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible to create a 'regexp trie' where the leaves are associated with each original regexp, and search the trie in parallel for all matching leaves.
 filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-filterMatches p definitions  = let
-  in if not (matchTest (masterRegex definitions) plain) -- see if document matches *any* regex, to try to bail out early
+filterMatches p definitions  = let plain = simplifiedDoc p
+  in if not (matchTest masterRegex plain) -- see if document matches *any* regex, to try to bail out early
      then []
-     else filterMatch definitions
- where
-   plain :: T.Text -- cache the plain text of the document
-   plain = simplifiedDoc p
-
-   -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes.
-   -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;
-   -- if we have more than one regexp, test the full list; if none match, return empty list, otherwise, split in half, and recurse on each half.
-   filterMatch :: [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-   filterMatch [] = []
-   filterMatch (d:[]) = if matchTest (masterRegex [d]) plain then [d] else [] -- only one match left, base case
-   filterMatch ds = if not (matchTest (masterRegex ds) plain) then [] else
-     let l = length ds `div` 2 in filterMatch (take l ds) ++ filterMatch (drop l ds)
-
- -- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
-masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex
-masterRegex ds = R.makeRegex $ T.intercalate "|" $ map (\(a,_,_) -> a) ds
+     else filter (\(_,b,_) -> matchTest b plain) definitions -- if so, test regexes one by one
 
 -- We want to match our given regexps by making them 'word-level' and matching on punctuation/whitespace delimiters. This avoids subword matches, for example, matching 'GAN' in 'StyleGAN' is undesirable.
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
@@ -180,6 +164,10 @@ customDefinitionsR = map (\(a,b) -> (a,
                                       b))
 
 -----------
+
+-- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
+masterRegex :: R.Regex
+masterRegex = R.makeRegex $ T.intercalate "|" $ map (\(a,_,_) -> a) $ customDefinitions
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
