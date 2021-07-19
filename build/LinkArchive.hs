@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-07-15 10:35:33 gwern"
+When:  Time-stamp: "2021-07-20 10:42:02 gwern"
 License: CC-0
 -}
 
@@ -803,6 +803,7 @@ whiteList url
       , "www.openphilanthropy.org" -- stable
       , "alignmentforum.org" -- stable
       , "forum.effectivealtruism.org" -- stable
+      , "www.effectivealtruism.org" -- stable
       , "www.preclinicaltrials.eu" -- service
       , "disease-connect.org" -- service
       , "chrome.google.com/webstore/" -- service
@@ -837,7 +838,7 @@ whiteList url
       , "www.courtlistener.com/" -- stable
       , "console.cloud.google.com" -- cloud service requiring login
       , "imsdb.com" -- homepage
-      , "www.reg.ru/blog/anime-generation-with-stylegan/" -- mirror of /Faces
+      , "www.reg.ru/blog/anime-generation-with-stylegan/" -- unnecessary (mirror of /Faces)
       , "catscan2.toolforge.org" -- interactive/service
       , "www.mangafox.com/manga" -- service/pirated
       , "highlightcam.co.nz" -- homepage
@@ -872,5 +873,6 @@ whiteList url
       , "bitcoinbook.cs.princeton.edu" -- homepage
       , "theme.typora.io" -- stable/updated source code/docs
       , "sigbovik.org/" -- stable/homepage
+      , "sociologicalscience.com" -- stable (preprint host)
       ] = True
     | otherwise = False

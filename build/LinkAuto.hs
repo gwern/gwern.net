@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-16 21:12:38 gwern"
+When:  Time-stamp: "2021-07-19 17:48:56 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -358,7 +358,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("GPT-3", "https://arxiv.org/abs/2005.14165#openai")
   , ("GPT-f", "https://arxiv.org/abs/2009.03393#openai")
   , ("GPT-J", "https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/")
-  , ("Grover", "https://arxiv.org/abs/1905.12616")
+  , ("GROVER", "https://arxiv.org/abs/1905.12616#allen") -- it's an acronym, the paper writes it in all-caps even if the homepage doesn't, and 'Grover' is an unfortunately common surname; so we'll just always write "GROVER" to eliminate collisions...
   , ("gscan2pdf", "http://gscan2pdf.sourceforge.net/")
   , ("GShard", "https://arxiv.org/abs/2006.16668#google")
   , ("GSPMD", "https://arxiv.org/abs/2105.04663#google")
@@ -514,6 +514,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("popups\\.js", "/static/js/popups.js")
   , ("Practical Typography", "https://practicaltypography.com/")
   , ("Prediction[Bb]ook.com", "https://predictionbook.com/")
+  , ("[Pp]rediction [Mm]arket.?", "/Prediction-markets")
   , ("[Pp]redictron", "https://arxiv.org/abs/1612.08810")
   , ("(President|Barack) Obama", "https://en.wikipedia.org/wiki/Barack_Obama")
   , ("ProGANs?", "https://arxiv.org/abs/1710.10196")
@@ -789,4 +790,8 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Turing-NLG", "https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/")
   , ("[Cc]onfounding", "https://en.wikipedia.org/wiki/Confounding")
   , ("[Rr]everse causation", "https://en.wikipedia.org/wiki/Correlation_does_not_imply_causation#B_causes_A_(reverse_causation_or_reverse_causality)")
+  , ("[Cc]rowdsourcing", "https://en.wikipedia.org/wiki/Crowdsourcing")
+  , ("[Pp]opulation genetics?", "https://en.wikipedia.org/wiki/Population_genetics")
+  , ("[Gg]roup selection(ism)?", "https://en.wikipedia.org/wiki/Group_selection")
+  , ("[Pp]arasocial", "/notes/Parasocial")
   ] :: [(T.Text,T.Text)] )
