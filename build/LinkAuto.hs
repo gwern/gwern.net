@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-19 17:48:56 gwern"
+When:  Time-stamp: "2021-07-20 17:13:14 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -794,4 +794,11 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Pp]opulation genetics?", "https://en.wikipedia.org/wiki/Population_genetics")
   , ("[Gg]roup selection(ism)?", "https://en.wikipedia.org/wiki/Group_selection")
   , ("[Pp]arasocial", "/notes/Parasocial")
+  , ("[Dd]ecision[ -][Tt]heor(y|ies|etc)", "https://en.wikipedia.org/wiki/Decision_theory#Choice_under_uncertainty")
+  , ("[Aa]pproximate [Bb]ayesian [Cc]omputation", "https://en.wikipedia.org/wiki/Approximate_Bayesian_computation")
+  , ("Bayesian decision", "https://en.wikipedia.org/wiki/Subjective_expected_utility")
+  , ("Bayesian (models?|approach|estimation|methods?|statistics?|analysis|inference)", "https://en.wikipedia.org/wiki/Bayesian_statistics")
+  , ("(Naive[ -])?Bayes(ian)? classifier.?", "https://en.wikipedia.org/wiki/Naive_Bayes_classifier")
+  , ("Bayesian optimization", "https://en.wikipedia.org/wiki/Bayesian_optimization")
+  , ("Bayesian RL", "https://arxiv.org/abs/1609.04436")
   ] :: [(T.Text,T.Text)] )
