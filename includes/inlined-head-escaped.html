@@ -1608,13 +1608,11 @@ a > .smallcaps-auto { margin-left: 0.7px; }
     background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z" fill="%23000"/></svg>');
 }
 
-/* Modifying the 'fill' does not work so well when we call an SVG as a 'background-image', however, like for the —𝔊— footers on the index page, so we hardwire a white fill variable in a copy of the logo as a hack. */
-/* body.index article::after, body.tags article::after, body.directory-index article::after { */
-/*     background-image: url('/static/img/logo/logo-smooth-white.svg'); } */
-body.index article::after, body.tags article::after, body.directory-index article::after {
+/* Modifying the 'fill' does not work so well when we call an SVG as a 'background-image' (like for the —𝔊— footers on the index page), so we do variable+invert tricks to get a white copy of the logo as a hack. */
+body.index main article::after, body.tags main article::after, body.directory-index main article::after {
     filter: invert(1); background-color: var(--GW-body-background-color-inverted); }
 
-/*  The ‘celestial symbol’ horizonal rules are SVGs and must be inverted.
+/*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
     */
 hr::after,
 .horizontalRule-nth-0 hr::after {
