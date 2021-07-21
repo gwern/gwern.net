@@ -499,7 +499,7 @@ hr::after,
 .horizontalRule-nth-0 hr::after {
     /* https://commons.wikimedia.org/wiki/File:Sun_of_Vergina_black.svg */
     content: url('/static/img/icons/sun-verginasun-black.svg');
-    opacity: 0.85;
+    opacity: 0.87;
     width: 40px;
     height: 40px;
 }
@@ -508,13 +508,13 @@ hr::after,
     /* NOTE: alternative moon icon is /static/img/icons/japanesecrest-oookashippouofoookatadasuke-sun.svg modified from https://commons.wikimedia.org/wiki/File:Japanese_crest_Oooka_Shippou_of_Oooka_Tadasuke.svg - while nice, it lacks the intense moire effect of the Vergina Sun */
     content: url('/static/img/icons/japanesecrest-tsukinihoshi-dottedmoon.svg');
     opacity: 0.90;
-    width: 24px;
-    height: 24px;
+    width: 25px;
+    height: 25px;
 }
 .horizontalRule-nth-2 hr::after {
     content: url('/static/img/icons/asterism-triplewhitestar.svg');
-    width: 30px;
-    height: 28px;
+    width: 36px;
+    height: 30px;
 }
 .horizontalRule-nth-2 {
     filter: drop-shadow(0 0 0 currentColor);
@@ -581,7 +581,7 @@ ol {
 }
 #markdownBody ul,
 #markdownBody ol {
-	display: flow-root;
+    display: flow-root;
 }
 li > ul,
 li > ol {
@@ -734,8 +734,8 @@ figcaption {
     width: fit-content;
 }
 figcaption strong {
-	font-weight: inherit;
-	font-variant-caps: small-caps;
+    font-weight: inherit;
+    font-variant-caps: small-caps;
 }
 @media only screen and (max-width: 649px) {
     figcaption {
@@ -2258,9 +2258,9 @@ body.directory-index article::before {
     }
 }
 @media only screen and (max-width: 649px) {
-	body.index #back-to-top {
-		left: unset;
-	}
+    body.index #back-to-top {
+        left: unset;
+    }
 }
 
 /*=----------------=*/
@@ -2788,7 +2788,7 @@ body.directory-index #disqus_thread {
 
 .popframe ul,
 .popframe ol {
-	overflow: unset;
+    overflow: unset;
 }
 
 .popframe:not(.zoomed) p + p {
@@ -2945,53 +2945,53 @@ body.directory-index #disqus_thread {
     height: 100%;
 }
 
-/*	Wikipedia entries.
-	*/
+/*  Wikipedia entries.
+    */
 .wikipedia-entry .table-wrapper {
-	margin: 1.5em 0 1.5em 0;
-	clear: both;
+    margin: 1.5em 0 1.5em 0;
+    clear: both;
 }
 .wikipedia-entry .infobox {
-	font-size: 0.9em;
+    font-size: 0.9em;
 }
 .wikipedia-entry .infobox tbody tr:hover {
-	outline: none;
+    outline: none;
 }
 .wikipedia-entry .infobox th[colspan="2"],
 .wikipedia-entry .infobox td[colspan="2"],
 .wikipedia-entry .infobox th.sidebar-title,
 .wikipedia-entry .infobox th.sidebar-heading {
-	text-align: center;
+    text-align: center;
 }
 .wikipedia-entry .infobox th {
-	border-top: 1px solid var(--GW-table-row-horizontal-border-color);
+    border-top: 1px solid var(--GW-table-row-horizontal-border-color);
 }
 .wikipedia-entry .infobox tr:first-of-type th {
-	font-size: 1.25em;
+    font-size: 1.25em;
 }
 .wikipedia-entry .infobox td:first-child {
-	font-weight: bold;
+    font-weight: bold;
 }
 .wikipedia-entry .infobox td ul {
-	margin: 0.25em 0;
-	padding: 0 0 0 1.5em;
+    margin: 0.25em 0;
+    padding: 0 0 0 1.5em;
 }
 .popframe.annotation .popframe-content-view.wikipedia-entry > figure.float-right {
     margin: 0.125em 0 0.75em 1.5em;
 }
 .wikipedia-entry #Timeline-row {
-	display: flex;
-	width: -moz-fit-content;
-	width: fit-content;
-	margin: 0.25em auto;
+    display: flex;
+    width: -moz-fit-content;
+    width: fit-content;
+    margin: 0.25em auto;
 }
 .wikipedia-entry th br ~ * {
-	font-weight: normal;
-	font-size: calc((1 / 1.25) * 1em);
+    font-weight: normal;
+    font-size: calc((1 / 1.25) * 1em);
 }
 .wikipedia-entry .hatnote {
-	margin: 0 0 0.75em 0;
-	font-style: italic;
+    margin: 0 0 0.75em 0;
+    font-style: italic;
 }
 
 /*┌──────────────────────┐*/
@@ -3781,7 +3781,7 @@ body.directory-index #disqus_thread {
     width: 2em;
     position: absolute;
     left: 0.4em;
-    top: 0.4em;
+    top: 0.1em;
     color: var(--GW-popups-popup-options-dialog-button-text-color);
     margin: 1px;
 }
@@ -3953,7 +3953,7 @@ body.directory-index #disqus_thread {
     right: calc(-1 * var(--GW-popins-popin-border-width));
     bottom: calc(100%);
     height: calc(var(--GW-popins-popin-border-width) + var(--GW-popins-popin-title-bar-height));
-	max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)) - 2em);
+    max-width: calc(100% + (2 * var(--GW-popins-popin-border-width)) - 2em);
     border-style: double;
     border-color: var(--GW-popins-popin-border-color);
     border-width:  var(--GW-popins-popin-border-width) var(--GW-popins-popin-border-width) 0 var(--GW-popins-popin-border-width);
@@ -4031,27 +4031,27 @@ body.directory-index #disqus_thread {
     opacity: 0.35;
 }
 
-/*	Popin stack counter.
-	*/
+/*  Popin stack counter.
+    */
 .popin-stack-counter {
-	position: absolute;
-	right: calc(100% + var(--GW-popins-popin-border-width));
-	bottom: var(--GW-popins-popin-border-width);
-	height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 3px);
+    position: absolute;
+    right: calc(100% + var(--GW-popins-popin-border-width));
+    bottom: var(--GW-popins-popin-border-width);
+    height: calc(var(--GW-popins-popin-title-bar-height) - var(--GW-popins-popin-border-width) - 3px);
     padding: 0 0.5em;
-	background-color: var(--GW-popins-popin-border-color);
-	border-style: solid;
-	border-color: var(--GW-popins-popin-border-color);
-	border-width: 1px 0 0 1px;
-	font-family: var(--GW-sans-serif-font-stack);
-	font-size: 0.8rem;
-	font-weight: normal;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    background-color: var(--GW-popins-popin-border-color);
+    border-style: solid;
+    border-color: var(--GW-popins-popin-border-color);
+    border-width: 1px 0 0 1px;
+    font-family: var(--GW-sans-serif-font-stack);
+    font-size: 0.8rem;
+    font-weight: normal;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-indent: 0;
-	cursor: default;
-	color: var(--GW-popins-popin-stack-counter-text-color);
+    cursor: default;
+    color: var(--GW-popins-popin-stack-counter-text-color);
 }
 
 /*┌────────────────────┐*/
@@ -4159,25 +4159,25 @@ body.directory-index #disqus_thread {
 
 .popin-open:not(.footnote-ref),
 .popin-open:not(.footnote-ref):hover {
-	background-color: var(--GW-popins-popin-background-color);
-	--GW-link-underline-background-color: var(--GW-popins-popin-background-color);
-	--popin-open-highlight-box-shadow-x-offset: 2px;
-	box-shadow:
-		var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--GW-popins-popin-background-color);
-	background-image: none !important;
-	display: inline-block;
+    background-color: var(--GW-popins-popin-background-color);
+    --GW-link-underline-background-color: var(--GW-popins-popin-background-color);
+    --popin-open-highlight-box-shadow-x-offset: 2px;
+    box-shadow:
+        var(--popin-open-highlight-box-shadow-x-offset) 0 0 5px var(--GW-popins-popin-background-color);
+    background-image: none !important;
+    display: inline-block;
     text-align: left;
     text-indent: 0;
 }
 .popin-open:not(.footnote-ref)::before,
 .popin-open:not(.footnote-ref):hover::before {
-	background-image: none;
-	width: calc(100% + 2 * var(--GW-popins-popin-border-width));
-	height: calc(100% + 2 * var(--GW-popins-popin-border-width));
-	border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
-	left: calc(var(--popin-open-highlight-box-shadow-x-offset) - (2 * var(--GW-popins-popin-border-width)));
-	bottom: calc(0px - (2 * var(--GW-popins-popin-border-width)));
-	top: unset;
+    background-image: none;
+    width: calc(100% + 2 * var(--GW-popins-popin-border-width));
+    height: calc(100% + 2 * var(--GW-popins-popin-border-width));
+    border: var(--GW-popins-popin-border-width) double var(--GW-popins-popin-border-color);
+    left: calc(var(--popin-open-highlight-box-shadow-x-offset) - (2 * var(--GW-popins-popin-border-width)));
+    bottom: calc(0px - (2 * var(--GW-popins-popin-border-width)));
+    top: unset;
 }
 
 /*=-------------=*/
@@ -4189,12 +4189,12 @@ body.directory-index #disqus_thread {
 /*└────────────────────┘*/
 
 @media only screen and (max-width: 649px) {
-	.popin .annotation-abstract figure:first-child {
-		margin-top: 1.75em;
-	}
-	.popin .annotation-abstract.wikipedia-entry figure:first-child {
-		margin-top: 1.5em;
-	}
+    .popin .annotation-abstract figure:first-child {
+        margin-top: 1.75em;
+    }
+    .popin .annotation-abstract.wikipedia-entry figure:first-child {
+        margin-top: 1.5em;
+    }
 }
 
 /*┌──────────────────┐*/
@@ -4202,7 +4202,7 @@ body.directory-index #disqus_thread {
 /*└──────────────────┘*/
 
 .popin.footnote {
-	min-height: unset;
+    min-height: unset;
 }
 
 /*┌──────────────────────────┐*/
@@ -4277,9 +4277,9 @@ body.directory-index #disqus_thread {
 /*└──────────────┘*/
 
 .popin {
-	white-space: normal;
-	font-weight: normal;
-	font-style: normal;
+    white-space: normal;
+    font-weight: normal;
+    font-style: normal;
     font-size: var(--GW-body-text-font-size);
     text-align: unset;
 }
@@ -4289,17 +4289,17 @@ body.directory-index #disqus_thread {
 /*└───────────────────────┘*/
 
 .popin .markdownBody p {
-	text-align: justify;
+    text-align: justify;
 }
 
-/*	Page metadata block in local page embed popups.
-	*/
+/*  Page metadata block in local page embed popups.
+    */
 .popin #page-metadata-block span:nth-of-type(3) {
-	white-space: normal;
-	display: block;
+    white-space: normal;
+    display: block;
 }
 .popin #page-metadata-block > span:nth-child(n+2)::after {
-	content: none;
+    content: none;
 }
 
 /*********************/
