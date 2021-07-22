@@ -23,12 +23,13 @@ import Control.Concurrent (threadDelay)
 
 import Data.FileStore.Utils (runShellCommand)
 
-import Text.Pandoc (Inline(..), Block(..), Pandoc)
+import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown)
 import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk (breakSlashes . breakEquals) .
-                       walk smallcapsfyInlineCleanup . walk smallcapsfy . rulersCycle 3
+typographyTransform = walk smallcapsfyInlineCleanup . walk smallcapsfy .
+                      walk (breakSlashes . breakEquals) .
+                      rulersCycle 3
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
 -- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
@@ -128,13 +129,20 @@ breakSlashes x@CodeBlock{} = x
 breakSlashes x@RawBlock{}  = x
 breakSlashes x@Header{}    = x
 breakSlashes x@Table{}     = x
-breakSlashes x = walk breakSlashesInline x
-breakSlashesInline :: Inline -> Inline
+breakSlashes x = topDown breakSlashesInline x
+breakSlashesInline, breakSlashesPlusThinSpaces :: Inline -> Inline
 breakSlashesInline x@(SmallCaps _) = x
-breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>')) s then -- things get tricky if we mess around with raw HTML, so we bail out for anything that even *looks* like it might be HTML tags & has '<>'
+breakSlashesInline (Link a ss ts)  = Link a (walk breakSlashesPlusThinSpaces ss) ts
+breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ')) s then -- things get tricky if we mess around with raw HTML, so we bail out for anything that even *looks* like it might be HTML tags & has '<>' or a HAIR SPACE already
                                  RawInline "html" (T.replace " /<wbr> " " / " $ T.replace " /<wbr>" " /" $ T.replace "/<wbr> " "/ " $ -- fix redundant <wbr>s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
                                                    T.replace "/" "/<wbr>" s) else x
 breakSlashesInline x = x
+-- the link-underlining hack, using drop-shadows, causes many problems with characters like slashes 'eating' nearby characters; a phrase like "A/B testing" is not usually a problem because the slash is properly kerned, but inside a link, the '/' will eat at 'B' and other characters where the top-left comes close to the top of the slash. (We may be able to drop this someday if CSS support for underlining with skip-ink ever solidifies.)
+-- The usual solution is to insert a HAIR SPACE or THIN SPACE. Here, we descend inside Link nodes to their Str to  add both <wbr> (line-breaking is still an issue AFAIK) and HAIR SPACE (THIN SPACE proved to be too much).
+breakSlashesPlusThinSpaces x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ')) s then
+                                 RawInline "html" (T.replace " /<wbr> " " / " $ T.replace " /<wbr>" " /" $ T.replace "/<wbr> " "/ " $
+                                                   T.replace "/" " / <wbr>" s) else x
+breakSlashesPlusThinSpaces x = x
 
 breakEquals :: Block -> Block
 breakEquals x@CodeBlock{} = x
