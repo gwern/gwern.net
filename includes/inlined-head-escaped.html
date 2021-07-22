@@ -1067,7 +1067,7 @@ May be able at some point to simplify this using regular link underlining, since
 */
 
 .markdownBody a:link,
-div#footer a {
+#footer a:link {
     text-decoration: none;
     background-image: linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
     background-size: 1px 1px;
@@ -1079,7 +1079,8 @@ div#footer a {
     font-variant-numeric: lining-nums;
 }
 .markdownBody a:link,
-.markdownBody a:link * {
+.markdownBody a:link *,
+footer a:link {
     text-shadow:
          0      0.05em  var(--GW-link-underline-background-color),
          0.05em 0.05em  var(--GW-link-underline-background-color),
