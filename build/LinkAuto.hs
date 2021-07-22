@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-20 17:13:14 gwern"
+When:  Time-stamp: "2021-07-21 16:00:27 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -801,4 +801,5 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("(Naive[ -])?Bayes(ian)? classifier.?", "https://en.wikipedia.org/wiki/Naive_Bayes_classifier")
   , ("Bayesian optimization", "https://en.wikipedia.org/wiki/Bayesian_optimization")
   , ("Bayesian RL", "https://arxiv.org/abs/1609.04436")
+  , ("(non|anti)?-?[Ee]pilep(sy|ies|etics?)", "https://en.wikipedia.org/wiki/Epilepsy")
   ] :: [(T.Text,T.Text)] )

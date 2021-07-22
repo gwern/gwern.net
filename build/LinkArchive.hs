@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-07-20 10:42:02 gwern"
+When:  Time-stamp: "2021-07-21 20:50:26 gwern"
 License: CC-0
 -}
 
@@ -606,6 +606,7 @@ whiteList url
       , "beepb00p.xyz" -- stable
       , "equestriadaily.com/search" -- service
       , "libgen.is" -- service
+      , "libgen.rs" -- service
       , "gen.lib.rus.ec" -- service
       , "nyaa.se" -- service
       , "nyaa.eu" -- service
