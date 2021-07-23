@@ -154,6 +154,17 @@ else
     # Testing compilation results:
     set +e
 
+    λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
+         echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
+                                     fgrep --invert-match -e '/docs/cs/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
+                                                          -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
+                                -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
+                                -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
+                                -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
+                                -e '/nootropics/Magnesium' -e '/Selection';
+       }
+    wrap λ "Warning: unauthorized LaTeX users somewhere"
+
     λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 13040 ] && echo "$VISIBLE_N" && exit 1; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
@@ -166,38 +177,30 @@ else
     λ(){ fgrep --color=always '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!Margin:'; }
-    wrap λ "Stray interwiki links"
-
     λ(){ PAGES=$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/')
        for PAGE in $PAGES; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
-    wrap λ "Smallcaps-auto regression"
+    wrap λ "Smallcaps-auto regression in Markdown"
 
-    λ(){ PAGES="$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/') $(find _site/metadata/annotations/ -type f -name '*.html' | sort)"
-         echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
-                                     fgrep --invert-match -e '/docs/cs/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
-                                                          -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
-                                -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
-             -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
-             -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
-             -e '/nootropics/Magnesium';
-       }
-    wrap λ "Warning: unauthorized LaTeX users"
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!Margin:'; }
+    wrap λ "Stray interwiki links in Markdown"
+
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 egrep --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
+    wrap λ "Incorrect PDF page links in Markdown"
 
     λ(){ find ./ -type f -name "*.page" -type f -exec egrep --color=always -e 'cssExtension: [a-c,e-z]' {} \; ; }
-    wrap λ "Incorrect drop caps"
-
-    λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | fgrep -v '.git/FETCH_HEAD'; }
-    wrap λ "Empty files"
-
-    λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=100 "fgrep --color=always --with-filename -- '————–'"; }
-    wrap λ "Broken table"
+    wrap λ "Incorrect drop caps in Markdown"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
-    wrap λ "Broken code"
+    wrap λ "Broken code in Markdown"
 
     λ(){ egrep --color=always -e '<div class="admonition .*">[^$]' -e '<div class="epigrah">' **/*.page; }
-    wrap λ "Broken admonition paragraph or epigraph."
+    wrap λ "Broken admonition paragraph or epigraph in Markdown"
+
+    λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | fgrep -v '.git/FETCH_HEAD'; }
+    wrap λ "Empty files somewhere"
+
+    λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=100 "fgrep --color=always --with-filename -- '————–'"; }
+    wrap λ "Broken tables in HTML"
 
     λ(){ egrep --color=always '^"~/' ./static/redirects/nginx.conf; }
     wrap λ "Warning: tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
