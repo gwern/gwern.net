@@ -227,7 +227,7 @@ else
                -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
                -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' \
                -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
-               -e ']https' -- ./metadata/*.yaml; }
+               -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
@@ -513,6 +513,13 @@ else
           done; }
     wrap λ "Too-wide images (downscale)"
 
+    ## Remind to refine doc directories/tags (should be <50):
+    find docs/ -type d -print0 | egrep --null-data -v -e 'docs/$' -e 'www' -e 'rotten.com' -e '2011-gwern-yourmorals.org' -e '2000-iapac-norvir' |
+        while read -d '' -r dir;
+    do N=$(find "$dir" -maxdepth 1 -type f | wc --lines);
+       if [[ $N -gt 50 ]]; then printf "%5d: %s\n" $N "$dir"; fi;
+    done | sort --numeric-sort
+
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ $(date +"%d") == "1" ]; then
 
@@ -541,10 +548,10 @@ else
     if [ $(date +"%j") == "002" ]; then
         bold "Checking all URLs for redirects…"
         for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell -istatic/build/ static/build/link-extractor.hs | \
-                         egrep -e '^/' | sort -u); do
+                         egrep -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://www.gwern.net$URL");
-            if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
+            if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
         for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell -istatic/build/ static/build/link-extractor.hs | \
