@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-23 12:02:05 gwern"
+When:  Time-stamp: "2021-07-25 18:54:52 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -452,7 +452,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Mind Sparke", "http://www.mindsparke.com/")
   , ("[Mm]inuets?", "https://en.wikipedia.org/wiki/Minuet")
   , ("MLP:?FIM", "https://en.wikipedia.org/wiki/My_Little_Pony:_Friendship_Is_Magic")
-  , ("MLP-?Mixer", "https://arxiv.org/abs/2105.01601#google")
+  , ("MLP-?Mixers?", "https://arxiv.org/abs/2105.01601#google")
   , ("[Mm]odal [Rr]ealism", "https://en.wikipedia.org/wiki/Modal_realism")
   , ("Modern Synthesis", "https://en.wikipedia.org/wiki/Neo-Darwinism")
   , ("Moebius-like", "https://en.wikipedia.org/wiki/Jean_Giraud")
@@ -792,7 +792,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("[Rr]everse causation", "https://en.wikipedia.org/wiki/Correlation_does_not_imply_causation#B_causes_A_(reverse_causation_or_reverse_causality)")
   , ("[Cc]rowdsourcing", "https://en.wikipedia.org/wiki/Crowdsourcing")
   , ("[Pp]opulation genetics?", "https://en.wikipedia.org/wiki/Population_genetics")
-  , ("[Gg]roup selection(ism)?", "https://en.wikipedia.org/wiki/Group_selection")
+  , ("([Gg]roup[ -]selection(ism)?|[Mm]ulti-level selection)", "https://en.wikipedia.org/wiki/Group_selection")
   , ("[Pp]arasocial", "/notes/Parasocial")
   , ("[Dd]ecision[ -][Tt]heor(y|ies|etc)", "https://en.wikipedia.org/wiki/Decision_theory#Choice_under_uncertainty")
   , ("[Aa]pproximate [Bb]ayesian [Cc]omputation", "https://en.wikipedia.org/wiki/Approximate_Bayesian_computation")
@@ -804,4 +804,17 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("(non|anti)?-?[Ee]pilep(sy|ies|etics?)", "https://en.wikipedia.org/wiki/Epilepsy")
   , ("t-SNE", "https://en.wikipedia.org/wiki/T-distributed_stochastic_neighbor_embedding")
   , ("mRNAs?", "https://en.wikipedia.org/wiki/Messenger_RNA")
+  , ("[Vv]itri(fied|fy|fying|fication)", "https://en.wikipedia.org/wiki/Vitrification")
+  , ("[Cc]ryonics?", "https://en.wikipedia.org/wiki/Cryonics")
+  , ("[Cc]ryopreserv(e.?|ation)", "https://en.wikipedia.org/wiki/Cryopreservation")
+  , ("[Bb]iobank(ed|s|ing)?", "https://en.wikipedia.org/wiki/Biobank")
+  , ("(UKBB|UK Bio ?[Bb]ank)", "https://en.wikipedia.org/wiki/UK_Biobank")
+  , ("([Mm]ulti-?[Ll]evel|[Hh]ierarchical linear|[Hh]ierarchical|[Ll]inear mixed[ -]effects?|[Ll]inear mixed|[Mm]ixed[ -]effects?|[Mm]ixed|[Nn]ested data|[Rr]andom-effects|[Rr]andom parameter) model(s|ing)?", "https://en.wikipedia.org/wiki/Multilevel_model")
+  , ("([Qq]uadcopter|[Qq]uadrotor)s?", "https://en.wikipedia.org/wiki/Quadcopter")
+  , ("[Mm]icrobio(me|ta).?", "https://en.wikipedia.org/wiki/Microbiome")
+  , ("[Cc]affein(e|ate|ated)", "https://en.wikipedia.org/wiki/Caffeine")
+  , ("([Ll]-)?[Tt]heanine.?", "https://en.wikipedia.org/wiki/Theanine")
+  , ("(Andrey )?Kolmogorov.?.?.?", "https://en.wikipedia.org/wiki/Andrey_Kolmogorov")
+  , ("Kolmogorov complexity", "https://en.wikipedia.org/wiki/Kolmogorov_complexity")
+  , ("Kolmogorov axioms", "https://en.wikipedia.org/wiki/Probability_axioms")
   ] :: [(T.Text,T.Text)] )

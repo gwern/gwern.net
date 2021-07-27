@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-07-16 21:16:24 gwern"
+When:  Time-stamp: "2021-07-26 16:50:51 gwern"
 License: CC-0
 -}
 
@@ -740,6 +740,7 @@ cleanAbstractsHTML t = trim $
   -- regexp substitutions:
   sedMany [
   ("([0-9]+)[ -]fold", "\\1×"),
+  ("([0-9]+)[ -]times", "\\1×"),
   ("<p><strong>([A-Z][a-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
   ("<p><strong>([A-Z][a-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
   ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
@@ -749,9 +750,9 @@ cleanAbstractsHTML t = trim $
   ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2"),
   ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
   ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
+  ("([0-9]+)-([0-9]+)", "\\1–\\2"),
   ("([0-9]) %", "\\1%"),
-  ("([.0-9]+)x", "\\1×"),
-  ("([.0-9]+)X", "\\1×"),
+  ("([.0-9]+)[xX]", "\\1×"),
   ("=-\\.([.0-9]+)", " = -0.\\1"),
   (" ([0-9]*[02456789])th", " \\1<sup>th</sup>"),
   (" ([0-9]*[1])st",        " \\1<sup>st</sup>"),
