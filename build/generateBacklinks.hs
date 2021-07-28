@@ -52,7 +52,7 @@ writeOutCallers :: Metadata -> T.Text -> [T.Text] -> IO ()
 writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/backlinks/" ++ urlEncode (T.unpack target) ++ ".html"
                                        -- guess at the anchor ID in the calling page, so the cross-page popup will pop up at the calling site,
                                        -- rather than merely popping up the entire page (and who knows *where* in it the reverse citation is).
-                                       -- (NOTE: This will fail if the default generated link ID has been overriden to disambiguate, unfortunately, and
+                                       -- (NOTE: This will fail if the default generated link ID has been overridden to disambiguate, unfortunately, and
                                        -- it'll just pop up the page as a whole. It would be difficult to rewrite the schema and preserve all
                                        -- variant overrides...)
                                        let ident = case M.lookup (T.unpack target) md of
@@ -87,10 +87,11 @@ parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
                             let links = filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                   extractLinks md text
-
-                            let caller = filter blackList $ repeat $ T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
-                            let called = filter (/= head caller) (map (T.pack . takeWhile (/='#') . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
-                            return $ zip called caller
+                            let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
+                            if not (blackList caller) then return [] else
+                             do
+                                let called = filter (/= caller) (map (T.pack . takeWhile (/='#') . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
+                                return $ zip called (repeat caller)
 
 type Backlinks = HM.HashMap T.Text [T.Text]
 
