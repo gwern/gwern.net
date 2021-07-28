@@ -7,12 +7,13 @@
 
 module Main where
 
-import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
-                     pandocExtensions, Inline(Link), Pandoc, Block(Para))
-import qualified Data.Text as T (append,  head, replace, pack, unlines, Text)
+import qualified Data.Text as T (append,  head, isInfixOf, replace, pack, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStr)
 import System.Environment (getArgs)
 import System.FilePath (takeBaseName)
+
+import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
+                     pandocExtensions, Inline(Link), Pandoc, Block(Para))
 
 import Columns (simplified)
 
@@ -50,5 +51,6 @@ extractURLs :: Pandoc -> [T.Text]
 extractURLs = queryWith extractURL
  where
    extractURL :: Inline -> [T.Text]
-   extractURL (Link _ il (u,_)) = [u`T.append`" "`T.append` (T.replace "\n" " " $ simplified $ Para il)]
+   extractURL x@(Link _ il (u,_)) = if "\"\"" `T.isInfixOf` u then error ("Error! Doubled double-quotes in: " ++ show x)
+                                    else [u`T.append`" "`T.append` (T.replace "\n" " " $ simplified $ Para il)]
    extractURL _ = []
