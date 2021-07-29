@@ -14,8 +14,10 @@ import System.FilePath (takeBaseName)
 
 import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
                      pandocExtensions, Inline(Link), Pandoc, Block(Para))
+import Text.Pandoc.Walk (walk)
 
 import Columns (simplified)
+import Interwiki (convertInterwikiLinks)
 
 -- | Map over the filenames
 main :: IO ()
@@ -48,7 +50,7 @@ extractLinks txt = let parsedEither = runPure $ readMarkdown def{readerExtension
 
 -- | Read 1 Pandoc AST and return its URLs as Strings
 extractURLs :: Pandoc -> [T.Text]
-extractURLs = queryWith extractURL
+extractURLs = queryWith extractURL . walk convertInterwikiLinks
  where
    extractURL :: Inline -> [T.Text]
    extractURL x@(Link _ il (u,_)) = if "\"\"" `T.isInfixOf` u then error ("Error! Doubled double-quotes in: " ++ show x)
