@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-07-21 20:50:26 gwern"
+When:  Time-stamp: "2021-07-27 23:19:37 gwern"
 License: CC-0
 -}
 
@@ -875,5 +875,6 @@ whiteList url
       , "theme.typora.io" -- stable/updated source code/docs
       , "sigbovik.org/" -- stable/homepage
       , "sociologicalscience.com" -- stable (preprint host)
+      , "eugenewei.com" -- stable
       ] = True
     | otherwise = False

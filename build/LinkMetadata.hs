@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-07-27 12:01:12 gwern"
+When:  Time-stamp: "2021-07-28 21:39:22 gwern"
 License: CC-0
 -}
 
@@ -750,7 +750,9 @@ cleanAbstractsHTML t = trim $
   ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2"),
   ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
   ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
-  ("([0-9]+)-([0-9]+)", "\\1–\\2"),
+  (" = -([0-9])", " = −\\1"), -- eg 'β = -0.08', HYPHEN to MINUS SIGN
+  ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>"), -- eg '10<sup>-7</sup>', HYPHEN to MINUS SIGN
+  ("([0-9]+%?)-([0-9]+)", "\\1–\\2"),
   ("([0-9]) %", "\\1%"),
   ("([.0-9]+)[xX]", "\\1×"),
   ("=-\\.([.0-9]+)", " = -0.\\1"),
@@ -770,8 +772,12 @@ cleanAbstractsHTML t = trim $
   -- simple string substitutions:
   replaceMany [
     ("<span style=\"font-weight:normal\"> </span>", "")
+    , ("<em>p</em>=", "<em>p</em> = ")
+    , ("β=", "β = ")
+    , ("\8217=", "\8217 = ")
     , (" the the ", " the ")
     , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
+    , ("</sub>=", "</sub> = ") -- eg '<em>r</em><sub>A</sub>=0.28'
     , ("<sup></sup>", "")
     , ("<sub></sub>", "")
     , ("<i>", "<em>")
@@ -1259,6 +1265,7 @@ cleanAbstractsHTML t = trim $
     , (" = 0", " = 0")
     , (" R2", " R<sup>2</sup>")
     , ("R2 = ", "R<sup>2</sup> = ")
+    , ("<em>p<\\/em>=", "<em>p</em> = ")
     , ("P = ", "<em>p</em> = ")
     , ("P values", "<em>p</em>-values")
     , (" P &lt; .", " <em>p</em> &lt; 0.")
