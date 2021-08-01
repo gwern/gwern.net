@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-07-31 23:40:15 gwern"
+When:  Time-stamp: "2021-07-28 23:21:21 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -33,13 +33,9 @@ Dependencies: Pandoc, text, regex-tdfa, /static/build/Columns.hs
 
 import Data.Char (isPunctuation)
 import Data.List (nub, sortBy)
-import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, Text)
-import Control.Concurrent (getNumCapabilities)
 import Control.Monad.State (evalState, get, put, State)
-import System.IO.Unsafe (unsafePerformIO)
-import Control.Parallel.Strategies (parMap, rseq)
 
 import Text.Pandoc (topDown, queryWith, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str))
 import Text.Pandoc.Walk (walkM, walk)
@@ -156,44 +152,10 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ map (T.repla
 -- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.
 -- Hypothetically, we can optimize this further: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible to create a 'regexp trie' where the leaves are associated with each original regexp, and search the trie in parallel for all matching leaves.
 filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-filterMatches p definitions  = if T.length plain < 20000 then
-                                 -- for short texts like annotations, the recursive tree is extremely expensive, so just do the straight-line version:
-                                 if not (matchTest allRegex plain) then []
-                                 else filter (\(_,r,_) -> matchTest r plain) definitions
-                               -- if long (>10k characters), we start the tree slog:
-                               else filterMatch definitions
-  where
-   plain :: T.Text -- cache the plain text of the document
-   plain = simplifiedDoc p
-
-   allRegex :: R.Regex
-   allRegex = masterRegex definitions
-
-   threadN :: Int
-   threadN = unsafePerformIO getNumCapabilities
-
-   regexpsMax :: Int
-   regexpsMax = 128
-
-   -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes.
-   -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;
-   -- if we have more than one regexp, test the full list; if none match, return empty list, otherwise, split in half, and recurse on each half.
-   filterMatch :: [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-   filterMatch  [] = []
-   filterMatch [d] = if matchTest (masterRegex [d]) plain then [d] else [] -- only one match left, base case
-   -- if none of the regexps match, quit; if any match, then decide whether the remaining list is short enough to check 1 by 1, or if
-   -- it is long enough that we should try to split it up into sublists and fork out the recursive call; doing a 'wide' recursion *should* be a lot faster than a binary tree
-   filterMatch ds
-    | not (matchTest (masterRegex ds) plain) = []
-    | length ds < regexpsMax = concatMap (filterMatch . return) ds
-    | otherwise =
-      let subDefinitions
-            = chunksOf ((length ds `div` threadN) `max` 2) ds
-        in concat $ parMap rseq filterMatch subDefinitions
-
--- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
-masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex
-masterRegex ds = R.makeRegex $ T.intercalate "|" $ map (\(a,_,_) -> a) ds
+filterMatches p definitions  = let plain = simplifiedDoc p
+  in if not (matchTest masterRegex plain) -- see if document matches *any* regex, to try to bail out early
+     then []
+     else filter (\(_,b,_) -> matchTest b plain) definitions -- if so, test regexes one by one
 
 -- We want to match our given regexps by making them 'word-level' and matching on punctuation/whitespace delimiters. This avoids subword matches, for example, matching 'GAN' in 'StyleGAN' is undesirable.
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
@@ -202,6 +164,10 @@ customDefinitionsR = map (\(a,b) -> (a,
                                       b))
 
 -----------
+
+-- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
+masterRegex :: R.Regex
+masterRegex = R.makeRegex $ T.intercalate "|" $ map (\(a,_,_) -> a) $ customDefinitions
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
@@ -338,7 +304,7 @@ customDefinitions = customDefinitionsR $ -- delimit & compile
   , ("Eleme", "https://en.wikipedia.org/wiki/Ele.me")
   , ("Elena Ferrante", "https://en.wikipedia.org/wiki/Elena_Ferrante")
   , ("El Ten Eleven", "https://en.wikipedia.org/wiki/El_Ten_Eleven")
-  , ("[Ee]nd[ -][Tt]o[ -][Ee]nd", "/notes/End-to-end")
+  , ("[Ee]nd-[Tt]o-[Ee]nd", "/notes/End-to-end")
   , ("entorhinal-hippocampal", "https://en.wikipedia.org/wiki/EC-hippocampus_system")
   , ("E\\. ?O\\. ?Wilson", "https://en.wikipedia.org/wiki/E._O._Wilson")
   , ("Epigrams in Programming", "/docs/cs/1982-perlis.pdf")
