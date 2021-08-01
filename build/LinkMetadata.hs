@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-07-28 21:39:22 gwern"
+When:  Time-stamp: "2021-07-31 20:26:52 gwern"
 License: CC-0
 -}
 
@@ -110,7 +110,7 @@ readLinkMetadata = do
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
-writeAnnotationFragments am md = void $ M.traverseWithKey (\p mi -> void $ forkIO $ writeAnnotationFragment am md p mi) md
+writeAnnotationFragments am md = void $! M.traverseWithKey (\p mi -> void $ forkIO $! writeAnnotationFragment am md p mi) md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> IO ()
 writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                           do let u' = linkCanonicalize u
@@ -133,21 +133,21 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
                                                Right finalHTML -> let refloated = T.pack $ restoreFloatRight e $ T.unpack finalHTML
                                                                   in writeUpdatedFile filepath' refloated
-   where -- write only when changed, to reduce sync overhead
-    writeUpdatedFile :: FilePath -> T.Text -> IO ()
-    writeUpdatedFile target contentsNew = do existsOld <- doesFileExist target
-                                             if not existsOld then
-                                               TIO.writeFile target contentsNew
-                                               else do contentsOld <- TIO.readFile target
-                                                       when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
+-- write only when changed, to reduce sync overhead
+writeUpdatedFile :: FilePath -> T.Text -> IO ()
+writeUpdatedFile target contentsNew = do existsOld <- doesFileExist target
+                                         if not existsOld then
+                                           TIO.writeFile target contentsNew
+                                           else do contentsOld <- TIO.readFile target
+                                                   when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
 
-    typesetHtmlField :: String -> String -> String
-    typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
-                           case fieldPandocMaybe of
-                             Left errr -> error $ show i ++ ": " ++ t ++ show errr
-                             Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
-                                                    let (Right fieldHtml) = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta fieldPandoc') in
-                               restoreFloatRight orig $ T.unpack fieldHtml
+typesetHtmlField :: String -> String -> String
+typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
+                       case fieldPandocMaybe of
+                         Left errr -> error $ show orig ++ ": " ++ t ++ show errr
+                         Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
+                                                let (Right fieldHtml) = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta fieldPandoc') in
+                           restoreFloatRight orig $ T.unpack fieldHtml
 
 getBackLink :: FilePath -> IO FilePath
 getBackLink p = do let backLinkRaw = "/metadata/annotations/backlinks/" ++
