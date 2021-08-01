@@ -22,7 +22,7 @@ import Columns (listsTooLong)
 
 main :: IO ()
 main = do dirs <- getArgs
-          let dirs' = map (\dir -> if "./" `isPrefixOf` dir then drop 2 dir else dir) dirs
+          let dirs' = map (\dir -> (if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/") dirs
 
           meta <- readLinkMetadata
 

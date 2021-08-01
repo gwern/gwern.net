@@ -41,7 +41,7 @@ else
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
     bold "Building directory indexes…"
     (runhaskell -istatic/build/ static/build/generateDirectory.hs \
-                $(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
+                $(find docs fiction haskell newsletter nootropics notes reviews zeo -type d \
                       | sort | fgrep -v -e 'docs/www/' -e 'docs/personal' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
                                         -e 'docs/statistics/order/beanmachine-multistage') ) # &
