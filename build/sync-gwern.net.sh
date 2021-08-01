@@ -73,7 +73,7 @@ else
     bold "Building Hakyll…"
     # Build:
     ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling:
-    ghc -tmpdir /tmp/ -Wall -rtsopts -threaded --make hakyll.hs
+    ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make hakyll.hs
     ## Parallelization:
     N="$(if [ ${#} == 0 ]; then echo 16; else echo "$1"; fi)"
     cd ../../ # go to site root
@@ -149,7 +149,9 @@ else
         fi
     }
     export -f staticCompileMathJax
-    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'; find _site/metadata/annotations/ -name '*.html') | shuf | parallel --jobs 32 --max-args=1 staticCompileMathJax
+    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
+     find _site/metadata/annotations/ -name '*.html') | shuf | \
+        parallel --jobs 32 --max-args=1 staticCompileMathJax
 
     # Testing compilation results:
     set +e
@@ -181,7 +183,7 @@ else
        for PAGE in $PAGES; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
     wrap λ "Smallcaps-auto regression in Markdown"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W)' -e '!W "' -e '!Margin:'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W\)' -e '!W "' -e '!Margin:'; }
     wrap λ "Stray interwiki links in Markdown"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 egrep --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
@@ -230,7 +232,7 @@ else
                -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
-    λ(){ fgrep --color=always -e '""' -- ./metadata/*.yaml | fgrep -v -e 'alt=""' -e 'controls=""'; }
+    λ(){ fgrep -e '""' -- ./metadata/*.yaml | fgrep -v -e 'alt=""' -e 'controls=""'; }
     wrap λ "Doubled double-quotes in YAML, usually an error."
 
     λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
@@ -441,6 +443,12 @@ else
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v -e images/thumbnails/ -e metadata/annotations/; }
     wrap λ "No files should have double hyphens or tildes in their names."
 
+    λ(){ find . -type f | fgrep -v -e '.'; }
+    wrap λ "Every file should have at least one period in them (extension)."
+
+    λ(){ find . -type f -name "*\.*\.page"; }
+    wrap λ "Markdown files should have exactly one period in them."
+
     bold "Checking for HTML/PDF/image anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
                          parallel --max-args=100 "fgrep --ignore-case --files-with-matches \
@@ -548,7 +556,7 @@ else
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
     if [ $(date +"%d") == "31" ]; then
-        rm ./metadata/annotations/*
+        rm ./metadata/annotations/*.html
     fi
 
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
