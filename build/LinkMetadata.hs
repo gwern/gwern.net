@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-07-31 20:26:52 gwern"
+When:  Time-stamp: "2021-08-02 11:31:14 gwern"
 License: CC-0
 -}
 
@@ -73,18 +73,25 @@ readLinkMetadata = do
              custom <- readYaml "metadata/custom.yaml"
 
              -- Quality checks:
-             -- - URLs, titles & annotations should all be unique, although author/date/DOI needn't be (we might annotate multiple parts of a single DOI)
+             -- requirements:
+             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation)
+             -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
+             -- - authors must exist (if only as 'Anonymous'), but are non-unique
+             -- - dates are non-unique & optional/NA for always-updated things like Wikipedia
+             -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do)
+             -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urls = map fst custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
+
              let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
-             -- all custom annotations should correspond to an existing file (auto.yaml may have stale entries, but custom.yaml should never! This indicates a renamed or missing file.)
+
              let files = map (takeWhile (/='#') . tail) $ filter (\u -> head u == '/') urls
              forM_ files (\f -> do exist <- doesFileExist f
                                    unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
 
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
-             -- - DOIs are optional since they usually don't exist, and dates are optional for always-updated things like WP; but everything else should:
              let emptyCheck = filter (\(u,(t,a,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
              unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
 
@@ -99,7 +106,6 @@ readLinkMetadata = do
              let balancedParens = filter (\(_,(_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
              unless (null balancedParens) $ error $ "Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
-
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata "metadata/auto.yaml" -- cleanup first
