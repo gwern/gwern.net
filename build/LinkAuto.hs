@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-01 17:03:45 gwern"
+When:  Time-stamp: "2021-08-03 14:52:50 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -37,7 +37,8 @@ import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, Text)
 import Control.Concurrent (getNumCapabilities)
-import Control.Parallel.Strategies (parMap, rseq)
+import Control.Parallel.Strategies (parMap, rdeepseq)
+import Control.DeepSeq (NFData(rnf))
 import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -156,12 +157,12 @@ filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ map (T.repla
 -- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.
 -- Hypothetically, we can optimize this further: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible to create a 'regexp trie' where the leaves are associated with each original regexp, and search the trie in parallel for all matching leaves.
 filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-filterMatches p definitions  = if T.length plain < 20000 then
+filterMatches p definitions  = if False then -- T.length plain < 20000 then
                                  -- for short texts like annotations, the recursive tree is extremely expensive, so just do the straight-line version:
                                  if not (matchTest allRegex plain) then []
                                  else filter (\(_,r,_) -> matchTest r plain) definitions
                                -- if long (>10k characters), we start the tree slog:
-                               else filterMatch definitions
+                               else filterMatch True definitions
   where
    plain :: T.Text -- cache the plain text of the document
    plain = simplifiedDoc p
@@ -173,23 +174,29 @@ filterMatches p definitions  = if T.length plain < 20000 then
    threadN = unsafePerformIO getNumCapabilities
 
    regexpsMax :: Int
-   regexpsMax = 96
+   regexpsMax = 32
 
    -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes.
    -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;
    -- if we have more than one regexp, test the full list; if none match, return empty list, otherwise, split in half, and recurse on each half.
-   filterMatch :: [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-   filterMatch  [] = []
-   filterMatch [d] = if matchTest (masterRegex [d]) plain then [d] else [] -- only one match left, base case
+   filterMatch :: Bool -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
+   filterMatch _ [] = []
+   filterMatch _ [d] = if matchTest (masterRegex [d]) plain then [d] else [] -- only one match left, base case
    -- if none of the regexps match, quit; if any match, then decide whether the remaining list is short enough to check 1 by 1, or if
    -- it is long enough that we should try to split it up into sublists and fork out the recursive call; doing a 'wide' recursion *should* be a lot faster than a binary tree
-   filterMatch ds
+   filterMatch skipCheck ds
+    -- for the very first iteration (called from `filterMatches`), we want to skip the master regex because it will be huge and slow.
+    -- So, immediately break up the regexp list and descend
+    | skipCheck = let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
+                  in concat $ parMap rdeepseq (filterMatch False) subDefinitions
     | not (matchTest (masterRegex ds) plain) = []
-    | length ds < regexpsMax || threadN == 1  = concatMap (filterMatch . return) ds -- in ghci, parallelism doesn't work, so just skip that
+    | length ds < regexpsMax || threadN == 1  = concatMap ((filterMatch False) . return) ds -- in ghci, parallelism doesn't work, so just skip that
     | otherwise =
-      let subDefinitions
-            = chunksOf ((length ds `div` threadN) `max` 2) ds
-        in concat $ parMap rseq filterMatch subDefinitions
+      let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
+        in concat $ parMap rdeepseq (filterMatch False) subDefinitions
+
+instance NFData R.Regex where
+  rnf a = a `seq` ()
 
 -- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
 masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex
@@ -208,9 +215,11 @@ customDefinitionsR = map (\(a,b) -> (a,
 -- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as turning into multiple links (eg one link for each word in a phrase), abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
 -- I'm not sure how crazy I want to get with the rewrites, though. The regexp rewriting is expensive since it must look at all text. If you're doing those sorts of other rewrites, it'd generally be more sensible to require them to be marked up explicitly, which is vastly easier to program & more efficient. We'll see.
 customDefinitions :: [(T.Text, R.Regex, T.Text)]
-customDefinitions = if nub (map fst custom) /= map fst custom || nub (map snd custom) /= map snd custom
-                    then error $ "Definition keys/values are not unique! Definitions: " ++ show custom
-                    else customDefinitionsR custom -- delimit & compile
+customDefinitions = if nub (map fst custom) /= map fst custom
+                    then error $ "Definition keys are not unique! Definitions: " ++ show (map fst custom)
+                    else if nub (map snd custom) /= map snd custom then
+                           error $ "Definition values are not unique! Definitions: " ++ show (map snd custom)
+                         else customDefinitionsR custom -- delimit & compile
        -- descending order, longest match to shortest (for regex priority):
 custom :: [(T.Text, T.Text)]
 custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
@@ -892,4 +901,211 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Terence Tao", "https://en.wikipedia.org/wiki/Terence_Tao")
         , ("[Ss]urvivorship curve", "https://en.wikipedia.org/wiki/Survivorship_curve")
         , ("Wittgenstein", "https://en.wikipedia.org/wiki/Ludwig_Wittgenstein")
+        , ("(SNP|[Ss]ingle[ -][Nn]ucleotide [Pp]olymorphism)", "https://en.wikipedia.org/wiki/Single-nucleotide_polymorphism")
+        , ("[Ss]equential analysis", "https://en.wikipedia.org/wiki/Sequential_analysis")
+        , ("(Dungeons (&|and) Dragons|D&D)", "https://en.wikipedia.org/wiki/Dungeons_%26_Dragons")
+        , ("(IPA|International Phonetic Alphabet)", "https://en.wikipedia.org/wiki/International_Phonetic_Alphabet")
+        , ("(LD|[Ll]inkage [Dd]isequilibrium|[Ll]inkage [Ee]quilibrium)", "https://en.wikipedia.org/wiki/Linkage_disequilibrium")
+        , ("(NFT|[Nn]on-[Ff]ungible [Tt]oken)", "https://en.wikipedia.org/wiki/Non-fungible_token")
+        , ("(Paul Graham|pg)", "https://en.wikipedia.org/wiki/Paul_Graham_%28computer_programmer%29")
+        , ("(SAD|Seasonal [Aa]ffective [Dd]isorder)", "https://en.wikipedia.org/wiki/Seasonal_affective_disorder")
+        , ("(Shotetsu|Shōtetsu)", "https://en.wikipedia.org/wiki/Sh%C5%8Dtetsu")
+        , ("(VoI|[Vv]alue [Oo]f [Ii]nformation)", "https://en.wikipedia.org/wiki/Value_of_Information")
+        , ("(W. S. Gosset|William Sealy Gosset|Student)", "https://en.wikipedia.org/wiki/William_Sealy_Gosset")
+        , ("(Waste Isolation Pilot Plant|WIPP)", "https://en.wikipedia.org/wiki/Waste_Isolation_Pilot_Plant")
+        , ("([Bb]inomial distribution|binomially)", "https://en.wikipedia.org/wiki/Binomial_distribution")
+        , ("([Cc]entral [Ll]imit [Tt]heorem|CLT)", "https://en.wikipedia.org/wiki/Central_limit_theorem")
+        , ("([Ee]xponential discounting|[Ee]xponentially discounted)", "https://en.wikipedia.org/wiki/Exponential_discounting")
+        , ("([Mm]arkov [Dd]ecision [Pp]rocess|MDP)", "https://en.wikipedia.org/wiki/Markov_decision_process")
+        , ("([Nn]egative selection|[Pp]urifying selection)", "https://en.wikipedia.org/wiki/Negative_selection_(natural_selection)")
+        , ("([Nn]ormal distribution.?|Gaussian distribution.?|[Nn]ormally[ -]distributed)", "https://en.wikipedia.org/wiki/Normal_distribution")
+        , ("([Ss]tatistical[ -]significance|[Ss]tatistically-significant)", "https://en.wikipedia.org/wiki/Statistical_significance")
+        , ("([Tt]abletop [Rr]ole-[Pp]laying [Gg]ame|TTRPG)", "https://en.wikipedia.org/wiki/Tabletop_role-playing_game")
+        , ("([Vv]isual[ -]novel|VN)", "https://en.wikipedia.org/wiki/Visual_novel")
+        , ("([Ww]orking[ -][Mm]emory|WM)", "https://en.wikipedia.org/wiki/Working_memory")
+        , ("A. ?E. Housman", "https://en.wikipedia.org/wiki/A.E._Housman")
+        , ("Alexander Shulgin", "https://en.wikipedia.org/wiki/Alexander_Shulgin")
+        , ("Amazon S3", "https://en.wikipedia.org/wiki/Amazon_S3")
+        , ("Amdahl's [Ll]aw", "https://en.wikipedia.org/wiki/Amdahl%27s_law")
+        , ("Anne Roe", "https://en.wikipedia.org/wiki/Anne_Roe")
+        , ("Anthropic [Pp]rinciple", "https://en.wikipedia.org/wiki/Anthropic_principle")
+        , ("Arthur Schopenhauer", "https://en.wikipedia.org/wiki/Arthur_Schopenhauer")
+        , ("Asuka Langley Soryu", "https://en.wikipedia.org/wiki/Asuka_Langley_Soryu")
+        , ("Augur", "https://en.wikipedia.org/wiki/Augur_%28software%29")
+        , ("Aum Shinrikyo", "https://en.wikipedia.org/wiki/Aum_Shinrikyo")
+        , ("Bakewell", "https://en.wikipedia.org/wiki/Robert_Bakewell_%28agriculturalist%29")
+        , ("Bayesian [Ss]earch [Tt]heory", "https://en.wikipedia.org/wiki/Bayesian_search_theory")
+        , ("Bit[Tt]orrent", "https://en.wikipedia.org/wiki/BitTorrent")
+        , ("Bonferroni correction", "https://en.wikipedia.org/wiki/Bonferroni_correction")
+        , ("Bradley.Terry model", "https://en.wikipedia.org/wiki/Bradley-Terry_model")
+        , ("Bruce Schneier", "https://en.wikipedia.org/wiki/Bruce_Schneier")
+        , ("Cordwainer Smith", "https://en.wikipedia.org/wiki/Cordwainer_Smith")
+        , ("Cowboy Bebop", "https://en.wikipedia.org/wiki/Cowboy_Bebop")
+        , ("Creative Commons", "https://en.wikipedia.org/wiki/Creative_Commons")
+        , ("Cryptonomicon", "https://en.wikipedia.org/wiki/Cryptonomicon")
+        , ("Cyphernomicon", "https://en.wikipedia.org/wiki/Cyphernomicon")
+        , ("Dan Simmons", "https://en.wikipedia.org/wiki/Dan_Simmons")
+        , ("David Brin", "https://en.wikipedia.org/wiki/David_Brin")
+        , ("Death Note", "https://en.wikipedia.org/wiki/Death_Note")
+        , ("Dinosaur Comics", "https://en.wikipedia.org/wiki/Dinosaur_Comics")
+        , ("Donald Keene", "https://en.wikipedia.org/wiki/Donald_Keene")
+        , ("Douglas Engelbart", "https://en.wikipedia.org/wiki/Douglas_Engelbart")
+        , ("Douglas Hofstadter", "https://en.wikipedia.org/wiki/Douglas_Hofstadter")
+        , ("Dune", "https://en.wikipedia.org/wiki/Dune_%28novel%29")
+        , ("E. ?T. Jaynes", "https://en.wikipedia.org/wiki/E.T._Jaynes")
+        , ("Elo rating system", "https://en.wikipedia.org/wiki/Elo_rating_system")
+        , ("Evernote.?", "https://en.wikipedia.org/wiki/Evernote")
+        , ("FRACTRAN", "https://en.wikipedia.org/wiki/FRACTRAN")
+        , ("Fermi [Pp]aradox", "https://en.wikipedia.org/wiki/Fermi_paradox")
+        , ("Feynman", "https://en.wikipedia.org/wiki/Richard_Feynman")
+        , ("Freeman Dyson", "https://en.wikipedia.org/wiki/Freeman_Dyson")
+        , ("Galton's [Pp]roblem", "https://en.wikipedia.org/wiki/Galton%27s_problem")
+        , ("Genshiken", "https://en.wikipedia.org/wiki/Genshiken")
+        , ("George Dyson", "https://en.wikipedia.org/wiki/George_Dyson_%28science_historian%29")
+        , ("GiveWell", "https://en.wikipedia.org/wiki/GiveWell")
+        , ("Gompertz", "https://en.wikipedia.org/wiki/Gompertz%E2%80%93Makeham_law_of_mortality")
+        , ("Goodhart's [Ll]aw", "https://en.wikipedia.org/wiki/Goodhart%27s_law")
+        , ("Google Surveys", "https://en.wikipedia.org/wiki/Google_Surveys")
+        , ("Greg Egan", "https://en.wikipedia.org/wiki/Greg_Egan")
+        , ("Hayao Miyazaki", "https://en.wikipedia.org/wiki/Hayao_Miyazaki")
+        , ("I. A. Richards", "https://en.wikipedia.org/wiki/I._A._Richards")
+        , ("I. J. Good", "https://en.wikipedia.org/wiki/I._J._Good")
+        , ("Intrade", "https://en.wikipedia.org/wiki/Intrade")
+        , ("Jargon File", "https://en.wikipedia.org/wiki/Jargon_File")
+        , ("Jeanne Calment", "https://en.wikipedia.org/wiki/Jeanne_Calment")
+        , ("Julian Assange", "https://en.wikipedia.org/wiki/Julian_Assange")
+        , ("Known Space", "https://en.wikipedia.org/wiki/Known_Space")
+        , ("Lord's [Pp]aradox", "https://en.wikipedia.org/wiki/Lord%27s_paradox")
+        , ("MANOVA", "https://en.wikipedia.org/wiki/MANOVA")
+        , ("MIDI", "https://en.wikipedia.org/wiki/MIDI")
+        , ("Many[ -][Ww]orlds [Ii]nterpretation", "https://en.wikipedia.org/wiki/Many-worlds_interpretation")
+        , ("Markdown", "https://en.wikipedia.org/wiki/Markdown")
+        , ("Mnemosyne", "https://en.wikipedia.org/wiki/Mnemosyne_%28software%29")
+        , ("Neil Gaiman", "https://en.wikipedia.org/wiki/Neil_Gaiman")
+        , ("New Yorker", "https://en.wikipedia.org/wiki/The_New_Yorker")
+        , ("Nick Bostrom", "https://en.wikipedia.org/wiki/Nick_Bostrom")
+        , ("Norbert Wiener", "https://en.wikipedia.org/wiki/Norbert_Wiener")
+        , ("Oliver Heaviside", "https://en.wikipedia.org/wiki/Oliver_Heaviside")
+        , ("Otaku no Video", "https://en.wikipedia.org/wiki/Otaku_no_Video")
+        , ("Patreon", "https://en.wikipedia.org/wiki/Patreon")
+        , ("Prisoner's [Dd]ilemma", "https://en.wikipedia.org/wiki/Prisoner%27s_dilemma")
+        , ("Project Orion", "https://en.wikipedia.org/wiki/Project_Orion_%28nuclear_propulsion%29")
+        , ("Quantified Self", "https://en.wikipedia.org/wiki/Quantified_Self")
+        , ("QuickCheck", "https://en.wikipedia.org/wiki/QuickCheck")
+        , ("RAND", "https://en.wikipedia.org/wiki/RAND_Corporation")
+        , ("Rebuild [Oo]f Evangelion", "https://en.wikipedia.org/wiki/Rebuild_of_Evangelion")
+        , ("Red Delicious", "https://en.wikipedia.org/wiki/Red_Delicious")
+        , ("Repository for Germinal Choice", "https://en.wikipedia.org/wiki/Repository_for_Germinal_Choice")
+        , ("Richard Dawkins", "https://en.wikipedia.org/wiki/Richard_Dawkins")
+        , ("Robert Bringhurst", "https://en.wikipedia.org/wiki/Robert_Bringhurst")
+        , ("Rosenhan experiment", "https://en.wikipedia.org/wiki/Rosenhan_experiment")
+        , ("Ross (William )?Ulbricht", "https://en.wikipedia.org/wiki/Ross_Ulbricht")
+        , ("Rumiko Takahashi", "https://en.wikipedia.org/wiki/Rumiko_Takahashi")
+        , ("SHA-256", "https://en.wikipedia.org/wiki/SHA-256")
+        , ("Saddam Hussein", "https://en.wikipedia.org/wiki/Saddam_Hussein")
+        , ("Samuel Johnson", "https://en.wikipedia.org/wiki/Samuel_Johnson")
+        , ("Samuel T. Cohen", "https://en.wikipedia.org/wiki/Samuel_T._Cohen")
+        , ("Satoshi Nakamoto", "https://en.wikipedia.org/wiki/Satoshi_Nakamoto")
+        , ("Saul Kripke", "https://en.wikipedia.org/wiki/Saul_Kripke")
+        , ("Scott Aaronson", "https://en.wikipedia.org/wiki/Scott_Aaronson")
+        , ("Scott Sumner", "https://en.wikipedia.org/wiki/Scott_Sumner")
+        , ("Shawn Bradley", "https://en.wikipedia.org/wiki/Shawn_Bradley")
+        , ("Shinji Ikari", "https://en.wikipedia.org/wiki/Shinji_Ikari")
+        , ("Singularity", "https://en.wikipedia.org/wiki/Technological_singularity")
+        , ("Slender Man stabbing.?", "https://en.wikipedia.org/wiki/Slender_Man_stabbing")
+        , ("Snowclone", "https://en.wikipedia.org/wiki/Snowclone")
+        , ("Space Battleship Yamato", "https://en.wikipedia.org/wiki/Space_Battleship_Yamato")
+        , ("Stacy Schiff", "https://en.wikipedia.org/wiki/Stacy_Schiff")
+        , ("Stanislaw Ulam", "https://en.wikipedia.org/wiki/Stanislaw_Ulam")
+        , ("Stephen LaBerge", "https://en.wikipedia.org/wiki/Stephen_LaBerge")
+        , ("Stephenie Meyer", "https://en.wikipedia.org/wiki/Stephenie_Meyer")
+        , ("Steve Jobs", "https://en.wikipedia.org/wiki/Steve_Jobs")
+        , ("Steven Pinker", "https://en.wikipedia.org/wiki/Steven_Pinker")
+        , ("Stewart Brand", "https://en.wikipedia.org/wiki/Stewart_Brand")
+        , ("Stripe", "https://en.wikipedia.org/wiki/Stripe_%28company%29")
+        , ("Studio Ghibli", "https://en.wikipedia.org/wiki/Studio_Ghibli")
+        , ("StumpWM", "https://en.wikipedia.org/wiki/StumpWM")
+        , ("Textual criticism", "https://en.wikipedia.org/wiki/Textual_criticism")
+        , ("The Atlantic", "https://en.wikipedia.org/wiki/The_Atlantic")
+        , ("The Elements of Typographic Style", "https://en.wikipedia.org/wiki/The_Elements_of_Typographic_Style")
+        , ("The Library of Babel", "https://en.wikipedia.org/wiki/The_Library_of_Babel")
+        , ("The Literary Digest#Presidential poll", "https://en.wikipedia.org/wiki/The_Literary_Digest#Presidential_poll")
+        , ("The Matrix", "https://en.wikipedia.org/wiki/The_Matrix")
+        , ("The Melancholy of Haruhi Suzumiya", "https://en.wikipedia.org/wiki/The_Melancholy_of_Haruhi_Suzumiya")
+        , ("The Mother of All Demos", "https://en.wikipedia.org/wiki/The_Mother_of_All_Demos")
+        , ("The Unreasonable Effectiveness [Oo]f Mathematics [Ii]n the Natural Sciences", "https://en.wikipedia.org/wiki/The_Unreasonable_Effectiveness_of_Mathematics_in_the_Natural_Sciences")
+        , ("The World [Aa]s Will [Aa]nd Representation", "https://en.wikipedia.org/wiki/The_World_as_Will_and_Representation")
+        , ("Theodicy", "https://en.wikipedia.org/wiki/Theodicy")
+        , ("They Shall Not Grow Old", "https://en.wikipedia.org/wiki/They_Shall_Not_Grow_Old")
+        , ("Thomas Browne", "https://en.wikipedia.org/wiki/Thomas_Browne")
+        , ("Thrawn [Tt]rilogy", "https://en.wikipedia.org/wiki/Thrawn_trilogy")
+        , ("Tor", "https://en.wikipedia.org/wiki/Tor_%28anonymity_network%29")
+        , ("Touhou", "https://en.wikipedia.org/wiki/Touhou_Project")
+        , ("True[Tt]ype", "https://en.wikipedia.org/wiki/TrueType")
+        , ("Trusted[ -][Tt]imestamping", "https://en.wikipedia.org/wiki/Trusted_timestamping")
+        , ("Turandot", "https://en.wikipedia.org/wiki/Turandot")
+        , ("Umberto Eco", "https://en.wikipedia.org/wiki/Umberto_Eco")
+        , ("Vergina Sun", "https://en.wikipedia.org/wiki/Vergina_Sun")
+        , ("Virtual You[Tt]uber", "https://en.wikipedia.org/wiki/Virtual_YouTuber")
+        , ("Vocaloid", "https://en.wikipedia.org/wiki/Vocaloid")
+        , ("Western Union", "https://en.wikipedia.org/wiki/Western_Union")
+        , ("William Faulkner", "https://en.wikipedia.org/wiki/William_Faulkner")
+        , ("Wired", "https://en.wikipedia.org/wiki/Wired_%28magazine%29")
+        , ("Wittgenstein on Rules and Private Language", "https://en.wikipedia.org/wiki/Wittgenstein_on_Rules_and_Private_Language")
+        , ("X[Mm]onad", "https://en.wikipedia.org/wiki/Xmonad")
+        , ("Yasuhiro Takeda", "https://en.wikipedia.org/wiki/Yasuhiro_Takeda")
+        , ("Yunmen Wenyan", "https://en.wikipedia.org/wiki/Yunmen_Wenyan")
+        , ("ZUN", "https://en.wikipedia.org/wiki/Team_Shanghai_Alice#Member")
+        , ("[Aa]rgument from silence", "https://en.wikipedia.org/wiki/Argument_from_silence")
+        , ("[Aa]ssassination market", "https://en.wikipedia.org/wiki/Assassination_market")
+        , ("[Aa]vailability heuristic", "https://en.wikipedia.org/wiki/Availability_heuristic")
+        , ("[Bb]eam[ -]search", "https://en.wikipedia.org/wiki/Beam_search")
+        , ("[Bb]eta distribution", "https://en.wikipedia.org/wiki/Beta_distribution")
+        , ("[Bb]locking", "https://en.wikipedia.org/wiki/Blocking_%28statistics%29")
+        , ("[Bb]ootstrap(ping|ped)?", "https://en.wikipedia.org/wiki/Bootstrapping_%28statistics%29")
+        , ("[Cc]ognitive [Bb]ias(es)?", "https://en.wikipedia.org/wiki/Cognitive_bias")
+        , ("[Dd]arcs", "https://en.wikipedia.org/wiki/Darcs")
+        , ("[Dd]esigner drug", "https://en.wikipedia.org/wiki/Designer_drug")
+        , ("[Dd]iminishing returns?", "https://en.wikipedia.org/wiki/Diminishing_returns")
+        , ("[Dd]oujin(shi)?", "https://en.wikipedia.org/wiki/Doujinshi")
+        , ("[Ff]ixation", "https://en.wikipedia.org/wiki/Fixation_%28population_genetics%29")
+        , ("[Ff]urry", "https://en.wikipedia.org/wiki/Furry_fandom")
+        , ("[Gg]enetic drift", "https://en.wikipedia.org/wiki/Genetic_drift")
+        , ("[Gg]esamtkunstwerk", "https://en.wikipedia.org/wiki/Gesamtkunstwerk")
+        , ("[Gg]it", "https://en.wikipedia.org/wiki/Git_%28software%29")
+        , ("[Kk]ratom", "https://en.wikipedia.org/wiki/Kratom")
+        , ("[Ll]azy evaluation", "https://en.wikipedia.org/wiki/Lazy_evaluation")
+        , ("[Ll]ucid dreaming", "https://en.wikipedia.org/wiki/Lucid_dreaming")
+        , ("[Mm]emoization", "https://en.wikipedia.org/wiki/Memoization")
+        , ("[Mm]eta[ -]analysis", "https://en.wikipedia.org/wiki/Meta-analysis")
+        , ("[Mm]ultivariate linear model", "https://en.wikipedia.org/wiki/Multivariate_linear_model")
+        , ("[Nn]oble lie", "https://en.wikipedia.org/wiki/Noble_lie")
+        , ("[Nn]ootropics?", "https://en.wikipedia.org/wiki/Nootropics")
+        , ("[Oo]taku", "https://en.wikipedia.org/wiki/Otaku")
+        , ("[Pp]aracosm", "https://en.wikipedia.org/wiki/Paracosm")
+        , ("[Pp]areidolia", "https://en.wikipedia.org/wiki/Pareidolia")
+        , ("[Pp]iracetam", "https://en.wikipedia.org/wiki/Piracetam")
+        , ("[Pp]ower[ -]law", "https://en.wikipedia.org/wiki/Power_law")
+        , ("[Pp]rice discrimination", "https://en.wikipedia.org/wiki/Price_discrimination")
+        , ("[Pp]ublic[ -]key cryptography", "https://en.wikipedia.org/wiki/Public-key_cryptography")
+        , ("[Rr]adium", "https://en.wikipedia.org/wiki/Radium")
+        , ("[Rr]egression to the mean", "https://en.wikipedia.org/wiki/Regression_to_the_mean")
+        , ("[Rr]evealed preference.?", "https://en.wikipedia.org/wiki/Revealed_preference")
+        , ("[Rr]sync", "https://en.wikipedia.org/wiki/Rsync")
+        , ("[Rr]ule of succession", "https://en.wikipedia.org/wiki/Rule_of_succession")
+        , ("[Ss]chizoid", "https://en.wikipedia.org/wiki/Schizoid_personality_disorder")
+        , ("[Ss]ecurity[ -]through[ -]obscurity", "https://en.wikipedia.org/wiki/Security_through_obscurity")
+        , ("[Ss]elegiline", "https://en.wikipedia.org/wiki/Selegiline")
+        , ("[Ss]um of normally distributed random variables", "https://en.wikipedia.org/wiki/Sum_of_normally_distributed_random_variables")
+        , ("[Tt]ime[ -]preference", "https://en.wikipedia.org/wiki/Time_preference")
+        , ("[Tt]runcation selection", "https://en.wikipedia.org/wiki/Truncation_selection")
+        , ("[Vv]ariance", "https://en.wikipedia.org/wiki/Variance")
+        , ("[Vv]ariance[ -][Cc]omponent.?", "/notes/Variance-components")
+        , ("[Ww]abi[ -]sabi", "https://en.wikipedia.org/wiki/Wabi-sabi")
+        , ("[Ww]ake therapy", "https://en.wikipedia.org/wiki/Wake_therapy")
+        , ("[Ww]get", "https://en.wikipedia.org/wiki/Wget")
+        , ("[Ww]orse[ -][Ii]s[ -][Bb]etter", "https://en.wikipedia.org/wiki/Worse_is_better")
+        , ("[rR]epeated measures", "https://en.wikipedia.org/wiki/Repeated_measures_design")
+        , ("[tT]acit knowledge", "https://en.wikipedia.org/wiki/Tacit_knowledge")
+        , ("t-distribution", "https://en.wikipedia.org/wiki/Student%27s_t-distribution")
         ]

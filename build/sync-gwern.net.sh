@@ -46,8 +46,8 @@ else
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
                                         -e 'docs/statistics/order/beanmachine-multistage') ) # &
 
-    bold "Updating annotations..."
-    (ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) # &
+    # bold "Updating annotations..."
+    # (ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) # &
 
     bold "Updating backlinks..."
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) # &
@@ -63,7 +63,7 @@ else
     ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling:
     ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make hakyll.hs
     ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 16; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 20; else echo "$1"; fi)"
     cd ../../ # go to site root
     bold "Building site…"
     ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
