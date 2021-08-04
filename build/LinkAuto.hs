@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-03 14:52:50 gwern"
+When:  Time-stamp: "2021-08-04 17:29:57 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -37,8 +37,7 @@ import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
 import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, Text)
 import Control.Concurrent (getNumCapabilities)
-import Control.Parallel.Strategies (parMap, rdeepseq)
-import Control.DeepSeq (NFData(rnf))
+import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
@@ -188,15 +187,12 @@ filterMatches p definitions  = if False then -- T.length plain < 20000 then
     -- for the very first iteration (called from `filterMatches`), we want to skip the master regex because it will be huge and slow.
     -- So, immediately break up the regexp list and descend
     | skipCheck = let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-                  in concat $ parMap rdeepseq (filterMatch False) subDefinitions
+                  in concat $ parMap rseq (filterMatch False) subDefinitions
     | not (matchTest (masterRegex ds) plain) = []
-    | length ds < regexpsMax || threadN == 1  = concatMap ((filterMatch False) . return) ds -- in ghci, parallelism doesn't work, so just skip that
+    | length ds < regexpsMax || threadN == 1  = concatMap ((filterMatch False) . return) ds -- in ghci, parallelism doesn't work, so just skip when we have 1 thread (==interpreted)
     | otherwise =
       let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-        in concat $ parMap rdeepseq (filterMatch False) subDefinitions
-
-instance NFData R.Regex where
-  rnf a = a `seq` ()
+        in concat $ parMap rseq (filterMatch False) subDefinitions
 
 -- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
 masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex
