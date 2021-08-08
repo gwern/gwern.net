@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-06 17:43:30 gwern"
+When:  Time-stamp: "2021-08-07 19:47:29 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -245,7 +245,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Dungeons (&|and) Dragons|D&D)", "https://en.wikipedia.org/wiki/Dungeons_%26_Dragons")
         , ("(EHR|[Ee]lectronic [Hh]ealth [Rr]ecords?)", "https://en.wikipedia.org/wiki/Electronic_health_record")
         , ("(EV|[Ee]xpected[ -][Vv]alue|[Ee]xpectation)", "https://en.wikipedia.org/wiki/Expected_value")
-        , ("(Edward Luttwak|Luttwak)", "https://en.wikipedia.org/wiki/Edward_Luttwak")
+        , ("(Edward N. Luttwak|Edward Luttwak|Luttwak)", "https://en.wikipedia.org/wiki/Edward_Luttwak")
         , ("(End [Oo]f Evangelion|EoE|EOE)", "https://en.wikipedia.org/wiki/The_End_of_Evangelion")
         , ("(Everything2|E2)", "https://en.wikipedia.org/wiki/Everything2")
         , ("(Extraversion|Introversion)", "https://en.wikipedia.org/wiki/Extraversion_and_introversion")

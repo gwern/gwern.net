@@ -407,8 +407,8 @@ else
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
-    λ(){ curl --silent 'https://www.gwern.net/index' | tr -d '­' | fgrep --quiet 'This is the website</span> of <strong>Gwern Branwen</strong>' || echo "Content-check failed"
-         curl --silent 'https://www.gwern.net/Zeo'   | tr -d '­' | fgrep --quiet 'lithium orotate' || echo "Content-check failed"; }
+    λ(){ curl --silent 'https://www.gwern.net/index' | tr -d '­' | fgrep --quiet 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/index content-check failed";
+         curl --silent 'https://www.gwern.net/Zeo'   | tr -d '­' | fgrep --quiet 'lithium orotate' || echo "/Zeo Content-check failed"; }
     wrap λ "Known-content check of index/Zeo"
 
     ## did any of the key pages mysteriously vanish from the live version?
