@@ -637,16 +637,20 @@ ul > li::before {
 
 ul > li::before,
 ul ul ul ul > li::before {
-    content: url('/static/img/icons/single-white-star.svg');
+    content: url('/static/img/icons/single-black-star.svg');
+    opacity: 0.8;
+
 }
 ul ul > li::before,
 ul ul ul ul ul > li::before {
-    content: url('/static/img/icons/single-black-star.svg');
+    content: url('/static/img/icons/single-white-star.svg');
+    opacity: initial;
 }
 ul ul ul > li::before,
 ul ul ul ul ul ul > li::before {
     /* this rotates into more of a 'lozenge' square for variety's sake */
     content: url('/static/img/icons/single-white-star-rotated.svg');
+    opacity: initial;
 }
 
 /*=-----------------------=*/
