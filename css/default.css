@@ -638,11 +638,13 @@ ul > li::before {
 ul > li::before,
 ul ul ul ul > li::before {
     content: url('/static/img/icons/single-black-star.svg');
-    opacity: 0.8;
+    opacity: 0.75;
 
 }
 ul ul > li::before,
-ul ul ul ul ul > li::before {
+ul ul ul ul ul > li::before,
+/* special /index override because the link compilation is not bolded */
+body.index ul > li::before {
     content: url('/static/img/icons/single-white-star.svg');
     opacity: initial;
 }
