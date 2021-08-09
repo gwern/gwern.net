@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-08-06 20:03:49 gwern"
+When:  Time-stamp: "2021-08-08 22:29:15 gwern"
 License: CC-0
 -}
 
@@ -883,5 +883,6 @@ whiteList url
       , "www.rte.ie/archives/" -- video
       , "geroprotectors.org" -- updated database
       , "www.satcompetition.org" -- updated database
+      , "endlessvn.io/" -- homepage
       ] = True
     | otherwise = False
