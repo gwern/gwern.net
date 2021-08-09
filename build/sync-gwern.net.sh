@@ -35,7 +35,7 @@ else
     set -e
 
     # lower priority of everything we run (some of it is expensive):
-    renice -n 19 $$
+    renice -n 19 "$$" > /dev/null
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
@@ -43,17 +43,17 @@ else
 
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
     bold "Building directory indexes…"
-    (runhaskell -istatic/build/ static/build/generateDirectory.hs \
+    (time runhaskell -istatic/build/ static/build/generateDirectory.hs \
                 $(find docs fiction haskell newsletter nootropics notes reviews zeo -type d \
                       | sort | fgrep -v -e 'docs/www/' -e 'docs/personal' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
                                         -e 'docs/statistics/order/beanmachine-multistage') ) # &
 
     # bold "Updating annotations..."
-    # (ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) # &
+    # (time ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) # &
 
     bold "Updating backlinks..."
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' | sort | runhaskell -istatic/build/ static/build/generateBacklinks.hs) # &
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' | sort | time runhaskell -istatic/build/ static/build/generateBacklinks.hs) # &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -66,10 +66,10 @@ else
     ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling:
     ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make hakyll.hs
     ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 20; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
     cd ../../ # go to site root
     bold "Building site…"
-    ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
+    time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
     rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
 
