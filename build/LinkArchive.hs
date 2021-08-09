@@ -1,8 +1,9 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-08-08 22:29:15 gwern"
+When:  Time-stamp: "2021-08-09 14:48:27 gwern"
 License: CC-0
+Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
 
 {-
@@ -40,19 +41,21 @@ module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
-import Data.Maybe (fromMaybe)
-import Text.Pandoc (Inline(Link))
+import Data.Maybe (isJust, fromMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
-import Text.Show.Pretty (ppShow)
 import System.Directory (renameFile)
 import System.IO.Temp (writeSystemTempFile)
 import Data.Time.Calendar (toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
-import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
 import System.IO (stderr, hPutStrLn)
+
+import Data.FileStore.Utils (runShellCommand)
+import Network.URI.TLD (parseTLD)
+import Text.Pandoc (Inline(Link))
+import Text.Show.Pretty (ppShow)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg 2019-11-22 = 58810
@@ -84,7 +87,7 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
                          mapM_ (\(p,ami) -> case ami of
                                   Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
                                   Right u@(Just ('/':'/':_)) -> error $ "Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u
-                                  Right (Just u)  -> if not ("http" `isPrefixOf` p) then
+                                  Right (Just u)  -> if not ("http" `isPrefixOf` p && isJust (parseTLD p)) then
                                                        error $ "Error! Invalid archive link? " ++ show p ++ show u ++ show ami
                                                        else return ami
                                   Right Nothing   -> return ami
