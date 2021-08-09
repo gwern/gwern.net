@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-07 19:47:29 gwern"
+When:  Time-stamp: "2021-08-08 23:01:26 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -35,7 +35,7 @@ import Data.Char (isPunctuation)
 import Data.List (nub, sortBy)
 import Data.List.Split (chunksOf)
 import qualified Data.Set as S (empty, fromList, insert, member, Set)
-import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, Text)
+import qualified Data.Text as T (append, head, intercalate, length, last, replace, singleton, tail, init, lines, Text)
 import Control.Concurrent (getNumCapabilities)
 import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
@@ -161,7 +161,7 @@ filterMatches p definitions  = if False then -- T.length plain < 20000 then
                                  if not (matchTest allRegex plain) then []
                                  else filter (\(_,r,_) -> matchTest r plain) definitions
                                -- if long (>10k characters), we start the tree slog:
-                               else filterMatch True definitions
+                               else filterMatch True definitions plain
   where
    plain :: T.Text -- cache the plain text of the document
    plain = simplifiedDoc p
@@ -170,7 +170,7 @@ filterMatches p definitions  = if False then -- T.length plain < 20000 then
    allRegex = masterRegex definitions
 
    threadN :: Int
-   threadN = unsafePerformIO getNumCapabilities
+   threadN = (unsafePerformIO getNumCapabilities) `div` 2
 
    regexpsMax :: Int
    regexpsMax = 32
@@ -178,25 +178,29 @@ filterMatches p definitions  = if False then -- T.length plain < 20000 then
    -- Optimization: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes.
    -- divide-and-conquer recursion: if we have 1 regexp left to test, test it and return if matches or empty list otherwise;
    -- if we have more than one regexp, test the full list; if none match, return empty list, otherwise, split in half, and recurse on each half.
-   filterMatch :: Bool -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-   filterMatch _ [] = []
-   filterMatch _ [d] = if matchTest (masterRegex [d]) plain then [d] else [] -- only one match left, base case
+   filterMatch :: Bool -> [(T.Text, R.Regex, T.Text)] -> T.Text -> [(T.Text, R.Regex, T.Text)]
+   filterMatch _ [] _ = []
+   filterMatch _ [d] text = if matchTest (masterRegex [d]) text then [d] else [] -- only one match left, base case
    -- if none of the regexps match, quit; if any match, then decide whether the remaining list is short enough to check 1 by 1, or if
    -- it is long enough that we should try to split it up into sublists and fork out the recursive call; doing a 'wide' recursion *should* be a lot faster than a binary tree
-   filterMatch skipCheck ds
+   filterMatch skipCheck defs text
     -- for the very first iteration (called from `filterMatches`), we want to skip the master regex because it will be huge and slow.
     -- So, immediately break up the regexp list and descend
-    | skipCheck = let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-                  in concat $ parMap rseq (filterMatch False) subDefinitions
-    | not (matchTest (masterRegex ds) plain) = []
-    | length ds < regexpsMax || threadN == 1  = concatMap ((filterMatch False) . return) ds -- in ghci, parallelism doesn't work, so just skip when we have 1 thread (==interpreted)
+    | skipCheck = let subDefinitions = chunksOf ((length defs `div` threadN) `max` 2) defs
+                  in concat $ parMap rseq (\d -> filterMatch False d text) subDefinitions
+    | not (matchTest (masterRegex defs) text) = []
+    | length defs < regexpsMax || threadN == 1  = concatMap ((\d -> filterMatch False d text) . return) defs -- in ghci, parallelism doesn't work, so just skip when we have 1 thread (==interpreted)
     | otherwise =
-      let subDefinitions = chunksOf ((length ds `div` threadN) `max` 2) ds
-        in concat $ parMap rseq (filterMatch False) subDefinitions
+      let subDefinitions = chunksOf ((length defs `div` threadN) `max` 2) defs
+      in -- regexps are line-delimited, so none of our matches will be multi-line. This means we can run the regexps on one line at a time independently,
+        -- exposing a lot of parallelism.
+        let subTexts = (let textLines = T.lines text in chunksOf ((length textLines `div` threadN) `max` 2) textLines) :: [[T.Text]]
+        in concat $ parMap rseq (\subText ->
+                         concat $ parMap rseq (\d -> concatMap (filterMatch False d) subText) subDefinitions) subTexts
 
 -- create a simple heuristic master regexp using alternation out of all possible regexes, for the heuristic check 'filterMatches'. WARNING: Depending on the regex library, just alternating regexes (rather than using a regexp trie) could potentially trigger an exponential explosion in RAM usage...
 masterRegex :: [(T.Text, R.Regex, T.Text)] -> R.Regex
-masterRegex ds = R.makeRegex $ T.intercalate "|" $ map (\(a,_,_) -> a) ds
+masterRegex defs = R.makeRegex $ T.intercalate "|" $ map (\(a,_,_) -> a) defs
 
 -- We want to match our given regexps by making them 'word-level' and matching on punctuation/whitespace delimiters. This avoids subword matches, for example, matching 'GAN' in 'StyleGAN' is undesirable.
 customDefinitionsR :: [(T.Text, T.Text)] -> [(T.Text, R.Regex, T.Text)]
