@@ -2277,7 +2277,7 @@ body.directory-index article::before {
 body.reviews-books #markdownBody blockquote {
   clear: none;
 }
-bodyreviews-books #markdownBody ol {
+body.reviews-books #markdownBody ol {
   overflow: unset;
 }
 
