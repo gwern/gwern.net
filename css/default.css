@@ -3234,8 +3234,6 @@ body.directory-index #disqus_thread {
     min-width: var(--GW-popups-popup-with-title-bar-min-width);
 }
 
-.popframe-title-link { font-weight: bold; }
-
 .popup .popframe-title-bar {
     position: absolute;
     height: var(--popup-title-bar-height);
@@ -3247,7 +3245,6 @@ body.directory-index #disqus_thread {
     width: 100%;
     cursor: grab;
     z-index: 11;
-    font-weight: bold;
 }
 
 .popup.has-title-bar.mini-title-bar .popframe-title-bar {
@@ -3275,6 +3272,7 @@ body.directory-index #disqus_thread {
 .popup .popframe-title {
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.8rem;
+    font-weight: bold;
     flex: 1 1 100%;
     /*  Extra 3rem padding on left to accommodate 2 extra buttons. */
     padding: 0 4rem 0 1rem;
