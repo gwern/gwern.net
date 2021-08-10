@@ -501,8 +501,7 @@ a[href*="fda.gov"]::after,
 a[href*="filfre.net"]::after,
 a[href*="gainax.co.jp"]::after,
 a[href*="goodreads.com"]::after,
-a[href*="haskell.org"]::after,
-a[href*="haskell.org"][href$=".hs"]::after,
+a[href*="haskell.org"]:not([href$=".hs" i])::after,
 a[href*="harney.com"]::after,
 a[href*="justice.gov"]::after,
 a[href*="khara.co.jp"]::after,
@@ -797,7 +796,7 @@ a[href*="rstudio.com"]::after {
 }
 
 /* Haskell: simplify logo; the double-lambda is too busy when used for link icons */
-a[href*="haskell.org"]:not([href$=".hs"])::after { /* primary user: hackage.haskell.org */
+a[href*="haskell.org"]:not([href$=".hs" i])::after { /* primary user: hackage.haskell.org */
     content: "\1D6CC"; /* (𝛌) MATHEMATICAL BOLD SMALL LAMDA */
     font-size: 1em;
     opacity: 0.6;
