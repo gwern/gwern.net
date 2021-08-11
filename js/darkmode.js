@@ -174,8 +174,8 @@ function injectModeSelector() {
 			color: transparent;
 			margin: 0;
 			padding: 0;
-			width: 2.1em;
-			height: 2.1em;
+			width: 2em;
+			height: 2em;
 			align-items: center;
 			box-shadow: none;
 			opacity: 0.55;
@@ -194,6 +194,12 @@ function injectModeSelector() {
 		#mode-selector button:hover,
 		#mode-selector button.selected {
 			opacity: 1.0;
+		}
+	}
+	@media only screen and (max-width: 649px) {
+		#mode-selector button[class^='select-mode-'] {
+			width: 2.25em;
+			height: 2.25em;
 		}
 	}
     </style>`);
