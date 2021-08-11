@@ -33,22 +33,15 @@ if (window.Extracts) {
 
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
+		//	Open link in same window on mobile, new window on desktop.
         let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
         //  Link to original URL (for archive links).
         let originalLinkHTML = "";
-        // remove HTML from the title, which may have <em> or <span class="smallcaps"> in it, breaking substitution.
-        function strip(html){
-            let doc = new DOMParser().parseFromString(html, 'text/html');
-            return doc.body.textContent || "";
-        }
-        let titleText = strip(referenceData.titleHTML);
-
         if (   referenceData.element.dataset.urlOriginal != undefined
-               && referenceData.element.dataset.urlOriginal != target.href) {
-
+            && referenceData.element.dataset.urlOriginal != target.href) {
             originalLinkHTML = `<span class="originalURL">[<a
-                            title="Link to original URL for ‘${titleText}’"
+                            title="Link to original URL for ‘${referenceData.element.textContent}’"
                             href="${referenceData.element.dataset.urlOriginal}"
                             target="${linkTarget}"
                             alt="Original URL for this archived link; may be broken."
@@ -68,7 +61,7 @@ if (window.Extracts) {
         let abstractSpecialClass = ``;
         if (Annotations.isWikipediaLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
-        return `<p class="data-field title">${titleLinkHTML} ${originalLinkHTML}</p>`
+        return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
              + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
              + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
@@ -92,6 +85,7 @@ if (window.Extracts) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         if (target.dataset.urlOriginal) {
+			//	Open link in same window on mobile, new window on desktop.
             let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
             //  For local-archive links, include archive link with original.
