@@ -33,7 +33,7 @@ if (window.Extracts) {
 
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
-        let linkTarget = (Extracts.popFrameProvider == Popins) ? `target="_self"` : ` target="_new" `;
+        let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
         //  Link to original URL (for archive links).
         let originalLinkHTML = "";
@@ -49,19 +49,19 @@ if (window.Extracts) {
 
             originalLinkHTML = `<span class="originalURL">[<a
                             title="Link to original URL for ‘${titleText}’"
-                            href="${referenceData.element.dataset.urlOriginal}"` +
-                            linkTarget +
-                            `alt="Original URL for this archived link; may be broken."
+                            href="${referenceData.element.dataset.urlOriginal}"
+                            target="${linkTarget}"
+                            alt="Original URL for this archived link; may be broken."
                                 >live</a>]</span>`;
         }
 
         //  Extract title/link.
         let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
         let titleLinkHTML = `<a
-                                class="${titleLinkClass}"` +
-                                linkTarget +
-                                `href="${target.href}"
+                                class="${titleLinkClass}"
                                 title="Open ${target.href} in a new window"
+                                href="${target.href}"
+                                target="${linkTarget}"
                                     >${referenceData.titleHTML}</a>`;
 
         //  The fully constructed annotation pop-frame contents.
@@ -92,22 +92,22 @@ if (window.Extracts) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         if (target.dataset.urlOriginal) {
-            let linkTarget = (Extracts.popFrameProvider == Popins) ? ` target="_self" ` : ` target="_blank" `;
+            let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
             //  For local-archive links, include archive link with original.
             return `<a
                     class="popframe-title-link-archived"
+                    title="Open ${target.href} in a new window (desktop) or current (mobile)"
                     href="${target.href}"
-                    title="Open ${target.href} in a new window (desktop) or current (mobile)"` +
-                linkTarget +
-                `>[ARCHIVED]</a>` +
+                    target="${linkTarget}"
+                		>[ARCHIVED]</a>` +
                 `<span class="separator">·</span>` +
                 `<a
                     class="popframe-title-link"
+                    title="Open ${target.dataset.urlOriginal} in a new window (desktop) or current (mobile)"
                     href="${target.dataset.urlOriginal}"
-                    title="Open ${target.dataset.urlOriginal} in a new window (desktop) or current (mobile)"` +
-                    linkTarget +
-                        `>${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
+                    target="${linkTarget}"
+                        >${popFrameTitleText.replace(/^\[original\]/, "")}</a>`;
         } else {
             return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
         }

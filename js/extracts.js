@@ -276,23 +276,20 @@ Extracts = {
             titleText = (target.hostname == location.hostname)
                         ? target.pathname + target.hash
                         : target.href;
-        // Because tab-handling is bad on mobile, readers expect the original remote URL to open up in-tab, as readers will be single-threaded;
-        // on desktop, we can open up in a tab for poweruser-browsing of tab-explosions.
-        if (Extracts.popFrameProvider == Popins) {
-            return `<a
-                class="popframe-title-link"
-                href="${target.href}"
-                title="Open ${target.href} in current window"
-                target="_self"
-                    >${titleText}</a>`;
-        } else {
-            return `<a
-                class="popframe-title-link"
-                href="${target.href}"
-                title="Open ${target.href} in new window."
-                target="_blank"
-                    >${titleText}</a>`;
-        }
+
+        /*	Because tab-handling is bad on mobile, readers expect the original 
+        	remote URL to open up in-tab, as readers will be single-threaded;
+        	on desktop, we can open up in a tab for poweruser-browsing of 
+        	tab-explosions.
+        	*/
+		let whichWindow = (Extracts.popFrameProvider == Popins) ? "current" : "new";
+		let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
+		return `<a
+			class="popframe-title-link"
+			href="${target.href}"
+			title="Open ${target.href} in ${whichWindow} window."
+			target="${linkTarget}"
+				>${titleText}</a>`;
     },
 
     //  Returns the contents of the title element for a pop-frame.
