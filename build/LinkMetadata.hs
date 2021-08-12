@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-06 16:38:50 gwern"
+When:  Time-stamp: "2021-08-12 16:38:28 gwern"
 License: CC-0
 -}
 
@@ -29,7 +29,7 @@ import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
-import System.Directory (doesFileExist)
+import System.Directory (createDirectoryIfMissing, doesFileExist)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeExtension, takeFileName)
 import System.IO (stderr, hPutStrLn)
@@ -142,8 +142,13 @@ writeAnnotationFragment am md u i@(a,b,c,d,e) = when (length e > 180) $
 -- write only when changed, to reduce sync overhead
 writeUpdatedFile :: FilePath -> T.Text -> IO ()
 writeUpdatedFile target contentsNew = do existsOld <- doesFileExist target
-                                         if not existsOld then
+                                         if not existsOld then do
                                            TIO.writeFile target contentsNew
+                                           -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
+                                           -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
+                                           -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
+                                           createDirectoryIfMissing True "./_site/metadata/annotations/"
+                                           TIO.writeFile ("./_site/"++target) contentsNew
                                            else do contentsOld <- TIO.readFile target
                                                    when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
 
