@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-08-09 14:48:27 gwern"
+When:  Time-stamp: "2021-08-11 12:31:16 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -887,5 +887,6 @@ whiteList url
       , "geroprotectors.org" -- updated database
       , "www.satcompetition.org" -- updated database
       , "endlessvn.io/" -- homepage
+      , "readthedocs.io" -- generally stable, updated docs
       ] = True
     | otherwise = False

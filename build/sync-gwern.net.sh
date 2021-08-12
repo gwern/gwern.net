@@ -235,7 +235,7 @@ else
     λ(){ egrep --color=always -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
     wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
 
-    λ(){ fgrep --color=always -e 'backlinks/' -e 'metadata/annotations/' -- ./metadata/backlinks.hs; }
+    λ(){ fgrep --color=always -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
     λ(){ egrep --color=always -e '[0-9]*[02456789]th' -e '[0-9]*[3]rd' -e '[0-9]*[2]nd' -e '[0-9]*[1]st'  -- ./metadata/*.yaml | \
@@ -401,8 +401,10 @@ else
           cm "text/x-r; charset=utf-8" 'https://www.gwern.net/static/build/linkAbstract.R'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/build/linkArchive.sh'
           cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/custom.yaml'
-          cm "video/mp4" 'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
+          cm "video/mp4"  'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
+          cm "image/jpeg" 'https://www.gwern.net/images/lobel-frogandtoadtogether-thebox-crop.jpg'
+          cm "image/png"  'https://www.gwern.net/images/googlesearch-tools-daterange.png'
         }
     wrap λ "The live MIME types are incorrect"
 
