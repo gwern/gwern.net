@@ -64,7 +64,9 @@ body.index .has-content::before {
 }
 
 /* Italics slant right, leading to overlaps in a case like 'of [inversive geometry](!Wikipedia)' on /notes/Lions, where the _f_ slants to nearly overlap the upper-left bracket for the WP link. So we add margin to the left (not padding-left, as that simply pushes the bracket outward, not improving the overlap). */
-em .has-annotation { margin-left: 0.22em; }
+em .has-annotation {
+	margin-left: 0.22em;
+}
 
 /******************************************************************************/
 /* The philosophy of link icons is that the hyperlink text & surrounding context often leaves much out, which would be impossible to express inline conveniently (such as filetypes like PDF: a link being PDF is no longer a big deal for desktop readers, whose browser will open them quickly, natively, and render accurately, but due to the unfortunate state of mobile PDF viewing, mobile readers still care and may prefer not to open a PDF).
@@ -466,10 +468,14 @@ body.index a.link-local::after {
     content: none;
 }
 
-/* remove the 'W' document icon from the anonymous feedback link icon; it is true, but not useful (a 'document' doesn't look like 'a thing I can interact with & type in text to), and it looks bad/cluttered given that icons are removed from the rest of the 'surrounding' UI (*especially* in /index).  */
-#footer a[href*='docs.google.com'i]::after { content: none; }
+body.tags a.link-local::after {
+	content: none;
+}
 
-body.tags a.link-local::after { content: none; }
+/* remove the 'W' document icon from the anonymous feedback link icon; it is true, but not useful (a 'document' doesn't look like 'a thing I can interact with & type in text to), and it looks bad/cluttered given that icons are removed from the rest of the 'surrounding' UI (*especially* in /index).  */
+#footer a[href*='docs.google.com'i]::after {
+	content: none;
+}
 
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
