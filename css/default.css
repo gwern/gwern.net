@@ -2912,7 +2912,7 @@ body.directory-index #disqus_thread {
 .popframe.annotation .originalURL {
     font-variant-caps: small-caps;
     margin: 0 0.5em 0 0;
-    font-size: 90%;
+	font-size: 0.875em;
 }
 .popframe.annotation .iaMirror {
     padding-right: 0.3em;
