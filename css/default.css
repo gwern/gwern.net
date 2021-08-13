@@ -40,7 +40,7 @@
     --GW-popins-popin-max-height: 50vh;
     --GW-popins-popin-min-height: 120px;
     --GW-popins-popin-border-width: 3px;
-    --GW-popins-popin-title-bar-height: 1.7rem;
+    --GW-popins-popin-title-bar-height: 1.75rem;
 }
 
 /*********************/
@@ -3983,7 +3983,7 @@ body.directory-index #disqus_thread {
 .popin .popframe-title {
     display: flex;
     font-family: var(--GW-sans-serif-font-stack);
-    font-size: 0.8rem;
+    font-size: 0.875rem;
     flex: 1 1 100%;
     padding: 0 1rem;
     white-space: nowrap;
