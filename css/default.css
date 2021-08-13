@@ -2912,7 +2912,7 @@ body.directory-index #disqus_thread {
 .popframe.annotation .originalURL {
     font-variant-caps: small-caps;
     margin: 0 0.5em 0 0;
-    font-size: 90%;
+	font-size: 0.875em;
 }
 .popframe.annotation .iaMirror {
     padding-right: 0.3em;
@@ -3782,11 +3782,10 @@ body.directory-index #disqus_thread {
 }
 
 #popup-options-dialog button.close-button {
-    display: block;
     width: 2em;
     position: absolute;
     left: 0.4em;
-    top: 0.1em;
+    top: 0.4em;
     color: var(--GW-popups-popup-options-dialog-button-text-color);
     margin: 1px;
 }
@@ -3800,7 +3799,8 @@ body.directory-index #disqus_thread {
     box-shadow: -1px -1px 0 0 currentColor;
 }
 #popup-options-dialog button.close-button svg {
-    display: block;
+	height: 100%;
+	width: 100%;
     fill: currentColor;
 }
 
