@@ -154,7 +154,7 @@ else
                                 -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
                                 -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
                                 -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
-                                -e '/nootropics/Magnesium' -e '/Selection';
+                                -e '/nootropics/Magnesium' -e '/Selection' -e 'docs/statistics/bayes/1994-falk';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
@@ -196,7 +196,7 @@ else
     wrap λ "Broken tables in HTML"
 
     λ(){ egrep --color=always '^"~/' ./static/redirects/nginx.conf; }
-    wrap λ "Warning: tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
+    wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
