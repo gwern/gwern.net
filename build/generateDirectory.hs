@@ -106,7 +106,7 @@ sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,File
 sortByDate = sortBy (\(f,(t,a,d,_,_),_) (f',(t',a',d',_,_),_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
 
 
--- how do we handle files with appended data, which are linked like '/docs/rl/2020-bellemare.pdf#google' but exist as files as '/docs/rl/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
+-- how do we handle files with appended data, which are linked like '/docs/reinforcement-learning/2020-bellemare.pdf#google' but exist as files as '/docs/reinforcement-learning/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix

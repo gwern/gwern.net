@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-12 14:47:27 gwern"
+When:  Time-stamp: "2021-08-14 11:34:46 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -228,7 +228,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Ainu people|Ainu)", "https://en.wikipedia.org/wiki/Ainu_people")
         , ("(Akaike [Ii]nformation [Cc]riterion|AIC)", "https://en.wikipedia.org/wiki/Akaike_information_criterion")
         , ("(Alexey )?Guzey", "https://guzey.com/")
-        , ("(Alpha ?Zero|Alpha0)", "/docs/rl/2018-silver.pdf#deepmind")
+        , ("(Alpha ?Zero|Alpha0)", "/docs/reinforcement-learning/2018-silver.pdf#deepmind")
         , ("(Andrey )?Kolmogorov.?.?.?", "https://en.wikipedia.org/wiki/Andrey_Kolmogorov")
         , ("(Anime News Network|ANN)", "https://en.wikipedia.org/wiki/Anime_News_Network")
         , ("(ArXiv|Arxiv|arxiv)", "https://en.wikipedia.org/wiki/ArXiv")
@@ -314,7 +314,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(TADNE|This Anime Does Not Exist\\.?a?i?)", "https://thisanimedoesnotexist.ai/")
         , ("(TFDNE|This Fursona Does Not Exist)", "https://www.thisfursonadoesnotexist.com")
         , ("(TPDNE|This Pony Does Not Exist)", "https://thisponydoesnotexist.net/")
-        , ("(TWDNE|TWDNEv2|This Waifu Does Not Exist|This ?Waifu ?Does ?Not ?Exist(\\.net)?)", "https://www.thiswaifudoesnotexist.net/")
+        , ("(TWDNE|TWDNEv2|This Waifu Does Not Exist|This ?Waifu ?Does ?Not ?Exist(\\.net)?)", "/TWDNE")
         , ("(TeX|Tex)", "https://en.wikipedia.org/wiki/TeX")
         , ("(Terman (study|sample)|Terman's|[Gg]enetic [Ss]tudies [Oo]f [Gg]enius)", "https://en.wikipedia.org/wiki/Genetic_Studies_of_Genius")
         , ("(UKBB|UK Bio ?[Bb]ank)", "https://en.wikipedia.org/wiki/UK_Biobank")
@@ -777,7 +777,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Otaku no Video", "https://en.wikipedia.org/wiki/Otaku_no_Video")
         , ("Overcoming ?Bias", "https://www.overcomingbias.com/")
         , ("Owarimonogatari", "https://en.wikipedia.org/wiki/List_of_Monogatari_episodes#Owarimonogatari")
-        , ("PILCO", "/docs/rl/2011-deisenroth.pdf")
+        , ("PILCO", "/docs/reinforcement-learning/2011-deisenroth.pdf")
         , ("PNSR", "https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio")
         , ("Pareto distribution", "https://en.wikipedia.org/wiki/Pareto_distribution")
         , ("Parker-Hulme murder case", "https://en.wikipedia.org/wiki/Parker%E2%80%93Hulme_murder_case")
@@ -817,7 +817,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("R2D3", "https://arxiv.org/abs/1909.01387#deepmind")
         , ("RAND", "https://en.wikipedia.org/wiki/RAND_Corporation")
         , ("REALM", "https://kentonl.com/pub/gltpc.2020.pdf#google")
-        , ("REINFORCE", "/docs/rl/1992-williams.pdf")
+        , ("REINFORCE", "/docs/reinforcement-learning/1992-williams.pdf")
         , ("ROUGE", "https://en.wikipedia.org/wiki/ROUGE_(metric)")
         , ("RUDDER", "https://arxiv.org/abs/1806.07857")
         , ("R[Ee][Ll][Uu]", "https://en.wikipedia.org/wiki/Rectifier_(neural_networks)")
