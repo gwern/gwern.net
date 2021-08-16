@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-12 16:38:28 gwern"
+When:  Time-stamp: "2021-08-15 20:30:02 gwern"
 License: CC-0
 -}
 
@@ -184,6 +184,12 @@ annotateLink md target =
      -- the leading '/' indicates this is a local Gwern.net file
      let target' = replace "https://www.gwern.net/" "/" target
      let target'' = if head target' == '.' then drop 1 target' else target'
+
+     -- check local link validity: every local link except tags should exist on-disk:
+     when (head target'' == '/' && not ("/metadata/annotations/" `isPrefixOf` target'') && not ("/tags/" `isInfixOf` target'')) $
+       do let target''' = (\f -> if not ('.' `elem` f) then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
+          exist <- doesFileExist target'''
+          unless exist $ error ("Link error: file does not exist? " ++ target''' ++ " (" ++target++")")
 
      let annotated = M.lookup target'' md
      case annotated of
@@ -522,7 +528,7 @@ generateID url author date
                            let authorCount = length authors in
                              if authorCount == 0 then "" else
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
-                                 -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
+                                 -- handle cases like '/docs/statistics/peer-review/1975-johnson-2.pdf'
                                  -- let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
                                    -- let suffix' = if suffix == "-1" then "" else suffix in
                                  let suffix' = "" in
@@ -576,7 +582,7 @@ generateID url author date
        , ("/docs/silk-road/2020-yang-2.pdf", "yang-et-al-2020-b")
        , ("/docs/statistics/bias/2020-mcabe.pdf", "mccabe-2020-2")
        , ("/docs/statistics/causality/2019-gordon.pdf", "gordon-et-al-2019-2")
-       , ("/docs/statistics/peerreview/1975-johnson-2.pdf", "johnson-1975-2")
+       , ("/docs/statistics/peer-review/1975-johnson-2.pdf", "johnson-1975-2")
        , ("http://discovery.ucl.ac.uk/10080409/8/Bradley_10080409_thesis.pdf", "bradley-2019-2")
        , ("http://fastml.com/goodbooks-10k-a-new-dataset-for-book-recommendations/", "z-2017-2")
        , ("http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0040352", "smith-et-al-2007-link")
@@ -771,6 +777,8 @@ cleanAbstractsHTML t = trim $
   (" ([0-9]*[1])st",        " \\1<sup>st</sup>"),
   (" ([0-9]*[3])rd",        " \\1<sup>rd</sup>"),
   (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", ""), -- rm AERA classification tags they stick into the Crossref abstracts
+  ("CI=([.0-9])", "CI = \\1"), -- 'CI=0.90' → 'CI = 0.90'
+  ("AOR=([.0-9])", "AOR = \\1"), -- 'AOR=2.9' → 'CI = 2.09'
   -- math regexes
   ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^"),
   ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^"),
