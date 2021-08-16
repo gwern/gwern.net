@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-14 11:34:46 gwern"
+When:  Time-stamp: "2021-08-15 20:19:31 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -1169,6 +1169,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Nn]atural selection", "https://en.wikipedia.org/wiki/Natural_selection")
         , ("[Nn]egative externalit(y|ies)", "https://en.wikipedia.org/wiki/Negative_externality")
         , ("[Nn]icotine", "/Nicotine")
+        , ("([Ee]lectronic [Cc]igarette|[Ee]-[Cc]igarette|[Vv]ap(ing|e))", "https://en.wikipedia.org/wiki/Electronic_cigarette")
         , ("[Nn]oble lie", "https://en.wikipedia.org/wiki/Noble_lie")
         , ("[Nn]ootropics?", "https://en.wikipedia.org/wiki/Nootropics")
         , ("[Nn]ucleus [Ss]ampling", "https://arxiv.org/abs/1904.09751")
@@ -1307,4 +1308,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("wav2vec 2\\.0", "https://arxiv.org/abs/2006.11477#facebook")
         , ("[Rr]ent[ -]seeking", "https://en.wikipedia.org/wiki/Rent-seeking")
         , ("[Pp]ublic[ -]choice( theory)?", "https://en.wikipedia.org/wiki/Public_choice")
+        , ("(C.? [Ee]legans|Caenorhabditis elegans)", "https://en.wikipedia.org/wiki/Caenorhabditis_elegans")
         ]

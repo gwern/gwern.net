@@ -144,7 +144,7 @@ generateListItem (f,(t,aut,_,_,""),bl)  = let f' = if "index" `isSuffixOf` f the
 generateListItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
   --
-  -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philo/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
+  -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
   generateAnnotationBlock True (f,Just a) bl

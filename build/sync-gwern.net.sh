@@ -9,10 +9,10 @@
 # When:  Time-stamp: "2019-09-15 14:38:14 gwern"
 # License: CC-0
 
-bold() { echo -e "\033[1m$@\033[0m"; }
-red() { echo -e "\e[41m$@\e[0m"; }
+bold () { echo -e "\033[1m$@\033[0m"; }
+red  () { echo -e "\e[41m$@\e[0m"; }
 ## function to wrap checks and print red-highlighted warning if non-zero output (self-documenting):
-wrap() { OUTPUT=$($1 2>&1)
+wrap () { OUTPUT=$($1 2>&1)
          WARN="$2"
          if [ -n "$OUTPUT" ]; then
              red "$WARN";
@@ -106,7 +106,7 @@ else
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
     ### We skip .json/.jsonl/.csv because they are too large & Pandoc will choke;
     bold "Generating syntax-highlighted versions of source code files…"
-    syntaxHighlight() {
+    syntaxHighlight () {
         declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" )
         for FILE in "$@"; do
             FILENAME=$(basename -- "$FILE")
@@ -248,7 +248,7 @@ else
     λ(){ fgrep --color=always -e ' significant'  ./metadata/custom.yaml; }
     wrap λ "Misleading language in custom.yaml"
 
-    λ() {
+    λ(){
         set +e;
         IFS=$(echo -en "\n\b");
         PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' | sort -u)"
@@ -325,8 +325,8 @@ else
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
-    c() { curl --compressed --silent --output /dev/null --head "$@"; }
-    λ(){ cr() { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
+    c () { curl --compressed --silent --output /dev/null --head "$@"; }
+    λ(){ cr () { [[ "$2" != $(c --location --write-out '%{url_effective}' "$1") ]] && echo "$1" "$2"; }
          cr 'https://www.gwern.net/dnm-archives' 'https://www.gwern.net/DNM-archives'
          cr 'https://www.gwern.net/docs/dnb/1978-zimmer.pdf' 'https://www.gwern.net/docs/music-distraction/1978-zimmer.pdf'
          cr 'https://www.gwern.net/AB%20testing' 'https://www.gwern.net/AB-testing'
@@ -334,7 +334,7 @@ else
          cr 'https://www.gwern.net/Book-reviews' 'https://www.gwern.net/reviews/Books'
          cr 'https://www.gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://www.gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3'; }
     wrap λ "Check that some redirects go where they should"
-    λ() { cm() { [[ "$1" != $(c --write-out '%{content_type}' "$2") ]] && echo "$1" "$2"; }
+    λ() { cm () { [[ "$1" != $(c --write-out '%{content_type}' "$2") ]] && echo "$1" "$2"; }
           ### check key pages:
           ## check every possible extension:
           ## check some random ones:
@@ -459,13 +459,14 @@ else
 
     λ(){
         export LL="$(curl --silent ifconfig.me)"
-        checkSpamHeader() {
-            HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | \
+        checkSpamHeader () {
+            # extract text from first 2 pages:
+            HEADER=$(pdftotext -f 1 -l 2 "$@" - 2> /dev/null | \
                          fgrep -e 'INFORMATION TO USERS' -e 'Your use of the JSTOR archive indicates your acceptance of JSTOR' \
                                -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
                                -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
                                -e 'Additional services and information for ' -e 'Access to this document was granted through an Emerald subscription' \
-                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers' -e "$LL" )
+                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers' -e "$LL" -e 'eScholarship.org' )
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader
@@ -504,10 +505,10 @@ else
     λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e './docs/www/' -e './static/404.html' | xargs fgrep --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages"
 
-    λ() { find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel --max-args=100 identify | egrep '\.gif\[[0-9]\] '; }
+    λ(){ find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel --max-args=100 identify | egrep '\.gif\[[0-9]\] '; }
     wrap λ "Animated GIF is deprecated; GIFs should be converted to WebMs/MP4"
 
-    λ() { JPGS_BIG="$(find ./ -type f -name "*.jpg" | parallel --max-args=100 "identify -format '%Q %F\n'" {} | sort --numeric-sort | egrep -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')";
+    λ(){ JPGS_BIG="$(find ./ -type f -name "*.jpg" | parallel --max-args=100 "identify -format '%Q %F\n'" {} | sort --numeric-sort | egrep -e '^[7-9][0-9] ' -e '^6[6-9]' -e '^100')";
           echo "$JPGS_BIG";
           compressJPG2 $(echo "$JPGS_BIG" | cut --delimiter=' ' --field=2); }
     wrap λ "Compress JPGs to ≤65% quality"
@@ -533,7 +534,7 @@ else
 
         bold "Checking all MIME types…"
         PAGES=$(cd ~/wiki/ && find . -type f -name "*.page" | sed -e 's/\.\///' -e 's/\.page$//' | sort)
-        c() { curl --compressed --silent --output /dev/null --head "$@"; }
+        c () { curl --compressed --silent --output /dev/null --head "$@"; }
         for PAGE in $PAGES; do
             MIME=$(c --max-redirs 0 --write-out '%{content_type}' "https://www.gwern.net/$PAGE")
             if [ "$MIME" != "text/html; charset=utf-8" ]; then red "$PAGE : $MIME"; exit 2; fi
@@ -543,8 +544,8 @@ else
         done
 
         # check for any pages that could use multi-columns now:
-        λ() { (find . -name "*.page"; find ./metadata/annotations/ -maxdepth 1 -name "*.html") | shuf | \
-            parallel --max-args=100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
+        λ(){ (find . -name "*.page"; find ./metadata/annotations/ -maxdepth 1 -name "*.html") | shuf | \
+                 parallel --max-args=100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
