@@ -332,7 +332,12 @@ else
          cr 'https://www.gwern.net/AB%20testing' 'https://www.gwern.net/AB-testing'
          cr 'https://www.gwern.net/Archiving%20URLs.html' 'https://www.gwern.net/Archiving-URLs'
          cr 'https://www.gwern.net/Book-reviews' 'https://www.gwern.net/reviews/Books'
-         cr 'https://www.gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://www.gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3'; }
+         cr 'https://www.gwern.net/docs/ai/2019-10-21-gwern-gpt2-folkrnn-samples.ogg' 'https://www.gwern.net/docs/ai/music/2019-10-21-gwern-gpt2-folkrnn-samples.mp3';
+         cr 'https://www.gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm' 'https://www.gwern.net/docs/silk-road/2013-06-07-premiumdutch-profile.htm'
+         cr 'https://www.gwern.net/docs/elections/2012-gwern-notes.txt' 'https://www.gwern.net/docs/prediction/election/2012-gwern-notes.txt'
+         cr 'https://www.gwern.net/docs/statistics/peerreview/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf' 'https://www.gwern.net/docs/statistics/peer-review/1976-rosenthal-experimenterexpectancyeffects-ch3.pdf'
+         cr 'https://www.gwern.net/docs/longnow/form990-longnowfoundation-2001-12.pdf' 'https://www.gwern.net/docs/long-now/form990-longnowfoundation-2001-12.pdf'
+       }
     wrap λ "Check that some redirects go where they should"
     λ() { cm () { [[ "$1" != $(c --write-out '%{content_type}' "$2") ]] && echo "$1" "$2"; }
           ### check key pages:
@@ -349,14 +354,14 @@ else
           cm "application/octet-stream" 'https://www.gwern.net/docs/zeo/firmware-v2.6.3R-zeo.img'
           cm "application/pdf" 'https://www.gwern.net/docs/cs/2010-bates.pdf'
           cm "application/pdf" 'https://www.gwern.net/docs/history/1694-gregory.pdf'
-          cm "application/vnd.ms-excel" 'https://www.gwern.net/docs/dnb/2012-05-30-kundu-dnbrapm.xls'
+          cm "application/vnd.ms-excel" 'https://www.gwern.net/docs/dual-n-back/2012-05-30-kundu-dnbrapm.xls'
           cm "application/vnd.oasis.opendocument.spreadsheet" 'https://www.gwern.net/docs/genetics/heritable/1980-osborne-twinsblackandwhite-appendix.ods'
           cm "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" 'https://www.gwern.net/docs/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx'
           cm "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 'https://www.gwern.net/docs/genetics/heritable/2015-mosing-supplement.docx'
           cm "application/vnd.rn-realmedia" 'https://www.gwern.net/docs/rotten.com/library/bio/crime/serial-killers/elmer-wayne-henley/areyouguilty.rm'
           cm "application/x-maff" 'https://www.gwern.net/docs/eva/2001-pulpmag-hernandez-2.html.maff'
           cm "application/x-shockwave-flash" 'https://www.gwern.net/docs/rotten.com/library/bio/entertainers/comic/patton-oswalt/patton.swf'
-          cm "application/x-tar" 'https://www.gwern.net/docs/dnb/2011-zhong.tar'
+          cm "application/x-tar" 'https://www.gwern.net/docs/dual-n-back/2011-zhong.tar'
           cm "application/x-xz" 'https://www.gwern.net/docs/personal/2013-09-25-gwern-googlealertsemails.tar.xz'
           cm "application/zip" 'https://www.gwern.net/docs/statistics/bayes/2014-tenan-supplement.zip'
           cm "audio/mpeg" 'https://www.gwern.net/docs/history/1969-schirra-apollo11flighttothemoon.mp3'
@@ -383,18 +388,18 @@ else
           cm "text/csv; charset=utf-8" 'https://www.gwern.net/docs/statistics/2013-google-index.csv'
           cm "text/html" 'https://www.gwern.net/atom.xml'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/cs/2012-terencetao-anonymity.html'
-          cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/sr/2013-06-07-premiumdutch-profile.htm'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/silk-road/2013-06-07-premiumdutch-profile.htm'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/index'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Attention'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Faster'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Movies'
-          cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/xrisks/1985-hofstadter'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/existential-risk/1985-hofstadter'
           cm "text/markdown; charset=utf-8" 'https://www.gwern.net/2014-spirulina.page'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/docs/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/redirects/nginx.conf'
-          cm "text/x-adobe-acrobat-drm" 'https://www.gwern.net/docs/dnb/2012-zhong.ebt'
+          cm "text/x-adobe-acrobat-drm" 'https://www.gwern.net/docs/dual-n-back/2012-zhong.ebt'
           cm "text/x-haskell; charset=utf-8" 'https://www.gwern.net/static/build/hakyll.hs'
           cm "text/x-opml; charset=utf-8" 'https://www.gwern.net/docs/personal/rss-subscriptions.opml'
           cm "text/x-patch; charset=utf-8" 'https://www.gwern.net/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch'
@@ -460,8 +465,8 @@ else
     λ(){
         export LL="$(curl --silent ifconfig.me)"
         checkSpamHeader () {
-            # extract text from first 2 pages:
-            HEADER=$(pdftotext -f 1 -l 2 "$@" - 2> /dev/null | \
+            # extract text from first page:
+            HEADER=$(pdftotext -f 1 -l 1 "$@" - 2> /dev/null | \
                          fgrep -e 'INFORMATION TO USERS' -e 'Your use of the JSTOR archive indicates your acceptance of JSTOR' \
                                -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
                                -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
