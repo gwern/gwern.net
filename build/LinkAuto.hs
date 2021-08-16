@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-15 20:19:31 gwern"
+When:  Time-stamp: "2021-08-16 13:21:05 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -429,6 +429,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Bandai", "https://en.wikipedia.org/wiki/Bandai")
         , ("Barlow Twins?", "https://arxiv.org/abs/2103.03230#facebook")
         , ("Baskerville", "https://en.wikipedia.org/wiki/Baskerville")
+        , ("Bayes.?.?.? ([Tt]heorem|[Ff]ormula|[Ll]aw|[Rr]ule)", "https://en.wikipedia.org/wiki/Bayes%27_theorem")
         , ("Bayesian (models?|approach|estimation|methods?|statistics?|analysis|inference)", "https://en.wikipedia.org/wiki/Bayesian_statistics")
         , ("Bayesian RL", "https://arxiv.org/abs/1609.04436")
         , ("Bayesian [Ss]earch [Tt]heory", "https://en.wikipedia.org/wiki/Bayesian_search_theory")
@@ -1309,4 +1310,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Rr]ent[ -]seeking", "https://en.wikipedia.org/wiki/Rent-seeking")
         , ("[Pp]ublic[ -]choice( theory)?", "https://en.wikipedia.org/wiki/Public_choice")
         , ("(C.? [Ee]legans|Caenorhabditis elegans)", "https://en.wikipedia.org/wiki/Caenorhabditis_elegans")
+        , ("(([Dd]is)[Aa]ssortative [Mm]ating|[Aa]ssortativ(e|ity)|[Aa]ssortative [Mm]atching)", "https://en.wikipedia.org/wiki/Assortative_mating")
         ]
