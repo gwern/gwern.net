@@ -118,7 +118,7 @@ else
     export -f syntaxHighlight
     set +e
     find _site/static/ -type f,l -name "*.html" | sort | parallel syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" | sort | fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' -e 'metadata/backlinks.hs' -e 'metadata/archive.hs' | parallel syntaxHighlight &
+    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" | sort | fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' -e 'metadata/backlinks.hs' -e 'metadata/archive.hs' -e 'docs/www/' | parallel syntaxHighlight &
         # Pandoc fails on embedded Unicode/regexps in JQuery
     set -e
 
@@ -396,6 +396,7 @@ else
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Movies'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/existential-risk/1985-hofstadter'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Bakewell'
           cm "text/markdown; charset=utf-8" 'https://www.gwern.net/2014-spirulina.page'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/docs/personal/2009-sleep.txt'
           cm "text/plain; charset=utf-8" 'https://www.gwern.net/static/redirects/nginx.conf'
