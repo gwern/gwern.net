@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-15 20:30:02 gwern"
+When:  Time-stamp: "2021-08-19 12:07:28 gwern"
 License: CC-0
 -}
 
@@ -77,8 +77,8 @@ readLinkMetadata = do
              -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation)
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
              -- - authors must exist (if only as 'Anonymous'), but are non-unique
-             -- - dates are non-unique & optional/NA for always-updated things like Wikipedia
-             -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do)
+             -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYY[-MM[-DD]]'.
+             -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urls = map fst custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
@@ -90,6 +90,10 @@ readLinkMetadata = do
                                    unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
 
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+
+             let dois = map (\(_,(_,_,_,doi,_)) -> doi) custom in
+               let badDois = filter (\d -> '–' `elem` d || '—' `elem` d) dois in
+                 when (not (null badDois)) $ error $ "Bad DOIs (en/em dash): " ++ show badDois
 
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              let emptyCheck = filter (\(u,(t,a,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
@@ -247,7 +251,7 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
                                                                 let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]] in
-                                                                let values = if doi=="" then [] else [("doi",T.pack doi)] in
+                                                                let values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)] in
                                                                   let linkPrefix = if rawUrlp then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
                                                                   let link =
                                                                              Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
@@ -336,7 +340,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, processPubMedAbstract $ unlines abstrct))
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, processPubMedAbstract $ unlines abstrct))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
@@ -349,7 +353,7 @@ pdf p = do let p' = takeWhile (/='#') p
                   d:[] -> return $ Right (p, ("", "", d, "", ""))
                   (etitle:eauthor:edate:_) -> do
                     let edoi = lines $ U.toString mb2
-                    let edoi' = if null edoi then "" else head edoi
+                    let edoi' = if null edoi then "" else processDOI $ head edoi
                     -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                     (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p']
                     let ecreator = filterMeta $ U.toString mb3
@@ -403,7 +407,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         if title=="" then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return (Left Permanent)
                           else do
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
-                                 let doi     = concat $ parseMetadataTagsoup "citation_doi" metas
+                                 let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                  let abstrct = cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  return $ Right (p, (title, author, date, doi, abstrct))
@@ -426,7 +430,8 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract url $ trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
-                         let doi = findTxt $ fst $ element "arxiv:doi" tags
+                         -- NOTE: Arxiv does not, as a matter of policy, provide its own DOIs (even though they easily could...), but sometimes things are published elsewhere & get updated to note that DOI:
+                         let doi = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let abst = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
                          return $ Right (url, (title,authors,published,doi,abst))
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
@@ -460,6 +465,9 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
                                             in (x:r,rs)
                     | otherwise          = let (r,rs) = closeEl i     xs
                                             in (x:r,rs)
+
+processDOI :: String -> String
+processDOI = replace "–" "-" . replace "—" "-"
 
 processPubMedAbstract :: String -> String
 processPubMedAbstract abst = let clean = runPure $ do
