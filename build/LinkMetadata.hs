@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-19 12:07:28 gwern"
+When:  Time-stamp: "2021-08-19 14:49:19 gwern"
 License: CC-0
 -}
 
@@ -24,7 +24,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
-import Data.Maybe (Maybe, fromJust, fromMaybe)
+import Data.Maybe (Maybe, fromJust, fromMaybe, isNothing)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
@@ -39,7 +39,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     readHtml, writerExtensions, nullAttr, nullMeta, queryWith,
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
-import Text.Regex (subRegex, mkRegex)
+import Text.Regex (subRegex, mkRegex, matchRegex)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
@@ -90,6 +90,9 @@ readLinkMetadata = do
                                    unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
 
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+
+             let dates = map (\(_,(_,_,dt,_,_)) -> dt) custom in
+               mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex (mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$") d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
              let dois = map (\(_,(_,_,_,doi,_)) -> doi) custom in
                let badDois = filter (\d -> '–' `elem` d || '—' `elem` d) dois in
@@ -650,37 +653,37 @@ generateID url author date
        , ("https://openai.com/blog/image-gpt/", "chen-et-al-2020-blog")
        , ("https://openai.com/blog/musenet/", "musenet-blog")
        , ("https://openai.com/projects/five/", "oa5-blog")
-       , ("https://scholars-stage.blogspot.com/2010/08/notes-on-dynamics-of-human-civilization.html", "greer-growth")
-       , ("https://scholars-stage.blogspot.com/2013/02/ominous-parallels-what-antebellum.html", "greer-civil-war")
-       , ("https://scholars-stage.blogspot.com/2013/10/radical-islamic-terrorism-in-context-pt_10.html", "greer-islam-2")
-       , ("https://scholars-stage.blogspot.com/2013/10/radical-islamic-terrorism-in-context-pt.html", "greer-islam-1")
-       , ("https://scholars-stage.blogspot.com/2014/03/smallpox-on-steppe.html", "greer-smallpox")
-       , ("https://scholars-stage.blogspot.com/2014/04/meditations-on-maoism-ye-fus-hard-road.html", "greer-maoism-forgetting")
-       , ("https://scholars-stage.blogspot.com/2014/06/the-cross-section-ilusion.html", "greer-cross-section")
-       , ("https://scholars-stage.blogspot.com/2014/09/what-edward-luttwak-doesnt-know-about_6.html", "greer-luttwak-2")
-       , ("https://scholars-stage.blogspot.com/2014/09/what-edward-luttwak-doesnt-know-about.html", "greer-luttwak-1")
-       , ("https://scholars-stage.blogspot.com/2014/12/isis-mongols-and-return-of-ancient.html", "greer-islam-3")
-       , ("https://scholars-stage.blogspot.com/2015/01/the-radical-sunzi.html", "greer-sun-tzu")
-       , ("https://scholars-stage.blogspot.com/2015/02/the-education-of-american-strategist.html", "greer-strategic-ignorance")
-       , ("https://scholars-stage.blogspot.com/2015/05/the-war-where-future-met-past.html", "greer-woodblock-prints")
-       , ("https://scholars-stage.blogspot.com/2015/09/shakespeare-in-american-politics.html", "greer-shakespeare")
-       , ("https://scholars-stage.blogspot.com/2015/10/awareness-vs-action-two-modes-of.html", "greer-exitvoice")
-       , ("https://scholars-stage.blogspot.com/2015/10/pre-modern-battlefields-were-absolutely.html", "greer-battlefields")
-       , ("https://scholars-stage.blogspot.com/2016/01/america-will-always-fail-at-regional.html", "greer-foreign-knowledge")
-       , ("https://scholars-stage.blogspot.com/2016/10/everybody-wants-thucydides-trap.html", "greer-thucydides-trap")
-       , ("https://scholars-stage.blogspot.com/2016/11/history-is-written-by-losers.html", "greer-thucydides-historians")
-       , ("https://scholars-stage.blogspot.com/2016/12/men-of-honor-men-of-interest.html", "greer-thucydides-miletus")
-       , ("https://scholars-stage.blogspot.com/2017/07/everything-is-worse-in-china.html", "greer-totalitarianism-3")
-       , ("https://scholars-stage.blogspot.com/2018/01/vengeance-as-justice-passages-i.html", "greer-vengeance")
-       , ("https://scholars-stage.blogspot.com/2018/03/you-dont-have-people.html", "greer-american-isolationism")
-       , ("https://scholars-stage.blogspot.com/2018/07/what-cyber-war-will-look-like.html", "greer-hybrid-warfare")
-       , ("https://scholars-stage.blogspot.com/2018/08/tradition-is-smarter-than-you-are.html", "greer-tradition")
-       , ("https://scholars-stage.blogspot.com/2019/01/reflections-on-chinas-stalinist.html", "greer-totalitarianism-1")
-       , ("https://scholars-stage.blogspot.com/2019/03/reflections-on-chinas-stalinist.html", "greer-totalitarianism-2")
-       , ("https://scholars-stage.blogspot.com/2019/04/on-quests-for-transcendence.html", "greer-transcendence")
-       , ("https://scholars-stage.blogspot.com/2019/04/the-inner-life-of-chinese-teenagers.html", "greer-meihao")
-       , ("https://scholars-stage.blogspot.com/2019/05/the-utterly-dysfunctional-belt-and-road.html", "greer-beltandroad")
-       , ("https://scholars-stage.blogspot.com/2019/06/passages-i-highlighted-in-my-copy-of.html", "greer-only-yesterday")
+       , ("https://scholars-stage.org/2010/08/notes-on-dynamics-of-human-civilization.html", "greer-growth")
+       , ("https://scholars-stage.org/2013/02/ominous-parallels-what-antebellum.html", "greer-civil-war")
+       , ("https://scholars-stage.org/2013/10/radical-islamic-terrorism-in-context-pt_10.html", "greer-islam-2")
+       , ("https://scholars-stage.org/2013/10/radical-islamic-terrorism-in-context-pt.html", "greer-islam-1")
+       , ("https://scholars-stage.org/2014/03/smallpox-on-steppe.html", "greer-smallpox")
+       , ("https://scholars-stage.org/2014/04/meditations-on-maoism-ye-fus-hard-road.html", "greer-maoism-forgetting")
+       , ("https://scholars-stage.org/2014/06/the-cross-section-ilusion.html", "greer-cross-section")
+       , ("https://scholars-stage.org/2014/09/what-edward-luttwak-doesnt-know-about_6.html", "greer-luttwak-2")
+       , ("https://scholars-stage.org/2014/09/what-edward-luttwak-doesnt-know-about.html", "greer-luttwak-1")
+       , ("https://scholars-stage.org/2014/12/isis-mongols-and-return-of-ancient.html", "greer-islam-3")
+       , ("https://scholars-stage.org/2015/01/the-radical-sunzi.html", "greer-sun-tzu")
+       , ("https://scholars-stage.org/2015/02/the-education-of-american-strategist.html", "greer-strategic-ignorance")
+       , ("https://scholars-stage.org/2015/05/the-war-where-future-met-past.html", "greer-woodblock-prints")
+       , ("https://scholars-stage.org/2015/09/shakespeare-in-american-politics.html", "greer-shakespeare")
+       , ("https://scholars-stage.org/2015/10/awareness-vs-action-two-modes-of.html", "greer-exitvoice")
+       , ("https://scholars-stage.org/2015/10/pre-modern-battlefields-were-absolutely.html", "greer-battlefields")
+       , ("https://scholars-stage.org/2016/01/america-will-always-fail-at-regional.html", "greer-foreign-knowledge")
+       , ("https://scholars-stage.org/2016/10/everybody-wants-thucydides-trap.html", "greer-thucydides-trap")
+       , ("https://scholars-stage.org/2016/11/history-is-written-by-losers.html", "greer-thucydides-historians")
+       , ("https://scholars-stage.org/2016/12/men-of-honor-men-of-interest.html", "greer-thucydides-miletus")
+       , ("https://scholars-stage.org/2017/07/everything-is-worse-in-china.html", "greer-totalitarianism-3")
+       , ("https://scholars-stage.org/2018/01/vengeance-as-justice-passages-i.html", "greer-vengeance")
+       , ("https://scholars-stage.org/2018/03/you-dont-have-people.html", "greer-american-isolationism")
+       , ("https://scholars-stage.org/2018/07/what-cyber-war-will-look-like.html", "greer-hybrid-warfare")
+       , ("https://scholars-stage.org/2018/08/tradition-is-smarter-than-you-are.html", "greer-tradition")
+       , ("https://scholars-stage.org/2019/01/reflections-on-chinas-stalinist.html", "greer-totalitarianism-1")
+       , ("https://scholars-stage.org/2019/03/reflections-on-chinas-stalinist.html", "greer-totalitarianism-2")
+       , ("https://scholars-stage.org/2019/04/on-quests-for-transcendence.html", "greer-transcendence")
+       , ("https://scholars-stage.org/2019/04/the-inner-life-of-chinese-teenagers.html", "greer-meihao")
+       , ("https://scholars-stage.org/2019/05/the-utterly-dysfunctional-belt-and-road.html", "greer-beltandroad")
+       , ("https://scholars-stage.org/2019/06/passages-i-highlighted-in-my-copy-of.html", "greer-only-yesterday")
        , ("https://seclab.bu.edu/papers/reddit-WACCO2019.pdf", "bradley-stringhini-2019-2")
        , ("https://share.obormot.net/misc/gwern/wikipedia-popups.js", "achmiz-2019-2")
        , ("https://sites.google.com/view/videopredictioncapacity", "villegas-et-al-2019-2")
