@@ -106,7 +106,7 @@ sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,File
 sortByDate = sortBy (\(f,(t,a,d,_,_),_) (f',(t',a',d',_,_),_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
 
 
--- how do we handle files with appended data, which are linked like '/docs/rl/2020-bellemare.pdf#google' but exist as files as '/docs/rl/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
+-- how do we handle files with appended data, which are linked like '/docs/reinforcement-learning/2020-bellemare.pdf#google' but exist as files as '/docs/reinforcement-learning/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
@@ -144,7 +144,7 @@ generateListItem (f,(t,aut,_,_,""),bl)  = let f' = if "index" `isSuffixOf` f the
 generateListItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
   --
-  -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philo/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
+  -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
   generateAnnotationBlock True (f,Just a) bl

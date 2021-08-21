@@ -72,6 +72,9 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
                                        updateFile f $ T.unpack html
+                                       -- HACK: write out a duplicate 'metadata/annotations/backlinks/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
+                                       -- We overload the syntax-highlighting feature to make backlinks *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the backlinks `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if... we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
+                                       updateFile (f++".html") $ T.unpack html
 
 updateFile :: FilePath -> String -> IO ()
 updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-backlinks" contentsNew

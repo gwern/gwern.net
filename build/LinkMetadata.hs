@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-12 16:38:28 gwern"
+When:  Time-stamp: "2021-08-19 14:49:19 gwern"
 License: CC-0
 -}
 
@@ -24,7 +24,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
-import Data.Maybe (Maybe, fromJust, fromMaybe)
+import Data.Maybe (Maybe, fromJust, fromMaybe, isNothing)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
@@ -39,7 +39,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     readHtml, writerExtensions, nullAttr, nullMeta, queryWith,
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
-import Text.Regex (subRegex, mkRegex)
+import Text.Regex (subRegex, mkRegex, matchRegex)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
@@ -77,8 +77,8 @@ readLinkMetadata = do
              -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation)
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
              -- - authors must exist (if only as 'Anonymous'), but are non-unique
-             -- - dates are non-unique & optional/NA for always-updated things like Wikipedia
-             -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do)
+             -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYY[-MM[-DD]]'.
+             -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urls = map fst custom
              when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
@@ -90,6 +90,13 @@ readLinkMetadata = do
                                    unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
 
              let titles = map (\(_,(t,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+
+             let dates = map (\(_,(_,_,dt,_,_)) -> dt) custom in
+               mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex (mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$") d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+
+             let dois = map (\(_,(_,_,_,doi,_)) -> doi) custom in
+               let badDois = filter (\d -> '–' `elem` d || '—' `elem` d) dois in
+                 when (not (null badDois)) $ error $ "Bad DOIs (en/em dash): " ++ show badDois
 
              let annotations = map (\(_,(_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              let emptyCheck = filter (\(u,(t,a,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
@@ -185,6 +192,12 @@ annotateLink md target =
      let target' = replace "https://www.gwern.net/" "/" target
      let target'' = if head target' == '.' then drop 1 target' else target'
 
+     -- check local link validity: every local link except tags should exist on-disk:
+     when (head target'' == '/' && not ("/metadata/annotations/" `isPrefixOf` target'') && not ("/tags/" `isInfixOf` target'')) $
+       do let target''' = (\f -> if not ('.' `elem` f) then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
+          exist <- doesFileExist target'''
+          unless exist $ error ("Link error: file does not exist? " ++ target''' ++ " (" ++target++")")
+
      let annotated = M.lookup target'' md
      case annotated of
        -- the link has a valid annotation already defined, so we're done: nothing changed.
@@ -241,7 +254,7 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
                                                                 let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]] in
-                                                                let values = if doi=="" then [] else [("doi",T.pack doi)] in
+                                                                let values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)] in
                                                                   let linkPrefix = if rawUrlp then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
                                                                   let link =
                                                                              Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
@@ -330,7 +343,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim doi, processPubMedAbstract $ unlines abstrct))
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, processPubMedAbstract $ unlines abstrct))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
@@ -343,7 +356,7 @@ pdf p = do let p' = takeWhile (/='#') p
                   d:[] -> return $ Right (p, ("", "", d, "", ""))
                   (etitle:eauthor:edate:_) -> do
                     let edoi = lines $ U.toString mb2
-                    let edoi' = if null edoi then "" else head edoi
+                    let edoi' = if null edoi then "" else processDOI $ head edoi
                     -- PDFs have both a 'Creator' and 'Author' metadata field sometimes. Usually Creator refers to the (single) person who created the specific PDF file in question, and Author refers to the (often many) authors of the content; however, sometimes PDFs will reverse it: 'Author' means the PDF-maker and 'Creators' the writers. If the 'Creator' field is longer than the 'Author' field, then it's a reversed PDF and we want to use that field instead of omitting possibly scores of authors from our annotation.
                     (_,_,mb3) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Creator", "-Creator", p']
                     let ecreator = filterMeta $ U.toString mb3
@@ -397,7 +410,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         if title=="" then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return (Left Permanent)
                           else do
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
-                                 let doi     = concat $ parseMetadataTagsoup "citation_doi" metas
+                                 let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                  let abstrct = cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  return $ Right (p, (title, author, date, doi, abstrct))
@@ -420,7 +433,8 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract url $ trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
-                         let doi = findTxt $ fst $ element "arxiv:doi" tags
+                         -- NOTE: Arxiv does not, as a matter of policy, provide its own DOIs (even though they easily could...), but sometimes things are published elsewhere & get updated to note that DOI:
+                         let doi = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let abst = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
                          return $ Right (url, (title,authors,published,doi,abst))
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
@@ -454,6 +468,9 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
                                             in (x:r,rs)
                     | otherwise          = let (r,rs) = closeEl i     xs
                                             in (x:r,rs)
+
+processDOI :: String -> String
+processDOI = replace "–" "-" . replace "—" "-"
 
 processPubMedAbstract :: String -> String
 processPubMedAbstract abst = let clean = runPure $ do
@@ -522,7 +539,7 @@ generateID url author date
                            let authorCount = length authors in
                              if authorCount == 0 then "" else
                                let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
-                                 -- handle cases like '/docs/statistics/peerreview/1975-johnson-2.pdf'
+                                 -- handle cases like '/docs/statistics/peer-review/1975-johnson-2.pdf'
                                  -- let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
                                    -- let suffix' = if suffix == "-1" then "" else suffix in
                                  let suffix' = "" in
@@ -570,13 +587,13 @@ generateID url author date
        , ("/docs/radiance/2002-scholz-radiance#old-legends", "old-legends-2")
        , ("/docs/radiance/2002-scholz-radiance", "scholz-2002-2")
        , ("/docs/sociology/1987-rossi", "rossi-1987-2")
-       , ("/docs/sr/2019-du.pdf", "du-et-al-2019-2")
-       , ("/docs/sr/2020-ladegaard.pdf", "ladegaard-2020-2")
-       , ("/docs/sr/2020-norbutas.pdf", "norbutas-et-al-2020-1")
-       , ("/docs/sr/2020-yang-2.pdf", "yang-et-al-2020-b")
+       , ("/docs/silk-road/2019-du.pdf", "du-et-al-2019-2")
+       , ("/docs/silk-road/2020-ladegaard.pdf", "ladegaard-2020-2")
+       , ("/docs/silk-road/2020-norbutas.pdf", "norbutas-et-al-2020-1")
+       , ("/docs/silk-road/2020-yang-2.pdf", "yang-et-al-2020-b")
        , ("/docs/statistics/bias/2020-mcabe.pdf", "mccabe-2020-2")
        , ("/docs/statistics/causality/2019-gordon.pdf", "gordon-et-al-2019-2")
-       , ("/docs/statistics/peerreview/1975-johnson-2.pdf", "johnson-1975-2")
+       , ("/docs/statistics/peer-review/1975-johnson-2.pdf", "johnson-1975-2")
        , ("http://discovery.ucl.ac.uk/10080409/8/Bradley_10080409_thesis.pdf", "bradley-2019-2")
        , ("http://fastml.com/goodbooks-10k-a-new-dataset-for-book-recommendations/", "z-2017-2")
        , ("http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0040352", "smith-et-al-2007-link")
@@ -636,37 +653,37 @@ generateID url author date
        , ("https://openai.com/blog/image-gpt/", "chen-et-al-2020-blog")
        , ("https://openai.com/blog/musenet/", "musenet-blog")
        , ("https://openai.com/projects/five/", "oa5-blog")
-       , ("https://scholars-stage.blogspot.com/2010/08/notes-on-dynamics-of-human-civilization.html", "greer-growth")
-       , ("https://scholars-stage.blogspot.com/2013/02/ominous-parallels-what-antebellum.html", "greer-civil-war")
-       , ("https://scholars-stage.blogspot.com/2013/10/radical-islamic-terrorism-in-context-pt_10.html", "greer-islam-2")
-       , ("https://scholars-stage.blogspot.com/2013/10/radical-islamic-terrorism-in-context-pt.html", "greer-islam-1")
-       , ("https://scholars-stage.blogspot.com/2014/03/smallpox-on-steppe.html", "greer-smallpox")
-       , ("https://scholars-stage.blogspot.com/2014/04/meditations-on-maoism-ye-fus-hard-road.html", "greer-maoism-forgetting")
-       , ("https://scholars-stage.blogspot.com/2014/06/the-cross-section-ilusion.html", "greer-cross-section")
-       , ("https://scholars-stage.blogspot.com/2014/09/what-edward-luttwak-doesnt-know-about_6.html", "greer-luttwak-2")
-       , ("https://scholars-stage.blogspot.com/2014/09/what-edward-luttwak-doesnt-know-about.html", "greer-luttwak-1")
-       , ("https://scholars-stage.blogspot.com/2014/12/isis-mongols-and-return-of-ancient.html", "greer-islam-3")
-       , ("https://scholars-stage.blogspot.com/2015/01/the-radical-sunzi.html", "greer-sun-tzu")
-       , ("https://scholars-stage.blogspot.com/2015/02/the-education-of-american-strategist.html", "greer-strategic-ignorance")
-       , ("https://scholars-stage.blogspot.com/2015/05/the-war-where-future-met-past.html", "greer-woodblock-prints")
-       , ("https://scholars-stage.blogspot.com/2015/09/shakespeare-in-american-politics.html", "greer-shakespeare")
-       , ("https://scholars-stage.blogspot.com/2015/10/awareness-vs-action-two-modes-of.html", "greer-exitvoice")
-       , ("https://scholars-stage.blogspot.com/2015/10/pre-modern-battlefields-were-absolutely.html", "greer-battlefields")
-       , ("https://scholars-stage.blogspot.com/2016/01/america-will-always-fail-at-regional.html", "greer-foreign-knowledge")
-       , ("https://scholars-stage.blogspot.com/2016/10/everybody-wants-thucydides-trap.html", "greer-thucydides-trap")
-       , ("https://scholars-stage.blogspot.com/2016/11/history-is-written-by-losers.html", "greer-thucydides-historians")
-       , ("https://scholars-stage.blogspot.com/2016/12/men-of-honor-men-of-interest.html", "greer-thucydides-miletus")
-       , ("https://scholars-stage.blogspot.com/2017/07/everything-is-worse-in-china.html", "greer-totalitarianism-3")
-       , ("https://scholars-stage.blogspot.com/2018/01/vengeance-as-justice-passages-i.html", "greer-vengeance")
-       , ("https://scholars-stage.blogspot.com/2018/03/you-dont-have-people.html", "greer-american-isolationism")
-       , ("https://scholars-stage.blogspot.com/2018/07/what-cyber-war-will-look-like.html", "greer-hybrid-warfare")
-       , ("https://scholars-stage.blogspot.com/2018/08/tradition-is-smarter-than-you-are.html", "greer-tradition")
-       , ("https://scholars-stage.blogspot.com/2019/01/reflections-on-chinas-stalinist.html", "greer-totalitarianism-1")
-       , ("https://scholars-stage.blogspot.com/2019/03/reflections-on-chinas-stalinist.html", "greer-totalitarianism-2")
-       , ("https://scholars-stage.blogspot.com/2019/04/on-quests-for-transcendence.html", "greer-transcendence")
-       , ("https://scholars-stage.blogspot.com/2019/04/the-inner-life-of-chinese-teenagers.html", "greer-meihao")
-       , ("https://scholars-stage.blogspot.com/2019/05/the-utterly-dysfunctional-belt-and-road.html", "greer-beltandroad")
-       , ("https://scholars-stage.blogspot.com/2019/06/passages-i-highlighted-in-my-copy-of.html", "greer-only-yesterday")
+       , ("https://scholars-stage.org/2010/08/notes-on-dynamics-of-human-civilization.html", "greer-growth")
+       , ("https://scholars-stage.org/2013/02/ominous-parallels-what-antebellum.html", "greer-civil-war")
+       , ("https://scholars-stage.org/2013/10/radical-islamic-terrorism-in-context-pt_10.html", "greer-islam-2")
+       , ("https://scholars-stage.org/2013/10/radical-islamic-terrorism-in-context-pt.html", "greer-islam-1")
+       , ("https://scholars-stage.org/2014/03/smallpox-on-steppe.html", "greer-smallpox")
+       , ("https://scholars-stage.org/2014/04/meditations-on-maoism-ye-fus-hard-road.html", "greer-maoism-forgetting")
+       , ("https://scholars-stage.org/2014/06/the-cross-section-ilusion.html", "greer-cross-section")
+       , ("https://scholars-stage.org/2014/09/what-edward-luttwak-doesnt-know-about_6.html", "greer-luttwak-2")
+       , ("https://scholars-stage.org/2014/09/what-edward-luttwak-doesnt-know-about.html", "greer-luttwak-1")
+       , ("https://scholars-stage.org/2014/12/isis-mongols-and-return-of-ancient.html", "greer-islam-3")
+       , ("https://scholars-stage.org/2015/01/the-radical-sunzi.html", "greer-sun-tzu")
+       , ("https://scholars-stage.org/2015/02/the-education-of-american-strategist.html", "greer-strategic-ignorance")
+       , ("https://scholars-stage.org/2015/05/the-war-where-future-met-past.html", "greer-woodblock-prints")
+       , ("https://scholars-stage.org/2015/09/shakespeare-in-american-politics.html", "greer-shakespeare")
+       , ("https://scholars-stage.org/2015/10/awareness-vs-action-two-modes-of.html", "greer-exitvoice")
+       , ("https://scholars-stage.org/2015/10/pre-modern-battlefields-were-absolutely.html", "greer-battlefields")
+       , ("https://scholars-stage.org/2016/01/america-will-always-fail-at-regional.html", "greer-foreign-knowledge")
+       , ("https://scholars-stage.org/2016/10/everybody-wants-thucydides-trap.html", "greer-thucydides-trap")
+       , ("https://scholars-stage.org/2016/11/history-is-written-by-losers.html", "greer-thucydides-historians")
+       , ("https://scholars-stage.org/2016/12/men-of-honor-men-of-interest.html", "greer-thucydides-miletus")
+       , ("https://scholars-stage.org/2017/07/everything-is-worse-in-china.html", "greer-totalitarianism-3")
+       , ("https://scholars-stage.org/2018/01/vengeance-as-justice-passages-i.html", "greer-vengeance")
+       , ("https://scholars-stage.org/2018/03/you-dont-have-people.html", "greer-american-isolationism")
+       , ("https://scholars-stage.org/2018/07/what-cyber-war-will-look-like.html", "greer-hybrid-warfare")
+       , ("https://scholars-stage.org/2018/08/tradition-is-smarter-than-you-are.html", "greer-tradition")
+       , ("https://scholars-stage.org/2019/01/reflections-on-chinas-stalinist.html", "greer-totalitarianism-1")
+       , ("https://scholars-stage.org/2019/03/reflections-on-chinas-stalinist.html", "greer-totalitarianism-2")
+       , ("https://scholars-stage.org/2019/04/on-quests-for-transcendence.html", "greer-transcendence")
+       , ("https://scholars-stage.org/2019/04/the-inner-life-of-chinese-teenagers.html", "greer-meihao")
+       , ("https://scholars-stage.org/2019/05/the-utterly-dysfunctional-belt-and-road.html", "greer-beltandroad")
+       , ("https://scholars-stage.org/2019/06/passages-i-highlighted-in-my-copy-of.html", "greer-only-yesterday")
        , ("https://seclab.bu.edu/papers/reddit-WACCO2019.pdf", "bradley-stringhini-2019-2")
        , ("https://share.obormot.net/misc/gwern/wikipedia-popups.js", "achmiz-2019-2")
        , ("https://sites.google.com/view/videopredictioncapacity", "villegas-et-al-2019-2")
@@ -690,7 +707,7 @@ generateID url author date
        , ("https://www.biorxiv.org/content/early/2017/12/31/241414", "ma-rrblup")
        , ("https://www.biorxiv.org/content/early/2018/07/25/376897", "belsky-et-al-2018-2")
        , ("https://www.cl.cam.ac.uk/~bjc63/tight_scrape.pdf", "turk-et-al-2020-2")
-       , ("https://www.gwern.net/docs/traffic/2020-aral.pdf", "aral-dhillon-2020-paper")
+       , ("https://www.gwern.net/docs/advertising/2020-aral.pdf", "aral-dhillon-2020-paper")
        , ("https://www.nature.com/articles/s41467-019-13585-5", "hill-et-al-20192")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3339577/", "karageorghis-et-al-2012-2")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4294962/", "robinson-et-al-2015-2")
@@ -771,6 +788,8 @@ cleanAbstractsHTML t = trim $
   (" ([0-9]*[1])st",        " \\1<sup>st</sup>"),
   (" ([0-9]*[3])rd",        " \\1<sup>rd</sup>"),
   (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", ""), -- rm AERA classification tags they stick into the Crossref abstracts
+  ("CI=([.0-9])", "CI = \\1"), -- 'CI=0.90' → 'CI = 0.90'
+  ("AOR=([.0-9])", "AOR = \\1"), -- 'AOR=2.9' → 'CI = 2.09'
   -- math regexes
   ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^"),
   ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^"),
