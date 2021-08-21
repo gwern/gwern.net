@@ -820,6 +820,23 @@ a code {
     background-color: transparent;
 }
 
+/*	Reduce text-shadow overlap partially erasing letters next to smallcaps: 
+	eg in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`, 
+	the 'o' in 'micro' will be partially erased and look like a 'c' without 
+	some sort of extra spacing
+	*/
+.markdownBody a:link > .smallcaps,
+.markdownBody a:link > .smallcaps-auto {
+	margin-left: 0.7px;
+}
+
+/*	Similar to above, but for subscripts and superscripts
+	*/
+.markdownBody a:link > sub,
+.markdownBody a:link > sup {
+	padding-left: 0.125em;
+}
+
 /**************/
 /* PARAGRAPHS */
 /**************/
@@ -987,9 +1004,6 @@ span.smallcaps-auto {
     font-feature-settings: 'smcp', 'c2sc';
     font-variant-numeric: tabular-nums;
 }
-/* Reduce text-shadow overlap partially erasing letters next to smallcaps: eg in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`, the 'o' in 'micro' will be partially erased and look like a 'c' without some sort of extra spacing */
-a > .smallcaps-auto { margin-left: 0.7px; }
-
 /*************/
 /* DARK MODE */
 /*************/
