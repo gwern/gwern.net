@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-19 11:14:35 gwern"
+When:  Time-stamp: "2021-08-21 12:06:35 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -361,7 +361,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Pp]rotein.? folding|folding protein.?)", "https://en.wikipedia.org/wiki/Protein_folding")
         , ("([Qq]uadcopter|[Qq]uadrotor)s?", "https://en.wikipedia.org/wiki/Quadcopter")
         , ("([Qq]uantitative [Tt]rait [Ll]oci|QTLs?)", "https://en.wikipedia.org/wiki/Quantitative_trait_locus")
-        , ("([Rr]ange restriction|restricted range)", "https://en.wikipedia.org/wiki/Range_restriction")
+        , ("([Rr]ange restriction|[Rr]estricted range|[Rr]estriction of range)", "https://en.wikipedia.org/wiki/Range_restriction")
         , ("([Ss]elf-[Ss]upervised [Ll]earning|[Ss]emi-[Ss]upervised [Ll]earning)", "https://en.wikipedia.org/wiki/Semi-supervised_learning")
         , ("([Ss]tatistical [Pp]ower|well-powered)", "https://en.wikipedia.org/wiki/Statistical_power")
         , ("([Ss]tatistical[ -]significance|[Ss]tatistically-significant)", "https://en.wikipedia.org/wiki/Statistical_significance")

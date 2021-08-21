@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-19 14:49:19 gwern"
+When:  Time-stamp: "2021-08-19 21:24:46 gwern"
 License: CC-0
 -}
 
@@ -594,6 +594,7 @@ generateID url author date
        , ("/docs/statistics/bias/2020-mcabe.pdf", "mccabe-2020-2")
        , ("/docs/statistics/causality/2019-gordon.pdf", "gordon-et-al-2019-2")
        , ("/docs/statistics/peer-review/1975-johnson-2.pdf", "johnson-1975-2")
+       , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne-website")
        , ("http://discovery.ucl.ac.uk/10080409/8/Bradley_10080409_thesis.pdf", "bradley-2019-2")
        , ("http://fastml.com/goodbooks-10k-a-new-dataset-for-book-recommendations/", "z-2017-2")
        , ("http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0040352", "smith-et-al-2007-link")
