@@ -298,9 +298,13 @@ body.index #sidebar a#logo {
     pointer-events: none;
 }
 
+body.index #markdownBody section h1 {
+	border-bottom: 1px dotted currentColor;
+}
+
 /*	Columns.
 	*/
-@media only screen and (min-width: 650px) {
+@media only screen and (min-width: 961px) {
 	body.index #markdownBody {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -318,9 +322,6 @@ body.index #sidebar a#logo {
 	}
 	body.index #markdownBody section > ul {
 		margin: 0.75em 3em 0 0.25em;
-	}
-	body.index #markdownBody section h1 {
-		border-bottom: 1px dotted currentColor;
 	}
 	@media only screen and (max-width: 1040px) {
 		body.index #markdownBody {
