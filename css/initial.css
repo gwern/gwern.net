@@ -298,10 +298,43 @@ body.index #sidebar a#logo {
     pointer-events: none;
 }
 
-/*  Make the sections reflow; better than fixed-width tables. */
-body.index article section {
-    display: inline-block;
-    vertical-align: top;
+/*	Columns.
+	*/
+@media only screen and (min-width: 650px) {
+	body.index #markdownBody {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 2em;
+		grid-row-gap: 0.5em;
+	}
+	body.index #markdownBody .abstract,
+	body.index #markdownBody section#newest {
+		grid-column-start: 1;
+		grid-column-end: -1;
+	}
+	body.index #markdownBody section#newest > ul {
+		column-count: 2;
+		column-gap: 6.625em;
+	}
+	body.index #markdownBody section > ul {
+		margin: 0.75em 3em 0 0.25em;
+	}
+	body.index #markdownBody section h1 {
+		border-bottom: 1px dotted currentColor;
+	}
+	@media only screen and (max-width: 1040px) {
+		body.index #markdownBody {
+			grid-template-columns: 1fr;
+		}
+		body.index #markdownBody section > ul,
+		body.index #markdownBody section#newest > ul {
+			column-count: 2;
+			column-gap: 3em;
+		}
+		body.index #markdownBody section > ul li {
+			break-inside: avoid;
+		}
+	}
 }
 
 /*  Abstract is not a real abstract, just an introduction, no need for the abstract formatting.
@@ -311,18 +344,6 @@ body.index .abstract {
     border: none;
     margin: 0;
     box-shadow: none;
-}
-
-@media only screen and (min-width: 1200px) {
-    /*  Leave enough horizontal room to show multiple sections simultaneously, table-like */
-    body.index #markdownBody {
-        width: 1350px;
-        max-width: calc(50vw + 420px);
-    }
-    body.index p,
-    body.index hr {
-        max-width: 970px;
-    }
 }
 
 /*  Add some vertical padding for the introduction.
