@@ -372,7 +372,7 @@ body.tags #markdownBody ul {
 }
 body.index #markdownBody li > ul,
 body.tags #markdownBody li > ul {
-    margin: 0.25em 0 0.25em 0;
+    margin: 0;
 }
 body.index #markdownBody li,
 body.tags #markdownBody li {
