@@ -601,14 +601,9 @@ body.index #markdownBody section h1 {
 		grid-column-gap: 2em;
 		grid-row-gap: 0.5em;
 	}
-	body.index #markdownBody .abstract,
-	body.index #markdownBody section#newest {
+	body.index #markdownBody .abstract {
 		grid-column-start: 1;
 		grid-column-end: -1;
-	}
-	body.index #markdownBody section#newest > ul {
-		column-count: 2;
-		column-gap: 6.625em;
 	}
 	body.index #markdownBody section > ul {
 		margin: 0.75em 3em 0 0.25em;
@@ -617,8 +612,7 @@ body.index #markdownBody section h1 {
 		body.index #markdownBody {
 			grid-template-columns: 1fr;
 		}
-		body.index #markdownBody section > ul,
-		body.index #markdownBody section#newest > ul {
+		body.index #markdownBody section > ul {
 			column-count: 2;
 			column-gap: 3em;
 		}
@@ -1132,9 +1126,9 @@ a code {
     background-color: transparent;
 }
 
-/*	Reduce text-shadow overlap partially erasing letters next to smallcaps: 
-	eg in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`, 
-	the 'o' in 'micro' will be partially erased and look like a 'c' without 
+/*	Reduce text-shadow overlap partially erasing letters next to smallcaps:
+	eg in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`,
+	the 'o' in 'micro' will be partially erased and look like a 'c' without
 	some sort of extra spacing
 	*/
 .markdownBody a:link > .smallcaps,
