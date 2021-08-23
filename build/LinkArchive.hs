@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-08-19 20:08:12 gwern"
+When:  Time-stamp: "2021-08-21 20:23:31 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -895,5 +895,7 @@ whiteList url
       , "library.bz/" -- Libgen
       , "wellcomecollection.org/works/" -- low-quality
       , "www.reddit.com/r/mlscaling/search" -- search/updated
+      , "thechineseteashop.com/" -- homepage
+      , "teahabitat.com/" -- homepage
       ] = True
     | otherwise = False
