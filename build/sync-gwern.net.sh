@@ -442,6 +442,9 @@ else
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v -e images/thumbnails/ -e metadata/annotations/; }
     wrap λ "No files should have double hyphens or tildes in their names."
 
+    λ(){ fgrep --before-context=1 'Right Nothing' ./metadata/archive.hs; }
+    wrap λ "Links failed to archive (broken)."
+
     λ(){ find . -type f | fgrep -v -e '.'; }
     wrap λ "Every file should have at least one period in them (extension)."
 
@@ -498,10 +501,13 @@ else
     wrap λ "Corrupted HTMLs"
 
     λ(){ checkEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
-                              if [ "$ENCRYPTION" != "" ]; then echo "Encrypted: $@"; fi; }
+                              if [ "$ENCRYPTION" != "" ]; then
+                                  TEMP=$(mktemp /tmp/encrypted-XXXX.pdf)
+                                  pdftk "$FILE" input_pw output "$TEMP" && mv "$TEMP" "$FILE";
+                              fi; }
          export -f checkEncryption
          find ./ -type f -name "*.pdf" | parallel checkEncryption; }
-    wrap λ "'Encrypted' PDFs (fix with pdftk: `pdftk $PDF input_pw output foo.pdf`)" &
+    wrap λ "'Encrypted' PDFs (fix with pdftk: 'pdftk $PDF input_pw output foo.pdf')" &
 
     ## DjVu is deprecated (due to SEO: no search engines will crawl DjVu, turns out!):
     λ(){ find ./ -type f -name "*.djvu"; }
