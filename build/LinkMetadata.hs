@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-19 21:24:46 gwern"
+When:  Time-stamp: "2021-08-24 22:36:05 gwern"
 License: CC-0
 -}
 
@@ -654,37 +654,37 @@ generateID url author date
        , ("https://openai.com/blog/image-gpt/", "chen-et-al-2020-blog")
        , ("https://openai.com/blog/musenet/", "musenet-blog")
        , ("https://openai.com/projects/five/", "oa5-blog")
-       , ("https://scholars-stage.org/2010/08/notes-on-dynamics-of-human-civilization.html", "greer-growth")
-       , ("https://scholars-stage.org/2013/02/ominous-parallels-what-antebellum.html", "greer-civil-war")
-       , ("https://scholars-stage.org/2013/10/radical-islamic-terrorism-in-context-pt_10.html", "greer-islam-2")
-       , ("https://scholars-stage.org/2013/10/radical-islamic-terrorism-in-context-pt.html", "greer-islam-1")
-       , ("https://scholars-stage.org/2014/03/smallpox-on-steppe.html", "greer-smallpox")
-       , ("https://scholars-stage.org/2014/04/meditations-on-maoism-ye-fus-hard-road.html", "greer-maoism-forgetting")
-       , ("https://scholars-stage.org/2014/06/the-cross-section-ilusion.html", "greer-cross-section")
-       , ("https://scholars-stage.org/2014/09/what-edward-luttwak-doesnt-know-about_6.html", "greer-luttwak-2")
-       , ("https://scholars-stage.org/2014/09/what-edward-luttwak-doesnt-know-about.html", "greer-luttwak-1")
-       , ("https://scholars-stage.org/2014/12/isis-mongols-and-return-of-ancient.html", "greer-islam-3")
-       , ("https://scholars-stage.org/2015/01/the-radical-sunzi.html", "greer-sun-tzu")
-       , ("https://scholars-stage.org/2015/02/the-education-of-american-strategist.html", "greer-strategic-ignorance")
-       , ("https://scholars-stage.org/2015/05/the-war-where-future-met-past.html", "greer-woodblock-prints")
-       , ("https://scholars-stage.org/2015/09/shakespeare-in-american-politics.html", "greer-shakespeare")
-       , ("https://scholars-stage.org/2015/10/awareness-vs-action-two-modes-of.html", "greer-exitvoice")
-       , ("https://scholars-stage.org/2015/10/pre-modern-battlefields-were-absolutely.html", "greer-battlefields")
-       , ("https://scholars-stage.org/2016/01/america-will-always-fail-at-regional.html", "greer-foreign-knowledge")
-       , ("https://scholars-stage.org/2016/10/everybody-wants-thucydides-trap.html", "greer-thucydides-trap")
-       , ("https://scholars-stage.org/2016/11/history-is-written-by-losers.html", "greer-thucydides-historians")
-       , ("https://scholars-stage.org/2016/12/men-of-honor-men-of-interest.html", "greer-thucydides-miletus")
-       , ("https://scholars-stage.org/2017/07/everything-is-worse-in-china.html", "greer-totalitarianism-3")
-       , ("https://scholars-stage.org/2018/01/vengeance-as-justice-passages-i.html", "greer-vengeance")
-       , ("https://scholars-stage.org/2018/03/you-dont-have-people.html", "greer-american-isolationism")
-       , ("https://scholars-stage.org/2018/07/what-cyber-war-will-look-like.html", "greer-hybrid-warfare")
-       , ("https://scholars-stage.org/2018/08/tradition-is-smarter-than-you-are.html", "greer-tradition")
-       , ("https://scholars-stage.org/2019/01/reflections-on-chinas-stalinist.html", "greer-totalitarianism-1")
-       , ("https://scholars-stage.org/2019/03/reflections-on-chinas-stalinist.html", "greer-totalitarianism-2")
-       , ("https://scholars-stage.org/2019/04/on-quests-for-transcendence.html", "greer-transcendence")
-       , ("https://scholars-stage.org/2019/04/the-inner-life-of-chinese-teenagers.html", "greer-meihao")
-       , ("https://scholars-stage.org/2019/05/the-utterly-dysfunctional-belt-and-road.html", "greer-beltandroad")
-       , ("https://scholars-stage.org/2019/06/passages-i-highlighted-in-my-copy-of.html", "greer-only-yesterday")
+       , ("https://scholars-stage.org/notes-on-the-dynamics-of-human-civilization-the-growth-revolution-part-i/", "greer-growth")
+       , ("https://scholars-stage.org/ominous-parallels-what-antebellum-america-can-teach-us-about-our-modern-political-regime/", "greer-civil-war")
+       , ("https://scholars-stage.org/radical-islamic-terrorism-in-context-pt-ii/", "greer-islam-2")
+       , ("https://scholars-stage.org/radical-islamic-terrorism-in-context-pt-i/", "greer-islam-1")
+       , ("https://scholars-stage.org/smallpox-on-the-steppe/", "greer-smallpox")
+       , ("https://scholars-stage.org/meditations-on-maoism-ye-fus-hard-road-home/", "greer-maoism-forgetting")
+       , ("https://scholars-stage.org/the-cross-section-ilusion/", "greer-cross-section")
+       , ("https://scholars-stage.org/what-edward-luttwak-doesnt-know-about-ancient-china-or-a-short-history-of-han-xiongnu-relations-pt-2/", "greer-luttwak-2")
+       , ("https://scholars-stage.org/what-edward-luttwak-doesnt-know-about-ancient-china-or-a-short-history-of-han-xiongnu-relations-pt-1/", "greer-luttwak-1")
+       , ("https://scholars-stage.org/isis-the-mongols-and-the-return-of-ancient-challenges/", "greer-islam-3")
+       , ("https://scholars-stage.org/the-radical-sunzi/", "greer-sun-tzu")
+       , ("https://scholars-stage.org/american-policy-makers-do-not-read-books/", "greer-strategic-ignorance")
+       , ("https://scholars-stage.org/when-modern-war-met-an-antique-art/", "greer-woodblock-prints")
+       , ("https://scholars-stage.org/shakespeare-in-american-politics/", "greer-shakespeare")
+       , ("https://scholars-stage.org/awareness-vs-action-two-modes-of-protest-in-american-history/", "greer-exitvoice")
+       , ("https://scholars-stage.org/pre-modern-battlefields-were-absolutely-terrifying/", "greer-battlefields")
+       , ("https://scholars-stage.org/america-will-always-fail-at-regional-expertise/", "greer-foreign-knowledge")
+       , ("https://scholars-stage.org/everybody-wants-a-thucydides-trap/", "greer-thucydides-trap")
+       , ("https://scholars-stage.org/history-is-written-by-the-losers/", "greer-thucydides-historians")
+       , ("https://scholars-stage.org/men-of-honor-men-of-interest/", "greer-thucydides-miletus")
+       , ("https://scholars-stage.org/everything-is-worse-in-china/", "greer-totalitarianism-3")
+       , ("https://scholars-stage.org/vengeance-as-justice-passages-i-highlighted-in-my-copy-of-eye-for-an-eye/", "greer-vengeance")
+       , ("https://scholars-stage.org/you-do-not-have-the-people/", "greer-american-isolationism")
+       , ("https://scholars-stage.org/what-cyber-war-will-look-like/", "greer-hybrid-warfare")
+       , ("https://scholars-stage.org/tradition-is-smarter-than-you-are/", "greer-tradition")
+       , ("https://scholars-stage.org/reflections-on-chinas-stalinist-heritage-i-a-tyrants-toolkit/", "greer-totalitarianism-1")
+       , ("https://scholars-stage.org/reflections-on-chinas-stalinist-heritage-ii-just-how-totalitarian-is-modern-china/", "greer-totalitarianism-2")
+       , ("https://scholars-stage.org/questing-for-transcendence/", "greer-transcendence")
+       , ("https://scholars-stage.org/the-inner-life-of-chinese-teenagers/", "greer-meihao")
+       , ("https://scholars-stage.org/the-utterly-dysfunctional-belt-and-road/", "greer-beltandroad")
+       , ("https://scholars-stage.org/passages-i-highlighted-in-my-copy-of-only-yesterday-an-informal-history-of-the-1920s/", "greer-only-yesterday")
        , ("https://seclab.bu.edu/papers/reddit-WACCO2019.pdf", "bradley-stringhini-2019-2")
        , ("https://share.obormot.net/misc/gwern/wikipedia-popups.js", "achmiz-2019-2")
        , ("https://sites.google.com/view/videopredictioncapacity", "villegas-et-al-2019-2")
@@ -785,9 +785,9 @@ cleanAbstractsHTML t = trim $
   ("([0-9]) %", "\\1%"),
   ("([.0-9]+)[xX]", "\\1×"),
   ("=-\\.([.0-9]+)", " = -0.\\1"),
-  (" ([0-9]*[02456789])th", " \\1<sup>th</sup>"),
-  (" ([0-9]*[1])st",        " \\1<sup>st</sup>"),
-  (" ([0-9]*[3])rd",        " \\1<sup>rd</sup>"),
+  ("([0-9]*[02456789])th", "\\1<sup>th</sup>"),
+  ("([0-9]*[1])st",        "\\1<sup>st</sup>"),
+  ("([0-9]*[3])rd",        "\\1<sup>rd</sup>"),
   (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", ""), -- rm AERA classification tags they stick into the Crossref abstracts
   ("CI=([.0-9])", "CI = \\1"), -- 'CI=0.90' → 'CI = 0.90'
   ("AOR=([.0-9])", "AOR = \\1"), -- 'AOR=2.9' → 'CI = 2.09'

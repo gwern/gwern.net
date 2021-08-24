@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-23 20:49:01 gwern"
+When:  Time-stamp: "2021-08-24 14:20:49 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -643,7 +643,8 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("IBM Plex", "https://en.wikipedia.org/wiki/IBM_Plex")
         , ("ID3", "https://en.wikipedia.org/wiki/ID3_algorithm")
         , ("IMPALA", "https://arxiv.org/abs/1802.01561#deepmind")
-        , ("Image[Nn]et", "https://arxiv.org/abs/1409.0575")
+        , ("(ILSVR|Image[Nn]et)", "https://arxiv.org/abs/1409.0575")
+        , ("PASCAL (VOC|Visual Object Classes)", "http://host.robots.ox.ac.uk/pascal/VOC/")
         , ("Infinite Jest", "https://en.wikipedia.org/wiki/Infinite_Jest")
         , ("Infinite in All Directions", "https://en.wikipedia.org/wiki/Infinite_in_All_Directions")
         , ("Inflation\\.hs", "/static/build/Inflation.hs")
@@ -822,7 +823,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("ROUGE", "https://en.wikipedia.org/wiki/ROUGE_(metric)")
         , ("RUDDER", "https://arxiv.org/abs/1806.07857")
         , ("R[Ee][Ll][Uu]", "https://en.wikipedia.org/wiki/Rectifier_(neural_networks)")
-        , ("R[Oo]BERT[aA]", "https://arxiv.org/abs/1907.11692#facebook")
+        , ("R[Oo]BERT[aA]", "https://arxiv.org/abs/1907.11692#facebook") -- RoBERTa
         , ("R\\. ?A\\. ?Fisher", "https://en.wikipedia.org/wiki/Ronald_Fisher")
         , ("R\\. ?A\\. ?Lafferty", "https://en.wikipedia.org/wiki/R._A._Lafferty")
         , ("R\\. Scott Bakker", "https://en.wikipedia.org/wiki/R._Scott_Bakker")
@@ -1314,4 +1315,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(SES|[Ss]ocio.?economic [Ss]tatus)", "https://en.wikipedia.org/wiki/Socioeconomic_status")
         , ("([Ee]xecutive [Ff]unction(.|ing)?|EFs?)", "https://en.wikipedia.org/wiki/Executive_functions")
         , ("(Rich Sutton|Rich S. Sutton|Richard S. Sutton|Richard Sutton|Sutton)", "https://en.wikipedia.org/wiki/Richard_S._Sutton")
+        , ("[Oo]bject.detection", "https://en.wikipedia.org/wiki/Object_detection")
+        , ("([Aa]utomated|[Ii]mage|[Pp]anoptic|[Pp]ixel|[S]emantic) segmentation", "https://en.wikipedia.org/wiki/Image_segmentation")
+        , ("[Bb]ounding.box.?.?", "https://en.wikipedia.org/wiki/Minimum_bounding_box")
         ]

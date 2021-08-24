@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2021-08-23 21:27:33 gwern"
+# When:  Time-stamp: "2021-08-24 21:00:18 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -64,7 +64,8 @@ else
             MIME_LOCAL=$(file "$TARGET" | fgrep 'PDF document, version ') || true
 
             if [[ -f "$TARGET" ]] && [[ -n "$MIME_LOCAL" ]] && [[ ! "$MIME_REMOTE" =~ .*"text/html".* ]] || \
-                   [[ "$MIME_REMOTE" =~ "application/pdf".*  || "$MIME_REMOTE" =~ "application/octet-stream".* ]];
+                   [[ "$MIME_REMOTE" =~ "application/pdf".*  || "$MIME_REMOTE" =~ "application/octet-stream".* ]] || \
+                   [[ ! "$MIME_LOCAL" == "" ]];
             then
                 mkdir --parents "./docs/www/$DOMAIN/"
                 ## move the PDF into the Gwern.net repo:
