@@ -57,7 +57,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        -- variant overrides...)
                                        let ident = case M.lookup (T.unpack target) md of
                                                              Nothing -> ""
-                                                             Just (_,aut,dt,_,_) -> let i = generateID (T.unpack target) aut dt in
+                                                             Just (_,aut,dt,_,_,_) -> let i = generateID (T.unpack target) aut dt in
                                                                                       if i=="" then "" else "#" `T.append` i
                                        let content = BulletList $
                                             map (\c -> [Para [Link nullAttr

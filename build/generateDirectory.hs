@@ -103,24 +103,24 @@ listFiles m direntries' = do
 
 -- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
 sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,FilePath)]
-sortByDate = sortBy (\(f,(t,a,d,_,_),_) (f',(t',a',d',_,_),_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
+sortByDate = sortBy (\(f,(_,_,d,_,_,_),_) (f',(_,_,d',_,_,_),_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
 
 
 -- how do we handle files with appended data, which are linked like '/docs/reinforcement-learning/2020-bellemare.pdf#google' but exist as files as '/docs/reinforcement-learning/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
-                       Just ("",_,_,_,_) -> tryPrefix
+                       Just ("",_,_,_,_,_) -> tryPrefix
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
                                            let u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u in
-                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", "")) else
+                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", "", "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
                                                   -- '/reviews/Cat-Sense.page' will trigger a fallback to /reviews/Cat-Sense#fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in
-                                                    if snd possibleFallback == ("", "", "", "", "") then (u, ("", "", "", "", "")) else
+                                                    if snd possibleFallback == ("", "", "", "", "", "") then (u, ("", "", "", "", "", "")) else
                                                       (u',snd possibleFallback))
 
 generateDirectoryItems :: [FilePath] -> Block
@@ -134,7 +134,7 @@ generateDirectoryItems ds = BulletList
 generateListItems :: [(FilePath, MetadataItem,FilePath)] -> Block
 generateListItems p = BulletList (map generateListItem p)
 generateListItem :: (FilePath,MetadataItem,FilePath) -> [Block]
-generateListItem (f,(t,aut,_,_,""),bl)  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
+generateListItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
                                             let author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)] in
                                               -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
                                           let backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks/'What links here'/'incoming link'/'inbound link'/inlink/'inward link'/citation for this page (the list of other pages which link to this URL).")], Str ")"] in

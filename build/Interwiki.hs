@@ -61,7 +61,7 @@ interwikiMap :: M.Map T.Text T.Text
 interwikiMap = M.fromList $ wpInterwikiMap ++ customInterwikiMap
 wpInterwikiMap, customInterwikiMap :: [(T.Text, T.Text)]
 customInterwikiMap = [("Hackage", "https://hackage.haskell.org/package/"),
-                      ("Hawiki", "https://haskell.org/haskellwiki/"),
+                      ("Hawiki", "https://wiki.haskell.org/"),
                       ("Hoogle", "https://hoogle.haskell.org/?hoogle="),
                       -- shortcuts
                       ("W", "https://en.wikipedia.org/wiki/"),

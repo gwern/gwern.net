@@ -2,7 +2,7 @@
 {- LinkPrioritize.hs: simple CLI utility for taking a list of URLs, comparing to automatic & manual link annotation databases, and ranking poorly-annotated links by frequency to help prioritize creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2020-12-26 12:01:25 gwern"
+When:  Time-stamp: "2021-08-26 13:15:43 gwern"
 License: CC-0
 Dependencies: none
 
@@ -63,5 +63,5 @@ filterLink md target =
     let annotated = M.lookup target' md in
       case annotated of
        -- the link has a valid annotation already defined (>100 chars, no meaningful abstract can be written in <100), so build & return;
-       Just (_,_,_,_,abstrct)  -> if length abstrct > 100 then "" else target'
+       Just (_,_,_,_,_,abstrct)  -> if length abstrct > 100 then "" else target'
        Nothing -> target'
