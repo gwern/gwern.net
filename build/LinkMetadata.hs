@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-26 13:46:54 gwern"
+When:  Time-stamp: "2021-08-26 17:18:27 gwern"
 License: CC-0
 -}
 
@@ -292,13 +292,12 @@ readYaml yaml = do filep <- doesFileExist yaml
                           Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> MetadataList
-                 convertListToMetadata [u, t, a, d, di, s] = [(u, (t,a,d,di,defaultTag u,s))]
-                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,ts,s))]
+                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,defaultTag u,s))]
+                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,defaultTag u ++ ", " ++ ts,s))]
                  convertListToMetadata e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
                  -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc
                  defaultTag :: String -> String
-                 defaultTag "" = ""
                  defaultTag path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
@@ -312,7 +311,7 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,ts,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
-                                           -- we do deduplication in rewriteLinkMetadata (when constructing the Map) on startup, so no need to check here, just blind write:
+                                           -- we do deduplication in 'rewriteLinkMetadata' (when constructing the 'Map') on startup, so no need to check here, just blind-write:
                                               let newYaml = Y.encode [(l,t,a,d,di,ts,abst)]
                                               B.appendFile "metadata/auto.yaml" newYaml
 
