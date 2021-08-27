@@ -45,8 +45,7 @@ convertInterwikiLinks x@(Link attr@(ident, classes, kvs) ref (interwiki, article
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else x
-            where -- 'https://starwars.wikia.com/wiki/Emperor_Palpatine'
-              --
+            where
                   interwikiurl :: T.Text -> T.Text -> T.Text
                   -- normalize links; MediaWiki requires first letter to be capitalized
                   interwikiurl u a = let a' = if u=="https://en.wikipedia.org/wiki/" then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
