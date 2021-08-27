@@ -12,7 +12,7 @@ import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Link, Space, Span, Str), Pandoc(Pandoc))
-import qualified Data.Map as M (lookup, size, toList, filterWithKey)
+import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
@@ -33,8 +33,9 @@ generateDirectory mta dir'' = do
   direntries <- listDirectory dir''
   let direntries' = map (\entry -> "/"++dir''++entry) direntries
 
-  dirs  <- listDirectories direntries'
-  pairs <- listFiles mta   direntries'
+  dirs   <- listDirectories direntries'
+  pairs  <- listFiles  mta  direntries'
+  tagged <- listTagged mta  dir''
 
   let header = generateYAMLHeader dir''
   let directorySection = generateDirectoryItems dirs
@@ -100,6 +101,21 @@ listFiles m direntries' = do
 
                    return $ reverse $ sortByDate $ -- most recent first: nicer for browsing, especially given that older files typically have no annotations.
                      zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
+
+-- Fetch URLs/file 'tagged' with the current directory but not residing in it.
+--
+-- tag-dirs are only in "docs/*", so "haskell/" etc is out. Tags drop the docs/ prefix, and we want to avoid
+-- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
+listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
+-- listTags :: Metadata -> FilePath -> Metadata
+listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else -- M.empty else --
+                   let dirTag = replace "docs/" "" dir in
+                     let tagged = M.filterWithKey (\u (_,_,_,_,ts,_) -> not (dir `isInfixOf` u) && dirTag `elem` ts) m in
+                       do let files = M.keys tagged
+                          backlinks <- mapM getBackLink files
+                          let fileAnnotationsMi = map (lookupFallback m) files
+                          return $ reverse $ sortByDate $
+                            zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
 
 -- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
 sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,FilePath)]
