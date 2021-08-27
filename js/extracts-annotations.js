@@ -33,7 +33,7 @@ if (window.Extracts) {
 
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
-		//	Open link in same window on mobile, new window on desktop.
+        //  Open link in same window on mobile, new window on desktop.
         let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
         //  Link to original URL (for archive links).
@@ -63,6 +63,7 @@ if (window.Extracts) {
             abstractSpecialClass = "wikipedia-entry";
         return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
              + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
+             + `<p class="data-field link-tags">${referenceData.tagsHTML}</p>`
              + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
 
@@ -85,7 +86,7 @@ if (window.Extracts) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         if (target.dataset.urlOriginal) {
-			//	Open link in same window on mobile, new window on desktop.
+            //  Open link in same window on mobile, new window on desktop.
             let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
             //  For local-archive links, include archive link with original.
@@ -94,7 +95,7 @@ if (window.Extracts) {
                     title="Open ${target.href} in a new window (desktop) or current (mobile)"
                     href="${target.href}"
                     target="${linkTarget}"
-                		>[ARCHIVED]</a>` +
+                        >[ARCHIVED]</a>` +
                 `<span class="separator">·</span>` +
                 `<a
                     class="popframe-title-link"

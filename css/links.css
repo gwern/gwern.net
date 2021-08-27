@@ -472,6 +472,9 @@ body.tags a.link-local::after {
 	content: none;
 }
 
+/* remove G icon from the tags inside popups (which go to directory indexes, which aren't really top-level/essay content, and the G is clutter) */
+a.link-tag.link-local.has-content.spawns-popup::after { content: none; }
+
 /* remove the 'W' document icon from the anonymous feedback link icon; it is true, but not useful (a 'document' doesn't look like 'a thing I can interact with & type in text to), and it looks bad/cluttered given that icons are removed from the rest of the 'surrounding' UI (*especially* in /index).  */
 #footer a[href*='docs.google.com'i]::after {
 	content: none;
