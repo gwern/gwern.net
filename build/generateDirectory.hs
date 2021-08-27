@@ -114,13 +114,13 @@ lookupFallback m u = case M.lookup u m of
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
                                            let u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u in
-                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", "", "")) else
+                                               (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
                                                   -- '/reviews/Cat-Sense.page' will trigger a fallback to /reviews/Cat-Sense#fuzz-testing'; the
                                                   -- longer hit will also be empty, usually, and so not better. We check for that case and return
                                                   -- the original path and not the longer path.
                                                   let possibleFallback = lookupFallback m u' in
-                                                    if snd possibleFallback == ("", "", "", "", "", "") then (u, ("", "", "", "", "", "")) else
+                                                    if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
                                                       (u',snd possibleFallback))
 
 generateDirectoryItems :: [FilePath] -> Block

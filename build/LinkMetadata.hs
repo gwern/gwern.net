@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-27 11:22:11 gwern"
+When:  Time-stamp: "2021-08-27 17:28:11 gwern"
 License: CC-0
 -}
 
@@ -19,7 +19,7 @@ import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey, union, Map)
-import qualified Data.Text as T (append, splitOn, pack, unpack, Text)
+import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
@@ -209,7 +209,7 @@ annotateLink md target =
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
                        Left Temporary -> return False -- hPutStrLn stderr ("Skipping "++target) >> return False
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
-                       Left Permanent -> writeLinkMetadata target'' ("", "", "", "", "", "") >> return False
+                       Left Permanent -> writeLinkMetadata target'' ("", "", "", "", [], "") >> return False
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
                                        when (e=="") $ hPutStrLn stderr (f ++ ": " ++ show target ++ ": " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
@@ -220,12 +220,12 @@ hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp = walk (hasAnnotationInline md idp)
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,b,c) d (f,g)) =
-            if "https://en.wikipedia.org/wiki/" `isPrefixOf` T.unpack f then addHasAnnotation idBool True y ("","","","","","")
+            if "https://en.wikipedia.org/wiki/" `isPrefixOf` T.unpack f then addHasAnnotation idBool True y ("","","","",[],"")
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
                   Nothing               -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
-                  Just ("","","","","","") -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
+                  Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
                   Just               mi -> addHasAnnotation idBool False y mi
           hasAnnotationInline _ _ y = y
 
@@ -256,7 +256,7 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
                                                                 let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]] in
-                                                                  let tags = if ts=="" then [] else [Str ";", Space] ++ [tagsToLinksSpan ts] in
+                                                                  let tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)] in
                                                                   let linkPrefix = if rawUrlp then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
                                                                   let link =
@@ -306,16 +306,16 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 --   <a href="/docs/genetics/heritable/index" class="link-tag">genetics/heritable</a>,
 --   <a href="/docs/psychology/writing/index" class="link-tag">psychology/writing</a>
 -- </span>
-tagsToLinksSpan :: String -> Inline
-tagsToLinksSpan "" = Span nullAttr []
-tagsToLinksSpan ts = let tags = T.splitOn ", " $ T.pack ts in
+tagsToLinksSpan :: [String] -> Inline
+tagsToLinksSpan [] = Span nullAttr []
+tagsToLinksSpan ts = let tags = map T.pack ts in
                        Span ("", ["link-tags"], []) $
                        intersperse (Str ", ") $ map (\t -> Link ("", ["link-tag"], []) [Str t] ("/docs/"`T.append`t`T.append`"/index#files", "Link to tag index") ) tags
 
 -------------------------------------------------------------------------------------------------------------------------------
 
 type Metadata = M.Map Path MetadataItem
-type MetadataItem = (String, String, String, String, String, String) -- (Title, Author, Date, DOI, Tags, Abstract)
+type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)
 type MetadataList = [(Path, MetadataItem)]
 type Path = String
 
@@ -328,21 +328,22 @@ readYaml yaml = do filep <- doesFileExist yaml
                           Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> MetadataList
-                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,defaultTag u "", s))]
-                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,defaultTag u ts, s))]
+                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,tag2TagsWithDefault u "", s))]
+                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,tag2TagsWithDefault u ts, s))]
                  convertListToMetadata e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
-                 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc
-                 defaultTag :: String -> String -> String
-                 defaultTag path tags = let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
-                                                      if tags == "" then defTag else
-                                                        if defTag `elem` (split ", " tags) then tags else defTag ++ ", " ++ tags
+                 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
+                 tag2TagsWithDefault :: String -> String -> [String]
+                 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags in
+                                          let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
+                                            if tags' == [] then [defTag] else
+                                              if defTag `elem` tags' then tags' else defTag:tags'
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
 rewriteLinkMetadata yaml = do old <- readYaml yaml
                               let new = M.fromList old :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-                              let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> (a,b,c,d,e,ts,f)) $ -- flatten [(Path, (String, String, String, String, String))]
+                              let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> (a,b,c,d,e, intercalate ", " ts,f)) $ -- flatten [(Path, (String, String, String, String, String))]
                                     M.toList new
                               B.writeFile yaml newYaml
 
@@ -350,7 +351,7 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,ts,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
                                            -- we do deduplication in 'rewriteLinkMetadata' (when constructing the 'Map') on startup, so no need to check here, just blind-write:
-                                              let newYaml = Y.encode [(l,t,a,d,di,ts,abst)]
+                                              let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
                                               B.appendFile "metadata/auto.yaml" newYaml
 
 data Failure = Temporary | Permanent deriving Show
@@ -386,7 +387,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
-                             let ts = "" -- TODO: replace with ML call to infer tags
+                             let ts = [] -- TODO: replace with ML call to infer tags
                              return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, processPubMedAbstract $ unlines abstrct))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
@@ -397,7 +398,7 @@ pdf p = do let p' = takeWhile (/='#') p
              do print mb
                 let results = (lines $ (\s -> if head s == '\n' then tail s else s) $ replace "\n\n" "\n" $ U.toString mb)
                 case results of
-                  d:[] -> return $ Right (p, ("", "", d, "", "", ""))
+                  d:[] -> return $ Right (p, ("", "", d, "", [], ""))
                   (etitle:eauthor:edate:_) -> do
                     let edoi = lines $ U.toString mb2
                     let edoi' = if null edoi then "" else processDOI $ head edoi
@@ -406,7 +407,7 @@ pdf p = do let p' = takeWhile (/='#') p
                     let ecreator = filterMeta $ U.toString mb3
                     let eauthor' = filterMeta eauthor
                     let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
-                    let ts = "" -- TODO: replace with ML call to infer tags
+                    let ts = [] -- TODO: replace with ML call to infer tags
                     hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi'
                     a <- fmap (fromMaybe "") $ doi2Abstract edoi'
                     return $ Right (p, (filterMeta $ trimTitle etitle, author, trim $ replace ":" "-" edate, edoi', ts, a))
@@ -458,7 +459,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                  let abstrct = cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
-                                 let ts = "" -- TODO: replace with ML call to infer tags
+                                 let ts = [] -- TODO: replace with ML call to infer tags
                                  return $ Right (p, (title, author, date, doi, ts, abstrct))
   where
     parseMetadataTagsoup, parseMetadataTagsoupSecond :: String -> [Tag String] -> [String]
@@ -482,7 +483,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          -- NOTE: Arxiv does not, as a matter of policy, provide its own DOIs (even though they easily could...), but sometimes things are published elsewhere & get updated to note that DOI:
                          let doi = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let abst = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
-                         let ts = "" -- TODO: replace with ML call to infer tags
+                         let ts = [] -- TODO: replace with ML call to infer tags
                          return $ Right (url, (title,authors,published,doi,ts,abst))
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
