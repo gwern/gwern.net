@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-26 17:18:27 gwern"
+When:  Time-stamp: "2021-08-26 21:39:36 gwern"
 License: CC-0
 -}
 
@@ -19,10 +19,10 @@ import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (fromList, toList, lookup, traverseWithKey, union, Map)
-import qualified Data.Text as T (append, unpack, pack, Text)
+import qualified Data.Text as T (append, splitOn, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
-import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
+import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isNothing)
 import Data.Text.IO as TIO (readFile, writeFile)
@@ -250,10 +250,11 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _,_,_,_,_) -> nonAnnotatedLink
                               Just (_,    _,_,_,_,"") -> nonAnnotatedLink
-                              Just (tle,aut,dt,doi,_,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID in
+                              Just (tle,aut,dt,doi,ts,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID in
                                                             let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
                                                               let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
                                                                 let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]] in
+                                                                  let tags = if ts=="" then [] else [Str ";", Space] ++ [tagsToLinksSpan ts] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)] in
                                                                   let linkPrefix = if rawUrlp then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
                                                                   let link =
@@ -264,7 +265,14 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                                                                        -- check that float-right hasn't been deleted by Pandoc again:
                                                                        let abst'' = restoreFloatRight abst abst' in
                                                               [Para
-                                                                (linkPrefix ++ [link,Str ","] ++ author ++ [Str "("] ++ date ++ backlink ++ [Str ")"] ++ [Str ":"]),
+                                                                (linkPrefix ++ [link,Str ","] ++
+                                                                  author ++
+                                                                  [Str "("] ++
+                                                                  date ++
+                                                                  backlink ++
+                                                                  tags ++
+                                                                  [Str ")"] ++
+                                                                  [Str ":"]),
                                                                 BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                                            ]
                              where
@@ -275,6 +283,32 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
 -- WARNING: because of the usual RawHtml issues, reading with Pandoc doesn't help - it just results in RawInlines which still need to be parsed somehow. I settled for a braindead string-rewrite; in annotations, there shouldn't be *too* many cases where the href=# pattern shows up without being a div link...
 rewriteAnchors :: FilePath -> T.Text -> T.Text
 rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
+
+-- Compile tags down into a Span containing a list of links to the respective /docs/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
+--
+-- Simple version:
+-- > tagsToLinksSpan "economics, genetics/heritable, psychology/writing"
+-- →
+-- Span ("",["link-tags"],[])
+--   [Link ("",["link-tag"],[]) [Str "economics"] ("/docs/economics/index",""),Str ", ",
+--     Link ("",["link-tag"],[]) [Str "genetics/heritable"] ("/docs/genetics/heritable/index",""),Str ", ",
+--     Link ("",["link-tag"],[]) [Str "psychology/writing"] ("/docs/psychology/writing/index","")
+--   ]
+-- Markdown:
+-- →
+-- [[economics](/docs/economics/index){.link-tag}, [genetics/heritable](/docs/genetics/heritable/index){.link-tag}, [psychology/writing](/docs/psychology/writing/index){.link-tag}]{.link-tags}
+-- HTML:
+-- →
+-- <span class="link-tags">
+--   <a href="/docs/economics/index" class="link-tag">economics</a>,
+--   <a href="/docs/genetics/heritable/index" class="link-tag">genetics/heritable</a>,
+--   <a href="/docs/psychology/writing/index" class="link-tag">psychology/writing</a>
+-- </span>
+tagsToLinksSpan :: String -> Inline
+tagsToLinksSpan "" = Span nullAttr []
+tagsToLinksSpan ts = let tags = T.splitOn ", " $ T.pack ts in
+                       Span ("", ["link-tags"], []) $
+                       intersperse (Str ", ") $ map (\t -> Link ("", ["link-tag"], []) [Str t] ("/docs/"`T.append`t`T.append`"/index", "Link to tag index") ) tags
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -292,13 +326,15 @@ readYaml yaml = do filep <- doesFileExist yaml
                           Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
                  convertListToMetadata :: [String] -> MetadataList
-                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,defaultTag u,s))]
-                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,defaultTag u ++ ", " ++ ts,s))]
+                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,defaultTag u "", s))]
+                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,defaultTag u ts, s))]
                  convertListToMetadata e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
                  -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc
-                 defaultTag :: String -> String
-                 defaultTag path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
+                 defaultTag :: String -> String -> String
+                 defaultTag path tags = let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
+                                                      if tags == "" then defTag else
+                                                        if defTag `elem` (split ", " tags) then tags else defTag ++ ", " ++ tags
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
@@ -382,7 +418,7 @@ pdf p = do let p' = takeWhile (/='#') p
    filterMeta :: String -> String
    filterMeta ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
     where badSubstrings, badWholes :: [String]
-          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled"]
+          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA"]
           badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
 
 -- nested JSON object: eg 'jq .message.abstract'
