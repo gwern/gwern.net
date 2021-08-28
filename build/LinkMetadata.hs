@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-27 20:46:47 gwern"
+When:  Time-stamp: "2021-08-27 21:53:00 gwern"
 License: CC-0
 -}
 
@@ -334,11 +334,11 @@ readYaml yaml = do filep <- doesFileExist yaml
                  convertListToMetadata e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
                  -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
-                 tag2TagsWithDefault :: String -> String -> [String]
-                 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags in
-                                          let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
-                                            if tags' == [] then [] else
-                                              if defTag `elem` tags' then tags' else defTag:tags'
+tag2TagsWithDefault :: String -> String -> [String]
+tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags in
+                         let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
+                           if tags' == [] then [] else
+                             if defTag `elem` tags' || defTag == "" then tags' else defTag:tags'
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
