@@ -30,9 +30,9 @@ main = do
 
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
-  let files = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $ filter (not . ("tags/"`isInfixOf`)) $ filter ("/"`isPrefixOf`) $ map T.unpack $ HM.keys bldb ++ concat (HM.elems bldb)
+  let files = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $ filter (\f -> not ("tags/"`isInfixOf` f || "/index"`isInfixOf` f)) $ filter ("/"`isPrefixOf`) $ map T.unpack $ HM.keys bldb ++ concat (HM.elems bldb)
   forM_ files (\f -> do exist <- doesFileExist f
-                        unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
+                        unless exist $ error ("Backlinks: files annotation error: file does not exist? " ++ f))
 
   -- if all are valid, write out:
   _ <- HM.traverseWithKey (writeOutCallers mdb) bldb

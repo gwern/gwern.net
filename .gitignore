@@ -6,3 +6,4 @@ metadata/archive.hs
 **.o
 **.hi
 build/hakyll
+build/generateDirectory

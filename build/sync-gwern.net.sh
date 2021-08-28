@@ -37,13 +37,17 @@ else
     # lower priority of everything we run (some of it is expensive):
     renice -n 19 "$$" > /dev/null
 
+    ## Parallelization:
+    N="$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
+
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
     (cd ./static/ && git status && git pull --verbose https://gwern.obormot.net/static/.git || true)
 
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
     bold "Building directory indexes…"
-    (time runhaskell -istatic/build/ static/build/generateDirectory.hs \
+    (cd ./static/build && ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make generateDirectory.hs)
+    (time ./static/build/generateDirectory +RTS -N"$N" -RTS \
                 $(find docs fiction haskell newsletter nootropics notes reviews zeo -type d \
                       | sort | fgrep -v -e 'docs/www/' -e 'docs/personal' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
@@ -65,13 +69,11 @@ else
     # Build:
     ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling:
     ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make hakyll.hs
-    ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
     cd ../../ # go to site root
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
-    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
+    rm --recursive --force -- ./static/build/hakyll ./static/build/generateDirectory ./static/build/*.o ./static/build/*.hi || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -263,14 +265,18 @@ else
                              -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' )
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
         done
-        ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
-        for PAGE in $PAGES ./static/404.html; do
-            HTML="${PAGE%.page}"
+        set -e;
+    }
+    wrap λ "Markdown→HTML pages don't validate as HTML5"
+
+    ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
+    λ() { for PAGE in $PAGES ./static/404.html; do
+              HTML="${PAGE%.page}"
             ANCHOR=$(static/build/anchor-checker.php ./_site/"$HTML")
             if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
-        done;
-        set -e; }
-    wrap λ "Markdown→HTML pages don't validate as HTML5"
+          done;
+          }
+    wrap λ "Anchors linked but not defined inside page?"
 
     ## Is the Internet up?
     ping -q -c 5 google.com  &> /dev/null

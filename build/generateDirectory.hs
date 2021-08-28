@@ -2,7 +2,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
--- Read directories like "docs/iodine/" for its files; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, which gets compiled with Hakyll and gets the usual popup annotations. Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
+-- Read directories like "docs/iodine/" for its files, as well as any files/links with annotations & the tag 'iodine'; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, which gets compiled with Hakyll and gets the usual popup annotations.
+-- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
 import Control.Monad (filterM)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy)
@@ -16,6 +17,7 @@ import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (unpack, pack)
 import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
+import Control.Monad.Parallel as Par (mapM_)
 
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, Metadata, MetadataItem)
 import Columns (listsTooLong)
@@ -26,7 +28,7 @@ main = do dirs <- getArgs
 
           meta <- readLinkMetadata
 
-          mapM_ (generateDirectory meta) dirs'  -- NOTE: while embarrassingly-parallel & trivial to switch to `Control.Monad.Parallel.mapM_`, because of the immensely slow Haskell compilation (due to Pandoc), 2021-04-23 benchmarking suggests that compile+runtime is ~1min slower than `runhaskell` interpretation
+          Par.mapM_ (generateDirectory meta) dirs' -- because of the expense of searching the annotation database for each directory-tag, it's worth parallelizing as much as possible. (We could invert and do a single joint search, but at the cost of ruining our clear top-down parallel workflow.)
 
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do
@@ -35,23 +37,24 @@ generateDirectory mta dir'' = do
 
   dirs   <- listDirectories direntries'
   pairs  <- listFiles  mta  direntries'
-  tagged <- listTagged mta  dir''
+  tagged <- listTagged mta  (init dir'')
+  let links = reverse $ sortByDate $ pairs++tagged
 
   let header = generateYAMLHeader dir''
   let directorySection = generateDirectoryItems dirs
 
-  let fileSection = generateListItems pairs
+  let linkSection = generateListItems links
   let body = [Header 2 nullAttr [Str "Directories"]] ++
-               -- for pages like ./docs/statistics/index.page where there are 9+ subdirectories, we'd like to multi-column the directory section (we can't for files because there are so many annotations):
+               -- for pages like ./docs/statistics/index.page where there are 9+ subdirectories, we'd like to multi-column the directory section (we can't for files/links because there are so many annotations):
                (if length dirs < 8 then [directorySection] else
                  [RawBlock (Format "html") "<div class=\"columns\">\n\n",
                    directorySection,
                    RawBlock (Format "html") "</div>"]) ++
-               [Header 2 nullAttr [Str "Files"]] ++
+               [Header 2 nullAttr [Str "Links"]] ++
                 -- for lists, they *may* all be devoid of annotations and short
-                if length (listsTooLong [fileSection]) == 0 then [fileSection] else
+                if length (listsTooLong [linkSection]) == 0 then [linkSection] else
                   [RawBlock (Format "html") "<div class=\"columns\">\n\n",
-                   fileSection,
+                   linkSection,
                    RawBlock (Format "html") "</div>"]
 
   let document = Pandoc nullMeta body
@@ -99,7 +102,7 @@ listFiles m direntries' = do
                    backlinks <- mapM getBackLink files'
                    let fileAnnotationsMi = map (lookupFallback m) files'
 
-                   return $ reverse $ sortByDate $ -- most recent first: nicer for browsing, especially given that older files typically have no annotations.
+                   return $
                      zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
 
 -- Fetch URLs/file 'tagged' with the current directory but not residing in it.
@@ -114,10 +117,11 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else -- M.em
                        do let files = M.keys tagged
                           backlinks <- mapM getBackLink files
                           let fileAnnotationsMi = map (lookupFallback m) files
-                          return $ reverse $ sortByDate $
+                          return $
                             zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
 
 -- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
+-- We generally prefer to reverse this to descending order, to show newest-first.
 sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,FilePath)]
 sortByDate = sortBy (\(f,(_,_,d,_,_,_),_) (f',(_,_,d',_,_,_),_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
 
