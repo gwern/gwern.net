@@ -227,7 +227,7 @@ Annotations = {
             titleHTML:      referenceElement.innerHTML.trimQuotes(),
             authorHTML:     (authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
             dateHTML:       (dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
-            tagsHTML:       (tagsElement ? `<em><span class="data-field link-tags">${tagsElement.innerHTML}</span></em>` : ``),
+            tagsHTML:       (tagsElement ? `<p class="data-field link-tags"><em><span class="data-field link-tags">${tagsElement.innerHTML}</span></em></p>` : ``),
             abstractHTML:   referenceEntry.querySelector("blockquote div").innerHTML
         };
     },

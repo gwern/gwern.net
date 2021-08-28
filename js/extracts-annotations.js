@@ -63,7 +63,7 @@ if (window.Extracts) {
             abstractSpecialClass = "wikipedia-entry";
         return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
              + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
-             + `<p class="data-field link-tags">${referenceData.tagsHTML}</p>`
+             + `${referenceData.tagsHTML}`
              + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
 

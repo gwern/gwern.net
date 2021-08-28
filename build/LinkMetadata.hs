@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-27 17:28:11 gwern"
+When:  Time-stamp: "2021-08-27 20:46:47 gwern"
 License: CC-0
 -}
 
@@ -308,9 +308,10 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 -- </span>
 tagsToLinksSpan :: [String] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
+tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = map T.pack ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\t -> Link ("", ["link-tag"], []) [Str t] ("/docs/"`T.append`t`T.append`"/index#files", "Link to tag index") ) tags
+                       intersperse (Str ", ") $ map (\t -> Link ("", ["link-tag"], []) [Str t] ("/docs/"`T.append`t`T.append`"/index#links", "Link to tag index") ) tags
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -336,7 +337,7 @@ readYaml yaml = do filep <- doesFileExist yaml
                  tag2TagsWithDefault :: String -> String -> [String]
                  tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags in
                                           let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
-                                            if tags' == [] then [defTag] else
+                                            if tags' == [] then [] else
                                               if defTag `elem` tags' then tags' else defTag:tags'
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
