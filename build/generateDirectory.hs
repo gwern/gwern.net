@@ -157,7 +157,7 @@ generateListItem :: (FilePath,MetadataItem,FilePath) -> [Block]
 generateListItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
                                             let author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)] in
                                               -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
-                                          let backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks/'What links here'/'incoming link'/'inbound link'/inlink/'inward link'/citation for this page (the list of other pages which link to this URL).")], Str ")"] in
+                                          let backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")], Str ")"] in
                                             if t=="" then [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : (author ++ backlink))]
                                             else [Para (Code nullAttr (T.pack f') : (Link nullAttr [Str ":", Space, Str "“", Str (T.pack t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
 
@@ -167,4 +167,4 @@ generateListItem (f,a,bl) =
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  generateAnnotationBlock True (f,Just a) bl
+  generateAnnotationBlock ("/"`isPrefixOf`f) (f,Just a) bl

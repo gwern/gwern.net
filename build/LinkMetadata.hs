@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-27 21:53:00 gwern"
+When:  Time-stamp: "2021-08-28 15:27:03 gwern"
 License: CC-0
 -}
 
@@ -248,7 +248,7 @@ parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml
 parseRawBlock x = x
 
 generateAnnotationBlock :: Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> [Block]
-generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
+generateAnnotationBlock rawFilep (f, ann) blp = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _,_,_,_,_) -> nonAnnotatedLink
                               Just (_,    _,_,_,_,"") -> nonAnnotatedLink
@@ -258,7 +258,7 @@ generateAnnotationBlock rawUrlp (f, ann) blp = case ann of
                                                                 let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]] in
                                                                   let tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts] in
                                                                 let values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)] in
-                                                                  let linkPrefix = if rawUrlp then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
+                                                                  let linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
                                                                   let link =
                                                                              Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                                                         in
@@ -337,7 +337,6 @@ readYaml yaml = do filep <- doesFileExist yaml
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags in
                          let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
-                           if tags' == [] then [] else
                              if defTag `elem` tags' || defTag == "" then tags' else defTag:tags'
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
@@ -351,6 +350,9 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,ts,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
+                                           -- when we write out auto-tags for auto.yaml, do we need to delete the auto-tag from the path? What if the file moves?
+                                           -- No, because if the file moves, even with gwSed editing auto.yaml directly to change the key, we will at some point blow away auto.yaml and rebuild everything from scratch, so while the auto-tags will be stale up until that point, they do eventually get fixed.
+                                           --
                                            -- we do deduplication in 'rewriteLinkMetadata' (when constructing the 'Map') on startup, so no need to check here, just blind-write:
                                               let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
                                               B.appendFile "metadata/auto.yaml" newYaml
@@ -422,7 +424,7 @@ pdf p = do let p' = takeWhile (/='#') p
    filterMeta :: String -> String
    filterMeta ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
     where badSubstrings, badWholes :: [String]
-          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;"]
+          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING"]
           badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
 
 -- nested JSON object: eg 'jq .message.abstract'
