@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-28 15:27:03 gwern"
+When:  Time-stamp: "2021-08-29 10:40:27 gwern"
 License: CC-0
 -}
 
@@ -789,9 +789,11 @@ trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (
 
 sed :: String -> String -> (String -> String)
 sed before after s = subRegex (mkRegex before) s after
+-- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)
 sedMany regexps s = foldr (uncurry sed) s regexps
 
+-- list of fixed string rewrites
 replaceMany :: [(String,String)] -> (String -> String)
 replaceMany rewrites s = foldr (uncurry replace) s rewrites
 
@@ -812,7 +814,8 @@ initializeAuthors a' = replaceMany [("Meena", "M."), (",,", ","), (", ,", ", "),
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle :: String -> String
 trimTitle [] = ""
-trimTitle t = let t' = reverse $ replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
+trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg "Compensatory conspicuous communication_ Low status increases jargon use"
+                       replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
 cleanAbstractsHTML :: String -> String

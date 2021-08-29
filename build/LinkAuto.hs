@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-28 20:45:31 gwern"
+When:  Time-stamp: "2021-08-28 21:31:35 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -1319,7 +1319,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Aa]utomated|[Ii]mage|[Pp]anoptic|[Pp]ixel|[S]emantic) segmentation", "https://en.wikipedia.org/wiki/Image_segmentation")
         , ("[Bb]ounding.box.?.?", "https://en.wikipedia.org/wiki/Minimum_bounding_box")
         , ("[Pp]ropensity[ -][Ss]core(s|[ -][Mm]atching|analysis|model|methods?)?", "https://en.wikipedia.org/wiki/Propensity_score_matching")
-        , ("[Cc]atnip|[Nn]epeta [cc]ataria|[Cc]at nip|[Cc]atmint)", "https://en.wikipedia.org/wiki/Catnip")
+        , ("([Cc]atnip|[Nn]epeta [cc]ataria|[Cc]at nip|[Cc]atmint)", "https://en.wikipedia.org/wiki/Catnip")
         , ("([Vv]alerian|Valeriana officinalis)", "https://en.wikipedia.org/wiki/Valerian_(herb)")
         , ("([Ss]ilver[ -]vine|Actinidia polygama|[Mm]atatabi)", "https://en.wikipedia.org/wiki/Actinidia_polygama")
         , ("(Tatarian honeysuckle|[Hh]oneysuckle|Lonicera tatarica)", "https://en.wikipedia.org/wiki/Lonicera_tatarica")
