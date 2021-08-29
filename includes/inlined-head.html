@@ -589,11 +589,11 @@ body.index #sidebar a#logo {
 }
 
 body.index #markdownBody section h1 {
-	border-bottom: 1px dotted currentColor;
+    border-bottom: 1px dotted currentColor;
 }
 
-/*	Columns.
-	*/
+/*  Columns.
+    */
 @media only screen and (min-width: 961px) {
 
     /* Suppress bonus section in single/double-column layout */
@@ -601,38 +601,42 @@ body.index #markdownBody section h1 {
         display: none;
     }
 
-	body.index #markdownBody {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		grid-column-gap: 2em;
-		grid-row-gap: 0.5em;
-	}
-	body.index #markdownBody .abstract {
-		grid-column-start: 1;
-		grid-column-end: -1;
-	}
-	body.index #markdownBody section > ul {
-		margin: 0.75em 3em 0 0.25em;
-	}
-	@media only screen and (max-width: 1040px) {
-		body.index #markdownBody {
-			grid-template-columns: 1fr;
-		}
-		body.index #markdownBody section > ul {
-			column-count: 2;
-			column-gap: 3em;
-		}
-		body.index #markdownBody section > ul li {
-			break-inside: avoid;
-		}
+    body.index #markdownBody {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-column-gap: 2em;
+        grid-row-gap: 0.5em;
+    }
+    body.index #markdownBody .abstract {
+        grid-column-start: 1;
+        grid-column-end: -1;
+    }
+    body.index #markdownBody section > ul {
+        margin: 0.75em 3em 0 0.25em;
+    }
+    @media only screen and (max-width: 1040px) {
+        body.index #markdownBody {
+            grid-template-columns: 1fr;
+        }
+        body.index #markdownBody section > ul {
+            column-count: 2;
+            column-gap: 3em;
+        }
+        body.index #markdownBody section > ul li {
+            break-inside: avoid;
+        }
     }
 }
 
 /* On sufficiently-wide screens, we can get 3 columns in nicely; to preserve the initial row being 'meta' blocks, we leave #notable visible (for a newest/popular/notable triplet) */
 @media only screen and (min-width: 1500px) {
-	body.index #markdownBody {
-		grid-template-columns: 45ch 45ch 45ch;
-	}
+
+    body.index #markdownBody #notable {
+        display: block;
+    }
+    body.index #markdownBody {
+        grid-template-columns: 45ch 45ch 45ch;
+    }
 }
 
 /*  Abstract is not a real abstract, just an introduction, no need for the abstract formatting.
@@ -1023,14 +1027,14 @@ h1 {
     }
 }
 
-/*	Lazy-load below-fold sections in supported browsers.
-	Disabled temporarily pending layout redesign to compensate for layout
-	containment. —Obormot 2021-03-21
-	*/
+/*  Lazy-load below-fold sections in supported browsers.
+    Disabled temporarily pending layout redesign to compensate for layout
+    containment. —Obormot 2021-03-21
+    */
 /*
 section.level1:nth-of-type(n+4) {
-	content-visibility: auto;
-	contain-intrinsic-size: 200vh;
+    content-visibility: auto;
+    contain-intrinsic-size: 200vh;
 }
  */
 
@@ -1102,7 +1106,7 @@ May be able at some point to simplify this using regular link underlining, since
     background-size: 1px 1px;
     background-repeat: repeat-x;
     background-position: 0% calc(100% - 0.1em);
-	box-decoration-break: clone;
+    box-decoration-break: clone;
 
     /*  Disable oldstyle nums in underlined links because the oldstyle nums are almost subscript-like and overlap */
     font-variant-numeric: lining-nums;
@@ -1139,21 +1143,21 @@ a code {
     background-color: transparent;
 }
 
-/*	Reduce text-shadow overlap partially erasing letters next to smallcaps:
-	eg in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`,
-	the 'o' in 'micro' will be partially erased and look like a 'c' without
-	some sort of extra spacing
-	*/
+/*  Reduce text-shadow overlap partially erasing letters next to smallcaps:
+    eg in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`,
+    the 'o' in 'micro' will be partially erased and look like a 'c' without
+    some sort of extra spacing
+    */
 .markdownBody a:link > .smallcaps,
 .markdownBody a:link > .smallcaps-auto {
-	margin-left: 0.7px;
+    margin-left: 0.7px;
 }
 
-/*	Similar to above, but for subscripts and superscripts
-	*/
+/*  Similar to above, but for subscripts and superscripts
+    */
 .markdownBody a:link > sub,
 .markdownBody a:link > sup {
-	padding-left: 0.125em;
+    padding-left: 0.125em;
 }
 
 /**************/
