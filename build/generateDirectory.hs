@@ -38,12 +38,18 @@ generateDirectory mta dir'' = do
   dirs   <- listDirectories direntries'
   pairs  <- listFiles  mta  direntries'
   tagged <- listTagged mta  (init dir'')
+
+  -- descending date order
   let links = reverse $ sortByDate $ pairs++tagged
+
+  -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
+  let tagSelf = init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
+  let links' = map (\(y,(a,b,c,d,tags,f),z) -> (y,(a,b,c,d, filter (/= tagSelf) tags,f),z)) links
 
   let header = generateYAMLHeader dir''
   let directorySection = generateDirectoryItems dirs
 
-  let linkSection = generateListItems links
+  let linkSection = generateListItems links'
   let body = [Header 2 nullAttr [Str "Directories"]] ++
                -- for pages like ./docs/statistics/index.page where there are 9+ subdirectories, we'd like to multi-column the directory section (we can't for files/links because there are so many annotations):
                (if length dirs < 8 then [directorySection] else
