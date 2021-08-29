@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-27 11:00:20 gwern"
+When:  Time-stamp: "2021-08-28 20:45:31 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -910,14 +910,14 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Switch Transformers?", "https://arxiv.org/abs/2101.03961#google")
         , ("T5s?", "https://arxiv.org/abs/1910.10683#google")
         , ("TF?RC", "https://sites.research.google/trc/")
-        , ("TPU-?v2s?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Second_generation_TPU")
-        , ("TPU-?v3s?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Third_generation_TPU")
-        , ("TPU-?v4s?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Fourth_generation_TPU")
-        , ("TPUs?", "/docs/ai/2020-jouppi.pdf#google")
+        , ("TPU-?v2s?(-[0-9]+)?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Second_generation_TPU")
+        , ("TPU-?v3s?(-[0-9]+)?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Third_generation_TPU")
+        , ("TPU-?v4s?(-[0-9]+)?", "https://en.wikipedia.org/wiki/Tensor_Processing_Unit#Fourth_generation_TPU")
+        , ("TPUs?(-[0-9]+)?", "/docs/ai/2020-jouppi.pdf#google")
         , ("TSMC", "https://en.wikipedia.org/wiki/TSMC")
         , ("Ted Chiang", "https://en.wikipedia.org/wiki/Ted_Chiang")
         , ("Terence Tao", "https://en.wikipedia.org/wiki/Terence_Tao")
-        , ("Textual criticism", "https://en.wikipedia.org/wiki/Textual_criticism")
+        , ("[Tt]extual criticism", "https://en.wikipedia.org/wiki/Textual_criticism")
         , ("The Atlantic", "https://en.wikipedia.org/wiki/The_Atlantic")
         , ("The Book of the New Sun", "https://en.wikipedia.org/wiki/The_Book_of_the_New_Sun")
         , ("The Browser", "https://thebrowser.com/")
@@ -927,7 +927,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("The Matrix", "https://en.wikipedia.org/wiki/The_Matrix")
         , ("The Melancholy of Haruhi Suzumiya", "https://en.wikipedia.org/wiki/The_Melancholy_of_Haruhi_Suzumiya")
         , ("The Mother of All Demos", "https://en.wikipedia.org/wiki/The_Mother_of_All_Demos")
-        , ("The Pile", "https://arxiv.org/abs/2101.00027")
+        , ("[Tt]he Pile", "https://arxiv.org/abs/2101.00027")
         , ("The Unreasonable Effectiveness [Oo]f Mathematics [Ii]n the Natural Sciences", "https://en.wikipedia.org/wiki/The_Unreasonable_Effectiveness_of_Mathematics_in_the_Natural_Sciences")
         , ("The World [Aa]s Will [Aa]nd Representation", "https://en.wikipedia.org/wiki/The_World_as_Will_and_Representation")
         , ("[Tt]heodic(y|ies)", "https://en.wikipedia.org/wiki/Theodicy")
@@ -1319,4 +1319,15 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Aa]utomated|[Ii]mage|[Pp]anoptic|[Pp]ixel|[S]emantic) segmentation", "https://en.wikipedia.org/wiki/Image_segmentation")
         , ("[Bb]ounding.box.?.?", "https://en.wikipedia.org/wiki/Minimum_bounding_box")
         , ("[Pp]ropensity[ -][Ss]core(s|[ -][Mm]atching|analysis|model|methods?)?", "https://en.wikipedia.org/wiki/Propensity_score_matching")
+        , ("[Cc]atnip|[Nn]epeta [cc]ataria|[Cc]at nip|[Cc]atmint)", "https://en.wikipedia.org/wiki/Catnip")
+        , ("([Vv]alerian|Valeriana officinalis)", "https://en.wikipedia.org/wiki/Valerian_(herb)")
+        , ("([Ss]ilver[ -]vine|Actinidia polygama|[Mm]atatabi)", "https://en.wikipedia.org/wiki/Actinidia_polygama")
+        , ("(Tatarian honeysuckle|[Hh]oneysuckle|Lonicera tatarica)", "https://en.wikipedia.org/wiki/Lonicera_tatarica")
+        , ("([a-zA-Z1-9.,]+-)?[Nn]epetalactone.?", "https://en.wikipedia.org/wiki/Nepetalactone")
+        , ("[Aa]ctinidine", "https://en.wikipedia.org/wiki/Actinidine")
+        , ("(Gibbs sampl(er|ing)|Gibbs (learning )?algorithm.?)", "https://en.wikipedia.org/wiki/Gibbs_sampling")
+        , ("(Felis catus|[Dd]omestic(ed)? cat.?|[Cc]at)", "https://en.wikipedia.org/wiki/Cat")
+        , ("([Dd]rosophila( [Mm]elanogaster)?|D. [Mm]elanogaster|[Dd]rosophila)", "https://en.wikipedia.org/wiki/Drosophila_melanogaster")
+        , ("[Cc]ross[ -]entropy", "https://en.wikipedia.org/wiki/Cross_entropy")
+        , ("[Ee]ntropy", "https://en.wikipedia.org/wiki/Entropy_(information_theory)") -- doesn't look like most of my uses are physics but information theory
         ]
