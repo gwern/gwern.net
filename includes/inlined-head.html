@@ -595,6 +595,12 @@ body.index #markdownBody section h1 {
 /*	Columns.
 	*/
 @media only screen and (min-width: 961px) {
+
+    /* Suppress bonus section in single/double-column layout */
+    body.index #markdownBody #notable {
+        display: none;
+    }
+
 	body.index #markdownBody {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
@@ -619,6 +625,13 @@ body.index #markdownBody section h1 {
 		body.index #markdownBody section > ul li {
 			break-inside: avoid;
 		}
+    }
+}
+
+/* On sufficiently-wide screens, we can get 3 columns in nicely; to preserve the initial row being 'meta' blocks, we leave #notable visible (for a newest/popular/notable triplet) */
+@media only screen and (min-width: 1500px) {
+	body.index #markdownBody {
+		grid-template-columns: 45ch 45ch 45ch;
 	}
 }
 
