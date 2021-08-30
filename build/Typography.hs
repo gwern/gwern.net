@@ -93,14 +93,14 @@ smallcapsfyInlineCleanup x = x
 smallcapsfyRegex :: R.Regex
 smallcapsfyRegex = R.makeRegex
   -- match standard acronyms like ABC or ABCDEF:
-  ("[A-Z][A-Z][A-Z]+|" ++
+  ("[A-Z&][A-Z&][A-Z&]+|" ++
     -- match hyphen-separated acronyms like 'GPT-2-117M' but not small mixed like '150MB'/'P100'/'FP16'
     -- or hyphenated expressions with lowercase letters like 'BigGAN-level':
-   "[A-Z][A-Z][A-Z]+(-[[:digit:]]+|[A-Z]+)+|" ++
+   "[A-Z&][A-Z&][A-Z&]+(-[[:digit:]]+|[A-Z&]+)+|" ++
    -- smallcaps entirety of "TPUv3", oldstyle numbers look odd when juxtaposed against smallcaps+lowercase
-   "[A-Z][A-Z][A-Z]+([[:digit:]]+|[a-zA-Z]+)+|" ++
+   "[A-Z&][A-Z&][A-Z&]+([[:digit:]]+|[a-zA-Z&]+)+|" ++
    -- but we do want to continue across hyphens of all-uppercase strings like "YYYY-MM-DD" or "X-UNITER" or "DALL·E":
-   "[A-Z][A-Z][A-Z]+(-[A-Z]+)+|" ++ "[A-Z]+-[A-Z][A-Z][A-Z]+|" ++ "[A-Z]+\183[A-Z]+|" ++
+   "[A-Z&][A-Z&][A-Z&]+(-[A-Z&]+)+|" ++ "[A-Z&]+-[A-Z&][A-Z&][A-Z&]+|" ++ "[A-Z&]+\183[A-Z&]+|" ++
    -- or slashed acronyms like "TCP/IP": eg
    -- walk smallcapsfyInline [Str "Connecting using TCP/IP"]
    -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP/IP</span>"]
@@ -108,9 +108,14 @@ smallcapsfyRegex = R.makeRegex
    -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP</span>"]
    -- walk smallcapsfyInline [Str "Connecting using IP"]
    -- → [Str "Connecting using IP"]
+   "[A-Z&][A-Z&][A-Z&]+(/[A-Z&]+)+|" ++ "[A-Z&]+/[A-Z&][A-Z&][A-Z&]+|" ++
+   -- It looks odd when you have 'AB XYZ' or 'XYZ AB' with partial smallcaps, so we treat them as a single range (although in practice this may not work due to the Space splitting):
    -- walk smallcapsfyInline [Str "Connecting using TCP IP"]
-   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP</span> IP"]
-   "[A-Z][A-Z][A-Z]+(/[A-Z]+)+|" ++ "[A-Z]+/[A-Z][A-Z][A-Z]+|" ++
+   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP IP</span>"]
+   "[A-Z&][A-Z&][A-Z&] [A-Z&][A-Z&]|" ++
+   -- walk smallcapsfyInline [Str "WP RSS bot"]
+   -- → [RawInline (Format "html") "<span class=\"smallcaps-auto\">WP RSS</span> bot"]
+   "[A-Z&][A-Z&] [A-Z&][A-Z&][A-Z&]|" ++
    -- special-case AM/PM like "9:30AM" or "1PM" or "5:55 PM" (WARNING: Pandoc will typically parse spaces into 'Space' AST nodes, making it hard to match on things like "5 PM")
    "[[:digit:]]+ ?[AP]M|" ++
    "\\??[AP]M|" ++ -- special-case handling for all the "?AM--?PM" in /Morning-writing:
