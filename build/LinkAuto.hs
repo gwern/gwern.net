@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-28 21:31:35 gwern"
+When:  Time-stamp: "2021-08-30 15:28:38 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -836,7 +836,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Red Delicious", "https://en.wikipedia.org/wiki/Red_Delicious")
         , ("Reformer", "https://arxiv.org/abs/2001.04451#google")
         , ("RegNet", "https://arxiv.org/abs/2003.13678#facebook")
-        , ("Registered Reports?", "https://en.wikipedia.org/wiki/Preregistration_(science)#Registered_reports")
+        , ("([Rr]egistered [Rr]eports?|[Pp]re-?regist(ered|er|ering|ration))", "https://en.wikipedia.org/wiki/Preregistration_(science)#Registered_reports")
         , ("Repository for Germinal Choice", "https://en.wikipedia.org/wiki/Repository_for_Germinal_Choice")
         , ("Res[Nn]e[Xx]t", "https://arxiv.org/abs/1907.07640")
         , ("Richard Dawkins", "https://en.wikipedia.org/wiki/Richard_Dawkins")
@@ -1326,8 +1326,9 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([a-zA-Z1-9.,]+-)?[Nn]epetalactone.?", "https://en.wikipedia.org/wiki/Nepetalactone")
         , ("[Aa]ctinidine", "https://en.wikipedia.org/wiki/Actinidine")
         , ("(Gibbs sampl(er|ing)|Gibbs (learning )?algorithm.?)", "https://en.wikipedia.org/wiki/Gibbs_sampling")
-        , ("(Felis catus|[Dd]omestic(ed)? cat.?|[Cc]at)", "https://en.wikipedia.org/wiki/Cat")
+        , ("(Felis catus|[Dd]omestic(ed)? cat.?|[Cc]ats?)", "https://en.wikipedia.org/wiki/Cat")
         , ("([Dd]rosophila( [Mm]elanogaster)?|D. [Mm]elanogaster|[Dd]rosophila)", "https://en.wikipedia.org/wiki/Drosophila_melanogaster")
         , ("[Cc]ross[ -]entropy", "https://en.wikipedia.org/wiki/Cross_entropy")
         , ("[Ee]ntropy", "https://en.wikipedia.org/wiki/Entropy_(information_theory)") -- doesn't look like most of my uses are physics but information theory
+        , ("(([Rr]andomi[zs]ed )?[Cc]ontrol(led)? ((clinical[ -])?[Tt]rials?|[Ee]xperiment)|RCTs?)", "https://en.wikipedia.org/wiki/Randomized_controlled_trial")
         ]

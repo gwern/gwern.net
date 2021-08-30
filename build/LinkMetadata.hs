@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-29 10:40:27 gwern"
+When:  Time-stamp: "2021-08-30 15:29:37 gwern"
 License: CC-0
 -}
 
@@ -1007,6 +1007,7 @@ cleanAbstractsHTML t = trim $
     , ("<h2>", "<p><strong>")
     , ("</h3>", "</strong></p>")
     , ("<h3>", "<p><strong>")
+    , ("<br/><br/>", "</p> <p>")
     , ("<br/><h3>", "<h3>")
     , ("</p><p>", "</p> <p>")
     , ("<jats:title>SUMMARY</jats:title>", "")
@@ -1139,6 +1140,26 @@ cleanAbstractsHTML t = trim $
     , ("<p>Funding: ", "<p><strong>Funding</strong>: ")
     , ("( <em>n</em> =", "(<em>n</em> =")
     , ("<em>N</em> =", "<em>n</em> =")
+    , ("(i)", "(1)")
+    , (" i)", " (1)")
+    , ("(ii)", "(2)")
+    , (" ii)", " (2)")
+    , ("(iii)", "(3)")
+    , (" iii)", " (3)")
+    , ("(iv)", "(4)")
+    , (" iv)", " (4)")
+    , ("(v)", "(5)")
+    , (" v)", " (5)")
+    , ("(vi)", "(6)")
+    , (" vi)", " (6)")
+    , ("(vii)", "(7)")
+    , (" vii)", " (7)")
+    , ("(viii)", "(8)")
+    , (" viii)", " (8)")
+    , ("(ix)", "(9)")
+    , (" ix)", " (9)")
+    , ("(x)", "(10)")
+    , (" x)", " (10)")
     , (" =  ", " = ")
     , ("<strong><strong>", "<strong>")
     , ("</strong></strong>", "</strong>")
