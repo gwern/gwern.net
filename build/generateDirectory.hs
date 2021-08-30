@@ -24,7 +24,7 @@ import Columns (listsTooLong)
 
 main :: IO ()
 main = do dirs <- getArgs
-          let dirs' = map (\dir -> (if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/") dirs
+          let dirs' = map (\dir -> replace "//" "/" ((if "./" `isPrefixOf` dir then drop 2 dir else dir) ++ "/")) dirs
 
           meta <- readLinkMetadata
 
@@ -160,7 +160,7 @@ generateDirectoryItems ds = BulletList
 generateListItems :: [(FilePath, MetadataItem,FilePath)] -> Block
 generateListItems p = BulletList (map generateListItem p)
 generateListItem :: (FilePath,MetadataItem,FilePath) -> [Block]
-generateListItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
+generateListItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
                                             let author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)] in
                                               -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
                                           let backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")], Str ")"] in
