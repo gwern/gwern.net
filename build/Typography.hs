@@ -80,7 +80,7 @@ smallcapsfyInline x@(Str s) = let rewrite = go s in if s /= rewrite then RawInli
                                  in if matched==""
                                     then a -- no acronym anywhere in it
                                     else (T.pack before)
-                                         `T.append` "<span class=\"smallcaps-auto\">"`T.append` (T.pack matched) `T.append` "</span>"
+                                         `T.append` "<span class=\"smallcaps-auto\">"`T.append` (T.pack $ replace "&" "&amp;" matched) `T.append` "</span>"
                                          `T.append` go (T.pack after)
 smallcapsfyInline x = x
 -- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg if we scrape a Gwern.net abstract (which will already be smallcaps) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
