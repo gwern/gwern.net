@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-08-23 11:11:10 gwern"
+When:  Time-stamp: "2021-08-31 11:12:36 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -87,8 +87,11 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
                          mapM_ (\(p,ami) -> case ami of
                                   Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
                                   Right u@(Just ('/':'/':_)) -> error $ "Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u
-                                  Right (Just u)  -> if not ("http" `isPrefixOf` p || isJust (parseTLD p)) then
-                                                       error $ "Error! Invalid archive link? " ++ show p ++ show u ++ show ami
+                                  Right (Just u)  -> if not ("http" `isPrefixOf` p) then
+                                                       error $ "Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami
+                                                     else
+                                                       if isJust (parseTLD p) then
+                                                        error $ "Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami
                                                        else return ami
                                   Right Nothing   -> return ami
                                   Left  _         -> return ami)
