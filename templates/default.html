@@ -194,7 +194,6 @@
 
     $partial("static/includes/inlined-foot.html")$
 
-    $if(index)$ $else$
 
     <script defer id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
     <script>
@@ -204,6 +203,7 @@
       gtag('config', 'UA-18912926-1');
     </script>
 
+    $if(index)$ $else$
     <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter, as tables are on only a very small subset of pages -->
     <div id="comments">
       <div id="disqus_thread"></div>
