@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-30 15:29:37 gwern"
+When:  Time-stamp: "2021-08-30 22:11:20 gwern"
 License: CC-0
 -}
 
@@ -115,12 +115,16 @@ readLinkMetadata = do
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
              unless (null balancedParens) $ error $ "Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
 
+             -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
+             -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
+             partial <- readYaml "metadata/partial.yaml"
+
              -- auto-generated cached definitions; can be deleted if gone stale
-             rewriteLinkMetadata "metadata/auto.yaml" -- cleanup first
+             rewriteLinkMetadata "metadata/auto.yaml" -- do auto-cleanup  first
              auto <- readYaml "metadata/auto.yaml"
 
              -- merge the hand-written & auto-generated link annotations, and return:
-             let final = M.union (M.fromList custom) (M.fromList auto) -- left-biased, 'custom' overrides 'auto'
+             let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
