@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-08-30 22:11:20 gwern"
+When:  Time-stamp: "2021-08-31 13:53:56 gwern"
 License: CC-0
 -}
 
@@ -1014,20 +1014,6 @@ cleanAbstractsHTML t = trim $
     , ("<br/><br/>", "</p> <p>")
     , ("<br/><h3>", "<h3>")
     , ("</p><p>", "</p> <p>")
-    , ("<jats:title>SUMMARY</jats:title>", "")
-    , ("<strong>ABSTRACT</strong><br/>              <p>", "<p>")
-    , ("</strong><p>", "</strong>: <p>")
-    , ("<p></abstract></p>", "")
-    , ("<strong>Abstract</strong>:        ", "")
-    , ("<abstract abstract-type=\"summary\"><br/>", "")
-    , ("<abstract abstract-type=\"toc\">", "")
-    , ("<abstract abstract-type=\"editor\">", "")
-    , ("<abstract abstract-type=\"synopsis\">", "")
-    , ("<strong>SUMMARY</jats:title>", "")
-    , ("<strong>Abstract</jats:title>", "")
-    , ("<strong>Abstract</strong><br/>", "")
-    , ("<h3>Abstract:</h3>", "")
-    , ("<h3>Summary/Abstract</h3>", "")
     , ("Alzheimer9", "Alzheimer'")
     , ("<br/> <br/>", "<br/>")
     , ("1.<p>", "<p>")
@@ -1199,6 +1185,21 @@ cleanAbstractsHTML t = trim $
     , ("< /i>", "</i>")
     , ("<jats:title>Abstract</jats:title>\n\t  <jats:p>", "<p>")
     , ("<jats:title>Abstract</jats:title><jats:p>The</jats:p>", "")
+    , ("<jats:title>SUMMARY</jats:title>", "")
+    , ("<jats:title>Summary</jats:title>", "")
+    , ("<strong>ABSTRACT</strong><br/>              <p>", "<p>")
+    , ("</strong><p>", "</strong>: <p>")
+    , ("<p></abstract></p>", "")
+    , ("<strong>Abstract</strong>:        ", "")
+    , ("<abstract abstract-type=\"summary\"><br/>", "")
+    , ("<abstract abstract-type=\"toc\">", "")
+    , ("<abstract abstract-type=\"editor\">", "")
+    , ("<abstract abstract-type=\"synopsis\">", "")
+    , ("<strong>SUMMARY</jats:title>", "")
+    , ("<strong>Abstract</jats:title>", "")
+    , ("<strong>Abstract</strong><br/>", "")
+    , ("<h3>Abstract:</h3>", "")
+    , ("<h3>Summary/Abstract</h3>", "")
     , ("<h3>ABSTRACT</h3>", "")
     , ("<h3>Abstract</h3>", "")
     , ("<h3>SUMMARY</h3>", "")
