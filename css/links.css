@@ -542,7 +542,7 @@ a[href*="rstudio.com"]::after,
 a[href*="salon.com"]::after,
 a[href*="sciencemag.org"]::after,
 a[href*="sciencedirect.com"]::after,
-a[href*="scholars-stage.blogspot.com"]::after,
+a[href*="scholars-stage.org"]::after,
 a[href*="slate.com"]::after,
 a[href*="slatestarcodex"]::after,
 a[href*="slatestarscratchpad.tumblr.com/"]::after,
@@ -679,7 +679,7 @@ a[href*="yunnansourcing.com"]::after {
 }
 
 /* Avoid the unfortunate connotations of 'SS' */
-a[href*="scholars-stage.blogspot.com"]::after {
+a[href*="scholars-stage.org"]::after {
     content: "Ss";
 }
 

@@ -1573,7 +1573,7 @@ table td > code {
 
 /*  Add little icons to tables handled by tablesorter.js
     to advertise that they are sortable.
-    http://tablesorter.com/docs/#Configuration
+    https://mottie.github.io/tablesorter/docs/#Configuration
     */
 th.tablesorter-header {
     background-image: url('/static/img/tablesorter/tablesorter-bg.gif');

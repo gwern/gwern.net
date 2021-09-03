@@ -643,7 +643,7 @@ whiteList url
       , "antilop.cc" -- stable
       , "www.ncbi.nlm.nih.gov" -- stable
       , "eric.ed.gov" -- stable
-      , "scholars-stage.blogspot.com" -- stable
+      , "scholars-stage.org" -- stable
       , "toolbox.google.com/datasetsearch/" -- interactive
       , "trends.google.com" -- interactive
       , "landing.google.com/sre" -- stable
