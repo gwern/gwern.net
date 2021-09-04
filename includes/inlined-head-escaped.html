@@ -593,13 +593,14 @@ body.index #markdownBody section h1 {
 }
 
 /*  Columns.
-    */
-@media only screen and (min-width: 961px) {
+ */
 
-    /* Suppress bonus section in single/double-column layout */
-    body.index #markdownBody #notable {
-        display: none;
-    }
+/* Suppress bonus section in single/double-column layout */
+body.index #markdownBody #notable {
+    display: none;
+}
+
+@media only screen and (min-width: 961px) {
 
     body.index #markdownBody {
         display: grid;
