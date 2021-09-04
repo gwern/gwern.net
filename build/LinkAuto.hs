@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-08-30 15:28:38 gwern"
+When:  Time-stamp: "2021-09-02 23:59:59 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -988,7 +988,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("X[Mm]onad", "https://en.wikipedia.org/wiki/Xmonad")
         , ("Yasuhiro Takeda", "https://en.wikipedia.org/wiki/Yasuhiro_Takeda")
         , ("Yoshiyuki Tomino", "https://en.wikipedia.org/wiki/Yoshiyuki_Tomino")
-        , ("Your[Mm]orals\\.org", "http://yourmorals.org/")
+        , ("Your[Mm]orals\\.org", "https://yourmorals.org/")
         , ("Yunmen Wenyan", "https://en.wikipedia.org/wiki/Yunmen_Wenyan")
         , ("ZUN", "https://en.wikipedia.org/wiki/Team_Shanghai_Alice#Member")
         , ("Zeo", "/Zeo")
@@ -1331,4 +1331,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]ross[ -]entropy", "https://en.wikipedia.org/wiki/Cross_entropy")
         , ("[Ee]ntropy", "https://en.wikipedia.org/wiki/Entropy_(information_theory)") -- doesn't look like most of my uses are physics but information theory
         , ("(([Rr]andomi[zs]ed )?[Cc]ontrol(led)? ((clinical[ -])?[Tt]rials?|[Ee]xperiment)|RCTs?)", "https://en.wikipedia.org/wiki/Randomized_controlled_trial")
+        , ("(GPU|[Gg]raphics [Pp]rocessing [Uu]nit)", "https://en.wikipedia.org/wiki/Graphics_processing_unit")
         ]
