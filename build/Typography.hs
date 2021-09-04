@@ -2,7 +2,7 @@
 
 -- Module for typographic enhancements of text:
 -- 1. adding smallcaps to capitalized phrases
--- 2. adding line-break tags (`<wbr>`) to slashes so web browsers break at slashes in text
+-- 2. adding line-break tags (`<wbr>` as Unicode ZERO WIDTH SPACE) to slashes so web browsers break at slashes in text
 -- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a cycling pattern, like `class="ruler-1"`/`class="ruler-2"`/`class="ruler-3"`/`class="ruler-1"`..., like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal rulers and other block elements within each section, it is not possible to do the usual trick like with blockquotes/lists).
 module Typography (invertImageInline, typographyTransform, imageMagickDimensions) where
 
@@ -15,7 +15,7 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, append, isInfixOf, isSuffixOf, pack, unpack, replace, Text)
+import qualified Data.Text as T (any, isInfixOf, isSuffixOf, pack, unpack, replace, Text)
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
@@ -23,12 +23,12 @@ import Control.Concurrent (threadDelay)
 
 import Data.FileStore.Utils (runShellCommand)
 
-import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown)
+import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown, nullAttr)
 import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk smallcapsfyInlineCleanup . walk smallcapsfy .
-                      walk (breakSlashes . breakEquals) .
+typographyTransform = walk (breakSlashes . breakEquals) .
+                      walk smallcapsfyInlineCleanup . walk smallcapsfy .
                       rulersCycle 3
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
@@ -72,16 +72,16 @@ smallcapsfy :: Block -> Block
 smallcapsfy h@Header{} = h
 smallcapsfy x          = walk smallcapsfyInline x
 smallcapsfyInline, smallcapsfyInlineCleanup :: Inline -> Inline
-smallcapsfyInline x@(Str s) = let rewrite = go s in if s /= rewrite then RawInline "html" rewrite else x
+smallcapsfyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
   where
-    go :: T.Text -> T.Text
-    go "" = ""
+    go :: T.Text -> [Inline]
+    go "" = []
     go a = let (before,matched,after) = R.match smallcapsfyRegex (T.unpack a) :: (String,String,String)
                                  in if matched==""
-                                    then a -- no acronym anywhere in it
-                                    else (T.pack before)
-                                         `T.append` "<span class=\"smallcaps-auto\">"`T.append` (T.pack $ replace "&" "&amp;" matched) `T.append` "</span>"
-                                         `T.append` go (T.pack after)
+                                    then [Str a] -- no acronym anywhere in it
+                                    else (if before==""then[] else [Str (T.pack before)]) ++
+                                         [Span ("", ["smallcaps-auto"], []) [Str $ T.pack matched]] ++
+                                         (if after==""then[] else go (T.pack after))
 smallcapsfyInline x = x
 -- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg if we scrape a Gwern.net abstract (which will already be smallcaps) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
 smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) [y@(RawInline _ t)]) = if "<span class=\"smallcaps-auto\">" `T.isInfixOf` t then y else x
@@ -126,8 +126,8 @@ smallcapsfyRegex = R.makeRegex
 
 -------------------------------------------
 
--- add '<wbr>' (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://www.gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking is incompetent, sadly).
--- WARNING: this will affect link texts like '[AC/DC](!Wikipedia)', so make sure you do the rewrite after the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for possible HTML and bails out to avoid damaging it
+-- add '<wbr>'/ZERO WIDTH SPACE (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/wbr) HTML element to inline uses of forward slashes, such as in lists, to tell Chrome to linebreak there (see https://www.gwern.net/Lorem#inline-formatting in Chrome for examples of how its linebreaking is incompetent, sadly).
+-- WARNING: this will affect link texts like '[AC/DC](!Wikipedia)', so make sure you do the rewrite after the interwiki and any passes which insert inline HTML - right now 'breakSlashes' tests for possible HTML and bails out to avoid damaging it.
 breakSlashes :: Block -> Block
 -- skip CodeBlock/RawBlock/Header/Table: enabling line-breaking on slashes there is a bad idea or not possible:
 breakSlashes x@CodeBlock{} = x
@@ -135,19 +135,19 @@ breakSlashes x@RawBlock{}  = x
 breakSlashes x@Header{}    = x
 breakSlashes x@Table{}     = x
 breakSlashes x = topDown breakSlashesInline x
-breakSlashesInline, breakSlashesPlusThinSpaces :: Inline -> Inline
+breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
 breakSlashesInline x@(SmallCaps _) = x
-breakSlashesInline (Link a ss ts)  = Link a (walk breakSlashesPlusThinSpaces ss) ts
-breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ')) s then -- things get tricky if we mess around with raw HTML, so we bail out for anything that even *looks* like it might be HTML tags & has '<>' or a HAIR SPACE already
-                                 RawInline "html" (T.replace " /<wbr> " " / " $ T.replace " /<wbr>" " /" $ T.replace "/<wbr> " "/ " $ -- fix redundant <wbr>s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
-                                                   T.replace "/" "/<wbr>" s) else x
+breakSlashesInline (Link a ss ts)  = Link a (walk breakSlashesPlusHairSpaces ss) ts
+breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ' || t == '\8203')) s then -- things get tricky if we mess around with raw HTML, so we bail out for anything that even *looks* like it might be HTML tags & has '<>' or a HAIR SPACE or ZERO WIDTH SPACE already
+                                 Str (T.replace " /\8203 " " / " $ T.replace " /\8203" " /" $ T.replace "/\8203 " "/ " $ -- fix redundant \8203s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
+                                                   T.replace "/" "/\8203" s) else x
 breakSlashesInline x = x
 -- the link-underlining hack, using drop-shadows, causes many problems with characters like slashes 'eating' nearby characters; a phrase like "A/B testing" is not usually a problem because the slash is properly kerned, but inside a link, the '/' will eat at 'B' and other characters where the top-left comes close to the top of the slash. (We may be able to drop this someday if CSS support for underlining with skip-ink ever solidifies.)
 -- The usual solution is to insert a HAIR SPACE or THIN SPACE. Here, we descend inside Link nodes to their Str to  add both <wbr> (line-breaking is still an issue AFAIK) and HAIR SPACE (THIN SPACE proved to be too much).
-breakSlashesPlusThinSpaces x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ')) s then
-                                 RawInline "html" (T.replace " /<wbr> " " / " $ T.replace " /<wbr>" " /" $ T.replace "/<wbr> " "/ " $
-                                                   T.replace "/" " / <wbr>" s) else x
-breakSlashesPlusThinSpaces x = x
+breakSlashesPlusHairSpaces x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ')) s then
+                                 Str (T.replace " /\8203 " " / " $ T.replace " /\8203" " /" $ T.replace "/\8203 " "/ " $
+                                                   T.replace "/" " / \8203" s) else x
+breakSlashesPlusHairSpaces x = x
 
 breakEquals :: Block -> Block
 breakEquals x@CodeBlock{} = x
