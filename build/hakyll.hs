@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-08-14 22:23:27 gwern"
+When: Time-stamp: "2021-09-04 22:48:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -61,7 +61,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import Network.HTTP (urlEncode)
 
 import Data.List.Utils (replace)
-import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack)
+import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, length)
 
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
@@ -244,7 +244,7 @@ descField d = field d $ \item -> do
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
 pandocTransform md adb p =
-                           do let pw = walk linkAuto $ walk (marginNotes . convertInterwikiLinks) p
+                           do let pw = walk linkAuto $ walk (footnoteAnchorChecker . marginNotes . convertInterwikiLinks) p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
@@ -365,3 +365,8 @@ marginNotes x@(Note (bs:cs)) =
                             Span ("", ["marginnote"], []) (blocksToInlines $ (Para ms):cs)
     _ -> x
 marginNotes x = x
+
+-- Check for footnotes which may be broken and rendering wrong, with the content inside the body rather than as a footnote. (An example was present for an embarrassingly long time in /GPT-3...)
+footnoteAnchorChecker :: Inline -> Inline
+footnoteAnchorChecker n@(Note [Para [Str s]]) = if " " `T.isInfixOf` s || T.length s > 10 then n else error ("Warning: a short spaceless footnote! May be a broken anchor (ie swapping the intended '[^abc]:' for '^[abc]:'): " ++ show n)
+footnoteAnchorChecker n = n
