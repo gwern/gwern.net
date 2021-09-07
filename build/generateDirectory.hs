@@ -20,7 +20,6 @@ import System.IO.Temp (writeSystemTempFile)
 import Control.Monad.Parallel as Par (mapM_)
 
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, Metadata, MetadataItem)
-import Columns (listsTooLong)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -45,6 +44,7 @@ generateDirectory mta dir'' = do
   -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
   let tagSelf = init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
   let links' = map (\(y,(a,b,c,d,tags,f),z) -> (y,(a,b,c,d, filter (/= tagSelf) tags,f),z)) links
+  let allUnannotatedFilesP = all (=="") $ map (\(_,(_,_,_,_,_,annotation),_) -> annotation) links'
 
   let header = generateYAMLHeader dir''
   let directorySection = generateDirectoryItems dirs
@@ -57,8 +57,8 @@ generateDirectory mta dir'' = do
                    directorySection,
                    RawBlock (Format "html") "</div>"]) ++
                [Header 2 nullAttr [Str "Links"]] ++
-                -- for lists, they *may* all be devoid of annotations and short
-                if length (listsTooLong [linkSection]) == 0 then [linkSection] else
+               -- for lists, they *may* all be devoid of annotations and short
+                if not allUnannotatedFilesP then [linkSection] else
                   [RawBlock (Format "html") "<div class=\"columns\">\n\n",
                    linkSection,
                    RawBlock (Format "html") "</div>"]
