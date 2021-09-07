@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-04 18:12:03 gwern"
+When:  Time-stamp: "2021-09-07 13:54:56 gwern"
 License: CC-0
 -}
 
@@ -95,9 +95,11 @@ readLinkMetadata = do
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) custom in
                mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex (mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$") d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
-             let dois = map (\(_,(_,_,_,doi,_,_)) -> doi) custom in
-               let badDois = filter (\d -> '–' `elem` d || '—' `elem` d) dois in
-                 when (not (null badDois)) $ error $ "Bad DOIs (en/em dash): " ++ show badDois
+             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi) custom in
+                 when (not (null badDoisDash)) $ error $ "Bad DOIs (en/em dash): " ++ show badDoisDash
+             -- about the only requirement for DOIs, aside from being made of graphical Unicode characters, is that they contain one '/':
+             let badDoisSlash = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else not ('/' `elem` doi)) custom in
+               when (not (null badDoisSlash)) $ error $ "Invalid DOI (missing mandatory forward slash): " ++ show badDoisSlash
 
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
