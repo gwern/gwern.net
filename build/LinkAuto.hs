@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-09-04 18:06:27 gwern"
+When:  Time-stamp: "2021-09-07 13:17:28 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -691,6 +691,10 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Less ?Wrong", "https://www.lesswrong.com")
         , ("Libri-Light", "https://arxiv.org/abs/1912.07875#facebook")
         , ("Lisp [Mm]achines?", "https://en.wikipedia.org/wiki/Lisp_machine")
+        , ("Common Lisp", "https://en.wikipedia.org/wiki/Common_Lisp")
+        , ("(Unix|UNIX)", "https://en.wikipedia.org/wiki/Unix")
+        , ("(Lisp programming language|Lisp language|LISP|Lisp)", "https://en.wikipedia.org/wiki/Lisp_(programming_language)")
+        , ("(Haskell programming language|Haskell language|Haskell)", "https://en.wikipedia.org/wiki/Haskell_(programming_language)")
         , ("Lord's [Pp]aradox", "https://en.wikipedia.org/wiki/Lord%27s_paradox")
         , ("Lotka's [Ll]aw", "https://en.wikipedia.org/wiki/Lotka%27s_law")
         , ("Lucretius", "https://en.wikipedia.org/wiki/Lucretius")
@@ -719,7 +723,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Merchant fees?", "https://en.wikipedia.org/wiki/Interchange_fee")
         , ("Met HD", "https://en.wikipedia.org/wiki/Metropolitan_Opera_Live_in_HD")
         , ("Meta[Mm]ath", "https://en.wikipedia.org/wiki/Metamath")
-        , ("Michael Nielsen", "http://michaelnielsen.org/")
+        , ("Michael Nielsen", "https://michaelnielsen.org/")
         , ("Mike Darwin", "https://en.wikipedia.org/wiki/Mike_Darwin")
         , ("Mike Power", "http://mikepower.pressfolios.com/")
         , ("Million Veteran Program", "https://www.research.va.gov/mvp/")
