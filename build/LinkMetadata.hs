@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-07 13:54:56 gwern"
+When:  Time-stamp: "2021-09-08 11:58:46 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink) where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -63,7 +63,6 @@ isLocalLink = walk isLocalLink'
                (if takeExtension f' /= "" then y else
                   Link (a, "link-local" : b, c) e (f, g)))
         isLocalLink' x = x
-
 
 -------------------------------------------------------------------------------------------------------------------------------
 
@@ -258,31 +257,31 @@ generateAnnotationBlock rawFilep (f, ann) blp = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _,_,_,_,_) -> nonAnnotatedLink
                               Just (_,    _,_,_,_,"") -> nonAnnotatedLink
-                              Just (tle,aut,dt,doi,ts,abst) -> let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID in
-                                                            let author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space] in
-                                                              let date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]] in
-                                                                let backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]] in
-                                                                  let tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts] in
-                                                                let values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)] in
-                                                                  let linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else [] in
-                                                                  let link =
-                                                                             Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
-                                                                        in
-                                                                    -- make sure every abstract is wrapped in paragraph tags for proper rendering:
-                                                                     let abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || take 7 abst == "<figure" then abst else "<p>" ++ abst ++ "</p>" in
-                                                                       -- check that float-right hasn't been deleted by Pandoc again:
-                                                                       let abst'' = restoreFloatRight abst abst' in
-                                                              [Para
-                                                                (linkPrefix ++ [link,Str ","] ++
-                                                                  author ++
-                                                                  [Str "("] ++
-                                                                  date ++
-                                                                  backlink ++
-                                                                  tags ++
-                                                                  [Str ")"] ++
-                                                                  [Str ":"]),
-                                                                BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
-                                                           ]
+                              Just (tle,aut,dt,doi,ts,abst) ->
+                                let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
+                                    author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space]
+                                    date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
+                                    backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
+                                    tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
+                                    values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
+                                    linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
+                                    link = Link (lid, ["docMetadata"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
+                                    -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
+                                    abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || take 7 abst == "<figure" then abst else "<p>" ++ abst ++ "</p>"
+                                    -- check that float-right hasn't been deleted by Pandoc again:
+                                    abst'' = restoreFloatRight abst abst'
+                                in
+                                  [Para
+                                       (linkPrefix ++ [link,Str ","] ++
+                                         author ++
+                                         [Str "("] ++
+                                         date ++
+                                         backlink ++
+                                         tags ++
+                                         [Str ")"] ++
+                                         [Str ":"]),
+                                       BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
+                                  ]
                              where
                                nonAnnotatedLink :: [Block]
                                nonAnnotatedLink = [Para [Link nullAttr [Str (T.pack f)] (T.pack f, "")]]
@@ -341,9 +340,10 @@ readYaml yaml = do filep <- doesFileExist yaml
 
                  -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
-tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags in
-                         let defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else "" in
-                             if defTag `elem` tags' || defTag == "" then tags' else defTag:tags'
+tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
+                                    defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
+                                in
+                                  if defTag `elem` tags' || defTag == "" then tags' else defTag:tags'
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
@@ -580,7 +580,7 @@ restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfix
 -- regexp can warn about citation-text which needs to be linkified.
 generateID :: String -> String -> String -> T.Text
 generateID url author date
-  | any (\(u,_) -> u == url) linkIdOverrides = fromJust $ lookup url linkIdOverrides
+  | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
   -- eg '/Faces' = '#gwern-faces'
   | ("Gwern Branwen" == author) ||
     (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url))
@@ -591,25 +591,10 @@ generateID url author date
   | author == "" = ""
   | date   == "" = ""
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
-  | otherwise = T.pack $ let year = if date=="" then "2020" else take 4 date in -- YYYY-MM-DD
-                           let authors = split ", " $ head $ split " (" author in -- handle affiliations like "Tom Smith (Wired)"
-                           let authorCount = length authors in
-                             if authorCount == 0 then "" else
-                               let firstAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors in
-                                 -- handle cases like '/docs/statistics/peer-review/1975-johnson-2.pdf'
-                                 -- let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
-                                   -- let suffix' = if suffix == "-1" then "" else suffix in
-                                 let suffix' = "" in
-                                 filter (/='.') $ map toLower $ if authorCount >= 3 then
-                                                 firstAuthorSurname ++ "-et-al-" ++ year ++ suffix' else
-                                                   if authorCount == 2 then
-                                                     let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
-                                                       firstAuthorSurname ++ "-" ++ secondAuthorSurname ++ "-" ++ year ++ suffix'
-                                                   else
-                                                     firstAuthorSurname ++ "-" ++ year ++ suffix'
+  | otherwise = T.pack $ citeToID $ authorsToCite author date
   where
-    linkIdOverrides :: [(String, T.Text)]
-    linkIdOverrides = [
+    linkIDOverrides :: [(String, T.Text)]
+    linkIDOverrides = [
       ("/docs/ai/2019-radford.pdf#openai", "gpt-2-paper")
        , ("/docs/ai/2020-chen.pdf#openai", "chen-igpt-paper")
        , ("/docs/ai/anime/2020-ko.pdf", "ko-cho-2020")
@@ -783,6 +768,28 @@ generateID url author date
        , ("http://www.terrierman.com/russianfoxfarmstudy.pdf", "trut-1999-2")
        , ("http://zenpundit.com/?p=52965", "greer-thucydides-roundtable")
       ]
+
+authorsToCite :: String -> String -> String
+authorsToCite author date =
+  let year = if date=="" then "2021" else take 4 date -- YYYY-MM-DD
+      authors = split ", " author
+      authorCount = length authors
+      firstAuthorSurname = if authorCount==0 then "" else filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors
+  in
+       if authorCount == 0 then "" else
+           -- handle cases like '/docs/statistics/peer-review/1975-johnson-2.pdf'
+           -- let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
+             -- let suffix' = if suffix == "-1" then "" else suffix in
+           let suffix' = "" in
+           if authorCount >= 3 then
+                           firstAuthorSurname ++ " et al " ++ year ++ suffix' else
+                             if authorCount == 2 then
+                               let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
+                                 firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
+                             else
+                               firstAuthorSurname ++ " " ++ year ++ suffix'
+citeToID :: String -> String
+citeToID = filter (/='.') . map toLower . replace " " "-" . replace " & " "-"
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l

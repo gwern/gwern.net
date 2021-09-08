@@ -19,7 +19,7 @@ import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, Metadata, MetadataItem)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, Metadata, MetadataItem)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -145,8 +145,9 @@ lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
                        Just ("",_,_,_,_,_) -> tryPrefix
                        Just mi -> (u,mi)
-                       where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m in
-                                           let u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u in
+                       where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m
+                                             u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u
+                                         in
                                                (if (".page" `isInfixOf` u') || (u == u') then (u, ("", "", "", "", [], "")) else
                                                   -- sometimes the fallback is useless eg, a link to a section will trigger a 'longer' hit, like
                                                   -- '/reviews/Cat-Sense.page' will trigger a fallback to /reviews/Cat-Sense#fuzz-testing'; the
@@ -169,18 +170,23 @@ generateListItems p = BulletList (map generateItem p)
 
 generateSections :: [(FilePath, MetadataItem,FilePath)] -> [Block]
 generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
-                                let sectionID = if aut=="" then "" else (generateID f aut dt) `T.append` "-section" in
-                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++t++"”")]]
+                                let sectionID = if aut=="" then "" else (generateID f aut dt) `T.append` "-section"
+                                    authorShort = authorsToCite aut dt
+                                in
+                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite aut dt))]]
                                  ++ generateItem p)
 
 
 generateItem :: (FilePath,MetadataItem,FilePath) -> [Block]
-generateItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f in
-                                            let author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)] in
-                                              -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
-                                          let backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")], Str ")"] in
-                                            if t=="" then [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : (author ++ backlink))]
-                                            else [Para (Code nullAttr (T.pack f') : (Link nullAttr [Str ":", Space, Str "“", Str (T.pack t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
+generateItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
+                                            author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)]
+                                            -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
+                                            backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")], Str ")"]
+                                        in
+                                          if t=="" then
+                                            [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : (author ++ backlink))]
+                                          else
+                                            [Para (Code nullAttr (T.pack f') : (Link nullAttr [Str ":", Space, Str "“", Str (T.pack t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
 
 generateItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
