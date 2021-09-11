@@ -177,7 +177,7 @@ else
        for PAGE in $PAGES; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
     wrap λ "Smallcaps-auto regression in Markdown"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>'; }
     wrap λ "Stray links in Markdown"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 egrep --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]'; }
@@ -198,7 +198,7 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=100 "fgrep --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML"
 
-    λ(){ egrep --color=always '^"~/' ./static/redirects/nginx.conf; }
+    λ(){ egrep --color=always -e '^"~/' -e '\$";$' ./static/redirects/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
@@ -297,16 +297,13 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg docs/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --exclude=".*" --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@78.46.86.149:"/home/gwern/gwern.net/static"
     rsync --exclude=".*" --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie non-generated files):
     bold "Syncing pages…"
-    rsync --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
     rsync --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi;
-    rsync --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@78.46.86.149:"/home/gwern/gwern.net"
     rsync --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
     set +e
 
