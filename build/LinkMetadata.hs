@@ -760,7 +760,7 @@ generateID url author date
        , ("https://www.theatlantic.com/magazine/archive/2006/08/nightfall/305030/", "leithauser-2006-nightfall")
        , ("https://www.thisfursonadoesnotexist.com", "arfafax-tfdne")
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne")
-       , ("http://www.aidungeon.io/2019/11/my-orc-band-and-our-quest-for-equal.html", "walton-2019-music-troupe")
+       , ("https://web.archive.org/web/20191127163535/http://www.aidungeon.io/2019/11/my-orc-band-and-our-quest-for-equal.html", "walton-2019-music-troupe")
        , ("http://www.incompleteideas.net/IncIdeas/BitterLesson.html", "sutton-2019-2")
        , ("http://www.paulgraham.com/nerds.html", "paul-graham-nerds-2")
        , ("http://www.rand.org/pubs/monographs/MG1026.html", "bahney-et-al-2010-2")

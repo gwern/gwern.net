@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-09-09 10:46:20 gwern"
+When:  Time-stamp: "2021-09-11 19:57:33 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -535,7 +535,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Edward O\\. Thorp", "https://en.wikipedia.org/wiki/Edward_O._Thorp")
         , ("Edward Teller", "https://en.wikipedia.org/wiki/Edward_Teller")
         , ("Edward Thorndike", "https://en.wikipedia.org/wiki/Edward_Thorndike")
-        , ("Edward Tufte", "https://en.wikipedia.org/wiki/Edward_Tufte")
+        , ("(Edward Tufte|Tufte)", "https://en.wikipedia.org/wiki/Edward_Tufte")
         , ("EfficientNet", "https://arxiv.org/abs/1905.11946#google")
         , ("Ehrlich-Simon wager", "https://en.wikipedia.org/wiki/Simon%E2%80%93Ehrlich_wager")
         , ("EigenGAN", "https://arxiv.org/abs/2104.12476")
@@ -1338,4 +1338,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(([Rr]andomi[zs]ed )?[Cc]ontrol(led)? ((clinical[ -])?[Tt]rials?|[Ee]xperiment)|RCTs?)", "https://en.wikipedia.org/wiki/Randomized_controlled_trial")
         , ("(GPU|[Gg]raphics [Pp]rocessing [Uu]nit)", "https://en.wikipedia.org/wiki/Graphics_processing_unit")
         , ("(F<sub>st</sub>|F~st~|Fst)", "https://en.wikipedia.org/wiki/Fixation_index")
+        , ("LaMDA", "https://blog.google/technology/ai/lamda/")
         ]
