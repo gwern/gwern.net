@@ -12,6 +12,10 @@
     --GW-text-selection-background-color: #333;
     --GW-text-selection-color: #fff;
 
+    /*  Visited.
+     */
+    --GW-body-link-visited-color: #6a6a6a;
+
     /*  Link underlining.
         */
     --GW-link-underline-background-color: var(--GW-body-background-color);
@@ -1067,7 +1071,7 @@ h1 {
 /*= Margin notes =*/
 /*=--------------=*/
 
-/*  On wide viewports, hide margin note until it is styled as a sidenote (i.e,
+/*  On wide viewports, hide the margin notes until it is styled as a sidenote (i.e,
     until it gets the `.sidenote` class applied to it).
     */
 @media only screen and (min-width: 1761px) {
@@ -1083,6 +1087,11 @@ h1 {
 a {
     color: var(--GW-body-link-color); /* off-black */
     text-decoration: none;
+}
+
+/* slightly gray out links the reader has already visited, so they know if they've seen that content before. (A critical affordance in densely hyperlinked longform.) */
+.markdownBody a:visited {
+    color: var(--GW-body-link-visited-color);
 }
 
 /*=------------------------=*/
@@ -1346,6 +1355,10 @@ span.smallcaps-auto {
         */
     --GW-text-selection-background-color: #dcdcdc;
     --GW-text-selection-color: #000;
+
+    /*  Visited.
+     */
+    --GW-body-link-visited-color: #b1b1b1;
 
     /*  Link underlining.
         */

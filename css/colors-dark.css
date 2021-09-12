@@ -11,6 +11,10 @@
     --GW-text-selection-background-color: #dcdcdc;
     --GW-text-selection-color: #000;
 
+    /*  Visited.
+     */
+    --GW-body-link-visited-color: #b1b1b1;
+
     /*  Link underlining.
         */
     --GW-link-underline-background-color: var(--GW-body-background-color);
