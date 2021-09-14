@@ -3,12 +3,16 @@
 -- CLI tool to add link-tags to specified URLs/paths. eg 'addTag.hs "economics/experience-curve" "https://en.wikipedia.org/wiki/Experience_curve_effects"'
 module Main where
 
-import LinkMetadata (readYaml, writeYaml, MetadataList, MetadataItem)
-import System.Environment (getArgs)
+import Control.Monad (when)
 import Data.Maybe (isJust, fromJust)
+import System.Environment (getArgs)
+
+import LinkMetadata (readYaml, writeYaml, MetadataList, MetadataItem)
 
 main :: IO ()
 main = do [tag, link] <- getArgs
+          when (head link /= '/' && take 4 link /= "http") $ error $ "Arguments not 'addTag.hs tag *link*'? : " ++ link
+          when (head tag == '/'  || take 4 tag == "http")  $ error $ "Arguments not 'addTag.hs *tag* link'? : " ++ tag
           [custom,partial,auto] <- mapM readYaml ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
           addAndWriteTags tag link custom partial auto
 
