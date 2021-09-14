@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-08 11:58:46 gwern"
+When:  Time-stamp: "2021-09-13 22:43:07 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite) where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -325,6 +325,11 @@ type MetadataItem = (String, String, String, String, [String], String) -- (Title
 type MetadataList = [(Path, MetadataItem)]
 type Path = String
 
+writeYaml :: Path -> MetadataList -> IO ()
+writeYaml path yaml = do
+  let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ yaml
+  B.writeFile path newYaml
+
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
                    if not filep then return [] else do
@@ -345,21 +350,21 @@ tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
                                 in
                                   if defTag `elem` tags' || defTag == "" then tags' else defTag:tags'
 
+tag2Default :: String -> String
+tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
+
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
 rewriteLinkMetadata yaml = do old <- readYaml yaml
                               let new = M.fromList old :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-                              let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> (a,b,c,d,e, intercalate ", " ts,f)) $ -- flatten [(Path, (String, String, String, String, String))]
+                              let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
                                     M.toList new
                               B.writeFile yaml newYaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,ts,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
-                                           -- when we write out auto-tags for auto.yaml, do we need to delete the auto-tag from the path? What if the file moves?
-                                           -- No, because if the file moves, even with gwSed editing auto.yaml directly to change the key, we will at some point blow away auto.yaml and rebuild everything from scratch, so while the auto-tags will be stale up until that point, they do eventually get fixed.
-                                           --
-                                           -- we do deduplication in 'rewriteLinkMetadata' (when constructing the 'Map') on startup, so no need to check here, just blind-write:
+
                                               let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
                                               B.appendFile "metadata/auto.yaml" newYaml
 
