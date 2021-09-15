@@ -55,7 +55,7 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-link-bibliography
 generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
                        "title: " ++ d ++ " (Link Bibliography)\n" ++
-                       "description: Annotated bibliography of links in the top-level page <a href=\"" ++ d ++ "\">" ++ "'"++d++"'</a>\n" ++
+                       "description: 'Annotated bibliography of links in the top-level page \"" ++ d ++ "\"'\n" ++
                        "tags: index\n" ++
                        "created: 2009-01-01\n" ++
                        "status: in progress\n" ++
@@ -64,6 +64,8 @@ generateYAMLHeader d = "---\n" ++
                        "cssExtension: drop-caps-de-zs\n" ++
                        "index: true\n" ++
                        "...\n" ++
+                       "\n" ++
+                       "<a href=\"" ++ "/"++d ++ "\">\"" ++ d ++ "\"</a> links:\n" ++
                        "\n"
 
 generateLinkBibliographyItems :: [(String,MetadataItem)] -> Block
