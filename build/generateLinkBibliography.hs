@@ -56,7 +56,7 @@ generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
                        "title: " ++ d ++ " (Link Bibliography)\n" ++
                        "description: 'Annotated bibliography of links in the top-level page \"" ++ d ++ "\"'\n" ++
-                       "tags: index\n" ++
+                       "tags: link-bibliography\n" ++
                        "created: 2009-01-01\n" ++
                        "status: in progress\n" ++
                        "confidence: log\n" ++
@@ -65,7 +65,7 @@ generateYAMLHeader d = "---\n" ++
                        "index: true\n" ++
                        "...\n" ++
                        "\n" ++
-                       "<a href=\"" ++ "/"++d ++ "\">\"" ++ d ++ "\"</a> links:\n" ++
+                       "<strong><a href=\"" ++ "/"++d ++ "\">\"" ++ d ++ "\"</a></strong> links:\n" ++
                        "\n"
 
 generateLinkBibliographyItems :: [(String,MetadataItem)] -> Block

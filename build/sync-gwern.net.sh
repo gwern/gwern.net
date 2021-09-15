@@ -27,7 +27,7 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v pdftotext) && \
           -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage) && -n $(command -v static/build/link-extractor.hs) && \
           -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
-          && -n $(command -v static/build/generateLinkBibliography.hs) &&
+          -n $(command -v static/build/generateLinkBibliography.hs) && \
           -n $(command -v static/build/generateBacklinks.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
