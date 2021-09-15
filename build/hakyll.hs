@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-09-04 22:48:12 gwern"
+When: Time-stamp: "2021-09-15 11:04:19 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -256,6 +256,7 @@ pandocTransform md adb p =
 -- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
 imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
+  if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) then return x else
   do let ext = takeExtension $ T.unpack target
      let target' = replace "%2F" "/" $ T.unpack target
      (_,w) <- imageMagickDimensions $ tail target'
