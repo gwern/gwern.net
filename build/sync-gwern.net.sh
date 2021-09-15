@@ -27,6 +27,7 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v file) && -n $(command -v exiftool) && -n $(command -v identify) && -n $(command -v pdftotext) && \
           -n $(command -v ~/src/node_modules/mathjax-node-page/bin/mjpage) && -n $(command -v static/build/link-extractor.hs) && \
           -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
+          && -n $(command -v static/build/generateLinkBibliography.hs) &&
           -n $(command -v static/build/generateBacklinks.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
@@ -51,13 +52,17 @@ else
                 $(find docs fiction haskell newsletter nootropics notes reviews zeo -type d \
                       | sort | fgrep -v -e 'docs/www/' -e 'docs/personal' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
-                                        -e 'docs/statistics/order/beanmachine-multistage') ) # &
+                                        -e 'docs/statistics/order/beanmachine-multistage' \
+                -e 'docs/link-bibliography')  ) # &
+
+    bold "Updating link bibliographies…"
+    runhaskell -istatic/build static/build/generateLinkBibliography.hs $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///')
 
     # bold "Updating annotations..."
     # (time ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) # &
 
     bold "Updating backlinks..."
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' | sort | time runhaskell -istatic/build/ static/build/generateBacklinks.hs) # &
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' | sort | time runhaskell -istatic/build/ static/build/generateBacklinks.hs) # &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -205,7 +210,7 @@ else
     wrap λ "Check possible typo in YAML metadata database"
 
     λ(){ fgrep --color=always -e '**' -e 'amp#' -e ' _' -e '_ ' -- ./metadata/custom.yaml;
-         egrep -e ',[A-Za-z]' -- ./metadata/custom.yaml | fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone';
+         egrep -e ',[A-Za-z]' -- ./metadata/custom.yaml | fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone';
          egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
                -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -- ./metadata/*.yaml;
