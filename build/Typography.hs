@@ -86,6 +86,8 @@ smallcapsfyInline x = x
 -- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg if we scrape a Gwern.net abstract (which will already be smallcaps) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
 smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) [y@(RawInline _ t)]) = if "<span class=\"smallcaps-auto\">" `T.isInfixOf` t then y else x
 smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"],_) (y@(Span (_,["smallcaps-auto"],_) _):_)) = y
+smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"], _) [Span ("",[],[]) y]) = Span ("",["smallcaps-auto"], []) y
+smallcapsfyInlineCleanup (Span ("",[], []) [Span (_,["smallcaps-auto"],_) y]) = Span ("",["smallcaps-auto"], []) y
 smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) _) = x
 smallcapsfyInlineCleanup x = x
 
