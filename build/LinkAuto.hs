@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-09-12 13:28:31 gwern"
+When:  Time-stamp: "2021-09-15 12:22:21 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -357,7 +357,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Nn]ormal distribution.?|Gaussian distribution.?|[Nn]ormally[ -]distributed)", "https://en.wikipedia.org/wiki/Normal_distribution")
         , ("([Pp]archive|PAR|PAR2)", "https://en.wikipedia.org/wiki/Parchive")
         , ("([Pp]olygenic [Ss]core|PGS|[Pp]olygenic [Rr]isk [Ss]core|PRS|[Gg]enetic [Rr]isk [Ss]core|GRS|[Gg]enome-[Ww]ide [Ss]core|[Pp]olygenic [Ii]ndex|PGI)", "https://en.wikipedia.org/wiki/Polygenic_score")
-        , ("([Pp]rompt programming|[Pp]rompt engineering)", "/GPT-3#prompt-programming")
+        , ("([Pp]rompt programming|[Pp]rompt engineering)", "/GPT-3#prompts-as-programming")
         , ("([Pp]rotein.? folding|folding protein.?)", "https://en.wikipedia.org/wiki/Protein_folding")
         , ("([Qq]uadcopter|[Qq]uadrotor)s?", "https://en.wikipedia.org/wiki/Quadcopter")
         , ("([Qq]uantitative [Tt]rait [Ll]oci|QTLs?)", "https://en.wikipedia.org/wiki/Quantitative_trait_locus")

@@ -162,7 +162,7 @@ else
                                 -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
                                 -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
                                 -e '/nootropics/Magnesium' -e '/Selection' -e 'docs/statistics/bayes/1994-falk' -e '/Zeo' \
-                                -e '/Mail-delivery';
+                                -e '/Mail-delivery' -e 'docs/link-bibliography/Complexity-vs-AI' -e 'docs/link-bibliography/newsletter/2021/04';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
@@ -229,7 +229,8 @@ else
                -e '<ul class="columns"' -e '<ol class="columns"' -e ',/div>' -e '](https://' -e ' the the ' \
                -e 'Ꜳ' -e 'ꜳ'  -e 'ꬱ' -e 'Ꜵ' -e 'ꜵ' -e 'Ꜷ' -e 'ꜷ' -e 'Ꜹ' -e 'ꜹ' -e 'Ꜻ' -e 'ꜻ' -e 'Ꜽ' -e 'ꜽ' \
                -e '🙰' -e 'ꭁ' -e 'ﬀ' -e 'ﬃ' -e 'ﬄ' -e 'ﬁ' -e 'ﬂ' -e 'ﬅ' -e 'ﬆ ' -e 'ᵫ' -e 'ꭣ' -e ']9h' -e ']9/' \
-               -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age' -e '….' -e '((' -e ' %' -- ./metadata/*.yaml; }
+               -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age' -e '….' -e '((' -e ' %' \
+               -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ fgrep -e '""' -- ./metadata/*.yaml | fgrep -v -e 'alt=""' -e 'controls=""'; }
