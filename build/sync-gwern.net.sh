@@ -273,6 +273,23 @@ else
                              -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' )
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
         done
+
+        INDEXES="$(find docs/ -type f -name "index.page" | sort -u)"
+        LINKBIBLIOGRAPHIES="$(find docs/link-bibliography/ -type f -name "*.page" | sort -u)"
+        for INDEX in $INDEXES $LINKBIBLIOGRAPHIES; do
+            HTML="${INDEX%.page}"
+            TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
+                       egrep --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
+                             -e "Error: missing quote mark for attribute value" -e 'Warning: <img> proprietary attribute "loading"' \
+                             -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \
+                             -e 'Warning: missing <!DOCTYPE> declaration' -e 'Warning: inserting implicit <body>' \
+                             -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' \
+                             # indexes/bibliographies necessarily have a lot of colliding IDs and it's difficult to avoid them automatically,
+                             # so we skip them, though they are errors in regular pages.
+                             -e 'Warning: <a> anchor ".*" already defined')
+            if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
+        done
+
         set -e;
     }
     wrap λ "Markdown→HTML pages don't validate as HTML5"
