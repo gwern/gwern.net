@@ -274,6 +274,8 @@ else
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
         done
 
+        # indexes/bibliographies necessarily have a lot of colliding IDs and it's difficult to avoid them automatically,
+        # so we skip them, though they are errors in regular pages.
         INDEXES="$(find docs/ -type f -name "index.page" | sort -u)"
         LINKBIBLIOGRAPHIES="$(find docs/link-bibliography/ -type f -name "*.page" | sort -u)"
         for INDEX in $INDEXES $LINKBIBLIOGRAPHIES; do
@@ -284,10 +286,8 @@ else
                              -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \
                              -e 'Warning: missing <!DOCTYPE> declaration' -e 'Warning: inserting implicit <body>' \
                              -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' \
-                             # indexes/bibliographies necessarily have a lot of colliding IDs and it's difficult to avoid them automatically,
-                             # so we skip them, though they are errors in regular pages.
-                             -e 'Warning: <a> anchor ".*" already defined')
-            if [[ -n $TIDY ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$TIDY"; fi
+                             -e 'Warning: <a> anchor .* already defined')
+            if [[ -n $TIDY ]]; then echo -e "\n\e[31m$INDEX\e[0m:\n$TIDY"; fi
         done
 
         set -e;
