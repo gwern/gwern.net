@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-14 08:03:30 gwern"
+When:  Time-stamp: "2021-09-19 11:31:48 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Me
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
-import Data.Char (isAlpha, isSpace, toLower)
+import Data.Char (isAlpha, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
@@ -779,7 +779,7 @@ authorsToCite author date =
   let year = if date=="" then "2021" else take 4 date -- YYYY-MM-DD
       authors = split ", " author
       authorCount = length authors
-      firstAuthorSurname = if authorCount==0 then "" else filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse $ head authors
+      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
   in
        if authorCount == 0 then "" else
            -- handle cases like '/docs/statistics/peer-review/1975-johnson-2.pdf'
@@ -789,7 +789,7 @@ authorsToCite author date =
            if authorCount >= 3 then
                            firstAuthorSurname ++ " et al " ++ year ++ suffix' else
                              if authorCount == 2 then
-                               let secondAuthorSurname = filter isAlpha $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
+                               let secondAuthorSurname = filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
                                  firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
                              else
                                firstAuthorSurname ++ " " ++ year ++ suffix'
