@@ -6,7 +6,7 @@ module Main where
 -- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
 
 import Control.Monad (filterM)
-import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort, sortBy)
+import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
 import Data.List.Utils (replace)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile, removeFile)
 import System.Environment (getArgs)
@@ -38,7 +38,7 @@ generateDirectory mta dir'' = do
 
   pairs  <- listFiles  mta  direntries'
   tagged <- listTagged mta  (init dir'')
-  let links = reverse $ sortByDate $ pairs++tagged -- newest first, to show recent additions
+  let links = nub $ reverse $ sortByDate $ pairs++tagged -- newest first, to show recent additions
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
   let tagSelf = init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
