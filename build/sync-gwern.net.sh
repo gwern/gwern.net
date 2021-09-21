@@ -210,7 +210,7 @@ else
     wrap λ "Check possible typo in YAML metadata database"
 
     λ(){ fgrep --color=always -e '**' -e 'amp#' -e ' _' -e '_ ' -- ./metadata/custom.yaml;
-         egrep -e ',[A-Za-z]' -- ./metadata/custom.yaml | fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone';
+         egrep -e ',[A-Za-z]' -- ./metadata/custom.yaml | fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine';
          egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
                -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' -- ./metadata/*.yaml;
@@ -262,7 +262,7 @@ else
     λ(){
         set +e;
         IFS=$(echo -en "\n\b");
-        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' | sort -u)"
+        PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' -e 'docs/link-bibliography' | sort -u)"
         OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -maxdepth 1 -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404.html; do
             HTML="${PAGE%.page}"

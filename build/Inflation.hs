@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2021-01-02 16:50:10 gwern"
+-- When:  Time-stamp: "2021-09-22 11:07:30 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting https://en.wikipedia.org/wiki/Money_illusion by implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real price! (Misunderstanding of inflation may be getting worse over time: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008 )
@@ -69,7 +69,7 @@ import Data.Text as T (head, pack, unpack, tail)
 minPercentage :: Float
 minPercentage = 1 + 0.20
 currentYear :: Int
-currentYear = 2020
+currentYear = 2021
 
 nominalToRealInflationAdjuster :: Inline -> Inline
 nominalToRealInflationAdjuster x@(Link _ _ (ts, _))
