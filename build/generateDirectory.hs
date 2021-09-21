@@ -62,14 +62,18 @@ generateDirectory mta dir'' = do
                  [RawBlock (Format "html") "<div class=\"columns\">\n\n",
                    directorySection,
                    RawBlock (Format "html") "</div>"]) ++
-               [Header 1 nullAttr [Str "Links"]] ++
-                titledLinksSections ++
-               [Header 1 nullAttr [Str "Miscellaneous"]] ++
-               -- for lists, they *may* all be devoid of annotations and short
-                if not allUnannotatedUntitledP then [untitledLinksSection] else
-                  [RawBlock (Format "html") "<div class=\"columns\">\n\n",
-                   untitledLinksSection,
-                   RawBlock (Format "html") "</div>"]
+
+               (if null titledLinks then [] else
+                   [Header 1 nullAttr [Str "Links"]] ++
+                   titledLinksSections) ++
+
+               (if null untitledLinks then [] else
+                   [Header 1 nullAttr [Str "Miscellaneous"]] ++
+                   -- for lists, they *may* all be devoid of annotations and short
+                   if not allUnannotatedUntitledP then [untitledLinksSection] else
+                     [RawBlock (Format "html") "<div class=\"columns\">\n\n",
+                      untitledLinksSection,
+                      RawBlock (Format "html") "</div>"])
 
   let document = Pandoc nullMeta body
   let p = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
