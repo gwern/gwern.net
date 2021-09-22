@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-22 15:55:02 gwern"
+When:  Time-stamp: "2021-09-23 11:38:53 gwern"
 License: CC-0
 -}
 
@@ -18,10 +18,10 @@ import Data.Char (isAlpha, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (elems, fromList, toList, lookup, map, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (elems, fromList, fromListWith, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
-import qualified Data.HashMap.Strict as HM (empty, lookup, toList, fromList, HashMap)
+import qualified Data.HashMap.Strict as HM (empty, toList, fromList, HashMap)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
@@ -334,6 +334,7 @@ tagsToLinksSpan ts = let tags = map T.pack ts in
 -------------------------------------------------------------------------------------------------------------------------------
 
 type Backlinks = HM.HashMap T.Text [T.Text]
+type Forwardlinks = M.Map T.Text [T.Text]
 
 readBacklinksDB :: IO Backlinks
 readBacklinksDB = do bll <- Prelude.readFile "metadata/backlinks.hs"
@@ -345,6 +346,14 @@ writeBacklinksDB bldb = do let bll = HM.toList bldb :: [(T.Text,[T.Text])]
                            let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
                            t <- writeSystemTempFile "hakyll-backlinks" $ ppShow bll'
                            renameFile t "metadata/backlinks.hs"
+
+convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
+convertBacklinksToForwardlinks = M.fromListWith (++) . convertBacklinks
+
+convertBacklinks :: Backlinks -> [(T.Text,[T.Text])]
+convertBacklinks = reverseList . HM.toList
+  where reverseList :: [(a,[b])] -> [(b,[a])]
+        reverseList = concatMap (\(a,bs) -> zip bs [[a]])
 
 type Metadata = M.Map Path MetadataItem
 type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)
@@ -359,15 +368,15 @@ writeYaml path yaml = do
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
                    if not filep then return [] else do
-                        bdb <- readBacklinksDB
+                        fdb <- fmap convertBacklinksToForwardlinks readBacklinksDB
                         file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
                         case file of
                           Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
-                          Right y -> (return $ concatMap (convertListToMetadata bdb) y) :: IO MetadataList
+                          Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
-                 convertListToMetadata :: Backlinks -> [String] -> MetadataList
-                 convertListToMetadata b [u, t, a, d, di,     s] = [(u, (t,a,d,di,pages2Tags b u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata b [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,pages2Tags b u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata :: Forwardlinks -> [String] -> MetadataList
+                 convertListToMetadata f [u, t, a, d, di,     s] = [(u, (t,a,d,di,pages2Tags f u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata f [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,pages2Tags f u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
@@ -381,19 +390,226 @@ tag2Default :: String -> String
 tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
 
 -- another tag heuristic: some pages are heavily topic-focused such that any link on them can safely be given a specific tag, especially as many pages serve as link-dumps. (For example, everything on '/Sunk-cost' can be safely tagged 'sunk-cost'.)
--- Using the backlink database, we can look up what pages each link is present on, see if it is linked by any such page specified in our little topic database, and add that tag (if not already present).
-pages2Tags :: Backlinks -> String -> [String] -> [String]
-pages2Tags b path oldTags = let additionalTags = page2Tag b path in
+-- Using the forward-links database, we can look up what pages each link is present on, see if it is linked by any such page specified in our little topic database, and add that tag (if not already present).
+pages2Tags :: Forwardlinks -> String -> [String] -> [String]
+pages2Tags f path oldTags = let additionalTags = page2Tag f path in
                               nubOrd (additionalTags ++ oldTags)
 
-page2Tag :: Backlinks -> String -> [String]
-page2Tag b path = let backlinks = fromMaybe [] $ HM.lookup (T.pack $ takeWhile (/='#') path) b in
-                    map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) backlinks
+page2Tag :: Forwardlinks -> String -> [String]
+page2Tag f path = let backlinks = M.lookup (T.pack $ takeWhile (/='#') path) f in
+                    case backlinks of
+                      Nothing -> []
+                      Just links ->  map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) links
 
 pageTagDB :: M.Map T.Text [T.Text]
-pageTagDB = M.fromList [("/GPT-3", ["ai/gpt", "fiction"])
-                       , ("/GPT-3-nonfiction", ["ai/gpt"])
-                       ]
+pageTagDB = M.fromList [
+  ("/2012-election-predictions", ["prediction/election"])
+  , ("/2014-spirulina", ["nootropic"])
+  , ("/Ads", ["advertising"])
+  , ("/Against-The-Miletians", ["philosophy"])
+  , ("/Anime-criticism-is-not-about-quality", ["anime"])
+  , ("/Archiving-URLs", ["linkrot"])
+  , ("/Arias-past-present-and-future", ["anime"])
+  , ("/backfire-effect", ["sociology"])
+  , ("/Bacopa", ["nootropic"])
+  , ("/BigGAN", ["ai/gan"])
+  , ("/Bitcoin-is-Worse-is-Better", ["bitcoin"])
+  , ("/Candy-Japan", ["statistics/decision"])
+  , ("/Catnip", ["cat/catnip"])
+  , ("/Catnip-survey", ["cat/catnip"])
+  , ("/Causality", ["statistics/causality"])
+  , ("/Choosing-Software", ["technology"])
+  , ("/Coin-flip", ["statistics/decision"])
+  , ("/Collecting", ["psychology/collecting"])
+  , ("/Complement", ["economics"])
+  , ("/Complexity-vs-AI", ["ai"])
+  , ("/Computers", ["cs"])
+  , ("/Conscientiousness-and-online-education", ["psychology"])
+  , ("/Console-Insurance", ["economics"])
+  , ("/Copyright", ["economics/copyright"])
+  , ("/Correlation", ["statistics/causality"])
+  , ("/Creatine", ["creatine"])
+  , ("/Crops", ["ai/anime"])
+  , ("/Cryonics", ["cryonics"])
+  , ("/CYOA", ["ai/gpt"])
+  , ("/Danbooru2020", ["ai/anime"])
+  , ("/Death-Note-Ending", ["anime"])
+  , ("/Death-Note-script", ["statistics/bayes"])
+  , ("/Design", ["technology"])
+  , ("/Differences", ["psychology"])
+  , ("/DNB-FAQ", ["dual-n-back"])
+  , ("/DNB-meta-analysis", ["dual-n-back"])
+  , ("/DNM-archives", ["silk-road"])
+  , ("/DNM-arrests", ["silk-road"])
+  , ("/DNM-survival", ["silk-road"])
+  , ("/docs/anime/1997-utena", ["anime"])
+  , ("/docs/anime/2010-sarrazin", ["anime"])
+  , ("/docs/bitcoin/2008-nakamoto", ["bitcoin"])
+  , ("/docs/bitcoin/2011-davis", ["bitcoin"])
+  , ("/docs/bitcoin/2014-mccaleb", ["bitcoin"])
+  , ("/docs/cs/1955-nash", ["cs"])
+  , ("/docs/culture/1983-wolfe-thecitadeloftheautarch-thejustman", ["sociology"])
+  , ("/docs/culture/2007-wolfe", ["fiction"])
+  , ("/docs/eva/1996-animerica-conscience-otaking", ["eva"])
+  , ("/docs/eva/1996-newtype-anno-interview", ["eva"])
+  , ("/docs/eva/1997-animeland-may-hideakianno-interview-english", ["eva"])
+  , ("/docs/eva/1997-animeland-may-hideakianno-interview-french", ["eva"])
+  , ("/docs/eva/2002-takeda-notenkimemoirs", ["eva"])
+  , ("/docs/eva/2003-oshii-izubuchi", ["eva"])
+  , ("/docs/eva/2003-rahxephoncomplete-anno-izubuchi", ["eva"])
+  , ("/docs/eva/2004-okada", ["eva"])
+  , ("/docs/eva/2005-little-boy", ["anime", "japanese"])
+  , ("/docs/eva/2005-murakami", ["anime", "japanese"])
+  , ("/docs/eva/2005-sawaragi", ["anime", "japanese"])
+  , ("/docs/eva/2010-crc", ["eva"])
+  , ("/docs/eva/2011-house", ["eva"])
+  , ("/docs/existential-risk/1985-hofstadter", ["existential-risk"])
+  , ("/docs/japanese/2002-gibson", ["japanese"])
+  , ("/docs/japanese/teika", ["japanese"])
+  , ("/docs/silk-road/2013-power", ["silk-road"])
+  , ("/docs/sociology/1987-rossi", ["sociology"])
+  , ("/docs/spaced-repetition/1981-duchastel", ["spaced-repetition"])
+  , ("/docs/statistics/bayes/1994-falk", ["statistics/bayes"])
+  , ("/Earwax", ["cat/earwax"])
+  , ("/education-is-not-about-learning", ["psychology"])
+  , ("/Embryo-editing", ["genetics/editing"])
+  , ("/Everything", ["statistics/causality"])
+  , ("/Evolutionary-Licenses", ["economics/copyright"])
+  , ("/Faces-graveyard", ["ai/gan", "ai/anime"])
+  , ("/Faces", ["ai/stylegan", "ai/anime"])
+  , ("/FMP-parody", ["anime"])
+  , ("/fog-gun", ["technology"])
+  , ("/Fonts", ["design"])
+  , ("/Forking-Paths", ["prediction", "technology"])
+  , ("/Girl-Scouts-and-good-governance", ["economics"])
+  , ("/GoodReads", ["fiction"])
+  , ("/Google-Alerts", ["technology"])
+  , ("/Google-shutdowns", ["statistics/survival-analysis"])
+  , ("/GPT-2-music", ["ai/music", "ai/gpt"])
+  , ("/GPT-2", ["ai/gpt", "ai/poetry"])
+  , ("/GPT-2-preference-learning", ["ai/gpt"])
+  , ("/GPT-3-nonfiction", ["ai/gpt"])
+  , ("/GPT-3", ["ai/gpt"])
+  , ("/Greenland", ["economics"])
+  , ("/Hafu", ["anime"])
+  , ("/haskell/Archiving-GitHub", ["haskell"])
+  , ("/haskell/Run-Length-Encoding", ["haskell"])
+  , ("/haskell/Summer-of-Code", ["haskell"])
+  , ("/haskell/Wikipedia-Archive-Bot", ["haskell"])
+  , ("/haskell/Wikipedia-RSS-Archive-Bot", ["haskell"])
+  , ("/Holy-wars", ["technology"])
+  , ("/Hunter", ["iq"])
+  , ("/Hydrocephalus", ["iq"])
+  , ("/In-Defense-Of-Inclusionism", ["wikipedia"])
+  , ("/intermittent-fasting", ["longevity"])
+  , ("/Iodine", ["iodine"])
+  , ("/iq", ["iq"])
+  , ("/komm-susser-tod", ["eva"])
+  , ("/Language", ["philosophy"])
+  , ("/Life-contract", ["economics"])
+  , ("/Lifelogging", ["technology"])
+  , ("/Lithium", ["lithium"])
+  , ("/Long-Bets", ["prediction"])
+  , ("/Longevity", ["longevity"])
+  , ("/LSD-microdosing", ["nootropic"])
+  , ("/Lunar-sleep", ["zeo"])
+  , ("/MCTS-AI", ["reinforcement-learning"])
+  , ("/Media-RL", ["reinforcement-learning"])
+  , ("/Melatonin", ["melatonin"])
+  , ("/Modafinil", ["modafinil"])
+  , ("/Modafinil-survey", ["modafinil"])
+  , ("/Morning-writing", ["psychology/writing"])
+  , ("/Mugging-DP", ["reinforcement-learning"])
+  , ("/Music-distraction", ["music-distraction"])
+  , ("/Newton", ["history"])
+  , ("/Nicotine", ["nicotine"])
+  , ("/nootropics/Magnesium", ["nootropic"])
+  , ("/Nootropics", ["nootropic"])
+  , ("/notes/Abandoned-Footnotes", ["sociology"])
+  , ("/notes/Attention", ["ai"])
+  , ("/notes/Automation", ["economics"])
+  , ("/notes/Competence", ["psychology"])
+  , ("/notes/Daicon-videos", ["eva"])
+  , ("/notes/Fashion", ["sociology"])
+  , ("/notes/Faster", ["cs"])
+  , ("/notes/FC", ["ai"])
+  , ("/notes/Fermi", ["math"])
+  , ("/notes/Killing-Rabbits", ["fiction"])
+  , ("/notes/Lions", ["math"])
+  , ("/notes/Lizardman-constant", ["sociology"])
+  , ("/notes/Local-optima", ["economics"])
+  , ("/notes/Nash", ["bitcoin", "economics"])
+  , ("/notes/Parasocial", ["sociology"])
+  , ("/notes/Pipeline", ["statistics/order"])
+  , ("/notes/Ramsey", ["statistics/decision"])
+  , ("/notes/Regression", ["statistics/bayes"])
+  , ("/notes/Scaling", ["ai/scaling"])
+  , ("/notes/Small-groups", ["sociology"])
+  , ("/notes/Sparsity", ["ai"])
+  , ("/notes/TBI", ["psychology/neuroscience"])
+  , ("/notes/Variance-components", ["statistics"])
+  , ("/Ontological-pantheism", ["philosophy"])
+  , ("/Order-statistics", ["statistics/order"])
+  , ("/otaku-essay", ["eva"])
+  , ("/otaku", ["eva"])
+  , ("/otaku-predictions", ["eva"])
+  , ("/plastination", ["cryonics"])
+  , ("/Prediction-markets", ["prediction"])
+  , ("/presocratic-path-to-atomism", ["philosophy"])
+  , ("/Red", ["design"])
+  , ("/Replication", ["statistics/bias"])
+  , ("/Resilient-Haskell-Software", ["haskell"])
+  , ("/Resorter", ["statistics/comparison"])
+  , ("/reviews/Anime", ["anime"])
+  , ("/reviews/ARPA", ["ai"])
+  , ("/reviews/Cat-Sense", ["cat"])
+  , ("/reviews/Cultural-Revolution", ["history", "sociology"])
+  , ("/reviews/Tea", ["tea"])
+  , ("/RNN-metadata", ["ai/gpt"])
+  , ("/Sand", ["history"])
+  , ("/Scaling-hypothesis", ["ai/scaling"])
+  , ("/Search", ["technology"])
+  , ("/Selection", ["statistics/order"])
+  , ("/Self-decrypting-files", ["cs"])
+  , ("/sicp/Chapter-1-1", ["cs"])
+  , ("/sicp/Chapter-1-2", ["cs"])
+  , ("/sicp/Chapter-1-3", ["cs"])
+  , ("/sicp/Introduction", ["cs"])
+  , ("/Sidenotes", ["design"])
+  , ("/Silk-Road", ["silk-road"])
+  , ("/Simulation-inferences", ["cs"])
+  , ("/SMPY", ["iq/smpy"])
+  , ("/Sort", ["cs"])
+  , ("/sources-of-religious-experience", ["philosophy"])
+  , ("/Spaced-repetition", ["spaced-repetition"])
+  , ("/Subscripts", ["design"])
+  , ("/Sunk-cost", ["sunk-cost"])
+  , ("/Tanks", ["ai"])
+  , ("/Terrorism-is-not-about-Terror", ["terrorism"])
+  , ("/Terrorism-is-not-Effective", ["terrorism"])
+  , ("/The-3-Grenades", ["cs"])
+  , ("/The-Existential-Risk-of-Mathematical-Error", ["math"])
+  , ("/The-Melancholy-of-Kyon", ["anime"])
+  , ("/The-Narrowing-Circle", ["philosophy"])
+  , ("/Timestamping", ["bitcoin"])
+  , ("/Tool-AI", ["ai"])
+  , ("/TPB-Bitcoin", ["bitcoin"])
+  , ("/Tryon", ["genetics/selection"])
+  , ("/Turing-complete", ["cs"])
+  , ("/Water", ["statistics/comparison"])
+  , ("/Wikipedia-and-Dark-Side-Editing", ["wikipedia"])
+  , ("/Wikipedia-and-Knol", ["wikipedia"])
+  , ("/Wikipedia-and-Other-Wikis", ["wikipedia"])
+  , ("/Wikipedia-and-YouTube", ["wikipedia"])
+  , ("/Wooden-pillows", ["history"])
+  , ("/zeo/Caffeine", ["zeo"])
+  , ("/zeo/CO2", ["zeo"])
+  , ("/Zeo", ["zeo"])
+  , ("/zeo/Potassium", ["zeo"])
+  , ("/zeo/Redshift", ["zeo"])
+  , ("/zeo/Vitamin-D", ["zeo"])
+  , ("/zeo/ZMA", ["zeo"])
+  ]
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
