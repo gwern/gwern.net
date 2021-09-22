@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-21 12:46:49 gwern"
+When:  Time-stamp: "2021-09-22 11:43:00 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite) where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite, Backlinks, readBacklinksDB, writeBacklinksDB) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -21,6 +21,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 import qualified Data.Map.Strict as M (elems, fromList, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
+import qualified Data.HashMap.Strict as HM (empty, lookup, toList, fromList, HashMap)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
@@ -29,7 +30,7 @@ import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
-import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist)
+import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist, renameFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
 import System.IO (stderr, hPutStrLn)
@@ -40,12 +41,17 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex, matchRegex)
+import Text.Show.Pretty (ppShow)
+import System.IO.Temp (writeSystemTempFile)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
+
+currentYear :: Int
+currentYear = 2021
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -327,6 +333,19 @@ tagsToLinksSpan ts = let tags = map T.pack ts in
 
 -------------------------------------------------------------------------------------------------------------------------------
 
+type Backlinks = HM.HashMap T.Text [T.Text]
+
+readBacklinksDB :: IO Backlinks
+readBacklinksDB = do bll <- Prelude.readFile "metadata/backlinks.hs"
+                     if bll=="" then return HM.empty else
+                       let bldb = HM.fromList $ map (\(a,b) -> (T.pack a, map T.pack b)) (read bll :: [(String,[String])]) in
+                         return bldb
+writeBacklinksDB :: Backlinks -> IO ()
+writeBacklinksDB bldb = do let bll = HM.toList bldb :: [(T.Text,[T.Text])]
+                           let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
+                           t <- writeSystemTempFile "hakyll-backlinks" $ ppShow bll'
+                           renameFile t "metadata/backlinks.hs"
+
 type Metadata = M.Map Path MetadataItem
 type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)
 type MetadataList = [(Path, MetadataItem)]
@@ -340,17 +359,18 @@ writeYaml path yaml = do
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
                    if not filep then return [] else do
+                        bdb <- readBacklinksDB
                         file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
                         case file of
                           Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
-                          Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
+                          Right y -> (return $ concatMap (convertListToMetadata bdb) y) :: IO MetadataList
                 where
-                 convertListToMetadata :: [String] -> MetadataList
-                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,tag2TagsWithDefault u "", s))]
-                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,tag2TagsWithDefault u ts, s))]
-                 convertListToMetadata e = error $ "Pattern-match failed (too few fields?): " ++ show e
+                 convertListToMetadata :: Backlinks -> [String] -> MetadataList
+                 convertListToMetadata b [u, t, a, d, di,     s] = [(u, (t,a,d,di,pages2Tags b u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata b [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,pages2Tags b u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
-                 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
+-- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
                                     defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
@@ -359,6 +379,21 @@ tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
 
 tag2Default :: String -> String
 tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
+
+-- another tag heuristic: some pages are heavily topic-focused such that any link on them can safely be given a specific tag, especially as many pages serve as link-dumps. (For example, everything on '/Sunk-cost' can be safely tagged 'sunk-cost'.)
+-- Using the backlink database, we can look up what pages each link is present on, see if it is linked by any such page specified in our little topic database, and add that tag (if not already present).
+pages2Tags :: Backlinks -> String -> [String] -> [String]
+pages2Tags b path oldTags = let additionalTags = page2Tag b path in
+                              nubOrd (additionalTags ++ oldTags)
+
+page2Tag :: Backlinks -> String -> [String]
+page2Tag b path = let backlinks = fromMaybe [] $ HM.lookup (T.pack $ takeWhile (/='#') path) b in
+                    map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) backlinks
+
+pageTagDB :: M.Map T.Text [T.Text]
+pageTagDB = M.fromList [("/GPT-3", ["ai/gpt", "fiction"])
+                       , ("/GPT-3-nonfiction", ["ai/gpt"])
+                       ]
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
 rewriteLinkMetadata :: Path -> IO ()
@@ -783,7 +818,7 @@ generateID url author date
 
 authorsToCite :: String -> String -> String
 authorsToCite author date =
-  let year = if date=="" then "2021" else take 4 date -- YYYY-MM-DD
+  let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
       authors = split ", " author
       authorCount = length authors
       firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors

@@ -20,7 +20,7 @@ import Text.Show.Pretty (ppShow)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad (forM_, unless)
 
-import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata)
+import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, BackLinks, readBacklinksDB, writeBacklinksDB)
 
 main :: IO ()
 main = do
@@ -30,7 +30,7 @@ main = do
 
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
-  let files = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $ filter (\f -> not ("tags/"`isInfixOf` f || "/index"`isInfixOf` f)) $ filter ("/"`isPrefixOf`) $ map T.unpack $ HM.keys bldb ++ concat (HM.elems bldb)
+  let files = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $ filter (\f -> not ("tags/"`isInfixOf` f || "/index"`isInfixOf` f || "/docs/link-bibliography/" `isPrefixOf` f)) $ filter ("/"`isPrefixOf`) $ map T.unpack $ HM.keys bldb ++ concat (HM.elems bldb)
   forM_ files (\f -> do exist <- doesFileExist f
                         unless exist $ error ("Backlinks: files annotation error: file does not exist? " ++ f))
 
@@ -82,7 +82,7 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-backlinks" conten
                               if not existsOld then
                                 renameFile t f
                                 else
-                                  do contentsOld <- readFile f
+                                  do contentsOld <- Prelude.readFile f
                                      if contentsNew /= contentsOld then renameFile t f else removeFile t
 
 
@@ -95,19 +95,6 @@ parseFileForLinks md m = do text <- TIO.readFile m
                              do
                                 let called = filter (/= caller) (map (T.pack . takeWhile (/='#') . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
                                 return $ zip called (repeat caller)
-
-type Backlinks = HM.HashMap T.Text [T.Text]
-
-readBacklinksDB :: IO Backlinks
-readBacklinksDB = do bll <- readFile "metadata/backlinks.hs"
-                     if bll=="" then return HM.empty else
-                       let bldb = HM.fromList $ map (\(a,b) -> (T.pack a, map T.pack b)) (read bll :: [(String,[String])]) in
-                         return bldb
-writeBacklinksDB :: Backlinks -> IO ()
-writeBacklinksDB bldb = do let bll = HM.toList bldb :: [(T.Text,[T.Text])]
-                           let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
-                           t <- writeSystemTempFile "hakyll-backlinks" $ ppShow bll'
-                           renameFile t "metadata/backlinks.hs"
 
 -- | Read one Text string and return its URLs (as Strings)
 extractLinks :: Bool -> T.Text -> [T.Text]
