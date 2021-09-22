@@ -7,7 +7,7 @@ import Control.Monad (when)
 import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
 
-import LinkMetadata (readYaml, writeYaml, MetadataList, MetadataItem)
+import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
 
 main :: IO ()
 main = do [tag, link] <- getArgs
@@ -24,7 +24,14 @@ addAndWriteTags t i c p a  = do let cP = hasItem c i
                                 if cP then writeYaml "metadata/custom.yaml" (addTag c i t) else
                                   if pP then writeYaml "metadata/partial.yaml" (addTag p i t) else
                                     if aP then let (autoNew,partialNew) = mvItem a p i in writeYaml "metadata/auto.yaml" autoNew >> writeYaml "metadata/partial.yaml" (addTag partialNew i t)
-                                    else writeYaml "metadata/partial.yaml" (p ++ [(i,("","","","",[t],""))])
+                                    else addNewLink i
+
+-- what if a link is completely new and is not in either custom.yaml (handwritten) or auto.yaml (often auto-annotated)? If we write it directly into partial.yaml, then for many links like Arxiv/Biorxiv, we'd skip creating an automatic annotation!
+-- So instead we hook back into the main link annotation workflow, create a new annotation for that (which will be in auto.yaml), and then run addTag.hs *again*, so this time it has an annotation to work with (and will do auto.yaml → partial.yaml).
+addNewLink :: String -> IO ()
+addNewLink p = do md <- readLinkMetadata
+                  _ <- annotateLink md p
+                  main
 
 addTag :: MetadataList -> String -> String -> MetadataList
 addTag ml i tag = map (\(path,item@(a,b,c,d,e,f)) -> if i /= path || (tag `elem` e) then (path,item) else
