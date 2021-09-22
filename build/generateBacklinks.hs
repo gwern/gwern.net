@@ -20,7 +20,7 @@ import Text.Show.Pretty (ppShow)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad (forM_, unless)
 
-import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, BackLinks, readBacklinksDB, writeBacklinksDB)
+import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, Backlinks, readBacklinksDB, writeBacklinksDB)
 
 main :: IO ()
 main = do
@@ -115,6 +115,7 @@ extractURLs = queryWith extractURL
 blackList :: T.Text -> Bool
 blackList f
   | any (`T.isInfixOf` f) ["/backlinks/"] = False
+  | any (`T.isInfixOf` f) ["/link-bibliography/"] = False
   | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/",
                             -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
                             "https://wwwyoutube.com/", "https://en.wikipedia.org/wiki/",
