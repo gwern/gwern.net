@@ -57,14 +57,23 @@ if (window.Extracts) {
                                 target="${linkTarget}"
                                     >${referenceData.titleHTML}</a>`;
 
+        let tagBacklinks = ``;
+        if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = ``; } else {
+            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `<p class="data-field link-tags">${referenceData.tagsHTML}</p>`; } else {
+                if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `<p>${referenceData.backlinksHTML}</p>`; } else {
+                    if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `<p>${referenceData.tagsHTML}; ${referenceData.backlinksHTML}</p>`; }
+                }
+            }
+        }
+
         //  The fully constructed annotation pop-frame contents.
         let abstractSpecialClass = ``;
         if (Annotations.isWikipediaLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
         return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
-             + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
-             + `${referenceData.tagsHTML}`
-             + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
+            + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
+            + tagBacklinks
+            + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
 
     Extracts.titleForPopFrame_ANNOTATION = (popFrame) => {

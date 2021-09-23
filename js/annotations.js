@@ -222,12 +222,16 @@ Annotations = {
         // Link Tags
         let tagsElement = referenceEntry.querySelector(".link-tags");
 
+        // the backlinks link (if exists)
+        let backlinksElement = referenceEntry.querySelector(".backlinks");
+
         return {
             element:        referenceElement,
             titleHTML:      referenceElement.innerHTML.trimQuotes(),
             authorHTML:     (authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
             dateHTML:       (dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
-            tagsHTML:       (tagsElement ? `<p class="data-field link-tags"><span class="data-field link-tags">${tagsElement.innerHTML}</span></p>` : ``),
+            tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
+            backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
             abstractHTML:   referenceEntry.querySelector("blockquote div").innerHTML
         };
     },
@@ -241,6 +245,7 @@ Annotations = {
             authorHTML:     `<span class="data-field author">Wikipedia</span>`,
             dateHTML:       ``,
             tagsHTML:       ``,
+            backlinksHTML:       ``,
             abstractHTML:   referenceEntry.innerHTML
         };
     },
