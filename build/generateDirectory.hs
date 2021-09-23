@@ -32,6 +32,7 @@ main = do dirs <- getArgs
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do
   let parentDirectory = takeDirectory $ takeDirectory dir''
+  let parentDirectory' = if parentDirectory == "." then "/index" else "/" ++ parentDirectory ++ "/index"
   direntries <- listDirectory dir''
   let direntries' = map (\entry -> "/"++dir''++entry) direntries
 
@@ -55,7 +56,7 @@ generateDirectory mta dir'' = do
   let untitledLinksSection  = generateListItems untitledLinks
 
   let header = generateYAMLHeader dir''
-  let directorySection = generateDirectoryItems parentDirectory dirs
+  let directorySection = generateDirectoryItems parentDirectory' dirs
 
   let body = [Header 1 nullAttr [Str "Directories"]] ++
                -- for pages like ./docs/statistics/index.page where there are 9+ subdirectories, we'd like to multi-column the directory section (we can't for files/links because there are so many annotations):
@@ -163,10 +164,10 @@ lookupFallback m u = case M.lookup u m of
                                                       (u',snd possibleFallback))
 
 generateDirectoryItems :: FilePath -> [FilePath] -> Block
-generateDirectoryItems parent ds = let parent' = T.pack parent in
+generateDirectoryItems parent ds = let parent' = T.pack $ takeDirectory parent in
                              BulletList
                               $ filter (not . null) $
-                              [Para [Link nullAttr [Str "↑ Parent directory"] ("/" `T.append` parent' `T.append` "/index", "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]] :
+                              [Para [Link nullAttr [Str "↑ Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]] :
                               map generateDirectoryItem ds
  where generateDirectoryItem :: FilePath -> [Block]
        generateDirectoryItem d = [Para [Link nullAttr [Code nullAttr (T.pack $ "↓ " ++ takeDirectory d)] (T.pack d, "")]]
