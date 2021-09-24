@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-23 22:21:04 gwern"
+When:  Time-stamp: "2021-09-24 11:50:59 gwern"
 License: CC-0
 -}
 
@@ -396,7 +396,12 @@ pages2Tags f path oldTags = let additionalTags = page2Tag f path in
                               nubOrd (additionalTags ++ oldTags)
 
 page2Tag :: Forwardlinks -> String -> [String]
-page2Tag f path = let backlinks = M.lookup (T.pack $ takeWhile (/='#') path) f in
+page2Tag fdb path
+  -- skip metadata pages which are linked all over the place for various reasons
+  | any (`isPrefixOf` path) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/About", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem"]
+                                       = []
+  | any (`isSuffixOf` path) ["/index"] = []
+  | otherwise = let backlinks = M.lookup (T.pack $ takeWhile (/='#') path) fdb in
                     case backlinks of
                       Nothing -> []
                       Just links ->  map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) links
