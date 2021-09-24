@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-24 16:08:02 gwern"
+When:  Time-stamp: "2021-09-24 17:57:32 gwern"
 License: CC-0
 -}
 
@@ -18,10 +18,9 @@ import Data.Char (isAlpha, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (elems, fromList, fromListWith, toList, lookup, map, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (empty, elems, fromList, fromListWith, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
-import qualified Data.HashMap.Strict as HM (empty, toList, fromList, HashMap)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
@@ -333,16 +332,16 @@ tagsToLinksSpan ts = let tags = map T.pack ts in
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-type Backlinks = HM.HashMap T.Text [T.Text]
+type Backlinks = M.Map T.Text [T.Text]
 type Forwardlinks = M.Map T.Text [T.Text]
 
 readBacklinksDB :: IO Backlinks
 readBacklinksDB = do bll <- Prelude.readFile "metadata/backlinks.hs"
-                     if bll=="" then return HM.empty else
-                       let bldb = HM.fromList $ map (\(a,b) -> (T.pack a, map T.pack b)) (read bll :: [(String,[String])]) in
+                     if bll=="" then return M.empty else
+                       let bldb = M.fromList $ map (\(a,b) -> (T.pack a, map T.pack b)) (read bll :: [(String,[String])]) in
                          return bldb
 writeBacklinksDB :: Backlinks -> IO ()
-writeBacklinksDB bldb = do let bll = HM.toList bldb :: [(T.Text,[T.Text])]
+writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
                            let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
                            t <- writeSystemTempFile "hakyll-backlinks" $ ppShow bll'
                            renameFile t "metadata/backlinks.hs"
@@ -351,7 +350,7 @@ convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
 convertBacklinksToForwardlinks = M.fromListWith (++) . convertBacklinks
 
 convertBacklinks :: Backlinks -> [(T.Text,[T.Text])]
-convertBacklinks = reverseList . HM.toList
+convertBacklinks = reverseList . M.toList
   where reverseList :: [(a,[b])] -> [(b,[a])]
         reverseList = concatMap (\(a,bs) -> zip bs [[a]])
 
@@ -1195,6 +1194,8 @@ cleanAbstractsHTML t = trim $
     , ("<span class=\"math inline\">\\(G\\)</span>", "<em>G</em>")
     , ("<span class=\"math inline\">\\(\\hbar\\)</span>", "ℏ")
     , ("<span class=\"math inline\">\\(n\\)</span>", "<em>n</em>")
+    , ("<span class=\"math inline\">\\(n^{1/4}\\)</span>", "<em>n</em><sup>1⁄4</sup>")
+    , ("<span class=\"math inline\">\\(n^{1/2}\\)</span>", "<em>n</em><sup>1⁄2</sup>")
     , ("<span class=\"math inline\">\\(n^{-1/2}\\)</span>", "<em>n</em><sup>−1⁄2</sup>")
     , ("<span class=\"math inline\">\\(n^{-1}\\)</span>", "<em>n</em><sup>−1</sup>")
     , ("<span class=\"math inline\">\\(n^{-\beta}\\)</span>", "<em>n<sup>−β</sup></em>")

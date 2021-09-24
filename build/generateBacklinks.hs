@@ -10,8 +10,7 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf)
-import qualified Data.HashMap.Strict as HM (keys, elems, traverseWithKey, fromListWith, union)
-import qualified Data.Map.Strict as M (lookup)
+import qualified Data.Map.Strict as M (lookup, keys, elems, traverseWithKey, fromListWith, union)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import Network.HTTP (urlDecode, urlEncode)
 import Data.List.Utils (replace)
@@ -32,12 +31,12 @@ main = do
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
         filter (\f -> not ("tags/"`isInfixOf` f || "/index"`isInfixOf` f || "/docs/link-bibliography/" `isPrefixOf` f)) $
         filter ("/"`isPrefixOf`) $ map T.unpack $
-        HM.keys bldb ++ concat (HM.elems bldb)
+        M.keys bldb ++ concat (M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
                              unless exist $ error ("Backlinks: files annotation error: file does not exist? " ++ f))
 
   -- if all are valid, write out:
-  _ <- HM.traverseWithKey (writeOutCallers mdb) bldb
+  _ <- M.traverseWithKey (writeOutCallers mdb) bldb
 
   fs <- fmap (filter (\f -> not $ ("/backlinks/"`isPrefixOf`f || "/docs/link-bibliography/"`isPrefixOf`f || "#"`isPrefixOf`f || ".#"`isPrefixOf`f)) .  map (sed "^\\.\\/" "")) $
          fmap lines getContents
@@ -47,8 +46,8 @@ main = do
   let html     = filter (".html" `isSuffixOf` ) fs
   links2 <- mapM (parseFileForLinks False) html
 
-  let linksdb = HM.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2
-  let bldb' = bldb `HM.union` linksdb
+  let linksdb = M.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2
+  let bldb' = bldb `M.union` linksdb
   writeBacklinksDB bldb'
 
 writeOutCallers :: Metadata -> T.Text -> [T.Text] -> IO ()
