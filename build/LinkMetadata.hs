@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-24 11:50:59 gwern"
+When:  Time-stamp: "2021-09-24 16:08:02 gwern"
 License: CC-0
 -}
 
@@ -289,8 +289,8 @@ generateAnnotationBlock rawFilep (f, ann) blp = case ann of
                                          author ++
                                          [Str "("] ++
                                          date ++
-                                         backlink ++
                                          tags ++
+                                         backlink ++
                                          [Str ")"] ++
                                          [Str ":"]),
                                        BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
@@ -537,7 +537,7 @@ pageTagDB = M.fromList [
   , ("/notes/Daicon-videos", ["eva"])
   , ("/notes/Fashion", ["sociology"])
   , ("/notes/Faster", ["cs"])
-  , ("/notes/FC", ["ai"])
+  , ("/notes/FC", ["ai/fully-connected"])
   , ("/notes/Fermi", ["math"])
   , ("/notes/Killing-Rabbits", ["fiction"])
   , ("/notes/Lions", ["math"])
@@ -636,7 +636,7 @@ data Failure = Temporary | Permanent deriving Show
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l = return (Left Permanent)
-                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Left Temporary) -- WP is now handled by annotations.js calling the Mobile WP API
+                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Left Permanent) -- WP is now handled by annotations.js calling the Mobile WP API
                  | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
                  | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
                  | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
