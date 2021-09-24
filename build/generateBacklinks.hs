@@ -9,18 +9,17 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, reader
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, Text)
 import qualified Data.Text.IO as TIO (readFile)
-import Data.List (isPrefixOf, isInfixOf, isSuffixOf, sort)
-import qualified Data.HashMap.Strict as HM (empty, keys, elems, toList, fromList, traverseWithKey, fromListWith, union, HashMap)
+import Data.List (isPrefixOf, isInfixOf, isSuffixOf)
+import qualified Data.HashMap.Strict as HM (keys, elems, traverseWithKey, fromListWith, union)
 import qualified Data.Map.Strict as M (lookup)
 import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
 import Network.HTTP (urlDecode, urlEncode)
 import Data.List.Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
-import Text.Show.Pretty (ppShow)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad (forM_, unless)
 
-import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, Backlinks, readBacklinksDB, writeBacklinksDB)
+import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB)
 
 main :: IO ()
 main = do
@@ -30,14 +29,18 @@ main = do
 
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
-  let files = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $ filter (\f -> not ("tags/"`isInfixOf` f || "/index"`isInfixOf` f || "/docs/link-bibliography/" `isPrefixOf` f)) $ filter ("/"`isPrefixOf`) $ map T.unpack $ HM.keys bldb ++ concat (HM.elems bldb)
-  forM_ files (\f -> do exist <- doesFileExist f
-                        unless exist $ error ("Backlinks: files annotation error: file does not exist? " ++ f))
+  let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
+        filter (\f -> not ("tags/"`isInfixOf` f || "/index"`isInfixOf` f || "/docs/link-bibliography/" `isPrefixOf` f)) $
+        filter ("/"`isPrefixOf`) $ map T.unpack $
+        HM.keys bldb ++ concat (HM.elems bldb)
+  forM_ filesCheck (\f -> do exist <- doesFileExist f
+                             unless exist $ error ("Backlinks: files annotation error: file does not exist? " ++ f))
 
   -- if all are valid, write out:
   _ <- HM.traverseWithKey (writeOutCallers mdb) bldb
 
-  fs <- fmap (filter (\f -> not $ ("/backlinks/"`isPrefixOf`f || "#"`isPrefixOf`f || ".#"`isPrefixOf`f)) . map (sed "^\\.\\/" "")) $ fmap lines getContents
+  fs <- fmap (filter (\f -> not $ ("/backlinks/"`isPrefixOf`f || "/docs/link-bibliography/"`isPrefixOf`f || "#"`isPrefixOf`f || ".#"`isPrefixOf`f)) .  map (sed "^\\.\\/" "")) $
+         fmap lines getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs
   links1 <- mapM (parseFileForLinks True) markdown -- NOTE: while embarrassingly-parallel & trivial to switch to `Control.Monad.Parallel.mapM`, because of the immensely slow Haskell compilation (due to Pandoc), 2021-04-23 benchmarking suggests that compile+runtime is ~2min slower than `runhaskell` interpretation
@@ -93,7 +96,7 @@ parseFileForLinks md m = do text <- TIO.readFile m
                             let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
                             if not (blackList caller) then return [] else
                              do
-                                let called = filter (/= caller) (map (T.pack . takeWhile (/='#') . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
+                                let called = filter (/= caller) (map (T.pack . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
                                 return $ zip called (repeat caller)
 
 -- | Read one Text string and return its URLs (as Strings)
@@ -116,7 +119,7 @@ blackList :: T.Text -> Bool
 blackList f
   | any (`T.isInfixOf` f) ["/backlinks/"] = False
   | any (`T.isInfixOf` f) ["/link-bibliography/"] = False
-  | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/",
+  | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/About", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                             -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
                             "https://wwwyoutube.com/", "https://en.wikipedia.org/wiki/",
                             "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
