@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-24 17:57:32 gwern"
+When:  Time-stamp: "2021-09-24 22:37:08 gwern"
 License: CC-0
 -}
 
@@ -18,7 +18,7 @@ import Data.Char (isAlpha, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (empty, elems, fromList, fromListWith, toList, lookup, map, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (empty, elems, fromList, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
@@ -186,12 +186,13 @@ typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerEx
                            restoreFloatRight orig $ T.unpack fieldHtml
 
 getBackLink :: FilePath -> IO FilePath
-getBackLink p = do let backLinkRaw = "/metadata/annotations/backlinks/" ++
-                                                                   urlEncode (p++".html")
+getBackLink p = do let p' = takeWhile (/='#') p
+                   let backLinkRaw = "/metadata/annotations/backlinks/" ++
+                                                                   urlEncode (p'++".html")
                    backLinkExists <- doesFileExist $ tail backLinkRaw
                    -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg `/metadata/annotations/backlinks/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/backlinks/%2Fdocs%2Frl%2Findex.html`)
                    let backLink' = if not backLinkExists then "" else "/metadata/annotations/backlinks/" ++
-                         urlEncode (concatMap (\t -> if t=='/' || t==':' then urlEncode [t] else [t]) (p++".html"))
+                         urlEncode (concatMap (\t -> if t=='/' || t==':' then urlEncode [t] else [t]) (p'++".html"))
                    return backLink'
 
 -- walk each page, extract the links, and create annotations as necessary for new links
@@ -333,7 +334,6 @@ tagsToLinksSpan ts = let tags = map T.pack ts in
 -------------------------------------------------------------------------------------------------------------------------------
 
 type Backlinks = M.Map T.Text [T.Text]
-type Forwardlinks = M.Map T.Text [T.Text]
 
 readBacklinksDB :: IO Backlinks
 readBacklinksDB = do bll <- Prelude.readFile "metadata/backlinks.hs"
@@ -346,15 +346,16 @@ writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
                            t <- writeSystemTempFile "hakyll-backlinks" $ ppShow bll'
                            renameFile t "metadata/backlinks.hs"
 
-convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
-convertBacklinksToForwardlinks = M.fromListWith (++) . convertBacklinks
+-- type Forwardlinks = M.Map T.Text [T.Text]
+-- convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
+-- convertBacklinksToForwardlinks = M.fromListWith (++) . convertBacklinks
 
-convertBacklinks :: Backlinks -> [(T.Text,[T.Text])]
-convertBacklinks = reverseList . M.toList
-  where reverseList :: [(a,[b])] -> [(b,[a])]
-        reverseList = concatMap (\(a,bs) -> zip bs [[a]])
+-- convertBacklinks :: Backlinks -> [(T.Text,[T.Text])]
+-- convertBacklinks = reverseList . M.toList
+--   where reverseList :: [(a,[b])] -> [(b,[a])]
+--         reverseList = concatMap (\(a,bs) -> zip bs [[a]])
 
-type Metadata = M.Map Path MetadataItem
+type Metadata = M.Map Path MetadataItem                                --
 type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)
 type MetadataList = [(Path, MetadataItem)]
 type Path = String
@@ -367,13 +368,13 @@ writeYaml path yaml = do
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
                    if not filep then return [] else do
-                        fdb <- fmap convertBacklinksToForwardlinks readBacklinksDB
+                        fdb <- readBacklinksDB
                         file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
                         case file of
                           Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
                           Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
-                 convertListToMetadata :: Forwardlinks -> [String] -> MetadataList
+                 convertListToMetadata :: Backlinks -> [String] -> MetadataList
                  convertListToMetadata f [u, t, a, d, di,     s] = [(u, (t,a,d,di,pages2Tags f u $ tag2TagsWithDefault u "", s))]
                  convertListToMetadata f [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,pages2Tags f u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ show e
@@ -390,11 +391,11 @@ tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ take
 
 -- another tag heuristic: some pages are heavily topic-focused such that any link on them can safely be given a specific tag, especially as many pages serve as link-dumps. (For example, everything on '/Sunk-cost' can be safely tagged 'sunk-cost'.)
 -- Using the forward-links database, we can look up what pages each link is present on, see if it is linked by any such page specified in our little topic database, and add that tag (if not already present).
-pages2Tags :: Forwardlinks -> String -> [String] -> [String]
+pages2Tags :: Backlinks -> String -> [String] -> [String]
 pages2Tags f path oldTags = let additionalTags = page2Tag f path in
                               nubOrd (additionalTags ++ oldTags)
 
-page2Tag :: Forwardlinks -> String -> [String]
+page2Tag :: Backlinks -> String -> [String]
 page2Tag fdb path
   -- skip metadata pages which are linked all over the place for various reasons
   | any (`isPrefixOf` path) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/About", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem"]

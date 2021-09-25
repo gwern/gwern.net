@@ -7,7 +7,7 @@ import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, reader
                      readHtml, readMarkdown, runPure, writeHtml5String, writerExtensions,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, Text)
+import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup, keys, elems, traverseWithKey, fromListWith, union)
@@ -87,16 +87,21 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-backlinks" conten
                                   do contentsOld <- Prelude.readFile f
                                      if contentsNew /= contentsOld then renameFile t f else removeFile t
 
-
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
-                            let links = filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
-                                  extractLinks md text
+
+                            let links = map truncateAnchors $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
+                                         extractLinks md text
+
                             let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
                             if not (blackList caller) then return [] else
                              do
                                 let called = filter (/= caller) (map (T.pack . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
                                 return $ zip called (repeat caller)
+
+-- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
+truncateAnchors :: T.Text -> T.Text
+truncateAnchors str = if "." `T.isInfixOf` str then str else T.takeWhile (/='#') str
 
 -- | Read one Text string and return its URLs (as Strings)
 extractLinks :: Bool -> T.Text -> [T.Text]

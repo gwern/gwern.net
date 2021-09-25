@@ -130,15 +130,17 @@ listFiles m direntries' = do
 -- tag-dirs are only in "docs/*", so "haskell/" etc is out. Tags drop the docs/ prefix, and we want to avoid
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
 listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
--- listTags :: Metadata -> FilePath -> Metadata
-listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else -- M.empty else --
+listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "docs/" "" dir in
                      let tagged = M.filterWithKey (\u (_,_,_,_,ts,_) -> not (dir `isInfixOf` u) && dirTag `elem` ts) m in
-                       do let files = M.keys tagged
+                       do let files = nub $ map truncateAnchors $ M.keys tagged
                           backlinks <- mapM getBackLink files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $
                             zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
+  where
+    truncateAnchors :: String -> String
+    truncateAnchors str = if '.' `elem` str then str else takeWhile (/='#') str
 
 -- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
 -- We generally prefer to reverse this to descending order, to show newest-first.
