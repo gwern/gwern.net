@@ -58,12 +58,7 @@ generateDirectory mta dir'' = do
   let header = generateYAMLHeader dir''
   let directorySection = generateDirectoryItems parentDirectory' dirs
 
-  let body = [Header 1 nullAttr [Str "Directories"]] ++
-               -- for pages like ./docs/statistics/index.page where there are 9+ subdirectories, we'd like to multi-column the directory section (we can't for files/links because there are so many annotations):
-               (if length dirs < 8 then [directorySection] else
-                 [RawBlock (Format "html") "<div class=\"columns\">\n\n",
-                   directorySection,
-                   RawBlock (Format "html") "</div>"]) ++
+  let body =   directorySection ++
 
                (if null titledLinks then [] else
                    [Header 1 nullAttr [Str "Links"]] ++
@@ -165,12 +160,19 @@ lookupFallback m u = case M.lookup u m of
                                                     if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
                                                       (u',snd possibleFallback))
 
-generateDirectoryItems :: FilePath -> [FilePath] -> Block
+generateDirectoryItems :: FilePath -> [FilePath] -> [Block]
 generateDirectoryItems parent ds = let parent' = T.pack $ takeDirectory parent in
-                             BulletList
-                              $ filter (not . null) $
-                              [Para [Link nullAttr [Str "↑ Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]] :
-                              map generateDirectoryItem ds
+  -- all directories have a parent directory with an index (eg /docs/index has the parent /index), so we always link it.
+  -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
+  [Para [Link nullAttr [Str "↑ Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]] ++
+  -- but many directories have no subdirectories, and so no need for a 'Directories' section:
+  if null ds then [] else
+    ([Header 1 nullAttr [Str "Directories"]] ++
+      -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
+     (if length ds < 8 then [] else [RawBlock (Format "html") "<div class=\"columns\">\n\n"]) ++
+      [BulletList $ filter (not . null) $ map generateDirectoryItem ds] ++
+      (if length ds < 8 then [] else [RawBlock (Format "html") "</div>"])
+    )
  where generateDirectoryItem :: FilePath -> [Block]
        generateDirectoryItem d = [Para [Link nullAttr [Code nullAttr (T.pack $ "↓ " ++ takeDirectory d)] (T.pack d, "")]]
 
