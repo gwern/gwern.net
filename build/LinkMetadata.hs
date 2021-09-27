@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-24 22:37:08 gwern"
+When:  Time-stamp: "2021-09-26 17:44:24 gwern"
 License: CC-0
 -}
 
@@ -748,7 +748,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
                                  else replace "https://arxiv.org/abs/" "" url
-               threadDelay 15000000 -- Arxiv anti-scraping has been getting increasingly aggressive about blocking me despite hardly touching them, so add a long 15s delay for each request...
+               threadDelay 5000000 -- Arxiv anti-scraping is aggressive about blocking me despite hardly touching them, so add a long 5s timeout delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
                  ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
@@ -887,9 +887,9 @@ generateID url author date
        , ("/docs/genetics/selection/1979-may-2.pdf", "may-anderson-1979-3")
        , ("/docs/genetics/selection/1980-yoo.pdf", "1980-yoo-1-responsetoselection-2")
        , ("/docs/genetics/selection/2007-maejima.pdf", "maejima-et-al-2007-2")
-       , ("/docs/iq/2011-gensowski.pdf", "gensowski-et-al-2011-2")
+       , ("/docs/iq/ses/2011-gensowski.pdf", "gensowski-et-al-2011-2")
        , ("/docs/iq/2013-rietveld.pdf", "rietveld-et-al-2013-2")
-       , ("/docs/iq/2018-gensowski.pdf", "gensowski-2018-2")
+       , ("/docs/iq/ses/2018-gensowski.pdf", "gensowski-2018-2")
        , ("/docs/japanese/2002-gibson", "gibson-mud-2")
        , ("/docs/music-distraction/2012-perham.pdf", "perham-sykora-2012-2")
        , ("/docs/psychology/2014-shen.pdf", "shen-et-al-2014-link")
@@ -963,7 +963,7 @@ generateID url author date
        , ("https://openai.com/blog/better-language-models/", "gpt-2-blog")
        , ("https://openai.com/blog/image-gpt/", "chen-et-al-2020-blog")
        , ("https://openai.com/blog/musenet/", "musenet-blog")
-       , ("https://openai.com/projects/five/", "oa5-blog")
+       , ("https://openai.com/five/", "oa5-blog")
        , ("https://scholars-stage.org/notes-on-the-dynamics-of-human-civilization-the-growth-revolution-part-i/", "greer-growth")
        , ("https://scholars-stage.org/ominous-parallels-what-antebellum-america-can-teach-us-about-our-modern-political-regime/", "greer-civil-war")
        , ("https://scholars-stage.org/radical-islamic-terrorism-in-context-pt-ii/", "greer-islam-2")
@@ -1023,7 +1023,7 @@ generateID url author date
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3339577/", "karageorghis-et-al-2012-2")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4294962/", "robinson-et-al-2015-2")
        , ("https://www.newcriterion.com/issues/2006/10/a-good-list", "leithauser-2006-good-list")
-       , ("https://www.newcriterion.com/issues/2006/4/a-science-fiction-writer-of-the-fifties", "leithauser-2006-science-fiction-writer")
+       , ("https://newcriterion.com/issues/2006/4/a-science-fiction-writer-of-the-fifties", "leithauser-2006-science-fiction-writer")
        , ("https://www.sciencedirect.com/science/article/pii/S0955395919303482", "norbutas-et-al-2020-4")
        , ("https://www.theatlantic.com/magazine/archive/2006/08/nightfall/305030/", "leithauser-2006-nightfall")
        , ("https://www.thisfursonadoesnotexist.com", "arfafax-tfdne")
@@ -1125,7 +1125,9 @@ cleanAbstractsHTML t = trim $
   ("([0-9]*[3])rd",        "\\1<sup>rd</sup>"),
   (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", ""), -- rm AERA classification tags they stick into the Crossref abstracts
   ("CI=([.0-9])", "CI = \\1"), -- 'CI=0.90' → 'CI = 0.90'
-  ("AOR=([.0-9])", "AOR = \\1"), -- 'AOR=2.9' → 'CI = 2.09'
+  ("RR=([.0-9])", "RR = \\1"), -- 'RR=2.9' → 'RR = 2.09'
+  ("OR=([.0-9])", "OR = \\1"), -- 'OR=2.9' → 'OR = 2.09'
+  ("AOR=([.0-9])", "AOR = \\1"), -- 'AOR=2.9' → 'AOR = 2.09'
   -- math regexes
   ("<span class=\"math inline\">\\\\\\(([a-z])\\\\\\)</span>", "<em>\\1</em>"), -- '<span class="math inline">\(d\)</span>'
   ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^"),

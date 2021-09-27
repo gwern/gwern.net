@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-09-24 16:13:43 gwern"
+When:  Time-stamp: "2021-09-24 19:28:26 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -228,7 +228,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Ainu people|Ainu)", "https://en.wikipedia.org/wiki/Ainu_people")
         , ("(Akaike [Ii]nformation [Cc]riterion|AIC)", "https://en.wikipedia.org/wiki/Akaike_information_criterion")
         , ("(Alexey )?Guzey", "https://guzey.com/")
-        , ("(Alpha ?Zero|Alpha0)", "/docs/reinforcement-learning/2018-silver.pdf#deepmind")
+        , ("(Alpha ?Zero|Alpha0)", "/docs/reinforcement-learning/alphago/2018-silver.pdf#deepmind")
         , ("(Andrey )?Kolmogorov.?.?.?", "https://en.wikipedia.org/wiki/Andrey_Kolmogorov")
         , ("(Anime News Network|ANN)", "https://en.wikipedia.org/wiki/Anime_News_Network")
         , ("(ArXiv|Arxiv|arxiv)", "https://en.wikipedia.org/wiki/ArXiv")
@@ -286,7 +286,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Neon Genesis Evangelion|NGE|NGE TV|Evangelion)", "https://en.wikipedia.org/wiki/Neon_Genesis_Evangelion")
         , ("(Nico Nico Douga|NND)", "https://en.wikipedia.org/wiki/Nico_Nico_Douga")
         , ("(Niels Bohr|Bohr)", "https://en.wikipedia.org/wiki/Niels_Bohr")
-        , ("(OpenAI 5|OA ?5)", "https://openai.com/projects/five/")
+        , ("(OpenAI 5|OA ?5)", "https://openai.com/five/")
         , ("(Openness|Openness to Experience)", "https://en.wikipedia.org/wiki/Openness_to_Experience")
         , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://science.sciencemag.org/content/364/6443/859#deepmind")
         , ("(POMDP|[Pp]artially [Oo]bservable [Mm]arkov [Dd]ecision [Pp]rocess)", "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process")
@@ -1080,7 +1080,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Dd]ynamic programming", "https://en.wikipedia.org/wiki/Dynamic_programming")
         , ("[Ee]-[Gg]old", "https://en.wikipedia.org/wiki/E-gold")
         , ("[Ee]ffect[ -]sizes?", "https://en.wikipedia.org/wiki/Effect_sizes")
-        , ("[Ee]nd[ -][Tt]o[ -][Ee]nd", "/notes/End-to-end")
+        , ("[Ee]nd[ -][Tt]o[ -][Ee]nd", "/docs/cs/end-to-end-principle/index")
         , ("[Ee]nhanced weathering", "https://en.wikipedia.org/wiki/Enhanced_weathering")
         , ("[Ee]pistasis", "https://en.wikipedia.org/wiki/Epistasis")
         , ("[Ee]thogram", "https://en.wikipedia.org/wiki/Ethogram")
@@ -1343,4 +1343,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Pp]edigree", "https://en.wikipedia.org/wiki/Pedigree_chart")
         , ("(N,N-dimethyltryptamine|N,N-DMT|DMT)", "https://en.wikipedia.org/wiki/N,N-Dimethyltryptamine")
         , ("(MNIST|MNIST dataset|MNIST digit)", "https://en.wikipedia.org/wiki/MNIST_database")
+        , ("([Hh]idden [Mm]arkov [Mm]odel.?|[Hh]idden [Mm]arkov|HMM.?)", "https://en.wikipedia.org/wiki/Hidden_Markov_model")
+        , ("[Dd]ata[ -][Aa]ugment(ation.?)?", "https://en.wikipedia.org/wiki/Data_augmentation")
         ]
