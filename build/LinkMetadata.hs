@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-26 17:44:24 gwern"
+When:  Time-stamp: "2021-09-27 18:28:13 gwern"
 License: CC-0
 -}
 
@@ -41,7 +41,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex, matchRegex)
 import Text.Show.Pretty (ppShow)
-import System.IO.Temp (writeSystemTempFile)
+import System.IO.Temp (writeSystemTempFile, emptySystemTempFile)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
@@ -363,7 +363,9 @@ type Path = String
 writeYaml :: Path -> MetadataList -> IO ()
 writeYaml path yaml = do
   let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ yaml
-  B.writeFile path newYaml
+  tempPath <- emptySystemTempFile "hakyll-yaml"
+  B.writeFile tempPath newYaml
+  renameFile tempPath path
 
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
