@@ -58,7 +58,15 @@ generateDirectory mta dir'' = do
   let header = generateYAMLHeader dir''
   let directorySection = generateDirectoryItems parentDirectory' dirs
 
-  let body =   directorySection ++
+  -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at '/docs/foo/index'
+  print ("/"++dir''++"index")
+  let abstract = case M.lookup ("/"++dir''++"index") mta of
+                   Nothing -> []
+                   Just (_,_,_,_,_,dirAbstract) -> [RawBlock (Format "html") (T.pack dirAbstract)]
+
+  let body =   abstract ++
+
+               directorySection ++
 
                (if null titledLinks then [] else
                    [Header 1 nullAttr [Str "Links"]] ++
