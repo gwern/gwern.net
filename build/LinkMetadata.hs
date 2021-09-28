@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-27 18:28:13 gwern"
+When:  Time-stamp: "2021-09-28 11:46:54 gwern"
 License: CC-0
 -}
 
@@ -336,9 +336,9 @@ tagsToLinksSpan ts = let tags = map T.pack ts in
 type Backlinks = M.Map T.Text [T.Text]
 
 readBacklinksDB :: IO Backlinks
-readBacklinksDB = do bll <- Prelude.readFile "metadata/backlinks.hs"
+readBacklinksDB = do bll <- TIO.readFile "metadata/backlinks.hs"
                      if bll=="" then return M.empty else
-                       let bldb = M.fromList $ map (\(a,b) -> (T.pack a, map T.pack b)) (read bll :: [(String,[String])]) in
+                       let bldb = M.fromList (read (T.unpack bll) :: [(T.Text,[T.Text])]) in
                          return bldb
 writeBacklinksDB :: Backlinks -> IO ()
 writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
@@ -552,7 +552,7 @@ pageTagDB = M.fromList [
   , ("/notes/Regression", ["statistics/bayes"])
   , ("/notes/Scaling", ["ai/scaling"])
   , ("/notes/Small-groups", ["sociology"])
-  , ("/notes/Sparsity", ["ai"])
+  , ("/docs/ai/sparsity/index", ["ai"])
   , ("/notes/TBI", ["psychology/neuroscience"])
   , ("/notes/Variance-components", ["statistics"])
   , ("/Ontological-pantheism", ["philosophy"])
@@ -700,7 +700,7 @@ pdf p = do let p' = takeWhile (/='#') p
    filterMeta :: String -> String
    filterMeta ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
     where badSubstrings, badWholes :: [String]
-          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity"]
+          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics"]
           badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
 
 -- nested JSON object: eg 'jq .message.abstract'
@@ -1156,6 +1156,8 @@ cleanAbstractsHTML t = trim $
     , ("<i>", "<em>")
     , ("</i>", "</em>")
     -- math substitutions:
+    , ("<span class=\"math inline\">\\(_{50}\\)</span>", "<sub>50</sub>")
+    , ("<span class=\"math inline\">\\(_r\\)</span>", "<sub><em>r</em></sub>")
     , ("<span class=\"math inline\">\\(tanh\\)</span>", "<em>tanh</em>")
     , ("<span class=\"texhtml \">O(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
     , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
