@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-28 11:46:54 gwern"
+When:  Time-stamp: "2021-09-28 16:38:24 gwern"
 License: CC-0
 -}
 
@@ -532,9 +532,9 @@ pageTagDB = M.fromList [
   , ("/Nicotine", ["nicotine"])
   , ("/nootropics/Magnesium", ["nootropic"])
   , ("/Nootropics", ["nootropic"])
-  , ("/notes/Abandoned-Footnotes", ["sociology"])
+  , ("/docs/sociology/abandoned-footnotes/index", ["sociology"])
   , ("/notes/Attention", ["ai"])
-  , ("/notes/Automation", ["economics"])
+  , ("/docs/economics/automation/index", ["economics"])
   , ("/notes/Competence", ["psychology"])
   , ("/notes/Daicon-videos", ["eva"])
   , ("/notes/Fashion", ["sociology"])
@@ -542,10 +542,10 @@ pageTagDB = M.fromList [
   , ("/notes/FC", ["ai/fully-connected"])
   , ("/notes/Fermi", ["math"])
   , ("/notes/Killing-Rabbits", ["fiction"])
-  , ("/notes/Lions", ["math"])
+  , ("/notes/Lions", ["math/humor"])
   , ("/notes/Lizardman-constant", ["sociology"])
   , ("/notes/Local-optima", ["economics"])
-  , ("/notes/Nash", ["bitcoin", "economics"])
+  , ("/docs/bitcoin/nashx/index", ["bitcoin", "economics"])
   , ("/notes/Parasocial", ["sociology"])
   , ("/notes/Pipeline", ["statistics/order"])
   , ("/notes/Ramsey", ["statistics/decision"])
