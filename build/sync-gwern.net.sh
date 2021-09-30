@@ -158,11 +158,12 @@ else
          echo "$PAGES" | xargs fgrep -l --color=always -e '<span class="math inline">' -e '<span class="math display">' -e '<span class="mjpage">' | \
                                      fgrep --invert-match -e '/docs/cs/1955-nash' -e '/Backstop' -e '/Death-Note-Anonymity' -e '/Differences' \
                                                           -e '/Lorem' -e '/Modus' -e '/Order-statistics' -e '/Conscientiousness-and-online-education' \
-                                -e 'docs%2Fmath%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
+                                -e 'docs%2Fmath%2Fhumor%2F2001-borwein.pdf' -e 'statistical_paradises_and_paradoxes.pdf' -e '1959-shannon.pdf' \
                                 -e '/The-Existential-Risk-of-Mathematical-Error' -e '/Replication' \
                                 -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
                                 -e '/nootropics/Magnesium' -e '/Selection' -e 'docs/statistics/bayes/1994-falk' -e '/Zeo' \
-                                -e '/Mail-delivery' -e 'docs/link-bibliography/Complexity-vs-AI' -e 'docs/link-bibliography/newsletter/2021/04';
+                                -e '/Mail-delivery' -e 'docs/link-bibliography/Complexity-vs-AI' -e 'docs/link-bibliography/newsletter/2021/04' \
+                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 

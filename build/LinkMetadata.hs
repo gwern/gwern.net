@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-29 14:40:31 gwern"
+When:  Time-stamp: "2021-09-29 21:31:39 gwern"
 License: CC-0
 -}
 
@@ -720,7 +720,7 @@ doi2Abstract doi = if length doi < 7 then return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
-                                       Just a -> let trimmedAbstract = cleanAbstractsHTML a
+                                       Just a -> let trimmedAbstract = cleanAbstractsHTML $cleanAbstractsHTML a
                                                  in return $ Just trimmedAbstract
 
 -- handles medRxiv too (same codebase)
@@ -866,7 +866,7 @@ generateID url author date
   where
     linkIDOverrides :: [(String, T.Text)]
     linkIDOverrides = [
-      ("/docs/ai/2019-radford.pdf#openai", "gpt-2-paper")
+      ("/docs/ai/gpt/2019-radford.pdf#openai", "gpt-2-paper")
        , ("/docs/ai/2020-chen.pdf#openai", "chen-igpt-paper")
        , ("/docs/ai/anime/2020-ko.pdf", "ko-cho-2020")
        , ("/docs/anime/2020-akita.pdf", "akita-et-al-2020-2")
@@ -1273,6 +1273,7 @@ cleanAbstractsHTML t = trim $
     , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
     , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
     -- rest:
+    , ("<strong>Abstract</strong><br/>", "")
     , ("</p> <p>", "</p>\n<p>")
     , ("</p><p>", "</p>\n<p>")
     , ("</li> <li>", "</li>\n<li>")
@@ -1410,6 +1411,9 @@ cleanAbstractsHTML t = trim $
     , ("statistically significant", "statistically-significant")
     , ("clinical significance", "clinical-significance")
     , ("clinically significant", "clinically-significant")
+    , ("<p>Conclusions: ", "<p><strong>Conclusions</strong>: ")
+    , ("<p>Results: ", "<p><strong>Results</strong>: ")
+    , ("<p>Aims: ", "<p><strong>Aims</strong>: ")
     , ("<p>Background: ", "<p><strong>Background</strong>: ")
     , ("<p>Methods: ", "<p><strong>Methods</strong>: ")
     , ("<p>Outcomes: ", "<p><strong>Outcomes</strong>: ")
@@ -1630,6 +1634,7 @@ cleanAbstractsHTML t = trim $
     , (" = .",    " = 0.")
     , (" gf ", " <em>gf</em> ")
     , (" gc ", " <em>gc</em> ")
+    , ("( g = ", "(<em>g</em> =")
     , ("<i><em>h</em><sup>2</sup></i>", "<em>h</em><sup>2</sup>")
     , ("<i><em>h</em><sup>2</sup><sub>SNP</sub></i>", "<em>h</em><sup>2</sup><sub>SNP</sub>")
     , ("h<sup>2</sup>", "<em>h</em><sup>2</sup>")
@@ -1790,5 +1795,6 @@ cleanAbstractsHTML t = trim $
     , ("high- g", "high-<em>g</em>")
     , ("\t\t", "")
     , ("\t\t\t\t\t", "")
+    , ("co- occurring", "co-occurring")
     , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
       ] t
