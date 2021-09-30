@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-28 16:38:24 gwern"
+When:  Time-stamp: "2021-09-29 14:40:31 gwern"
 License: CC-0
 -}
 
@@ -32,6 +32,7 @@ import Network.HTTP (urlEncode)
 import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist, renameFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
+import System.GlobalLock (lock)
 import System.IO (stderr, hPutStrLn)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
@@ -361,7 +362,7 @@ type MetadataList = [(Path, MetadataItem)]
 type Path = String
 
 writeYaml :: Path -> MetadataList -> IO ()
-writeYaml path yaml = do
+writeYaml path yaml = lock $ do
   let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ yaml
   tempPath <- emptySystemTempFile "hakyll-yaml"
   B.writeFile tempPath newYaml
@@ -518,7 +519,7 @@ pageTagDB = M.fromList [
   , ("/Lithium", ["lithium"])
   , ("/Long-Bets", ["prediction"])
   , ("/Longevity", ["longevity"])
-  , ("/LSD-microdosing", ["nootropic"])
+  , ("/LSD-microdosing", ["psychedelic"])
   , ("/Lunar-sleep", ["zeo"])
   , ("/MCTS-AI", ["reinforcement-learning"])
   , ("/Media-RL", ["reinforcement-learning"])
@@ -628,10 +629,10 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,ts,abst) = do hPutStrLn stderr (l ++ " : " ++ show i)
+writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do hPutStrLn stderr (l ++ " : " ++ show i)
 
-                                              let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
-                                              B.appendFile "metadata/auto.yaml" newYaml
+                                                     let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
+                                                     B.appendFile "metadata/auto.yaml" newYaml
 
 data Failure = Temporary | Permanent deriving Show
 
