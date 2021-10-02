@@ -18,6 +18,8 @@ import Data.Containers.ListUtils (nubOrd)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad (forM_, unless)
 
+import Control.Monad.Parallel as Par (mapM)
+
 import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB)
 
 main :: IO ()
@@ -42,9 +44,9 @@ main = do
          fmap lines getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs
-  links1 <- mapM (parseFileForLinks True) markdown -- NOTE: while embarrassingly-parallel & trivial to switch to `Control.Monad.Parallel.mapM`, because of the immensely slow Haskell compilation (due to Pandoc), 2021-04-23 benchmarking suggests that compile+runtime is ~2min slower than `runhaskell` interpretation
+  links1 <- Par.mapM (parseFileForLinks True) markdown
   let html     = filter (".html" `isSuffixOf` ) fs
-  links2 <- mapM (parseFileForLinks False) html
+  links2 <- Par.mapM (parseFileForLinks False) html
 
   let linksdb = M.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2
   let bldb' = bldb `M.union` linksdb

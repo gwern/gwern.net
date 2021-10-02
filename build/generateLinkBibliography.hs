@@ -19,6 +19,8 @@ import System.IO.Temp (writeSystemTempFile)
 import Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (head, pack, unpack)
 
+import Control.Monad.Parallel as Par (mapM_)
+
 import Text.Pandoc (Inline(Code, Link, Str, Space), def, nullAttr, nullMeta, queryWith, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
 import Text.Pandoc.Walk (walk)
 
@@ -28,7 +30,7 @@ import LinkMetadata (generateAnnotationBlock, readLinkMetadata, Metadata, Metada
 main :: IO ()
 main = do pages <- getArgs
           md <- readLinkMetadata
-          mapM_ (generateLinkBibliography md) pages
+          Par.mapM_ (generateLinkBibliography md) pages
 
 generateLinkBibliography :: Metadata -> String -> IO ()
 generateLinkBibliography md page = do links <- extractLinksFromPage page

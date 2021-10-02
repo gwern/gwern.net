@@ -45,24 +45,33 @@ else
     bold "Pulling infrastructure updates…"
     (cd ./static/ && git status && git pull --verbose https://gwern.obormot.net/static/.git || true)
 
+    bold "Compiling…"
+    cd ./static/build
+    compile () { ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
+    compile Columns.hs &
+    compile generateBacklinks.hs &
+    compile generateDirectory.hs &
+    compile generateLinkBibliography.hs &
+    compile link-extractor.hs &
+    compile hakyll.hs &
+    wait
+    cd ../../
+
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
     bold "Building directory indexes…"
-    (cd ./static/build && ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make generateDirectory.hs)
-    (time ./static/build/generateDirectory +RTS -N"$N" -RTS \
+
+    ./static/build/generateDirectory +RTS -N"$N" -RTS \
                 $(find docs fiction haskell newsletter nootropics notes reviews zeo -type d \
                       | sort | fgrep -v -e 'docs/www/' -e 'docs/personal' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
                                         -e 'docs/statistics/order/beanmachine-multistage' \
-                -e 'docs/link-bibliography')  ) # &
+                -e 'docs/link-bibliography')
 
     bold "Updating link bibliographies…"
-    runhaskell -istatic/build static/build/generateLinkBibliography.hs $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///')
-
-    # bold "Updating annotations..."
-    # (time ghci -istatic/build/ ./static/build/hakyll.hs -e 'do { md <- readLinkMetadata; am <- readArchiveMetadata; writeAnnotationFragments am md; }' &> /dev/null) # &
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///')
 
     bold "Updating backlinks..."
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' | sort | time runhaskell -istatic/build/ static/build/generateBacklinks.hs) # &
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -70,15 +79,11 @@ else
     # Cleanup pre:
     rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
 
-    bold "Building Hakyll…"
-    # Build:
-    ## Gwern.net is big and Hakyll+Pandoc is slow, so it's worth the hassle of compiling:
-    ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make hakyll.hs
     cd ../../ # go to site root
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
-    rm --recursive --force -- ./static/build/hakyll ./static/build/generateDirectory ./static/build/*.o ./static/build/*.hi || true
+    rm --recursive --force -- ./static/build/hakyll ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/*.o ./static/build/*.hi || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -592,7 +597,7 @@ else
 
         # check for any pages that could use multi-columns now:
         λ(){ (find . -name "*.page"; find ./metadata/annotations/ -maxdepth 1 -name "*.html") | shuf | \
-                 parallel --max-args=100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
+                 parallel --max-args=100 ./static/build/Columns --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
@@ -603,19 +608,21 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ $(date +"%j") == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell -istatic/build/ static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell ./static/build/link-extractor | \
                          egrep -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://www.gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell -istatic/build/ static/build/link-extractor.hs | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 ./static/build/link-extractor | \
                          egrep -e '^https://www.gwern.net' | sort -u); do
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
     fi
+
+    rm static/build/Columns static/build/link-extractor static/build/*.hi static/build/*.o 2>&1 >/dev/null || true
 
     bold "Sync successful"
 fi
