@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-02 17:09:16 gwern"
+When:  Time-stamp: "2021-10-02 18:35:38 gwern"
 License: CC-0
 -}
 
@@ -378,8 +378,8 @@ readYaml yaml = do filep <- doesFileExist yaml
                           Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
                  convertListToMetadata :: Backlinks -> [String] -> MetadataList
-                 convertListToMetadata f [u, t, a, d, di,     s] = [(u, (t,a,d,di,pages2Tags f u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata f [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,pages2Tags f u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata f [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags f u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata f [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags f u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ show e
 
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
@@ -392,11 +392,15 @@ tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
 tag2Default :: String -> String
 tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
 
+-- de-duplicate tags: remove the more general tags in favor of nested (more specific) tags. eg ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
+uniqTags :: [String] -> [String]
+uniqTags tags = nubOrd $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
+
 -- another tag heuristic: some pages are heavily topic-focused such that any link on them can safely be given a specific tag, especially as many pages serve as link-dumps. (For example, everything on '/Sunk-cost' can be safely tagged 'sunk-cost'.)
 -- Using the forward-links database, we can look up what pages each link is present on, see if it is linked by any such page specified in our little topic database, and add that tag (if not already present).
 pages2Tags :: Backlinks -> String -> [String] -> [String]
 pages2Tags f path oldTags = let additionalTags = page2Tag f path in
-                              nubOrd (additionalTags ++ oldTags)
+                              additionalTags ++ oldTags
 
 page2Tag :: Backlinks -> String -> [String]
 page2Tag fdb path
