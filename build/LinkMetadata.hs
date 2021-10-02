@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-09-30 18:22:40 gwern"
+When:  Time-stamp: "2021-10-02 17:09:16 gwern"
 License: CC-0
 -}
 
@@ -243,17 +243,17 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
-                  Nothing               -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
-                  Just ("","","","",[],"") -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
-                  Just               mi -> addHasAnnotation idBool False y mi
+                  Nothing                 -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
+                  Just ("","","","",_,"") -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
+                  Just                 mi -> addHasAnnotation idBool False y mi
           hasAnnotationInline _ _ y = y
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
           addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,_,abstrct) =
            let a'
                  | not idBool = ""
-                 | a == "" = generateID (T.unpack f) aut dt
-                 | otherwise = a
+                 | a == ""    = generateID (T.unpack f) aut dt
+                 | otherwise  = a
            in -- erase link ID?
               if (length abstrct < 180) && not forcep then y else
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
