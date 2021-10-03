@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-02 18:46:37 gwern"
+When:  Time-stamp: "2021-10-02 20:40:22 gwern"
 License: CC-0
 -}
 
@@ -79,7 +79,7 @@ readLinkMetadata = do
 
              -- Quality checks:
              -- requirements:
-             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation)
+             -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
              -- - authors must exist (if only as 'Anonymous'), but are non-unique
              -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYY[-MM[-DD]]'.
@@ -87,7 +87,8 @@ readLinkMetadata = do
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "docs/$TAG/"
              -- - annotations must exist and be unique inside custom.yaml (overlap in auto.yaml can be caused by the hacky appending); their HTML should pass some simple syntactic validity checks
              let urls = map fst custom
-             when (length (uniq (sort urls)) /=  length urls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (urls \\ nubOrd urls)
+             let normalizedUrls = map (replace "https://" "" . replace "http://" "") urls
+             when (length (uniq (sort normalizedUrls)) /=  length normalizedUrls) $ error $ "Duplicate URLs in 'custom.yaml'!" ++ unlines (normalizedUrls \\ nubOrd normalizedUrls)
 
              let brokenUrls = filter (\u -> null u || not (head u == 'h' || head u == '/') || ' ' `elem` u) urls in when (brokenUrls /= []) $ error $ "Broken URLs in 'custom.yaml': " ++ unlines brokenUrls
 
@@ -96,7 +97,7 @@ readLinkMetadata = do
                                 do exist <- doesFileExist f
                                    unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
 
-             let titles = map (\(_,(t,_,_,_,_,_)) -> t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+             let titles = map (\(_,(t,_,_,_,_,_)) -> filter (not . isPunctuation) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
 
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) custom in
                mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex (mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$") d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates

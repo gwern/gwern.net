@@ -575,7 +575,7 @@ else
     wrap λ "Too-wide images (downscale)"
 
     ## Remind to refine doc directories/tags (should be <50):
-    find docs/ -type d -print0 | egrep --null-data -v -e 'docs/$' -e 'www' -e 'rotten.com' -e '2011-gwern-yourmorals.org' -e '2000-iapac-norvir' |
+    find docs/ -type d -print0 | egrep --null-data -v -e 'docs/$' -e 'www' -e 'rotten.com' -e '2011-gwern-yourmorals.org' -e '2000-iapac-norvir' -e 'docs/link-bibliography' |
         while read -d '' -r dir;
     do N=$(find "$dir" -maxdepth 1 -type f | wc --lines);
        if [[ $N -gt 50 ]]; then printf "%5d: %s\n" $N "$dir"; fi;
@@ -622,7 +622,7 @@ else
         done
     fi
 
-    rm static/build/Columns static/build/link-extractor static/build/*.hi static/build/*.o 2>&1 >/dev/null || true
+    rm static/build/Columns static/build/link-extractor static/build/*.hi static/build/*.o &> /dev/null || true
 
     bold "Sync successful"
 fi
