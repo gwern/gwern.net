@@ -4,6 +4,7 @@
 module Main where
 
 import Control.Monad (when)
+import Data.List.Utils (replace)
 import Data.Maybe (isJust, fromJust)
 import System.Environment (getArgs)
 
@@ -11,10 +12,11 @@ import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, Metada
 
 main :: IO ()
 main = do [link, tag] <- getArgs
-          when (head link /= '/' && take 4 link /= "http") $ error $ "Arguments not 'addTag.hs tag *link*'? : " ++ link
+          let link' = replace "https://www.gwern.net/" "/" link
+          when (head link' /= '/' && take 4 link' /= "http") $ error $ "Arguments not 'addTag.hs tag *link*'? : " ++ link'
           when (head tag == '/'  || take 4 tag == "http")  $ error $ "Arguments not 'addTag.hs *tag* link'? : " ++ tag
           [custom,partial,auto] <- mapM readYaml ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
-          addAndWriteTags tag link custom partial auto
+          addAndWriteTags tag link' custom partial auto
 
 -- If an annotation is in custom.yaml, we only want to write that. If it's in partial.yaml, likewise. If it's in auto.yaml, now that we've added a tag to it, it is no longer disposable and must be preserved by moving it from auto.yaml to partial.yaml. If it's not in any metadata file (such as a Wikipedia link, which is normally suppressed), then we add it to partial.yaml.
 addAndWriteTags :: String -> String -> MetadataList -> MetadataList -> MetadataList -> IO ()

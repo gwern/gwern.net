@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-02 20:40:22 gwern"
+When:  Time-stamp: "2021-10-04 16:54:34 gwern"
 License: CC-0
 -}
 
@@ -97,7 +97,7 @@ readLinkMetadata = do
                                 do exist <- doesFileExist f
                                    unless exist $ error ("Custom annotation error: file does not exist? " ++ f))
 
-             let titles = map (\(_,(t,_,_,_,_,_)) -> filter (not . isPunctuation) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
+             let titles = map (\(_,(t,_,_,_,_,_)) -> filter (\c -> not (isPunctuation c || isSpace c)) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
 
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) custom in
                mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex (mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$") d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
@@ -514,7 +514,7 @@ pageTagDB = M.fromList [
   , ("/Hunter", ["iq"])
   , ("/Hydrocephalus", ["iq"])
   , ("/In-Defense-Of-Inclusionism", ["wikipedia"])
-  , ("/intermittent-fasting", ["longevity"])
+  , ("/intermittent-fasting", ["longevity/fasting"])
   , ("/Iodine", ["iodine"])
   , ("/iq", ["iq"])
   , ("/komm-susser-tod", ["eva"])
@@ -554,7 +554,7 @@ pageTagDB = M.fromList [
   , ("/docs/bitcoin/nashx/index", ["bitcoin", "economics"])
   , ("/notes/Parasocial", ["sociology"])
   , ("/notes/Pipeline", ["statistics/order"])
-  , ("/notes/Ramsey", ["statistics/decision"])
+  , ("/notes/Ramsey", ["philosophy/frank-p-ramsey"])
   , ("/notes/Regression", ["statistics/bayes"])
   , ("/notes/Scaling", ["ai/scaling"])
   , ("/notes/Small-groups", ["sociology"])
