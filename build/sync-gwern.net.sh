@@ -56,6 +56,7 @@ else
     compile hakyll.hs &
     wait
     cd ../../
+    cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
 
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
     bold "Building directory indexes…"

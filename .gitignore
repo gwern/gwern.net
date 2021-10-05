@@ -7,3 +7,6 @@ metadata/archive.hs
 **.hi
 build/hakyll
 build/generateDirectory
+build/generateBacklinks
+build/generateLinkBibliography
+build/link-extractor

@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-04 16:54:34 gwern"
+When:  Time-stamp: "2021-10-05 12:01:28 gwern"
 License: CC-0
 -}
 
@@ -1108,7 +1108,7 @@ trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of 
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
 cleanAbstractsHTML :: String -> String
-cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML'
+cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsHTML'
  where cleanAbstractsHTML' :: String -> String
        cleanAbstractsHTML' = trim . sedMany [
         -- regexp substitutions:
@@ -1282,6 +1282,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML'
           , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
           , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
           -- rest:
+          , ("<strong>ABSTRACT</strong><br/>", "")
           , ("<strong>Abstract</strong><br/>", "")
           , ("</p> <p>", "</p>\n<p>")
           , ("</p><p>", "</p>\n<p>")
@@ -1508,6 +1509,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML'
           , ("<abstract>", "")
           , ("<abstract>\n  ", "")
           , ("\n</abstract>", "")
+          , ("<strong>Abstract</strong>:<p>", "<p>")
           , ("<p><strong>Abstract</strong>: ", "<p>")
           , ("<strong>AIM:</strong>", "<strong>Aim</strong>:")
           , ("<strong>METHODS:</strong>", "<strong>Methods</strong>:")
