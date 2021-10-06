@@ -71,7 +71,7 @@ else
     bold "Updating link bibliographies…"
     ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///')
 
-    bold "Updating backlinks..."
+    bold "Updating backlinks…"
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
 
     bold "Check/update VCS…"
