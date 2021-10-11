@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-07 11:22:37 gwern"
+When:  Time-stamp: "2021-10-10 21:02:51 gwern"
 License: CC-0
 -}
 
@@ -43,6 +43,8 @@ import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex, matchRegex)
 import Text.Show.Pretty (ppShow)
 import System.IO.Temp (writeSystemTempFile, emptySystemTempFile)
+
+import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
@@ -99,8 +101,9 @@ readLinkMetadata = do
 
              let titles = map (\(_,(t,_,_,_,_,_)) -> filter (\c -> not (isPunctuation c || isSpace c)) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
 
+             let dateRegex = mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) custom in
-               mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex (mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$") d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+               Par.mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex dateRegex d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi) custom in
                  when (not (null badDoisDash)) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
@@ -131,15 +134,13 @@ readLinkMetadata = do
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata "metadata/auto.yaml" -- do auto-cleanup  first
              auto <- readYaml "metadata/auto.yaml"
-
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
 
              -- check tags (not just custom but all of them, including partials)
              let tagsSet = nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) final
-             mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
-                               unless directoryP $ error ("Link Annotation Error: tag does not match a directory! " ++ tag)) tagsSet
-
+             Par.mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
+                                   unless directoryP $ error ("Link Annotation Error: tag does not match a directory! " ++ tag)) tagsSet
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
@@ -1139,6 +1140,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("AOR=([.0-9])", "AOR = \\1"), -- 'AOR=2.9' → 'AOR = 2.09'
         -- math regexes
         ("<span class=\"math inline\">\\\\\\(([a-z])\\\\\\)</span>", "<em>\\1</em>"), -- '<span class="math inline">\(d\)</span>'
+        ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\)</span>", "\\1"), -- '<span class="math inline">\(30\)</span>'
         ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^"),
         ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^"),
         ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\times\\\\\\)</span>", "\\1×"), -- '<span class="math inline">\(1.5\times\)</span>'
@@ -1213,6 +1215,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(G\\)</span>", "<em>G</em>")
           , ("<span class=\"math inline\">\\(\\hbar\\)</span>", "ℏ")
           , ("<span class=\"math inline\">\\(n\\)</span>", "<em>n</em>")
+          , ("<span class=\"math inline\">\\(\\alpha\\)</span>", "α")
           , ("<span class=\"math inline\">\\(n^{1/4}\\)</span>", "<em>n</em><sup>1⁄4</sup>")
           , ("<span class=\"math inline\">\\(n^{1/2}\\)</span>", "<em>n</em><sup>1⁄2</sup>")
           , ("<span class=\"math inline\">\\(n^{-1/2}\\)</span>", "<em>n</em><sup>−1⁄2</sup>")
@@ -1311,6 +1314,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<h2>", "<p><strong>")
           , ("</h3>", "</strong></p>")
           , ("<h3>", "<p><strong>")
+          , ("<br/></p>", "</p>")
           , ("<br/><br/>", "</p> <p>")
           , ("<br/><h3>", "<h3>")
           , ("</p><p>", "</p> <p>")
@@ -1527,6 +1531,10 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("\nContext: ", "\n<strong>Context</strong>: ")
           , ("\nPurpose: ", "\n<strong>Purpose</strong>: ")
           , ("\nRationale: ", "\n<strong>Rationale</strong>: ")
+          , ("<p><strong>OBJECTIVE</strong></p>\n<p>", "<p><strong>Objective</strong>: ")
+          , ("<p><strong>METHOD</strong></p>\n<p>", "<p><strong>Method</strong>: ")
+          , ("<p><strong>RESULTS</strong></p>\n<p>", "<p><strong>Results</strong>: ")
+          , ("<p><strong>CONCLUSIONS</strong></p>\n<p>         ", "<p><strong>Conclusions</strong>: ")
           , ("\nObjective: ", "\n<strong>Objective</strong>: ")
           , ("\nObjectives: ", "\n<strong>Objectives</strong>: ")
           , ("\nQuestion: ", "\n<strong>Question</strong>: ")
