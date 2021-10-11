@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-11 09:23:24 gwern"
+When:  Time-stamp: "2021-10-11 18:37:51 gwern"
 License: CC-0
 -}
 
@@ -241,7 +241,7 @@ hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp = walk (hasAnnotationInline md idp)
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,b,c) d (f,g)) =
-            if "https://en.wikipedia.org/wiki/" `isPrefixOf` T.unpack f then addHasAnnotation idBool True y ("","","","",[],"")
+            if wikipediaArticleNamespace (T.unpack f) then addHasAnnotation idBool True y ("","","","",[],"")
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
@@ -260,6 +260,13 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
               if (length abstrct < 180) && not forcep then y else
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
           addHasAnnotation _ _ z _ = z
+
+-- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg 'https://en.wikipedia.org/wiki/File:Energy_density.svg'
+-- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough; we can only popup on articles, the other pages need raw URL previews.
+wikipediaArticleNamespace :: String -> Bool
+wikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) then False else
+                                let u' = takeWhile (/=':') $ replace "https://en.wikipedia.org/wiki/" "" u in
+                                  not $ u' `elem` ["Talk", "User", "User talk", "Wikipedia", "Wikipedia talk", "File", "File talk", "MediaWiki", "MediaWiki talk", "Template", "Template talk", "Help", "Help talk", "Category", "Category talk", "Portal", "Portal talk", "Draft", "Draft talk", "TimedText", "TimedText talk", "Module", "Module talk", "Gadget", "Gadget talk", "Gadget definition", "Gadget definition talk", "Special", "Media"]
 
 parseRawBlock :: Block -> Block
 parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in

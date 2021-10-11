@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-10-07 14:20:34 gwern"
+When:  Time-stamp: "2021-10-11 17:39:14 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -309,7 +309,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(SVM|[Ss]upport [Vv]ector [Mm]achines?)", "https://en.wikipedia.org/wiki/Support-vector_machine")
         , ("(Shotetsu|Shōtetsu)", "https://en.wikipedia.org/wiki/Sh%C5%8Dtetsu")
         , ("(Soft Actor-Critic|SAC)", "https://arxiv.org/abs/1801.01290")
-        , ("(StyleGAN3|StyleGAN2-ADA)s?|Karras et al 2020", "https://arxiv.org/abs/2006.06676#nvidia")
+        , ("StyleGAN2-ADA.?|Karras et al 2020", "https://arxiv.org/abs/2006.06676#nvidia")
         , ("(StyleGANs?|CelebA[ -]HQ|FFHQ)", "https://arxiv.org/abs/1812.04948#nvidia")
         , ("(TADNE|This Anime Does Not Exist\\.?a?i?)", "https://thisanimedoesnotexist.ai/")
         , ("(TFDNE|This Fursona Does Not Exist)", "https://www.thisfursonadoesnotexist.com")
