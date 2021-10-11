@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-10 21:02:51 gwern"
+When:  Time-stamp: "2021-10-10 22:34:09 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite, Backlinks, readBacklinksDB, writeBacklinksDB) where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -1049,7 +1049,7 @@ generateID url author date
 authorsToCite :: String -> String -> String
 authorsToCite author date =
   let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
-      authors = split ", " author
+      authors = split ", " $ sedMany [(" \\([A-Za-z]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" would break the later string-munging & eventually the HTML
       authorCount = length authors
       firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
   in
@@ -1067,6 +1067,10 @@ authorsToCite author date =
                                firstAuthorSurname ++ " " ++ year ++ suffix'
 citeToID :: String -> String
 citeToID = filter (/='.') . map toLower . replace " " "-" . replace " & " "-"
+
+-- for link bibliographies / tag pages, better truncate author lists at a reasonable length:
+authorsTruncate :: String -> String
+authorsTruncate a = let (before,after) = splitAt 250 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
@@ -1113,8 +1117,15 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
  where cleanAbstractsHTML' :: String -> String
        cleanAbstractsHTML' = trim . sedMany [
         -- regexp substitutions:
+         ("  *", " "), -- squeeze whitespace
+        ("<br/> *</p>", "</p>"),
+        ("<p> *", "<p>"),
+        (" *</p>", "</p>"),
+        ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
         ("([0-9]+)[ -]fold", "\\1×"),
         ("([0-9]+)[ -]times", "\\1×"),
+        ("<br/> <strong>([A-Z][a-z]+)<\\/strong><p>", "<p><strong>\\1</strong>: "), --         <br/> <strong>Background</strong><p>
+        ("</p><strong>([A-Z][a-z]+)<\\/strong><p>", "</p> <p><strong>\\1</strong>: "),
         ("<p><strong>([A-Z][a-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
@@ -1818,5 +1829,10 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("\t\t", "")
           , ("\t\t\t\t\t", "")
           , ("co- occurring", "co-occurring")
+          , ("</sup><br/>", "</sup>")
+          , ("\n            <jats:italic>k</jats:italic>\n            ", "<em>k</em>")
+          , ("\n            <jats:sup>–6</jats:sup>\n            ", "<sup>–6</sup>")
+          , ("\n            <jats:italic>in vitro</jats:italic>\n", " <em>in vitro</em>")
+          , ("\n            <jats:italic>R</jats:italic>\n", "<em>R</em>")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
             ]

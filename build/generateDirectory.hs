@@ -19,7 +19,7 @@ import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, Metadata, MetadataItem)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, authorsTruncate, Metadata, MetadataItem)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -197,7 +197,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
 
 generateItem :: (FilePath,MetadataItem,FilePath) -> [Block]
 generateItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
-                                            author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)]
+                                            author = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
                                             -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
                                             backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")], Str ")"]
                                         in

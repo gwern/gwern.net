@@ -25,7 +25,7 @@ import Text.Pandoc (Inline(Code, Link, Str, Space), def, nullAttr, nullMeta, que
 import Text.Pandoc.Walk (walk)
 
 import Interwiki (convertInterwikiLinks)
-import LinkMetadata (generateAnnotationBlock, readLinkMetadata, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 
 main :: IO ()
 main = do pages <- getArgs
@@ -77,7 +77,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = let f'
                                                            | "http" `isPrefixOf` f = f
                                                            | "index" `isSuffixOf` f = takeDirectory f
                                                            | otherwise = takeFileName f
-                                                         author = if aut=="" then [] else [Str ",", Space, Str (T.pack aut)]
+                                                         author = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
                                                             -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
                                         in
                                           if t=="" then
