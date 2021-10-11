@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-10 22:34:09 gwern"
+When:  Time-stamp: "2021-10-11 09:23:24 gwern"
 License: CC-0
 -}
 
@@ -860,8 +860,10 @@ generateID url author date
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
   -- eg '/Faces' = '#gwern-faces'
   | ("Gwern Branwen" == author) ||
-    (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url))
+    (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url) && not ("/index"`isInfixOf`url))
   = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
+  -- skip tag links:
+  | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index#links" `isSuffixOf` url) = ""
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- shikata ga nai:
@@ -1044,6 +1046,8 @@ generateID url author date
        , ("http://www.stuartcheshire.org/rants/latency.html", "luu-2017-stupid")
        , ("http://www.terrierman.com/russianfoxfarmstudy.pdf", "trut-1999-2")
        , ("http://zenpundit.com/?p=52965", "greer-thucydides-roundtable")
+       , ("https://www.lesswrong.com/posts/baTWMegR42PAsH9qJ/generalizing-from-one-example", "alexander-2009-typicalmind")
+       , ("https://www.lesswrong.com/posts/reitXJgJXFzKpdKyd/beware-trivial-inconveniences", "alexander-2009-trivialinconveniences")
       ]
 
 authorsToCite :: String -> String -> String
