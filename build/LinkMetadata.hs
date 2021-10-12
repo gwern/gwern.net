@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-12 11:25:47 gwern"
+When:  Time-stamp: "2021-10-12 16:29:19 gwern"
 License: CC-0
 -}
 
@@ -651,10 +651,11 @@ writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do hPutStrLn stderr (l ++ " : 
 data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
-arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
+arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (Left Permanent)
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l' = return (Left Permanent) -- WP is now handled by annotations.js calling the Mobile WP API
                  | "https://arxiv.org/abs/" `isPrefixOf` l' = arxiv l'
+                 | "https://openreview.net/forum?id=" `isPrefixOf` l' || "https://openreview.net/pdf?id=" `isPrefixOf` l' = openreview l'
                  | "https://www.biorxiv.org/content/" `isPrefixOf` l' = biorxiv l'
                  | "https://www.medrxiv.org/content/" `isPrefixOf` l' = biorxiv l'
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l' = pubmed l'
@@ -688,7 +689,7 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
-           (_,_,mb) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p']
+           (_,_,mb)  <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$Title$/$Author$/$Date", "-Title", "-Author", "-dateFormat", "%F", "-Date", p']
            (_,_,mb2) <- runShellCommand "./" Nothing "exiftool" ["-printFormat", "$DOI", "-DOI", p']
            if BL.length mb > 0 then
              do print mb
@@ -812,6 +813,16 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
                                             in (x:r,rs)
                     | otherwise          = let (r,rs) = closeEl i     xs
                                             in (x:r,rs)
+openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
+                    (status,_,bs) <- runShellCommand "./" Nothing "openReviewAbstract.sh" [p']
+                    case status of
+                        ExitFailure _ -> hPutStrLn stderr ("OpenReview download failed: " ++ p) >> return (Left Permanent)
+                        _ -> do
+                               let (title:date:author:tldr:desc:keywords:[]) = lines $ U.toString bs
+                               let abstractCombined = intercalate "\n\n" [tldr, desc, "[Keywords: " ++ keywords ++ "]"]
+                               return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
+                                                   -- due to pseudo-LaTeX
+                                                    processArxivAbstract p abstractCombined))
 
 processDOI :: String -> String
 processDOI = replace "–" "-" . replace "—" "-"
@@ -1612,7 +1623,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<em>Objective:</em> ", "<strong>Objective</strong>:")
           , ("<em>Results:</em> ", "<strong>Results</strong>:")
           , ("<em>Conclusions:</em>", "<strong>Conclusions</strong>:")
-          , ("\91Keywords: ", "<strong>\91Keywords</strong>: ")
+          , ("\91Keywords: ", "\91<strong>Keywords</strong>: ")
           , ("&lt;/i&gt;&lt;/b&gt;", "</em>")
           , ("&lt;b&gt;&lt;i&gt;", "<em>")
           , (" (4/8 ", " (4⁄8 ")
