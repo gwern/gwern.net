@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-11 18:37:51 gwern"
+When:  Time-stamp: "2021-10-12 10:52:02 gwern"
 License: CC-0
 -}
 
@@ -339,7 +339,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = map T.pack ts in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\t -> Link ("", ["link-tag"], []) [Str t] ("/docs/"`T.append`t`T.append`"/index#links", "Link to tag index") ) tags
+                       intersperse (Str ", ") $ map (\t -> Link ("", ["link-tag"], []) [Str t] ("/docs/"`T.append`t`T.append`"/index", "Link to tag index") ) tags
 
 -------------------------------------------------------------------------------------------------------------------------------
 
