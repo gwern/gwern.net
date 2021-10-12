@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-12 10:52:02 gwern"
+When:  Time-stamp: "2021-10-12 11:25:47 gwern"
 License: CC-0
 -}
 
@@ -29,6 +29,7 @@ import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
+import Network.URI (isURI)
 import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist, renameFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
@@ -651,26 +652,28 @@ data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv, biorxiv, pubmed :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l = return (Left Permanent)
-                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l = return (Left Permanent) -- WP is now handled by annotations.js calling the Mobile WP API
-                 | "https://arxiv.org/abs/" `isPrefixOf` l = arxiv l
-                 | "https://www.biorxiv.org/content/" `isPrefixOf` l = biorxiv l
-                 | "https://www.medrxiv.org/content/" `isPrefixOf` l = biorxiv l
-                 | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l = pubmed l
+linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (Left Permanent)
+                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l' = return (Left Permanent) -- WP is now handled by annotations.js calling the Mobile WP API
+                 | "https://arxiv.org/abs/" `isPrefixOf` l' = arxiv l'
+                 | "https://www.biorxiv.org/content/" `isPrefixOf` l' = biorxiv l'
+                 | "https://www.medrxiv.org/content/" `isPrefixOf` l' = biorxiv l'
+                 | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l' = pubmed l'
                      -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
-                 | "journals.plos.org" `isInfixOf` l = pubmed l
-                 | "plosbiology.org" `isInfixOf` l = pubmed l
-                 | "ploscompbiology.org" `isInfixOf` l = pubmed l
-                 | "plosgenetics.org" `isInfixOf` l = pubmed l
-                 | "plosmedicine.org" `isInfixOf` l = pubmed l
-                 | "plosone.org" `isInfixOf` l = pubmed l
-                 | null l = return (Left Permanent)
+                 | "journals.plos.org" `isInfixOf` l' = pubmed l'
+                 | "plosbiology.org" `isInfixOf` l' = pubmed l'
+                 | "ploscompbiology.org" `isInfixOf` l' = pubmed l'
+                 | "plosgenetics.org" `isInfixOf` l' = pubmed l'
+                 | "plosmedicine.org" `isInfixOf` l' = pubmed l'
+                 | "plosone.org" `isInfixOf` l' = pubmed l'
+                 | null l' = return (Left Permanent)
                  -- locally-hosted PDF?
-                 | ".pdf" `isInfixOf` l = let l' = linkCanonicalize l in if head l' == '/' then pdf $ tail l else return (Left Permanent)
+                 | ".pdf" `isInfixOf` l' = let l'' = linkCanonicalize l' in if head l'' == '/' then pdf $ tail l' else return (Left Permanent)
                  -- We skip Gwern.net pages, because Gwern.net pages are handled as live cross-page popups: if they have an abstract, it'll be visible at the top right under the metadata block, so generating annotations automatically turns out to be unnecessary (and bug prone)
-                 | "/" `isPrefixOf` l || "https://www.gwern.net/" `isPrefixOf` l = return (Left Permanent)
+                 | "/" `isPrefixOf` l' || "https://www.gwern.net/" `isPrefixOf` l' = return (Left Permanent)
                  -- And everything else is unhandled:
                  | otherwise = return (Left Permanent)
+                 -- check validity of all external links:
+                 where l' = if head l == '/' then l else if not (isURI l) then error $ "External URL is invalid‽ " ++ l else l
 
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
