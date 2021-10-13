@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-12 22:06:11 gwern"
+When:  Time-stamp: "2021-10-13 12:35:12 gwern"
 License: CC-0
 -}
 
@@ -853,13 +853,17 @@ processPubMedAbstract abst = let clean = runPure $ do
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
 processArxivAbstract u a = let cleaned = runPure $ do
-                                    pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack $
-                                      -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
+                                    let tex = sedMany [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt{\\1})")] $
                                               replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (" ~", " \\sim")] a
+
+                                    pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
+                                      -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
+
                                     writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
                  Left e -> error $ u ++ " : " ++ show e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
+
 
 --------------------------------------------
 -- String munging and processing
@@ -1182,7 +1186,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("OR=([.0-9])", "OR = \\1"), -- 'OR=2.9' → 'OR = 2.09'
         ("AOR=([.0-9])", "AOR = \\1"), -- 'AOR=2.9' → 'AOR = 2.09'
         -- math regexes
-        ("<span class=\"math inline\">\\\\\\(([a-z])\\\\\\)</span>", "<em>\\1</em>"), -- '<span class="math inline">\(d\)</span>'
+        ("<span class=\"math inline\">\\\\\\(([a-zA-Z])\\\\\\)</span>", "<em>\\1</em>"), -- '<span class="math inline">\(d\)</span>', 'the state matrix <span class="math inline">\(A\)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\)</span>", "\\1"), -- '<span class="math inline">\(30\)</span>'
         ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^"),
         ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^"),
@@ -1213,6 +1217,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(x&#39;(t) = Ax(t) + Bu(t), y(t) = Cx(t) + Du(t)\\)</span>", "<em>x&#39;(t)</em> = <em>Ax(t)</em> + <em>Bu(t)</em>, <em>y(t)</em> = <em>Cx(t)</em> + <em>Du(t)</em>")
           , ("<span class=\"math inline\">\\(_{50}\\)</span>", "<sub>50</sub>")
           , ("<span class=\"math inline\">\\(_r\\)</span>", "<sub><em>r</em></sub>")
           , ("<span class=\"math inline\">\\(tanh\\)</span>", "<em>tanh</em>")

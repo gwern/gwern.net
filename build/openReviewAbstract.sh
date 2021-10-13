@@ -3,7 +3,7 @@
 # openReviewAbstract.sh: scrape paper metadata from OpenReview
 # Author: Gwern Branwen
 # Date: 2021-10-12
-# When:  Time-stamp: "2021-10-12 20:01:35 gwern"
+# When:  Time-stamp: "2021-10-13 12:34:54 gwern"
 # License: CC-0
 #
 # Shell script to scrape paper titles/date/author/abstract (TLDR if exists, then full abstract)/keywords from the OpenReview conference website.
@@ -39,4 +39,9 @@ curl --silent --location "$@" | \
        .props.pageProps.forumNote.content."TL;DR",
        (.props.pageProps.forumNote.content.abstract | sub("\n"; " ")),
        (.props.pageProps.forumNote.content.keywords | join(", "))?' | \
-    sed -e 's/^null$//'
+           # empty fields should be empty lines
+    sed -e 's/^null$//' | \
+        # join hyphen-broken newlines
+        sed -e ':again' -e '/[[:alpha:]]-$/ { N; s/-\n//; b again; }' | \
+            # manually clean up some LaTeXisms that Pandoc ignores:
+            sed -e 's/\\mbox{\([[:graph:]]*\)}/\\emph{\1}/g' -e 's/\\citep\?{\([[:graph:]]*\)}/\(\\texttt{\1}\)/g'
