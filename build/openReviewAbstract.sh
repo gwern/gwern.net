@@ -3,10 +3,10 @@
 # openReviewAbstract.sh: scrape paper metadata from OpenReview
 # Author: Gwern Branwen
 # Date: 2021-10-12
-# When:  Time-stamp: "2021-10-12 16:19:02 gwern"
+# When:  Time-stamp: "2021-10-12 20:01:35 gwern"
 # License: CC-0
 #
-# Shell script to scrape paper titles/date/author/abstract (tldr if exists, then full abstract)/keywords from the OpenReview conference website.
+# Shell script to scrape paper titles/date/author/abstract (TLDR if exists, then full abstract)/keywords from the OpenReview conference website.
 #
 # Examples:
 #
@@ -30,13 +30,13 @@
 # set -e
 # set -x
 
-curl --silent "$@" | \
-    # normalizing with Tidy puts the JSON object on a single line, which we can then grep out without fullblown HTML parsing:
+curl --silent --location "$@" | \
+    # normalizing with Tidy puts the JSON object on a single line, which we can then grep out without full-blown HTML parsing:
     tidy -quiet 2>/dev/null | fgrep "pageProps" | \
     jq --raw-output '.props.pageProps.forumNote.content.title,
        (.props.pageProps.forumNote.content.authors | join(", ")),
        (.props.pageProps.forumNote.tmdate / 1000 | strftime("%F")),
        .props.pageProps.forumNote.content."TL;DR",
-       .props.pageProps.forumNote.content.abstract,
-       (.props.pageProps.forumNote.content.keywords|join(", "))' | \
+       (.props.pageProps.forumNote.content.abstract | sub("\n"; " ")),
+       (.props.pageProps.forumNote.content.keywords | join(", "))?' | \
     sed -e 's/^null$//'

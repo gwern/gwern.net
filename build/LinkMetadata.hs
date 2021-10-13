@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-12 16:29:19 gwern"
+When:  Time-stamp: "2021-10-12 20:04:18 gwern"
 License: CC-0
 -}
 
@@ -818,8 +818,9 @@ openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                     case status of
                         ExitFailure _ -> hPutStrLn stderr ("OpenReview download failed: " ++ p) >> return (Left Permanent)
                         _ -> do
-                               let (title:date:author:tldr:desc:keywords:[]) = lines $ U.toString bs
-                               let abstractCombined = intercalate "\n\n" [tldr, desc, "[Keywords: " ++ keywords ++ "]"]
+                               let (title:date:author:tldr:desc:keywords) = lines $ U.toString bs
+                               let keywords' = if null keywords then "" else "[Keywords: " ++ concat keywords ++ "]"
+                               let abstractCombined = intercalate "\n\n" [tldr, desc, keywords']
                                return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
                                                    -- due to pseudo-LaTeX
                                                     processArxivAbstract p abstractCombined))
@@ -1147,6 +1148,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<p> *", "<p>"),
         (" *</p>", "</p>"),
         ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
+        ("([0-9][0-9]+) ?x ?([0-9][0-9]+) ?px", "\\1×\\2px"), --  "Alexnet performance for 16 x16 px features)."
         ("([0-9]+)[ -]fold", "\\1×"),
         ("([0-9]+)[ -]times", "\\1×"),
         ("<br/> <strong>([A-Z][a-z]+)<\\/strong><p>", "<p><strong>\\1</strong>: "), --         <br/> <strong>Background</strong><p>
