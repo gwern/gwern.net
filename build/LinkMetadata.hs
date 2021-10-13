@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-12 20:04:18 gwern"
+When:  Time-stamp: "2021-10-12 22:06:11 gwern"
 License: CC-0
 -}
 
@@ -24,7 +24,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
-import Data.Maybe (Maybe, fromJust, fromMaybe, isNothing)
+import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
@@ -105,6 +105,9 @@ readLinkMetadata = do
              let dateRegex = mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) custom in
                Par.mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex dateRegex d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+
+             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) custom in
+               Par.mapM_ (\a -> when (not (null a)) $ when (isJust (matchRegex dateRegex a)) (error $ "Mixed up author & date?: " ++ a) ) authors
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi) custom in
                  when (not (null badDoisDash)) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
@@ -818,8 +821,10 @@ openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                     case status of
                         ExitFailure _ -> hPutStrLn stderr ("OpenReview download failed: " ++ p) >> return (Left Permanent)
                         _ -> do
-                               let (title:date:author:tldr:desc:keywords) = lines $ U.toString bs
-                               let keywords' = if null keywords then "" else "[Keywords: " ++ concat keywords ++ "]"
+                               let (title:author:date:tldr:desc:keywords) = lines $ U.toString bs
+                               let keywords' = if null keywords || keywords == [""] then "" else
+                                                 if length keywords > 1 then (unlines $ init keywords) ++ "\n\n[Keywords: " ++ last keywords ++ "]"
+                                                 else "[Keywords: " ++ concat keywords ++ "]"
                                let abstractCombined = intercalate "\n\n" [tldr, desc, keywords']
                                return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
                                                    -- due to pseudo-LaTeX
