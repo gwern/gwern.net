@@ -36,11 +36,18 @@ generateDirectory mta dir'' = do
   direntries <- listDirectory dir''
   let direntries' = map (\entry -> "/"++dir''++entry) direntries
 
-  dirs   <- listDirectories direntries'
-
-  pairs  <- listFiles  mta  direntries'
   tagged <- listTagged mta  (init dir'')
-  let links = nub $ reverse $ sortByDate $ pairs++tagged -- newest first, to show recent additions
+  -- we allow tag-directories to be cross-listed, not just children. So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'. This allows cross-references without requiring deep nesting - 'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
+  let taggedDirs = map (\(f,_,_) -> f) $ filter (\(f,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f) tagged
+  let direntries'' = direntries' ++ taggedDirs
+  -- we suppress what would be duplicate entries in the File/Links section
+  let tagged' = filter (\(f,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
+
+  dirs   <- listDirectories direntries''
+
+  pairs  <- listFiles  mta  direntries''
+
+  let links = nub $ reverse $ sortByDate $ pairs++tagged' -- newest first, to show recent additions
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
   let tagSelf = init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
@@ -113,7 +120,7 @@ generateYAMLHeader d = "---\n" ++
 
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
-                       directories <- filterM (doesDirectoryExist . tail) direntries'
+                       directories <- filterM (doesDirectoryExist . tail) $ map (replace "/index" "") direntries'
                        let directoriesMi = sort $ map (++"/index") directories
                        filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
 
