@@ -16,7 +16,7 @@ import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, Metada
 
 main :: IO ()
 main = do args <- getArgs
-          let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
+          let links = map (replace "https://www.gwern.net/" "/") $ filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
           tags <- filterM (\arg' -> doesDirectoryExist ("docs/"++arg')) $ filter (\arg -> (not (arg `elem` links))) args
           mapM_ (\link -> mapM_ (addOneTag link) tags) links
 
