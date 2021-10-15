@@ -5,7 +5,7 @@
 -- eg 'addTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects" "economics/experience-curve" "genetics/heritable" "https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data"' would tag the 2 links into 2 tag-directories.
 module Main where
 
-import Control.Monad (filterM, when)
+import Control.Monad (when)
 import Data.List.Utils (replace)
 import Data.List (isPrefixOf)
 import Data.Maybe (isJust, fromJust)
@@ -17,7 +17,9 @@ import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, Metada
 main :: IO ()
 main = do args <- getArgs
           let links = map (replace "https://www.gwern.net/" "/") $ filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
-          tags <- filterM (\arg' -> doesDirectoryExist ("docs/"++arg')) $ filter (\arg -> (not (arg `elem` links))) args
+          let tags = filter (\arg -> (not (arg `elem` links))) args
+          mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++arg')
+                             if not filep then error ("Error: specified tag not defined? '" ++ arg' ++ "'") else return arg') tags
           mapM_ (\link -> mapM_ (addOneTag link) tags) links
 
 addOneTag :: String -> String -> IO ()
@@ -27,8 +29,8 @@ addOneTag link tag = do
           link'' <- if not (head link' /= '/' && take 4 link' /= "http") then return link' else
                      do existP <- doesFileExist link'
                         if existP then return $ "/" ++ link' else
-                          error $ "Arguments not 'addTag.hs tag *link*'? and file does not exist? : " ++ link'
-          when (head tag == '/'  || take 4 tag == "http")  $ error $ "Arguments not 'addTag.hs *tag* link'? : " ++ tag
+                          error $ "File does not exist? : '" ++ link' ++ "'"
+          when (head tag == '/'  || take 4 tag == "http")  $ error $ "Arguments not 'addTag.hs *tag* link'? : '" ++ tag ++ "'"
           [custom,partial,auto] <- mapM readYaml ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
           addAndWriteTags tag link'' custom partial auto
 
