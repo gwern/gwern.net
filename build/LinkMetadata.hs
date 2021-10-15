@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-15 11:34:41 gwern"
+When:  Time-stamp: "2021-10-15 15:31:59 gwern"
 License: CC-0
 -}
 
@@ -1098,7 +1098,7 @@ generateID url author date
 authorsToCite :: String -> String -> String
 authorsToCite author date =
   let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
-      authors = split ", " $ sedMany [(" \\([A-Za-z]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" would break the later string-munging & eventually the HTML
+      authors = split ", " $ sedMany [(" \\([A-Za-z ]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" would break the later string-munging & eventually the HTML
       authorCount = length authors
       firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
   in
