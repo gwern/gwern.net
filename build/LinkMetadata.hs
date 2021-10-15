@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-13 12:57:00 gwern"
+When:  Time-stamp: "2021-10-15 11:34:41 gwern"
 License: CC-0
 -}
 
@@ -286,7 +286,7 @@ generateAnnotationBlock rawFilep (f, ann) blp = case ann of
                               Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
                                 let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
-                                    author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)], Space]
+                                    author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)]]
                                     date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
@@ -301,11 +301,13 @@ generateAnnotationBlock rawFilep (f, ann) blp = case ann of
                                   [Para
                                        (linkPrefix ++ [link,Str ","] ++
                                          author ++
-                                         [Str "("] ++
-                                         date ++
-                                         tags ++
-                                         backlink ++
-                                         [Str ")"] ++
+                                         (if (date++tags++backlink)==[] then []
+                                           else [Str " ("] ++
+                                                date ++
+                                                tags ++
+                                                backlink ++
+                                                [Str ")"]
+                                         ) ++
                                          [Str ":"]),
                                        BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                   ]
@@ -398,7 +400,7 @@ readYaml yaml = do filep <- doesFileExist yaml
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
-                                    defTag = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
+                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path)) then replace "/docs/" "" $ takeDirectory path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
@@ -456,7 +458,7 @@ pageTagDB = M.fromList [
   , ("/Creatine", ["creatine"])
   , ("/Crops", ["ai/anime"])
   , ("/Cryonics", ["cryonics"])
-  , ("/CYOA", ["ai/gpt"])
+  , ("/CYOA", ["fiction/text-game"])
   , ("/Danbooru2020", ["ai/anime"])
   , ("/Death-Note-Ending", ["anime"])
   , ("/Death-Note-script", ["statistics/bayes"])
@@ -853,8 +855,11 @@ processPubMedAbstract abst = let clean = runPure $ do
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
 processArxivAbstract :: String -> String -> String
 processArxivAbstract u a = let cleaned = runPure $ do
-                                    let tex = sedMany [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt{\\1})")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (" ~", " \\sim")] a
+                                    let tex = sedMany [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt{\\1})"),
+                                                      ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
+                                                      ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
+                                                      ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ""), (" ~", " \\sim")] a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
@@ -1082,6 +1087,12 @@ generateID url author date
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7770104/", "couvyduchesne-et-al-2020-brain-age")
        , ("/docs/statistics/decision/1983-howard-readingsondecisionanalysis-v1.pdf", "howard-matheson-1983-readings-v1")
        , ("/docs/statistics/decision/1983-howard-readingsondecisionanalysis-v2.pdf", "howard-matheson-1983-readings-v2")
+       , ("https://openaccess.thecvf.com/content/ICCV2021/papers/Zhang_SmartShadow_Artistic_Shadow_Drawing_Tool_for_Line_Drawings_ICCV_2021_paper.pdf", "zhang-et-al-2021-smartshadow")
+       , ("https://arxiv.org/abs/2104.13742", "wang-et-al-2021-minegan")
+       , ("https://arxiv.org/abs/2102.12593", "li-et-al-2021-anigan")
+       , ("https://github.com/arfafax/E621-Face-Dataset", "arfafax-2020-e621")
+       , ("https://arxiv.org/abs/1908.05840", "kim-et-al-2019-tag2pix")
+       , ("http://www.engineeringletters.com/issues_v27/issue_3/EL_27_3_01.pdf", "liu-et-al-2019-animesketchcoloring")
       ]
 
 authorsToCite :: String -> String -> String

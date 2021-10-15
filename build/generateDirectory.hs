@@ -39,7 +39,7 @@ generateDirectory mta dir'' = do
   tagged <- listTagged mta  (init dir'')
   -- we allow tag-directories to be cross-listed, not just children. So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'. This allows cross-references without requiring deep nesting - 'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
   let taggedDirs = map (\(f,_,_) -> f) $ filter (\(f,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f) tagged
-  let direntries'' = direntries' ++ taggedDirs
+  let direntries'' = sort direntries' ++ sort taggedDirs
   -- we suppress what would be duplicate entries in the File/Links section
   let tagged' = filter (\(f,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
@@ -121,7 +121,7 @@ generateYAMLHeader d = "---\n" ++
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
                        directories <- filterM (doesDirectoryExist . tail) $ map (replace "/index" "") direntries'
-                       let directoriesMi = sort $ map (++"/index") directories
+                       let directoriesMi = map (++"/index") directories
                        filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
 
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
@@ -195,7 +195,8 @@ generateListItems p = BulletList (map generateItem p)
 
 generateSections :: [(FilePath, MetadataItem,FilePath)] -> [Block]
 generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
-                                let sectionID = if aut=="" then "" else (generateID f aut dt) `T.append` "-section"
+                                let sectionID = if aut=="" then "" else let linkId = (generateID f aut dt) in
+                                                                          if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite aut dt
                                 in
                                  [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite aut dt))]]
