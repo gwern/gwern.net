@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-10-11 20:17:29 gwern"
+When:  Time-stamp: "2021-10-15 19:17:41 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -832,7 +832,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("R\\. ?A\\. ?Fisher", "https://en.wikipedia.org/wiki/Ronald_Fisher")
         , ("R\\. ?A\\. ?Lafferty", "https://en.wikipedia.org/wiki/R._A._Lafferty")
         , ("R\\. Scott Bakker", "https://en.wikipedia.org/wiki/R._Scott_Bakker")
-        , ("Rainbow", "https://arxiv.org/abs/1710.02298#deepmind")
         , ("RandAugment", "https://arxiv.org/abs/1909.13719#google")
         , ("Randall Jarrell", "https://en.wikipedia.org/wiki/Randall_Jarrell")
         , ("Ravelry", "https://en.wikipedia.org/wiki/Ravelry")
@@ -1213,7 +1212,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Pp]rice discrimination", "https://en.wikipedia.org/wiki/Price_discrimination")
         , ("[Pp]riming", "https://en.wikipedia.org/wiki/Priming_(psychology)")
         , ("[Pp]rincipal-agent problems?", "https://en.wikipedia.org/wiki/Principal-agent_problems")
-        , ("[Pp]rior", "https://en.wikipedia.org/wiki/Prior_probability")
+        , ("([Pp]riors|[Pp]rior probabil(y|ies)|[Pp]rior distributions?)", "https://en.wikipedia.org/wiki/Prior_probability")
         , ("[Pp]silocybin", "https://en.wikipedia.org/wiki/Psilocybin")
         , ("[Pp]sychopath(y|ic|s)?", "https://en.wikipedia.org/wiki/Psychopathy")
         , ("[Pp]ublic [Dd]omain", "https://en.wikipedia.org/wiki/Public_domain")
