@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-16 16:05:19 gwern"
+When:  Time-stamp: "2021-10-17 12:01:09 gwern"
 License: CC-0
 -}
 
@@ -896,6 +896,7 @@ restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfix
 -- regexp can warn about citation-text which needs to be linkified.
 generateID :: String -> String -> String -> T.Text
 generateID url author date
+  -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
   -- eg '/Faces' = '#gwern-faces'
   | ("Gwern Branwen" == author) ||
@@ -909,7 +910,7 @@ generateID url author date
   | author == "" = ""
   | date   == "" = ""
   -- 'Foo 2020' → '#foo-2020'; 'Foo & Bar 2020' → '#foo-bar-2020'; 'foo et al 2020' → 'foo-et-al-2020'
-  | otherwise = T.pack $ citeToID $ authorsToCite author date
+  | otherwise = T.pack $ citeToID $ authorsToCite url author date
   where
     linkIDOverrides :: [(String, T.Text)]
     linkIDOverrides = [
@@ -1098,18 +1099,18 @@ generateID url author date
        , ("http://www.engineeringletters.com/issues_v27/issue_3/EL_27_3_01.pdf", "liu-et-al-2019-animesketchcoloring")
       ]
 
-authorsToCite :: String -> String -> String
-authorsToCite author date =
+authorsToCite :: String -> String -> String -> String
+authorsToCite url author date =
   let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
       authors = split ", " $ sedMany [(" \\([A-Za-z ]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" would break the later string-munging & eventually the HTML
       authorCount = length authors
       firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
   in
        if authorCount == 0 then "" else
-           -- handle cases like '/docs/statistics/peer-review/1975-johnson-2.pdf'
-           -- let suffix = (let s = take 1 $ reverse $ takeBaseName url in if (s /= "") && isNumber (head s) then "-" ++ s else "") in
-             -- let suffix' = if suffix == "-1" then "" else suffix in
-           let suffix' = "" in
+           -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
+           let suffix' = let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
+                           if suffix == url then "" else "-" ++ suffix
+           in
            if authorCount >= 3 then
                            firstAuthorSurname ++ " et al " ++ year ++ suffix' else
                              if authorCount == 2 then
