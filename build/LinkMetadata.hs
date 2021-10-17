@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-15 15:31:59 gwern"
+When:  Time-stamp: "2021-10-16 16:05:19 gwern"
 License: CC-0
 -}
 
@@ -18,7 +18,7 @@ import Data.Char (isAlpha, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (empty, elems, fromList, toList, lookup, map, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
@@ -144,7 +144,10 @@ readLinkMetadata = do
              -- check tags (not just custom but all of them, including partials)
              let tagsSet = nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) final
              Par.mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
-                                   unless directoryP $ error ("Link Annotation Error: tag does not match a directory! " ++ tag)) tagsSet
+                                   when (not directoryP) $ do
+                                     let missingTags = M.filter (\(_,_,_,_,tags,_) -> tag`elem`tags) final
+                                     error ("Link Annotation Error: tag does not match a directory! " ++ show missingTags))
+               tagsSet
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
@@ -1869,6 +1872,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<small></small>", "")
           , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
           , (" et al. ", " et al ")
+          , (" C. elegans", " <em>C. elegans</em>")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
           , ("one- or five-shot", "one-shot or five-shot")
