@@ -58,10 +58,10 @@ if (window.Extracts) {
                                     >${referenceData.titleHTML}</a>`;
 
         let tagBacklinks = ``;
-        if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = ``; } else {
-            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `<p class="data-field link-tags">${referenceData.tagsHTML}</p>`; } else {
-                if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `<p>${referenceData.backlinksHTML}</p>`; } else {
-                    if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `<p>${referenceData.tagsHTML}; ${referenceData.backlinksHTML}</p>`; }
+        if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = `</p>`; } else {
+            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `; <span class="data-field link-tags">${referenceData.tagsHTML}</p>`; } else {
+                if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.backlinksHTML}</p>`; } else {
+                    if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.tagsHTML}; ${referenceData.backlinksHTML}</p>`; }
                 }
             }
         }
@@ -71,7 +71,7 @@ if (window.Extracts) {
         if (Annotations.isWikipediaLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
         return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
-            + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}</p>`
+            + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}`
             + tagBacklinks
             + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
