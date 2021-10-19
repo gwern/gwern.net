@@ -1417,6 +1417,7 @@ a[href*='erowid.org']:hover::after {
 .markdownBody a[href*='wikisource.org'].docMetadata {
     background-image: var(--GW-dotted-underline-background-image);
     background-size: 2px 1px;
+    padding-left: 0em;
 }
 .markdownBody a[href*='wikipedia.org'].docMetadata:hover,
 .markdownBody a[href*='wikimedia.org'].docMetadata:hover,
