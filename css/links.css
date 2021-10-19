@@ -1425,11 +1425,17 @@ a[href*='erowid.org']:hover::after {
 .markdownBody a[href*='wikisource.org'].docMetadata:hover {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
+/* Suppress the WP link icon suffix, and suppress the hook annotation for WP articles (knowledge of WP 'articles' vs Talk pages/History/etc is baked into the links by the docMetadata+has-annotation classes, see LinkMetadata.hs's `wikipediaArticleNamespace` function); the dotted-underlining is enough. */
 a[href*='wikipedia.org'].docMetadata::after,
 a[href*='wikimedia.org'].docMetadata::after,
 a[href*='wiktionary.org'].docMetadata::after,
 a[href*='wikimediafoundation.org'].docMetadata::after,
-a[href*='wikisource.org'].docMetadata::after {
+a[href*='wikisource.org'].docMetadata::after,
+a[href*='wikipedia.org'].has-annotation::before,
+a[href*='wikimedia.org'].docMetadata::before,
+a[href*='wiktionary.org'].docMetadata::before,
+a[href*='wikimediafoundation.org'].docMetadata::before,
+a[href*='wikisource.org'].docMetadata::before {
     content: none;
 }
 a[href*='wikipedia.org']::after, /* primary user: en.wikipedia.org */
