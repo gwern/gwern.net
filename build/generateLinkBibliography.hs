@@ -9,6 +9,7 @@ module Main where
 
 import Data.List (isPrefixOf, isSuffixOf, nub)
 import Data.List.Utils (replace)
+import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup)
 import System.Directory (doesFileExist, renameFile, removeFile, createDirectoryIfMissing)
 import System.Environment (getArgs)
@@ -84,7 +85,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = let f'
                                             [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
                                           else
                                             [Para (Code nullAttr (T.pack f') :
-                                                    Link nullAttr [Str ":", Space, Str "“", Str (T.pack t), Str "”"] (T.pack f, "") : author)]
+                                                    Link nullAttr [Str ":", Space, Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 generateLinkBibliographyItem (f,a) = generateAnnotationBlock ("/"`isPrefixOf`f) (f,Just a) ""
 
 extractLinksFromPage :: String -> IO [String]

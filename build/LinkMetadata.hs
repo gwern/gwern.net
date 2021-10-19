@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-17 12:01:09 gwern"
+When:  Time-stamp: "2021-10-19 19:45:54 gwern"
 License: CC-0
 -}
 
@@ -26,6 +26,7 @@ import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, s
 import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.IO as TIO (readFile, writeFile)
+import Data.Text.Titlecase (titlecase)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
@@ -159,7 +160,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                              let filepath = take 247 $ urlEncode u'
                                              let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
                                              when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                             let titleHtml    = typesetHtmlField "" a
+                                             let titleHtml    = typesetHtmlField "" $ titlecase a
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in smallcaps-ing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
@@ -439,7 +440,6 @@ pageTagDB = M.fromList [
   , ("/Against-The-Miletians", ["philosophy"])
   , ("/Anime-criticism-is-not-about-quality", ["anime"])
   , ("/Archiving-URLs", ["linkrot"])
-  , ("/Arias-past-present-and-future", ["anime"])
   , ("/backfire-effect", ["sociology"])
   , ("/Bacopa", ["nootropic"])
   , ("/BigGAN", ["ai/gan"])
@@ -903,7 +903,7 @@ generateID url author date
     (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url) && not ("/index"`isInfixOf`url))
   = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
   -- skip tag links:
-  | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index#links" `isSuffixOf` url) = ""
+  | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- shikata ga nai:
@@ -1208,8 +1208,8 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\)</span>", "\\1"), -- '<span class="math inline">\(30\)</span>'
         ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^([.0-9]+)\\$",             "\\1 × \\2^\\3^"),
         ("\\$([.0-9]+) \\\\cdot ([.0-9]+)\\^\\{([.0-9]+)\\}\\$",       "\\1 × \\2^\\3^"),
-        ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\times\\\\\\)</span>", "\\1×"), -- '<span class="math inline">\(1.5\times\)</span>'
-        ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\times ([0-9.]+)\\\\\\)</span>", "\\1×\\2"), -- '<span class="math inline">\(224\times\ 224)</span>'
+        ("<span class=\"math inline\">\\\\\\(([0-9.]+) ?\\\\times\\\\\\)</span>", "\\1×"), -- '<span class="math inline">\(1.5\times\)</span>'
+        ("<span class=\"math inline\">\\\\\\(([0-9.]+) ?\\\\times ([0-9.]+)\\\\\\)</span>", "\\1×\\2"), -- '<span class="math inline">\(224\times\ 224)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\%\\\\\\)</span>", "\\1%"), -- '<span class=\"math inline\">\\(83.6\\%\\)</span>'
         ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×"), -- '<span class="math inline">\(\times\)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^4\)</span>'
@@ -1741,6 +1741,8 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("r≤", "<em>r</em> ≤ ")
           , ("<var>", "<em>")
           , ("</var>", "</em>")
+          , ("</monospace>", "</code>")
+          , ("<monospace>", "<code>")
           , ("<code class=\"mw-highlight mw-highlight-lang-text mw-content-ltr\" dir=\"ltr\"", "<code")
           , ("<wbr />", "")
           , ("<wbr/>", "")

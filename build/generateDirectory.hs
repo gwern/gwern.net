@@ -8,6 +8,7 @@ module Main where
 import Control.Monad (filterM)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
 import Data.List.Utils (replace)
+import Data.Text.Titlecase (titlecase)
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile, removeFile)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
@@ -197,11 +198,10 @@ generateSections :: [(FilePath, MetadataItem,FilePath)] -> [Block]
 generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
                                 let sectionID = if aut=="" then "" else let linkId = (generateID f aut dt) in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
-                                    authorShort = authorsToCite aut dt
+                                    authorShort = authorsToCite f aut dt
                                 in
-                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite aut dt))]]
+                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt))]]
                                  ++ generateItem p)
-
 
 generateItem :: (FilePath,MetadataItem,FilePath) -> [Block]
 generateItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
@@ -212,7 +212,7 @@ generateItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f e
                                           if t=="" then
                                             [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : (author ++ backlink))]
                                           else
-                                            [Para (Code nullAttr (T.pack f') : (Link nullAttr [Str ":", Space, Str "“", Str (T.pack t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
+                                            [Para (Code nullAttr (T.pack f') : (Link nullAttr [Str ":", Space, Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
 
 generateItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
