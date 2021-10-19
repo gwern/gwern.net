@@ -3,7 +3,7 @@
 
 module Main where
 
-import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, queryWith, readerExtensions,
+import Text.Pandoc (def, nullMeta, pandocExtensions, queryWith, readerExtensions,
                      readHtml, readMarkdown, runPure, writeHtml5String, writerExtensions,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
 import Text.Pandoc.Walk (walk)
@@ -64,7 +64,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                              Just (_,aut,dt,_,_,_) -> let i = generateID (T.unpack target) aut dt in
                                                                                       if i=="" then "" else "#" `T.append` i
                                        let content = BulletList $
-                                            map (\c -> [Para [Link nullAttr
+                                            map (\c -> [Para [Link ("", ["link-local"], []) -- specify that links are popup-able
                                                                   [Str (if T.head c == '/' then T.tail c else c)]
                                                                   (c`T.append`ident, "")]
                                                    ]
