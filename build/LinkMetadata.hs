@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-19 19:45:54 gwern"
+When:  Time-stamp: "2021-10-20 12:04:27 gwern"
 License: CC-0
 -}
 
@@ -726,7 +726,7 @@ pdf p = do let p' = takeWhile (/='#') p
    filterMeta :: String -> String
    filterMeta ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
     where badSubstrings, badWholes :: [String]
-          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics"]
+          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd"]
           badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
 
 -- nested JSON object: eg 'jq .message.abstract'
@@ -1097,6 +1097,11 @@ generateID url author date
        , ("https://github.com/arfafax/E621-Face-Dataset", "arfafax-2020-e621")
        , ("https://arxiv.org/abs/1908.05840", "kim-et-al-2019-tag2pix")
        , ("http://www.engineeringletters.com/issues_v27/issue_3/EL_27_3_01.pdf", "liu-et-al-2019-animesketchcoloring")
+       , ("/docs/sociology/2010-kelly-whattechwants-ch7-convergence.pdf",                  "2010-kelly-ch7")
+       , ("/docs/sociology/2010-kelly-whattechnologywants-ch11-lessonsofamishhackers.pdf", "2010-kelly-ch11")
+       , ("/docs/reinforcement-learning/openai/2017-openai-form990.pdf", "2017-clark")
+       , ("https://arxiv.org/abs/2005.12126#nvidia",    "kim-et-al-2020-gamegan-paper")
+       , ("https://nv-tlabs.github.io/gameGAN/#nvidia", "kim-et-al-2020-gamegan-repo")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1151,10 +1156,12 @@ initializeAuthors a' = replaceMany [("Meena", "M."), (",,", ","), (", ,", ", "),
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
                          (", +", ", "),
-                         ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith" → "A. Smith"
-                         ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith" → "A. B. Smith"
+                         ("([A-Z]\\.)([A-Za-z]+)", "\\1 \\2"),                              -- "A.Smith"      → "A. Smith"
+                         ("([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3"),               -- "A.B. Smith"   → "A. B. Smith"
                          ("([A-Z]\\.)([A-Z]\\.)([A-Z]\\.) ([A-Za-z]+)", "\\1 \\2 \\3 \\4"), -- "C.A.B. Smith" → "C. A. B. Smith"
-                         (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith" → "John H. Smith"
+                         (" ([A-Z])([A-Z])([A-Z]) ", " \\1. \\2. \\3. "),                   -- "John HAB Smith" → "John H. A. B. Smith"
+                         (" ([A-Z])([A-Z]) ", " \\1. \\2. "),                               -- "John HA Smith"  → "John H. A. Smith"
+                         (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith"   → "John H. Smith"
                          ]
                        a'
 

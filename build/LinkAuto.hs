@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-10-15 19:17:41 gwern"
+When:  Time-stamp: "2021-10-20 12:00:38 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -251,7 +251,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Extraversion|Introversion)", "https://en.wikipedia.org/wiki/Extraversion_and_introversion")
         , ("(Fate/Grand Order|FGO|F:GO)", "https://en.wikipedia.org/wiki/Fate%2FGrand_Order")
         , ("(Fermi [Pp]roblem.?|Fermi [Qq]uestion.?)", "https://en.wikipedia.org/wiki/Fermi_problem")
-        , ("(Fr[ée]chet inception distance|FID)", "https://en.wikipedia.org/wiki/Fr%C3%A9chet_inception_distance")
+        , ("(Fr[ée]chet [Ii]nception [Dd]istance|FID)", "https://en.wikipedia.org/wiki/Fr%C3%A9chet_inception_distance")
         , ("(Friedrich Nietzsche|Nietzsche)", "https://en.wikipedia.org/wiki/Friedrich_Nietzsche")
         , ("(Fujiwara (no )?Teika|Teika (no )?Fujiwara)", "https://en.wikipedia.org/wiki/Fujiwara_no_Teika")
         , ("(GSEM|[Gg]enomic SEM|[Gg]enomic [Ss]tructural [Ee]quation [Mm]odeling)", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6520146/")

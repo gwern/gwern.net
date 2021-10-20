@@ -200,7 +200,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
                                 in
-                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt))]]
+                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++titlecase t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt))]]
                                  ++ generateItem p)
 
 generateItem :: (FilePath,MetadataItem,FilePath) -> [Block]
