@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-20 12:04:27 gwern"
+When:  Time-stamp: "2021-10-20 21:36:27 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Me
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
-import Data.Char (isAlpha, isPunctuation, isSpace, toLower)
+import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, writeFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
@@ -30,7 +30,7 @@ import Data.Text.Titlecase (titlecase)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
-import Network.URI (isURI)
+import Network.URI (isURI, uriFragment, parseURIReference)
 import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist, renameFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
@@ -1112,9 +1112,15 @@ authorsToCite url author date =
       firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
   in
        if authorCount == 0 then "" else
-           -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
-           let suffix' = let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
-                           if suffix == url then "" else "-" ++ suffix
+           let
+             -- hashes: "https://www.google.com/foo.pdf#page=14" → "-page-14"; this is most useful for cases where we link a PDF but also specific pages in it, which produces colliding ids (eg '/docs/psychology/2013-kurzban.pdf#page=14' vs '/docs/psychology/2013-kurzban.pdf')
+             -- We skip this for annotations like '#deepmind', however. There's no need to have to write IDs like 'silver-et-al-2016-deepmind', when 'silver-et-al-2016' is entirely adequate for a unique short ID.
+             extension = if not ("#page=" `isInfixOf` url) then "" else
+                           map (\c -> if isAlphaNum c then c else '-') $ uriFragment $ fromJust $ parseURIReference url
+             -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
+             suffix' = (let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
+                           if suffix == url then "" else "-" ++ suffix) ++ extension
+
            in
            if authorCount >= 3 then
                            firstAuthorSurname ++ " et al " ++ year ++ suffix' else
