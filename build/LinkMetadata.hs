@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-20 21:36:27 gwern"
+When:  Time-stamp: "2021-10-20 23:33:19 gwern"
 License: CC-0
 -}
 
@@ -30,7 +30,7 @@ import Data.Text.Titlecase (titlecase)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
 import Network.HTTP (urlEncode)
-import Network.URI (isURI, uriFragment, parseURIReference)
+import Network.URI (isURIReference, uriFragment, parseURIReference)
 import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist, renameFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
@@ -682,7 +682,7 @@ linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (
                  -- And everything else is unhandled:
                  | otherwise = return (Left Permanent)
                  -- check validity of all external links:
-                 where l' = if head l == '/' then l else if not (isURI l) then error $ "External URL is invalid‽ " ++ l else l
+                 where l' = if head l == '/' then l else if not (isURIReference l) then error $ "External URL is invalid‽ " ++ l else l
 
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]

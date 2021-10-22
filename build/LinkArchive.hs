@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-08-31 12:51:09 gwern"
+When:  Time-stamp: "2021-10-21 20:44:39 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -901,5 +901,6 @@ whiteList url
       , "thechineseteashop.com/" -- homepage
       , "teahabitat.com/" -- homepage
       , "raganwald.com" -- stable
+      , "aclanthology.org" -- stable
       ] = True
     | otherwise = False
