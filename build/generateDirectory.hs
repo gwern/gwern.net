@@ -189,7 +189,10 @@ generateDirectoryItems parent ds = let parent' = T.pack $ takeDirectory parent i
       (if length ds < 8 then [] else [RawBlock (Format "html") "</div>"])
     )
  where generateDirectoryItem :: FilePath -> [Block]
-       generateDirectoryItem d = [Para [Link nullAttr [Code nullAttr (T.pack $ "↓ " ++ takeDirectory d)] (T.pack d, "")]]
+       generateDirectoryItem d = [Para [Link nullAttr [Str (T.pack $ directoryPrefix parent d), Code nullAttr (T.pack $ takeDirectory d)] (T.pack d, "")]]
+       -- subdirectories are 'down', while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out' (left) because 'right' would imply some sort of 'inward'
+       directoryPrefix :: FilePath -> FilePath -> String
+       directoryPrefix parent' d' = if takeDirectory d' `isSuffixOf` parent' then "↓ " else "← "
 
 generateListItems :: [(FilePath, MetadataItem,FilePath)] -> Block
 generateListItems p = BulletList (map generateItem p)
