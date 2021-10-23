@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-20 23:33:19 gwern"
+When:  Time-stamp: "2021-10-22 20:07:22 gwern"
 License: CC-0
 -}
 
@@ -147,7 +147,7 @@ readLinkMetadata = do
              Par.mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
                                    when (not directoryP) $ do
                                      let missingTags = M.filter (\(_,_,_,_,tags,_) -> tag`elem`tags) final
-                                     error ("Link Annotation Error: tag does not match a directory! " ++ show missingTags))
+                                     error ("Link Annotation Error: tag does not match a directory! " ++ "Tag: " ++ tag ++ "; annotation: " ++ show missingTags))
                tagsSet
              return final
 
@@ -901,7 +901,7 @@ generateID url author date
   -- eg '/Faces' = '#gwern-faces'
   | ("Gwern Branwen" == author) ||
     (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url) && not ("/index"`isInfixOf`url))
-  = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
+  = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
   -- skip tag links:
   | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
@@ -1102,6 +1102,9 @@ generateID url author date
        , ("/docs/reinforcement-learning/openai/2017-openai-form990.pdf", "2017-clark")
        , ("https://arxiv.org/abs/2005.12126#nvidia",    "kim-et-al-2020-gamegan-paper")
        , ("https://nv-tlabs.github.io/gameGAN/#nvidia", "kim-et-al-2020-gamegan-repo")
+       , ("/docs/reinforcement-learning/alphago/2017-silver.pdf#deepmind", "silver-et-al-2017-alphago-zero")
+       , ("https://arxiv.org/abs/1712.01815#deepmind", "silver-et-al-2017-alphazero")
+       , ("https://arxiv.org/abs/2006.01855", "mcilroy-young-et-al-2020-maia")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1130,7 +1133,7 @@ authorsToCite url author date =
                              else
                                firstAuthorSurname ++ " " ++ year ++ suffix'
 citeToID :: String -> String
-citeToID = filter (/='.') . map toLower . replace " " "-" . replace " & " "-"
+citeToID = filter (\c -> c/='.' && c/='\'') . map toLower . replace " " "-" . replace " & " "-"
 
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length:
 authorsTruncate :: String -> String
@@ -1157,7 +1160,7 @@ replaceMany rewrites s = foldr (uncurry replace) s rewrites
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors a' = replaceMany [("Meena", "M."), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", "")] $
+initializeAuthors a' = replaceMany [(",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", "")] $
                        sedMany [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
