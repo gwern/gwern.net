@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-10-22 22:28:51 gwern"
+When:  Time-stamp: "2021-10-24 23:41:07 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -908,5 +908,13 @@ whiteList url
       , "www.avclub.com/the-100-best-worst-and-weirdest-things-we-saw-on-the-1839566367" -- too much media
       , "https://ww2.arb.ca.gov/our-work/programs/cap-and-trade-program" -- homepage
       , "https://egamebook.com/lochness/" -- interactive
+      , "https://sites.research.google/trc/about/" -- homepage
+      , "https://realbotix.com/" -- homepage
+      , "https://www.grillitype.com/" -- homepage
+      , "https://www.royalroad.com/fiction/" -- stable
+      , "https://www.lipreading.org/" -- homepage
+      , "https://research.google/pubs/" -- stable
+      , "https://www.tabnine.com/" -- homepage
+      , "https://www.alphagomovie.com/" -- stable
       ] = True
     | otherwise = False

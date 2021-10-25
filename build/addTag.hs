@@ -15,8 +15,8 @@ import System.Directory (doesDirectoryExist, doesFileExist)
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
 
 main :: IO ()
-main = do args <- getArgs
-          let links = map (replace "https://www.gwern.net/" "/") $ filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
+main = do args <- fmap (map $ replace "https://www.gwern.net/" "/") $ getArgs
+          let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) args
           let tags = filter (\arg -> (not (arg `elem` links))) args
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++arg')
                              if not filep then error ("Error: specified tag not defined? '" ++ arg' ++ "'") else return arg') tags

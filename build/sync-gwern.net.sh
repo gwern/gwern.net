@@ -49,11 +49,11 @@ else
     cd ./static/build
     compile () { ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
     compile Columns.hs &
-    sleep 2s && compile generateBacklinks.hs &
-    sleep 3s && compile generateDirectory.hs &
-    sleep 4s && compile generateLinkBibliography.hs &
-    sleep 5s && compile link-extractor.hs &
-    sleep 6s && compile hakyll.hs &
+    sleep 3s && compile generateBacklinks.hs &
+    sleep 4s && compile generateDirectory.hs &
+    sleep 5s && compile generateLinkBibliography.hs &
+    sleep 6s && compile link-extractor.hs &
+    sleep 7s && compile hakyll.hs &
     wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption

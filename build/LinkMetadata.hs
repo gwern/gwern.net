@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-24 11:49:42 gwern"
+When:  Time-stamp: "2021-10-24 18:20:11 gwern"
 License: CC-0
 -}
 
@@ -862,7 +862,7 @@ processArxivAbstract u a = let cleaned = runPure $ do
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), (" ~", " \\sim")] a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")] a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
@@ -1187,6 +1187,8 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
        cleanAbstractsHTML' = trim . sedMany [
         -- regexp substitutions:
          ("  *", " "), -- squeeze whitespace
+         (" \\( ", " ("),
+         (" ) ", " )"),
         ("<br/> *</p>", "</p>"),
         ("<p> *", "<p>"),
         (" *</p>", "</p>"),
@@ -1220,6 +1222,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("([0-9]*[02456789])th", "\\1<sup>th</sup>"),
         ("([0-9]*[1])st",        "\\1<sup>st</sup>"),
         ("([0-9]*[3])rd",        "\\1<sup>rd</sup>"),
+        ("\\(JEL [A-Z][0-9][0-9]+\\)\\.?", ""),
         (" \\(JEL [A-Z][0-9][0-9], .* [A-Z][0-9][0-9]\\)", ""), -- rm AERA classification tags they stick into the Crossref abstracts
         ("CI=([.0-9])", "CI = \\1"), -- 'CI=0.90' → 'CI = 0.90'
         ("RR=([.0-9])", "RR = \\1"), -- 'RR=2.9' → 'RR = 2.09'
@@ -1789,6 +1792,11 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , (" P &lt;", " <em>p</em> &lt;")
           , (" P &lt;", " <em>p</em> &lt;")
           , ("≤p≤",     " ≤ <em>p</em> ≤ ")
+          , ("( d = ", "(<em>d</em> = ")
+          , ("(d = ", "(<em>d</em> = ")
+          , ("(d < ", "(<em>d</em> < ")
+          , ("(d > ", "(<em>d</em> > ")
+          , ("(rs)", "(<em>r</em>s)")
           , ("\40r=",     "\40<em>r</em> = ")
           , ("\40R=",     "\40<em>r</em> = ")
           , ("\40R = ",   "\40<em>r</em> = ")
