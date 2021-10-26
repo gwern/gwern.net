@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-25 15:26:04 gwern"
+When:  Time-stamp: "2021-10-25 21:36:45 gwern"
 License: CC-0
 -}
 
@@ -726,7 +726,7 @@ pdf p = do let p' = takeWhile (/='#') p
    filterMeta :: String -> String
    filterMeta ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
     where badSubstrings, badWholes :: [String]
-          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose"]
+          badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy"]
           badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
 
 -- nested JSON object: eg 'jq .message.abstract'
@@ -913,7 +913,9 @@ generateID url author date
   | otherwise = T.pack $ citeToID $ authorsToCite url author date
   where
     linkIDOverrides :: [(String, T.Text)]
-    linkIDOverrides = [
+    linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with [a-zA-Z]
+                              if (not $ isAlpha $ head $ T.unpack ident) then error ("Invalid link ID override! " ++ show o) else o) $
+                      [
       ("/docs/ai/gpt/2019-radford.pdf#openai", "gpt-2-paper")
        , ("/docs/ai/2020-chen.pdf#openai", "chen-igpt-paper")
        , ("/docs/ai/anime/2020-ko.pdf", "ko-cho-2020")
@@ -936,7 +938,7 @@ generateID url author date
        , ("/docs/genetics/selection/1936-greenwood-experimentalepidemiology.pdf", "greenwood-et-al-1936-2")
        , ("/docs/genetics/selection/1979-anderson.pdf", "anderson-may-1979-2")
        , ("/docs/genetics/selection/1979-may-2.pdf", "may-anderson-1979-3")
-       , ("/docs/genetics/selection/1980-yoo.pdf", "1980-yoo-1-responsetoselection-2")
+       , ("/docs/genetics/selection/1980-yoo.pdf", "yoo-1980-1-responsetoselection")
        , ("/docs/genetics/selection/2007-maejima.pdf", "maejima-et-al-2007-2")
        , ("/docs/iq/ses/2011-gensowski.pdf", "gensowski-et-al-2011-2")
        , ("/docs/iq/2013-rietveld.pdf", "rietveld-et-al-2013-2")
@@ -944,7 +946,7 @@ generateID url author date
        , ("/docs/japanese/2002-gibson", "gibson-mud-2")
        , ("/docs/music-distraction/2012-perham.pdf", "perham-sykora-2012-2")
        , ("/docs/psychology/2014-shen.pdf", "shen-et-al-2014-link")
-       , ("/docs/psychology/2016-feinberg.pdf", "2016-feinberg-consciousness-2")
+       , ("/docs/psychology/2016-feinberg.pdf", "feinberg-2016-consciousness-2")
        , ("/docs/radiance/2002-scholz-radiance#old-legends", "old-legends-2")
        , ("/docs/radiance/2002-scholz-radiance", "scholz-2002-2")
        , ("/docs/sociology/1987-rossi", "rossi-1987-2")
@@ -1097,9 +1099,9 @@ generateID url author date
        , ("https://github.com/arfafax/E621-Face-Dataset", "arfafax-2020-e621")
        , ("https://arxiv.org/abs/1908.05840", "kim-et-al-2019-tag2pix")
        , ("http://www.engineeringletters.com/issues_v27/issue_3/EL_27_3_01.pdf", "liu-et-al-2019-animesketchcoloring")
-       , ("/docs/sociology/2010-kelly-whattechwants-ch7-convergence.pdf",                  "2010-kelly-ch7")
-       , ("/docs/sociology/2010-kelly-whattechnologywants-ch11-lessonsofamishhackers.pdf", "2010-kelly-ch11")
-       , ("/docs/reinforcement-learning/openai/2017-openai-form990.pdf", "2017-clark")
+       , ("/docs/sociology/2010-kelly-whattechwants-ch7-convergence.pdf",                  "kelly-2010-ch7")
+       , ("/docs/sociology/2010-kelly-whattechnologywants-ch11-lessonsofamishhackers.pdf", "kelly-2010-ch11")
+       , ("/docs/reinforcement-learning/openai/2017-openai-form990.pdf", "clark-2017")
        , ("https://arxiv.org/abs/2005.12126#nvidia",    "kim-et-al-2020-gamegan-paper")
        , ("https://nv-tlabs.github.io/gameGAN/#nvidia", "kim-et-al-2020-gamegan-repo")
        , ("/docs/reinforcement-learning/alphago/2017-silver.pdf#deepmind", "silver-et-al-2017-alphago-zero")
@@ -1107,6 +1109,8 @@ generateID url author date
        , ("https://arxiv.org/abs/2006.01855", "mcilroy-young-et-al-2020-maia")
        , ("https://openai.com/blog/fine-tuning-gpt-2/", "ziegler-et-al-2019-blog")
        , ("https://arxiv.org/abs/1909.08593#openai",    "ziegler-et-al-2019-paper")
+       , ("https://openai.com/blog/ai-and-efficiency/", "hernandez-brown-2020-blog")
+       , ("https://arxiv.org/abs/2005.04305#openai",    "hernandez-brown-2020-paper")
       ]
 
 authorsToCite :: String -> String -> String -> String
