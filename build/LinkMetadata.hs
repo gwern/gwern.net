@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-26 20:47:30 gwern"
+When:  Time-stamp: "2021-10-27 14:07:51 gwern"
 License: CC-0
 -}
 
@@ -159,7 +159,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                              bl <- getBackLink u'
                                              let filepath = take 247 $ urlEncode u'
                                              let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
-                                             when (filepath /= filepath') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
+                                             when (filepath /= urlEncode u') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
                                              let titleHtml    = typesetHtmlField "" $ titlecase a
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in smallcaps-ing date/DOI, so skip those
