@@ -138,6 +138,12 @@ else
         # Pandoc fails on embedded Unicode/regexps in JQuery
     set -e
 
+    bold "Reformatting HTML sources to look nicer using HTML Tidy…"
+    # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
+    tidyUp () { tidy -indent -wrap 130 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only auto -modify "$@" || true; }
+    export -f tidyUp
+    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=40 tidyUp
+
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
     bold "Compiling LaTeX JS+HTML into static CSS+HTML…"
@@ -159,11 +165,6 @@ else
     (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotations/ -name '*.html') | shuf | \
         parallel --jobs 32 --max-args=1 staticCompileMathJax
-
-    bold "Reformatting HTML sources to look nicer using HTML Tidy…"
-    tidyUp () { tidy -indent -wrap 130 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only auto -modify "$@"; }
-    export -f tidyUp
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=40 tidyUp
 
     # Testing compilation results:
     set +e
