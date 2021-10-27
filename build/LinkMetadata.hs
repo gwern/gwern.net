@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-25 21:36:45 gwern"
+When:  Time-stamp: "2021-10-26 20:47:30 gwern"
 License: CC-0
 -}
 
@@ -236,7 +236,7 @@ annotateLink md target =
        Nothing -> do new <- linkDispatcher target''
                      case new of
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
-                       Left Temporary -> return False -- hPutStrLn stderr ("Skipping "++target) >> return False
+                       Left Temporary -> return False
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
                        Left Permanent -> writeLinkMetadata target'' ("", "", "", "", [], "") >> return False
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
@@ -652,7 +652,6 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
 writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do hPutStrLn stderr (l ++ " : " ++ show i)
-
                                                      let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
                                                      B.appendFile "metadata/auto.yaml" newYaml
 
@@ -1111,6 +1110,7 @@ generateID url author date
        , ("https://arxiv.org/abs/1909.08593#openai",    "ziegler-et-al-2019-paper")
        , ("https://openai.com/blog/ai-and-efficiency/", "hernandez-brown-2020-blog")
        , ("https://arxiv.org/abs/2005.04305#openai",    "hernandez-brown-2020-paper")
+       , ("/docs/sociology/2021-sariaslan.pdf", "sariaslan-et-al-2021-foster-homes")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1191,7 +1191,8 @@ cleanAbstractsHTML :: String -> String
 cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsHTML'
  where cleanAbstractsHTML' :: String -> String
        cleanAbstractsHTML' = trim . sedMany [
-        -- regexp substitutions:
+         -- add newlines for readability
+         ("</p> ?<p>", "</p>\n<p>"),
          ("  *", " "), -- squeeze whitespace
          (" \\( ", " ("),
          (" ) ", " )"),
@@ -1199,7 +1200,8 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<p> *", "<p>"),
         (" *</p>", "</p>"),
         ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
-        -- comma-separate at thousands for consistency:
+        -- regexp substitutions:
+        -- - comma-separate at thousands for consistency:
         (" ([0-9]+)([0-9][0-9][0-9])",                                                    " \\1,\\2"),             -- thousands
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])",                                   " \\1,\\2,\\3"),         -- millions
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])",                  " \\1,\\2,\\3,\\4"),     -- billions
