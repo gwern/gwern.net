@@ -160,6 +160,11 @@ else
      find _site/metadata/annotations/ -name '*.html') | shuf | \
         parallel --jobs 32 --max-args=1 staticCompileMathJax
 
+    bold "Reformatting HTML sources to look nicer using HTML Tidy…"
+    tidyUp () { tidy -indent -wrap 130 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only auto -modify "$@"; }
+    export -f tidyUp
+    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=40 tidyUp
+
     # Testing compilation results:
     set +e
 
