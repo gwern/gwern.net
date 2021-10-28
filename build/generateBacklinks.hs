@@ -4,7 +4,7 @@
 module Main where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, queryWith, readerExtensions,
-                     readHtml, readMarkdown, runPure, writeHtml5String, writerExtensions,
+                     readHtml, readMarkdown, runPure, writeHtml5String,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, takeWhile, Text)
@@ -20,7 +20,7 @@ import Control.Monad (forM_, unless)
 
 import Control.Monad.Parallel as Par (mapM)
 
-import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB)
+import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions)
 
 main :: IO ()
 main = do
@@ -71,7 +71,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                 ) callers
 
                                        let pandoc = walk (hasAnnotation md True) $ Pandoc nullMeta [content]
-                                       let html = let htmlEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} pandoc
+                                       let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output

@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-27 19:48:37 gwern"
+When:  Time-stamp: "2021-10-28 10:47:10 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB) where
+module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -39,7 +39,7 @@ import System.IO (stderr, hPutStrLn)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
-                    readHtml, writerExtensions, nullAttr, nullMeta, queryWith,
+                    readHtml, writerExtensions, nullAttr, nullMeta, queryWith, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex, matchRegex)
@@ -170,7 +170,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                              let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk linkAuto $ walk convertInterwikiLinks pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
 
-                                             let finalHTMLEither = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} localizedPandoc
+                                             let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
                                              case finalHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
                                                Right finalHTML -> let refloated = T.pack $ restoreFloatRight e $ T.unpack finalHTML
@@ -188,12 +188,16 @@ writeUpdatedFile target contentsNew = do existsOld <- doesFileExist target
                                            else do contentsOld <- TIO.readFile target
                                                    when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
 
+-- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
+safeHtmlWriterOptions :: WriterOptions
+safeHtmlWriterOptions = def{writerColumns = 9999, writerExtensions = (enableExtension Ext_shortcut_reference_links pandocExtensions)}
+
 typesetHtmlField :: String -> String -> String
 typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerExtensions = pandocExtensions} (T.pack t) in
                        case fieldPandocMaybe of
                          Left errr -> error $ show orig ++ ": " ++ t ++ show errr
                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
-                                                let (Right fieldHtml) = runPure $ writeHtml5String def{writerExtensions = pandocExtensions} (Pandoc nullMeta fieldPandoc') in
+                                                let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
                            restoreFloatRight orig $ T.unpack fieldHtml
 
 getBackLink :: FilePath -> IO FilePath
@@ -848,7 +852,7 @@ processPubMedAbstract abst = let clean = runPure $ do
                                    --   <sec>
                                    --     <title>Objectives</title>...
                                    pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack $ sed "^ +" "" abst)
-                                   html <- writeHtml5String def pandoc
+                                   html <- writeHtml5String safeHtmlWriterOptions pandoc
                                    return $ T.unpack html
                              in case clean of
                                   Left e -> error $ show e ++ ": " ++ abst
@@ -866,7 +870,7 @@ processArxivAbstract u a = let cleaned = runPure $ do
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
 
-                                    writeHtml5String def{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
+                                    writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
                  Left e -> error $ u ++ " : " ++ show e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
@@ -1111,8 +1115,8 @@ generateID url author date
        , ("https://openai.com/blog/ai-and-efficiency/", "hernandez-brown-2020-blog")
        , ("https://arxiv.org/abs/2005.04305#openai",    "hernandez-brown-2020-paper")
        , ("/docs/sociology/2021-sariaslan.pdf", "sariaslan-et-al-2021-foster-homes")
-       , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "1999-keene-teika")
-       , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "1999-keene-shotetsu")
+       , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "keene-1999-teika")
+       , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "keene-1999-shotetsu")
       ]
 
 authorsToCite :: String -> String -> String -> String
