@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-28 10:47:10 gwern"
+When:  Time-stamp: "2021-10-28 18:48:29 gwern"
 License: CC-0
 -}
 
@@ -1117,6 +1117,10 @@ generateID url author date
        , ("/docs/sociology/2021-sariaslan.pdf", "sariaslan-et-al-2021-foster-homes")
        , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "keene-1999-teika")
        , ("/docs/japanese/1999-keene-seedsintheheart-teika.pdf", "keene-1999-shotetsu")
+       , ("/docs/genetics/selection/2019-karavani-supplement.pdf", "karavani-et-al-2019-supplement")
+       , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6130754/", "young-et-al-2018-rdr")
+       , ("/docs/genetics/heritable/2019-border-supplement.pdf", "border-et-al-2019-supplement")
+       , ("https://www.biorxiv.org/content/10.1101/2020.01.14.905927v1.full", "wang-et-al-2020-twas")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1285,6 +1289,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L^2)\\)</span>", "𝑂(<em>L</em><sup>2</sup>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\log(L))\\)</span>", "𝑂(log(<em>L</em>))")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\sqrt{L})\\)</span>", "𝑂(√<em>L</em>)")
+          , ("<span class=\"math inline\">\\(\\mathcal{O}(1/\\sqrt{d})\\)</span>", "𝑂(1⁄√<em>d</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(n\\log n)\\)</span>", "𝒪(<em>n</em> log <em>n</em>)")
           , ("$\\mathrm{sinc}(ax)$", "sinc(<em>ax</em>)")
           , ("<span class=\"texhtml \">\\mathrm{sinc}(ax)</span>", "sinc(<em>ax</em>)")
@@ -1352,6 +1357,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(K\\)</span>", "<em>K</em>")
           , ("<span class=\"math inline\">\\(\\sin\\Theta\\)</span>", "sinΘ")
           , ("<span class=\"math inline\">\\(\\ell_2\\)</span>", "𝓁<sub>2</sub>")
+          , ("<span class=\"math inline\">\\(\\ell_1\\)</span>", "𝓁<sub>1</sub>")
           , ("<span class=\"math inline\">\\(l_1\\)</span>", "𝓁<sub>1</sub>")
           , ("<span class=\"math inline\">\\(2.4\\)</span>", "2.4")
           , ("<span class=\"math inline\">\\(47.1\\)</span>", "47.1")
