@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-10-20 12:00:38 gwern"
+When:  Time-stamp: "2021-10-28 21:16:10 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -270,7 +270,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Jorge Luis Borges|Borges)", "https://en.wikipedia.org/wiki/Jorge_Luis_Borges")
         , ("(LDSC|LD [Ss]core [Rr]egression)", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4495769/")
         , ("(LD|[Ll]inkage [Dd]isequilibrium|[Ll]inkage [Ee]quilibrium)", "https://en.wikipedia.org/wiki/Linkage_disequilibrium")
-        , ("(LSTM|Long short-term memory)", "https://en.wikipedia.org/wiki/Long_short-term_memory")
+        , ("(LSTM|[Ll]ong [Ss]hort[ -][Tt]erm [Mm]emory)", "https://en.wikipedia.org/wiki/Long_short-term_memory")
         , ("(Leta Stetter Hollingworth|Hollingworth)", "https://en.wikipedia.org/wiki/Leta_Stetter_Hollingworth")
         , ("(Lewis Terman|Terman)", "https://en.wikipedia.org/wiki/Lewis_Terman")
         , ("(MAOI|[Mm]onoamine [Oo]xidase [Ii]nhibitor)", "https://en.wikipedia.org/wiki/Monoamine_oxidase_inhibitor")
@@ -644,7 +644,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("IBM Plex", "https://en.wikipedia.org/wiki/IBM_Plex")
         , ("ID3", "https://en.wikipedia.org/wiki/ID3_algorithm")
         , ("IMPALA", "https://arxiv.org/abs/1802.01561#deepmind")
-        , ("(ILSVR|Image[Nn]et)", "https://arxiv.org/abs/1409.0575")
+        , ("(ILSVRC|Image[Nn]et)", "https://arxiv.org/abs/1409.0575")
         , ("PASCAL (VOC|Visual Object Classes)", "http://host.robots.ox.ac.uk/pascal/VOC/")
         , ("Infinite Jest", "https://en.wikipedia.org/wiki/Infinite_Jest")
         , ("Infinite in All Directions", "https://en.wikipedia.org/wiki/Infinite_in_All_Directions")

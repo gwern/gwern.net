@@ -48,12 +48,12 @@ else
     bold "Compiling…"
     cd ./static/build
     compile () { ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
+    sleep 0s && compile hakyll.hs &
+    sleep 5s && (compile generateLinkBibliography.hs &
+    compile generateDirectory.hs &
+    compile generateBacklinks.hs &
     compile Columns.hs &
-    sleep 3s && compile generateBacklinks.hs &
-    sleep 4s && compile generateDirectory.hs &
-    sleep 5s && compile generateLinkBibliography.hs &
-    sleep 6s && compile link-extractor.hs &
-    sleep 7s && compile hakyll.hs &
+    compile link-extractor.hs)
     wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
@@ -117,7 +117,7 @@ else
                               -e 's/\([a-z]\)⋱<sub>\([0-9]\)/\1⁠⋱⁠<sub>\2/g' -e 's/\([a-z]\)<sub>⋱\([0-9]\)/\1<sub>⁠⋱⁠\2/g' \
                             "$@"; }; export -f nonbreakSpace;
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
-    find ./_site/metadata/annotations/ -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
+    find ./_site/metadata/annotations/ -maxdepth 1 -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
     ### We skip .json/.jsonl/.csv because they are too large & Pandoc will choke;
@@ -142,7 +142,8 @@ else
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
     tidyUp () { tidy -indent -wrap 130 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only auto -modify "$@" || true; }
     export -f tidyUp
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=40 tidyUp
+    (find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" ; \
+     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' ) | parallel --max-args=250 tidyUp
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
@@ -226,7 +227,8 @@ else
     wrap λ "Check possible typo in YAML metadata database"
 
     λ(){ fgrep --color=always -e '**' -e 'amp#' -e ' _' -e '_ ' -- ./metadata/custom.yaml;
-         egrep -e ',[A-Za-z]' -- ./metadata/custom.yaml | fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine';
+         fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -- ./metadata/custom.yaml | \
+             egrep --color=always -e ',[A-Za-z]';
          egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]+ [A-Z]' \
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
                -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' -e 'id="[0-9]' -- ./metadata/*.yaml;
