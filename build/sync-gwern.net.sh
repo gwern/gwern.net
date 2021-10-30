@@ -49,11 +49,11 @@ else
     cd ./static/build
     compile () { ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
     sleep 0s && compile hakyll.hs &
-    sleep 5s && (compile generateLinkBibliography.hs &
-    compile generateDirectory.hs &
-    compile generateBacklinks.hs &
-    compile Columns.hs &
-    compile link-extractor.hs)
+    sleep 7s && compile generateLinkBibliography.hs &
+    sleep 7s && compile generateDirectory.hs &
+    sleep 7s && compile generateBacklinks.hs &
+    sleep 7s && compile Columns.hs &
+    sleep 7s && compile link-extractor.hs
     wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
@@ -140,7 +140,7 @@ else
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
-    tidyUp () { tidy -indent -wrap 130 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only auto -modify "$@" || true; }
+    tidyUp () { tidy -indent -wrap 140 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only auto -modify "$@" || true; }
     export -f tidyUp
     (find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" ; \
      find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' ) | parallel --max-args=250 tidyUp
