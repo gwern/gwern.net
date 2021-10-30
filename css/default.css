@@ -1692,12 +1692,10 @@ code {
     padding: 0 4px;
 
     /*  Tufte CSS's monospace/sans suggestions, borrowing from Github: */
-    /*  Added IBM Plex Mono webfont for styling consistency across platforms. */
-    /* Primary font: https://en.wikipedia.org/wiki/IBM_Plex This was chosen for its dotted/slashed zero (a sine qua non of coding fonts where O/0 ambiguity is fatal), and for rendering well on Macs. */
+    /*  Added JetBrains Mono webfont for styling consistency across platforms. */
+    /* Primary font: https://www.jetbrains.com/lp/mono/ This was chosen for its dotted/slashed zero (a sine qua non of coding fonts where O/0 ambiguity is fatal), and spacing ligatures. */
     font-family: var(--GW-monospaced-font-stack);
-    /*  OpenType stylistic sets to enable single-story 'g' and slashed zero in
-        IBM Plex Mono. */
-    font-feature-settings: 'ss02', 'ss03';
+    font-feature-settings: "liga" on, "calt" on;
 
     font-size: 0.9em;
     word-break: break-all;
