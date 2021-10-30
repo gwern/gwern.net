@@ -1178,7 +1178,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Ee]lectronic [Cc]igarette|[Ee]-[Cc]igarette|[Vv]ap(ing|e))", "https://en.wikipedia.org/wiki/Electronic_cigarette")
         , ("[Nn]oble lie", "https://en.wikipedia.org/wiki/Noble_lie")
         , ("[Nn]ootropics?", "https://en.wikipedia.org/wiki/Nootropics")
-        , ("[Nn]ucleus [Ss]ampling", "https://arxiv.org/abs/1904.09751")
+        , ("[Nn]ucleus [Ss]ampling", "https://arxiv.org/abs/1904.09751#allen")
         , ("[Oo]ld-style numerals?", "https://en.wikipedia.org/wiki/Text_figures")
         , ("[Oo]perant conditioning", "https://en.wikipedia.org/wiki/Operant_conditioning")
         , ("[Oo]pioids?", "https://en.wikipedia.org/wiki/Opioid")

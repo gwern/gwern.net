@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-28 18:48:29 gwern"
+When:  Time-stamp: "2021-10-30 16:57:36 gwern"
 License: CC-0
 -}
 
@@ -1121,6 +1121,15 @@ generateID url author date
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6130754/", "young-et-al-2018-rdr")
        , ("/docs/genetics/heritable/2019-border-supplement.pdf", "border-et-al-2019-supplement")
        , ("https://www.biorxiv.org/content/10.1101/2020.01.14.905927v1.full", "wang-et-al-2020-twas")
+       , ("https://egamebook.com/blog/data-about-gamebooks/", "hracek-2015-cyoa-survey")
+       , ("https://aidungeon.io/",                                                                       "walton-2019-aidungeon-2")
+       , ("https://colab.research.google.com/github/nickwalton/AIDungeon/blob/master/AIDungeon_2.ipynb", "walton-2019-aidungeon-2-colab")
+       , ("https://arxiv.org/abs/2103.03775", "wang-et-al-2021-limgen")
+       , ("/docs/existential-risk/1985-hofstadter-sanityandsurvival.pdf", "hofstadter-1985-superrationality-pdf")
+       , ("/docs/existential-risk/1985-hofstadter-sanityandsurvival",     "hofstadter-1985-superrationality")
+       , ("https://www.biorxiv.org/content/10.1101/201020v1.full", "tikkanen-et-al-2017-strength")
+       , ("/docs/eva/2004-okada.pdf", "okada-morikawa-2004-otakutalk-pdf")
+       , ("/docs/eva/2004-okada",     "okada-morikawa-2004-otakutalk")
       ]
 
 authorsToCite :: String -> String -> String -> String
