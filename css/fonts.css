@@ -213,39 +213,39 @@
 }
 
 /*****************/
-/* JETBRAINS MONO */
+/* IBM PLEX MONO */
 /*****************/
-/* Used in code blocks (https://www.jetbrains.com/lp/mono/) */
+/* Used in code blocks */
 
 @font-face {
-    font-family: 'JetBrains Mono';
+    font-family: 'IBM Plex Mono';
     font-weight: normal;
     font-style: normal;
-    src: url('/static/font/jetbrains-mono/JetBrainsMono-Regular.woff2') format('woff2');
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-Regular.otf') format('opentype');
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'JetBrains Mono';
+    font-family: 'IBM Plex Mono';
     font-weight: normal;
     font-style: italic;
-    src: url('/static/font/jetbrains-mono/JetBrainsMono-Italic.woff2') format('woff2');
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-RegularItalic.otf') format('opentype');
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'JetBrains Mono';
+    font-family: 'IBM Plex Mono';
     font-weight: bold;
     font-style: normal;
-    src: url('/static/font/jetbrains-mono/JetBrainsMono-Bold.woff2') format('woff2');
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-Bold.otf') format('opentype');
     font-display: swap;
 }
 
 @font-face {
-    font-family: 'JetBrains Mono';
+    font-family: 'IBM Plex Mono';
     font-weight: bold;
     font-style: italic;
-    src: url('/static/font/jetbrains-mono/JetBrainsMono-BoldItalic.woff2') format('woff2');
+    src: url('/static/font/ibm-plex-mono/IBMPlexMono-BoldItalic.otf') format('opentype');
     font-display: swap;
 }
 
