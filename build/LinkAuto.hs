@@ -808,7 +808,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Prediction[Bb]ook.com", "https://predictionbook.com/")
         , ("Price equation", "https://en.wikipedia.org/wiki/Price_equation")
         , ("Prisoner's [Dd]ilemma", "https://en.wikipedia.org/wiki/Prisoner%27s_dilemma")
-        , ("ProGANs?", "https://arxiv.org/abs/1710.10196")
+        , ("ProGANs?", "https://arxiv.org/abs/1710.10196#nvidia")
         , ("Project 100,000", "https://en.wikipedia.org/wiki/Project_100,000")
         , ("Project Malmo", "https://github.com/microsoft/malmo")
         , ("Project Orion", "https://en.wikipedia.org/wiki/Project_Orion_%28nuclear_propulsion%29")

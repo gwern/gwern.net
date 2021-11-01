@@ -3,7 +3,7 @@ module Interwiki (convertInterwikiLinks, inlinesToString) where
 
 import qualified Data.Map as M (fromList, lookup, Map)
 import Text.Pandoc (Inline(..))
-import qualified Data.Text as T (append, concat, head, tail, take, toUpper, pack, unpack, Text)
+import qualified Data.Text as T (append, concat, head, null, tail, take, toUpper, pack, unpack, Text)
 import Data.List.Utils (replace)
 import Network.HTTP (urlEncode)
 
@@ -39,7 +39,7 @@ inlinesToString = T.concat . map go
 convertInterwikiLinks :: Inline -> Inline
 convertInterwikiLinks x@(Link _ []           _) = error $ "Link error: no anchor text‽ " ++ show x
 convertInterwikiLinks x@(Link attr@(ident, classes, kvs) ref (interwiki, article)) =
-  if T.head article == ' ' then error $ "Link error: tooltip malformatted with excess whitespace? " ++ show x else
+  if not (T.null article) && T.head article == ' ' then error $ "Link error: tooltip malformatted with excess whitespace? " ++ show x else
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> case article of

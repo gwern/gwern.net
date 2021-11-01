@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-30 16:57:36 gwern"
+When:  Time-stamp: "2021-10-31 12:03:30 gwern"
 License: CC-0
 -}
 
@@ -1130,6 +1130,12 @@ generateID url author date
        , ("https://www.biorxiv.org/content/10.1101/201020v1.full", "tikkanen-et-al-2017-strength")
        , ("/docs/eva/2004-okada.pdf", "okada-morikawa-2004-otakutalk-pdf")
        , ("/docs/eva/2004-okada",     "okada-morikawa-2004-otakutalk")
+       , ("https://web.archive.org/web/20171025150859/http://nitro.biosci.arizona.edu:80/zbook/NewVolume_2/pdf/Chapter38.pdf", "walsh-lynch-1997-indexselection-application")
+       , ("https://web.archive.org/web/20171025141547/http://nitro.biosci.arizona.edu:80/zbook/NewVolume_2/pdf/Chapter37.pdf", "walsh-lynch-1997-indexselection-theory")
+       , ("http://www.vetta.org/2009/12/the-teenies/", "legg-2009-theteenies")
+       , ("http://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "legg-2009-ticktock")
+       , ("https://medium.com/@NPCollapse/addendum-evaluation-of-my-model-e6734b51a830", "leahy-2019-gpt15bevaluation")
+       , ("https://medium.com/@NPCollapse/replicating-gpt2-1-5b-86454a7f26af", "leahy-2019-gpt15breplication")
       ]
 
 authorsToCite :: String -> String -> String -> String
