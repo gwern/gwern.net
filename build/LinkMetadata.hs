@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-10-31 12:03:30 gwern"
+When:  Time-stamp: "2021-11-03 19:16:56 gwern"
 License: CC-0
 -}
 
@@ -1136,6 +1136,16 @@ generateID url author date
        , ("http://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "legg-2009-ticktock")
        , ("https://medium.com/@NPCollapse/addendum-evaluation-of-my-model-e6734b51a830", "leahy-2019-gpt15bevaluation")
        , ("https://medium.com/@NPCollapse/replicating-gpt2-1-5b-86454a7f26af", "leahy-2019-gpt15breplication")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch11-undesiredbehavior.pdf", "bradshaw-et-al-2012-undesiredbehavior")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch3-mechanismsbehaviour.pdf", "bradshaw-et-al-2012-mechanismsbehaviour")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch12-causesbehavioralchange.pdf", "bradshaw-et-al-2012-causesbehavioralchange")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch8-socialbehaviour.pdf", "bradshaw-et-al-2012-socialbehaviour")
+       , ("https://mlp.fandom.com/wiki/Between_Dark_and_Dawn", "wikia-2019-mlp-between_dark_and_dawn")
+       , ("https://mlp.fandom.com/wiki/The_Last_Laugh", "wikia-2019-mlp-the_last_laugh")
+       , ("https://mlp.fandom.com/wiki/Daring_Doubt", "wikia-2019-mlp-daring_doubt")
+       , ("https://mlp.fandom.com/wiki/The_Big_Mac_Question", "wikia-2019-mlp-the_big_mac_question")
+       , ("https://mlp.fandom.com/wiki/The_Last_Problem", "wikia-2019-mlp-the_last_problem")
+       , ("https://mlp.fandom.com/wiki/Sparkle%27s_Seven", "wikia-2019-mlp-sparkles_seven")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1227,7 +1237,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
         -- regexp substitutions:
         -- - comma-separate at thousands for consistency:
-        (" ([0-9]+)([0-9][0-9][0-9])",                                                    " \\1,\\2"),             -- thousands
+        -- skip thousands, since clobbers citations like 'Herring 2009' (which turns into 'Herring 2,009')
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])",                                   " \\1,\\2,\\3"),         -- millions
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])",                  " \\1,\\2,\\3,\\4"),     -- billions
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])([0-9][0-9][0-9])", " \\1,\\2,\\3,\\4,\\5"), -- trillions
@@ -1793,6 +1803,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , (" rg=", " <em>r</em><sub><em>g</em></sub> = ")
           , (" rg = ", " <em>r</em><sub><em>g</em></sub> = ")
           , ("(rg)", "(<em>r</em><sub><em>g</em></sub>)")
+          , ("(rg", "(<em>r</em><sub><em>g</em></sub>")
           , ("-&gt;", "→")
           , (" r=", "<em>r</em> = ")
           , (" r>", "<em>r</em> > ")
