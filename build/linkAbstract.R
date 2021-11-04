@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2021-10-17 15:29:00 gwern"
+# When:  Time-stamp: "2021-11-03 22:24:15 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited Title/Author/Date/DOI/Abstract.
@@ -102,7 +102,10 @@ if (grepl("plos",args)) {
     combined        <- paste0(paste0(labelsFormatted, rep(": ", length(labelsFormatted)), text), collapse="\n\n")
 
     title    <- fulltext$title
-    author   <- fulltext$author
+    # convert `[1] "Kosuri, Sriram"   "Church, George M"` into "Sriram Kosuri, George M Church"
+    author   <- paste(unlist(
+          Map(function(name) { paste(rev(unlist(strsplit(name, ", "))), collapse=" ") }, fulltext$author)),
+      collapse=", ")
     date     <- fulltext$year
     doi      <- fulltext$doi
     abstract <- { if (length(labels) > 1) { combined; } else { fulltext$abstract; } }
