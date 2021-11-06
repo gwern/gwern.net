@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-04 23:20:43 gwern"
+When:  Time-stamp: "2021-11-05 21:41:01 gwern"
 License: CC-0
 -}
 
@@ -434,7 +434,24 @@ page2Tag fdb path
   | otherwise = let backlinks = M.lookup (T.pack $ takeWhile (/='#') path) fdb in
                     case backlinks of
                       Nothing -> []
-                      Just links ->  map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) links
+                      Just links ->  (map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) links) ++
+                                     url2Tags path
+
+-- We also do general-purpose heuristics on the path/URL: any page in a domain might be given a specific tag, or perhaps any URL with the string "deepmind" might be given a 'reinforcement-learning/deepmind' tag—that sort of thing.
+url2Tags :: String -> [String]
+url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTagDB
+ where -- we allow arbitrary string predicates (so one might use regexps as well)
+        urlTagDB :: [((String -> Bool), String)]
+        urlTagDB = [
+            (("https://publicdomainreview.org"`isPrefixOf`),          "history/public-domain-review")
+          , (("https://www.filfre.net/"`isPrefixOf`),                 "technology/digital-antiquarian")
+          , (("https://abandonedfootnotes.blogspot.com"`isPrefixOf`), "sociology/abandoned-footnotes")
+          , (("https://dresdencodak.com"`isPrefixOf`), "humor")
+          , (("https://www.theonion.com"`isPrefixOf`), "humor")
+          , (("https://tvtropes.org"`isPrefixOf`), "fiction")
+          , (("evageeks.org"`isInfixOf`),  "eva")
+          , (("evamonkey.com"`isInfixOf`), "eva")
+          ]
 
 pageTagDB :: M.Map T.Text [T.Text]
 pageTagDB = M.fromList [
