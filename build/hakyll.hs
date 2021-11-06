@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-10-28 10:46:49 gwern"
+When: Time-stamp: "2021-11-05 19:56:29 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -37,7 +37,7 @@ Explanations:
 import Control.Exception (onException)
 import Control.Monad (when, void)
 import Data.Char (toLower)
-import Data.List (isPrefixOf, nubBy, sort)
+import Data.List (isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
 import Network.HTTP (urlDecode)
@@ -48,7 +48,7 @@ import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
                symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, lookupString,
                defaultHakyllWriterOptions, fromCapture, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAll, loadAndApplyTemplate, loadBody, makeItem, match, modificationTimeField, mapContext,
-               pandocCompilerWithTransformM, route, setExtension, pathField, preprocess,
+               pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
                tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Tags, unsafeCompiler, noResult)
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
@@ -207,6 +207,7 @@ postCtx tags =
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.)
     -- similarly, 'author': default.html has a conditional to set 'Gwern Branwen' as the author in the HTML metadata if 'author' is not defined, but if it is, then the HTML metadata switches to the defined author & the non-default author is exposed in the visible page metadata as well for the human readers.
     defaultContext <>
+    boolField "backlinksNo" backlinkCheck <>
     dateField "created" "%F" <>
     -- if no manually set last-modified time, fall back to checking file modification time:
     dateField "modified" "%F" <>
@@ -223,6 +224,10 @@ postCtx tags =
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
     (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
+
+-- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
+backlinkCheck :: Item a -> Bool
+backlinkCheck i = let p = toFilePath (itemIdentifier i) in not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 escapedTitleField :: String -> Context a
 escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
