@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-05 21:41:01 gwern"
+When:  Time-stamp: "2021-11-06 11:06:45 gwern"
 License: CC-0
 -}
 
@@ -1163,6 +1163,9 @@ generateID url author date
        , ("https://mlp.fandom.com/wiki/The_Big_Mac_Question", "wikia-2019-mlp-the_big_mac_question")
        , ("https://mlp.fandom.com/wiki/The_Last_Problem", "wikia-2019-mlp-the_last_problem")
        , ("https://mlp.fandom.com/wiki/Sparkle%27s_Seven", "wikia-2019-mlp-sparkles_seven")
+       , ("https://arxiv.org/abs/1808.04355", "burda-et-al-2018-largescalecuriosity")
+       , ("https://arxiv.org/abs/1806.11146", "elsayed-et-al-2018-adversarialreprogramming")
+       , ("https://arxiv.org/abs/1802.08195", "elsayed-et-al-2018-humanfooling")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1274,6 +1277,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
         ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
         (" = -([0-9])", " = −\\1"), -- eg 'β = -0.08', HYPHEN to MINUS SIGN
+        ("([0-9]) x 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>"),
         ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>"), -- eg '10<sup>-7</sup>', HYPHEN to MINUS SIGN
         ("([0-9]+%?)-([0-9]+)", "\\1–\\2"),
         ("([0-9]) %", "\\1%"),
@@ -1322,6 +1326,15 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(\\dot{x} = Ax + Bu, y = Cx + Du\\)</span>", "<em>͘x</em> = <em>Ax</em> + <em>Bu</em>, <em>y</em> = <em>Cx</em> + <em>Du</em>")
+          , ("<span class=\"math inline\">\\(u \\mapsto y\\)</span>", "<em>u</em> ↦ <em>y</em>")
+          , ("<span class=\"math inline\">\\(\\sqrt{T}\\)</span>", "√<em>T</em>")
+          , ("<span class=\"math inline\">\\(\\sqrt{H}\\)</span>", "√<em>H</em>")
+          , ("<span class=\"math inline\">\\(\\tilde{O}(\\sqrt{H^3 SAT})\\)</span>", "𝒪(√<em>H</em><sup>3</sup><em>SAT</em>)")
+          , ("<span class=\"math inline\">\\(\\gamma = 0.99\\)</span>", "γ = 0.99")
+          , ("<span class=\"math inline\">\\(\\gamma = 0.999\\)</span>", "γ = 0.999")
+          , ("<span class=\"math inline\">\\(d^{5/4}\\)</span>", "<em>d</em><sup>5⁄5</sup>")
+          , ("<span class=\"math inline\">\\(d^{3/2}\\)</span>", "<em>d</em><sup>3⁄2</sup>")
           , ("<span class=\"math inline\">\\(x&#39;(t) = Ax(t) + Bu(t), y(t) = Cx(t) + Du(t)\\)</span>", "<em>x&#39;(t)</em> = <em>Ax(t)</em> + <em>Bu(t)</em>, <em>y(t)</em> = <em>Cx(t)</em> + <em>Du(t)</em>")
           , ("<span class=\"math inline\">\\(_{50}\\)</span>", "<sub>50</sub>")
           , ("<span class=\"math inline\">\\(_r\\)</span>", "<sub><em>r</em></sub>")
