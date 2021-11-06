@@ -381,7 +381,7 @@ else
             --header "Content-Type: application/json" \
             --data "{\"files\":[\"$CHECK_RANDOM\"]}" > /dev/null; )
     # wait a bit for the CF cache to expire so it can refill with the latest version to be checked:
-    (sleep 20s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM"; )
+    (sleep 20s && $X_BROWSER "https://validator.w3.org/nu/?doc=$CHECK_RANDOM"; $X_BROWSER "https://validator.w3.org/checklink?uri=$CHECK_RANDOM&no_referer=on"; )
 
     # Testing post-sync:
     bold "Checking MIME types, redirects, content…"
