@@ -139,7 +139,13 @@ breakSlashes x@Table{}     = x
 breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
 breakSlashesInline x@(SmallCaps _) = x
-breakSlashesInline (Link a ss ts)  = Link a (walk breakSlashesPlusHairSpaces ss) ts
+breakSlashesInline x@Code{}        = x
+breakSlashesInline (Link a [Str ss] (t,""))  = if ss == t then
+                                                -- if an autolink like '<https://example.com>' which converts to 'Link () [Str "https://example.com"] ("https://example.com","")' or '[Para [Link ("",["uri"],[]) [Str "https://www.example.com"] ("https://www.example.com","")]]' (NOTE: we cannot rely on there being a "uri" class), then we mark it up as Code and skip it:
+                                                (Link a [Code nullAttr ss] (t,""))
+                                                else
+                                                Link a (walk breakSlashesPlusHairSpaces [Str ss]) (t,"")
+breakSlashesInline (Link a ss ts) = Link a (walk breakSlashesPlusHairSpaces ss) ts
 breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ' || t == '\8203')) s then -- things get tricky if we mess around with raw HTML, so we bail out for anything that even *looks* like it might be HTML tags & has '<>' or a HAIR SPACE or ZERO WIDTH SPACE already
                                  Str (T.replace " /\8203 " " / " $ T.replace " /\8203" " /" $ T.replace "/\8203 " "/ " $ -- fix redundant \8203s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
                                                    T.replace "/" "/\8203" s) else x
