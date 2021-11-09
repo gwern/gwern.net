@@ -86,7 +86,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = let f'
                                           else
                                             [Para (Code nullAttr (T.pack f') :
                                                     Link nullAttr [Str ":", Space, Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
-generateLinkBibliographyItem (f,a) = generateAnnotationBlock ("/"`isPrefixOf`f) (f,Just a) ""
+generateLinkBibliographyItem (f,a) = generateAnnotationBlock ("/"`isPrefixOf`f) True (f,Just a) ""
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path

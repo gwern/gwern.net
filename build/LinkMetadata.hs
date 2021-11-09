@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-07 11:11:09 gwern"
+When:  Time-stamp: "2021-11-09 11:42:30 gwern"
 License: CC-0
 -}
 
@@ -165,7 +165,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                              -- obviously no point in smallcaps-ing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
-                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock False (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl
+                                             let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl
                                              void $ createAnnotations md pandoc
                                              let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk linkAuto $ walk convertInterwikiLinks pandoc
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
@@ -287,14 +287,14 @@ parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml
                                             Right (Pandoc _ markdown') -> Div nullAttr markdown'
 parseRawBlock x = x
 
-generateAnnotationBlock :: Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> [Block]
-generateAnnotationBlock rawFilep (f, ann) blp = case ann of
+generateAnnotationBlock :: Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> [Block]
+generateAnnotationBlock rawFilep truncAuthorsp (f, ann) blp = case ann of
                               Nothing -> nonAnnotatedLink
                               Just ("",   _,_,_,_,_) -> nonAnnotatedLink
                               Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
                                 let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
-                                    author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack aut)]]
+                                    author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorsTruncate aut else aut)]]
                                     date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
@@ -784,7 +784,8 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
                                  let abstrct = cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  let ts = [] -- TODO: replace with ML call to infer tags
-                                 return $ Right (p, (title, author, date, doi, ts, abstrct))
+                                 if abstrct == "" then return (Left Temporary) else
+                                                   return $ Right (p, (title, author, date, doi, ts, abstrct))
   where
     parseMetadataTagsoup, parseMetadataTagsoupSecond :: String -> [Tag String] -> [String]
     parseMetadataTagsoup key metas = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ head b else "") metas
@@ -808,7 +809,9 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let doi = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let abst = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
                          let ts = [] -- TODO: replace with ML call to infer tags
-                         return $ Right (url, (title,authors,published,doi,ts,abst))
+                         -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
+                         if abst=="" then return (Left Temporary) else
+                                          return $ Right (url, (title,authors,published,doi,ts,abst))
 -- NOTE: we inline Tagsoup convenience code from Network.Api.Arxiv (https://hackage.haskell.org/package/arxiv-0.0.1/docs/src/Network-Api-Arxiv.html); because that library is unmaintained & silently corrupts data (https://github.com/toschoo/Haskell-Libs/issues/1), we keep the necessary code close at hand so at least we can easily patch it when errors come up
 -- Get the content of a 'TagText'
 findTxt :: [Tag String] -> String
@@ -1182,7 +1185,7 @@ authorsToCite url author date =
                            map (\c -> if isAlphaNum c then c else '-') $ uriFragment $ fromJust $ parseURIReference url
              -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
              suffix' = (let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
-                           if suffix == url then "" else "-" ++ suffix) ++ extension
+                           if suffix == url then "" else " " ++ suffix) ++ extension
 
            in
            if authorCount >= 3 then
@@ -1197,7 +1200,7 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’') . map toLower . replace 
 
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length:
 authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 250 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
+authorsTruncate a = let (before,after) = splitAt 200 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
@@ -1220,7 +1223,7 @@ replaceMany rewrites s = foldr (uncurry replace) s rewrites
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors a' = replaceMany [(",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’")] $
+initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", "")] .
                        sedMany [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
@@ -1232,7 +1235,6 @@ initializeAuthors a' = replaceMany [(",,", ","), (",,", ","), (", ,", ", "), ("�
                          (" ([A-Z])([A-Z]) ", " \\1. \\2. "),                               -- "John HA Smith"  → "John H. A. Smith"
                          (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith"   → "John H. Smith"
                          ]
-                       a'
 
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle :: String -> String
@@ -2003,4 +2005,5 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("\n            <jats:italic>in vitro</jats:italic>\n", " <em>in vitro</em>")
           , ("\n            <jats:italic>R</jats:italic>\n", "<em>R</em>")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
+          , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
             ]
