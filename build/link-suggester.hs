@@ -1,31 +1,35 @@
 #!/usr/bin/env runhaskell
 {-# LANGUAGE OverloadedStrings #-}
--- dependencies: libghc-pandoc-dev, Unique
+-- dependencies: libghc-pandoc-dev, Unique, monad-parallel, Interwiki.hs
 
 -- usage: 'find . -name "*.page" -or -name "*.html" | link-suggester.hs'; like 'link-extractor.hs', this extracts URLs from Markdown/HTML files
 -- but with a focus on compiling `(anchor/target, URL)` pairs to be used for semi-automated link rewrites in Emacs.
 
 module Main where
 
-import Data.List (nub, sort, sortBy)
+import Data.List (intercalate, nub, sort, sortBy)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromListWith, toList, map, Map)
+import Data.Maybe (isJust)
 import qualified Data.Set as S (fromList, member, Set)
-import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, Text)
+import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, unpack, Text)
 import qualified Data.Text.IO as TIO (readFile, writeFile)
 import System.Environment (getArgs)
+
+import Control.Monad.Parallel as Par (mapM) -- monad-parallel
+
+import Data.List.Unique as U (repeated) -- Unique
 
 import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
                      pandocExtensions, Inline(Link), Pandoc)
 import Text.Pandoc.Walk (walk)
 
-import Control.Monad.Parallel as Par (mapM)
-
-import Data.List.Unique as U (repeated)
+import Text.Regex (mkRegex, matchRegex)
 
 import Interwiki (convertInterwikiLinks, inlinesToString)
 
-hitsMinimum :: Int
+hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 2
+anchorLengthMaximum = 330
 
 -- | Map over the filenames
 main :: IO ()
@@ -35,7 +39,7 @@ main = do
   pairs <- fmap concat $ Par.mapM parseURLs fs
 
   -- blacklist bad URLs, which don't count
-  let db = M.filterWithKey (\k _ -> filterURLs k) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
+  let db = M.filterWithKey (\k _ -> not $ filterURLs k) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
 
   -- we de-duplicate *after* checking for minimum. Particularly for citations, each use counts, but we don't need each instance of 'Foo et al 2021' in the DB (`/usr/share/dict/words`), so we unique the list of anchors
   let db' = M.map (nub . sort) $ M.filter (\texts -> length texts >= hitsMinimum) db
@@ -54,19 +58,25 @@ main = do
 
 -- format the pairs in Elisp `(setq rewrites '((foo bar)) )` style so it can be read in & executed directly by Emacs's `load-file`.
 haskellListToElispList :: [(T.Text, T.Text)] -> T.Text
-haskellListToElispList xs = "(setq rewrites '("
+haskellListToElispList xs = "(setq markdown-rewrites '("
                             `T.append`
                             T.intercalate "\n                 " (map (T.pack . (\(t,u) -> "(" ++ show t ++ " " ++ show u ++ ")")) xs)
                             `T.append`
                             "\n                 )\n      )\n"
 
+-- return True if matches any blacklist conditions
 filterURLs :: T.Text -> Bool
-filterURLs    u = not ("$"`T.isPrefixOf`u || "\8383"`T.isPrefixOf`u || "#"`T.isPrefixOf`u)
+filterURLs    u = "$"`T.isPrefixOf`u || "\8383"`T.isPrefixOf`u || "#"`T.isPrefixOf`u
 filterAnchors :: S.Set T.Text -> T.Text -> Bool
-filterAnchors d t = not $
-                    ("$"`T.isInfixOf`t || "%"`T.isInfixOf`t || "["`T.isInfixOf`t || "]"`T.isInfixOf`t) ||
-                    S.member t d
-                    -- || (any (t==) [] )
+filterAnchors d t = T.length t > anchorLengthMaximum ||
+                    S.member t d ||
+                    isJust (matchRegex regex (T.unpack t)) ||
+                    "$"`T.isInfixOf`t || "%"`T.isInfixOf`t || "["`T.isInfixOf`t || "]"`T.isInfixOf`t ||
+                    "("`T.isPrefixOf`t  || "."`T.isPrefixOf`t ||
+                    "&"==t ||
+                    elem t []
+  where regex = mkRegex $ intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+", "pg[0-9]+", "p\\.[0-9]+"]
+
 
 dictionary :: IO (S.Set T.Text)
 dictionary = fmap (S.fromList . T.lines) $ TIO.readFile "/usr/share/dict/words"

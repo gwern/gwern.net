@@ -43,7 +43,7 @@ else
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git status && git pull --verbose https://gwern.obormot.net/static/.git || true)
+    (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
 
     bold "Compiling…"
     cd ./static/build
@@ -54,6 +54,7 @@ else
     sleep 7s && compile generateBacklinks.hs &
     sleep 7s && compile Columns.hs &
     sleep 7s && compile link-extractor.hs
+    sleep 7s && compile link-suggester.hs
     wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
@@ -74,6 +75,9 @@ else
 
     bold "Updating backlinks…"
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' -e '^\.' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
+
+    bold "Updating suggested-links database…"
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' | sort | ./static/build/link-suggester ./metadata/linkSuggestions.el +RTS -N"$N" -RTS) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -554,10 +558,10 @@ else
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:
-    λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
+    λ(){ find ~/wiki/ -type f -name "*.html" | fgrep --invert-match -e 4a4187fdcd0c848285640ce9842ebdf1bf179369 -e 5fda79427f76747234982154aad027034ddf5309 \
                                                 -e f0cab2b23e1929d87f060beee71f339505da5cad -e a9abc8e6fcade0e4c49d531c7d9de11aaea37fe5 \
                                                 -e 2015-01-15-outlawmarket-index.html -e ac4f5ed5051405ddbb7deabae2bce48b7f43174c.html \
-                                                -e %3FDaicon-videos.html \
+                                                -e %3FDaicon-videos.html -e 86600697f8fd73d008d8383ff4878c25eda28473.html \
              | parallel --max-args=100 file | fgrep --invert-match -e 'HTML document, ' -e 'ASCII text'; }
     wrap λ "Corrupted HTMLs"
 
