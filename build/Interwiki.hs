@@ -38,7 +38,7 @@ inlinesToString = T.concat . map go
                _        -> " "::T.Text
 convertInterwikiLinks :: Inline -> Inline
 convertInterwikiLinks x@(Link _ []           _) = error $ "Link error: no anchor text‽ " ++ show x
-convertInterwikiLinks x@(Link attr@(ident, classes, kvs) ref (interwiki, article)) =
+convertInterwikiLinks x@(Link attr@(_, _, _) ref (interwiki, article)) =
   if not (T.null article) && T.head article == ' ' then error $ "Link error: tooltip malformatted with excess whitespace? " ++ show x else
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
