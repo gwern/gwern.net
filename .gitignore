@@ -10,3 +10,4 @@ build/generateDirectory
 build/generateBacklinks
 build/generateLinkBibliography
 build/link-extractor
+build/link-suggester

@@ -77,7 +77,7 @@ else
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' -e '^\.' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
 
     bold "Updating suggested-links database…"
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' | sort | ./static/build/link-suggester ./metadata/linkSuggestions.el +RTS -N"$N" -RTS) &
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '/Lorem.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' | sort | ./static/build/link-suggester ./metadata/linkSuggestions.el +RTS -N"$N" -RTS) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
