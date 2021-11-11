@@ -26,7 +26,7 @@ import Text.Pandoc (Inline(Code, Link, Str, Space), def, nullAttr, nullMeta, que
 import Text.Pandoc.Walk (walk)
 
 import Interwiki (convertInterwikiLinks)
-import LinkMetadata (generateAnnotationBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationBlock, getBackLink, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 
 main :: IO ()
 main = do pages <- getArgs
@@ -35,8 +35,10 @@ main = do pages <- getArgs
 
 generateLinkBibliography :: Metadata -> String -> IO ()
 generateLinkBibliography md page = do links <- extractLinksFromPage page
+                                      backlinks <- mapM getBackLink links
                                       let pairs = linksToAnnotations md links
-                                          body = generateLinkBibliographyItems pairs
+                                          pairs' = zipWith (\(a,b) c -> (a,b,c)) pairs backlinks
+                                          body = generateLinkBibliographyItems pairs'
                                           document = Pandoc nullMeta [body]
                                           markdown = runPure $ writeMarkdown def{writerExtensions = pandocExtensions} document
                                       case markdown of
@@ -71,22 +73,22 @@ generateYAMLHeader d = "---\n" ++
                        "<strong><a href=\"" ++ "/"++d ++ "\">\"" ++ d ++ "\"</a></strong> links:\n" ++
                        "\n"
 
-generateLinkBibliographyItems :: [(String,MetadataItem)] -> Block
+generateLinkBibliographyItems :: [(String,MetadataItem,FilePath)] -> Block
 generateLinkBibliographyItems items = OrderedList (1, DefaultStyle, DefaultDelim) $ map generateLinkBibliographyItem items
-generateLinkBibliographyItem  :: (String,MetadataItem) -> [Block]
-generateLinkBibliographyItem (f,(t,aut,_,_,_,""))  = let f'
-                                                           | "http" `isPrefixOf` f = f
-                                                           | "index" `isSuffixOf` f = takeDirectory f
-                                                           | otherwise = takeFileName f
-                                                         author = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
-                                                            -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
+generateLinkBibliographyItem  :: (String,MetadataItem,FilePath) -> [Block]
+generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_)  = let f'
+                                                             | "http" `isPrefixOf` f = f
+                                                             | "index" `isSuffixOf` f = takeDirectory f
+                                                             | otherwise = takeFileName f
+                                                           author = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
+                                                           -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
                                         in
                                           if t=="" then
                                             [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
                                           else
                                             [Para (Code nullAttr (T.pack f') :
                                                     Link nullAttr [Str ":", Space, Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
-generateLinkBibliographyItem (f,a) = generateAnnotationBlock ("/"`isPrefixOf`f) True (f,Just a) ""
+generateLinkBibliographyItem (f,a,bl) = generateAnnotationBlock ("/"`isPrefixOf`f) True (f,Just a) bl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path
