@@ -12,8 +12,10 @@ import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromListWit
 import Data.Maybe (isJust)
 import qualified Data.Set as S (fromList, member, Set)
 import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, toLower, unpack, Text)
-import qualified Data.Text.IO as TIO (readFile, writeFile)
+import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
+import System.IO.Temp (writeSystemTempFile)
+import System.Directory (renameFile)
 
 import Control.Monad.Parallel as Par (mapM) -- monad-parallel
 
@@ -58,8 +60,10 @@ main = do
   let reversedDB = concatMap (\(url,ts) -> zip ts (repeat url)) $ M.toList db''
   -- sort by length of anchor text in descending length: longer matches should come first, for greater specificity in doing rewrites.
   let reversedDBSorted = sortBy (\(t1,_) (t2,_) -> if T.length t1 > T.length t2 then LT else if T.length t1 == T.length t2 then if t1 > t2 then LT else GT else GT) reversedDB
+  let elispDB = haskellListToElispList reversedDBSorted
 
-  TIO.writeFile output (haskellListToElispList reversedDBSorted)
+  temp <- writeSystemTempFile "linkSuggestions.el.tmp" (T.unpack elispDB)
+  renameFile temp output
 
 -- format the pairs in Elisp `(setq rewrites '((foo bar)) )` style so it can be read in & executed directly by Emacs's `load-file`.
 haskellListToElispList :: [(T.Text, T.Text)] -> T.Text
