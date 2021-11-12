@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-11-09 22:31:46 gwern"
+When:  Time-stamp: "2021-11-11 16:47:09 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -355,8 +355,8 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Mm]ulti-?[Ll]evel|[Hh]ierarchical linear|[Hh]ierarchical|[Ll]inear mixed[ -]effects?|[Ll]inear mixed|[Mm]ixed[ -]effects?|[Mm]ixed|[Nn]ested data|[Rr]andom-effects|[Rr]andom parameter) model(s|ing)?", "https://en.wikipedia.org/wiki/Multilevel_model")
         , ("([Nn]egative selection|[Pp]urifying selection)", "https://en.wikipedia.org/wiki/Negative_selection_(natural_selection)")
         , ("([Nn]ormal distribution.?|Gaussian distribution.?|[Nn]ormally[ -]distributed)", "https://en.wikipedia.org/wiki/Normal_distribution")
-        , ("([Pp]archive|PAR|PAR2)", "https://en.wikipedia.org/wiki/Parchive")
-        , ("([Pp]olygenic [Ss]core|PGS|[Pp]olygenic [Rr]isk [Ss]core|PRS|[Gg]enetic [Rr]isk [Ss]core|GRS|[Gg]enome-[Ww]ide [Ss]core|[Pp]olygenic [Ii]ndex|PGI)", "https://en.wikipedia.org/wiki/Polygenic_score")
+        , ("([Pp]archive|PAR|PAR2)s?", "https://en.wikipedia.org/wiki/Parchive")
+        , ("([Pp]olygenic [Ss]core|PGS|[Pp]olygenic [Rr]isk [Ss]core|PRS|[Gg]enetic [Rr]isk [Ss]core|GRS|[Gg]enome-[Ww]ide [Ss]core|[Pp]olygenic [Ii]ndex|PGI)s?", "https://en.wikipedia.org/wiki/Polygenic_score")
         , ("([Pp]rompt programming|[Pp]rompt engineering)", "/GPT-3#prompts-as-programming")
         , ("([Pp]rotein.? folding|folding protein.?)", "https://en.wikipedia.org/wiki/Protein_folding")
         , ("([Qq]uadcopter|[Qq]uadrotor)s?", "https://en.wikipedia.org/wiki/Quadcopter")
@@ -1348,4 +1348,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("JFT-3[Bb]", "https://arxiv.org/abs/2106.04560#google")
         , ("([Mm]ethylphenidate|Ritalin|Concerta)", "https://en.wikipedia.org/wiki/Methylphenidate")
         , ("([Aa]utism [Ss]pectrum|[Aa]utism [Ss]pectrum [Dd]isorders?|ASD)", "https://en.wikipedia.org/wiki/Autism_spectrum")
+        , ("(GSS|General Social Survey)", "https://en.wikipedia.org/wiki/General_Social_Survey")
         ]
