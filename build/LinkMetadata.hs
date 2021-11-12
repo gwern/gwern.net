@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-11 21:26:43 gwern"
+When:  Time-stamp: "2021-11-12 00:11:00 gwern"
 License: CC-0
 -}
 
@@ -252,13 +252,14 @@ annotateLink md target =
 hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp = walk (hasAnnotationInline md idp)
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
-          hasAnnotationInline mdb idBool y@(Link (a,b,c) d (f,g)) =
-            if wikipediaArticleNamespace (T.unpack f) then addHasAnnotation idBool True y ("","","","",[],"")
+          hasAnnotationInline mdb idBool y@(Link (a,classes,c) d (f,g)) =
+            if "docMetadataNot" `elem` classes then y else
+              if wikipediaArticleNamespace (T.unpack f) then addHasAnnotation idBool True y ("","","","",[],"")
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
-                  Nothing                 -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
-                  Just ("","","","",_,"") -> if a=="" then Link (generateID f' "" "",b,c) d (f,g) else y
+                  Nothing                 -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
+                  Just ("","","","",_,"") -> if a=="" then Link (generateID f' "" "",classes,c) d (f,g) else y
                   Just                 mi -> addHasAnnotation idBool False y mi
           hasAnnotationInline _ _ y = y
 
@@ -301,7 +302,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp = case a
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
                                     -- on directory indexes/link bibliography pages, we don't want to set 'docMetadata' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
-                                    link = Link (lid, if annotationP then ["docMetadata"] else [], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
+                                    link = Link (lid, if annotationP then ["docMetadata"] else ["docMetadataNot"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
                                     abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || take 7 abst == "<figure" then abst else "<p>" ++ abst ++ "</p>"
                                     -- check that float-right hasn't been deleted by Pandoc again:
