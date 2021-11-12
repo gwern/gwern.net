@@ -87,7 +87,8 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_)  = let f'
                                             [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : author)]
                                           else
                                             [Para (Code nullAttr (T.pack f') :
-                                                    Link nullAttr [Str ":", Space, Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
+                                                    Str ":" : Space :
+                                                    Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
 generateLinkBibliographyItem (f,a,bl) = generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl
 
 extractLinksFromPage :: String -> IO [String]

@@ -215,7 +215,7 @@ generateItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f e
                                           if t=="" then
                                             [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : (author ++ backlink))]
                                           else
-                                            [Para (Code nullAttr (T.pack f') : (Link nullAttr [Str ":", Space, Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
+                                            [Para (Code nullAttr (T.pack f') : Str ":" : Space : (Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
 
 generateItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
