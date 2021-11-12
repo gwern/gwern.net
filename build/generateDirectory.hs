@@ -223,4 +223,4 @@ generateItem (f,a,bl) =
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  generateAnnotationBlock ("/"`isPrefixOf`f) True (f,Just a) bl
+  generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl
