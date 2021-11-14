@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-12 00:11:00 gwern"
+When:  Time-stamp: "2021-11-13 11:29:40 gwern"
 License: CC-0
 -}
 
@@ -124,9 +124,13 @@ readLinkMetadata = do
                                              count > 0 && (count `mod` 2 == 1) ) custom
              unless (null balancedQuotes) $ error $ "Link Annotation Error: unbalanced double quotes! " ++ show balancedQuotes
 
-             let balancedBrackets = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '{' || c == '}') abst in
+             let balancedBracketsCurly = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '{' || c == '}') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
-             unless (null balancedBrackets) $ error $ "Link Annotation Error: unbalanced brackets! " ++ show balancedBrackets
+             unless (null balancedBracketsCurly) $ error $ "Link Annotation Error: unbalanced curly brackets! " ++ show balancedBracketsCurly
+
+             let balancedBracketsSquare = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '[' || c == ']') abst in
+                                                                     count > 0 && (count `mod` 2 == 1) ) custom
+             unless (null balancedBracketsSquare) $ error $ "Link Annotation Error: unbalanced square brackets! " ++ show balancedBracketsSquare
 
              let balancedParens = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
