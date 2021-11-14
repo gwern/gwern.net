@@ -48,21 +48,22 @@ else
     bold "Compiling…"
     cd ./static/build
     compile () { ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
-    sleep 0s && compile hakyll.hs &
-    sleep 7s && compile generateLinkBibliography.hs &
-    sleep 7s && compile generateDirectory.hs &
-    sleep 7s && compile generateBacklinks.hs &
-    sleep 7s && compile Columns.hs &
-    sleep 7s && compile link-extractor.hs
-    sleep 7s && compile link-suggester.hs
+    sleep 0s  && compile Columns.hs &
+    sleep 3s  && compile hakyll.hs &
+    sleep 7s  && compile generateLinkBibliography.hs &
+    sleep 8s  && compile generateDirectory.hs &
+    sleep 9s  && compile generateBacklinks.hs &
+    sleep 11s && compile link-extractor.hs
+    sleep 15s && compile link-suggester.hs
     wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
 
+    # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
+
     ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
     bold "Building directory indexes…"
-
     ./static/build/generateDirectory +RTS -N"$N" -RTS \
                 $(find docs fiction haskell newsletter nootropics notes reviews zeo -type d \
                       | sort | fgrep -v -e 'docs/www/' -e 'docs/personal' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
@@ -75,9 +76,6 @@ else
 
     bold "Updating backlinks…"
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' -e '^\.' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
-
-    bold "Updating suggested-links database…"
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '/Lorem.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' | sort | ./static/build/link-suggester ./metadata/linkSuggestions.el +RTS -N"$N" -RTS && rm ./static/build/link-suggester) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
