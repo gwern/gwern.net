@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-11-05 19:56:29 gwern"
+When: Time-stamp: "2021-11-13 19:25:33 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -178,15 +178,16 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
         runPure $ runWithDefaultPartials $
         compileTemplate "" "<div id=\"TOC\">$toc$</div>\n<div id=\"markdownBody\" class=\"markdownBody\">$body$</div>"
 
-postList :: Tags -> Pattern -> ([Item String] -> Compiler [Item String]) -> Compiler String
-postList tags pattern preprocess' = do
+postList :: String -> Tags -> Pattern -> ([Item String] -> Compiler [Item String]) -> Compiler String
+postList title tags pattern preprocess' = do
     postItemTemplate <- loadBody "static/templates/postitem.html"
-    posts' <- loadAll pattern
+    -- most tags we just leave in the default alphabetical sort. For newsletters, we prefer reverse order (they are written as '/newsletter/$YEAR/$MONTH.page' so the alphabetical sort is chronological, and reversing that is newest-first). This is particularly convenient with tooltip popups: the reader can mouse over 'NEWS' in the sidebar, and the latest finished newsletter will be the first link and it can be popped up as well.
+    posts' <- fmap (if title == "Tag: newsletter" then reverse else id) $ loadAll pattern
     posts <- preprocess' posts'
     applyTemplateList postItemTemplate (postCtx tags) posts
 tagPage :: Tags -> String -> Pattern -> Compiler (Item String)
 tagPage tags title pattern = do
-    list <- postList tags pattern (return . id)
+    list <- postList title tags pattern (return . id)
     makeItem ""
         >>= loadAndApplyTemplate "static/templates/tags.html"
                 (constField "posts" list <> constField "title" title <>
