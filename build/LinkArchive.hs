@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-11-09 22:50:45 gwern"
+When:  Time-stamp: "2021-11-12 20:56:18 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -921,5 +921,6 @@ whiteList url
       , "https://pioneer.app/" -- homepage
       , "dev.kanotype.net:8003/deepdanbooru/" -- interactive/service
       , "https://app.inferkit.com/demo"  -- interactive/service
+      , "https://animetudes.com" -- low quality (media)
       ] = True
     | otherwise = False
