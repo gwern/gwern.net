@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-14 08:09:27 gwern"
+When:  Time-stamp: "2021-11-15 09:50:55 gwern"
 License: CC-0
 -}
 
@@ -1278,6 +1278,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
+        ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>"), -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
         ("^en$", ""),
         ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2"), -- en dash errors in WP abstracts: usually meant em-dash. eg 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
         ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2"),
@@ -1463,6 +1464,13 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("$(x_0,\\gamma)$", "<em>(x<sub>0</sub>, γ)</em>")
           , ("$e=mc^2$", "<em>e</em> = <em>mc</em><sup>2</sup>")
           , ("$\frac{4}{3} \\cdot \\pi \\cdot r^3$", "4⁄3 × π × _r_^3^")
+          , (" Lp", " <em>L</em><sub><em>p</em></sub>")
+          , (" L2", " <em>L</em><sub>2</sub>")
+          , (" L1", " <em>L</em><sub>1</sub>")
+          , (" L0", " <em>L</em><sub>0</sub>")
+          , (" L-infinity", " <em>L</em><sub>∞</sub>")
+          , (" L-∞", " <em>L</em><sub>∞</sub>")
+          , (" L∞", " <em>L</em><sub>∞</sub>")
           -- rest:
           , ("<strong>ABSTRACT</strong><br/>", "")
           , ("<strong>Abstract</strong><br/>", "")
