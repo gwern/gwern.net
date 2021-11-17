@@ -39,7 +39,7 @@ inlinesToString = T.concat . map go
 convertInterwikiLinks :: Inline -> Inline
 convertInterwikiLinks x@(Link _ []           _) = error $ "Link error: no anchor text‽ " ++ show x
 convertInterwikiLinks x@(Link attr@(_, _, _) ref (interwiki, article)) =
-  if not (T.null article) && T.head article == ' ' then error $ "Link error: tooltip malformatted with excess whitespace? " ++ show x else
+  if not (T.null article) && T.head article == ' ' then error $ "Link error: tooltip malformed with excess whitespace? " ++ show x else
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> case article of
@@ -53,7 +53,7 @@ convertInterwikiLinks x@(Link attr@(_, _, _) ref (interwiki, article)) =
                   interwikiurl u a = let a' = if u=="https://en.wikipedia.org/wiki/" then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
                                        u `T.append` T.pack (replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
                   deunicode :: String -> String
-                  deunicode = map (\c -> if c == '’' then '\'' else c)
+                  deunicode = replace "’" "\'" . replace " " " " . replace " " " "
                   -- attr' = if "docMetadata" `elem` classes then attr else if  (ident, "docMetadata":classes, kvs)
 convertInterwikiLinks x = x
 -- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
