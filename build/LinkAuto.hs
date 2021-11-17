@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-11-15 10:50:48 gwern"
+When:  Time-stamp: "2021-11-16 10:20:20 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -71,7 +71,7 @@ annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
   where addFirstDefn :: Inline -> State (S.Set T.Text) Inline
         addFirstDefn x@(Link (ident,classes,values) il (t,tool)) = if "link-auto" `elem` classes then
             do st <- get
-               if S.member t st then return x -- return (Span ("", ["link-auto-skipped"], []) il) -- Useful for debugging to annotate spans of text which *would* have been Links.
+               if S.member t st then return (Span ("", ["link-auto-skipped"], []) il) -- Useful for debugging to annotate spans of text which *would* have been Links.
                  else do let st' = S.insert t st
                          put st'
                          return $ Link (ident,classes++["link-auto-first"],values) il (t,tool)
