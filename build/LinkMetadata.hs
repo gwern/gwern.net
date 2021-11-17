@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-15 09:50:55 gwern"
+When:  Time-stamp: "2021-11-16 10:07:02 gwern"
 License: CC-0
 -}
 
@@ -1334,6 +1334,10 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(L_2\\)</span>", "<em>L</em><sub>2</sub>")
+          , ("<span class=\"math inline\">\\(L_1\\)</span>", "<em>L</em><sub>1</sub>")
+          , ("<span class=\"math inline\">\\(L_0\\)</span>", "<em>L</em><sub>0</sub>")
+          , ("<span class=\"math inline\">\\(\\sim5\\%\\)</span>", "~5%")
           , ("<span class=\"math inline\">\\(\\text{RL}^2\\)</span>", "RL<sup>2</sup>")
           , ("<span class=\"math inline\">\\(\\dot{x} = Ax + Bu, y = Cx + Du\\)</span>", "<em>͘x</em> = <em>Ax</em> + <em>Bu</em>, <em>y</em> = <em>Cx</em> + <em>Du</em>")
           , ("<span class=\"math inline\">\\(u \\mapsto y\\)</span>", "<em>u</em> ↦ <em>y</em>")
@@ -1483,7 +1487,11 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("</p> <table>", "</p>\n<table>")
           , ("</table> <p>", "</table>\n<p>")
           , ("</p> <div", "</p>\n<div")
+          , ("<p><strong>Abstract</strong>:T", "<p>T")
+          , ("<strong>ABSTRACT</strong>: ", "")
           , ("<strong>Abstract</strong>: <p>", "<p>")
+          , ("<p><strong>ABSTRACT</strong><p>", "")
+          , ("<p><strong>Abstract</strong><p>", "")
           , (":</strong>", "</strong>:")
           , ("</p><p>", "</p> <p>")
           , (":</strong></p> <p>", "</strong>: ")
