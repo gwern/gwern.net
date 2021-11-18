@@ -125,7 +125,7 @@ blackList :: T.Text -> Bool
 blackList f
   | any (`T.isInfixOf` f) ["/backlinks/"] = False
   | any (`T.isInfixOf` f) ["/link-bibliography/"] = False
-  | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/About", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
+  | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                             -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
                             "https://wwwyoutube.com/", "https://en.wikipedia.org/wiki/",
                             "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False

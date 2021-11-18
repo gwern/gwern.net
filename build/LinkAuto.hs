@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-11-16 10:20:20 gwern"
+When:  Time-stamp: "2021-11-16 22:51:41 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -628,10 +628,10 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Hermann Hesse", "https://en.wikipedia.org/wiki/Hermann_Hesse")
         , ("Hex", "https://en.wikipedia.org/wiki/Hex_(board_game)")
         , ("Hideaki Anno", "https://en.wikipedia.org/wiki/Hideaki_Anno")
-        , ("Hideo Azuma", "https://en.wikipedia.org/wiki/Hideo%20Azuma")
+        , ("Hideo Azuma", "https://en.wikipedia.org/wiki/Hideo_Azuma")
         , ("Higurashi", "https://en.wikipedia.org/wiki/Higurashi_When_They_Cry")
         , ("Hiroki Azuma", "https://en.wikipedia.org/wiki/Hiroki_Azuma")
-        , ("Hiroshi Miyauchi", "https://en.wikipedia.org/wiki/Hiroshi%20Miyauchi")
+        , ("Hiroshi Miyauchi", "https://en.wikipedia.org/wiki/Hiroshi_Miyauchi")
         , ("Hiroyuki Yamaga", "https://en.wikipedia.org/wiki/Hiroyuki_Yamaga")
         , ("Hokkaido", "https://en.wikipedia.org/wiki/Hokkaido")
         , ("Homeric Question", "https://en.wikipedia.org/wiki/Homeric_Question")
@@ -670,7 +670,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Julian Simon", "https://en.wikipedia.org/wiki/Julian_Lincoln_Simon")
         , ("Kaplan et al 2020", "https://arxiv.org/abs/2001.08361#openai")
         , ("Kaplan-Meier", "https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator")
-        , ("Kazutaka Miyatake", "https://en.wikipedia.org/wiki/Kazutaka%20Miyatake")
+        , ("Kazutaka Miyatake", "https://en.wikipedia.org/wiki/Kazutaka_Miyatake")
         , ("Kelly criterion", "https://en.wikipedia.org/wiki/Kelly_criterion")
         , ("Kevin Kelly", "https://en.wikipedia.org/wiki/Kevin_Kelly_(editor)")
         , ("Kicks Condor", "https://www.kickscondor.com/")
@@ -711,7 +711,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Machiavellianism", "https://en.wikipedia.org/wiki/Machiavellianism_(psychology)")
         , ("Madama Butterfly", "https://en.wikipedia.org/wiki/Madama_Butterfly")
         , ("Magnus Carlsen", "https://en.wikipedia.org/wiki/Magnus_Carlsen")
-        , ("Mahiro Maeda", "https://en.wikipedia.org/wiki/Mahiro%20Maeda")
+        , ("Mahiro Maeda", "https://en.wikipedia.org/wiki/Mahiro_Maeda")
         , ("Many[ -][Ww]orlds [Ii]nterpretation", "https://en.wikipedia.org/wiki/Many-worlds_interpretation")
         , ("Marc Andreessen", "https://en.wikipedia.org/wiki/Marc_Andreessen")
         , ("Mark Pilgrim", "https://en.wikipedia.org/wiki/Mark_Pilgrim")
@@ -880,7 +880,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Shawn Presser", "https://nitter.hu/theshawwn")
         , ("Shikishi", "https://en.wikipedia.org/wiki/Princess_Shikishi")
         , ("Shinji Ikari", "https://en.wikipedia.org/wiki/Shinji_Ikari")
-        , ("Shonen Sunday", "https://en.wikipedia.org/wiki/Shonen%20Sunday")
+        , ("Shonen Sunday", "https://en.wikipedia.org/wiki/Shonen_Sunday")
         , ("Shortformer", "https://arxiv.org/abs/2012.15832")
         , ("SimC[Ll][Rr]", "https://arxiv.org/abs/2002.05709#google")
         , ("SimSiam", "https://arxiv.org/abs/2011.10566#facebook")
