@@ -691,16 +691,25 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     }
 }
 
-/*  Use justified text (words get broken/hyphenated as necessary to avoid a
-    'ragged margin'), undoing the default of 'flush left, ragged' right (see
+/*  On wide screens (desktop), use fully-justified text (words get broken/hyphenated as necessary to avoid a
+    'ragged margin'), overriding browser default of 'flush left, ragged' right (see
     https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
-    */
-.markdownBody p,
-.markdownBody li {
-    text-align: justify;
-    -webkit-hyphens: auto;
-    -ms-hyphens: auto;
-    hyphens: auto;
+
+    On mobile/narrow screens, that doesn't work as well: because browsers do greedy layout, justification forces 's t r e t c h e d out' words
+    and large spaces, leading to blatant https://en.wikipedia.org/wiki/River_(typography) , getting worse the narrower the screen (eg in lists).
+    On wide screens, it isn't too bad, and justification is still better than not, but on mobile it is extremely noticeable.
+    Switching to flush left ragged right doesn't look as nicely 'even', but it avoids that pathological behavior.
+    (More advanced typesetting algorithms like Knuth-Plass https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap#Minimum_raggedness can handle mobile widths nicely,
+    but no contemporary browser implements them natively, and all JS implementations I've looked at are buggy.)
+*/
+@media only screen and (min-width: 900px) {
+    .markdownBody p,
+    .markdownBody li {
+        text-align: justify;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto;
+    }
 }
 
 /*  Cute 'old-style' numerals, look a little nicer inline in text, and available natively in the SS fonts:
