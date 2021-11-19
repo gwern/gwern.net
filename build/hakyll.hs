@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-11-13 19:25:33 gwern"
+When: Time-stamp: "2021-11-18 12:17:59 gwern"
 License: CC-0
 
 Debian dependencies:
