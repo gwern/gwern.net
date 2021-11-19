@@ -1803,6 +1803,13 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 /* MISC */
 /********/
 
+/* Hanging Punctuation https://en.wikipedia.org/wiki/Hanging_punctuation
+   Microtypography: paragraphs starting/ending in quote marks outdent the quote slightly, so the paragraph continues to line up.
+   This is most noticeable in epigraphs and blockquotes. Minor, but nice.
+   CSS standard: https://www.w3.org/TR/css-text-3/#propdef-hanging-punctuation
+   Supported only in Safari https://caniuse.com/css-hanging-punctuation https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility but that has 18% market share, which is not nothing. */
+p { hanging-punctuation: first last; }
+
 /*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower)
     (borrowed from https://latex.now.sh/ )
     */
