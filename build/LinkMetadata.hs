@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-18 12:17:33 gwern"
+When:  Time-stamp: "2021-11-19 20:49:15 gwern"
 License: CC-0
 -}
 
@@ -358,9 +358,26 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 tagsToLinksSpan :: [String] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
-tagsToLinksSpan ts = let tags = map T.pack ts in
+tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\t -> Link ("", ["link-tag"], []) [Str t] ("/docs/"`T.append`t`T.append`"/index", "Link to tag index") ) tags
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+
+-- For some links, tag names may overlap considerably, eg ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
+--
+-- > condenseTags ["genetics/heritable",            "genetics/selection",                "genetics/correlation"]
+-- → [("genetics/heritable","genetics/heritable"), ("/selection","genetics/selection"), ("/correlation","genetics/correlation")]
+-- > condenseTags ["reinforcement-learning",               "reinforcement-learning/alphago",             "reinforcement-learning/muzero"]
+-- → [("reinforcement-learning","reinforcement-learning"),("/alphago","reinforcement-learning/alphago"),("/muzero","reinforcement-learning/muzero")]
+condenseTags :: [String] -> [(T.Text,T.Text)]
+condenseTags ts = map (\t -> let previousList = map prefixfy $ takeWhile (/=t) ts
+                                 prefix = prefixfy t
+                             in
+                          if prefix `elem` previousList then (T.pack (postfixfy t), T.pack t)
+                          else (T.pack t, T.pack t)
+                      )
+                  ts
+  where prefixfy  s = let prefix = reverse $ dropWhile (/= '/') $ reverse s in if prefix=="" then s else init prefix
+        postfixfy s = "/" ++ (reverse $ takeWhile (/= '/') $ reverse s)
 
 -------------------------------------------------------------------------------------------------------------------------------
 
