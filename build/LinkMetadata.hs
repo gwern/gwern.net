@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-19 20:49:15 gwern"
+When:  Time-stamp: "2021-11-20 19:55:41 gwern"
 License: CC-0
 -}
 
@@ -151,7 +151,7 @@ readLinkMetadata = do
              Par.mapM_ (\tag -> do directoryP <- doesDirectoryExist ("docs/"++tag++"/")
                                    when (not directoryP) $ do
                                      let missingTags = M.filter (\(_,_,_,_,tags,_) -> tag`elem`tags) final
-                                     error ("Link Annotation Error: tag does not match a directory! " ++ "Tag: " ++ tag ++ "; annotation: " ++ show missingTags))
+                                     error ("Link Annotation Error: tag does not match a directory! " ++ "Bad tag: '" ++ tag ++ "'\nBad annotation: " ++ show missingTags))
                tagsSet
              return final
 
@@ -421,13 +421,13 @@ readYaml yaml = do filep <- doesFileExist yaml
                         fdb <- readBacklinksDB
                         file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
                         case file of
-                          Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ show e
+                          Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
                           Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
                  convertListToMetadata :: Backlinks -> [String] -> MetadataList
                  convertListToMetadata f [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags f u $ tag2TagsWithDefault u "", s))]
                  convertListToMetadata f [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags f u $ tag2TagsWithDefault u ts, s))]
-                 convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ show e
+                 convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
 
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
@@ -695,7 +695,7 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do hPutStrLn stderr (l ++ " : " ++ show i)
+writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do hPutStrLn stderr (l ++ " : " ++ ppShow i)
                                                      let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
                                                      B.appendFile "metadata/auto.yaml" newYaml
 
@@ -730,7 +730,7 @@ linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
-                ExitFailure err -> hPutStrLn stderr (intercalate " : " [l, show status, show err, show mb]) >> return (Left Permanent)
+                ExitFailure err -> hPutStrLn stderr (intercalate " : " [l, ppShow status, ppShow err, ppShow mb]) >> return (Left Permanent)
                 _ -> do
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
@@ -801,7 +801,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         let metas = filter (isTagOpenName "meta") f
 
                         let title = concat $ parseMetadataTagsoup "DC.Title" metas
-                        if title=="" then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ show metas) >> return (Left Permanent)
+                        if title=="" then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ ppShow metas) >> return (Left Permanent)
                           else do
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
@@ -898,7 +898,7 @@ processPubMedAbstract abst = let clean = runPure $ do
                                    html <- writeHtml5String safeHtmlWriterOptions pandoc
                                    return $ T.unpack html
                              in case clean of
-                                  Left e -> error $ show e ++ ": " ++ abst
+                                  Left e -> error $ ppShow e ++ ": " ++ abst
                                   Right output -> cleanAbstractsHTML $ trim $ replace "<br/>" "" $ cleanAbstractsHTML output
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
@@ -915,7 +915,7 @@ processArxivAbstract u a = let cleaned = runPure $ do
 
                                     writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
-                 Left e -> error $ u ++ " : " ++ show e ++ ": " ++ a
+                 Left e -> error $ u ++ " : " ++ ppShow e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
 
 
@@ -960,7 +960,7 @@ generateID url author date
   where
     linkIDOverrides :: [(String, T.Text)]
     linkIDOverrides = map (\o@(_,ident) -> -- NOTE: HTML identifiers *must* start with [a-zA-Z]
-                              if (not $ isAlpha $ head $ T.unpack ident) then error ("Invalid link ID override! " ++ show o) else o) $
+                              if (not $ isAlpha $ head $ T.unpack ident) then error ("Invalid link ID override! " ++ ppShow o) else o) $
                       [
       ("/docs/ai/gpt/2019-radford.pdf#openai", "gpt-2-paper")
        , ("/docs/ai/2020-chen.pdf#openai", "chen-igpt-paper")
@@ -1106,16 +1106,16 @@ generateID url author date
        , ("https://www.aclweb.org/anthology/2020.acl-main.463.pdf", "bender-koller-2020-paper")
        , ("https://www.andrew.cmu.edu/user/nicolasc/publications/Christin-WWW13.pdf", "christin-2013-2")
        , ("https://www.andrew.cmu.edu/user/nicolasc/publications/Christin-WWW13.pdf", "christin-2013-3")
-       , ("https://www.biorxiv.org/content/early/2015/04/06/014498", "buliksullivan-et-al-2015-2")
-       , ("https://www.biorxiv.org/content/early/2016/08/31/072306", "hagenaars-et-al-2016-bald")
-       , ("https://www.biorxiv.org/content/early/2016/09/13/074815", "davies-et-al-2016-2")
-       , ("https://www.biorxiv.org/content/early/2016/09/23/076794", "day-et-al-2016-2")
-       , ("https://www.biorxiv.org/content/early/2016/10/19/081844", "warrier-et-al-2016-3")
-       , ("https://www.biorxiv.org/content/early/2017/06/05/106203", "hill-et-al-2017-kin")
-       , ("https://www.biorxiv.org/content/early/2017/07/07/160291.1", "hill-et-al-2017-2")
-       , ("https://www.biorxiv.org/content/early/2017/11/14/219261", "kong-non")
-       , ("https://www.biorxiv.org/content/early/2017/12/31/241414", "ma-rrblup")
-       , ("https://www.biorxiv.org/content/early/2018/07/25/376897", "belsky-et-al-2018-2")
+       , ("https://www.biorxiv.org/content/early/2015/04/06/014498.full", "buliksullivan-et-al-2015-2")
+       , ("https://www.biorxiv.org/content/early/2016/08/31/072306.full", "hagenaars-et-al-2016-bald")
+       , ("https://www.biorxiv.org/content/early/2016/09/13/074815.full", "davies-et-al-2016-2")
+       , ("https://www.biorxiv.org/content/early/2016/09/23/076794.full", "day-et-al-2016-2")
+       , ("https://www.biorxiv.org/content/early/2016/10/19/081844.full", "warrier-et-al-2016-3")
+       , ("https://www.biorxiv.org/content/early/2017/06/05/106203.full", "hill-et-al-2017-kin")
+       , ("https://www.biorxiv.org/content/early/2017/07/07/160291.1.full", "hill-et-al-2017-2")
+       , ("https://www.biorxiv.org/content/early/2017/11/14/219261.full", "kong-non")
+       , ("https://www.biorxiv.org/content/early/2017/12/31/241414.full", "ma-rrblup")
+       , ("https://www.biorxiv.org/content/early/2018/07/25/376897.full", "belsky-et-al-2018-2")
        , ("https://www.cl.cam.ac.uk/~bjc63/tight_scrape.pdf", "turk-et-al-2020-2")
        , ("https://www.gwern.net/docs/advertising/2020-aral.pdf", "aral-dhillon-2020-paper")
        , ("https://www.nature.com/articles/s41467-019-13585-5", "hill-et-al-20192")
