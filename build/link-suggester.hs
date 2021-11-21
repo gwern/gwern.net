@@ -11,7 +11,7 @@ import Data.List (intercalate, nub, sort, sortBy)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromListWith, toList, map, Map)
 import Data.Maybe (isJust)
 import qualified Data.Set as S (fromList, member, Set)
-import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, toLower, unpack, Text)
+import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, toLower, unpack, Text, head, last, init, drop)
 import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
 import System.IO.Temp (writeSystemTempFile)
@@ -113,6 +113,11 @@ extractURLs :: Pandoc -> [(T.Text,[T.Text])]
 extractURLs = queryWith extractURL . linkAuto . walk convertInterwikiLinks
  where
    extractURL :: Inline -> [(T.Text,[T.Text])]
-   extractURL (Link _ il (u,""))     = [(u, [inlinesToString il])]
-   extractURL (Link _ il (u,target)) = [(u, [inlinesToString il]), (u, [target])]
+   extractURL (Link _ il (u,""))     = [(u, [cleanURL $ inlinesToString il])]
+   extractURL (Link _ il (u,target)) = [(u, [cleanURL $ inlinesToString il]), (u, [target])]
    extractURL _ = []
+
+   -- NOTE: apparently due to nested Spans (from the smallcaps) and the RawInline issue (yet again), some link suggestions look like ">ADHD<". Very undesirable replacement targets. So we special-case clean those:
+   cleanURL :: T.Text -> T.Text
+   cleanURL "" = ""
+   cleanURL u = if T.head u == '>' && T.last u == '<' then T.init $ T.drop 1 u else u
