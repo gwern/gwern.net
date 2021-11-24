@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-20 19:55:41 gwern"
+When:  Time-stamp: "2021-11-23 21:00:29 gwern"
 License: CC-0
 -}
 
@@ -439,7 +439,7 @@ tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
 tag2Default :: String -> String
 tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
 
--- de-duplicate tags: remove the more general tags in favor of nested (more specific) tags. eg ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
+-- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
 uniqTags tags = nubOrd $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
 
@@ -457,8 +457,12 @@ page2Tag fdb path
   | any (`isSuffixOf` path) ["/index"] = []
   | otherwise = let backlinks = M.lookup (T.pack $ takeWhile (/='#') path) fdb in
                     case backlinks of
-                      Nothing -> []
-                      Just links ->  (map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) links)
+                      Nothing -> case M.lookup (T.pack $ path) fdb of -- is the URL present under a hash-link?
+                                   Nothing -> []
+                                   Just links' -> lookupTags links'
+                      Just links -> lookupTags links
+  where lookupTags :: [T.Text] -> [String]
+        lookupTags ls = map T.unpack $ concatMap (\l -> fromMaybe [] $ M.lookup l pageTagDB) ls
 
 -- We also do general-purpose heuristics on the path/URL: any page in a domain might be given a specific tag, or perhaps any URL with the string "deepmind" might be given a 'reinforcement-learning/deepmind' tag—that sort of thing.
 url2Tags :: String -> [String]
