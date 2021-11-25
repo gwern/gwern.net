@@ -209,14 +209,15 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
 generateItem :: (FilePath,MetadataItem,FilePath) -> [Block]
 generateItem (f,(t,aut,dt,_,tgs,""),bl)  = let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
-       title    = if t=="" then [Code nullAttr (T.pack f')] else [Code nullAttr (T.pack f'), Str (T.pack $ ": “"++t++"”")]
+       title    = if t=="" then [Code nullAttr (T.pack f')] else [Str (T.pack $ "“"++t++"”")]
+       prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
        author   = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
        date     = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
        tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan tgs]
        backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
   in
-  if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
-  else [Para (Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ [Str ")"]))]
+  if (tgs==[] && bl=="" && dt=="") then [Para (prefix ++ Link nullAttr title (T.pack f, "") : (author))]
+  else [Para (prefix  ++ Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ [Str ")"]))]
 generateItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
   --
