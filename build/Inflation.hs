@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2021-10-30 16:15:49 gwern"
+-- When:  Time-stamp: "2021-11-25 13:27:05 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting https://en.wikipedia.org/wiki/Money_illusion by implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real price! (Misunderstanding of inflation may be getting worse over time: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008 )
@@ -95,9 +95,9 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
             -- provide all 4 variables as metadata the <span> tags for possible CSS/JS processing
             [("originalYear",oldYear),("originalAmount",T.pack oldDollarString),
              ("currentYear",T.pack $ show currentYear),("currentAmount",T.pack adjustedDollarString),
-             ("title", T.pack ("CPI inflation-adjusted US dollar: from nominal $"++oldDollarString++" in "++T.unpack oldYear++" → real $"++adjustedDollarString++" in "++show currentYear)) ])
+             ("title", T.pack ("CPI inflation-adjusted US dollar: from nominal $"++oldDollarString'++" in "++T.unpack oldYear++" → real $"++adjustedDollarString++" in "++show currentYear)) ])
       -- [Str ("$" ++ oldDollarString), Subscript [Str oldYear, Superscript [Str ("$"++adjustedDollarString)]]]
-      [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["supsub"],[]) [Superscript text, Subscript [Str oldYear]]]
+      [Str (T.pack $ "$"++adjustedDollarString),  Span ("",["supsub"],[]) [Superscript [Str $ T.pack $ "$" ++ oldDollarString'], Subscript [Str oldYear]]]
     where -- oldYear = '$1970' → '1970'
           oldYear = T.tail oldYears
           oldDollarString = filter (/= '$') $ inlinesToString text -- '$50.50' → '50.50'
@@ -108,8 +108,10 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
           -- round to 2 digits when converting to String if a decimal was present and the inflation factor is <10x, otherwise, round to whole numbers.
           -- So, '$1.05' becomes '$20.55', but '$1' becomes '$20' instead of '$20.2359002', and '$0.05' can still become '$0.97'
           precision = if ('.' `elem` oldDollarString) && ((adjustedDollar < 10*oldDollar) || (adjustedDollar < 1)) then "2" else "0"
+          oldDollarString' = formatDecimal oldDollar precision
           adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
           adjustedDollarString = formatDecimal adjustedDollar precision
+
 dollarAdjuster x = x
 
 inlinesToString :: [Inline] -> String
