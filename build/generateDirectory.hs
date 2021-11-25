@@ -20,7 +20,7 @@ import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, authorsTruncate, Metadata, MetadataItem)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -142,7 +142,7 @@ listFiles m direntries' = do
 listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
 listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "docs/" "" dir in
-                     let tagged = M.filterWithKey (\u (_,_,_,_,ts,_) -> not (dir `isInfixOf` u) && dirTag `elem` ts) m in
+                     let tagged = M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
                        do let files = nub $ map truncateAnchors $ M.keys tagged
                           backlinks <- mapM getBackLink files
                           let fileAnnotationsMi = map (lookupFallback m) files
@@ -161,7 +161,7 @@ sortByDate = sortBy (\(f,(_,_,d,_,_,_),_) (f',(_,_,d',_,_,_),_) -> if not (null 
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
 lookupFallback m u = case M.lookup u m of
                        Nothing -> tryPrefix
-                       Just ("",_,_,_,_,_) -> tryPrefix
+                       Just ("","","","",[],"") -> tryPrefix
                        Just mi -> (u,mi)
                        where tryPrefix = let possibles =  M.filterWithKey (\url _ -> u `isPrefixOf` url && url /= u) m
                                              u' = if M.size possibles > 0 then fst $ head $ M.toList possibles else u
@@ -207,16 +207,16 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
                                  ++ generateItem p)
 
 generateItem :: (FilePath,MetadataItem,FilePath) -> [Block]
-generateItem (f,(t,aut,_,_,_,""),bl)  = let f' = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
-                                            author = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
-                                            -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
-                                            backlink = if bl=="" then [] else [Space, Str "(",  Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")], Str ")"]
-                                        in
-                                          if t=="" then
-                                            [Para (Link nullAttr [Code nullAttr (T.pack f')] (T.pack f, "") : (author ++ backlink))]
-                                          else
-                                            [Para (Code nullAttr (T.pack f') : Str ":" : Space : (Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "")) : (author ++ backlink))]
-
+generateItem (f,(t,aut,dt,_,tgs,""),bl)  = let
+       f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
+       title    = if t=="" then [Code nullAttr (T.pack f')] else [Code nullAttr (T.pack f'), Str (T.pack $ ": “"++t++"”")]
+       author   = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
+       date     = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
+       tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan tgs]
+       backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
+  in
+  if (tgs==[] && bl=="" && dt=="") then [Para (Link nullAttr title (T.pack f, "") : (author))]
+  else [Para (Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ [Str ")"]))]
 generateItem (f,a,bl) =
   -- render annotation as: (skipping DOIs)
   --
