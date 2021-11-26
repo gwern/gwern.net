@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-24 16:47:16 gwern"
+When:  Time-stamp: "2021-11-26 10:50:11 gwern"
 License: CC-0
 -}
 
@@ -1285,6 +1285,12 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         (" *</p>", "</p>"),
         ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
         -- regexp substitutions:
+        -- cleanup bare URLs (particularly common in Arxiv abstracts when linking to Github):
+        (" (https?://[a-zA-Z0-9_\\.\\?/-]+)$", " <a href=\"\\1\">\\1</a>$"),
+        (" (https?://[a-zA-Z0-9_\\.\\?/-]+)</p>", " <a href=\"\\1\">\\1</a></p>"),
+        (" (https?://[a-zA-Z0-9_\\.\\?/-]+)\\)", " <a href=\"\\1\">\\1</a> )"),
+        (" (https?://[a-zA-Z0-9_\\.\\?/-]+) \\.", " <a href=\"\\1\">\\1</a> ."),
+        (" (https?://[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">\\1</a> .</p>"),
         -- - comma-separate at thousands for consistency:
         -- skip thousands, since clobbers citations like 'Herring 2009' (which turns into 'Herring 2,009')
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])",                                   " \\1,\\2,\\3"),         -- millions
@@ -1343,6 +1349,9 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         -- simple string substitutions:
         replaceMany [
           ("<span style=\"font-weight:normal\"> </span>", "")
+          , ("i . e .,", "ie.")
+          , ("<p><strong>Motivation</strong></p>\n<p>", "<p><strong>Motivation</strong>: ")
+          , ("<p><strong>Availability</strong></p>\n<p>", "<p><strong>Availability</strong>: ")
           , ("<p>[<strong>Keywords</strong>: ]</p>", "")
           , ("<strong>Null</strong>: ", "")
           , ("<em>p</em>=", "<em>p</em> = ")
