@@ -52,9 +52,9 @@ else
     sleep 3s  && compile hakyll.hs &
     sleep 7s  && compile generateLinkBibliography.hs &
     sleep 8s  && compile generateDirectory.hs &
-    sleep 9s  && compile generateBacklinks.hs &
-    sleep 11s && compile link-extractor.hs &
-    sleep 15s && compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
+    sleep 10s  && compile generateBacklinks.hs &
+    sleep 12s && compile link-extractor.hs &
+    sleep 16s && compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
     wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
@@ -260,7 +260,7 @@ else
                -e ']https' -e 'STRONG>' -e '\1' -e '\2' -e '\3' -e ']($' -e '](₿' -e 'M age' -e '….' -e '((' -e ' %' \
                -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
                -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e '<span class="cit' -e 'gwsed' -e 'full.full' -e ',,' \
-               -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -- ./metadata/*.yaml; }
+               -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -- ./metadata/*.yaml; }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ fgrep '{#' $(find _site/ -type f -name "index"); }
