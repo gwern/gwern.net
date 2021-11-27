@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-11-25 23:41:29 gwern"
+When:  Time-stamp: "2021-11-27 09:36:06 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -926,5 +926,6 @@ whiteList url
       , "https://discord.com/invite/" -- service
       , "https://same.energy/" -- interactive/service
       , "https://old.reddit.com/r/MediaSynthesis/comments/p5nw28/clip_vqgan_keyword_comparison_by_kingdomakrillic/" -- low-quality due to Imgur embed
+      , "proceedings.mlr.press/" -- stable
       ] = True
     | otherwise = False
