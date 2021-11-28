@@ -48,14 +48,14 @@ else
     bold "Compiling…"
     cd ./static/build
     compile () { ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
-    sleep 0s  && compile Columns.hs &
-    sleep 3s  && compile hakyll.hs &
-    sleep 7s  && compile generateLinkBibliography.hs &
-    sleep 8s  && compile generateDirectory.hs &
-    sleep 10s  && compile generateBacklinks.hs &
-    sleep 12s && compile link-extractor.hs &
-    sleep 16s && compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
-    wait
+    compile Columns.hs
+    compile hakyll.hs
+    compile generateLinkBibliography.hs
+    compile generateDirectory.hs
+    compile generateBacklinks.hs
+    compile link-extractor.hs
+    compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
+    # wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
@@ -508,7 +508,7 @@ else
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v -e images/thumbnails/ -e metadata/annotations/; }
     wrap λ "No files should have double hyphens or tildes in their names."
 
-    λ(){ fgrep --before-context=1 'Right Nothing' ./metadata/archive.hs; }
+    λ(){ fgrep --before-context=1 -e 'Right Nothing' -e 'Just ""' ./metadata/archive.hs; }
     wrap λ "Links failed to archive (broken)."
 
     λ(){ find . -type f | fgrep -v -e '.'; }
