@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-11-27 09:36:06 gwern"
+When:  Time-stamp: "2021-11-27 22:31:19 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -39,6 +39,7 @@ But it'll be worth it to forestall thousands of dying links, regular reader frus
 {-# LANGUAGE OverloadedStrings #-}
 module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 
+import Control.Monad (filterM)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
 import Data.Maybe (isNothing, fromMaybe)
@@ -84,19 +85,19 @@ localizeLink _ x = return x
 readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
                          -- check for failed archives:
-                         mapM_ (\(p,ami) -> case ami of
-                                  Right (Just "") -> error $ "Error! Invalid empty archive link: " ++ show p ++ show ami
-                                  Right u@(Just ('/':'/':_)) -> error $ "Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u
+                         pdl' <- filterM (\(p,ami) -> case ami of
+                                  Right (Just "") -> hPutStrLn stderr ("Error! Invalid empty archive link: " ++ show p ++ show ami) >> return False
+                                  Right u@(Just ('/':'/':_)) -> hPutStrLn stderr ("Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u) >> return False
                                   Right (Just u)  -> if not ("http" `isPrefixOf` p) then
-                                                       error $ "Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami
+                                                       hPutStrLn stderr ("Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami) >> return False
                                                      else
                                                        if isNothing (parseTLD p) then
-                                                        error $ "Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami
-                                                       else return ami
-                                  Right Nothing   -> return ami
-                                  Left  _         -> return ami)
+                                                        hPutStrLn stderr ("Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami) >> return False
+                                                       else return True
+                                  Right Nothing   -> return True
+                                  Left  _         -> return True)
                               pdl
-                         return $ M.fromList pdl
+                         return $ M.fromList pdl'
 
 {-
 rewriteLink:
