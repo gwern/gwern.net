@@ -108,6 +108,7 @@ updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-directories" cont
 generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
                        "title: /" ++ d ++ " Directory Listing\n" ++
+                       "author: 'N/A'\n" ++
                        "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>, most recent first.\n" ++
                        "tags: index\n" ++
                        "created: 2009-01-01\n" ++
