@@ -516,7 +516,8 @@ if (window.Extracts) {
         "greaterwrong.com",
         "www.lesswrong.com",
         "lesswrong.com",
-        /(.+?)\.wikipedia\.org/
+        /(.+?)\.wikipedia\.org/,
+        "nitter.hu"
     ];
 
     Extracts.blacklistedForeignDomains = [
