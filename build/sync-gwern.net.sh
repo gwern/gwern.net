@@ -39,7 +39,7 @@ else
     renice -n 19 "$$" > /dev/null
 
     ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 31; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 30; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
@@ -47,7 +47,7 @@ else
 
     bold "Compiling…"
     cd ./static/build
-    compile () { ghc -O2 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
+    compile () { ghc -O1 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
     compile Columns.hs
     compile hakyll.hs
     compile generateLinkBibliography.hs
@@ -182,7 +182,7 @@ else
                                 -e '%2Fperformance-pay-nobel.html' -e '/docs/cs/index' -e '/docs/math/index' -e '/Coin-flip' \
                                 -e '/nootropics/Magnesium' -e '/Selection' -e 'docs/statistics/bayes/1994-falk' -e '/Zeo' \
                                 -e '/Mail-delivery' -e 'docs/link-bibliography/Complexity-vs-AI' -e 'docs/link-bibliography/newsletter/2021/04' \
-                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index';
+                                -e '/docs/math/humor/index' -e '/docs/ai/index' -e '/docs/statistics/bias/index' -e '/Variables';
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
