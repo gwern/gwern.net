@@ -517,7 +517,16 @@ if (window.Extracts) {
         "www.lesswrong.com",
         "lesswrong.com",
         /(.+?)\.wikipedia\.org/,
-        "nitter.hu"
+        "nitter.hu",
+        "old.reddit.com",
+        "arxiv.org",
+        "www.biorxiv.org",
+        "www.medrxiv.org",
+        "github.com",
+        /(.+?)\.github\.com/,
+        /(.+?)\.github\.io/,
+        /(.+?)\.eleuther\.ai/,
+        "bmk.sh"
     ];
 
     Extracts.blacklistedForeignDomains = [
