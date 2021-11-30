@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-29 10:55:32 gwern"
+When:  Time-stamp: "2021-11-30 12:21:29 gwern"
 License: CC-0
 -}
 
@@ -360,7 +360,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
@@ -805,7 +805,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                         let metas = filter (isTagOpenName "meta") f
 
                         let title = concat $ parseMetadataTagsoup "DC.Title" metas
-                        if title=="" then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": " ++ ppShow metas) >> return (Left Permanent)
+                        if title=="" then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": parsed metadata: " ++ ppShow metas ++ "\nParsed tags: " ++ show f) >> return (Left Permanent)
                           else do
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
@@ -1138,8 +1138,8 @@ generateID url author date
        , ("http://www.stuartcheshire.org/rants/latency.html", "luu-2017-stupid")
        , ("http://www.terrierman.com/russianfoxfarmstudy.pdf", "trut-1999-2")
        , ("http://zenpundit.com/?p=52965", "greer-thucydides-roundtable")
-       , ("https://www.lesswrong.com/posts/baTWMegR42PAsH9qJ/generalizing-from-one-example", "alexander-2009-typicalmind")
-       , ("https://www.lesswrong.com/posts/reitXJgJXFzKpdKyd/beware-trivial-inconveniences", "alexander-2009-trivialinconveniences")
+       , ("https://www.lesswrong.com/posts/baTWMegR42PAsH9qJ/generalizing-from-one-example", "alexander-2009-typical-mind")
+       , ("https://www.lesswrong.com/posts/reitXJgJXFzKpdKyd/beware-trivial-inconveniences", "alexander-2009-trivial-inconveniences")
        , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7770104/", "couvyduchesne-et-al-2020-brain-age")
        , ("/docs/statistics/decision/1983-howard-readingsondecisionanalysis-v1.pdf", "howard-matheson-1983-readings-v1")
        , ("/docs/statistics/decision/1983-howard-readingsondecisionanalysis-v2.pdf", "howard-matheson-1983-readings-v2")
@@ -1148,7 +1148,7 @@ generateID url author date
        , ("https://arxiv.org/abs/2102.12593", "li-et-al-2021-anigan")
        , ("https://github.com/arfafax/E621-Face-Dataset", "arfafax-2020-e621")
        , ("https://arxiv.org/abs/1908.05840", "kim-et-al-2019-tag2pix")
-       , ("http://www.engineeringletters.com/issues_v27/issue_3/EL_27_3_01.pdf", "liu-et-al-2019-animesketchcoloring")
+       , ("http://www.engineeringletters.com/issues_v27/issue_3/EL_27_3_01.pdf", "liu-et-al-2019-anime-sketch-coloring")
        , ("/docs/sociology/2010-kelly-whattechwants-ch7-convergence.pdf",                  "kelly-2010-ch7")
        , ("/docs/sociology/2010-kelly-whattechnologywants-ch11-lessonsofamishhackers.pdf", "kelly-2010-ch11")
        , ("/docs/reinforcement-learning/openai/2017-openai-form990.pdf", "clark-2017")
@@ -1175,33 +1175,35 @@ generateID url author date
        , ("/docs/existential-risk/1985-hofstadter-sanityandsurvival.pdf", "hofstadter-1985-superrationality-pdf")
        , ("/docs/existential-risk/1985-hofstadter-sanityandsurvival",     "hofstadter-1985-superrationality")
        , ("https://www.biorxiv.org/content/10.1101/201020v1.full", "tikkanen-et-al-2017-strength")
-       , ("/docs/eva/2004-okada.pdf", "okada-morikawa-2004-otakutalk-pdf")
-       , ("/docs/eva/2004-okada",     "okada-morikawa-2004-otakutalk")
-       , ("https://web.archive.org/web/20171025150859/http://nitro.biosci.arizona.edu:80/zbook/NewVolume_2/pdf/Chapter38.pdf", "walsh-lynch-1997-indexselection-application")
-       , ("https://web.archive.org/web/20171025141547/http://nitro.biosci.arizona.edu:80/zbook/NewVolume_2/pdf/Chapter37.pdf", "walsh-lynch-1997-indexselection-theory")
-       , ("http://www.vetta.org/2009/12/the-teenies/", "legg-2009-theteenies")
-       , ("http://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "legg-2009-ticktock")
-       , ("https://medium.com/@NPCollapse/addendum-evaluation-of-my-model-e6734b51a830", "leahy-2019-gpt15bevaluation")
-       , ("https://medium.com/@NPCollapse/replicating-gpt2-1-5b-86454a7f26af", "leahy-2019-gpt15breplication")
-       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch11-undesiredbehavior.pdf",      "bradshaw-et-al-2012-undesiredbehavior")
-       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch3-mechanismsbehaviour.pdf",     "bradshaw-et-al-2012-mechanismsbehaviour")
-       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch12-causesbehavioralchange.pdf", "bradshaw-et-al-2012-causesbehavioralchange")
-       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch8-socialbehaviour.pdf",         "bradshaw-et-al-2012-socialbehaviour")
-       , ("https://mlp.fandom.com/wiki/Between_Dark_and_Dawn", "wikia-2019-mlp-between_dark_and_dawn")
-       , ("https://mlp.fandom.com/wiki/The_Last_Laugh",        "wikia-2019-mlp-the_last_laugh")
-       , ("https://mlp.fandom.com/wiki/Daring_Doubt",          "wikia-2019-mlp-daring_doubt")
-       , ("https://mlp.fandom.com/wiki/The_Big_Mac_Question",  "wikia-2019-mlp-the_big_mac_question")
-       , ("https://mlp.fandom.com/wiki/The_Last_Problem",      "wikia-2019-mlp-the_last_problem")
-       , ("https://mlp.fandom.com/wiki/Sparkle%27s_Seven",     "wikia-2019-mlp-sparkles_seven")
-       , ("https://arxiv.org/abs/1808.04355", "burda-et-al-2018-largescalecuriosity")
-       , ("https://arxiv.org/abs/1806.11146", "elsayed-et-al-2018-adversarialreprogramming")
-       , ("https://arxiv.org/abs/1802.08195", "elsayed-et-al-2018-humanfooling")
+       , ("/docs/eva/2004-okada.pdf", "okada-morikawa-2004-otaku-talk-pdf")
+       , ("/docs/eva/2004-okada",     "okada-morikawa-2004-otaku-talk")
+       , ("https://web.archive.org/web/20171025150859/http://nitro.biosci.arizona.edu:80/zbook/NewVolume_2/pdf/Chapter38.pdf", "walsh-lynch-1997-index-selection-application")
+       , ("https://web.archive.org/web/20171025141547/http://nitro.biosci.arizona.edu:80/zbook/NewVolume_2/pdf/Chapter37.pdf", "walsh-lynch-1997-index-selection-theory")
+       , ("http://www.vetta.org/2009/12/the-teenies/", "legg-2009-the-teenies")
+       , ("http://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "legg-2009-tick-tock")
+       , ("https://medium.com/@NPCollapse/addendum-evaluation-of-my-model-e6734b51a830", "leahy-2019-gpt15b-evaluation")
+       , ("https://medium.com/@NPCollapse/replicating-gpt2-1-5b-86454a7f26af", "leahy-2019-gpt15b-replication")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch11-undesiredbehavior.pdf",      "bradshaw-et-al-2012-undesired-behavior")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch3-mechanismsbehaviour.pdf",     "bradshaw-et-al-2012-mechanisms-behaviour")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch12-causesbehavioralchange.pdf", "bradshaw-et-al-2012-causes-behavioral-change")
+       , ("/docs/cat/2012-bradshaw-behaviourdomesticcat-ch8-socialbehaviour.pdf",         "bradshaw-et-al-2012-social-behaviour")
+       , ("https://mlp.fandom.com/wiki/Between_Dark_and_Dawn", "wikia-2019-mlp-between-dark-and-dawn")
+       , ("https://mlp.fandom.com/wiki/The_Last_Laugh",        "wikia-2019-mlp-the-last-laugh")
+       , ("https://mlp.fandom.com/wiki/Daring_Doubt",          "wikia-2019-mlp-daring-doubt")
+       , ("https://mlp.fandom.com/wiki/The_Big_Mac_Question",  "wikia-2019-mlp-the-big-mac-question")
+       , ("https://mlp.fandom.com/wiki/The_Last_Problem",      "wikia-2019-mlp-the-last-problem")
+       , ("https://mlp.fandom.com/wiki/Sparkle%27s_Seven",     "wikia-2019-mlp-sparkles-seven")
+       , ("https://arxiv.org/abs/1808.04355", "burda-et-al-2018-large-scale-curiosity")
+       , ("https://arxiv.org/abs/1806.11146", "elsayed-et-al-2018-adversarial-reprogramming")
+       , ("https://arxiv.org/abs/1802.08195", "elsayed-et-al-2018-human-fooling")
        , ("/docs/sociology/2021-costello.pdf", "costello-et-al-2021-lwa")
-       , ("/docs/psychology/neuroscience/2021-xu.pdf", "xu-et-al-2021-rhesusconnectome")
+       , ("/docs/psychology/neuroscience/2021-xu.pdf", "xu-et-al-2021-rhesus-connectome")
        , ("/docs/longevity/2021-zhang.pdf", "zhang-et-al-2021-hair")
-       , ("https://arxiv.org/abs/2106.04533", "chen-et-al-2021-sparsevits")
-       , ("https://arxiv.org/abs/1704.03453", "tramer-et-al-2017-transferableadversarialexamples")
-       , ("https://arxiv.org/abs/2107.12979", "millidge-et-al-2021-predictivecodingreview")
+       , ("https://arxiv.org/abs/2106.04533", "chen-et-al-2021-sparse-vits")
+       , ("https://arxiv.org/abs/1704.03453", "tramer-et-al-2017-transferable-adversarial-examples")
+       , ("https://arxiv.org/abs/2107.12979", "millidge-et-al-2021-predictive-coding-review")
+       , ("https://arxiv.org/abs/2102.12092#openai", "ramesh-et-al-2021-dalle-paper")
+       , ("https://openai.com/blog/dall-e/", "ramesh-et-al-2021-dalle-blog")
       ]
 
 authorsToCite :: String -> String -> String -> String
