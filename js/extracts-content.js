@@ -511,6 +511,9 @@ if (window.Extracts) {
         "foreign-site object"
     ], (def => def[0] == "LOCAL_PAGE"));
 
+    /* Domains which *would* be useful to live-popup, but set X-Frame-Options/Content-Security-Policy HTTP headers which mean browsers will refuse to load the popup (eg https://support.mozilla.org/en-US/kb/xframe-neterror-page ):
+       "old.reddit.com", "arxiv.org", "www.biorxiv.org", "www.medrxiv.org", "github.com", /(.+?)\.github\.com/, /(.+?)\.github\.io/ */
+
     Extracts.qualifyingForeignDomains = [
         "www.greaterwrong.com",
         "greaterwrong.com",
@@ -518,13 +521,6 @@ if (window.Extracts) {
         "lesswrong.com",
         /(.+?)\.wikipedia\.org/,
         "nitter.hu",
-        "old.reddit.com",
-        "arxiv.org",
-        "www.biorxiv.org",
-        "www.medrxiv.org",
-        "github.com",
-        /(.+?)\.github\.com/,
-        /(.+?)\.github\.io/,
         /(.+?)\.eleuther\.ai/,
         "bmk.sh"
     ];
