@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-02 18:15:45 gwern"
+When:  Time-stamp: "2021-12-02 18:22:19 gwern"
 License: CC-0
 -}
 
@@ -49,7 +49,7 @@ import System.IO.Temp (writeSystemTempFile, emptySystemTempFile)
 import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
-import Interwiki (convertInterwikiLinks)
+import Interwiki (convertInterwikiLinks, wikipediaURLToTitle)
 import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
@@ -726,7 +726,8 @@ data Failure = Temporary | Permanent deriving Show
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (Left Permanent)
-                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l' = return (Left Permanent) -- WP is now handled by annotations.js calling the Mobile WP API
+                 -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for directory-tags.
+                 | "https://en.wikipedia.org/wiki/" `isPrefixOf` l' = return $ Right (l', (wikipediaURLToTitle l', "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l' = arxiv l'
                  | "https://openreview.net/forum?id=" `isPrefixOf` l' || "https://openreview.net/pdf?id=" `isPrefixOf` l' = openreview l'
                  | "https://www.biorxiv.org/content/" `isPrefixOf` l' = biorxiv l'
