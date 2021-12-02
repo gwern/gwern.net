@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-11-30 22:25:40 gwern"
+When:  Time-stamp: "2021-12-02 18:15:45 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan) where
+module LinkMetadata (isLocalLink, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -76,8 +76,19 @@ isLocalLink = walk isLocalLink'
 
 -------------------------------------------------------------------------------------------------------------------------------
 
+-- read the annotation base (no checks, >8.4× faster)
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
+             custom  <- readYaml "metadata/custom.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
+             partial <- readYaml "metadata/partial.yaml" -- tagged but not handwritten/cleaned-up
+             auto    <- readYaml "metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
+             -- merge the hand-written & auto-generated link annotations, and return:
+             let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'partial' overrides 'auto'
+             return final
+
+-- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
+readLinkMetadataAndCheck :: IO Metadata
+readLinkMetadataAndCheck = do
              -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
              custom <- readYaml "metadata/custom.yaml"
 

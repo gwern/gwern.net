@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-11-18 12:17:59 gwern"
+When: Time-stamp: "2021-12-02 18:12:48 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -66,7 +66,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToString)
-import LinkMetadata (isLocalLink, readLinkMetadata, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
+import LinkMetadata (isLocalLink, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
@@ -80,7 +80,7 @@ main = hakyll $ do
 
              -- popup metadata:
              preprocess $ print ("Popups parsing..." :: String)
-             meta <- preprocess readLinkMetadata
+             meta <- preprocess readLinkMetadataAndCheck
              preprocess $ print ("Writing annotations..." :: String)
              preprocess $ writeAnnotationFragments am meta
 
