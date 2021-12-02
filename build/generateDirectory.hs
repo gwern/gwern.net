@@ -185,12 +185,12 @@ generateDirectoryItems parent ds = let parent' = T.pack $ takeDirectory parent i
   if null ds then [] else
     ([Header 1 nullAttr [Str "Directories"]] ++
       -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
-     (if length ds < 8 then [] else [RawBlock (Format "html") "<div class=\"columns\">\n\n"]) ++
+     [RawBlock (Format "html") "<div class=\"columns\">\n"] ++
       [BulletList $ filter (not . null) $ map generateDirectoryItem ds] ++
-      (if length ds < 8 then [] else [RawBlock (Format "html") "</div>"])
+      [RawBlock (Format "html") "</div>"]
     )
  where generateDirectoryItem :: FilePath -> [Block]
-       generateDirectoryItem d = [Para [Link nullAttr [Str (T.pack $ directoryPrefix parent d), Code nullAttr (T.pack $ takeDirectory d)] (T.pack d, "")]]
+       generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) [Str (T.pack $ directoryPrefix parent d), Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d)] (T.pack d, "")]]
        -- subdirectories are 'down', while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out' (left) because 'right' would imply some sort of 'inward'
        directoryPrefix :: FilePath -> FilePath -> String
        directoryPrefix parent' d' = if takeDirectory d' `isSuffixOf` parent' then "↓ " else "← "
