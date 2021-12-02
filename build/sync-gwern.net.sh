@@ -39,7 +39,7 @@ else
     renice -n 19 "$$" > /dev/null
 
     ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 30; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 29; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
@@ -47,7 +47,7 @@ else
 
     bold "Compiling…"
     cd ./static/build
-    compile () { ghc -O1 -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
+    compile () { ghc -O2 -fforce-recomp -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
     compile Columns.hs
     compile hakyll.hs
     compile generateLinkBibliography.hs
