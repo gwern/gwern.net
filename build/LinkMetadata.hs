@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-02 18:22:19 gwern"
+When:  Time-stamp: "2021-12-02 21:22:38 gwern"
 License: CC-0
 -}
 
@@ -29,7 +29,7 @@ import Data.Text.IO as TIO (readFile, writeFile)
 import Data.Text.Titlecase (titlecase)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
-import Network.HTTP (urlEncode)
+import Network.HTTP (urlDecode, urlEncode)
 import Network.URI (isURIReference, uriFragment, parseURIReference)
 import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist, renameFile)
 import System.Exit (ExitCode(ExitFailure))
@@ -49,7 +49,7 @@ import System.IO.Temp (writeSystemTempFile, emptySystemTempFile)
 import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
-import Interwiki (convertInterwikiLinks, wikipediaURLToTitle)
+import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
@@ -1290,6 +1290,9 @@ initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "),
                          (" ([A-Z])([A-Z]) ", " \\1. \\2. "),                               -- "John HA Smith"  → "John H. A. Smith"
                          (" ([A-Z]) ", " \\1. ")                                            -- "John H Smith"   → "John H. Smith"
                          ]
+
+wikipediaURLToTitle :: String -> String
+wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
 
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle :: String -> String

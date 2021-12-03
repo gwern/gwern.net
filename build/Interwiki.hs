@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interwiki (convertInterwikiLinks, inlinesToString, wikipediaURLToTitle) where
+module Interwiki (convertInterwikiLinks, inlinesToString) where
 
 import qualified Data.Map as M (fromList, lookup, Map)
 import Text.Pandoc (Inline(..))
 import qualified Data.Text as T (append, concat, head, null, tail, take, toUpper, pack, unpack, Text)
 import Data.List.Utils (replace)
-import Network.HTTP (urlDecode, urlEncode)
+import Network.HTTP (urlEncode)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
@@ -70,6 +70,3 @@ customInterwikiMap = [("Hackage", "https://hackage.haskell.org/package/"),
 wpInterwikiMap = [("Wikipedia", "https://en.wikipedia.org/wiki/"),
                   ("Wikiquote", "https://en.wikiquote.org/wiki/"),
                   ("Wiktionary", "https://en.wiktionary.org/wiki/")]
-
-wikipediaURLToTitle :: String -> String
-wikipediaURLToTitle u = replace "#" " § " $ urlDecode $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
