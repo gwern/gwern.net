@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-03 18:32:51 gwern"
+When:  Time-stamp: "2021-12-04 10:18:34 gwern"
 License: CC-0
 -}
 
@@ -1148,7 +1148,7 @@ generateID url author date
        , ("https://newcriterion.com/issues/2006/4/a-science-fiction-writer-of-the-fifties", "leithauser-2006-science-fiction-writer")
        , ("https://www.sciencedirect.com/science/article/pii/S0955395919303482", "norbutas-et-al-2020-4")
        , ("https://www.theatlantic.com/magazine/archive/2006/08/nightfall/305030/", "leithauser-2006-nightfall")
-       , ("https://www.thisfursonadoesnotexist.com", "arfafax-tfdne")
+       , ("https://www.thisfursonadoesnotexist.com/", "arfafax-tfdne")
        , ("https://www.thiswaifudoesnotexist.net/", "gwern-twdne")
        , ("https://web.archive.org/web/20191127163535/http://www.aidungeon.io/2019/11/my-orc-band-and-our-quest-for-equal.html", "walton-2019-music-troupe")
        , ("http://www.incompleteideas.net/IncIdeas/BitterLesson.html", "sutton-2019-2")
@@ -1395,6 +1395,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(\\nu\\)</span>", "ν")
           , ("<span class=\"math inline\">\\(O(n^2)\\)</span>", "𝒪(<em>n</em><sup>2</sup>)")
           , ("<span class=\"math inline\">\\(\\alpha &gt; 0\\)</span>", "α > 0")
           , ("<span class=\"math inline\">\\(n^{-\\alpha}\\)</span>", "<em>n</em><sup>−α</sup>")
