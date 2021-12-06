@@ -79,18 +79,19 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
 -- convert an annotated item into a single text string: concatenate the useful metadata
 formatDoc :: MetadataItem -> T.Text
 formatDoc mi@(t,aut,dt,_,tags,abst) =
-    let document = T.pack $ unlines ["'"++t++"', by "++authorsTruncate aut++" ("++dt++").", "Keywords: "++(replace "\"" "" $ ppShow tags) ++ ".", "Abstract: "++abst]
+    let document = T.pack $ unlines ["'"++t++"', by "++authorsTruncate aut++" ("++dt++").", "Keywords: "++(intercalate ", " tags) ++ ".", "Abstract: "++abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
                           Right p -> p
         -- create a numbered list of URL references inside each document to expose it to the embedding model, as 'simplifiedDoc' necessarily strips URLs:
-        documentURLs = "References:\n" `T.append` T.unlines (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " $ tail titles)) $ zip (map show [(1::Int)..]) (extractURLs parsedEither))
+        documentURLs = extractURLs parsedEither
+        documentURLsText = if null documentURLs then "" else "References:\n" `T.append` T.unlines (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " $ tail titles)) $ zip (map show [(1::Int)..]) documentURLs)
         -- simple plaintext ASCII-ish version, which hopefully is more comprehensible to NN models than full-blown HTML
-        plainText = simplifiedDoc parsedEither `T.append` documentURLs
+        plainText = simplifiedDoc parsedEither `T.append` documentURLsText
         -- post-processing: 'We suggest replacing newlines (\n) in your input with a single space, as we have observed inferior results when newlines are present.' https://beta.openai.com/docs/api-reference/embeddings/create
         -- GPT-3 apparently doesn't do well with Unicode punctuation either (they get a bad BPE expansion factor too), so smart quotes are right out.
-        gptPlainText = T.take maxLength $ T.replace "\n" "" $ T.replace "“" "'" $ T.replace "”" "'" $ T.replace "‘" "''" $ T.replace "’" "'" $ T.replace "\\" "" $ T.replace "\"" "'" $ T.replace "\"" "'" plainText
+        gptPlainText = T.take maxLength $ T.replace "  " " " $ T.replace "  " " " $ T.replace "\n" "" $ T.replace "…" "..." $ T.replace "“" "'" $ T.replace "”" "'" $ T.replace "‘" "''" $ T.replace "’" "'" $ T.replace "\\" "" $ T.replace "\"" "'" $ T.replace "\"" "'" plainText
     in
       gptPlainText
   where
@@ -126,5 +127,5 @@ oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["stati
                       _ -> do let (modelType:latents) = lines $ U.toString mb
                               let embeddingM = readMaybe (unlines latents) :: Maybe [Double]
                               case embeddingM of
-                                Nothing -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc
+                                Nothing -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
                                 Just embedding -> return (modelType, embedding)
