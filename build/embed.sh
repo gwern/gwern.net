@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2021-12-05 20:08:15 gwern"
+# When:  Time-stamp: "2021-12-05 22:13:44 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint (https://beta.openai.com/docs/api-reference/embeddings). Authentication via shell environment variable.
@@ -21,15 +21,30 @@
 # Requires: curl, jq, valid API key defined in `$OPENAI_API_KEY`
 
 # set -e
-set -x
+# set -x
 
 # Input: 2048 BPEs of text
-# Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models ada-similarity [1024], babbage-similarity [2048], curie-similarity [4096], davinci-similarity [12288]
+# Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models ada-similarity [1024], babbage-similarity [2048], curie-similarity [4096], davinci-similarity [12288, or 12×]
 ENGINE="ada-similarity"
+TEXT="$1"
+TEXT_LENGTH="${#TEXT}"
 
-curl --silent "https://api.openai.com/v1/engines/$ENGINE/embeddings" -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" \
-     -d "{\"input\": \"$1\"}" | \
-    jq --raw-output '.model, .data[0].embedding'
+while [ $TEXT_LENGTH -gt 0 ]; do
+
+    RESULT="$(curl --silent "https://api.openai.com/v1/engines/$ENGINE/embeddings" -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" \
+         -d "{\"input\": \"$TEXT\"}")"
+    PARSED="$(echo "$RESULT" | jq --raw-output '.model, .data[0].embedding')"
+
+    if [ "$PARSED" = "null
+null" ]; then
+        echo "Length error? $TEXT_LENGTH $(echo $RESULT | jq .)" 1>&2
+        TEXT_LENGTH="$(($TEXT_LENGTH - 200))"
+        TEXT="${TEXT:0:$TEXT_LENGTH}"
+    else
+        echo "$PARSED"
+        break
+    fi
+done
 
 # Example output:
 #  $ curl --silent 'https://api.openai.com/v1/engines/ada-similarity/embeddings' -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d '{"input": "Sample document text goes here"}' | jq --raw-output '.model, .data[0].embedding'
