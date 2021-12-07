@@ -87,7 +87,7 @@ else
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
     # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
-    rm --recursive --force -- ./static/build/hakyll ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/*.o ./static/build/*.hi || true
+    rm --recursive --force -- ./static/build/hakyll ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor ./static/build/*.o ./static/build/*.hi || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -143,10 +143,12 @@ else
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
-    tidyUp () { tidy -indent -wrap 140 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only auto -modify "$@" || true; }
-    export -f tidyUp
-    (find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" ; \
-     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' ) | parallel --max-args=250 tidyUp
+    tidyUpFragment () { tidy -indent -wrap 140 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes -modify "$@" || true; }
+    ## tidy wants to dump whole well-formed HTML pages, not fragments to transclude, so switch.
+    tidyUpWhole () {    tidy -indent -wrap 140 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
+    export -f tidyUpFragment tidyUpWhole
+    find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
+     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=250 tidyUpWhole
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
