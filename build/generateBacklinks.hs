@@ -49,7 +49,7 @@ main = do
   links2 <- Par.mapM (parseFileForLinks False) html
 
   let linksdb = M.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2
-  let bldb' = bldb `M.union` linksdb
+  let bldb' = linksdb `M.union` bldb
   writeBacklinksDB bldb'
 
 writeOutCallers :: Metadata -> T.Text -> [T.Text] -> IO ()
@@ -63,12 +63,19 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                              Nothing -> ""
                                                              Just (_,aut,dt,_,_,_) -> let i = generateID (T.unpack target) aut dt in
                                                                                       if i=="" then "" else "#" `T.append` i
+                                       let callerTitles = map (\u -> case M.lookup (T.unpack u) md of
+                                                                      Nothing -> if T.head u == '/' then T.tail u else u
+                                                                      Just ("",_,_,_,_,_) -> if T.head u == '/' then T.tail u else u
+                                                                      Just (t,_,_,_,_,_) -> T.pack $ "“"++t++"”")
+                                                          callers
+                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["docMetadata"]) callers
+                                       let callers' = zip3 callers callerClasses callerTitles
                                        let content = BulletList $
-                                            map (\c -> [Para [Link ("", ["link-local"], []) -- specify that links are popup-able
-                                                                  [Str (if T.head c == '/' then T.tail c else c)]
-                                                                  (c`T.append`ident, "")]
+                                            map (\(u,c,t) -> [Para [Link ("", c, [])
+                                                                  [Str t]
+                                                                  (u`T.append`ident, "")]
                                                    ]
-                                                ) callers
+                                                ) callers'
 
                                        let pandoc = walk (hasAnnotation md True) $ Pandoc nullMeta [content]
                                        let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
