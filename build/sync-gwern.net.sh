@@ -186,7 +186,7 @@ else
        }
     wrap λ "Warning: unauthorized LaTeX users somewhere"
 
-    λ(){ VISIBLE_N=$(wc --lines ./_site/sitemap.xml); [ "$VISIBLE_N" -le 13040 ] && echo "$VISIBLE_N" && exit 1; }
+    λ(){ VISIBLE_N=$(cat ./_site/sitemap.xml | wc --lines); [ "$VISIBLE_N" -le 13040 ] && echo "$VISIBLE_N" && exit 1; }
     wrap λ "Sanity-check number-of-public-site-files in sitemap.xml failed"
 
     λ(){ COMPILED_N="$(find -L ./_site/ -type f | wc --lines)"
@@ -195,10 +195,10 @@ else
          [ "$COMPILED_BYTES" -le 41000000000 ] && echo "Total filesize: $COMPILED_BYTES" && exit 1; }
     wrap λ "Sanity-check: number of files & file-size"
 
-    λ(){ SUGGESTIONS_N=$(wc --lines ./metadata/linkSuggestions.el); [ "$SUGGESTIONS_N" -le 17000 ] && echo "$SUGGESTIONS_N"; }
+    λ(){ SUGGESTIONS_N=$(cat ./metadata/linkSuggestions.el | wc --lines); [ "$SUGGESTIONS_N" -le 17000 ] && echo "$SUGGESTIONS_N"; }
     wrap λ "Link-suggestion database broken?"
 
-    λ(){ BACKLINKS_N=$(wc --lines ./metadata/backlinks.hs); [ "$BACKLINKS_N" -le 62000 ] && echo "$BACKLINKS_N"; }
+    λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines); [ "$BACKLINKS_N" -le 62000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
 
     λ(){ fgrep --color=always '\\' ./static/css/*.css; }

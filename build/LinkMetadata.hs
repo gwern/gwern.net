@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-06 22:17:16 gwern"
+When:  Time-stamp: "2021-12-07 11:01:28 gwern"
 License: CC-0
 -}
 
@@ -222,7 +222,7 @@ getBackLink p = do
                    backLinkExists <- doesFileExist $ tail backLinkRaw
                    -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg `/metadata/annotations/backlinks/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/backlinks/%2Fdocs%2Frl%2Findex.html`)
                    let backLink' = if not backLinkExists then "" else "/metadata/annotations/backlinks/" ++
-                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' then urlEncode [t] else [t]) (p'++".html"))
+                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' then urlEncode [t] else [t]) (p++".html"))
                    return backLink'
 
 -- walk each page, extract the links, and create annotations as necessary for new links
@@ -1396,6 +1396,10 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(\\sqrt{n/k}\\)</span>", "√<em>n</em>⁄<em>k</em>")
+          , ("<span class=\"math inline\">\\(128/255\\)</span>", "128⁄255")
+          , ("<span class=\"math inline\">\\(8/255\\)</span>", "8⁄255")
+          , (" <span class=\"math inline\">\\(-\\)</span> ", "—")
           , ("<span class=\"math inline\">\\(\\nu\\)</span>", "ν")
           , ("<span class=\"math inline\">\\(O(n^2)\\)</span>", "𝒪(<em>n</em><sup>2</sup>)")
           , ("<span class=\"math inline\">\\(\\alpha &gt; 0\\)</span>", "α > 0")
@@ -1419,6 +1423,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(_r\\)</span>", "<sub><em>r</em></sub>")
           , ("<span class=\"math inline\">\\(tanh\\)</span>", "<em>tanh</em>")
           , ("<span class=\"texhtml \">O(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
+          , ("<span class=\"math inline\">\\(O(1)\\)</span>", "𝒪(1)")
           , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
           , ("$O(log n)$", "𝒪(log <em>n</em>)")
           , ("$\\mathcal{O}(log n)$", "𝒪(log <em>n</em>)")
@@ -1427,6 +1432,9 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\sqrt{L})\\)</span>", "𝑂(√<em>L</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(1/\\sqrt{d})\\)</span>", "𝑂(1⁄√<em>d</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(n\\log n)\\)</span>", "𝒪(<em>n</em> log <em>n</em>)")
+          , ("<span class=\"math inline\">\\(n \\approx d\\)</span>", "<em>n</em> ≈ <em>d</em>")
+          , ("<span class=\"math inline\">\\(k \\leq d\\)</span>", "<em>k</em> ≤ <em>d</em>")
+          , ("<span class=\"math inline\">\\(n \\approx d^p\\)</span>", "<em>n</em> ≈ <em>d<sup>p</sup></em>")
           , ("$\\mathrm{sinc}(ax)$", "sinc(<em>ax</em>)")
           , ("<span class=\"texhtml \">\\mathrm{sinc}(ax)</span>", "sinc(<em>ax</em>)")
           , ("$\\mathrm{sinc}(x)=\\sin(x)/x$", "sinc(<em>x</em>) = sin(<em>x</em>)⁄<em>x</em>")
@@ -1492,6 +1500,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(G\\)</span>", "<em>G</em>")
           , ("<span class=\"math inline\">\\(K\\)</span>", "<em>K</em>")
           , ("<span class=\"math inline\">\\(\\sin\\Theta\\)</span>", "sinΘ")
+          , ("<span class=\"math inline\">\\(\\ell_\\infty\\)</span>", "𝓁<sub>∞</sub>")
           , ("<span class=\"math inline\">\\(\\ell_2\\)</span>", "𝓁<sub>2</sub>")
           , ("<span class=\"math inline\">\\(\\ell_1\\)</span>", "𝓁<sub>1</sub>")
           , ("<span class=\"math inline\">\\(l_1\\)</span>", "𝓁<sub>1</sub>")
