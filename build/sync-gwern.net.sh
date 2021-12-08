@@ -148,7 +148,7 @@ else
     tidyUpWhole () {    tidy -indent -wrap 140 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
     export -f tidyUpFragment tidyUpWhole
     find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
-     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=250 tidyUpWhole
+    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | fgrep -v -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`

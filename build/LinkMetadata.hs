@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-07 11:01:28 gwern"
+When:  Time-stamp: "2021-12-07 19:21:52 gwern"
 License: CC-0
 -}
 
@@ -450,7 +450,7 @@ readYaml yaml = do filep <- doesFileExist yaml
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
-                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path)) then replace "/docs/" "" $ takeDirectory path else ""
+                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then replace "/docs/" "" $ takeDirectory path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
@@ -1369,8 +1369,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\%\\\\\\)</span>", "\\1%"), -- '<span class=\"math inline\">\\(83.6\\%\\)</span>'
         ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×"), -- '<span class="math inline">\(\times\)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^4\)</span>'
-        ("et al\\.?,? \\(([0-9]+)\\)", "et al \\1"), -- "Foo et al. (1999)", "Foo et al (1999)"
-        ("([A-Z][a-z]+) and ([A-Z][a-z]+),? ([0-9]+)", "\\1 & \\2 \\3"), -- 'Foo and Bar 1999', 'Foo and Bar, 1999' → 'Foo & Bar 1999'
+        ("([A-Z][a-z]+) and ([A-Z][a-z]+),? ([0-9]+)", "\\1 & \\2 \\3"), -- 'Foo and Bar 1999', 'Foo and Bar, 1999' → 'Foo & Bar 1999'; 'et al' is handled by Pandoc already
         ("<br/>    <strong>([a-zA-Z]+)</strong><br/><p>", "<p><strong>\\1</strong>: "),
         ("<strong>([a-zA-Z0-9_]+)</strong>:<p>", "<p><strong>\\1</strong>: "),
         ("<jats:title>([a-zA-Z0-9_]+):</jats:title><jats:p>", "<p><strong>\\1</strong>: "),
@@ -1493,6 +1492,8 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(O(K^2 \\log T)\\)</span>", "𝑂(<em>K</em><sup>2</sup> log <em>T</em>)")
           , ("<span class=\"math inline\">\\(O(K \\log T + K^2 \\log \\log T)\\)</span>", "𝑂(<em>K</em> log <em>T</em> + <em>K</em><sup>2</sup> log log <em>T</em>)")
           , ("<span class=\"math inline\">\\(Q\\)</span>", "<em>Q</em>")
+          , ("<span></span>-greedy", "ε-greedy")
+          , ("{\\epsilon}-greedy", "ε-greedy")
           , ("<span class=\"math inline\">\\(\\epsilon\\)</span>", "ε")
           , ("<span class=\"math inline\">\\(\\rightarrow\\)</span>", "→")
           , ("<span class=\"math inline\">\\(\\leftarrow\\)</span>", "←")
