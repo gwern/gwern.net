@@ -15,12 +15,12 @@ import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
-import qualified Data.Text as T (unpack, pack, append)
+import qualified Data.Text as T (unpack, pack, append, Text)
 import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, sed)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -34,13 +34,14 @@ generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do
   let parentDirectory = takeDirectory $ takeDirectory dir''
   let parentDirectory' = if parentDirectory == "." then "/index" else "/" ++ parentDirectory ++ "/index"
-  direntries <- listDirectory dir''
+  direntries <- fmap (filter (/="index.page")) $ -- filter out self
+                listDirectory dir''
   let direntries' = map (\entry -> "/"++dir''++entry) direntries
 
   tagged <- listTagged mta  (init dir'')
   -- we allow tag-directories to be cross-listed, not just children. So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'. This allows cross-references without requiring deep nesting - 'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
   let taggedDirs = map (\(f,_,_) -> f) $ filter (\(f,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f) tagged
-  let direntries'' = sort direntries' ++ sort taggedDirs
+  let direntries'' = sort direntries' ++ sort taggedDirs -- the actual sub-directories first, then the 'see alsos'
   -- we suppress what would be duplicate entries in the File/Links section
   let tagged' = filter (\(f,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
@@ -64,7 +65,7 @@ generateDirectory mta dir'' = do
   let untitledLinksSection  = generateListItems untitledLinks
 
   let header = generateYAMLHeader dir''
-  let directorySection = generateDirectoryItems parentDirectory' dirs
+  let directorySection = generateDirectoryItems parentDirectory' dir'' dirs
 
   -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at '/docs/foo/index'
   let abstract = case M.lookup ("/"++dir''++"index") mta of
@@ -122,8 +123,8 @@ generateYAMLHeader d = "---\n" ++
 
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
-                       directories <- filterM (doesDirectoryExist . tail) $ map (replace "/index" "") direntries'
-                       let directoriesMi = map (++"/index") directories
+                       directories <- filterM (doesDirectoryExist . tail) $ map (sed "/index$" "/" . replace "/index.page" "/")  direntries'
+                       let directoriesMi = map (replace "//" "/") $ map (++"/index") directories
                        filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
 
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
@@ -176,24 +177,22 @@ lookupFallback m u = case M.lookup u m of
                                                     if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
                                                       (u',snd possibleFallback))
 
-generateDirectoryItems :: FilePath -> [FilePath] -> [Block]
-generateDirectoryItems parent ds = let parent' = T.pack $ takeDirectory parent in
+generateDirectoryItems :: FilePath -> FilePath -> [FilePath] -> [Block]
+generateDirectoryItems parent current ds =
   -- all directories have a parent directory with an index (eg /docs/index has the parent /index), so we always link it.
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
-  [Para [Link nullAttr [Str "↑ Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]] ++
-  -- but many directories have no subdirectories, and so no need for a 'Directories' section:
-  if null ds then [] else
-    ([Header 1 nullAttr [Str "Directories"]] ++
       -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
      [RawBlock (Format "html") "<div class=\"columns\">\n"] ++
-      [BulletList $ filter (not . null) $ map generateDirectoryItem ds] ++
-      [RawBlock (Format "html") "</div>"]
-    )
- where generateDirectoryItem :: FilePath -> [Block]
-       generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) [Str (T.pack $ directoryPrefix parent d), Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d)] (T.pack d, "")]]
+     [BulletList $ [[Para [Link ("",["link-tag"],[]) [Str "↑ Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]]] ++
+       (filter (not . null) $ map generateDirectoryItem ds)] ++
+     [RawBlock (Format "html") "</div>"]
+ where parent' :: T.Text
+       parent' = T.pack $ takeDirectory parent
+       generateDirectoryItem :: FilePath -> [Block]
+       generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) [Str (T.pack $ directoryPrefix current d), Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d)] (T.pack d, "")]]
        -- subdirectories are 'down', while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out' (left) because 'right' would imply some sort of 'inward'
        directoryPrefix :: FilePath -> FilePath -> String
-       directoryPrefix parent' d' = if takeDirectory d' `isSuffixOf` parent' then "↓ " else "← "
+       directoryPrefix currentd d' = if ("/"++currentd) `isPrefixOf` d' then "↓ " else "← "
 
 generateListItems :: [(FilePath, MetadataItem,FilePath)] -> Block
 generateListItems p = BulletList (map generateItem p)
