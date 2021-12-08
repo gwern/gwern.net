@@ -3705,6 +3705,12 @@ body.directory-index #disqus_thread {
     margin: 1em -1em 1.125em -1em;
 }
 
+/*┌─────────────┐*/
+/*│ Tag popups. │*/
+/*└─────────────┘*/
+/* on tag/directory index popups, we want to hide the initial '# Links' <h1> because it takes up way too much space and adds nothing. */
+.popup h1.displayPopNot, .popinb h1.displayPopNot { display: none; }
+
 /*=---------------=*/
 /*= POPUP CONTENT =*/
 /*=---------------=*/
