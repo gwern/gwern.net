@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-12-02 18:12:48 gwern"
+When: Time-stamp: "2021-12-08 12:58:55 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -71,20 +71,23 @@ import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
 
+printGreen :: String -> IO ()
+printGreen s = putStrLn $ "\x1b[32m" ++ s ++ "\x1b[0m"
+
 main :: IO ()
 main = hakyll $ do
              tags <- buildTags "**.page" (fromCapture "tags/*")
 
-             preprocess $ print ("Local archives parsing..." :: String)
+             preprocess $ printGreen ("Local archives parsing…" :: String)
              am <- preprocess readArchiveMetadata
 
              -- popup metadata:
-             preprocess $ print ("Popups parsing..." :: String)
+             preprocess $ printGreen ("Popups parsing…" :: String)
              meta <- preprocess readLinkMetadataAndCheck
-             preprocess $ print ("Writing annotations..." :: String)
+             preprocess $ printGreen ("Writing annotations…" :: String)
              preprocess $ writeAnnotationFragments am meta
 
-             preprocess $ print ("Begin site compilation..." :: String)
+             preprocess $ printGreen ("Begin site compilation…" :: String)
              match "**.page" $ do
                  -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
                  -- as people keep screwing them up endlessly:
@@ -277,7 +280,7 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
                          void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
                        else
                          void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
-                     void $ print ("Created smaller image: " ++ smallerPath)
+                     void $ printGreen ("Created smaller image: " ++ smallerPath)
          let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
          return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
                         inlines (target, title)
@@ -357,7 +360,7 @@ staticImg x = return x
 
 -- https://edwardtufte.github.io/tufte-css/#sidenotes
 -- support Tufte-CSS-style margin notes with a syntax like
--- 'Foo bar.^[!Margin: Short explanation.] Baz quux burble...'
+-- 'Foo bar.^[!Margin: Short explanation.] Baz quux burble…'
 --
 -- > marginNotes (Note [Para [Str "!Margin:", Space, Str "Test."]])
 -- → Span ("",["marginnote"],[]) [Para [Space, Str "Test."]]
@@ -373,7 +376,7 @@ marginNotes x@(Note (bs:cs)) =
     _ -> x
 marginNotes x = x
 
--- Check for footnotes which may be broken and rendering wrong, with the content inside the body rather than as a footnote. (An example was present for an embarrassingly long time in /GPT-3...)
+-- Check for footnotes which may be broken and rendering wrong, with the content inside the body rather than as a footnote. (An example was present for an embarrassingly long time in /GPT-3…)
 footnoteAnchorChecker :: Inline -> Inline
 footnoteAnchorChecker n@(Note [Para [Str s]]) = if " " `T.isInfixOf` s || T.length s > 10 then n else error ("Warning: a short spaceless footnote! May be a broken anchor (ie swapping the intended '[^abc]:' for '^[abc]:'): " ++ show n)
 footnoteAnchorChecker n = n
