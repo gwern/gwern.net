@@ -528,6 +528,7 @@ a[href*="longbets.org"]::after,
 a[href*="longnow.org"]::after,
 a[href*="marginalrevolution.com"]::after,
 a[href*="medium.com"]::after,
+a[href*="microsoft"]::after,
 a[href*="myanimelist.net"]::after,
 a[href*="nature.com"]::after,
 a[href*="xkcd.com"]::after,
@@ -606,6 +607,7 @@ a[href*="economist.com"]::after,
 a[href*="sciencedirect.com"]::after,
 a[href*="bbc.com"]::after,
 a[href*="bbc.co.uk"]::after,
+a[href*="microsoft"]::after,
 a[href*="myanimelist.net"]::after,
 a[href*="animenewsnetwork.com"]::after,
 a[href*="fda.gov"]::after,
@@ -816,6 +818,15 @@ a[href*="haskell.org"]:not([href$=".hs" i])::after { /* primary user: hackage.ha
     content: "\1D6CC"; /* (𝛌) MATHEMATICAL BOLD SMALL LAMDA */
     font-size: 1em;
     opacity: 0.6;
+}
+
+/* Microsoft: I don't think https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg is all that recognizable,
+   so make a logotype more like https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg : an italic sans "MS", shrunken & moved left to reduce visual impact. */
+a[href*="microsoft"]::after {
+    content: "MS";
+    font-style: italic;
+    left: -0.09em;
+    font-size: 0.65em;
 }
 
 /* MAL: the blue of their logo doesn't work, so just text */
