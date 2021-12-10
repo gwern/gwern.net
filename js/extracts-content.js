@@ -512,7 +512,7 @@ if (window.Extracts) {
     ], (def => def[0] == "LOCAL_PAGE"));
 
     /* Domains which *would* be useful to live-popup, but set X-Frame-Options/Content-Security-Policy HTTP headers which mean browsers will refuse to load the popup (eg https://support.mozilla.org/en-US/kb/xframe-neterror-page ):
-       "old.reddit.com", "arxiv.org", "www.biorxiv.org", "www.medrxiv.org", "github.com", /(.+?)\.github\.com/, /(.+?)\.github\.io/ */
+       old.reddit.com, arxiv.org, www.biorxiv.org, www.medrxiv.org, github.com, github.io, news.ycombinator.com */
 
     Extracts.qualifyingForeignDomains = [
         "www.greaterwrong.com",

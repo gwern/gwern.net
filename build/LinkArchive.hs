@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-12-03 16:35:16 gwern"
+When:  Time-stamp: "2021-12-10 11:59:51 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -147,7 +147,7 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
 -- 3. after that, we may want to skip various filetypes and domains
 whiteList :: String -> Bool
 whiteList url
-  | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = True
+  | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = False
   | any (`isPrefixOf` url) ["/", "./", "../", "https://www.gwern.net", "#", "!", "$", "mailto", "irc"] = True
   | any (`isSuffixOf` url) [".pdf"] = False
   | any (`isSuffixOf` url) ["/pdf"] = False
@@ -343,8 +343,6 @@ whiteList url
       , "gitlab.com"
       , "flashcarddb.com"
       , "imdb.com"
-      , "github.com"
-      , "github.io"
       , "sagepub.com"
       , "amsciepub.com"
       , "liebertpub.com"
@@ -470,7 +468,6 @@ whiteList url
       , "flickr.com" -- stable
       , "hpmor.com" -- stable
       , "cryonicscalculator.com" -- interactive/service
-      , "ycombinator.com" -- stable
       , "wikifur.com" -- stable
       , "overcomingbias.com" -- stable
       , "waifulabs.com" -- interactive/service
