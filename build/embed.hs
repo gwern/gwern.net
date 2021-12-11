@@ -3,29 +3,24 @@
 
 module Main where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, queryWith, readerExtensions,
-                     readHtml, readMarkdown, runPure, writeHtml5String,
-                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
+import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, Inline(Link), runPure, Pandoc)
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T -- (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, takeWhile, Text, replace)
-import qualified Data.Text.IO as TIO (readFile)
-import Data.List (isPrefixOf, isInfixOf, isSuffixOf, (\\), intercalate, sort)
+import qualified Data.Text as T  (append, drop, head, init, intercalate, last, length, pack, replace, take, unlines, unpack, Text)
+import Data.List ((\\), intercalate, sort)
 import Data.Maybe (fromJust)
-import qualified Data.Map.Strict as M -- (filter, lookup, keys, elems, traverseWithKey, fromListWith, union)
-import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
-import Network.HTTP (urlDecode, urlEncode)
-import Data.List.Utils (replace)
+import qualified Data.Map.Strict as M (filter, keys, lookup)
+import System.Directory (doesFileExist, renameFile)
 import Data.Containers.ListUtils (nubOrd)
-import System.IO.Temp (writeSystemTempFile)
-import Control.Monad (forM_, unless)
+import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
 import Control.Monad.Parallel as Par (mapM)
 import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
+import Data.Binary (decodeFile, encodeFile)
 
-import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, MetadataItem, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, authorsTruncate)
+import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 
 import Columns (simplifiedDoc)
 
@@ -34,36 +29,27 @@ import Interwiki (convertInterwikiLinks, inlinesToString)
 main :: IO ()
 main = do md  <- readLinkMetadata
           edb <- readEmbeddings
-          let todo = take 500 $ sort $ missingEmbeddings md edb
-          newEmbeddings <- Par.mapM embed todo
-          let edb' = nubOrd (edb ++ newEmbeddings)
-          writeEmbeddings edb'
-          return ()
+          let todo = sort $ missingEmbeddings md edb
+          if (length todo) == 0 then putStrLn "done" else do
+            newEmbeddings <- Par.mapM embed todo
+            let edb' = nubOrd (edb ++ newEmbeddings)
+            writeEmbeddings edb'
+            return ()
 
 embeddingsPath :: String
-embeddingsPath = "metadata/embeddings.hs"
+embeddingsPath = "metadata/embeddings.bin"
 
 type Embedding  = (String, String, [Double]) -- NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead
 type Embeddings = [Embedding]
 
 readEmbeddings :: IO Embeddings
-readEmbeddings = do embeddingF <- readFile embeddingsPath
-                    let embeddings = readMaybe embeddingF :: Maybe Embeddings
-                    case embeddings of
-                      Nothing -> error $ "Malformed embeddings database didn't parse?"
-                      Just embeddingDB -> return embeddingDB
+readEmbeddings = do exists <- doesFileExist embeddingsPath
+                    if exists then decodeFile embeddingsPath else return []
 
 writeEmbeddings :: Embeddings -> IO ()
-writeEmbeddings edb = updateFile embeddingsPath (ppShow edb)
- where
-  updateFile :: FilePath -> String -> IO ()
-  updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-embeddings" contentsNew
-                                existsOld <- doesFileExist f
-                                if not existsOld then
-                                  renameFile t f
-                                  else
-                                    do contentsOld <- Prelude.readFile f
-                                       if contentsNew /= contentsOld then renameFile t f else removeFile t
+writeEmbeddings es = do tempf <- emptySystemTempFile "hakyll-embeddings"
+                        encodeFile tempf es
+                        renameFile tempf embeddingsPath
 
 missingEmbeddings :: Metadata -> Embeddings -> [(String, MetadataItem)]
 missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, tags, abst) -> length (t++aut++show tags++abst) > minimumLength) md
@@ -117,7 +103,7 @@ embed (p,mi) = do
   (modelType,embedding) <- oaAPIEmbed doc
   return (p,modelType,embedding)
 
--- we shell out to a Bash script `similar.sh`
+-- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
 oaAPIEmbed :: T.Text -> IO (String,[Double])
 oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", T.unpack doc]
                     case status of
@@ -127,3 +113,12 @@ oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["stati
                               case embeddingM of
                                 Nothing -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
                                 Just embedding -> return (modelType, embedding)
+
+
+-- copied from https://ardoris.wordpress.com/2014/08/14/cosine-similarity-pearson-correlation-inner-products/
+cosineSimilarity :: [Double] -> [Double] -> Double
+cosineSimilarity = similarity dot
+ where similarity ip xs ys = (ip xs ys) / ( (len xs) * (len ys) )
+         where len xs' = sqrt(ip xs' xs')
+       -- the inner products
+       dot xs ys = sum $ zipWith (*) xs ys
