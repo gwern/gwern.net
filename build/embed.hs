@@ -6,15 +6,16 @@ module Main where
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, Inline(Link), runPure, Pandoc)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, drop, head, init, intercalate, last, length, pack, replace, take, unlines, unpack, Text)
-import Data.List ((\\), intercalate, sort, sortOn, nub)
+import Data.List ((\\), intercalate, sort, sortOn)
 import Data.List.Utils (replace)
 import Data.Maybe (fromJust)
-import qualified Data.Map.Strict as M (filter, fromListWith, keys, lookup, map, Map)
+import qualified Data.Map.Strict as M (filter, keys, lookup)
 import System.Directory (doesFileExist, renameFile)
 import Data.Containers.ListUtils (nubOrd)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
 import qualified Control.Monad.Parallel as Par (mapM) -- mapM_
+import Control.Parallel.Strategies (parMap, rseq)
 import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -39,17 +40,18 @@ main = do md  <- readLinkMetadata
                        writeEmbeddings edb'
                        return edb'
 
-          let distances = embeddingDistances $ take 500 edb''
-          let targets   = M.keys distances
-          let matches   = (map (\target -> (target, map fst $ take topNEmbeddings $
-                                                    fromJust $ M.lookup target distances) )
-                            targets) :: [(String, [String])]
-          writeOutMatches matches
+          let distances = embeddingDistances edb''
+          putStrLn $ ppShow distances
+          -- let targets   = M.keys distances
+          -- let matches   = (map (\target -> (target, map fst $ take topNEmbeddings $
+          --                                           fromJust $ M.lookup target distances) )
+          --                   targets) :: [(String, [String])]
+          -- writeOutMatches matches
           return ()
 
 -- how many results do we want?
-topNEmbeddings :: Int
-topNEmbeddings = 10
+bestNEmbeddings :: Int
+bestNEmbeddings = 10
 
 embeddingsPath :: String
 embeddingsPath = "metadata/embeddings.bin"
@@ -142,35 +144,17 @@ cosineSimilarity = similarity dot
        -- the inner products
        dot xs ys = sum $ zipWith (*) xs ys
 
-type Distances = M.Map String [(String, Double)]
+-- type Distances = M.Map String [(String, Double)]
+type Distances = [(String, [String])]
 
--- create a dictionary to compute all pairwise distances (𝒪(n²)); store both versions so we can look up by either of the pair:
--- λ putStrLn $ ppShow $ embeddingDistances [("foo", "bar", [1,0]), ("foo2", "bar", [0.9,0.5]), ("foo3", "bar", [0.2,0.2])]
--- → fromList
---   [ ( "foo"
---     , [ ( "foo2" , 0.8741572761215378 )
---       , ( "foo3" , 0.7071067811865475 )
---       ]
---     )
---   , ( "foo2"
---     , [ ( "foo3" , 0.961523947640823 )
---       , ( "foo" , 0.8741572761215378 )
---       ]
---     )
---   , ( "foo3"
---     , [ ( "foo2" , 0.961523947640823 )
---       , ( "foo" , 0.7071067811865475 )
---       ]
---     )
---   ]
+-- loop over pairwise distances; maintain a list of top-n candidates, and throw away matches which don't pass the cut. This cuts down enormously on storage needs, at the cost of less parallelism, more recomputation, and much obscurer code.
 embeddingDistances :: Embeddings -> Distances
-embeddingDistances es = let allPairs = uniquePairs es in
-  M.map (take topNEmbeddings . reverse . nub . sortOn snd) $! M.fromListWith (\a b -> a++b) $!
-          concat $! Par.mapM (\((p1,md1,embed1),(p2,md2,embed2)) -> if md1/=md2 then [] else
-                              let distance = cosineSimilarity embed1 embed2 in
-                                [(p1, [(p2, distance)]), (p2, [(p1, distance)])]
-                                                                   ) allPairs
+embeddingDistances es = parMap rseq (\e1@(p1,_,_) -> (p1, map fst $ foldr (distanceAndRank e1) [] es)) es
 
+distanceAndRank :: Embedding -> Embedding -> [(String, Double)] -> [(String, Double)]
+distanceAndRank (p1,md1,embed1) (p2,md2,embed2) accum = if p1==p2 || md1/=md2 then accum else
+                                                          let distance = cosineSimilarity embed1 embed2 in
+                                                            take bestNEmbeddings $ sortOn snd $ [(p2,distance)] ++ accum
 
 writeOutMatches :: [(String, [String])] -> IO ()
 writeOutMatches = Prelude.mapM_ writeOutMatch -- Par.mapM_ writeOutMatch
