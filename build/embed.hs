@@ -6,7 +6,7 @@ module Main where
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, Inline(Link), runPure, Pandoc)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, drop, head, init, intercalate, last, length, pack, replace, take, unlines, unpack, Text)
-import Data.List ((\\), intercalate, sort, sortOn)
+import Data.List ((\\), intercalate, sort, sortOn, nub)
 import Data.List.Utils (replace)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, fromListWith, keys, lookup, map, Map)
@@ -14,7 +14,7 @@ import System.Directory (doesFileExist, renameFile)
 import Data.Containers.ListUtils (nubOrd)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
-import qualified Control.Monad.Parallel as Par (mapM, mapM_)
+import qualified Control.Monad.Parallel as Par (mapM) -- mapM_
 import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -77,8 +77,8 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
 
 -- convert an annotated item into a single text string: concatenate the useful metadata
 formatDoc :: (String,MetadataItem) -> T.Text
-formatDoc (p,mi@(t,aut,dt,_,tags,abst)) =
-    let document = T.pack $ replace "\n" "\n\n" $ unlines ["'"++t++"' " ++ "("++p++")" ++ ", by "++authorsTruncate aut++" ("++dt++").", "Keywords: "++(intercalate ", " tags) ++ ".", "Abstract: "++abst]
+formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
+    let document = T.pack $ replace "\n" "\n\n" $ unlines ["'"++t++"' " ++ "("++path++")" ++ ", by "++authorsTruncate aut++" ("++dt++").", "Keywords: "++(intercalate ", " tags) ++ ".", "Abstract: "++abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
@@ -113,7 +113,7 @@ formatDoc (p,mi@(t,aut,dt,_,tags,abst)) =
        cleanURL u = if T.head u == '>' && T.last u == '<' then T.init $ T.drop 1 u else u
 
 embed :: (String,MetadataItem) -> IO Embedding
-embed i@(p,mi) = do
+embed i@(p,_) = do
   let doc = formatDoc i
   (modelType,embedding) <- oaAPIEmbed doc
   return (p,modelType,embedding)
@@ -131,6 +131,8 @@ oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["stati
                                                            Nothing -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
                                                            Just embedding -> return (modelType, embedding)
 
+uniquePairs :: (Ord a) => [a] -> [(a,a)]
+uniquePairs l = [(x,y) | x <- l, y <- l, x < y]
 
 -- copied from https://ardoris.wordpress.com/2014/08/14/cosine-similarity-pearson-correlation-inner-products/
 cosineSimilarity :: [Double] -> [Double] -> Double
@@ -162,14 +164,13 @@ type Distances = M.Map String [(String, Double)]
 --     )
 --   ]
 embeddingDistances :: Embeddings -> Distances
-embeddingDistances es = M.map (take topNEmbeddings . reverse . sortOn snd) $ M.fromListWith (\a b -> nubOrd (a++b)) $
-                        concat $ Par.mapM (\(p1,md1,embed1) -> concatMap (\(p2,md2,embed2) ->
-                                                                    if (p1 == p2) -- skip self
-                                                                       || (md1 /= md2) then -- make sure embeddings are from the same model & meaningful to compare
-                                                                        [] else
-                                                                       let distance = cosineSimilarity embed1 embed2 in
-                                                                        [(p1, [(p2, distance)])] ) es
-                                         ) es
+embeddingDistances es = let allPairs = uniquePairs es in
+  M.map (take topNEmbeddings . reverse . nub . sortOn snd) $! M.fromListWith (\a b -> a++b) $!
+          concat $! Par.mapM (\((p1,md1,embed1),(p2,md2,embed2)) -> if md1/=md2 then [] else
+                              let distance = cosineSimilarity embed1 embed2 in
+                                [(p1, [(p2, distance)]), (p2, [(p1, distance)])]
+                                                                   ) allPairs
+
 
 writeOutMatches :: [(String, [String])] -> IO ()
 writeOutMatches = Prelude.mapM_ writeOutMatch -- Par.mapM_ writeOutMatch
