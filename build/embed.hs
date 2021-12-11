@@ -6,14 +6,14 @@ module Main where
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, Inline(Link), runPure, Pandoc)
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, drop, head, init, intercalate, last, length, pack, replace, take, unlines, unpack, Text)
-import Data.List ((\\), intercalate, sort)
+import Data.List ((\\), intercalate, sort, sortOn)
 import Data.Maybe (fromJust)
-import qualified Data.Map.Strict as M (filter, keys, lookup)
+import qualified Data.Map.Strict as M (filter, fromListWith, keys, lookup, map, Map)
 import System.Directory (doesFileExist, renameFile)
 import Data.Containers.ListUtils (nubOrd)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
-import Control.Monad.Parallel as Par (mapM)
+import qualified Control.Monad.Parallel as Par (mapM, mapM_)
 import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -29,12 +29,26 @@ import Interwiki (convertInterwikiLinks, inlinesToString)
 main :: IO ()
 main = do md  <- readLinkMetadata
           edb <- readEmbeddings
+
+          -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
           let todo = sort $ missingEmbeddings md edb
-          if (length todo) == 0 then putStrLn "done" else do
-            newEmbeddings <- Par.mapM embed todo
-            let edb' = nubOrd (edb ++ newEmbeddings)
-            writeEmbeddings edb'
-            return ()
+          edb'' <- do if (length todo) == 0 then putStrLn "done" >> return edb else do
+                       newEmbeddings <- Par.mapM embed todo
+                       let edb' = nubOrd (edb ++ newEmbeddings)
+                       writeEmbeddings edb'
+                       return edb'
+
+          let distances = embeddingDistances edb''
+          let targets   = M.keys distances
+          let matches   = (map (\target -> (target, map fst $ take topNEmbeddings $
+                                                    fromJust $ M.lookup target distances) )
+                            targets) :: [(String, [String])]
+          writeOutMatches matches
+          return ()
+
+-- how many results do we want?
+topNEmbeddings :: Int
+topNEmbeddings = 10
 
 embeddingsPath :: String
 embeddingsPath = "metadata/embeddings.bin"
@@ -119,6 +133,43 @@ oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["stati
 cosineSimilarity :: [Double] -> [Double] -> Double
 cosineSimilarity = similarity dot
  where similarity ip xs ys = (ip xs ys) / ( (len xs) * (len ys) )
-         where len xs' = sqrt(ip xs' xs')
+         where len xs' = sqrt (ip xs' xs')
        -- the inner products
        dot xs ys = sum $ zipWith (*) xs ys
+
+type Distances = M.Map String [(String, Double)]
+
+-- create a dictionary to compute all pairwise distances (𝒪(n²)); store both versions so we can look up by either of the pair:
+-- λ putStrLn $ ppShow $ embeddingDistances [("foo", "bar", [1,0]), ("foo2", "bar", [0.9,0.5]), ("foo3", "bar", [0.2,0.2])]
+-- → fromList
+--   [ ( "foo"
+--     , [ ( "foo2" , 0.8741572761215378 )
+--       , ( "foo3" , 0.7071067811865475 )
+--       ]
+--     )
+--   , ( "foo2"
+--     , [ ( "foo3" , 0.961523947640823 )
+--       , ( "foo" , 0.8741572761215378 )
+--       ]
+--     )
+--   , ( "foo3"
+--     , [ ( "foo2" , 0.961523947640823 )
+--       , ( "foo" , 0.7071067811865475 )
+--       ]
+--     )
+--   ]
+embeddingDistances :: Embeddings -> Distances
+embeddingDistances es = M.map (take topNEmbeddings . reverse . sortOn snd) $ M.fromListWith (\a b -> nubOrd (a++b)) $
+                        concat $ Par.mapM (\(p1,md1,embed1) -> concatMap (\(p2,md2,embed2) ->
+                                                                    if (p1 == p2) -- skip self
+                                                                       || (md1 /= md2) then -- make sure embeddings are from the same model & meaningful to compare
+                                                                        [] else
+                                                                       let distance = cosineSimilarity embed1 embed2 in
+                                                                        [(p1, [(p2, distance)])] ) es
+                                         ) es
+
+writeOutMatches :: [(String, [String])] -> IO ()
+writeOutMatches = Prelude.mapM_ writeOutMatch -- Par.mapM_ writeOutMatch
+
+writeOutMatch :: (String, [String]) -> IO ()
+writeOutMatch = putStrLn . show
