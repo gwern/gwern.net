@@ -7,6 +7,7 @@ import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T  (append, drop, head, init, intercalate, last, length, pack, replace, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate, sort, sortOn)
+import Data.List.Utils (replace)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, fromListWith, keys, lookup, map, Map)
 import System.Directory (doesFileExist, renameFile)
@@ -38,7 +39,7 @@ main = do md  <- readLinkMetadata
                        writeEmbeddings edb'
                        return edb'
 
-          let distances = embeddingDistances edb''
+          let distances = embeddingDistances $ take 500 edb''
           let targets   = M.keys distances
           let matches   = (map (\target -> (target, map fst $ take topNEmbeddings $
                                                     fromJust $ M.lookup target distances) )
@@ -75,9 +76,9 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
         minimumLength = 400 -- how many characters long should metadata be before it is worth trying to embed?
 
 -- convert an annotated item into a single text string: concatenate the useful metadata
-formatDoc :: MetadataItem -> T.Text
-formatDoc mi@(t,aut,dt,_,tags,abst) =
-    let document = T.pack $ unlines ["'"++t++"', by "++authorsTruncate aut++" ("++dt++").", "Keywords: "++(intercalate ", " tags) ++ ".", "Abstract: "++abst]
+formatDoc :: (String,MetadataItem) -> T.Text
+formatDoc (p,mi@(t,aut,dt,_,tags,abst)) =
+    let document = T.pack $ replace "\n" "\n\n" $ unlines ["'"++t++"' " ++ "("++p++")" ++ ", by "++authorsTruncate aut++" ("++dt++").", "Keywords: "++(intercalate ", " tags) ++ ".", "Abstract: "++abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
@@ -112,8 +113,8 @@ formatDoc mi@(t,aut,dt,_,tags,abst) =
        cleanURL u = if T.head u == '>' && T.last u == '<' then T.init $ T.drop 1 u else u
 
 embed :: (String,MetadataItem) -> IO Embedding
-embed (p,mi) = do
-  let doc = formatDoc mi
+embed i@(p,mi) = do
+  let doc = formatDoc i
   (modelType,embedding) <- oaAPIEmbed doc
   return (p,modelType,embedding)
 
@@ -122,11 +123,13 @@ oaAPIEmbed :: T.Text -> IO (String,[Double])
 oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", T.unpack doc]
                     case status of
                       ExitFailure err -> error $ "Exit Failure: " ++ (intercalate " : " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb])
-                      _ -> do let (modelType:latents) = lines $ U.toString mb
-                              let embeddingM = readMaybe (unlines latents) :: Maybe [Double]
-                              case embeddingM of
-                                Nothing -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
-                                Just embedding -> return (modelType, embedding)
+                      _ -> do let results = lines $ U.toString mb
+                              case results of
+                                [] -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
+                                (modelType:latents) -> let embeddingM = readMaybe (unlines latents) :: Maybe [Double] in
+                                                         case embeddingM of
+                                                           Nothing -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
+                                                           Just embedding -> return (modelType, embedding)
 
 
 -- copied from https://ardoris.wordpress.com/2014/08/14/cosine-similarity-pearson-correlation-inner-products/
