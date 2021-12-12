@@ -105,7 +105,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
     maxLength = 8100 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 
     -- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;
-    -- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do link-suggestions on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
+    -- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
     extractURLs :: Pandoc -> [(T.Text,[T.Text])]
     extractURLs = queryWith extractURL . walk convertInterwikiLinks
      where
@@ -204,20 +204,20 @@ writeOutMatch md (p,matches) =
      let alreadyLinked = extractLinks False $ T.pack abst
      let matchesPruned = filter (\(p2,_) -> not ((T.pack p2) `elem` alreadyLinked)) matches
 
-     let suggestions = BulletList $ map (generateItem md) matchesPruned
+     let similar = BulletList $ map (generateItem md) matchesPruned
 
-     let pandoc = Pandoc nullMeta [suggestions]
+     let pandoc = Pandoc nullMeta [similar]
      let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                 in case htmlEither of
-                            Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show suggestions
+                            Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similar
                             Right output -> output
-     let suggestedLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+     let similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
 
      let f = take 274 $ "metadata/annotations/similar/" ++ urlEncode p ++ ".html"
-     TIO.writeFile f suggestedLinksHtmlFragment
+     TIO.writeFile f similarLinksHtmlFragment
      -- HACK: write out a duplicate 'metadata/annotations/similar/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
      -- We overload the syntax-highlighting feature to make similiar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if... we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
-     TIO.writeFile (f++".html") suggestedLinksHtmlFragment
+     TIO.writeFile (f++".html") similarLinksHtmlFragment
 
 generateItem :: Metadata -> (String,Double) -> [Block]
 generateItem md (p2,distance) = let (t,_,_,_,_,_) = fromJust $ M.lookup p2 md in

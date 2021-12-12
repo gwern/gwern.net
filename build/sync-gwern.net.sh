@@ -29,6 +29,7 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
           -n $(command -v static/build/generateLinkBibliography.hs) && \
           -n $(command -v static/build/generateBacklinks.hs) ]] && \
+          -n $(command -v static/build/embed.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
     red "Dependencies missing or Hakyll already running?"
@@ -53,12 +54,14 @@ else
     compile generateLinkBibliography.hs
     compile generateDirectory.hs
     compile generateBacklinks.hs
+    compile embed.hs
     compile link-extractor.hs
     compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
     # wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
+    cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
 
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 
@@ -75,19 +78,23 @@ else
     ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///')
 
     bold "Updating backlinks…"
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
+
+    bold "Updating embeddings…"
+    ./static/build/embed +RTS -N"$N" -RTS
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
     cd ./build/
     # Cleanup pre:
-    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi || true
+    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor || true
 
     cd ../../ # go to site root
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
-    # cleanup post: (note that if Hakyll crashes and we exit in the previous line, the compiled Hakyll binary & intermediates hang around for faster recovery)
-    rm --recursive --force -- ./static/build/hakyll ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor ./static/build/*.o ./static/build/*.hi || true
+
+    # cleanup post:
+    rm --recursive --force -- ./static/build/hakyll || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -137,7 +144,7 @@ else
     export -f syntaxHighlight
     set +e
     find _site/static/ -type f,l -name "*.html" | sort | parallel syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" | sort | fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' -e 'metadata/backlinks.hs' -e 'metadata/embeddings.hs' -e 'metadata/archive.hs' -e 'docs/www/' | parallel syntaxHighlight &
+    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" | sort | fgrep -v -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' | parallel syntaxHighlight &
         # Pandoc fails on embedded Unicode/regexps in JQuery
     set -e
 
@@ -501,7 +508,7 @@ else
 
     # Testing files, post-sync
     bold "Checking for file anomalies…"
-    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'docs/www/' -e 'metadata/annotations/backlinks') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png' ; }
+    λ(){ fdupes --quiet --sameline --size --nohidden $(find ~/wiki/ -type d | egrep -v -e 'static' -e '.git' -e 'gwern/wiki/$' -e 'docs/www/' -e 'metadata/annotations/backlinks' -e 'metadata/annotations/similar') | fgrep --invert-match -e 'bytes each' -e 'trimfill.png' ; }
     wrap λ "Duplicate file check"
 
     λ() { find . -perm u=r -path '.git' -prune; }
