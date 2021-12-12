@@ -80,7 +80,7 @@ else
     bold "Updating backlinks…"
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
 
-    bold "Updating embeddings…"
+    bold "Updating embeddings/similar-links…"
     ./static/build/embed +RTS -N"$N" -RTS
 
     bold "Check/update VCS…"

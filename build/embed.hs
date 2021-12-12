@@ -52,7 +52,6 @@ main = do md  <- readLinkMetadata
           let ddb   = embeddings2Forest edb''
           let pairs = parMap rseq (findN ddb bestNEmbeddings) edb''
           writeOutMatches md pairs
-          return ()
 
 -- how many results do we want?
 bestNEmbeddings :: Int

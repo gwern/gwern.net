@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2021-12-05 22:13:44 gwern"
+# When:  Time-stamp: "2021-12-11 22:14:26 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint (https://beta.openai.com/docs/api-reference/embeddings). Authentication via shell environment variable.
@@ -25,7 +25,7 @@
 
 # Input: 2048 BPEs of text
 # Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models ada-similarity [1024], babbage-similarity [2048], curie-similarity [4096], davinci-similarity [12288, or 12×]
-ENGINE="ada-similarity"
+ENGINE="davinci-similarity"
 TEXT="$1"
 TEXT_LENGTH="${#TEXT}"
 
@@ -38,7 +38,7 @@ while [ $TEXT_LENGTH -gt 0 ]; do
     if [ "$PARSED" = "null
 null" ]; then
         echo "Length error? $TEXT_LENGTH $(echo $RESULT | jq .)" 1>&2
-        TEXT_LENGTH="$(($TEXT_LENGTH - 200))"
+        TEXT_LENGTH="$(($TEXT_LENGTH - 100))"
         TEXT="${TEXT:0:$TEXT_LENGTH}"
     else
         echo "$PARSED"
