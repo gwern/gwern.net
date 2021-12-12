@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-09 21:57:57 gwern"
+When:  Time-stamp: "2021-12-10 12:58:12 gwern"
 License: CC-0
 -}
 
@@ -1188,7 +1188,7 @@ generateID url author date
        , ("/docs/genetics/heritable/2019-border-supplement.pdf", "border-et-al-2019-supplement")
        , ("https://www.biorxiv.org/content/10.1101/2020.01.14.905927v1.full", "wang-et-al-2020-twas")
        , ("https://egamebook.com/blog/data-about-gamebooks/", "hracek-2015-cyoa-survey")
-       , ("https://aidungeon.io/",                                                                       "walton-2019-aidungeon-2")
+       , ("https://play.aidungeon.io/main/home",                                                                       "walton-2019-aidungeon-2")
        , ("https://colab.research.google.com/github/nickwalton/AIDungeon/blob/master/AIDungeon_2.ipynb", "walton-2019-aidungeon-2-colab")
        , ("https://arxiv.org/abs/2103.03775", "wang-et-al-2021-limgen")
        , ("/docs/existential-risk/1985-hofstadter-sanityandsurvival.pdf", "hofstadter-1985-superrationality-pdf")
@@ -1858,6 +1858,10 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("\91Keywords: ", "\91<strong>Keywords</strong>: ")
           , ("&lt;/i&gt;&lt;/b&gt;", "</em>")
           , ("&lt;b&gt;&lt;i&gt;", "<em>")
+          , ("~1/250", "~1⁄250")
+          , (" 2/3 ", " 2⁄3 ")
+          , (" 3/3 ", " 3⁄3 ")
+          , (" 1/10 ", " 1⁄10 ")
           , (" (4/8 ", " (4⁄8 ")
           , (" (4/8 ", " (4⁄8 ")
           , (" (5/8 ", " (5⁄8 ")

@@ -143,9 +143,9 @@ else
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
-    tidyUpFragment () { tidy -indent -wrap 140 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes -modify "$@" || true; }
+    tidyUpFragment () { tidy -indent -wrap 150 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes -modify "$@" || true; }
     ## tidy wants to dump whole well-formed HTML pages, not fragments to transclude, so switch.
-    tidyUpWhole () {    tidy -indent -wrap 140 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
+    tidyUpWhole () {    tidy -indent -wrap 150 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
     export -f tidyUpFragment tidyUpWhole
     find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | fgrep -v -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole

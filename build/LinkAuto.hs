@@ -378,7 +378,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("23[A]nd[Mm]e", "https://en.wikipedia.org/wiki/23andMe")
         , ("A. ?E. Housman", "https://en.wikipedia.org/wiki/A.E._Housman")
         , ("ABalytics", "https://github.com/danmaz74/ABalytics")
-        , ("AI Dungeon", "https://aidungeon.io/")
+        , ("AI Dungeon", "https://play.aidungeon.io/main/home")
         , ("AIXI", "https://www.lesswrong.com/tag/aixi")
         , ("AIXI\\.?js", "https://arxiv.org/abs/1705.07615")
         , ("ALBERT", "https://arxiv.org/abs/1909.11942#google")
