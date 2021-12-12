@@ -23,6 +23,7 @@ import System.Exit (ExitCode(ExitFailure))
 import Data.Binary (decodeFile, encodeFile)
 import qualified Data.Text.IO as TIO (writeFile)
 import Network.HTTP (urlEncode)
+import System.IO (stderr, hPutStrLn)
 
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 
@@ -32,7 +33,7 @@ import Interwiki (convertInterwikiLinks, inlinesToString)
 
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
-import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, recallWith)
+import Data.RPTree -- (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, recallWith)
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
@@ -41,21 +42,21 @@ main = do md  <- readLinkMetadata
           edb <- readEmbeddings
 
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
-          let todo = sort $ missingEmbeddings md edb
-          edb'' <- do if (length todo) == 0 then putStrLn "(Read databases; all updated.)" >> return edb else do
-                       newEmbeddings <- Par.mapM embed todo
+          let todo = take 100 $ sort $ missingEmbeddings md edb
+          edb'' <- do if (length todo) == 0 then hPutStrLn stderr "(Read databases; all updated.)" >> return edb else do
+                       newEmbeddings <- mapM embed todo
                        let edb' = nubOrd (edb ++ newEmbeddings)
                        writeEmbeddings edb'
                        return edb'
+          hPutStrLn stderr "(Wrote embeddings.)"
 
-          let hyperparams = hyperparameterSweep edb''
-          print $ take 20 hyperparams
-          print hyperparams
+          -- let hyperparams = hyperparameterSweep edb''
+          -- print $ take 20 hyperparams
+          -- print hyperparams
 
           -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
-          -- let ddb   = embeddings2Forest edb''
-          -- let pairs = parMap rseq (findN ddb bestNEmbeddings) edb''
-          -- writeOutMatches md pairs
+          -- let ddb  = embeddings2Forest edb''
+          -- Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
 
 -- how many results do we want?
 bestNEmbeddings :: Int
@@ -88,7 +89,7 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
 -- convert an annotated item into a single text string: concatenate the useful metadata
 formatDoc :: (String,MetadataItem) -> T.Text
 formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
-    let document = T.pack $ replace "\n" "\n\n" $ unlines ["'"++t++"' " ++ "("++path++")" ++ ", by "++authorsTruncate aut++" ("++dt++").", "Keywords: "++(intercalate ", " tags) ++ ".", "Abstract: "++abst]
+    let document = T.pack $ replace "\n" "\n\n" $ unlines ["'"++t++"' " ++ "("++path++")" ++ ", by "++authorsTruncate aut++(if dt==""then"."else" ("++dt++")."), "Subject: "++(intercalate ", " tags) ++ ".", replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
@@ -100,7 +101,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
         -- post-processing: 'We suggest replacing newlines (\n) in your input with a single space, as we have observed inferior results when newlines are present.' https://beta.openai.com/docs/api-reference/embeddings/create
         -- GPT-3 apparently doesn't do well with Unicode punctuation either (they get a bad BPE expansion factor too), so smart quotes are right out.
-        gptPlainText = T.take maxLength $ T.replace "  " " " $ T.replace "  " " " $ T.replace "\n" "" $ T.replace "…" "..." $ T.replace "“" "'" $ T.replace "”" "'" $ T.replace "‘" "''" $ T.replace "’" "'" $ T.replace "\\" "" $ T.replace "\"" "'" $ T.replace "\"" "'" plainText
+        gptPlainText = T.take maxLength $ T.replace "  " " " $ T.replace "  " " " $ T.replace "…" "..." $ T.replace "“" "'" $ T.replace "”" "'" $ T.replace "‘" "'" $ T.replace "’" "'" $ T.replace "\\" "" $ T.replace "\"" "'" $ T.replace "\"" "'" plainText
     in
       gptPlainText
   where
@@ -130,7 +131,8 @@ embed i@(p,_) = do
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
 oaAPIEmbed :: T.Text -> IO (String,[Double])
-oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", T.unpack doc]
+oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replace "\n" "\\n" $ -- JSON escaping of newlines
+                                                                                                   T.unpack doc]
                     case status of
                       ExitFailure err -> error $ "Exit Failure: " ++ (intercalate " : " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb])
                       _ -> do let results = lines $ U.toString mb
@@ -147,14 +149,14 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 
 -- magic hyperparameters must be chosen based on embedding type. For 'ada-similarity', '21 5 12' works reasonably well.
 embeddings2Forest :: Embeddings -> Forest
-embeddings2Forest = embeddings2ForestConfigurable 30 10 50
+embeddings2Forest = embeddings2ForestConfigurable 21 5 12
 
 embeddings2ForestConfigurable :: Int -> Int -> Int -> Embeddings -> Forest
 embeddings2ForestConfigurable ls nt pvd es =
   let minLeafSize = ls -- ???
       cfg = rpTreeCfg minLeafSize
               (length es) -- data N
-              (length $ (\(_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg 512 for ada-similarity embeddings)
+              (length $ (\(_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
   in
@@ -177,7 +179,7 @@ findNearest f k e = map (\(dist,Embed _ p) -> (p,dist)) $ knnEmbedding f k e
 
 -- we'll keep the distance to insert into the metadata for debugging purposes.
 findN :: Forest -> Int -> Embedding -> (String,[(String,Double)])
-findN f k e@(p1,_,_) = let results = nub $ filter (\(p2,_) -> p1 /= p2) $ findNearest f k e in
+findN f k e@(p1,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest, but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed...)
                  -- If that happens, back off and request more k.
@@ -221,43 +223,44 @@ davinci:
 60 10 150: 0.73
 
 edb <- readEmbeddings
-let f = embeddings2ForestConfigurable 70 5 200 edb
+let f = embeddings2Forest edb -- embeddings2ForestConfigurable 60 10 150 edb
 Data.RPTree.recallWith metricL2 f 20 $ (\(_,_,embd) -> ((fromListDv embd)::DVector Double)) $ head edb
 
 findNearest f 20 $ head edb
-
+findN f 20 $ head edb
 -}
-
-writeOutMatches :: Metadata -> [(String, [(String,Double)])] -> IO ()
-writeOutMatches md = Par.mapM_ (writeOutMatch md)
 
 writeOutMatch :: Metadata -> (String, [(String,Double)]) -> IO ()
 writeOutMatch md (p,matches) =
-  do let (_,_,_,_,_,abst) = fromJust $ M.lookup p md
-     -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
-     let alreadyLinked = extractLinks False $ T.pack abst
-     let matchesPruned = filter (\(p2,_) -> not ((T.pack p2) `elem` alreadyLinked)) matches
+  do case M.lookup p md of
+       Nothing -> return ()
+       Just (_,_,_,_,_,abst) -> do
+             -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
+             let alreadyLinked = extractLinks False $ T.pack abst
+             let matchesPruned = filter (\(p2,_) -> not ((T.pack p2) `elem` alreadyLinked)) matches
 
-     let similar = BulletList $ map (generateItem md) matchesPruned
+             let similar = BulletList $ map (generateItem md) matchesPruned
 
-     let pandoc = Pandoc nullMeta [similar]
-     let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
-                in case htmlEither of
-                            Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similar
-                            Right output -> output
-     let similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+             let pandoc = Pandoc nullMeta [similar]
+             let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
+                        in case htmlEither of
+                                    Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similar
+                                    Right output -> output
+             let similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
 
-     let f = take 274 $ "metadata/annotations/similar/" ++ urlEncode p ++ ".html"
-     TIO.writeFile f similarLinksHtmlFragment
-     -- HACK: write out a duplicate 'metadata/annotations/similar/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
-     -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if... we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
-     TIO.writeFile (f++".html") similarLinksHtmlFragment
+             let f = take 274 $ "metadata/annotations/similar/" ++ urlEncode p ++ ".html"
+             TIO.writeFile f similarLinksHtmlFragment
+             -- HACK: write out a duplicate 'metadata/annotations/similar/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
+             -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if... we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
+             TIO.writeFile (f++".html") similarLinksHtmlFragment
 
 generateItem :: Metadata -> (String,Double) -> [Block]
-generateItem md (p2,distance) = let (t,_,_,_,_,_) = fromJust $ M.lookup p2 md in
-                                  [Para
-                                    [Link ("", ["docMetadata"], [("embeddingDistance", T.pack $ show distance) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
-                                    ]
+generateItem md (p2,distance) = case M.lookup p2 md of
+                                  Nothing -> []
+                                  Just (t,_,_,_,_,_) ->
+                                      [Para
+                                        [Link ("", ["docMetadata"], [("embeddingDistance", T.pack $ show distance) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
+                                        ]
 
 -- | Read one Text string and return its URLs (as Strings)
 extractLinks :: Bool -> T.Text -> [T.Text]
