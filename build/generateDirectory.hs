@@ -219,8 +219,8 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl)  = let
        author   = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
        date     = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
        tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan tgs]
-       backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
-       similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
+       backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["link-local", "backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
+       similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (prefix ++ Link nullAttr title (T.pack f, "") : (author))]
   else [Para (prefix  ++ Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ similar ++ [Str ")"]))]

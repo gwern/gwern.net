@@ -226,7 +226,7 @@ Annotations = {
         let backlinksElement = referenceEntry.querySelector(".backlinks");
 
         // the similar-links link (if exists)
-        let similarElement = referenceEntry.querySelector(".similar");
+        let similarElement = referenceEntry.querySelector(".similars");
 
         return {
             element:        referenceElement,
@@ -235,7 +235,7 @@ Annotations = {
             dateHTML:       (dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
             tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
             backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
-            similarHTML:    (similarElement ? `<span class="data-field similar">${similarElement.innerHTML}</span>` : ``),
+            similarHTML:    (similarElement   ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
             abstractHTML:   referenceEntry.querySelector("blockquote div").innerHTML
         };
     },
