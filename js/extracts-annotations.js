@@ -57,11 +57,13 @@ if (window.Extracts) {
                                 target="${linkTarget}"
                                     >${referenceData.titleHTML}</a>`;
 
+        let similarLinksHtml = referenceData.similarHTML == `` ? `` : ` (<a href="${referenceData.similarHTML}" title="Related annotations (by text embedding)">similar</a>)`;
+
         let tagBacklinks = ``;
-        if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = `</p>`; } else {
-            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `; <span class="data-field link-tags">${referenceData.tagsHTML}</p>`; } else {
+        if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = `${similarLinksHtml}</p>`; } else {
+            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `; <span class="data-field link-tags">${referenceData.tagsHTML}${similarLinksHtml}</p>`; } else {
                 if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.backlinksHTML}</p>`; } else {
-                    if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.tagsHTML}; ${referenceData.backlinksHTML}</p>`; }
+                    if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.tagsHTML}; ${referenceData.backlinksHTML}${similarLinksHtml}</p>`; }
                 }
             }
         }

@@ -20,7 +20,7 @@ import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, sed)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, getSimilarLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, sed)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -40,26 +40,26 @@ generateDirectory mta dir'' = do
 
   tagged <- listTagged mta  (init dir'')
   -- we allow tag-directories to be cross-listed, not just children. So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'. This allows cross-references without requiring deep nesting - 'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
-  let taggedDirs = map (\(f,_,_) -> f) $ filter (\(f,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f) tagged
+  let taggedDirs = map (\(f,_,_,_) -> f) $ filter (\(f,_,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f) tagged
   let direntries'' = sort direntries' ++ sort taggedDirs -- the actual sub-directories first, then the 'see alsos'
   -- we suppress what would be duplicate entries in the File/Links section
-  let tagged' = filter (\(f,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
+  let tagged' = filter (\(f,_,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
   dirs   <- listDirectories direntries''
 
-  pairs  <- listFiles  mta  direntries''
+  triplets  <- listFiles  mta  direntries''
 
-  let links = nub $ reverse $ sortByDate $ pairs++tagged' -- newest first, to show recent additions
+  let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
 
   -- remove the tag for *this* directory; it is redundant to display 'cat/catnip' on every doc/link inside '/docs/cat/catnip/index.page', after all.
   let tagSelf = init $ replace "docs/" "" dir'' -- "docs/cat/catnip/" → 'cat/catnip'
-  let links' = map (\(y,(a,b,c,d,tags,f),z) -> (y,(a,b,c,d, filter (/= tagSelf) tags,f),z)) links
+  let links' = map (\(y,(a,b,c,d,tags,f),z,zz) -> (y,(a,b,c,d, filter (/= tagSelf) tags,f),z,zz)) links
 
   -- a very long List can be hard to browse, and doesn't provide a useful ToC. If we have titles, we can use those as section headers.
   -- (Entries without even a title must be squashed into a list and chucked at the end.)
-  let titledLinks   = filter (\(_,(t,_,_,_,_,_),_) -> t /= "") links'
-  let untitledLinks = filter (\(_,(t,_,_,_,_,_),_) -> t == "") links'
-  let allUnannotatedUntitledP = all (=="") $ map (\(_,(_,_,_,_,_,annotation),_) -> annotation) untitledLinks -- whether to be compact columns
+  let titledLinks   = filter (\(_,(t,_,_,_,_,_),_,_) -> t /= "") links'
+  let untitledLinks = filter (\(_,(t,_,_,_,_,_),_,_) -> t == "") links'
+  let allUnannotatedUntitledP = all (=="") $ map (\(_,(_,_,_,_,_,annotation),_,_) -> annotation) untitledLinks -- whether to be compact columns
 
   let titledLinksSections   = generateSections titledLinks
   let untitledLinksSection  = generateListItems untitledLinks
@@ -128,37 +128,41 @@ listDirectories direntries' = do
                        let directoriesMi = map (replace "//" "/") $ map (++"/index") directories
                        filterM (\f -> doesFileExist $ tail (f++".page")) directoriesMi
 
-listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath)]
+listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter (not . isSuffixOf ".tar") ) files
-                   backlinks <- mapM getBackLink files'
                    let fileAnnotationsMi = map (lookupFallback m) files'
+                   -- NOTE: files may be annotated only under a hash, eg '/docs/ai/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/2021-norrie.pdf' → `('/docs/ai/2021-norrie.pdf#google',_)`
+                   backlinks    <- mapM getBackLink $ map fst fileAnnotationsMi
+                   similarlinks <- mapM getSimilarLink $ map fst fileAnnotationsMi
 
                    return $
-                     zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
+                     zipWith3 (\(a,b) c d -> (a,b,c,d)) fileAnnotationsMi backlinks similarlinks
 
 -- Fetch URLs/file 'tagged' with the current directory but not residing in it.
 --
 -- tag-dirs are only in "docs/*", so "haskell/" etc is out. Tags drop the docs/ prefix, and we want to avoid
 -- the actual files inside the current directory, because they'll be covered by the `listFiles` version, of course.
-listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath)]
+listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath,FilePath)]
 listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "docs/" "" dir in
                      let tagged = M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
-                       do let files = nub $ map truncateAnchors $ M.keys tagged
-                          backlinks <- mapM getBackLink files
+                       do -- let files = nub $ map truncateAnchors $ M.keys tagged
+                          let files = nub $ M.keys tagged
+                          backlinks    <- mapM getBackLink files
+                          similarlinks <- mapM getSimilarLink files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $
-                            zipWith (\(a,b) c -> (a,b,c)) fileAnnotationsMi backlinks
+                            zipWith3 (\(a,b) c d -> (a,b,c,d)) fileAnnotationsMi backlinks similarlinks
   where
     truncateAnchors :: String -> String
     truncateAnchors str = if '.' `elem` str then str else takeWhile (/='#') str
 
 -- sort a list of entries in ascending order using the annotation date when available (as 'YYYY[-MM[-DD]]', which string-sorts correctly), and falling back to sorting on the filenames ('YYYY-author.pdf').
 -- We generally prefer to reverse this to descending order, to show newest-first.
-sortByDate :: [(FilePath,MetadataItem,FilePath)] -> [(FilePath,MetadataItem,FilePath)]
-sortByDate = sortBy (\(f,(_,_,d,_,_,_),_) (f',(_,_,d',_,_,_),_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
+sortByDate :: [(FilePath,MetadataItem,FilePath,FilePath)] -> [(FilePath,MetadataItem,FilePath,FilePath)]
+sortByDate = sortBy (\(f,(_,_,d,_,_,_),_,_) (f',(_,_,d',_,_,_),_,_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
 
 -- how do we handle files with appended data, which are linked like '/docs/reinforcement-learning/2020-bellemare.pdf#google' but exist as files as '/docs/reinforcement-learning/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
@@ -195,11 +199,11 @@ generateDirectoryItems parent current ds =
        directoryPrefix :: FilePath -> FilePath -> String
        directoryPrefix currentd d' = if ("/"++currentd) `isPrefixOf` d' then "↓ " else "← "
 
-generateListItems :: [(FilePath, MetadataItem,FilePath)] -> Block
+generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath)] -> Block
 generateListItems p = BulletList (map generateItem p)
 
-generateSections :: [(FilePath, MetadataItem,FilePath)] -> [Block]
-generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
+generateSections :: [(FilePath, MetadataItem,FilePath,FilePath)] -> [Block]
+generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
                                 let sectionID = if aut=="" then "" else let linkId = (generateID f aut dt) in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
@@ -207,22 +211,23 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_) ->
                                  [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++titlecase t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt))]]
                                  ++ generateItem p)
 
-generateItem :: (FilePath,MetadataItem,FilePath) -> [Block]
-generateItem (f,(t,aut,dt,_,tgs,""),bl)  = let
+generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
+generateItem (f,(t,aut,dt,_,tgs,""),bl,sl)  = let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
        title    = if t=="" then [Code nullAttr (T.pack f')] else [Str (T.pack $ "“"++t++"”")]
        prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
        author   = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
        date     = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
        tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan tgs]
-       backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++  [Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
+       backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
+       similar  = if sl=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["similar"],[]) [Str "similar"] (T.pack sl,"Similar links (by text embedding).")]]
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (prefix ++ Link nullAttr title (T.pack f, "") : (author))]
-  else [Para (prefix  ++ Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ [Str ")"]))]
-generateItem (f,a,bl) =
+  else [Para (prefix  ++ Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ similar ++ [Str ")"]))]
+generateItem (f,a,bl,sl) =
   -- render annotation as: (skipping DOIs)
   --
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl
+  generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
