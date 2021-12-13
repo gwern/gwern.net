@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-12 19:10:31 gwern"
+When:  Time-stamp: "2021-12-12 20:18:17 gwern"
 License: CC-0
 -}
 
@@ -324,8 +324,8 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                 let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
                                     author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorsTruncate aut else aut)]]
                                     date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
-                                    backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["similar"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
+                                    backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similar"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
@@ -383,7 +383,7 @@ tagsToLinksSpan :: [String] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
-                       Span ("", ["link-tags"], []) $
+                       Span ("", ["link-local", "link-tags"], []) $
                        intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
