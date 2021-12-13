@@ -40,11 +40,11 @@ else
     renice -n 19 "$$" > /dev/null
 
     ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 29; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 20; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
+    (cd ./static/ && git status && git pull --verbose 'http://gwern.obormot.net/static/.git' || true)
 
     bold "Compiling…"
     cd ./static/build
@@ -57,7 +57,6 @@ else
     compile embed.hs
     compile link-extractor.hs
     compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
-    # wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
@@ -65,7 +64,7 @@ else
 
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 
-    ## Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
+    # Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
     bold "Building directory indexes…"
     ./static/build/generateDirectory +RTS -N"$N" -RTS \
                 $(find docs fiction haskell newsletter nootropics notes reviews zeo -type d \
