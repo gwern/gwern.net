@@ -33,7 +33,7 @@ import Interwiki (convertInterwikiLinks, inlinesToString)
 
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
-import Data.RPTree -- (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, recallWith)
+import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest, recallWith)
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
@@ -44,19 +44,19 @@ main = do md  <- readLinkMetadata
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
           let todo = take 200 $ sort $ missingEmbeddings md edb
           edb'' <- do if (length todo) == 0 then hPutStrLn stderr "(Read databases; all updated.)" >> return edb else do
-                       newEmbeddings <- mapM embed todo
+                       newEmbeddings <- Par.mapM embed todo
                        let edb' = nubOrd (edb ++ newEmbeddings)
                        writeEmbeddings edb'
+                       hPutStrLn stderr "(Wrote embeddings.)"
                        return edb'
-          hPutStrLn stderr "(Wrote embeddings.)"
 
           -- let hyperparams = hyperparameterSweep edb''
           -- print $ take 20 hyperparams
           -- print hyperparams
 
           -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
-          -- let ddb  = embeddings2Forest edb''
-          -- Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
+          let ddb  = embeddings2Forest edb''
+          Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
 
 -- how many results do we want?
 bestNEmbeddings :: Int
@@ -183,8 +183,9 @@ findN :: Forest -> Int -> Embedding -> (String,[(String,Double)])
 findN f k e@(p1,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed...)
-                 -- If that happens, back off and request more k.
-                 if length results < bestNEmbeddings then findN f (k*2) e else (p1,results)
+                 -- If that happens, back off and request more k up to a max of 150.
+                 if k>150 then (p1, [])
+                 else if length results < bestNEmbeddings then findN f (k*2) e else (p1,results)
 
 hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 hyperparameterSweep edb =
