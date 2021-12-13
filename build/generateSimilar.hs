@@ -40,14 +40,17 @@ import Data.Conduit.List (sourceList)
 main :: IO ()
 main = do md  <- readLinkMetadata
           edb <- readEmbeddings
+          hPutStrLn stderr "Read databases."
 
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
-          let todo = take 200 $ sort $ missingEmbeddings md edb
-          edb'' <- do if (length todo) == 0 then hPutStrLn stderr "(Read databases; all updated.)" >> return edb else do
+          let todo = sort $ missingEmbeddings md edb
+          edb'' <- do if (length todo) == 0 then hPutStrLn stderr "All databases up to date." >> return edb else do
+                       hPutStrLn stderr $ "Embedding: " ++ show todo
                        newEmbeddings <- Par.mapM embed todo
+                       hPutStrLn stderr "Generated embeddings."
                        let edb' = nubOrd (edb ++ newEmbeddings)
                        writeEmbeddings edb'
-                       hPutStrLn stderr "(Wrote embeddings.)"
+                       hPutStrLn stderr "Wrote embeddings."
                        return edb'
 
           -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
@@ -181,7 +184,7 @@ findNearest f k e = map (\(dist,Embed _ p) -> (p,dist)) $ knnEmbedding f k e
 findN :: Forest -> Int -> Embedding -> (String,[(String,Double)])
 findN f k e@(p1,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
-                 -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed...)
+                 -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
                  -- If that happens, back off and request more k up to a max of 150.
                  if k>150 then (p1, [])
                  else if length results < bestNEmbeddings then findN f (k*2) e else (p1,results)
@@ -233,7 +236,7 @@ writeOutMatch md (p,matches) =
              let f = take 274 $ "metadata/annotations/similar/" ++ urlEncode p ++ ".html"
              TIO.writeFile f similarLinksHtmlFragment
              -- HACK: write out a duplicate 'metadata/annotations/similar/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
-             -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if... we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
+             -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if… we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
              TIO.writeFile (f++".html") similarLinksHtmlFragment
 
 generateItem :: Metadata -> (String,Double) -> [Block]
