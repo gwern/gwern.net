@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-12-10 11:59:51 gwern"
+When:  Time-stamp: "2021-12-12 22:57:12 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -119,7 +119,7 @@ rewriteLink adb url = do
           archive <- archiveURL url
           insertLinkIntoDB (Right archive) url
           return archive
-      Just (Right archive) -> if archive == Just "" then error ("Error! Tried to return a link to a non-existent archive! " ++ url) else return archive
+      Just (Right archive) -> if archive == Just "" then hPutStrLn stderr ("Error! Tried to return a link to a non-existent archive! " ++ url) >> return Nothing else return archive
 
 archiveDelay :: Integer
 archiveDelay = 60
