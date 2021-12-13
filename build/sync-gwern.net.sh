@@ -29,7 +29,7 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
           -n $(command -v static/build/generateLinkBibliography.hs) && \
           -n $(command -v static/build/generateBacklinks.hs) ]] && \
-          -n $(command -v static/build/embed.hs) ]] && \
+          -n $(command -v static/build/generateSimilar.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
     red "Dependencies missing or Hakyll already running?"
@@ -54,7 +54,7 @@ else
     compile generateLinkBibliography.hs
     compile generateDirectory.hs
     compile generateBacklinks.hs
-    compile embed.hs
+    compile generateSimilar.hs
     compile link-extractor.hs
     compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
     cd ../../
@@ -79,8 +79,8 @@ else
     bold "Updating backlinks…"
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
 
-    bold "Updating embeddings/similar-links…"
-    ./static/build/embed +RTS -N"$N" -RTS
+    bold "Updating embeddings+similar-links…"
+    ./static/build/generateSimilar.hs +RTS -N"$N" -RTS
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -659,7 +659,7 @@ else
         done
     fi
 
-    rm static/build/Columns static/build/link-extractor static/build/*.hi static/build/*.o &> /dev/null || true
+    rm static/build/Columns static/build/link-extractor static/build/generateLinkBibliography static/build/*.hi static/build/*.o &> /dev/null || true
 
     bold "Sync successful"
 fi
