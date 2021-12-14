@@ -40,7 +40,7 @@ else
     renice -n 19 "$$" > /dev/null
 
     ## Parallelization:
-    N="$(if [ ${#} == 0 ]; then echo 20; else echo "$1"; fi)"
+    N="$(if [ ${#} == 0 ]; then echo 25; else echo "$1"; fi)"
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
@@ -80,7 +80,7 @@ else
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
 
     bold "Updating embeddings+similar-links…"
-    ./static/build/generateSimilar.hs +RTS -N"$N" -RTS
+    ./static/build/generateSimilar +RTS -N"$N" -RTS
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
