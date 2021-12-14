@@ -148,14 +148,14 @@ listTagged :: Metadata -> FilePath -> IO [(FilePath,MetadataItem,FilePath,FilePa
 listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
                    let dirTag = replace "docs/" "" dir in
                      let tagged = M.filterWithKey (\u (_,_,_,_,tgs,_) -> not (dir `isInfixOf` u) && dirTag `elem` tgs) m in
-                       do -- let files = nub $ map truncateAnchors $ M.keys tagged
-                          let files = nub $ M.keys tagged
+                       do let files = nub $ map truncateAnchors $ M.keys tagged
                           backlinks    <- mapM getBackLink files
                           similarlinks <- mapM getSimilarLink files
                           let fileAnnotationsMi = map (lookupFallback m) files
                           return $
                             zipWith3 (\(a,b) c d -> (a,b,c,d)) fileAnnotationsMi backlinks similarlinks
   where
+    -- for essays, not files/links, drop section anchors to look up/link:
     truncateAnchors :: String -> String
     truncateAnchors str = if '.' `elem` str then str else takeWhile (/='#') str
 
