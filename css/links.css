@@ -478,7 +478,7 @@ body.tags a.link-local::after {
 }
 
 /* remove G icon from the tags inside popups (which go to directory indexes, which aren't really top-level/essay content, and the G is clutter) */
-a.similar::after, a.link-tag::after { content: none; }
+.similars a.similar::after, a.link-tag::after { content: none; }
 /* italicize link tags in popups/indexes similar to the page metadata block's tags for consistency */
 .link-tags { font-style: italic; }
 

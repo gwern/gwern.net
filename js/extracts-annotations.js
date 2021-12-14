@@ -59,10 +59,10 @@ if (window.Extracts) {
 
         let similarLinksHtml = referenceData.similarHTML == `` ? `` : ` (${referenceData.similarHTML})`;
 
-        let tagBacklinks = ``;
+        let tagBacklinks = `${similarLinksHtml}</p>`;
         if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = `${similarLinksHtml}</p>`; } else {
             if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `; <span class="data-field link-tags">${referenceData.tagsHTML}${similarLinksHtml}</p>`; } else {
-                if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.backlinksHTML}</p>`; } else {
+                if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.backlinksHTML}${similarLinksHtml}</p>`; } else {
                     if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.tagsHTML}; ${referenceData.backlinksHTML}${similarLinksHtml}</p>`; }
                 }
             }
