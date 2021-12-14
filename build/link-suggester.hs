@@ -11,7 +11,7 @@ import Data.List (intercalate, nub, sort, sortBy)
 import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromListWith, toList, map, Map)
 import Data.Maybe (isJust)
 import qualified Data.Set as S (fromList, member, Set)
-import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, toLower, unpack, Text, head, last, init, drop)
+import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, toLower, unpack, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
 import System.IO.Temp (writeSystemTempFile)
@@ -21,14 +21,10 @@ import Control.Monad.Parallel as Par (mapM) -- monad-parallel
 
 import Data.List.Unique as U (repeated) -- Unique
 
-import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
-                     pandocExtensions, Inline(Link), Pandoc)
-import Text.Pandoc.Walk (walk)
-
 import Text.Regex (mkRegex, matchRegex)
 
-import Interwiki (convertInterwikiLinks, inlinesToString)
 import LinkAuto (linkAuto)
+import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 2
@@ -96,28 +92,5 @@ dictionary = fmap (S.fromList . T.lines . T.toLower) $ TIO.readFile "/usr/share/
 parseURLs :: FilePath -> IO [(T.Text, [T.Text])]
 parseURLs file = do
   input <- TIO.readFile file
-  let converted = extractLinks input
+  let converted = extractURLsAndAnchorTooltips $ linkAuto $ parseMarkdownOrHTML True input
   return converted
-
--- | Read one Text string and pass to 'extractURLs'
-extractLinks :: T.Text -> [(T.Text,[T.Text])]
-extractLinks txt = let parsedEither = runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
-                        -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
-                   in case parsedEither of
-                              Left _ -> []
-                              Right links -> extractURLs links
-
--- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;
--- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do link-suggestions on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
-extractURLs :: Pandoc -> [(T.Text,[T.Text])]
-extractURLs = queryWith extractURL . linkAuto . walk convertInterwikiLinks
- where
-   extractURL :: Inline -> [(T.Text,[T.Text])]
-   extractURL (Link _ il (u,""))     = [(u, [cleanURL $ inlinesToString il])]
-   extractURL (Link _ il (u,target)) = [(u, [cleanURL $ inlinesToString il]), (u, [target])]
-   extractURL _ = []
-
-   -- NOTE: apparently due to nested Spans (from the smallcaps) and the RawInline issue (yet again), some link suggestions look like ">ADHD<". Very undesirable replacement targets. So we special-case clean those:
-   cleanURL :: T.Text -> T.Text
-   cleanURL "" = ""
-   cleanURL u = if T.head u == '>' && T.last u == '<' then T.init $ T.drop 1 u else u

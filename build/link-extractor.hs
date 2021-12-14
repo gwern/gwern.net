@@ -7,17 +7,12 @@
 
 module Main where
 
-import qualified Data.Text as T (append,  head, isInfixOf, replace, pack, unlines, Text)
+import qualified Data.Text as T (append,  head, pack, unlines)
 import qualified Data.Text.IO as TIO (readFile, putStr)
 import System.Environment (getArgs)
 import System.FilePath (takeBaseName)
 
-import Text.Pandoc (def, queryWith, readerExtensions, readMarkdown, runPure,
-                     pandocExtensions, Inline(Link), Pandoc, Block(Para))
-import Text.Pandoc.Walk (walk)
-
-import Columns (simplified)
-import Interwiki (convertInterwikiLinks)
+import Query (extractLinks)
 
 -- | Map over the filenames
 main :: IO ()
@@ -31,7 +26,7 @@ main = do
 printURLs :: Bool -> FilePath -> IO ()
 printURLs printfilename file = do
   input <- TIO.readFile file
-  let converted = extractLinks input
+  let converted = extractLinks True input
   -- rewrite self-links like "#discriminator-ranking" → "/Faces#discriminator-ranking" by prefixing the original Markdown filename's absolute-ized basename;
   -- this makes frequency counts more informative, eg for deciding what sections to refactor out into standalone pages (because heavy cross-referencing
   -- *inside* a page is an important indicator of a section being 'too big', just like cross-page references are).
@@ -39,20 +34,3 @@ printURLs printfilename file = do
 
   if printfilename then TIO.putStr $ T.unlines $ Prelude.map (\url -> (T.pack file) `T.append` ":" `T.append` url) converted' else
      TIO.putStr $ T.unlines converted'
-
--- | Read one Text string and return its URLs (as Strings)
-extractLinks :: T.Text -> [T.Text]
-extractLinks txt = let parsedEither = runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
-                        -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
-                   in case parsedEither of
-                              Left _ -> []
-                              Right links -> extractURLs links
-
--- | Read 1 Pandoc AST and return its URLs as Strings
-extractURLs :: Pandoc -> [T.Text]
-extractURLs = queryWith extractURL . walk convertInterwikiLinks
- where
-   extractURL :: Inline -> [T.Text]
-   extractURL x@(Link _ il (u,_)) = if "\"\"" `T.isInfixOf` u then error ("Error! Doubled double-quotes in: " ++ show x)
-                                    else [u`T.append`" "`T.append` (T.replace "\n" " " $ simplified $ Para il)]
-   extractURL _ = []

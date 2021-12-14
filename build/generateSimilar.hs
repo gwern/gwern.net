@@ -3,9 +3,8 @@
 
 module Main where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, writeHtml5String, Block(BulletList, Para), Inline(Link, Str), runPure, Pandoc(..))
-import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T  (append, drop, head, init, intercalate, last, length, pack, replace, strip, take, unlines, unpack, Text)
+import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, Str), runPure, Pandoc(..))
+import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate, sort, nub)
 import Data.List.Utils (replace)
 import Data.Maybe (fromJust)
@@ -24,17 +23,15 @@ import qualified Data.Text.IO as TIO (writeFile)
 import Network.HTTP (urlEncode)
 import System.IO (stderr, hPutStrLn)
 
-import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
-
-import Columns (simplifiedDoc)
-
-import Interwiki (convertInterwikiLinks, inlinesToString)
-
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
 import Data.RPTree (knn, forest, metricL2, rpTreeCfg, fpMaxTreeDepth, fpDataChunkSize, fpProjNzDensity, fromListDv, DVector, Embed(..), RPForest)
 import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
+
+import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
+import Columns (simplifiedDoc)
+import Query (extractURLsAndAnchorTooltips, extractLinks)
 
 main :: IO ()
 main = do md  <- readLinkMetadata
@@ -93,7 +90,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
                           Right p -> p
         -- create a numbered list of URL references inside each document to expose it to the embedding model, as 'simplifiedDoc' necessarily strips URLs:
-        documentURLs = extractURLs parsedEither
+        documentURLs = extractURLsAndAnchorTooltips parsedEither
         documentURLsText = if null documentURLs then "" else "References:\n" `T.append` T.unlines (map (\(n, (url,titles)) -> T.pack n `T.append` ". " `T.append` url `T.append` " " `T.append` (T.intercalate ", " $ tail titles)) $ zip (map show [(1::Int)..]) documentURLs)
         -- simple plaintext ASCII-ish version, which hopefully is more comprehensible to NN models than full-blown HTML
         plainText = simplifiedDoc parsedEither `T.append` documentURLsText
@@ -105,21 +102,6 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
   where
     maxLength :: Int
     maxLength = 8100 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
-
-    -- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;
-    -- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
-    extractURLs :: Pandoc -> [(T.Text,[T.Text])]
-    extractURLs = queryWith extractURL . walk convertInterwikiLinks
-     where
-       extractURL :: Inline -> [(T.Text,[T.Text])]
-       extractURL (Link _ il (u,""))     = [(u, [cleanURL $ inlinesToString il])]
-       extractURL (Link _ il (u,target)) = [(u, [cleanURL $ inlinesToString il]), (u, [target])]
-       extractURL _ = []
-
-       -- NOTE: apparently due to nested Spans (from the smallcaps) and the RawInline issue (yet again), some link suggestions look like ">ADHD<". Very undesirable replacement targets. So we special-case clean those:
-       cleanURL :: T.Text -> T.Text
-       cleanURL "" = ""
-       cleanURL u = if T.head u == '>' && T.last u == '<' then T.init $ T.drop 1 u else u
 
 embed :: (String,MetadataItem) -> IO Embedding
 embed i@(p,_) = do
@@ -246,18 +228,3 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                       [Para
                                         [Link ("", ["docMetadata"], [("embeddingDistance", T.pack $ show distance) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
                                         ]
-
--- | Read one Text string and return its URLs (as Strings)
-extractLinks :: Bool -> T.Text -> [T.Text]
-extractLinks md txt = let parsedEither = if md then runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
-                                         else runPure $ readHtml def{readerExtensions = pandocExtensions } txt
-                   in case parsedEither of
-                              Left _ -> []
-                              Right links -> extractURLs links
-    where -- | Read 1 Pandoc AST and return its URLs as Strings
-        extractURLs :: Pandoc -> [T.Text]
-        extractURLs = queryWith extractURL
-         where
-           extractURL :: Inline -> [T.Text]
-           extractURL (Link _ _ (u,_)) = [u]
-           extractURL _ = []

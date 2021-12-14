@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-12-03 23:14:16 gwern"
+When:  Time-stamp: "2021-12-14 10:59:27 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -46,6 +46,7 @@ import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
 import Columns (simplifiedDoc)
+import Query (extractURLs)
 
 -- test,test2 :: [Inline]
 -- -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
@@ -145,12 +146,8 @@ mergeSpaces (x:xs)                 = x:mergeSpaces xs
 -- Optimization: take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
 -- This avoids redundancy with links added by hand or other filters.
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
-filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ map (T.replace "https://www.gwern.net/" "/") $ queryWith extractLink markdown in
+filterDefinitions (Pandoc _ markdown) = let allLinks = S.fromList $ map (T.replace "https://www.gwern.net/" "/") $ queryWith extractURLs markdown in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)
-  where
-   extractLink :: Inline -> [T.Text]
-   extractLink (Link _ _ (path, _)) = [path]
-   extractLink _ = []
 
 -- Optimization: try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
 -- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.

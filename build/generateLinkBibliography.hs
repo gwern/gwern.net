@@ -18,15 +18,14 @@ import System.IO (stderr, hPrint)
 import System.IO.Temp (writeSystemTempFile)
 
 import Data.Text.IO as TIO (readFile)
-import qualified Data.Text as T (head, pack, unpack)
+import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space), def, nullAttr, nullMeta, queryWith, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
-import Text.Pandoc.Walk (walk)
+import Text.Pandoc (Inline(Code, Link, Str, Space), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
 
-import Interwiki (convertInterwikiLinks)
 import LinkMetadata (generateAnnotationBlock, getBackLink, getSimilarLink, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
+import Query (extractURLs)
 
 main :: IO ()
 main = do pages <- getArgs
@@ -100,12 +99,7 @@ extractLinksFromPage path = do f <- TIO.readFile path
                                           Left  _ -> []
                                           -- make the list unique, but keep the original ordering
                                           Right p -> filter (\l -> not (head l == '#')) $ -- self-links are not useful in link bibliographies
-                                                     nub $ extractLinks p -- TODO: maybe extract the title from the metadata for nicer formatting?
-extractLinks :: Pandoc -> [String]
-extractLinks p = queryWith extractLink $ walk convertInterwikiLinks p
-extractLink :: Inline -> [String]
-extractLink (Link _ _ (path, _)) = if T.head path == '$' || T.head path == '\8383' then [] else [T.unpack path]
-extractLink _ = []
+                                                     nub $ map T.unpack $ extractURLs p -- TODO: maybe extract the title from the metadata for nicer formatting?
 
 linksToAnnotations :: Metadata -> [String] -> [(String,MetadataItem)]
 linksToAnnotations m = map (linkToAnnotation m)

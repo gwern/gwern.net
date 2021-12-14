@@ -3,8 +3,8 @@
 
 module Main where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, queryWith, readerExtensions,
-                     readHtml, readMarkdown, runPure, writeHtml5String,
+import Text.Pandoc (nullMeta,
+                     runPure, writeHtml5String,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, takeWhile, Text)
@@ -21,6 +21,7 @@ import Control.Monad (forM_, unless)
 import Control.Monad.Parallel as Par (mapM)
 
 import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions)
+import Query (extractLinks)
 
 main :: IO ()
 main = do
@@ -112,22 +113,6 @@ parseFileForLinks md m = do text <- TIO.readFile m
 -- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
 truncateAnchors :: T.Text -> T.Text
 truncateAnchors str = if "." `T.isInfixOf` str then str else T.takeWhile (/='#') str
-
--- | Read one Text string and return its URLs (as Strings)
-extractLinks :: Bool -> T.Text -> [T.Text]
-extractLinks md txt = let parsedEither = if md then runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
-                                         else runPure $ readHtml def{readerExtensions = pandocExtensions } txt
-                   in case parsedEither of
-                              Left _ -> []
-                              Right links -> extractURLs links
-
--- | Read 1 Pandoc AST and return its URLs as Strings
-extractURLs :: Pandoc -> [T.Text]
-extractURLs = queryWith extractURL
- where
-   extractURL :: Inline -> [T.Text]
-   extractURL (Link _ _ (u,_)) = [u]
-   extractURL _ = []
 
 blackList :: T.Text -> Bool
 blackList f

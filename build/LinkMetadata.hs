@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-13 11:45:16 gwern"
+When:  Time-stamp: "2021-12-14 11:07:37 gwern"
 License: CC-0
 -}
 
@@ -39,7 +39,7 @@ import System.IO (stderr, hPutStrLn)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
-                    readHtml, writerExtensions, nullAttr, nullMeta, queryWith, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
+                    readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex, matchRegex)
@@ -53,6 +53,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
+import Query (extractURLs)
 
 currentYear :: Int
 currentYear = 2021
@@ -231,11 +232,7 @@ getSimilarLink = getXLink "similar"
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
-createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md) $ queryWith extractLink markdown
-  where
-   extractLink :: Inline -> [String]
-   extractLink (Link _ _ (path, _)) = [T.unpack path]
-   extractLink _ = []
+createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md . T.unpack) $ extractURLs (Pandoc nullMeta markdown)
 
 annotateLink :: Metadata -> String -> IO Bool
 annotateLink md target =
