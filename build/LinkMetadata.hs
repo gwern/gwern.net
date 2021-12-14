@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-12 20:18:17 gwern"
+When:  Time-stamp: "2021-12-13 11:45:16 gwern"
 License: CC-0
 -}
 
@@ -223,7 +223,7 @@ getXLink linkType p = do
                    linkExists <- doesFileExist $ tail linkRaw
                    -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
                    let link' = if not linkExists then "" else "/metadata/annotations/"++linkType++"/" ++
-                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' then urlEncode [t] else [t]) (p++".html"))
+                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' then urlEncode [t] else [t]) (p++".html"))
                    return link'
 getBackLink, getSimilarLink :: FilePath -> IO FilePath
 getBackLink    = getXLink "backlinks"
