@@ -15,7 +15,6 @@ import Data.Containers.ListUtils (nubOrd)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
 import qualified Control.Monad.Parallel as Par (mapM, mapM_)
-import Control.Parallel.Strategies (parMap, rseq)
 import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -150,8 +149,9 @@ type Forest = RPForest Double (V.Vector (Embed DVector Double String))
 -- For curie, sweeping to find '60,1,32' produces a substantial gain compared to the ada-tuned '21,5,12', so well-worthwhile.
 -- > hyperparameterSweep edb
 -- [(0.8555555555555556,(60,1,32)),(0.46888888888888886,(21,5,12))]
+-- TODO: I am not sure why it keeps picking '1' tree as optimum, and that seems like it might be related to the instances where no hits are returned?
 embeddings2Forest :: Embeddings -> Forest
-embeddings2Forest = embeddings2ForestConfigurable 60 1 32
+embeddings2Forest = embeddings2ForestConfigurable 60 3 32
 
 embeddings2ForestConfigurable :: Int -> Int -> Int -> Embeddings -> Forest
 embeddings2ForestConfigurable ls nt pvd es =
