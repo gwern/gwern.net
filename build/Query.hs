@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2021-12-14 11:53:35 gwern"
+When:  Time-stamp: "2021-12-14 16:42:04 gwern"
 License: CC-0
 -}
 
@@ -30,7 +30,7 @@ extractURLs :: Pandoc -> [T.Text]
 extractURLs = queryWith (map (\(url,_,_) -> url) . extractURL) . walk convertInterwikiLinks
 
 extractURL :: Inline -> [(T.Text,T.Text,T.Text)]
-extractURL (Link _ anchorText (url,tooltip)) = if T.head url == '$' || T.head url == '\8383' then [] -- ignore inflation-adjuster 'links'
+extractURL (Link _ anchorText (url,tooltip)) = if url=="" || T.head url == '$' || T.head url == '\8383' then [] -- ignore inflation-adjuster 'links'
                                                else [(url,inlinesToString anchorText,tooltip)]
 extractURL _ = []
 
