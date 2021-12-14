@@ -4,7 +4,7 @@ module LinkAuto (linkAuto) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-12-14 10:59:27 gwern"
+When:  Time-stamp: "2021-12-14 11:58:12 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -272,7 +272,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Lewis Terman|Terman)", "https://en.wikipedia.org/wiki/Lewis_Terman")
         , ("(MAOI|[Mm]onoamine [Oo]xidase [Ii]nhibitor)", "https://en.wikipedia.org/wiki/Monoamine_oxidase_inhibitor")
         , ("(MCMC|[Mm]arkov [Cc]hain [Mm]onte [Cc]arlo)", "https://en.wikipedia.org/wiki/Markov_chain_Monte_Carlo")
-        , ("(MCTS|Monte Carlo [Tt]ree[ -][Ss]earch)", "https://en.wikipedia.org/wiki/Monte_Carlo_tree_search")
+        , ("(MCTS|Monte Carlo [Tt]ree[ -][Ss]earch|MCTS-based)", "https://en.wikipedia.org/wiki/Monte_Carlo_tree_search")
         , ("(MIRI|Machine Intelligence Research Institute)", "https://en.wikipedia.org/wiki/Machine_Intelligence_Research_Institute")
         , ("(MLP:?FIM|My Little Pony: Friendship is Magic)", "https://en.wikipedia.org/wiki/My_Little_Pony:_Friendship_Is_Magic")
         , ("(MR|[Mm]endelian[ -][Rr]andomization)", "https://en.wikipedia.org/wiki/Mendelian_randomization")

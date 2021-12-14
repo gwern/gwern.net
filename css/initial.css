@@ -878,7 +878,7 @@ a code {
     margin-left: 0.7px;
 }
 
-/*  Similar to above, but for subscripts and superscripts
+/*  Like above, but for subscripts and superscripts
     */
 .markdownBody a:link > sub,
 .markdownBody a:link > sup {

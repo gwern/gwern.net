@@ -1,10 +1,11 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2021-12-14 11:16:56 gwern"
+When:  Time-stamp: "2021-12-14 11:53:35 gwern"
 License: CC-0
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
 module Query (extractLinks, extractURLs, extractURLsAndAnchorTooltips, parseMarkdownOrHTML) where
 
 import qualified Data.Text as T (init, drop, head, last, Text)
