@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
-module LinkAuto (linkAuto) where
+module LinkAuto (linkAuto, linkAutoFiltered) where
 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-12-14 11:58:12 gwern"
+When:  Time-stamp: "2021-12-15 12:37:38 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -60,8 +60,13 @@ import Query (extractURLs)
 
 -- turn first instance of a list of regex matches into hyperlinks in a Pandoc document. NOTE: this is best run as early as possible, because it is doing raw string matching, and any formatting or changing of phrases may break a match, but after running link syntax rewrites like the interwiki links (otherwise you'll wind up inserting WP links into pages that already have that WP link, just linked as `[foo](!Wikipedia)`.)
 linkAuto :: Pandoc -> Pandoc
-linkAuto p = let customDefinitions' = filterMatches p $ filterDefinitions p customDefinitions in
+linkAuto = linkAutoFiltered id
+
+-- if we want to run on just a subset of links (eg remove all resulting links to Wikipedia, or delete a specific regexp match), we can pass in a filter:
+linkAutoFiltered :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> Pandoc -> Pandoc
+linkAutoFiltered subsetter p = let customDefinitions' = filterMatches p $ filterDefinitions p (customDefinitions subsetter) in
                if null customDefinitions' then p else cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+
 
 -----------
 
@@ -203,17 +208,22 @@ customDefinitionsR = map (\(a,b) -> (a,
 
 -----------
 
+-- validate and error out immediately if there are bad rewrites defined
+definitionsValidate :: [(T.Text, T.Text)] -> [(T.Text, T.Text)]
+definitionsValidate defs = if nub (map fst defs) /= map fst defs
+                    then error $ "Definition keys are not unique! Definitions: " ++ show (map fst defs)
+                    else if nub (map snd defs) /= map snd defs then
+                           error $ "Definition values are not unique! Definitions: " ++ show (map snd defs)
+                         else defs
+
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
 -- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as turning into multiple links (eg one link for each word in a phrase), abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
 -- I'm not sure how crazy I want to get with the rewrites, though. The regexp rewriting is expensive since it must look at all text. If you're doing those sorts of other rewrites, it'd generally be more sensible to require them to be marked up explicitly, which is vastly easier to program & more efficient. We'll see.
-customDefinitions :: [(T.Text, R.Regex, T.Text)]
-customDefinitions = if nub (map fst custom) /= map fst custom
-                    then error $ "Definition keys are not unique! Definitions: " ++ show (map fst custom)
-                    else if nub (map snd custom) /= map snd custom then
-                           error $ "Definition values are not unique! Definitions: " ++ show (map snd custom)
-                         else customDefinitionsR custom -- delimit & compile
-       -- descending order, longest match to shortest (for regex priority):
+customDefinitions :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> [(T.Text, R.Regex, T.Text)]
+customDefinitions subsetter = customDefinitionsR $ definitionsValidate $ subsetter custom -- delimit & compile
+
+-- descending order, longest match to shortest (for regex priority):
 custom :: [(T.Text, T.Text)]
 custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
           ("15\\.ai", "https://fifteen.ai/")
