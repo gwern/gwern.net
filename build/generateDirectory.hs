@@ -9,18 +9,18 @@ import Control.Monad (filterM)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)
 import Data.List.Utils (replace)
 import Data.Text.Titlecase (titlecase)
-import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, renameFile, removeFile)
+import System.Directory (listDirectory, doesFileExist, doesDirectoryExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
-import qualified Data.Text as T (unpack, pack, append, Text)
+import qualified Data.Text as T (pack, append, Text)
 import System.IO (stderr, hPrint)
-import System.IO.Temp (writeSystemTempFile)
 import Control.Monad.Parallel as Par (mapM_)
 
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, getSimilarLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, sed)
+import Utils (writeUpdatedFile)
 
 main :: IO ()
 main = do dirs <- getArgs
@@ -95,17 +95,8 @@ generateDirectory mta dir'' = do
   case p of
     Left e   -> hPrint stderr e
     -- compare with the old version, and update if there are any differences:
-    Right p' -> do let contentsNew = header ++ T.unpack p'
-                   updateFile (dir'' ++ "index.page") contentsNew
-
-updateFile :: FilePath -> String -> IO ()
-updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-directories" contentsNew
-                              existsOld <- doesFileExist f
-                              if not existsOld then
-                                renameFile t f
-                                else
-                                  do contentsOld <- readFile f
-                                     if contentsNew /= contentsOld then renameFile t f else removeFile t
+    Right p' -> do let contentsNew = (T.pack header) `T.append` p'
+                   writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
 
 generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++

@@ -14,8 +14,6 @@ import qualified Data.Set as S (fromList, member, Set)
 import qualified Data.Text as T (append, length, lines, intercalate, pack, isInfixOf, isPrefixOf, toLower, unpack, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
-import System.IO.Temp (writeSystemTempFile)
-import System.Directory (renameFile)
 
 import Control.Monad.Parallel as Par (mapM) -- monad-parallel
 
@@ -25,6 +23,7 @@ import Text.Regex (mkRegex, matchRegex)
 
 import LinkAuto (linkAuto)
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
+import Utils (writeUpdatedFile)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 2
@@ -58,8 +57,7 @@ main = do
   let reversedDBSorted = sortBy (\(t1,_) (t2,_) -> if T.length t1 > T.length t2 then LT else if T.length t1 == T.length t2 then if t1 > t2 then LT else GT else GT) reversedDB
   let elispDB = haskellListToElispList reversedDBSorted
 
-  temp <- writeSystemTempFile "linkSuggestions.el.tmp" (T.unpack elispDB)
-  renameFile temp output
+  writeUpdatedFile "linkSuggestions.el.tmp" output elispDB
 
 -- format the pairs in Elisp `(setq rewrites '((foo bar)) )` style so it can be read in & executed directly by Emacs's `load-file`.
 haskellListToElispList :: [(T.Text, T.Text)] -> T.Text

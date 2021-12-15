@@ -11,17 +11,17 @@ import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup, keys, elems, traverseWithKey, fromListWith, union)
-import System.Directory (createDirectoryIfMissing, doesFileExist, removeFile, renameFile)
+import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Network.HTTP (urlDecode, urlEncode)
 import Data.List.Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
-import System.IO.Temp (writeSystemTempFile)
 import Control.Monad (forM_, unless)
 
 import Control.Monad.Parallel as Par (mapM)
 
 import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions)
 import Query (extractLinks)
+import Utils (writeUpdatedFile)
 
 main :: IO ()
 main = do
@@ -83,20 +83,11 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                   in case htmlEither of
                                                               Left e -> error $ show target ++ show callers ++ show e
                                                               Right output -> output
-                                       let backLinksHtmlFragment = "<div class=\"columns\">\n" ++ T.unpack html ++ "\n</div>"
-                                       updateFile f backLinksHtmlFragment
+                                       let backLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+                                       writeUpdatedFile "backlink" f backLinksHtmlFragment
                                        -- HACK: write out a duplicate 'metadata/annotations/backlinks/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
                                        -- We overload the syntax-highlighting feature to make backlinks *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the backlinks `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if... we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
-                                       updateFile (f++".html") $ T.unpack html
-
-updateFile :: FilePath -> String -> IO ()
-updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-backlinks" contentsNew
-                              existsOld <- doesFileExist f
-                              if not existsOld then
-                                renameFile t f
-                                else
-                                  do contentsOld <- Prelude.readFile f
-                                     if contentsNew /= contentsOld then renameFile t f else removeFile t
+                                       writeUpdatedFile "backlink" (f++".html") backLinksHtmlFragment
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m

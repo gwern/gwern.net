@@ -19,7 +19,6 @@ import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
 import Data.Binary (decodeFile, encodeFile)
-import qualified Data.Text.IO as TIO (writeFile)
 import Network.HTTP (urlEncode)
 import System.IO (stderr, hPutStrLn)
 
@@ -32,6 +31,7 @@ import Data.Conduit.List (sourceList)
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 import Columns (simplifiedDoc)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
+import Utils (writeUpdatedFile)
 
 main :: IO ()
 main = do md  <- readLinkMetadata
@@ -216,10 +216,10 @@ writeOutMatch md (p,matches) =
              let similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
 
              let f = take 274 $ "metadata/annotations/similar/" ++ urlEncode p ++ ".html"
-             TIO.writeFile f similarLinksHtmlFragment
+             writeUpdatedFile "similar" f similarLinksHtmlFragment
              -- HACK: write out a duplicate 'metadata/annotations/similar/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
              -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if… we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
-             TIO.writeFile (f++".html") similarLinksHtmlFragment
+             writeUpdatedFile "similar" (f++".html") similarLinksHtmlFragment
 
 generateItem :: Metadata -> (String,Double) -> [Block]
 generateItem md (p2,distance) = case M.lookup p2 md of

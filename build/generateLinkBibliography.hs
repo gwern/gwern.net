@@ -11,11 +11,9 @@ import Data.List (isPrefixOf, isSuffixOf, nub)
 import Data.List.Utils (replace)
 import Data.Text.Titlecase (titlecase)
 import qualified Data.Map as M (lookup)
-import System.Directory (doesFileExist, renameFile, removeFile, createDirectoryIfMissing)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import System.IO (stderr, hPrint)
-import System.IO.Temp (writeSystemTempFile)
 
 import Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
@@ -26,6 +24,7 @@ import Text.Pandoc (Inline(Code, Link, Str, Space), def, nullAttr, nullMeta, rea
 
 import LinkMetadata (generateAnnotationBlock, getBackLink, getSimilarLink, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 import Query (extractURLs)
+import Utils (writeUpdatedFile)
 
 main :: IO ()
 main = do pages <- getArgs
@@ -45,17 +44,7 @@ generateLinkBibliography md page = do links <- extractLinksFromPage page
                                         Left e   -> hPrint stderr e
                                         -- compare with the old version, and update if there are any differences:
                                         Right p' -> do let contentsNew = generateYAMLHeader (replace ".page" "" page) ++ T.unpack p'
-                                                       updateFile ("docs/link-bibliography/" ++ page) contentsNew
-
-updateFile :: FilePath -> String -> IO ()
-updateFile f contentsNew = do t <- writeSystemTempFile "hakyll-link-bibliography" contentsNew
-                              existsOld <- doesFileExist f
-                              if not existsOld then
-                                do createDirectoryIfMissing True (takeDirectory f)
-                                   renameFile t f
-                                else
-                                  do contentsOld <- Prelude.readFile f
-                                     if contentsNew /= contentsOld then renameFile t f else removeFile t
+                                                       writeUpdatedFile "link-bibliography" ("docs/link-bibliography/" ++ page) (T.pack contentsNew)
 
 generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++

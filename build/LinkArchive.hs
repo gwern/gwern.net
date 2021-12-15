@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-12-12 22:57:12 gwern"
+When:  Time-stamp: "2021-12-14 20:13:56 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -57,6 +57,8 @@ import Data.FileStore.Utils (runShellCommand)
 import Network.URI.TLD (parseTLD)
 import Text.Pandoc (Inline(Link))
 import Text.Show.Pretty (ppShow)
+
+import Utils (writeUpdatedFile)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg 2019-11-22 = 58810
@@ -127,8 +129,7 @@ archiveDelay = 60
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
                             let adb' = M.insert url a adb
-                            temp <- writeSystemTempFile "archive-metadata-auto.db.hs" (ppShow $ M.toAscList adb')
-                            renameFile temp "metadata/archive.hs"
+                            writeUpdatedFile "archive-metadata-auto.db.hs" "metadata/archive.hs" (T.pack $ ppShow $ M.toAscList adb')
 
 currentDay :: IO Integer
 currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime

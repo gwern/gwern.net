@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-14 11:07:37 gwern"
+When:  Time-stamp: "2021-12-14 20:01:20 gwern"
 License: CC-0
 -}
 
@@ -15,7 +15,7 @@ import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
-import qualified Data.ByteString as B (appendFile, writeFile)
+import qualified Data.ByteString as B (appendFile)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
@@ -25,13 +25,14 @@ import Data.FileStore.Utils (runShellCommand)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
 import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
-import Data.Text.IO as TIO (readFile, writeFile)
+import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
+import Data.Text.IO as TIO (readFile)
 import Data.Text.Titlecase (titlecase)
 import Data.Yaml as Y (decodeFileEither, encode, ParseException)
 import GHC.Generics (Generic)
 import Network.HTTP (urlDecode, urlEncode)
 import Network.URI (isURIReference, uriFragment, parseURIReference)
-import System.Directory (createDirectoryIfMissing, doesFileExist, doesDirectoryExist, renameFile)
+import System.Directory (doesFileExist, doesDirectoryExist)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
 import System.GlobalLock (lock)
@@ -44,7 +45,6 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex, matchRegex)
 import Text.Show.Pretty (ppShow)
-import System.IO.Temp (writeSystemTempFile, emptySystemTempFile)
 
 import qualified Control.Monad.Parallel as Par (mapM_)
 
@@ -54,6 +54,7 @@ import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import Query (extractURLs)
+import Utils (writeUpdatedFile)
 
 currentYear :: Int
 currentYear = 2021
@@ -191,19 +192,11 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                              case finalHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
                                                Right finalHTML -> let refloated = T.pack $ restoreFloatRight e $ T.unpack finalHTML
-                                                                  in writeUpdatedFile filepath' refloated
--- write only when changed, to reduce sync overhead
-writeUpdatedFile :: FilePath -> T.Text -> IO ()
-writeUpdatedFile target contentsNew = do existsOld <- doesFileExist target
-                                         if not existsOld then do
-                                           TIO.writeFile target contentsNew
+                                                                  in writeUpdatedFile "annotation" filepath' refloated >>
                                            -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
                                            -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
                                            -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
-                                           createDirectoryIfMissing True "./_site/metadata/annotations/"
-                                           TIO.writeFile ("./_site/"++target) contentsNew
-                                           else do contentsOld <- TIO.readFile target
-                                                   when (contentsNew /= contentsOld) $ TIO.writeFile target contentsNew
+                                                                     writeUpdatedFile "annotation" ("./_site/"++filepath') refloated
 
 -- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
 safeHtmlWriterOptions :: WriterOptions
@@ -412,8 +405,7 @@ readBacklinksDB = do bll <- TIO.readFile "metadata/backlinks.hs"
 writeBacklinksDB :: Backlinks -> IO ()
 writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
                            let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
-                           t <- writeSystemTempFile "hakyll-backlinks" $ ppShow bll'
-                           renameFile t "metadata/backlinks.hs"
+                           writeUpdatedFile "hakyll-backlinks" "metadata/backlinks.hs" (T.pack $ ppShow bll')
 
 -- type Forwardlinks = M.Map T.Text [T.Text]
 -- convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
@@ -431,10 +423,8 @@ type Path = String
 
 writeYaml :: Path -> MetadataList -> IO ()
 writeYaml path yaml = lock $ do
-  let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ yaml
-  tempPath <- emptySystemTempFile "hakyll-yaml"
-  B.writeFile tempPath newYaml
-  renameFile tempPath path
+  let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ yaml
+  writeUpdatedFile "hakyll-yaml" path newYaml
 
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
@@ -714,9 +704,9 @@ pageTagDB = M.fromList [
 rewriteLinkMetadata :: Path -> IO ()
 rewriteLinkMetadata yaml = do old <- readYaml yaml
                               let new = M.fromList old :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-                              let newYaml = Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
+                              let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
                                     M.toList new
-                              B.writeFile yaml newYaml
+                              writeUpdatedFile "yaml" yaml newYaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
