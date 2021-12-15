@@ -57,7 +57,7 @@ if (window.Extracts) {
                                 target="${linkTarget}"
                                     >${referenceData.titleHTML}</a>`;
 
-        let similarLinksHtml = referenceData.similarHTML == `` ? `` : ` (${referenceData.similarHTML})`;
+        let similarLinksHtml = referenceData.similarHTML == `` ? `` : `; ${referenceData.similarHTML}`;
 
         let tagBacklinks = `${similarLinksHtml}</p>`;
         if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = `${similarLinksHtml}</p>`; } else {
