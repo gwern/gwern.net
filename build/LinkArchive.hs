@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-12-14 20:13:56 gwern"
+When:  Time-stamp: "2021-12-15 17:41:39 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -45,8 +45,6 @@ import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
 import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
-import System.Directory (renameFile)
-import System.IO.Temp (writeSystemTempFile)
 import Data.Time.Calendar (toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -148,11 +146,11 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
 -- 3. after that, we may want to skip various filetypes and domains
 whiteList :: String -> Bool
 whiteList url
-  | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = False
-  | any (`isPrefixOf` url) ["/", "./", "../", "https://www.gwern.net", "#", "!", "$", "mailto", "irc"] = True
+  | any (`isPrefixOf` url) ["/", "./", "../", "https://www.gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/docs/"] = True
   | any (`isSuffixOf` url) [".pdf"] = False
   | any (`isSuffixOf` url) ["/pdf"] = False
   | any (`isInfixOf` url) [".pdf#"] = False
+  | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = False
   | any (`isInfixOf` url) [".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
       , ".xz"
@@ -928,5 +926,6 @@ whiteList url
       , "proceedings.mlr.press/" -- stable
       , "https://absa.org/" -- homepage
       , "https://www.agriapet.co.uk/" -- homepage
+      , "www.word.golf" -- interactive game
       ] = True
     | otherwise = False
