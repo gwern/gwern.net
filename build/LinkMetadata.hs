@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-16 11:46:15 gwern"
+When:  Time-stamp: "2021-12-17 17:16:56 gwern"
 License: CC-0
 -}
 
@@ -1250,7 +1250,7 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’') . map toLower . replace 
 
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length:
 authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 200 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
+authorsTruncate a = let (before,after) = splitAt 180 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
