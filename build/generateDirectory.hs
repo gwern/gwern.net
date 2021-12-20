@@ -198,12 +198,17 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
                                 let sectionID = if aut=="" then "" else let linkId = (generateID f aut dt) in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
+                                    sectionTitle = T.pack $ if not ("wikipedia"`isInfixOf`f) then "“"++titlecase t++"”" else t ++
+                                                     (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
-                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") (T.pack $ "“"++titlecase t++"”" ++ (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt))]]
+                                 [Header 2 (sectionID, [], []) [RawInline (Format "html") sectionTitle]]
                                  ++ generateItem p)
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
-generateItem (f,(t,aut,dt,_,tgs,""),bl,sl)  = let
+generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) =
+ if ("wikipedia"`isInfixOf`f) then [Para [Link nullAttr [Str "Wikipedia"] (T.pack f, T.pack $ "Wikipedia link about " ++ t)]]
+ else
+  let
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
        title    = if t=="" then [Code nullAttr (T.pack f')] else [Str (T.pack $ "“"++t++"”")]
        prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
