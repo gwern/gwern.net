@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-19 10:40:59 gwern"
+When:  Time-stamp: "2021-12-19 22:12:38 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan) where
+module LinkMetadata (isLocalLink, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -427,13 +427,25 @@ writeYaml path yaml = lock $ do
   let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ yaml
   writeUpdatedFile "hakyll-yaml" path newYaml
 
+-- skip all of the checks, validations, tag creation etc
+readYamlFast :: Path -> IO MetadataList
+readYamlFast yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
+                       case file of
+                          Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
+                          Right y -> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
+                where
+                 convertListToMetadataFast :: [String] -> MetadataList
+                 convertListToMetadataFast [u, t, a, d, di,     s] = [(u, (t,a,d,di,[], s))]
+                 convertListToMetadataFast [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,[ts], s))]
+                 convertListToMetadataFast                        e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
+
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
                    if not filep then return [] else do
                         fdb <- readBacklinksDB
                         file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
                         case file of
-                          Left e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
+                          Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
                           Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
                  convertListToMetadata :: Backlinks -> [String] -> MetadataList
