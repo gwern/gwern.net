@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-17 17:16:56 gwern"
+When:  Time-stamp: "2021-12-19 10:40:59 gwern"
 License: CC-0
 -}
 
@@ -398,7 +398,8 @@ condenseTags ts = map (\t -> let previousList = map prefixfy $ takeWhile (/=t) t
 type Backlinks = M.Map T.Text [T.Text]
 
 readBacklinksDB :: IO Backlinks
-readBacklinksDB = do bll <- TIO.readFile "metadata/backlinks.hs"
+readBacklinksDB = do exists <- doesFileExist "metadata/backlinks.hs"
+                     bll <- if exists then TIO.readFile "metadata/backlinks.hs" else return ""
                      if bll=="" then return M.empty else
                        let bldb = M.fromList (read (T.unpack bll) :: [(T.Text,[T.Text])]) in
                          return bldb
