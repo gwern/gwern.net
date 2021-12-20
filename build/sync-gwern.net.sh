@@ -53,9 +53,7 @@ else
     compile generateLinkBibliography.hs
     compile generateDirectory.hs
     compile generateBacklinks.hs
-    compile generateSimilar.hs
-    compile link-extractor.hs
-    compile link-suggester.hs & # NOTE: we don't use link-suggester in the build, but I want a freshly compiled parallelized binary available for the daily cron job which *does* update the link suggestion database.
+    ## NOTE: generateSimilar.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
@@ -78,9 +76,6 @@ else
     bold "Updating backlinks…"
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
 
-    bold "Updating embeddings+similar-links…"
-    time ./static/build/generateSimilar +RTS -N31 -RTS &
-
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
     cd ./build/
@@ -92,7 +87,7 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     # cleanup post:
-    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/generateSimilar static/build/link-extractor || true
+    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -644,21 +639,21 @@ else
     # once a year, check all on-site local links to make sure they point to the true current URL; this avoids excess redirects and various possible bugs (such as an annotation not being applied because it's defined for the true current URL but not the various old ones, or going through HTTP nginx redirects first)
     if [ $(date +"%j") == "002" ]; then
         bold "Checking all URLs for redirects…"
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell ./static/build/link-extractor | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 runhaskell ./static/build/link-extractor.hs | \
                          egrep -e '^/' | cut --delimiter=' ' --field=1 | sort -u); do
             echo "$URL"
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "https://www.gwern.net$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL (MIME: $MIME)"; fi;
         done
 
-        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 ./static/build/link-extractor | \
+        for URL in $(find . -type f -name "*.page" | parallel --max-args=100 ./static/build/link-extractor.hs | \
                          egrep -e '^https://www.gwern.net' | sort -u); do
             MIME=$(curl --silent --max-redirs 0 --output /dev/null --write '%{content_type}' "$URL");
             if [[ "$MIME" == "" ]]; then red "redirect! $URL"; fi;
         done
     fi
 
-    rm static/build/link-extractor static/build/generateLinkBibliography static/build/*.hi static/build/*.o &> /dev/null || true
+    rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &> /dev/null || true
 
     bold "Sync successful"
 fi
