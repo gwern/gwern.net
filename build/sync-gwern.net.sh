@@ -49,7 +49,6 @@ else
     bold "Compiling…"
     cd ./static/build
     compile () { ghc -O2 -fforce-recomp -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
-    compile Columns.hs
     compile hakyll.hs
     compile generateLinkBibliography.hs
     compile generateDirectory.hs
@@ -634,7 +633,7 @@ else
 
         # check for any pages that could use multi-columns now:
         λ(){ (find . -name "*.page"; find ./metadata/annotations/ -maxdepth 1 -name "*.html") | shuf | \
-                 parallel --max-args=100 ./static/build/Columns --print-filenames; }
+                 parallel --max-args=100 runhaskell -istatic/build/ ./static/build/Columns.hs --print-filenames; }
         wrap λ "Multi-columns use?"
     fi
     # if the end of the month, expire all of the annotations to get rid of stale ones:
@@ -659,7 +658,7 @@ else
         done
     fi
 
-    rm static/build/Columns static/build/link-extractor static/build/generateLinkBibliography static/build/*.hi static/build/*.o &> /dev/null || true
+    rm static/build/link-extractor static/build/generateLinkBibliography static/build/*.hi static/build/*.o &> /dev/null || true
 
     bold "Sync successful"
 fi
