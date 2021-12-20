@@ -48,12 +48,13 @@ else
 
     bold "Compiling…"
     cd ./static/build
-    compile () { ghc -O2 -fforce-recomp -tmpdir /tmp/ -Wall -rtsopts -threaded --make "$@"; }
-    compile hakyll.hs
-    compile generateLinkBibliography.hs
-    compile generateDirectory.hs
-    compile generateBacklinks.hs
+    compile () { TMPDIR="$(mktemp --directory)/"; ghc -O2 -fforce-recomp -tmpdir "$TMPDIR" -Wall -rtsopts -threaded --make "$@"; rm -rf "$TMPDIR"; }
+    compile hakyll.hs &
+    compile generateLinkBibliography.hs &
+    compile generateDirectory.hs &
+    compile generateBacklinks.hs &
     ## NOTE: generateSimilar.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
+    wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
@@ -68,10 +69,10 @@ else
                       | sort | fgrep -v -e 'docs/www/' -e 'docs/personal' -e 'docs/rotten.com' -e 'docs/genetics/selection/www.mountimprobable.com' \
                                         -e 'docs/biology/2000-iapac-norvir' -e 'docs/gwern.net-gitstats' -e 'docs/rl/armstrong-controlproblem' \
                                         -e 'docs/statistics/order/beanmachine-multistage' \
-                -e 'docs/link-bibliography')
+                -e 'docs/link-bibliography') &
 
     bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///')
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
 
     bold "Updating backlinks…"
     (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
