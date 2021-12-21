@@ -198,7 +198,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
                                 let sectionID = if aut=="" then "" else let linkId = (generateID f aut dt) in
                                                                           if linkId=="" then "" else linkId `T.append` "-section"
                                     authorShort = authorsToCite f aut dt
-                                    sectionTitle = T.pack $ if not ("wikipedia"`isInfixOf`f) then "“"++titlecase t++"”" else t ++
+                                    sectionTitle = T.pack $ if "wikipedia"`isInfixOf`f then t else "“"++titlecase t++"”" ++
                                                      (if authorShort=="" then "" else ", " ++ authorsToCite f aut dt)
                                 in
                                  [Header 2 (sectionID, [], []) [RawInline (Format "html") sectionTitle]]
