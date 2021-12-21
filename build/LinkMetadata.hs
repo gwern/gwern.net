@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-19 22:12:38 gwern"
+When:  Time-stamp: "2021-12-21 13:09:14 gwern"
 License: CC-0
 -}
 
@@ -189,6 +189,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                              localizedPandoc <- walkM (localizeLink am) annotationPandoc
 
                                              let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
+                                             annotationExisted <- doesFileExist filepath'
                                              case finalHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
                                                Right finalHTML -> let refloated = T.pack $ restoreFloatRight e $ T.unpack finalHTML
@@ -196,7 +197,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                            -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
                                            -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
                                            -- There is presumably some way for Hakyll to do the metadata file listing *after* compilation is finished, but it's easier to hack around here by forcing 'new' annotation writes to be manually inserted into _site/.
-                                                                     -- writeUpdatedFile "annotation" ("./_site/"++filepath') refloated
+                                                                    >> if not (annotationExisted) then writeUpdatedFile "annotation" ("./_site/"++filepath') refloated else return ()
 
 -- HACK: this is a workaround for an edge-case: Pandoc reads complex tables as 'grid tables', which then, when written using the default writer options, will break elements arbitrarily at newlines (breaking links in particular). We set the column width *so* wide that it should never need to break, and also enable 'reference links' to shield links by sticking their definition 'outside' the table. See <https://github.com/jgm/pandoc/issues/7641>.
 safeHtmlWriterOptions :: WriterOptions
@@ -1402,7 +1403,9 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(6\\times 10^{-6}\\)</span>", "6×10<sup>−6</sup>")
           , ("<span class=\"math inline\">\\(\\sqrt{n/k}\\)</span>", "√<em>n</em>⁄<em>k</em>")
+          , ("<span class=\"math inline\">\\(O\\sqrt{n})\\)</span>", "𝒪(√<em>n</em>)")
           , ("<span class=\"math inline\">\\(128/255\\)</span>", "128⁄255")
           , ("<span class=\"math inline\">\\(8/255\\)</span>", "8⁄255")
           , (" <span class=\"math inline\">\\(-\\)</span> ", "—")
@@ -1438,6 +1441,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(\\mathcal{O}(L\\sqrt{L})\\)</span>", "𝑂(√<em>L</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(1/\\sqrt{d})\\)</span>", "𝑂(1⁄√<em>d</em>)")
           , ("<span class=\"math inline\">\\(\\mathcal{O}(n\\log n)\\)</span>", "𝒪(<em>n</em> log <em>n</em>)")
+          , ("<span class=\"math inline\">\\(O(\\log n)\\)</span>", "𝒪(log <em>n</em>)")
           , ("<span class=\"math inline\">\\(n \\approx d\\)</span>", "<em>n</em> ≈ <em>d</em>")
           , ("<span class=\"math inline\">\\(k \\leq d\\)</span>", "<em>k</em> ≤ <em>d</em>")
           , ("<span class=\"math inline\">\\(n \\approx d^p\\)</span>", "<em>n</em> ≈ <em>d<sup>p</sup></em>")
@@ -1542,6 +1546,8 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(N\\)</span>", "<em>N</em>")
           , ("O(<span class=\"math inline\">\\(L\\log L\\)</span>", "𝑂(<em>L</em> log <em>L</em>)")
           , ("<span class=\"math inline\">\\(\\Delta^0_n\\)</span>", "Δ<span class=\"supsub\"><sup>0</sup><sub><em>n</em></sub></span>")
+          , ("<span class=\"math inline\">\\(\\tt KRISS\\)</span>", "<code>KRISS</code>")
+          , ("<span class=\"math inline\">\\(\\tt KRISSBERT\\)</span>", "<code>KRISSBERT</code>")
           , ("O(N) ", "𝑂(<em>N</em>) ")
           , (" O(N)", " 𝑂(<em>N</em>)")
           , (" N pixels", " <em>N</em> pixels")
