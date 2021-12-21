@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-12-17 23:05:30 gwern"
+When:  Time-stamp: "2021-12-20 20:59:03 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -928,5 +928,17 @@ whiteList url
       , "https://www.agriapet.co.uk/" -- homepage
       , "www.word.golf" -- interactive game
       , "https://demo.allennlp.org" -- interactive demos
+      , "https://www.cancerresearchuk.org/about-us" -- homepage
+      , "mymodafinil.net" -- dead
+      , "https://free.law/recap" -- homepage
+      , "https://dominicfrisby.com/" -- homepage
+      , "https://forum.effectivealtruism.org" -- stable
+      , "https://old.reddit.com/r/hangovereffect/" -- homepage
+      , "https://bwc.thelab.dc.gov/" -- low quality
+      , "https://www.trubrain.com/" -- homepage
+      , "https://energycontrol.org/quienes-somos/proyectos/" -- homepage
+      , "https://www.teaandabsinthe.com/" -- homepage
+      , "https://www.limeadery.com/" -- homepage
+      , "https://taooftea.com/" -- homepage
       ] = True
     | otherwise = False
