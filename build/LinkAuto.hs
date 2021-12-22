@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-12-15 12:37:38 gwern"
+When:  Time-stamp: "2021-12-22 10:38:10 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -28,7 +28,7 @@ For the cleanup pass, we track 'seen' `link-auto` links in a Set, and if a link 
 
 Bugs: will annotate phrases inside `Header` nodes, which breaks HTML validation.
 
-Dependencies: Pandoc, text, regex-tdfa, /static/build/Columns.hs
+Dependencies: Pandoc, text, regex-tdfa, /static/build/Utils.hs, /static/build/Query.hs
 -}
 
 import Data.Char (isPunctuation)
@@ -45,7 +45,7 @@ import Text.Pandoc (topDown, queryWith, nullAttr, Pandoc(..), Inline(Link,Image,
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
-import Columns (simplifiedDoc)
+import Utils (simplifiedDoc)
 import Query (extractURLs)
 
 -- test,test2 :: [Inline]

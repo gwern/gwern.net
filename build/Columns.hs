@@ -10,15 +10,17 @@
 --
 -- If a file already has the string '<div class="columns"' in it, it will be presumed to have been manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary reporting of false-positives.
 
-module Columns (listsTooLong, main, simplified, simplifiedDoc) where
+module Columns (listsTooLong, main) where
 
-import Text.Pandoc -- (def, nullMeta, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
-                   --  pandocExtensions, writePlain, Block(BulletList, OrderedList), Pandoc(Pandoc))
+import Text.Pandoc (def, queryWith, readerExtensions, readHtml, readMarkdown, runPure,
+                    pandocExtensions, Block(BulletList, OrderedList), Pandoc(Pandoc))
 import Data.List (isSuffixOf)
 import qualified Data.Text as T (isInfixOf, length, unlines, Text)
 import qualified Data.Text.IO as TIO (readFile, putStrLn)
 import System.Environment (getArgs)
 import Control.Monad (when, unless)
+
+import Utils (simplified)
 
 -- | Map over the filenames
 main :: IO ()
@@ -86,12 +88,3 @@ listItemLength is = let lengths = map listSubItemLength is in maximum lengths
 -- → 7
 listSubItemLength :: Block -> Int
 listSubItemLength i = T.length $ simplified i
-
-simplified :: Block -> T.Text
-simplified i = simplifiedDoc (Pandoc nullMeta [i])
-
-simplifiedDoc :: Pandoc -> T.Text
-simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in -- NOTE: it is important to make columns ultra-wide to avoid formatting-newlines being inserted to break up lines mid-phrase, which would defeat matches in LinkAuto.hs.
-                         case md of
-                           Left _ -> error $ "Failed to render: " ++ show md
-                           Right md' -> md'

@@ -29,9 +29,8 @@ import Data.Conduit (ConduitT)
 import Data.Conduit.List (sourceList)
 
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
-import Columns (simplifiedDoc)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (writeUpdatedFile)
+import Utils (simplifiedDoc, writeUpdatedFile)
 
 main :: IO ()
 main = do md  <- readLinkMetadata
