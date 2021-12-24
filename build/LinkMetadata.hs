@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-21 13:09:14 gwern"
+When:  Time-stamp: "2021-12-24 09:06:49 gwern"
 License: CC-0
 -}
 
@@ -36,7 +36,6 @@ import System.Directory (doesFileExist, doesDirectoryExist)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
 import System.GlobalLock (lock)
-import System.IO (stderr, hPutStrLn)
 import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
@@ -54,7 +53,7 @@ import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import Query (extractURLs)
-import Utils (writeUpdatedFile)
+import Utils (writeUpdatedFile, printGreen, printRed)
 
 currentYear :: Int
 currentYear = 2021
@@ -177,7 +176,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
                                              sl <- getSimilarLink u'
                                              let filepath = take 247 $ urlEncode u'
                                              let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
-                                             when (filepath /= urlEncode u') $ hPutStrLn stderr $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
+                                             when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
                                              let titleHtml    = typesetHtmlField "" $ titlecase a
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in smallcaps-ing date/DOI, so skip those
@@ -255,7 +254,7 @@ annotateLink md target =
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
                        Left Permanent -> writeLinkMetadata target'' ("", "", "", "", [], "") >> return False
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
-                                       when (e=="") $ hPutStrLn stderr (f ++ ": " ++ show target ++ ": " ++ show y)
+                                       when (e=="") $ printGreen (f ++ ": " ++ show target ++ ": " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
                                        forkIO (writeLinkMetadata target'' m) >> return True
 
@@ -724,7 +723,7 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do hPutStrLn stderr (l ++ " : " ++ ppShow i)
+writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do printGreen (l ++ " : " ++ ppShow i)
                                                      let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
                                                      B.appendFile "metadata/auto.yaml" newYaml
 
@@ -761,7 +760,7 @@ linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
               case status of
-                ExitFailure err -> hPutStrLn stderr (intercalate " : " [l, ppShow status, ppShow err, ppShow mb]) >> return (Left Permanent)
+                ExitFailure err -> printGreen (intercalate " : " [l, ppShow status, ppShow err, ppShow mb]) >> return (Left Permanent)
                 _ -> do
                         let parsed = lines $ replace " \n" "\n" $ trim $ U.toString mb
                         if length parsed < 5 then return (Left Permanent) else
@@ -787,7 +786,7 @@ pdf p = do let p' = takeWhile (/='#') p
                     let eauthor' = filterMeta eauthor
                     let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
                     let ts = [] -- TODO: replace with ML call to infer tags
-                    hPutStrLn stderr $ "PDF: " ++ p ++" DOI: " ++ edoi'
+                    printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
                     a <- fmap (fromMaybe "") $ doi2Abstract edoi'
                     return $ Right (p, (filterMeta $ trimTitle $ cleanAbstractsHTML etitle, author, trim $ replace ":" "-" edate, edoi', ts, a))
                   _ -> return (Left Permanent)
@@ -815,7 +814,7 @@ doi2Abstract doi = if length doi < 7 then return Nothing
                            if bs=="Resource not found." then return Nothing
                            else let j = eitherDecode bs :: Either String Crossref
                                 in case j of -- start unwrapping...
-                                    Left e -> hPutStrLn stderr ("Error: Crossref request failed: "++doi++" "++e) >> return Nothing
+                                    Left e -> printRed ("Error: Crossref request failed: "++doi++" "++e) >> return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
@@ -825,14 +824,14 @@ doi2Abstract doi = if length doi < 7 then return Nothing
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> hPutStrLn stderr ("BioRxiv download failed: " ++ p) >> return (Left Permanent)
+                 ExitFailure _ -> printRed ("BioRxiv download failed: " ++ p) >> return (Left Permanent)
                  _ -> do
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
 
                         let title = concat $ parseMetadataTagsoup "DC.Title" metas
-                        if title=="" then hPutStrLn stderr ("BioRxiv parsing failed: " ++ p ++ ": parsed metadata: " ++ ppShow metas ++ "\nParsed tags: " ++ show f) >> return (Left Permanent)
+                        if title=="" then printRed ("BioRxiv parsing failed: " ++ p ++ ": parsed metadata: " ++ ppShow metas ++ "\nParsed tags: " ++ show f) >> return (Left Permanent)
                           else do
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
@@ -854,7 +853,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                threadDelay 5000000 -- Arxiv anti-scraping is aggressive about blocking me despite hardly touching them, so add a long 5s timeout delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> hPutStrLn stderr ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
+                 ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc)
                          let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract url $ trimTitle $ findTxt $ fst $ element "title" tags
@@ -901,7 +900,7 @@ element nm (t:ts) | isTagOpenName nm t = let (r,rs) = closeEl 0 ts
 openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                     (status,_,bs) <- runShellCommand "./" Nothing "openReviewAbstract.sh" [p']
                     case status of
-                        ExitFailure _ -> hPutStrLn stderr ("OpenReview download failed: " ++ p) >> return (Left Permanent)
+                        ExitFailure _ -> printRed ("OpenReview download failed: " ++ p) >> return (Left Permanent)
                         _ -> do
                                let (title:author:date:tldr:desc:keywords) = lines $ U.toString bs
                                let keywords' = if null keywords || keywords == [""] then "" else
@@ -1319,6 +1318,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
          ("  *", " "), -- squeeze whitespace
          (" \\( ", " ("),
          (" ) ", " )"),
+         (" </p>", "</p>"),
         ("<br/> *</p>", "</p>"),
         ("<p> *", "<p>"),
         (" *</p>", "</p>"),
@@ -1432,7 +1432,9 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(_r\\)</span>", "<sub><em>r</em></sub>")
           , ("<span class=\"math inline\">\\(tanh\\)</span>", "<em>tanh</em>")
           , ("<span class=\"texhtml \">O(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
+          , ("<span class=\"math inline\">\\(\\mathcal{O}(100)\\)</span>", "𝒪(100)")
           , ("<span class=\"math inline\">\\(O(1)\\)</span>", "𝒪(1)")
+          , ("<span class=\"math inline\">\\(\\mathcal{O}(1)\\)</span>", "𝒪(1)")
           , ("<span class=\"texhtml \">\\mathcal{O}(log <i>n</i>)</span>", "𝒪(log <em>n</em>)")
           , ("$O(log n)$", "𝒪(log <em>n</em>)")
           , ("$\\mathcal{O}(log n)$", "𝒪(log <em>n</em>)")
@@ -1524,6 +1526,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(0.96\\)</span>", "0.96")
           , ("<span class=\"math inline\">\\(\\it<br/>performance\\)</span>", "<em>performance</em>")
           , ("<span class=\"math inline\">\\(\\it and\\)</span>", "<span class=\"math inline\">\\(\\it also\\)</span> <em>and also</em>")
+          , ("<span class=\"math inline\">\\(\\sim 6\\)</span>", "~6")
           , ("<span class=\"math inline\">\\(\\sim\\)</span>", "~")
           , ("<span class=\"math inline\">\\(\\sim 10^3\\)</span>", "~10<sup>3</sup>")
           , ("<span class=\"math inline\">\\(5\\%-35\\%\\)</span>", "5%–35%")

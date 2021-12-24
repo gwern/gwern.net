@@ -20,7 +20,6 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure))
 import Data.Binary (decodeFile, encodeFile)
 import Network.HTTP (urlEncode)
-import System.IO (stderr, hPutStrLn)
 
 import qualified Data.Vector as V (toList, Vector)
 import Control.Monad.Identity (runIdentity, Identity)
@@ -30,27 +29,29 @@ import Data.Conduit.List (sourceList)
 
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, writeUpdatedFile)
+import Utils (printGreen, simplifiedDoc, writeUpdatedFile)
 
 main :: IO ()
 main = do md  <- readLinkMetadata
           edb <- readEmbeddings
-          hPutStrLn stderr "Read databases."
+          printGreen "Read databases."
 
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
           let todo = sort $ missingEmbeddings md edb
-          edb'' <- do if (length todo) == 0 then hPutStrLn stderr "All databases up to date." >> return edb else do
-                       hPutStrLn stderr $ "Embedding: " ++ show todo
+          edb'' <- do if (length todo) == 0 then printGreen "All databases up to date." >> return edb else do
+                       printGreen $ "Embedding…" ++ show todo
                        newEmbeddings <- Par.mapM embed todo
-                       hPutStrLn stderr "Generated embeddings."
+                       printGreen "Generated embeddings."
                        let edb' = nubOrd (edb ++ newEmbeddings)
                        writeEmbeddings edb'
-                       hPutStrLn stderr "Wrote embeddings."
+                       printGreen "Wrote embeddings."
                        return edb'
 
           -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
           let ddb  = embeddings2Forest edb''
+          printGreen "Begin computing & writing out similarity-rankings…"
           Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
+          printGreen "Done."
 
 -- how many results do we want?
 bestNEmbeddings :: Int

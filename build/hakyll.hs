@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-12-08 12:58:55 gwern"
+When: Time-stamp: "2021-12-24 09:00:40 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,9 +70,7 @@ import LinkMetadata (isLocalLink, readLinkMetadataAndCheck, writeAnnotationFragm
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
-
-printGreen :: String -> IO ()
-printGreen s = putStrLn $ "\x1b[32m" ++ s ++ "\x1b[0m"
+import Utils (printGreen)
 
 main :: IO ()
 main = hakyll $ do

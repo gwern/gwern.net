@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-12-20 20:59:03 gwern"
+When:  Time-stamp: "2021-12-24 09:07:11 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -49,14 +49,13 @@ import Data.Time.Calendar (toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
-import System.IO (stderr, hPutStrLn)
 
 import Data.FileStore.Utils (runShellCommand)
 import Network.URI.TLD (parseTLD)
 import Text.Pandoc (Inline(Link))
 import Text.Show.Pretty (ppShow)
 
-import Utils (writeUpdatedFile)
+import Utils (writeUpdatedFile, printGreen, printRed)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg 2019-11-22 = 58810
@@ -86,13 +85,13 @@ readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
                          -- check for failed archives:
                          pdl' <- filterM (\(p,ami) -> case ami of
-                                  Right (Just "") -> hPutStrLn stderr ("Error! Invalid empty archive link: " ++ show p ++ show ami) >> return False
-                                  Right u@(Just ('/':'/':_)) -> hPutStrLn stderr ("Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u) >> return False
+                                  Right (Just "") -> printRed ("Error! Invalid empty archive link: " ++ show p ++ show ami) >> return False
+                                  Right u@(Just ('/':'/':_)) -> printRed ("Error! Invalid double-slash archive link: " ++ show p ++ show ami ++ show u) >> return False
                                   Right (Just u)  -> if not ("http" `isPrefixOf` p) then
-                                                       hPutStrLn stderr ("Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami) >> return False
+                                                       printRed ("Error! Did a local link slip in somehow? " ++ show p ++ show u ++ show ami) >> return False
                                                      else
                                                        if isNothing (parseTLD p) then
-                                                        hPutStrLn stderr ("Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami) >> return False
+                                                        printRed ("Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami) >> return False
                                                        else return True
                                   Right Nothing   -> return True
                                   Left  _         -> return True)
@@ -119,7 +118,7 @@ rewriteLink adb url = do
           archive <- archiveURL url
           insertLinkIntoDB (Right archive) url
           return archive
-      Just (Right archive) -> if archive == Just "" then hPutStrLn stderr ("Error! Tried to return a link to a non-existent archive! " ++ url) >> return Nothing else return archive
+      Just (Right archive) -> if archive == Just "" then printRed ("Error! Tried to return a link to a non-existent archive! " ++ url) >> return Nothing else return archive
 
 archiveDelay :: Integer
 archiveDelay = 60
@@ -136,9 +135,9 @@ currentDay = fmap (toModifiedJulianDay . utctDay) Data.Time.Clock.getCurrentTime
 archiveURL :: String -> IO (Maybe Path)
 archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArchive.sh" [l]
                   case exit of
-                     ExitSuccess -> do hPutStrLn stderr ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
+                     ExitSuccess -> do printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
                                        return $ Just $ U.toString stdout
-                     ExitFailure _ -> hPutStrLn stderr (l ++ " : archiving failed: " ++ U.toString stderr') >> return Nothing
+                     ExitFailure _ -> printRed (l ++ " : archiving failed: " ++ U.toString stderr') >> return Nothing
 
 -- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of URLs we always archive even if otherwise on a safe domain:
 -- 1. some matches we always want to skip

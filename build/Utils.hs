@@ -9,6 +9,7 @@ import System.FilePath (takeDirectory)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Pandoc (def, nullMeta, runPure,
                     writerColumns, writePlain, Block, Pandoc(Pandoc))
+import System.IO (stderr, hPutStrLn)
 
 -- Write only when changed, to reduce sync overhead; creates parent directories as necesary; writes to tempfile in /tmp/ (at a specified template name), and does an atomic rename to the final file.
 writeUpdatedFile :: String -> FilePath -> T.Text -> IO ()
@@ -30,3 +31,11 @@ simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in -
                          case md of
                            Left _ -> error $ "Failed to render: " ++ show md
                            Right md' -> md'
+
+-- print normal progress messages to stderr in bold green:
+printGreen :: String -> IO ()
+printGreen s = hPutStrLn stderr $ "\x1b[32m" ++ s ++ "\x1b[0m"
+
+-- print danger or error messages to stderr in red background:
+printRed :: String -> IO ()
+printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
