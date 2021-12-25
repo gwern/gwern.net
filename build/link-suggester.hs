@@ -23,7 +23,7 @@ import Text.Regex (mkRegex, matchRegex)
 
 import LinkAuto (linkAuto)
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
-import Utils (writeUpdatedFile)
+import Utils (writeUpdatedFile, printGreen)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 2
@@ -34,7 +34,9 @@ main :: IO ()
 main = do
   (output:_) <- getArgs
   fs         <- fmap lines getContents
+  printGreen "Parsing all files for links…"
   pairs <- fmap concat $ Par.mapM parseURLs fs
+  printGreen "Parsed all files for links."
 
   -- blacklist bad URLs, which don't count
   let db = M.filterWithKey (\k _ -> not $ filterURLs k) $ M.fromListWith (++) pairs :: M.Map T.Text [T.Text]
@@ -58,6 +60,7 @@ main = do
   let elispDB = haskellListToElispList reversedDBSorted
 
   writeUpdatedFile "linkSuggestions.el.tmp" output elispDB
+  printGreen "Wrote out link suggestion database."
 
 -- format the pairs in Elisp `(setq rewrites '((foo bar)) )` style so it can be read in & executed directly by Emacs's `load-file`.
 haskellListToElispList :: [(T.Text, T.Text)] -> T.Text

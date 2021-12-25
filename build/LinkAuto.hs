@@ -1,10 +1,10 @@
-{-# LANGUAGE OverloadedStrings, FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 module LinkAuto (linkAuto, linkAutoFiltered) where
 
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2021-12-22 10:38:10 gwern"
+When:  Time-stamp: "2021-12-26 13:20:04 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -593,6 +593,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("GPT-3", "https://arxiv.org/abs/2005.14165#openai")
         , ("GPT-J", "https://arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/")
         , ("GPT-f", "https://arxiv.org/abs/2009.03393#openai")
+        , ("(OpenAI Codex|OA Codex|OA's Codex)", "https://arxiv.org/abs/2107.03374#openai")
         , ("GPipe", "https://arxiv.org/abs/1811.06965#google")
         , ("GROVER", "https://arxiv.org/abs/1905.12616#allen") -- it's an acronym, the paper writes it in all-caps even if the homepage doesn't, and 'Grover' is an unfortunately common surname; so we'll just always write "GROVER" to eliminate collisions...
         , ("GSPMD", "https://arxiv.org/abs/2105.04663#google")
