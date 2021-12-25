@@ -39,7 +39,7 @@ main = do md  <- readLinkMetadata
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
           let todo = sort $ missingEmbeddings md edb
           edb'' <- do if (length todo) == 0 then printGreen "All databases up to date." >> return edb else do
-                       printGreen $ "Embedding…" ++ show todo
+                       printGreen $ "Embedding…\n" ++ show (unlines todo)
                        newEmbeddings <- Par.mapM embed todo
                        printGreen "Generated embeddings."
                        let edb' = nubOrd (edb ++ newEmbeddings)
@@ -226,5 +226,5 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                   Nothing -> []
                                   Just (t,_,_,_,_,_) ->
                                       [Para
-                                        [Link ("", ["docMetadata"], [("embeddingDistance", T.pack $ show distance) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
+                                        [Link ("", ["docMetadata"], [("embeddingDistance", T.pack $ take 7 $ show distance) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
                                         ]
