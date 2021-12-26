@@ -22,4 +22,4 @@ main = do originalMarkdown <- TIO.getContents
                  Right output -> cleanAbstractsHTML $ T.unpack output
 
           matchList <- GS.singleShotRecommendations html
-          putStrLn $ html ++ "\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList
+          putStrLn $ html ++ "\n\n<hr>\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList

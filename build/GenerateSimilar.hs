@@ -97,7 +97,15 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
 -- convert an annotated item into a single text string: concatenate the useful metadata in a OA API-aware way.
 formatDoc :: (String,MetadataItem) -> T.Text
 formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
-    let document = T.pack $ replace "\n" "\n\n" $ unlines ["'"++t++"' " ++ "("++path++")" ++ ", by "++authorsTruncate aut++(if dt==""then"."else" ("++dt++")."), "Subject: "++(intercalate ", " tags) ++ ".", replace "<hr />" "" abst]
+    let document = T.pack $ replace "\n" "\n\n" $ unlines [
+          if t=="" then "" else "'"++t++"' " ++
+          if path=="" then "" else "("++path++")" ++
+          if aut=="" then "" else ", by "++authorsTruncate aut ++
+          if dt==""then "." else" ("++dt++").",
+
+          if tags==[] then "" else "Subject: "++(intercalate ", " tags) ++ ".",
+
+          replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
                        in case parsed of
                           Left e -> error $ "Failed to parse HTML document into Pandoc AST: error: " ++ show e ++ " : " ++ show mi ++ " : " ++ T.unpack document
@@ -124,16 +132,16 @@ embed i@(p,_) = do
 
 -- we shell out to a Bash script `similar.sh` to do the actual curl + JSON processing; see it for details.
 oaAPIEmbed :: T.Text -> IO (String,[Double])
-oaAPIEmbed doc = do (status,_,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replace "\n" "\\n" $ -- JSON escaping of newlines
+oaAPIEmbed doc = do (status,stderr,mb) <- runShellCommand "./" Nothing "bash" ["static/build/embed.sh", replace "\n" "\\n" $ -- JSON escaping of newlines
                                                                                                    T.unpack doc]
                     case status of
-                      ExitFailure err -> error $ "Exit Failure: " ++ (intercalate " : " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb])
+                      ExitFailure err -> error $ "Exit Failure: " ++ (intercalate " ::: " [show (T.length doc), T.unpack doc, ppShow status, ppShow err, ppShow mb, show stderr])
                       _ -> do let results = lines $ U.toString mb
                               case results of
-                                [] -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
+                                [] -> error $ "Failed to read any embed.sh output at all? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb ++ "\n" ++ show stderr
                                 (modelType:latents) -> let embeddingM = readMaybe (unlines latents) :: Maybe [Double] in
                                                          case embeddingM of
-                                                           Nothing -> error $ "Failed to read embed.sh output? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb
+                                                           Nothing -> error $ "Failed to read embed.sh's generated embeddings? " ++ "\n" ++ show (T.length doc) ++ "\n" ++ T.unpack doc ++ "\n" ++ U.toString mb ++ "\n" ++ show stderr
                                                            Just embedding -> return (modelType, embedding)
 
 type Distances = [(String, [String])]
