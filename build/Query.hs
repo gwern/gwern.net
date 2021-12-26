@@ -1,12 +1,12 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2021-12-14 16:42:04 gwern"
+When:  Time-stamp: "2021-12-26 18:50:37 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module Query (extractLinks, extractURLs, extractURLsAndAnchorTooltips, parseMarkdownOrHTML) where
+module Query (extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML) where
 
 import qualified Data.Text as T (init, drop, head, last, Text)
 import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Link), runPure, Pandoc(..))
@@ -21,18 +21,30 @@ parseMarkdownOrHTML md txt = let parsedEither = if md then runPure $ readMarkdow
                               Left e    -> error $ "Failed to parse document: " ++ show md ++ show txt ++ show e
                               Right doc -> doc
 
+
+extractLinksWith :: (Inline -> Bool) -> Bool -> T.Text -> [T.Text]
+extractLinksWith rule md txt  = extractURLsWith rule $ parseMarkdownOrHTML md txt
+
 -- | Parse one Text string as a Pandoc Markdown document and return its URLs (as Strings)
 extractLinks :: Bool -> T.Text -> [T.Text]
-extractLinks md txt  = extractURLs $ parseMarkdownOrHTML md txt
+extractLinks = extractLinksWith (const True)
+
+extractURLsWith :: (Inline -> Bool) -> Pandoc -> [T.Text]
+extractURLsWith rule = queryWith (map (\(url,_,_) -> url) . extractURLWith rule) . walk convertInterwikiLinks
 
 -- | Read 1 Pandoc AST and return its URLs as Strings
 extractURLs :: Pandoc -> [T.Text]
-extractURLs = queryWith (map (\(url,_,_) -> url) . extractURL) . walk convertInterwikiLinks
+extractURLs = extractURLsWith (const True)
+
+extractURLWith :: (Inline -> Bool) -> Inline -> [(T.Text,T.Text,T.Text)]
+extractURLWith rule x@(Link _ anchorText (url, tooltip))
+    | url == "" || T.head url == '$' || T.head url == '\8383' = []
+    | rule x = [(url, inlinesToString anchorText, tooltip)]
+    | otherwise = []
+extractURLWith _ _ = []
 
 extractURL :: Inline -> [(T.Text,T.Text,T.Text)]
-extractURL (Link _ anchorText (url,tooltip)) = if url=="" || T.head url == '$' || T.head url == '\8383' then [] -- ignore inflation-adjuster 'links'
-                                               else [(url,inlinesToString anchorText,tooltip)]
-extractURL _ = []
+extractURL = extractURLWith (const True)
 
 -- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;
 -- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).

@@ -21,7 +21,7 @@ import Control.Monad.Parallel as Par (mapM)
 
 import LinkAuto (linkAutoFiltered)
 import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions)
-import Query (extractLinks)
+import Query (extractLinksWith)
 import Utils (writeUpdatedFile)
 
 main :: IO ()
@@ -96,13 +96,18 @@ parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
 
                             let links = map truncateAnchors $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
-                                         extractLinks md text
+                                         extractLinksWith backLinksNot md text
 
                             let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
                             if not (blackList caller) then return [] else
                              do
                                 let called = filter (/= caller) (map (T.pack . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
                                 return $ zip called (repeat caller)
+
+-- filter out links with the 'backlinksNot' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
+backLinksNot :: Inline -> Bool
+backLinksNot (Link (_, classes, _) _ _) = "backlinksNot" `notElem` classes
+backLinksNot _ = True
 
 -- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
 truncateAnchors :: T.Text -> T.Text
