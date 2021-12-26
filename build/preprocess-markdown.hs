@@ -9,6 +9,7 @@ import Text.Pandoc.Walk (walk)
 import LinkMetadata (cleanAbstractsHTML, safeHtmlWriterOptions)
 import LinkAuto (linkAuto)
 import Interwiki (convertInterwikiLinks)
+import qualified GenerateSimilar as GS (singleShotRecommendations)
 
 main :: IO ()
 main = do originalMarkdown <- TIO.getContents
@@ -16,6 +17,9 @@ main = do originalMarkdown <- TIO.getContents
                 pandoc <- readMarkdown def{readerExtensions=pandocExtensions} originalMarkdown
                 let pandoc' = linkAuto . walk convertInterwikiLinks $ pandoc
                 writeHtml5String safeHtmlWriterOptions pandoc'
-          case clean of
+          let html = case clean of
                  Left e -> error $ show e ++ ": " ++ show originalMarkdown
-                 Right output -> putStrLn $ cleanAbstractsHTML $ T.unpack output
+                 Right output -> cleanAbstractsHTML $ T.unpack output
+
+          matchList <- GS.singleShotRecommendations html
+          putStrLn $ html ++ "\n\n<p><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList

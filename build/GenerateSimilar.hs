@@ -1,7 +1,7 @@
 #!/usr/bin/env runhaskell
-{-# LANGUAGE FlexibleContexts, OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module Main where
+module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, Str), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
@@ -39,7 +39,7 @@ main = do md  <- readLinkMetadata
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
           let todo = sort $ missingEmbeddings md edb
           edb'' <- do if (length todo) == 0 then printGreen "All databases up to date." >> return edb else do
-                       printGreen $ "Embedding…\n" ++ show (unlines todo)
+                       printGreen $ "Embedding…\n" ++ unlines (map show todo)
                        newEmbeddings <- Par.mapM embed todo
                        printGreen "Generated embeddings."
                        let edb' = nubOrd (edb ++ newEmbeddings)
@@ -52,6 +52,19 @@ main = do md  <- readLinkMetadata
           printGreen "Begin computing & writing out similarity-rankings…"
           Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
           printGreen "Done."
+
+-- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
+singleShotRecommendations :: String -> IO T.Text
+singleShotRecommendations html =
+  do md  <- readLinkMetadata
+     edb <- readEmbeddings
+
+     newEmbedding <- embed ("",("","","","",[],html))
+     let ddb  = embeddings2Forest (newEmbedding:edb)
+     let (_,n) = (findN ddb bestNEmbeddings newEmbedding) :: (String,[(String,Double)])
+
+     let matchListHtml = (generateMatches md "" html n) :: T.Text
+     return matchListHtml
 
 -- how many results do we want?
 bestNEmbeddings :: Int
@@ -81,7 +94,7 @@ missingEmbeddings md edb = let urlsToCheck = M.keys $ M.filter (\(t, aut, _, _, 
   where minimumLength :: Int
         minimumLength = 400 -- how many characters long should metadata be before it is worth trying to embed?
 
--- convert an annotated item into a single text string: concatenate the useful metadata
+-- convert an annotated item into a single text string: concatenate the useful metadata in a OA API-aware way.
 formatDoc :: (String,MetadataItem) -> T.Text
 formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
     let document = T.pack $ replace "\n" "\n\n" $ unlines ["'"++t++"' " ++ "("++path++")" ++ ", by "++authorsTruncate aut++(if dt==""then"."else" ("++dt++")."), "Subject: "++(intercalate ", " tags) ++ ".", replace "<hr />" "" abst]
@@ -202,28 +215,32 @@ writeOutMatch md (p,matches) =
   do case M.lookup p md of
        Nothing -> return ()
        Just (_,_,_,_,_,abst) -> do
-             -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
-             let alreadyLinked = extractLinks False $ T.pack abst
-             let matchesPruned = filter (\(p2,_) -> not ((T.pack p2) `elem` alreadyLinked)) matches
-
-             let similar = BulletList $ map (generateItem md) matchesPruned
-
-             let pandoc = Pandoc nullMeta [similar]
-             let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
-                        in case htmlEither of
-                                    Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similar
-                                    Right output -> output
-             let similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
-
+             let similarLinksHtmlFragment = generateMatches md p abst matches
              let f = take 274 $ "metadata/annotations/similar/" ++ urlEncode p ++ ".html"
              writeUpdatedFile "similar" f similarLinksHtmlFragment
              -- HACK: write out a duplicate 'metadata/annotations/similar/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
              -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if… we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
              writeUpdatedFile "similar" (f++".html") similarLinksHtmlFragment
 
+generateMatches :: Metadata -> String -> String -> [(String,Double)] -> T.Text
+generateMatches md p abst matches =
+         -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
+         let alreadyLinked = extractLinks False $ T.pack abst
+             matchesPruned = filter (\(p2,_) -> not ((T.pack p2) `elem` alreadyLinked)) matches
+
+             similar = BulletList $ map (generateItem md) matchesPruned
+
+             pandoc = Pandoc nullMeta [similar]
+             html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
+                    in case htmlEither of
+                                Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similar
+                                Right output -> output
+             similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
+         in similarLinksHtmlFragment
+
 generateItem :: Metadata -> (String,Double) -> [Block]
 generateItem md (p2,distance) = case M.lookup p2 md of
-                                  Nothing -> []
+                                  Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
                                   Just (t,_,_,_,_,_) ->
                                       [Para
                                         [Link ("", ["docMetadata"], [("embeddingDistance", T.pack $ take 7 $ show distance) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
