@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-24 09:06:49 gwern"
+When:  Time-stamp: "2021-12-28 12:57:18 gwern"
 License: CC-0
 -}
 
@@ -263,8 +263,7 @@ hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp = walk (hasAnnotationInline md idp)
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,classes,c) d (f,g)) =
-            if "docMetadataNot" `elem` classes then y else
-              if wikipediaArticleNamespace (T.unpack f) then addHasAnnotation idBool True y ("","","","",[],"")
+            if "docMetadataNot" `elem` classes || "idNot" `elem` classes then y
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
@@ -290,13 +289,6 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                 else
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
           addHasAnnotation _ _ z _ = z
-
--- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg 'https://en.wikipedia.org/wiki/File:Energy_density.svg'
--- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough; we can only popup on articles, the other pages need raw URL previews.
-wikipediaArticleNamespace :: String -> Bool
-wikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) then False else
-                                let u' = takeWhile (/=':') $ replace "https://en.wikipedia.org/wiki/" "" u in
-                                  not $ u' `elem` ["Talk", "User", "User talk", "Wikipedia", "Wikipedia talk", "File", "File talk", "MediaWiki", "MediaWiki talk", "Template", "Template talk", "Help", "Help talk", "Category", "Category talk", "Portal", "Portal talk", "Draft", "Draft talk", "TimedText", "TimedText talk", "Module", "Module talk", "Gadget", "Gadget talk", "Gadget definition", "Gadget definition talk", "Special", "Media"]
 
 parseRawBlock :: Block -> Block
 parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
@@ -1231,6 +1223,8 @@ generateID url author date
        , ("https://arxiv.org/abs/2102.12092#openai", "ramesh-et-al-2021-dalle-paper")
        , ("https://openai.com/blog/dall-e/", "ramesh-et-al-2021-dalle-blog")
        , ("https://www.biorxiv.org/content/10.1101/2021.10.02.462713v1.full", "yang-et-al-2021-monkey-pacman")
+       , ("https://link.springer.com/article/10.1140/epjds/s13688-021-00259-w", "bracci-et-al-2021-dnmvaccines")
+       , ("https://onlinelibrary.wiley.com/doi/10.1002/hbm.25572", "williams-et-al-2021-ukbb")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1551,6 +1545,9 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<span class=\"math inline\">\\(\\Delta^0_n\\)</span>", "Δ<span class=\"supsub\"><sup>0</sup><sub><em>n</em></sub></span>")
           , ("<span class=\"math inline\">\\(\\tt KRISS\\)</span>", "<code>KRISS</code>")
           , ("<span class=\"math inline\">\\(\\tt KRISSBERT\\)</span>", "<code>KRISSBERT</code>")
+          , ("<span class=\"math inline\">\\(X_1,\\ldots,X_p\\)</span>", "<em>X</em><sub>1</sub>,...,<em>X</em><sub><em>p</em></sub>")
+          , ("<span class=\"math inline\">\\([0,1]\\)</span>", "[0,1]")
+          , ("<span class=\"math inline\">\\(R^2\\)</span>", "<em>R</em><sup>2</sup>")
           , ("O(N) ", "𝑂(<em>N</em>) ")
           , (" O(N)", " 𝑂(<em>N</em>)")
           , (" N pixels", " <em>N</em> pixels")
@@ -1568,6 +1565,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , (" L-∞", " <em>L</em><sub>∞</sub>")
           , (" L∞", " <em>L</em><sub>∞</sub>")
           -- rest:
+          , ("<p>Abstract. ", "<p>")
           , ("<strong>ABSTRACT</strong><br/>", "")
           , ("<strong>Abstract</strong><br/>", "")
           , ("</p> <p>", "</p>\n<p>")

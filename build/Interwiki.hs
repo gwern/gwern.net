@@ -5,6 +5,7 @@ import qualified Data.Map as M (fromList, lookup, Map)
 import Text.Pandoc (Inline(..))
 import qualified Data.Text as T (append, concat, head, null, tail, take, toUpper, pack, unpack, Text)
 import Data.List.Utils (replace)
+import Data.List (isPrefixOf)
 import Network.HTTP (urlEncode)
 
 -- INTERWIKI PLUGIN
@@ -39,13 +40,16 @@ inlinesToString = T.concat . map go
 convertInterwikiLinks :: Inline -> Inline
 convertInterwikiLinks x@(Link _ []           _) = error $ "Link error: no anchor text‽ " ++ show x
 convertInterwikiLinks x@(Link _ _ ("", _))      = x
-convertInterwikiLinks x@(Link attr@(_, _, _) ref (interwiki, article)) =
+convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if not (T.null article) && T.head article == ' ' then error $ "Link error: tooltip malformed with excess whitespace? " ++ show x else
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
-                Just url  -> case article of
-                                  "" -> Link attr ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
-                                  _  -> Link attr ref (url `interwikiurl` article, "")
+                Just url  -> let attr' = (ident,
+                                           "idNot" : (if enWikipediaArticleNamespace (T.unpack url) then "docMetadata" else "docMetadataNot") : classes,
+                                           kvs) in
+                             case article of
+                                  "" -> Link attr' ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
+                                  _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else x
             where
@@ -55,8 +59,15 @@ convertInterwikiLinks x@(Link attr@(_, _, _) ref (interwiki, article)) =
                                        u `T.append` T.pack (replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
                   deunicode :: String -> String
                   deunicode = replace "’" "\'" . replace " " " " . replace " " " "
-                  -- attr' = if "docMetadata" `elem` classes then attr else if  (ident, "docMetadata":classes, kvs)
 convertInterwikiLinks x = x
+
+-- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg 'https://en.wikipedia.org/wiki/File:Energy_density.svg'
+-- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough; we can only popup on articles, the other pages need raw URL previews.
+enWikipediaArticleNamespace :: String -> Bool
+enWikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) then False else
+                                let u' = takeWhile (/=':') $ replace "https://en.wikipedia.org/wiki/" "" u in
+                                  not $ u' `elem` ["Talk", "User", "User talk", "Wikipedia", "Wikipedia talk", "File", "File talk", "MediaWiki", "MediaWiki talk", "Template", "Template talk", "Help", "Help talk", "Category", "Category talk", "Portal", "Portal talk", "Draft", "Draft talk", "TimedText", "TimedText talk", "Module", "Module talk", "Gadget", "Gadget talk", "Gadget definition", "Gadget definition talk", "Special", "Media"]
+
 -- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
 --   appending to it the article name (suitably URL-escaped, of course).
 interwikiMap :: M.Map T.Text T.Text
