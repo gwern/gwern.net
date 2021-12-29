@@ -47,7 +47,7 @@ extractURL :: Inline -> [(T.Text,T.Text,T.Text)]
 extractURL = extractURLWith (const True)
 
 -- | Read 1 Pandoc AST and return its URLs/anchor-text pairs;
--- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
+-- if a URL has both a title and an anchor text, we return 2 pairs because both might be valid (eg. '[GPT-3](https://arxiv.org/foo "Language Models are Few-Shot Learners")' - we would like to do similar-links on both the short noun 'GPT-3' and the paper title, but we can't if we arbitrarily return one but not the other).
 extractURLsAndAnchorTooltips :: Pandoc -> [(T.Text,[T.Text])]
 extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterwikiLinks
  where

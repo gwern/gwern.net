@@ -53,10 +53,11 @@ else
     compile generateLinkBibliography.hs &
     compile generateDirectory.hs &
     compile generateBacklinks.hs &
+    compile preprocess-markdown.hs &
     ## NOTE: generateSimilar.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
     wait
     cd ../../
-    cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" # backup in case of corruption
+    cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" || true # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
     cp ./metadata/embeddings.bin "/tmp/embeddings-$(date +%s).bin.bak"
 
@@ -75,7 +76,7 @@ else
     ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
 
     bold "Updating backlinks…"
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS)
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -525,6 +526,9 @@ else
 
     λ(){ find . -type f -name "*\.*\.page"; }
     wrap λ "Markdown files should have exactly one period in them."
+
+    λ(){ find . -type f -mtime +3 -name "*#*"; }
+    wrap λ "Stale temporary files?"
 
     bold "Checking for HTML/PDF/image anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
