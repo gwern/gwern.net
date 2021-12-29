@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-28 12:57:18 gwern"
+When:  Time-stamp: "2021-12-29 13:13:47 gwern"
 License: CC-0
 -}
 
@@ -168,9 +168,9 @@ readLinkMetadataAndCheck = do
              return final
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
-writeAnnotationFragments am md = void $ M.traverseWithKey (\p mi -> void $ forkIO $ writeAnnotationFragment am md p mi) md
+writeAnnotationFragments am md = void $! M.traverseWithKey (\p mi -> void $! forkIO $! writeAnnotationFragment am md p mi) md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $
+writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $!
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
@@ -215,7 +215,7 @@ getXLink linkType p = do
                    let linkRaw = "/metadata/annotations/"++linkType++"/" ++
                                                                    urlEncode (p++".html")
                    linkExists <- doesFileExist $ tail linkRaw
-                   -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
+                   -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
                    let link' = if not linkExists then "" else "/metadata/annotations/"++linkType++"/" ++
                          urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' then urlEncode [t] else [t]) (p++".html"))
                    return link'
@@ -228,7 +228,9 @@ createAnnotations :: Metadata -> Pandoc -> IO ()
 createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md . T.unpack) $ extractURLs (Pandoc nullMeta markdown)
 
 annotateLink :: Metadata -> String -> IO Bool
-annotateLink md target =
+annotateLink md target
+  | "/metadata/" `isPrefixOf` target = return False
+  | otherwise =
   do when (null target) $ error (show target)
      when ((reverse $ take 3 $ reverse target) == "%20" || last target == ' ') $ error $ "URL ends in space? " ++ target
      -- normalize: convert 'https://www.gwern.net/docs/foo.pdf' to '/docs/foo.pdf' and './docs/foo.pdf' to '/docs/foo.pdf'
@@ -368,7 +370,7 @@ tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-local", "link-tags"], []) $
                        intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
--- For some links, tag names may overlap considerably, eg ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
+-- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
 -- > condenseTags ["genetics/heritable",            "genetics/selection",                "genetics/correlation"]
 -- → [("genetics/heritable","genetics/heritable"), ("/selection","genetics/selection"), ("/correlation","genetics/correlation")]
@@ -445,7 +447,7 @@ readYaml yaml = do filep <- doesFileExist yaml
                  convertListToMetadata f [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags f u $ tag2TagsWithDefault u ts, s))]
                  convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
 
--- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
+-- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
                                     defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then replace "/docs/" "" $ takeDirectory path else ""
@@ -455,7 +457,7 @@ tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
 tag2Default :: String -> String
 tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
 
--- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
+-- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
 uniqTags tags = nubOrd $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
 
@@ -794,7 +796,7 @@ pdf p = do let p' = takeWhile (/='#') p
           badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Admin", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Software", "Springer", "TIF", "Unknown", "Utilities", "Writer", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "comp", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", "OVID", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", "Word", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy"]
           badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf"]
 
--- nested JSON object: eg 'jq .message.abstract'
+-- nested JSON object: eg. 'jq .message.abstract'
 newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
 instance FromJSON Crossref
 newtype Message = Message { abstract :: Maybe String } deriving (Show,Generic)
@@ -835,7 +837,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
   where
     parseMetadataTagsoup, parseMetadataTagsoupSecond :: String -> [Tag String] -> [String]
     parseMetadataTagsoup key metas = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ head b else "") metas
-      -- 'TagOpen "meta" [("name","citation_abstract"),("lang","en"),("content","<h3>ABSTRACT</h3>\n<p>The vast majority of human mutations have minor allele frequencies (MAF) under 1%, with the plurality observed only once (i.e., \8220singletons\8221). While Mendelian diseases are predominantly caused by rare alleles, their role in complex phenotypes remains largely unknown. We develop and rigorously validate an approach to jointly estimate the contribution of alleles with different frequencies, including singletons, to phenotypic variation. We apply our approach to transcriptional regulation, an intermediate between genetic variation and complex disease. Using whole genome DNA and RNA sequencing data from 360 European individuals, we find that singletons alone contribute ~23% of all <i>cis</i>-heritability across genes (dwarfing the contributions of other frequencies). We then integrate external estimates of global MAF from worldwide samples to improve our inference, and find that average <i>cis</i>-heritability is 15.3%. Strikingly, 50.9% of <i>cis</i>-heritability is contributed by globally rare variants (MAF&lt;0.1%), implicating purifying selection as a pervasive force shaping the regulatory architecture of most human genes.</p><h3>One Sentence Summary</h3>\n<p>The vast majority of variants so far discovered in humans are rare, and together they have a substantial impact on gene regulation.</p>")]'
+      -- 'TagOpen "meta" [("name","citation_abstract"),("lang","en"),("content","<h3>ABSTRACT</h3>\n<p>The vast majority of human mutations have minor allele frequencies (MAF) under 1%, with the plurality observed only once (ie. \8220singletons\8221). While Mendelian diseases are predominantly caused by rare alleles, their role in complex phenotypes remains largely unknown. We develop and rigorously validate an approach to jointly estimate the contribution of alleles with different frequencies, including singletons, to phenotypic variation. We apply our approach to transcriptional regulation, an intermediate between genetic variation and complex disease. Using whole genome DNA and RNA sequencing data from 360 European individuals, we find that singletons alone contribute ~23% of all <i>cis</i>-heritability across genes (dwarfing the contributions of other frequencies). We then integrate external estimates of global MAF from worldwide samples to improve our inference, and find that average <i>cis</i>-heritability is 15.3%. Strikingly, 50.9% of <i>cis</i>-heritability is contributed by globally rare variants (MAF&lt;0.1%), implicating purifying selection as a pervasive force shaping the regulatory architecture of most human genes.</p><h3>One Sentence Summary</h3>\n<p>The vast majority of variants so far discovered in humans are rare, and together they have a substantial impact on gene regulation.</p>")]'
     parseMetadataTagsoupSecond key metas = map (\(TagOpen _ (a:b)) ->  if snd a == key then snd $ b!!1 else "") metas
 
 arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak through or are deliberate section/page links
@@ -952,7 +954,7 @@ restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfix
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
 -- 1. all citations like 'Foo & Bar 1990' or 'Quux et al 2020' should be hyperlinked (either as a internal anchor or fulltext link);
--- 2. annotated links get a predictable anchor ID generated from the metadata, like '#foo-et-al-2020' (ie grab the first 4 characters of the date, check
+-- 2. annotated links get a predictable anchor ID generated from the metadata, like '#foo-et-al-2020' (ie. grab the first 4 characters of the date, check
 --    the number of commas in the author field to decide if 'foo 1990' or 'foo & bar 1990' or 'foo et al 1990' etc);
 -- 3. duplicate links will, then, generate invalid HTML as two Foo et al 2020s (which must be links per #1) will both define id='#foo-et-al-2020', and this will trigger htmltidy errors/warnings on sync; so, one of them will be manually edited to either point to another instance which
 --    is part of a larger discussion/context, or be given a manual ID like id='#foo-et-al-2020-2'. (since the annotation is based on the URL not the
@@ -966,7 +968,7 @@ generateID :: String -> String -> String -> T.Text
 generateID url author date
   -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
-  -- eg '/Faces' = '#gwern-faces'
+  -- eg. '/Faces' = '#gwern-faces'
   | ("Gwern Branwen" == author) ||
     (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url) && not ("/index"`isInfixOf`url))
   = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
@@ -1225,6 +1227,8 @@ generateID url author date
        , ("https://www.biorxiv.org/content/10.1101/2021.10.02.462713v1.full", "yang-et-al-2021-monkey-pacman")
        , ("https://link.springer.com/article/10.1140/epjds/s13688-021-00259-w", "bracci-et-al-2021-dnmvaccines")
        , ("https://onlinelibrary.wiley.com/doi/10.1002/hbm.25572", "williams-et-al-2021-ukbb")
+       , ("https://www.nature.com/articles/s42255-021-00491-8", "xu-et-al-2021-procyanidin")
+       , ("https://www.biorxiv.org/content/10.1101/2021.12.10.472095v1.full", "saul-et-al-2021-geneset")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1236,7 +1240,7 @@ authorsToCite url author date =
   in
        if authorCount == 0 then "" else
            let
-             -- hashes: "https://www.google.com/foo.pdf#page=14" → "-page-14"; this is most useful for cases where we link a PDF but also specific pages in it, which produces colliding ids (eg '/docs/psychology/2013-kurzban.pdf#page=14' vs '/docs/psychology/2013-kurzban.pdf')
+             -- hashes: "https://www.google.com/foo.pdf#page=14" → "-page-14"; this is most useful for cases where we link a PDF but also specific pages in it, which produces colliding ids (eg. '/docs/psychology/2013-kurzban.pdf#page=14' vs '/docs/psychology/2013-kurzban.pdf')
              -- We skip this for annotations like '#deepmind', however. There's no need to have to write IDs like 'silver-et-al-2016-deepmind', when 'silver-et-al-2016' is entirely adequate for a unique short ID.
              extension = if not ("#page=" `isInfixOf` url) then "" else
                            map (\c -> if isAlphaNum c then c else '-') $ uriFragment $ fromJust $ parseURIReference url
@@ -1299,7 +1303,7 @@ wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ ur
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
 trimTitle :: String -> String
 trimTitle [] = ""
-trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg "Compensatory conspicuous communication_ Low status increases jargon use"
+trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg. "Compensatory conspicuous communication_ Low status increases jargon use"
                        replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
@@ -1341,13 +1345,13 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
         ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>"), -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
         ("^en$", ""),
-        ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2"), -- en dash errors in WP abstracts: usually meant em-dash. eg 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
+        ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2"), -- en dash errors in WP abstracts: usually meant em-dash. eg. 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
         ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2"),
         ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
         ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
-        (" = -([0-9])", " = −\\1"), -- eg 'β = -0.08', HYPHEN to MINUS SIGN
+        (" = -([0-9])", " = −\\1"), -- eg. 'β = -0.08', HYPHEN to MINUS SIGN
         ("([0-9]) x 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>"),
-        ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>"), -- eg '10<sup>-7</sup>', HYPHEN to MINUS SIGN
+        ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>"), -- eg. '10<sup>-7</sup>', HYPHEN to MINUS SIGN
         ("([0-9]+%?)-([0-9]+)", "\\1–\\2"),
         ("([0-9]) %", "\\1%"),
         ("([.0-9]+)[xX]", "\\1×"),
@@ -1371,6 +1375,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\%\\\\\\)</span>", "\\1%"), -- '<span class=\"math inline\">\\(83.6\\%\\)</span>'
         ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×"), -- '<span class="math inline">\(\times\)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^4\)</span>'
+        ("([A-z][a-z]+) ?et ?al ?\\(([0-9][0-9][0-9][0-9])\\)", "\\1 et al \\2"), -- 'Dette et al (2013)'
         ("([A-Z][a-z]+) and ([A-Z][a-z]+),? ([0-9]+)", "\\1 & \\2 \\3"), -- 'Foo and Bar 1999', 'Foo and Bar, 1999' → 'Foo & Bar 1999'; 'et al' is handled by Pandoc already
         ("<br/>    <strong>([a-zA-Z]+)</strong><br/><p>", "<p><strong>\\1</strong>: "),
         ("<strong>([a-zA-Z0-9_]+)</strong>:<p>", "<p><strong>\\1</strong>: "),
@@ -1391,7 +1396,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("\8217=", "\8217 = ")
           , (" the the ", " the ")
           , ("<span style=\"display:inline-block;vertical-align:-0.4em;font-size:80%;text-align:left\"><sup></sup><br /><sub>", "")
-          , ("</sub>=", "</sub> = ") -- eg '<em>r</em><sub>A</sub>=0.28'
+          , ("</sub>=", "</sub> = ") -- eg. '<em>r</em><sub>A</sub>=0.28'
           , ("<sup></sup>", "")
           , ("<sub></sub>", "")
           , ("<i>", "<em>")
@@ -1672,7 +1677,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("---", "&mdash;")
           , (" - ", "—")
           , (" — ", "—")
-          , (" -- ", "—") -- eg 'Darknet Data Mining -- A Canadian Cyber-crime Perspective'
+          , (" -- ", "—") -- eg. 'Darknet Data Mining -- A Canadian Cyber-crime Perspective'
           , ("was significantly diminished", "was statistically-significantly diminished")
           , ("decreased significantly", "decreased statistically-significantly")
           , ("is significantly better than", "is statistically-significantly better than")
@@ -2103,6 +2108,17 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("<small></small>", "")
           , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
           , (" et al. ", " et al ")
+          , (" et al., ", " et al ")
+          , ("(ie, ", "(ie. ")
+          , ("(ie ", "(ie. ")
+          , ("(i.e.,", "(ie.")
+          , ("(i.e.", "(ie.")
+          , (" e.g.", " eg.")
+          , ("(e.g.", "(eg.")
+          , ("(eg ", "(eg.")
+          , (" eg ", " eg. ")
+          , ("eg., ", "eg. ")
+          , ("e.g., ", "eg. ")
           , (" C. elegans", " <em>C. elegans</em>")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
