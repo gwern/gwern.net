@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2021-12-26 09:25:01 gwern"
+When:  Time-stamp: "2021-12-28 10:31:00 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -599,6 +599,7 @@ whiteList url
       , "treasurydirect.gov" -- service
       , "twitch.tv"  -- service
       , "archive.today" -- archive
+      , "archive.ph" -- archive
       , "quantum.country" -- interactive
       , "www.michaelnielsen.org" -- stable
       , "numinous.productions" -- stable/interactive
@@ -940,5 +941,6 @@ whiteList url
       , "https://www.limeadery.com/" -- homepage
       , "https://taooftea.com/" -- homepage
       , "https://ooo.ghostbows.ooo/" -- interactive/music
+      , "https://www.jetbrains.com/lp/mono/" -- low quality
       ] = True
     | otherwise = False
