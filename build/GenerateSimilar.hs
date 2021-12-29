@@ -53,7 +53,7 @@ main = do md  <- readLinkMetadata
           Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
           printGreen "Done."
 
--- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
+-- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
 singleShotRecommendations html =
   do md  <- readLinkMetadata
@@ -61,14 +61,14 @@ singleShotRecommendations html =
 
      newEmbedding <- embed ("",("","","","",[],html))
      let ddb  = embeddings2Forest (newEmbedding:edb)
-     let (_,n) = (findN ddb bestNEmbeddings newEmbedding) :: (String,[(String,Double)])
+     let (_,n) = (findN ddb (2*bestNEmbeddings) newEmbedding) :: (String,[(String,Double)])
 
      let matchListHtml = (generateMatches md "" html n) :: T.Text
      return matchListHtml
 
 -- how many results do we want?
 bestNEmbeddings :: Int
-bestNEmbeddings = 10
+bestNEmbeddings = 15
 
 type Embedding  = (String, String, [Double]) -- NOTE: 'Float' in Haskell is 32-bit single-precision float (FP32); OA API apparently returns 64-bit double-precision (FP64), so we use 'Double' instead. (Given the very small magnitude of the Doubles, it is probably a bad idea to try to save space/compute by casting to Float.)
 type Embeddings = [Embedding]
@@ -161,7 +161,7 @@ embeddings2ForestConfigurable ls nt pvd es =
   let minLeafSize = ls -- ???
       cfg = rpTreeCfg minLeafSize
               (length es) -- data N
-              (length $ (\(_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg 1024 for ada-similarity embeddings, 12288 for davinci)
+              (length $ (\(_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
   in
