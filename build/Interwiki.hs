@@ -26,7 +26,7 @@ inlinesToString = T.concat . map go
                Subscript   x' -> inlinesToString x'
                SmallCaps   x' -> inlinesToString x'
                -- throw away attributes and recurse on the [Inline]:
-               Span _      x' -> inlinesToString x' -- eg [foo]{.smallcaps} -> foo
+               Span _      x' -> inlinesToString x' -- eg. [foo]{.smallcaps} -> foo
                Quoted _    x' -> inlinesToString x'
                Cite _      x' -> inlinesToString x'
                Link _   x' _  -> inlinesToString x'
@@ -61,7 +61,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                   deunicode = replace "’" "\'" . replace " " " " . replace " " " "
 convertInterwikiLinks x = x
 
--- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg 'https://en.wikipedia.org/wiki/File:Energy_density.svg'
+-- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg. 'https://en.wikipedia.org/wiki/File:Energy_density.svg'
 -- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough; we can only popup on articles, the other pages need raw URL previews.
 enWikipediaArticleNamespace :: String -> Bool
 enWikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) then False else

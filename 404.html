@@ -545,7 +545,7 @@ header h1 {
 	text-align: left;
 }
 
-/* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
+/* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg. book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
 #page-metadata #page-description {
 	display: block;
 	margin: 0 auto 0.75em auto;

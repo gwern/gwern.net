@@ -124,7 +124,7 @@ listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
                    let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
-                   -- NOTE: files may be annotated only under a hash, eg '/docs/ai/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/2021-norrie.pdf' → `('/docs/ai/2021-norrie.pdf#google',_)`
+                   -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/2021-norrie.pdf' → `('/docs/ai/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM getBackLink $ map fst fileAnnotationsMi
                    similarlinks <- mapM getSimilarLink $ map fst fileAnnotationsMi
 
@@ -175,7 +175,7 @@ lookupFallback m u = case M.lookup u m of
 
 generateDirectoryItems :: FilePath -> FilePath -> [FilePath] -> [Block]
 generateDirectoryItems parent current ds =
-  -- all directories have a parent directory with an index (eg /docs/index has the parent /index), so we always link it.
+  -- all directories have a parent directory with an index (eg. /docs/index has the parent /index), so we always link it.
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
       -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
      [RawBlock (Format "html") "<div class=\"columns\">\n"] ++

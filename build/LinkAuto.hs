@@ -10,11 +10,11 @@ License: CC-0
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
 (Terms like "BERT" or "GPT-3" or "RoBERTa" are too hard to all define manually on every appearance, particularly in abstracts/annotations which themselves may be generated automatically, so it makes more sense to try to do it automatically.)
 
-Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of greedy rewrites (eg "GAN" vs "BigGAN").
+Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of greedy rewrites (eg. "GAN" vs "BigGAN").
 Regexps are sorted by length, longest-first, to further try to prioritize (so "BigGAN" would match before "GAN").
 For efficiency, we avoid String type conversion as much as possible.
 Regexp matching is done only within a Str node; therefore, mixed-formatting strings will not match.
-If a match is all inside italics/bold/smallcaps (eg 'Emph [Str x]'), then it will match; if a match is split (eg '...Str x1, Emph [Str x2], ...'), then it will fail.
+If a match is all inside italics/bold/smallcaps (eg. 'Emph [Str x]'), then it will match; if a match is split (eg. '...Str x1, Emph [Str x2], ...'), then it will fail.
 
 A document is queried for URLs and all URLs already present or regexps without plain text matches are removed from the rewrite dictionary.
 This usually lets a document be skipped entirely as having no possible non-redundant matches.
@@ -62,7 +62,7 @@ import Query (extractURLs)
 linkAuto :: Pandoc -> Pandoc
 linkAuto = linkAutoFiltered id
 
--- if we want to run on just a subset of links (eg remove all resulting links to Wikipedia, or delete a specific regexp match), we can pass in a filter:
+-- if we want to run on just a subset of links (eg. remove all resulting links to Wikipedia, or delete a specific regexp match), we can pass in a filter:
 linkAutoFiltered :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> Pandoc -> Pandoc
 linkAutoFiltered subsetter p = let customDefinitions' = filterMatches p $ filterDefinitions p (customDefinitions subsetter) in
                if null customDefinitions' then p else cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
@@ -218,7 +218,7 @@ definitionsValidate defs = if nub (map fst defs) /= map fst defs
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
 -- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
--- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as turning into multiple links (eg one link for each word in a phrase), abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
+-- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as turning into multiple links (eg. one link for each word in a phrase), abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
 -- I'm not sure how crazy I want to get with the rewrites, though. The regexp rewriting is expensive since it must look at all text. If you're doing those sorts of other rewrites, it'd generally be more sensible to require them to be marked up explicitly, which is vastly easier to program & more efficient. We'll see.
 customDefinitions :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> [(T.Text, R.Regex, T.Text)]
 customDefinitions subsetter = customDefinitionsR $ definitionsValidate $ subsetter custom -- delimit & compile

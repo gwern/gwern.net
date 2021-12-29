@@ -1,8 +1,8 @@
 #!/usr/bin/env runhaskell
 
--- CLI tool to add link-tags to specified URLs/paths. eg 'addTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects" "economics/experience-curve" '
+-- CLI tool to add link-tags to specified URLs/paths. eg. 'addTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects" "economics/experience-curve" '
 -- This supports multiple mixed arguments; if there are multiple links and/or multiple tags specified (as identified by links starting with '/' or 'http', and tags not starting with those & also the necessary tag-directory existing on disk), then we add all tags to all links (order irrelevant).
--- eg 'addTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects" "economics/experience-curve" "genetics/heritable" "https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data"' would tag the 2 links into 2 tag-directories.
+-- eg. 'addTag.hs "https://en.wikipedia.org/wiki/Experience_curve_effects" "economics/experience-curve" "genetics/heritable" "https://www.genome.gov/about-genomics/fact-sheets/DNA-Sequencing-Costs-Data"' would tag the 2 links into 2 tag-directories.
 module Main where
 
 import Control.Monad (when)

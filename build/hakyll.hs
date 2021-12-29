@@ -168,7 +168,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
                                        writerTemplate = Just tocTemplate,
                                        writerTOCDepth = 4,
                                        -- we use MathJax directly to bypass Texmath; this enables features like colored equations:
-                                       -- https://docs.mathjax.org/en/latest/input/tex/extensions/color.html http://mirrors.ctan.org/macros/latex/required/graphics/color.pdf#page=4 eg "Roses are $\color{red}{\text{beautiful red}}$, violets are $\color{blue}{\text{lovely blue}}$" or "${\color{red} x} + {\color{blue} y}$"
+                                       -- https://docs.mathjax.org/en/latest/input/tex/extensions/color.html http://mirrors.ctan.org/macros/latex/required/graphics/color.pdf#page=4 eg. "Roses are $\color{red}{\text{beautiful red}}$, violets are $\color{blue}{\text{lovely blue}}$" or "${\color{red} x} + {\color{blue} y}$"
                                        writerHTMLMathMethod = MathJax defaultMathJaxURL,
                                        writerEmailObfuscation = NoObfuscation }
    where
@@ -376,5 +376,5 @@ marginNotes x = x
 
 -- Check for footnotes which may be broken and rendering wrong, with the content inside the body rather than as a footnote. (An example was present for an embarrassingly long time in /GPT-3…)
 footnoteAnchorChecker :: Inline -> Inline
-footnoteAnchorChecker n@(Note [Para [Str s]]) = if " " `T.isInfixOf` s || T.length s > 10 then n else error ("Warning: a short spaceless footnote! May be a broken anchor (ie swapping the intended '[^abc]:' for '^[abc]:'): " ++ show n)
+footnoteAnchorChecker n@(Note [Para [Str s]]) = if " " `T.isInfixOf` s || T.length s > 10 then n else error ("Warning: a short spaceless footnote! May be a broken anchor (ie. swapping the intended '[^abc]:' for '^[abc]:'): " ++ show n)
 footnoteAnchorChecker n = n

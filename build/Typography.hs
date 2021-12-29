@@ -31,8 +31,8 @@ typographyTransform = walk (breakSlashes . breakEquals) .
                       walk smallcapsfyInlineCleanup . walk smallcapsfy .
                       rulersCycle 3
 
--- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
--- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
+-- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg. Bringhurst 2004, _Elements_ pg47; cf https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
+-- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg. in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
 -- However, if we walk a Pandoc AST and check for only acronyms/initials inside a `Str`, where they *can't* be part of a Link or CodeBlock, then looking over Gwern.net ASTs, they seem to always be safe to substitute in SmallCaps elements. Unfortunately, we can't use the regular `Inline -> Inline` replacement pattern because SmallCaps takes a `[Inline]` argument, and so we are doing `Str String -> SmallCaps [Inline]` in theory and changing the size/type.
 -- So we instead walk the Pandoc AST, use a regexp to split on 3 capital letters, and inline the HTML span, skipping `Span` and `SmallCaps` entirely as the former causes serious problems in infinite loops & duplication when tree-walking, and the latter works incorrectly for capitalized phrases.
 --
@@ -83,7 +83,7 @@ smallcapsfyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x
                                          [Span ("", ["smallcaps-auto"], []) [Str $ T.pack matched]] ++
                                          (if after==""then[] else go (T.pack after))
 smallcapsfyInline x = x
--- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg if we scrape a Gwern.net abstract (which will already be smallcaps) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
+-- Hack: collapse redundant span substitutions (this happens when we apply `typographyTransform` repeatedly eg. if we scrape a Gwern.net abstract (which will already be smallcaps) as an annotation, and then go to inline it elsewhere like a link to that page on a different page):
 smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) [y@(RawInline _ t)]) = if "<span class=\"smallcaps-auto\">" `T.isInfixOf` t then y else x
 smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"],_) (y@(Span (_,["smallcaps-auto"],_) _):_)) = y
 smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"], _) [Span ("",[],[]) y]) = Span ("",["smallcaps-auto"], []) y

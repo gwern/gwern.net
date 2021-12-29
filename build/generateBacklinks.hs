@@ -104,7 +104,7 @@ parseFileForLinks md m = do text <- TIO.readFile m
                                 let called = filter (/= caller) (map (T.pack . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
                                 return $ zip called (repeat caller)
 
--- filter out links with the 'backlinksNot' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
+-- filter out links with the 'backlinksNot' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
 backLinksNot :: Inline -> Bool
 backLinksNot (Link (_, classes, _) _ _) = "backlinksNot" `notElem` classes
 backLinksNot _ = True

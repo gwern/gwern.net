@@ -3,7 +3,7 @@
 -- dependencies: libghc-pandoc-dev
 
 -- usage: 'link-extract.hs [file]'; prints out a newline-delimited list of hyperlinks found in targeted Pandoc Markdown files when parsed.
--- Hyperlinks are not necessarily to the WWW but can be internal or interwiki hyperlinks (eg '/local/file.pdf' or '!Wikipedia').
+-- Hyperlinks are not necessarily to the WWW but can be internal or interwiki hyperlinks (eg. '/local/file.pdf' or '!Wikipedia').
 
 module Main where
 
@@ -28,7 +28,7 @@ printURLs printfilename file = do
   input <- TIO.readFile file
   let converted = extractLinks True input
   -- rewrite self-links like "#discriminator-ranking" → "/Faces#discriminator-ranking" by prefixing the original Markdown filename's absolute-ized basename;
-  -- this makes frequency counts more informative, eg for deciding what sections to refactor out into standalone pages (because heavy cross-referencing
+  -- this makes frequency counts more informative, eg. for deciding what sections to refactor out into standalone pages (because heavy cross-referencing
   -- *inside* a page is an important indicator of a section being 'too big', just like cross-page references are).
   let converted' = map (\u -> if T.head u /= '#' then u else "/" `T.append` (T.pack $ takeBaseName file) `T.append` u) converted
 

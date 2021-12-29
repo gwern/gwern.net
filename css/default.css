@@ -55,7 +55,7 @@
 /* SECTIONS */
 /************/
 /*  Use: annotate collapsible section headers with '{.collapse}' (in the Markdown);
-    for sections where I want a summary/abstract of that (eg in Notes.page/Statistical-notes.page),
+    for sections where I want a summary/abstract of that (eg. in Notes.page/Statistical-notes.page),
     one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'.
     (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
     */
@@ -1837,7 +1837,7 @@ p { hanging-punctuation: first last; }
 }
 
 /*  Prevent text-shadow of italics in links from creating visual glitches
-    (also fixes occasional link icon overlaps, eg a WP link to 'MGS:V' where
+    (also fixes occasional link icon overlaps, eg. a WP link to 'MGS:V' where
     the right-tilted 'V' would touch the WP 'W' link icon).
     */
 .markdownBody em {
