@@ -5,15 +5,13 @@ module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, Str), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
-import Data.List ((\\), intercalate, sort, nub)
+import Data.List ((\\), intercalate,  nub)
 import Data.List.Utils (replace)
 import Data.Maybe (fromJust)
 import qualified Data.Map.Strict as M (filter, keys, lookup)
 import System.Directory (doesFileExist, renameFile)
-import Data.Containers.ListUtils (nubOrd)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Read (readMaybe)
-import qualified Control.Monad.Parallel as Par (mapM, mapM_)
 import Text.Show.Pretty (ppShow)
 import Data.FileStore.Utils (runShellCommand)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
@@ -29,29 +27,7 @@ import Data.Conduit.List (sourceList)
 
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (printGreen, simplifiedDoc, writeUpdatedFile)
-
-main :: IO ()
-main = do md  <- readLinkMetadata
-          edb <- readEmbeddings
-          printGreen "Read databases."
-
-          -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
-          let todo = sort $ missingEmbeddings md edb
-          edb'' <- do if (length todo) == 0 then printGreen "All databases up to date." >> return edb else do
-                       printGreen $ "Embedding…\n" ++ unlines (map show todo)
-                       newEmbeddings <- Par.mapM embed todo
-                       printGreen "Generated embeddings."
-                       let edb' = nubOrd (edb ++ newEmbeddings)
-                       writeEmbeddings edb'
-                       printGreen "Wrote embeddings."
-                       return edb'
-
-          -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
-          let ddb  = embeddings2Forest edb''
-          printGreen "Begin computing & writing out similarity-rankings…"
-          Par.mapM_ (writeOutMatch md . findN ddb bestNEmbeddings) edb''
-          printGreen "Done."
+import Utils (simplifiedDoc, writeUpdatedFile)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -103,7 +79,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
           if aut=="" then "" else ", by "++authorsTruncate aut ++
           if dt==""then "." else" ("++dt++").",
 
-          if tags==[] then "" else "Subject: "++(intercalate ", " tags) ++ ".",
+          if null tags then "" else "Subject: "++(intercalate ", " tags) ++ ".",
 
           replace "<hr />" "" abst]
         parsedEither = let parsed = runPure $ readHtml def{readerExtensions = pandocExtensions } document
@@ -178,7 +154,7 @@ knnEmbedding f k (_,_,embd) = V.toList $
                                -- NOTE: 'metricL2' *seems* to be the L2-normalized Euclidean distance? which is *proportional* to cosine similarity/distance: not identical, but produces the same ranking, and so just as good for my purpose here? or so claims https://stats.stackexchange.com/a/146279/16897
                                -- 'inner' also works, type-wise, but produces terrible results on the GPT-3-ada embeddings; this is apparently due to the extremely similar magnitude of the embeddings, and dot-product not working as well as cosine similarity on language model embeddings is apparently common and expected.
                               -- 'knn', 'knnH', 'knnPQ': knnH/knnPQ always perform way worse for me.
-                               knn (metricL2) k f ((fromListDv embd)::DVector Double)
+                               knn metricL2 k f ((fromListDv embd)::DVector Double)
 
 findNearest :: Forest -> Int -> Embedding -> [(String,Double)]
 findNearest f k e = map (\(dist,Embed _ p) -> (p,dist)) $ knnEmbedding f k e
@@ -234,7 +210,7 @@ generateMatches :: Metadata -> String -> String -> [(String,Double)] -> T.Text
 generateMatches md p abst matches =
          -- we don't want to provide as a 'see also' a link already in the annotation, of course, so we need to pull them out & filter by:
          let alreadyLinked = extractLinks False $ T.pack abst
-             matchesPruned = filter (\(p2,_) -> not ((T.pack p2) `elem` alreadyLinked)) matches
+             matchesPruned = filter (\(p2,_) -> T.pack p2 `notElem` alreadyLinked) matches
 
              similar = BulletList $ map (generateItem md) matchesPruned
 
