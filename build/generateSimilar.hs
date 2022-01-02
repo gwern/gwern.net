@@ -34,8 +34,8 @@ main = do md  <- readLinkMetadata
           -- eg. in a crontab, this would work:
           -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; inotifywait --monitor ~/wiki/metadata/*.yaml -e attrib | while read; do sleep 10s && date && runhaskell -istatic/build/ ./static/build/generateSimilar.hs --update-only-embeddings; done'`
           -- [ie.: 'at boot, start a background daemon which monitors the annotation files and whenever one is modified, kill the monitor, wait 10s, and check for new annotations to embed & save; if nothing, exit & restart the monitoring.']
-          (args:_) <- getArgs
-          when (args /= "--update-only-embeddings") $ do
+          args <- getArgs
+          when (args /= ["--update-only-embeddings"]) $ do
             -- Otherwise, we keep going & compute all the suggestions.
             -- rp-tree supports serializing the tree to disk, but unclear how to update it, and it's fast enough to construct that it's not a bottleneck, so we recompute it from the embeddings every time.
             let ddb  = embeddings2Forest edb''

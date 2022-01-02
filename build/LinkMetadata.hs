@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2021-12-30 12:11:36 gwern"
+When:  Time-stamp: "2022-01-01 11:32:17 gwern"
 License: CC-0
 -}
 
@@ -1313,6 +1313,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
        cleanAbstractsHTML' = trim . sedMany [
          -- add newlines for readability
          ("</p> ?<p>", "</p>\n<p>"),
+         ("</p>\n \n<p>", "</p>\n<p>"),
          ("  *", " "), -- squeeze whitespace
          (" \\( ", " ("),
          (" ) ", " )"),
@@ -1572,6 +1573,8 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , (" L-∞", " <em>L</em><sub>∞</sub>")
           , (" L∞", " <em>L</em><sub>∞</sub>")
           -- rest:
+          , ("<strong>Abstract</strong>\n<p>", "<p>")
+          , ("<strong>Abstract</strong>\n \n ", "")
           , ("<p>Abstract. ", "<p>")
           , ("<strong>ABSTRACT</strong><br/>", "")
           , ("<strong>Abstract</strong><br/>", "")
@@ -1717,9 +1720,13 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , ("clinical significance", "clinical-significance")
           , ("clinically significant", "clinically-significant")
           , ("<p>Conclusions: ", "<p><strong>Conclusions</strong>: ")
+          , ("\n <strong>Conclusion</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
+          , ("\n <strong>Results</strong>\n<p>", "<p><strong>Results</strong>: ")
           , ("<p>Results: ", "<p><strong>Results</strong>: ")
           , ("<p>Aims: ", "<p><strong>Aims</strong>: ")
+          , ("<strong>Background</strong>\n<p>", "<p><strong>Background</strong>: ")
           , ("<p>Background: ", "<p><strong>Background</strong>: ")
+          , (" \n <strong>Methods</strong>\n<p>", "<p><strong>Methods</strong>: ")
           , ("<p>Methods: ", "<p><strong>Methods</strong>: ")
           , ("<p>Outcomes: ", "<p><strong>Outcomes</strong>: ")
           , ("<p>Interpretation: ", "<p><strong>Interpretation</strong>: ")
