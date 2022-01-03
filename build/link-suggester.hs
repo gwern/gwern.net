@@ -76,7 +76,7 @@ cleanAnchors :: [T.Text] -> [T.Text]
 cleanAnchors = map cleanAnchor
    where cleanAnchor :: T.Text -> T.Text
          cleanAnchor = T.dropWhileEnd trimText . T.dropWhile trimText
-         trimText = (\c -> isSpace c || isPunctuation c)
+         trimText = (\c -> isSpace c || isPunctuation c || c == '=')
 
 -- return True if matches any blacklist conditions
 filterURLs :: T.Text -> Bool
