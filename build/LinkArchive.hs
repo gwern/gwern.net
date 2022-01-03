@@ -68,7 +68,7 @@ type Path = String
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
 localizeLink :: ArchiveMetadata -> Inline -> IO Inline
 localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
-  -- skip local archiving if matches the whitelist, or it has a manual annotation '.localArchive-not' class on it, like `[Foo](!Wikipedia "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first linked, to avoid deletionist content rot)
+  -- skip local archiving if matches the whitelist, or it has a manual annotation '.localArchive-not' class on it, like `[Foo](!W "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first linked, to avoid deletionist content rot)
   if whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
     do targetURL' <- rewriteLink adb (T.unpack targetURL)
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original

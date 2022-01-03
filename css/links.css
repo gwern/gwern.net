@@ -63,7 +63,7 @@ body.index .has-content::before {
     content: none;
 }
 
-/* Italics slant right, leading to overlaps in a case like 'of [inversive geometry](!Wikipedia)' on /notes/Lions, where the _f_ slants to nearly overlap the upper-left bracket for the WP link. So we add margin to the left (not padding-left, as that simply pushes the bracket outward, not improving the overlap). */
+/* Italics slant right, leading to overlaps in a case like 'of [inversive geometry](!W)' on /notes/Lions, where the _f_ slants to nearly overlap the upper-left bracket for the WP link. So we add margin to the left (not padding-left, as that simply pushes the bracket outward, not improving the overlap). */
 em .has-annotation {
     margin-left: 0.22em;
 }

@@ -13,7 +13,7 @@ So instead we take a more heavyweight approach of explicitly parsing both and ch
 Simple use: (because it uses the LinkMetadata module, invoking it from a different directory than inside static/build/ is a bit tricky)
 
 $ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runhaskell -istatic/build/ ./static/build/link-prioritize.hs
-175 : !Wikipedia
+175 : !W
 4 : http://groups.google.com/group/brain-training/browse_thread/thread/3008683d4b314f6/5e833c4c0df9fb9b
 4 : #jaeggi-2010
 4 : #jaeggi-2008
