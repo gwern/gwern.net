@@ -15,8 +15,9 @@ main :: IO ()
 main = do originalMarkdown <- TIO.getContents
           let clean = runPure $ do
                 pandoc <- readMarkdown def{readerExtensions=pandocExtensions} originalMarkdown
-                let pandoc' = linkAuto . walk convertInterwikiLinks $ pandoc
-                writeHtml5String safeHtmlWriterOptions pandoc'
+                let pandoc' = walk convertInterwikiLinks pandoc
+                let pandoc'' = linkAuto pandoc'
+                writeHtml5String safeHtmlWriterOptions pandoc''
           let html = case clean of
                  Left e -> error $ show e ++ ": " ++ show originalMarkdown
                  Right output -> cleanAbstractsHTML $ T.unpack output
