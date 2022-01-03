@@ -32,7 +32,7 @@ main = do md  <- readLinkMetadata
 
           -- if we are only updating the embeddings, then we stop there and do nothing more. (This is useful for using `inotifywait` (from 'inotifytools' Debian package) to 'watch' the YAML databases for new entries, and immediately embed them then & there, so preprocess-markdown.hs's single-shot mode gets updated quickly with recently-written annotations, instead of always waiting for the nightly rebuild. When doing batches of new annotations, they are usually all relevant to each other, but won't appear in the suggested-links.)
           -- eg. in a crontab, this would work:
-          -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; inotifywait --monitor ~/wiki/metadata/*.yaml -e attrib | while read; do sleep 10s && date && runhaskell -istatic/build/ ./static/build/generateSimilar.hs --update-only-embeddings; done'`
+          -- $ `@reboot screen -d -m -S "embed" bash -c 'cd ~/wiki/; inotifywait --monitor ~/wiki/metadata/ -e attrib | while read; do sleep 10s && date && runhaskell -istatic/build/ ./static/build/generateSimilar.hs --update-only-embeddings; done'`
           -- [ie.: 'at boot, start a background daemon which monitors the annotation files and whenever one is modified, kill the monitor, wait 10s, and check for new annotations to embed & save; if nothing, exit & restart the monitoring.']
           args <- getArgs
           when (args /= ["--update-only-embeddings"]) $ do
