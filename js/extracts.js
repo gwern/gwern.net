@@ -178,7 +178,7 @@ Extracts = {
     /*  Content.
         */
 
-    /*  This array defines the types of ‘targets’ (i.e., annotated links,
+    /*  This array defines the types of ‘targets’ (ie. annotated links,
         links pointing to available content such as images or code files,
         citations, etc.) that Extracts supports.
         */
@@ -188,7 +188,7 @@ Extracts = {
 
     /*  Returns full type info for the given target. This contains the target
         type name, the name of the predicate function for identifying targets of
-        that type (e.g., isAnnotatedLink), classes which should be applied to
+        that type (eg. isAnnotatedLink), classes which should be applied to
         targets of that type during initial processing, the fill functions to
         fill popups and popins of that type, and the classes which should be
         applied to pop-frames of that type.
@@ -228,7 +228,7 @@ Extracts = {
                && Extracts.targetTypeInfo(targetA).typeName == Extracts.targetTypeInfo(targetB).typeName;
     },
 
-    /*  This function qualifies anchorlinks in transcluded content (i.e., other
+    /*  This function qualifies anchorlinks in transcluded content (ie. other
         pages on the site, as well as annotations describing other pages on the
         site), by rewriting their href attributes to include the path of the
         target (link) that spawned the pop-frame that contains the transcluded
@@ -277,9 +277,9 @@ Extracts = {
                         ? target.pathname + target.hash
                         : target.href;
 
-        /*	Because tab-handling is bad on mobile, readers expect the original 
+        /*	Because tab-handling is bad on mobile, readers expect the original
         	remote URL to open up in-tab, as readers will be single-threaded;
-        	on desktop, we can open up in a tab for poweruser-browsing of 
+        	on desktop, we can open up in a tab for poweruser-browsing of
         	tab-explosions.
         	*/
 		let whichWindow = (Extracts.popFrameProvider == Popins) ? "current" : "new";
@@ -312,7 +312,7 @@ Extracts = {
         on the same website (displayed to the user in popups, or injected in
         block flow as popins), and the (almost-)seamless handling of local links
         in such transcluded content in the same way that they’re handled in the
-        root document (i.e., the actual page loaded in the browser window). This
+        root document (ie. the actual page loaded in the browser window). This
         permits us to have truly recursive popups with unlimited recursion depth
         and no loss of functionality.
 
@@ -507,7 +507,7 @@ Extracts = {
 
         //  Mark sections with ‘§’ symbol.
         if (target.hash > "" && !popFrame.classList.contains("external-page-embed" &&
-            // links with an org notation for link icons (eg 'https://arxiv.org/abs/2006.07159#google') should not get a section mark
+            // links with an org notation for link icons (eg. 'https://arxiv.org/abs/2006.07159#google') should not get a section mark
             !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"].includes(target.hash)))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 

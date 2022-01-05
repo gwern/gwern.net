@@ -1299,7 +1299,7 @@ Popups = {
 		//  Get the containing popup.
 		let popup = event.target.closest(".popup");
 
-		/*  Make sure we’re clicking on the popup (i.e., its edge) and not
+		/*  Make sure we’re clicking on the popup (ie. its edge) and not
 			on any of the popup’s contained elements; that this is a
 			left-click; and that the popup is pinned or zoomed.
 			*/
@@ -1577,7 +1577,7 @@ Popups = {
 		}
 		window.popupBeingDragged = null;
 
-		//  Remove the listener (i.e., we only want this fired once).
+		//  Remove the listener (ie. we only want this fired once).
 		window.removeEventListener("mouseup", Popups.popupDragMouseUp);
 	},
 

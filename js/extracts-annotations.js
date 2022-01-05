@@ -90,7 +90,7 @@ if (window.Extracts) {
         //  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
         if (   target.hash > ""
             && (   (   target.hostname == location.hostname
-                       // annotations for local archive links with an org notation for link icons (eg ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook') should not get a section mark
+                       // annotations for local archive links with an org notation for link icons (eg. ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook') should not get a section mark
                     && !([ "alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"
                            ].includes(target.hash)))
                 || Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
@@ -237,7 +237,7 @@ if (window.Extracts) {
 
         /*  We set up an event handler for when the fragment loads, and respawn
             the popup / re-inject the popin, after it spawns (if it
-            hasn’t de-spawned already, e.g. if the user moused out of the
+            hasn’t de-spawned already, eg. if the user moused out of the
             target).
             */
         GW.notificationCenter.addHandlerForEvent("Annotations.annotationDidLoad", target.refreshPopFrameWhenFragmentLoaded = (info) => {

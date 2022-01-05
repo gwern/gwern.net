@@ -1,11 +1,11 @@
 // darkmode.js: Javascript library for controlling page appearance, toggling between regular white and 'dark mode'
 // Author: Said Achmiz
 // Date: 2020-03-20
-// When:  Time-stamp: "2021-06-20 17:35:01 gwern"
+// When:  Time-stamp: "2022-01-05 11:31:32 gwern"
 // license: PD
 
 /* Experimental 'dark mode': Mac OS (Safari) lets users specify via an OS widget 'dark'/'light' to make everything appear */
-/* bright-white or darker (eg for darker at evening to avoid straining eyes & disrupting circadian rhyhms); this then is */
+/* bright-white or darker (eg. for darker at evening to avoid straining eyes & disrupting circadian rhyhms); this then is */
 /* exposed by Safari as a CSS variable which can be selected on. This is also currently supported by Firefox weakly as an */
 /* about:config variable. Hypothetically, iOS in the future might use its camera or the clock to set 'dark mode' */
 /* automatically. https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme */
@@ -46,7 +46,7 @@ function injectModeSelector() {
         button.addActivateEvent(GW.modeSelectButtonClicked = (event) => {
             GWLog("GW.modeSelectButtonClicked", "darkmode.js", 2);
 
-            // Determine which setting was chosen (i.e., which button was clicked).
+            // Determine which setting was chosen (ie. which button was clicked).
             let selectedMode = event.target.dataset.name;
 
             // Save the new setting.

@@ -24,7 +24,7 @@ Sidenotes = {
 		*/
 	sidenoteMaxHeight: 600.0,
 
-	/*	Elements which occupy (partially or fully) the sidenote columns, and 
+	/*	Elements which occupy (partially or fully) the sidenote columns, and
 		which can thus collide with sidenotes.
 		*/
 	potentiallyOverlappingElementsSelector: ".full-width img, .full-width video, .full-width table, .full-width pre, .marginnote",
@@ -133,7 +133,7 @@ Sidenotes = {
 	updateSidenotePositions: () => {
 		GWLog("Sidenotes.updateSidenotePositions", "sidenotes.js", 1);
 
-		/*  If we’re in footnotes mode (i.e., the viewport is too narrow), then
+		/*  If we’re in footnotes mode (ie. the viewport is too narrow), then
 			don’t do anything.
 			*/
 		if (Sidenotes.mediaQueries.viewportWidthBreakpoint.matches)
@@ -148,7 +148,7 @@ Sidenotes = {
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			let sidenote = Sidenotes.sidenoteDivs[i];
 
-			/*  Check whether the sidenote is in the hidden sidenote storage (i.e.,
+			/*  Check whether the sidenote is in the hidden sidenote storage (ie.
 				within a currently-collapsed collapse block. If so, skip it.
 				*/
 			if (sidenote.classList.contains("hidden"))
@@ -169,8 +169,8 @@ Sidenotes = {
 			sidenote.classList.toggle("cut-off", (sidenoteOuterWrapper.scrollHeight > sidenoteOuterWrapper.offsetHeight + 2));
 		}
 
-		/*  Determine proscribed vertical ranges (i.e., bands of the page from which
-			sidenotes are excluded, by the presence of, e.g., a full-width table).
+		/*  Determine proscribed vertical ranges (ie. bands of the page from which
+			sidenotes are excluded, by the presence of, eg. a full-width table).
 			NOTE: We assume that proscribed vertical ranges do NOT overlap.
 			*/
 		var proscribedVerticalRangesLeft = [ ];
@@ -178,7 +178,7 @@ Sidenotes = {
 		let leftColumnBoundingRect = Sidenotes.sidenoteColumnLeft.getBoundingClientRect();
 		let rightColumnBoundingRect = Sidenotes.sidenoteColumnRight.getBoundingClientRect();
 
-		/*  Examine all potentially overlapping elements (i.e., non-sidenote
+		/*  Examine all potentially overlapping elements (ie. non-sidenote
 			elements that may appear in, or extend into, the side columns).
 			*/
 		document.querySelectorAll(Sidenotes.potentiallyOverlappingElementsSelector).forEach(potentiallyOverlappingElement => {
@@ -215,7 +215,7 @@ Sidenotes = {
 			let nextSidenote = Sidenotes.getNextVisibleSidenote(sidenote);
 			let nextSidenoteNumber = nextSidenote ? nextSidenote.id.substr(2) : "";
 
-			/*  Is this sidenote even displayed? Or is it hidden (i.e., within
+			/*  Is this sidenote even displayed? Or is it hidden (ie. within
 				a currently-collapsed collapse block)? If so, skip it.
 				*/
 			if (sidenote.classList.contains("hidden")) continue;
@@ -460,7 +460,7 @@ Sidenotes = {
 			side.appendChild(sidenote);
 		}
 
-		/*  Create & inject the sidenote self-links (i.e., boxed sidenote numbers).
+		/*  Create & inject the sidenote self-links (ie. boxed sidenote numbers).
 			*/
 		for (var i = 0; i < Sidenotes.citations.length; i++) {
 			let sidenoteSelfLink = document.createElement("a");
@@ -508,7 +508,7 @@ Sidenotes = {
 		/*  If the page was loaded with a hash that points to a footnote, but
 			sidenotes are enabled (or vice-versa), rewrite the hash in accordance
 			with the current mode (this will also cause the page to end up scrolled
-			to the appropriate element - footnote or sidenote). Add an active media 
+			to the appropriate element - footnote or sidenote). Add an active media
 			query to rewrite the hash whenever the viewport width media query changes.
 			*/
 		doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.rewriteHashForCurrentMode", (mediaQuery) => {
@@ -540,8 +540,8 @@ Sidenotes = {
 		if (GW.isMobile())
 			return;
 
-		/*  In footnote mode (i.e., on viewports too narrow to support sidenotes),
-			footnote reference links (i.e., citations) should point down to footnotes
+		/*  In footnote mode (ie. on viewports too narrow to support sidenotes),
+			footnote reference links (ie. citations) should point down to footnotes
 			(this is the default state).
 			But in sidenote mode, footnote reference links should point to sidenotes.
 			This function rewrites all footnote reference links appropriately to the
@@ -567,7 +567,7 @@ Sidenotes = {
 			doWhenMatchMedia(Sidenotes.mediaQueries.viewportWidthBreakpoint, "Sidenotes.addOrRemoveEventHandlersForCurrentMode", (mediaQuery) => {
 				if (!mediaQuery.matches) {
 					/*  After the hash updates, properly highlight everything, if needed.
-						Also, if the hash points to a sidenote whose citation is in a 
+						Also, if the hash points to a sidenote whose citation is in a
 						collapse block, expand it and all collapse blocks enclosing it.
 						*/
 					GW.notificationCenter.addHandlerForEvent("Collapse.targetDidRevealOnHashUpdate", Sidenotes.updateStateAfterTargetDidRevealOnHashUpdate = (info) => {
@@ -579,7 +579,7 @@ Sidenotes = {
 						Sidenotes.updateTargetCounterpart();
 					});
 
-					/*	Add event handler to (asynchronously) recompute sidenote positioning 
+					/*	Add event handler to (asynchronously) recompute sidenote positioning
 						when full-width media lazy-loads.
 						*/
 					GW.notificationCenter.addHandlerForEvent("Rewrite.fullWidthMediaDidLoad", Sidenotes.updateSidenotePositionsAfterFullWidthMediaDidLoad = () => {
@@ -615,7 +615,7 @@ Sidenotes = {
 				*/
 			Sidenotes.updateSidenotePositions();
 
-			/*	If layout remains to be done, queue up another reposition for 
+			/*	If layout remains to be done, queue up another reposition for
 				when all layout is complete.
 				*/
 			if (!GW.pageLayoutComplete) {
