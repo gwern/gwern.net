@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-05 19:25:03 gwern"
+When:  Time-stamp: "2022-01-06 14:25:01 gwern"
 License: CC-0
 -}
 
@@ -53,10 +53,7 @@ import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import Query (extractURLs)
-import Utils (writeUpdatedFile, printGreen, printRed)
-
-currentYear :: Int
-currentYear = 2021
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -1242,6 +1239,10 @@ generateID url author date
        , ("https://arxiv.org/abs/2107.08590", "wang-et-al-2021-evilmodel")
        , ("https://arxiv.org/abs/2103.14968", "abdal-et-al-2021-labels4free")
        , ("/docs/genetics/heritable/2021-ding.pdf", "ding-et-al-2021-anxiety")
+       , ("https://arxiv.org/abs/2111.05803#google", "metz-et-al-2021-gradientoptimizationproblems")
+       , ("https://learningtopredict.github.io/", "freeman-et-al-2019-blog")
+       , ("https://arxiv.org/abs/1910.13038", "freeman-et-al-2019-paper")
+       , ("https://arxiv.org/abs/1703.03400", "finn-et-al-2017-maml")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1320,8 +1321,9 @@ trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of 
                        replaceMany [(" : ", ": "), ("\n ", "")] $ trim t in
                 if not (null t') then reverse (if head t' == '.' then tail t' else t') else ""
 
+-- run all necessary rewrites on a string to clean up malformation, inconsistent formatting, errors, convert to house style, etc
 cleanAbstractsHTML :: String -> String
-cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsHTML'
+cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
  where cleanAbstractsHTML' :: String -> String
        cleanAbstractsHTML' = trim . sedMany [
          -- add newlines for readability
@@ -1349,6 +1351,28 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)\\)", " <a href=\"\\1\">\\1</a> )"),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+) \\.", " <a href=\"\\1\">\\1</a> ."),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">\\1</a> .</p>"),
+        -- try to rewrite half-parenthesis lists like '(( 1) foo; 2) bar' into '(1) foo; (2) bar' for consistency & parentheses-checking:
+        ("\\(10\\) (.*) 11\\)", " (10) \\1 (11)"),
+        (" 10\\) (.*) 11\\)", " (10) \\1 (11)"),
+        ("\\(9\\) (.*) 10\\)", " (9) \\1 (10)"),
+        (" 9\\) (.*) 10\\)", " (9) \\1 (10)"),
+        ("\\(8\\) (.*) 9\\)", " (8) \\1 (9)"),
+        (" 8\\) (.*) 9\\)", " (8) \\1 (9)"),
+        ("\\(7\\) (.*) 8\\)", " (7) \\1 (8)"),
+        (" 7\\) (.*) 8\\)", " (7) \\1 (8)"),
+        ("\\(6\\) (.*) 7\\)", " (6) \\1 (7)"),
+        (" 6\\) (.*) 7\\)", " (6) \\1 (7)"),
+        ("\\(5\\) (.*) 6\\)", " (5) \\1 (6)"),
+        (" 5\\) (.*) 6\\)", " (5) \\1 (6)"),
+        ("\\(4\\) (.*) 5\\)", " (4) \\1 (5)"),
+        (" 4\\) (.*) 5\\)", " (4) \\1 (5)"),
+        ("\\(3\\) (.*) 4\\)", " (3) \\1 (4)"),
+        (" 3\\) (.*) 4\\)", " (3) \\1 (4)"),
+        ("\\(2\\) (.*) 3\\)", " (2) \\1 (3)"),
+        (" 2\\) (.*) 3\\)", " (2) \\1 (3)"),
+        ("\\(1\\) (.*) 2\\)", " (1) \\1 (2)"),
+        (" 1\\) (.*) 2\\)", " (1) \\1 (2)"),
+
         -- - comma-separate at thousands for consistency:
         -- skip thousands, since clobbers citations like 'Herring 2009' (which turns into 'Herring 2,009')
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])",                                   " \\1,\\2,\\3"),         -- millions

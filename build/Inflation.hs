@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2021-11-25 13:27:05 gwern"
+-- When:  Time-stamp: "2022-01-06 14:20:52 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting https://en.wikipedia.org/wiki/Money_illusion by implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real price! (Misunderstanding of inflation may be getting worse over time: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008 )
@@ -68,14 +68,11 @@ import Text.Read (readMaybe)
 import Data.List (intercalate, unfoldr)
 import qualified Data.Map.Strict as M (findMax, findMin, fromList, lookup, lookupGE, lookupLE, mapWithKey, Map)
 import Data.Text as T (head, pack, unpack, tail)
-import Data.Time.Clock (getCurrentTime, utctDay)
-import Data.Time.Calendar (toGregorian)
-import System.IO.Unsafe (unsafePerformIO)
+
+import Utils (currentYear)
 
 minPercentage :: Float
 minPercentage = 1 + 0.20
-currentYear :: Int
-currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime
 
 nominalToRealInflationAdjuster :: Inline -> Inline
 nominalToRealInflationAdjuster x@(Link _ _ (ts, _))

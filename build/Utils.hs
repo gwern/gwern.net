@@ -10,6 +10,13 @@ import System.IO.Temp (emptySystemTempFile)
 import Text.Pandoc (def, nullMeta, runPure,
                     writerColumns, writePlain, Block, Pandoc(Pandoc))
 import System.IO (stderr, hPutStrLn)
+import Data.Time.Clock (getCurrentTime, utctDay)
+import Data.Time.Calendar (toGregorian)
+import System.IO.Unsafe (unsafePerformIO)
+
+-- Auto-update the current year.
+currentYear :: Int
+currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime
 
 -- Write only when changed, to reduce sync overhead; creates parent directories as necesary; writes to tempfile in /tmp/ (at a specified template name), and does an atomic rename to the final file.
 writeUpdatedFile :: String -> FilePath -> T.Text -> IO ()
@@ -39,3 +46,8 @@ printGreen s = hPutStrLn stderr $ "\x1b[32m" ++ s ++ "\x1b[0m"
 -- print danger or error messages to stderr in red background:
 printRed :: String -> IO ()
 printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
+
+-- Repeatedly apply `f` to an input until the input stops changing.
+-- <https://stackoverflow.com/questions/38955348/is-there-a-fixed-point-operator-in-haskell>
+fixedPoint :: Eq a => (a -> a) -> a -> a
+fixedPoint = until =<< ((==) =<<)
