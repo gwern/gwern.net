@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-04 20:28:41 gwern"
+When:  Time-stamp: "2022-01-05 19:25:03 gwern"
 License: CC-0
 -}
 
@@ -1233,6 +1233,15 @@ generateID url author date
        , ("https://onlinelibrary.wiley.com/doi/10.1002/hbm.25572", "williams-et-al-2021-ukbb")
        , ("https://www.nature.com/articles/s42255-021-00491-8", "xu-et-al-2021-procyanidin")
        , ("https://www.biorxiv.org/content/10.1101/2021.12.10.472095v1.full", "saul-et-al-2021-geneset")
+       , ("/docs/iq/1904-spearman.pdf", "spearman-1904-g")
+       , ("/docs/psychology/1904-spearman.pdf", "spearman-1904-measurementerror")
+       , ("https://arxiv.org/abs/2107.06532", "li-et-al-2021-graphjigsaw")
+       , ("https://arxiv.org/abs/2104.06490", "zhang-et-al-2021-datasetgan")
+       , ("/docs/anime/2018-zhang.pdf", "zhang-et-al-2018-twostagecolorization")
+       , ("https://arxiv.org/abs/2005.11401#facebook", "lewis-et-al-2020-rag")
+       , ("https://arxiv.org/abs/2107.08590", "wang-et-al-2021-evilmodel")
+       , ("https://arxiv.org/abs/2103.14968", "abdal-et-al-2021-labels4free")
+       , ("/docs/genetics/heritable/2021-ding.pdf", "ding-et-al-2021-anxiety")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1316,6 +1325,13 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
  where cleanAbstractsHTML' :: String -> String
        cleanAbstractsHTML' = trim . sedMany [
          -- add newlines for readability
+          ("<strong>Abstract</strong>: ", ""),
+          ("<p><strong>Abstract</strong>: <strong>Objective</strong>: ", "<p><strong>Objective</strong>: "),
+          ("<strong>Abstract</strong>\n<p>", "<p>"),
+          ("<strong>Abstract</strong>\n \n ", ""),
+          ("<p>Abstract. ", "<p>"),
+          ("<strong>ABSTRACT</strong><br/>", ""),
+          ("<strong>Abstract</strong><br/>", ""),
          ("</p> ?<p>", "</p>\n<p>"),
          ("</p>\n \n<p>", "</p>\n<p>"),
          ("  *", " "), -- squeeze whitespace
@@ -1577,11 +1593,6 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , (" L-∞", " <em>L</em><sub>∞</sub>")
           , (" L∞", " <em>L</em><sub>∞</sub>")
           -- rest:
-          , ("<strong>Abstract</strong>\n<p>", "<p>")
-          , ("<strong>Abstract</strong>\n \n ", "")
-          , ("<p>Abstract. ", "<p>")
-          , ("<strong>ABSTRACT</strong><br/>", "")
-          , ("<strong>Abstract</strong><br/>", "")
           , ("</p> <p>", "</p>\n<p>")
           , ("</p><p>", "</p>\n<p>")
           , ("</li> <li>", "</li>\n<li>")
@@ -1973,6 +1984,7 @@ cleanAbstractsHTML = cleanAbstractsHTML' . cleanAbstractsHTML' . cleanAbstractsH
           , (" rg = ", " <em>r</em><sub><em>g</em></sub> = ")
           , ("(rg)", "(<em>r</em><sub><em>g</em></sub>)")
           , ("(rg", "(<em>r</em><sub><em>g</em></sub>")
+          , ("|rg|=", "|<em>r</em><sub><em>g</em></sub>| = ")
           , ("-&gt;", "→")
           , (" r=", "<em>r</em> = ")
           , (" r>", "<em>r</em> > ")
