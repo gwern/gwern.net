@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-01-04 19:33:45 gwern"
+When:  Time-stamp: "2022-01-08 23:32:00 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -922,7 +922,7 @@ whiteList url
       , "https://icar-project.com/" -- homepage
       , "https://discord.com/invite/" -- service
       , "https://same.energy/" -- interactive/service
-      , "https://old.reddit.com/r/MediaSynthesis/comments/p5nw28/clip_vqgan_keyword_comparison_by_kingdomakrillic/" -- low-quality due to Imgur embed
+      , "https://old.reddit.com/r/MediaSynthesis/" -- low-quality due to Imgur/image embeds
       , "proceedings.mlr.press/" -- stable
       , "https://absa.org/" -- homepage
       , "https://www.agriapet.co.uk/" -- homepage
@@ -946,5 +946,6 @@ whiteList url
       , "https://willcrichton.net/nota/" -- interactive
       , "http://trixter.oldskool.org/" -- low quality (YT embed breaks)
       , "http://www.michaelburge.us/2019/05/21/marai-agent.html" -- low quality (YT embed breaks)
+      , "https://pol.is/home" -- homepage
       ] = True
     | otherwise = False
