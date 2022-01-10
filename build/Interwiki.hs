@@ -3,7 +3,7 @@ module Interwiki (convertInterwikiLinks, inlinesToString) where
 
 import qualified Data.Map as M (fromList, lookup, Map)
 import Text.Pandoc (Inline(..))
-import qualified Data.Text as T (append, concat, head, null, tail, take, toUpper, pack, unpack, Text)
+import qualified Data.Text as T (append, concat, head, isPrefixOf, null, tail, take, toUpper, pack, unpack, Text)
 import Data.List.Utils (replace)
 import Data.List (isPrefixOf)
 import Network.HTTP (urlEncode)
@@ -51,7 +51,9 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                                   "" -> Link attr' ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
-  else x
+  else if "https://en.wikipedia.org/wiki/" `T.isPrefixOf` interwiki && enWikipediaArticleNamespace (T.unpack interwiki) then
+            Link (ident, "docMetadata":classes, kvs) ref (interwiki, article)
+       else x
             where
                   interwikiurl :: T.Text -> T.Text -> T.Text
                   -- normalize links; MediaWiki requires first letter to be capitalized
@@ -61,6 +63,8 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                   deunicode = replace "’" "\'" . replace " " " " . replace " " " "
 convertInterwikiLinks x = x
 
+-- If True, a URL is a regular English Wikipedia article. If False, it's something else, like a talk page or history page etc.
+--
 -- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg. 'https://en.wikipedia.org/wiki/File:Energy_density.svg' . Note that we need the colon separator because the prefixes are not unique without it, eg. 'https://en.wikipedia.org/wiki/Image_segmentation' is not in the `Image` namespace because images have a colon, and so they would be `Image:...`.
 -- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough; we can only popup on articles, the other pages need raw URL previews.
 enWikipediaArticleNamespace :: String -> Bool
