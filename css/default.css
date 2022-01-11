@@ -2962,7 +2962,9 @@ body.directory-index #disqus_thread {
 }
 
 /*  Wikipedia entries.
-    */
+ */
+/* Suppress the author block in WP popups; we have nothing more useful to say than 'Wikipedia' (even if we grabbed the last-revision-time from WP, that's usually just a trivial bot edit and isn't a 'real' author date), and the fact that it's WP is already denoted by the dotted underline, 'W' icon on the title link, lack of the standard metadata block which non-WP annotations have (author/date/tag/backlinks/similar-links), and the encyclopedic topic & tone. Putting 'Wikipedia' on an entire line by itself is just a waste of precious popup vertical space. */
+.wikipedia-entry .author-plus-date { display: none; }
 .wikipedia-entry .table-wrapper {
     margin: 1.5em 0 1.5em 0;
     clear: both;
