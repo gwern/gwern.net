@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-01-05 11:02:31 gwern"
+When:  Time-stamp: "2022-01-10 20:24:21 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -155,7 +155,7 @@ filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://www.gw
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)
 
 -- Optimization: try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
--- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) plus compiling to plain, which in practice turns out to be a *huge* performance gain (>30×?) here.
+-- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) + plain-text-compilation, which in practice turns out to be a *huge* performance gain (>30×?) here.
 -- Hypothetically, we can optimize this further: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible to create a 'regexp trie' where the leaves are associated with each original regexp, and search the trie in parallel for all matching leaves.
 filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterMatches p definitions  = if False then -- T.length plain < 20000 then

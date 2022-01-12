@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2021-12-24 09:00:40 gwern"
+When: Time-stamp: "2022-01-11 10:11:22 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -250,8 +250,8 @@ descField d = field d $ \item -> do
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md adb p =
-                           do let pw = walk linkAuto $ walk (footnoteAnchorChecker . marginNotes . convertInterwikiLinks) p
+pandocTransform md adb p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add docMetadata as necessary
+                           do let pw = walk (footnoteAnchorChecker . marginNotes . convertInterwikiLinks) $ walk linkAuto p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
