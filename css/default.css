@@ -3012,6 +3012,10 @@ body.directory-index #disqus_thread {
     font-style: italic;
 }
 
+/* HACK: In WP popups, the thumbnails typically do not *quite* align with the caption, unlike regular images or in regular popups: the images ('img') get set to 250px (WP API's default for mobile?), but the figure caption ('figcaption') get set to 265.185px, producing a nagging inconsistency. This seems to be due to a loop in extracts.js ('// Ensure no reflow due to figures'), which tries to avoid the popup reflowing by setting the width dynamically, but it does so only on the *img* element. Thus, they wind up inconsistent.
+To hack around this issue (which surely has a better answer), and since in some cursory testing I didn't observe any widths >250px even for cases where WP could be sending a far bigger thumbnail/image, we can hardwire ahead of time a max-width of 250px in just WP popups' floated figures' captions.  */
+.wikipedia-entry figure[class^='float-'] .caption-wrapper { max-width: 250px; }
+
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
 /*└──────────────────────┘*/
