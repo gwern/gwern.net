@@ -3802,7 +3802,7 @@ body.directory-index #disqus_thread {
     width: 2em;
     position: absolute;
     left: 0.4em;
-    top: 0.4em;
+    top: 0.15em;
     color: var(--GW-popups-popup-options-dialog-button-text-color);
     margin: 1px;
 }
