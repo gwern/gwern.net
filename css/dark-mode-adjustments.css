@@ -122,6 +122,7 @@ table th.tablesorter-headerDesc {
 /*  Images that are marked as invertible by the server are inverted,
     hue-rotated, and desaturated. Other (non-invertible) images are merely
     desaturated. Hovering over an image restores it to its original state.
+    Hierarchy: ".invertible-not": no inversion or grayscale; ".invertible"/".invertible-auto": inverted (uninverted upon mouse hover); none: grayscaled (ungrayscaled on hover).
     */
 img.invertible,
 img.invertible-auto {
@@ -137,10 +138,13 @@ img.invertible-auto {
 }
 img:hover,
 img.invertible:hover,
-img.invertible-auto:hover {
+img.invertible-auto:hover,
+img:not(.invertible):not(.invertible-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
+/* For images which have been manually marked up with '{.invertible-not}', we avoid any filtering at all. If they are manually marked up (artwork, diagrams with multiple subtly-different colors matched to a legend/caption), the color is important and shouldn't be faded out by default. */
+#markdownBody img.invertible-not { filter: none; }
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
     and made more visible in dark mode.

@@ -53,12 +53,12 @@
 
     /*  Collapse blocks.
         */
-    --GW-collapse-summary-blockquote-hover-color: #333;
-    --GW-collapse-disclosure-button-color: #333;
-    --GW-collapse-disclosure-button-hover-color: #494949;
-    --GW-collapse-disclosure-button-top-part-text-color: #6c6c6c;
-    --GW-collapse-disclosure-button-bottom-part-text-color: #7c7c7c;
-    --GW-collapse-disclosure-button-text-hover-color: #000;
+	--GW-collapse-summary-blockquote-hover-color: #333;
+	--GW-collapse-disclosure-button-color: #333;
+	--GW-collapse-disclosure-button-hover-color: #494949;
+	--GW-collapse-disclosure-button-top-part-text-color: #6c6c6c;
+	--GW-collapse-disclosure-button-bottom-part-text-color: #7c7c7c;
+	--GW-collapse-disclosure-button-text-hover-color: #000;
 
     /*  Headings.
         */
@@ -210,8 +210,8 @@
         */
     --GW-index-page-bottom-ornament-line-color: #9f9f9f;
 
-    /*  Pop-frames (popups or popins).
-        */
+	/*	Pop-frames (popups or popins).
+		*/
     --GW-raw-code-popframe-line-highlight-background-color: #181700;
     --GW-raw-code-popframe-line-hightlight-border-color: #494949;
     --GW-raw-code-popframe-line-number-color: #7c7c7c;
@@ -230,13 +230,13 @@
     --GW-popups-popup-title-bar-background-color: #252525;
     --GW-popups-popup-title-bar-button-color: #6c6c6c;
     --GW-popups-popup-title-bar-button-color-hover: #fff;
-    --GW-popups-popup-title-color: #7c7c7c;
+	--GW-popups-popup-title-color: #7c7c7c;
     --GW-popups-popup-title-link-hover-color: var(--GW-body-link-hover-color);
     --GW-popups-popup-title-bar-background-focused-color: #3e3e3e;
     --GW-popups-popup-title-bar-button-focused-color: #a6a6a6;
     --GW-popups-popup-title-bar-button-focused-color-hover: #fff;
     --GW-popups-popup-title-bar-submenu-box-shadow-color: #494949;
-    --GW-popups-popup-title-focused-color: #fff;
+	--GW-popups-popup-title-focused-color: #fff;
     --GW-popups-popup-title-link-hover-focused-color: var(--GW-body-link-hover-color);
 
     --GW-popups-popup-scrollbar-track-color: var(--GW-body-background-color);
@@ -284,10 +284,10 @@
     --GW-mode-selector-button-text-color: #a6a6a6;
     --GW-mode-selector-button-hover-text-color: #fff;
 
-    /*  “Back to top” link.
-        */
-    --GW-back-to-top-link-color: #5c5c5c;
-    --GW-back-to-top-link-hover-color: #8b8b8b;
+	/*	“Back to top” link.
+		*/
+	--GW-back-to-top-link-color: #5c5c5c;
+	--GW-back-to-top-link-hover-color: #8b8b8b;
 }
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
@@ -477,7 +477,7 @@ div#mode-selector button.select-mode-light::before {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
-/*  All SVG link icons have to be inverted.
+/*  All SVG linkicons have to be inverted.
     */
 a.link-self.identifier-link-up::after,
 a.link-self.identifier-link-down::after,
