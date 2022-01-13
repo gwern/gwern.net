@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-09 11:03:49 gwern"
+When:  Time-stamp: "2022-01-12 10:37:54 gwern"
 License: CC-0
 -}
 
@@ -1367,6 +1367,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)\\)", " <a href=\"\\1\">\\1</a> )"),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+) \\.", " <a href=\"\\1\">\\1</a> ."),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">\\1</a> .</p>"),
+        (" (https://github.com/[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">Github</a>.</p>"),
         -- try to rewrite half-parenthesis lists like '(( 1) foo; 2) bar' into '(1) foo; (2) bar' for consistency & parentheses-checking:
         ("\\(10\\) (.*) 11\\)", " (10) \\1 (11)"),
         (" 10\\) (.*) 11\\)", " (10) \\1 (11)"),
