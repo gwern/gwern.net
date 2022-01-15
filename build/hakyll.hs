@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-01-12 10:33:50 gwern"
+When: Time-stamp: "2022-01-14 17:26:25 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -59,6 +59,7 @@ import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..))
 import Text.Pandoc.Walk (walk, walkM)
 import Network.HTTP (urlEncode)
+import System.IO.Unsafe (unsafePerformIO)
 
 import Data.List.Utils (replace)
 import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, length)
@@ -228,8 +229,9 @@ postCtx tags =
     (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
+-- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, `postList`, `tagPage`, and `main`?
 backlinkCheck :: Item a -> Bool
-backlinkCheck i = let p = toFilePath (itemIdentifier i) in not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
+backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/backlinks/%2F" ++ replace ".page" "" p) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
 
 escapedTitleField :: String -> Context a
 escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
