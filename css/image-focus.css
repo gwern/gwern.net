@@ -1,0 +1,353 @@
+/***************/
+/* IMAGE FOCUS */
+/***************/
+
+/*=--------------=*/
+/*= Hover styles =*/
+/*=--------------=*/
+
+#markdownBody img:hover {
+	filter: drop-shadow(0 0 3px #777);
+	cursor: zoom-in;
+}
+#markdownBody img:active {
+	transform: scale(0.975);
+}
+
+/*=---------=*/
+/*= Overlay =*/
+/*=---------=*/
+
+#image-focus-overlay {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	display: none;
+	cursor: zoom-out;
+}
+#image-focus-overlay::before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background-color: #000;
+	opacity: 0.9;
+	z-index: -1;
+}
+#image-focus-overlay.engaged {
+	display: initial;
+}
+
+#image-focus-overlay img {
+	margin: auto;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+/*=-------------------=*/
+/*= Single-image mode =*/
+/*=-------------------=*/
+
+#image-focus-overlay:not(.slideshow) .image-number,
+#image-focus-overlay:not(.slideshow) .slideshow-buttons,
+#image-focus-overlay:not(.slideshow) .slideshow-help-text {
+	display: none;
+}
+
+/*=---------=*/
+/*= Caption =*/
+/*=---------=*/
+
+#image-focus-overlay .caption {
+	position: absolute;
+	bottom: 0.75em;
+	background-color: rgba(0, 0, 0, 0.7);
+	left: 4.5em;
+	right: 4.5em;
+	margin: auto;
+	max-width: calc(100% - 9em);
+	text-align: center;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	border-radius: 8px;
+	z-index: 1;
+	transition:
+		bottom 0.15s ease;
+}
+@supports (width: -moz-fit-content) {
+	#image-focus-overlay .caption {
+		width: -moz-fit-content;
+	}
+}
+@supports (width: fit-content) {
+	#image-focus-overlay .caption {
+		width: fit-content;
+	}
+}
+#image-focus-overlay .caption.hidden {
+	bottom: -50%;
+	transition:
+		bottom 0.5s ease-in;
+}
+
+#image-focus-overlay .caption p {
+	margin: 1em 1.25em;
+	color: #fff;
+}
+#image-focus-overlay .caption code {
+	background-color: inherit;
+	border: none;
+	font-size: 1em;
+}
+#image-focus-overlay .caption a {
+	color: #ccc;
+}
+#image-focus-overlay .caption a:hover {
+	color: #aaa;
+}
+
+#image-focus-overlay .caption:not(:empty)::before {
+	content: "";
+	display: block;
+	position: absolute;
+	width: 100vw;
+	height: calc(100% + 1.5em);
+	z-index: -1;
+	top: -0.75em;
+	left: calc(-50vw + 50%);
+}
+
+/*=--------------=*/
+/*= Help overlay =*/
+/*=--------------=*/
+
+#image-focus-overlay .help-overlay {
+	position: absolute;
+	display: flex;
+	flex-flow: column;
+	z-index: 2;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	font-size: 1.25rem;
+	padding: 1em;
+	border-radius: 10px;
+	bottom: 1em;
+	right: 1em;
+	overflow: hidden;
+	white-space: nowrap;
+	color: transparent;
+	visibility: hidden;
+	transition:
+		visibility 1s ease,
+		color 1s ease,
+		background-color 1s ease,
+		bottom 0.3s ease;
+}
+#image-focus-overlay .help-overlay:hover {
+	max-width: 24em;
+	max-height: 14em;
+	background-color: rgba(0, 0, 0, 0.85);
+	color: #fff;
+	visibility: visible;
+	transition:
+		visibility 0.2s ease 0.3s,
+		color 0.2s ease 0.3s,
+		background-color 0.2s ease 0.3s;
+}
+
+#image-focus-overlay .help-overlay::after {
+	content: "?";
+	font-weight: bold;
+	font-size: 2rem;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	padding: 10px;
+	color: #000;
+	filter: drop-shadow(0 0 6px #fff);
+	visibility: visible;
+	opacity: 0.85;
+	transition:
+		visibility 1s ease;
+}
+#image-focus-overlay .help-overlay:hover::after {
+	visibility: hidden;
+	transition:
+		visibility 0.2s ease 0.3s;
+}
+
+#image-focus-overlay .help-overlay p {
+	margin: 0;
+	text-indent: -2em;
+	padding-left: 2em;
+	max-width: 100%;
+	overflow: hidden;
+}
+#image-focus-overlay .help-overlay p + p {
+	margin: 0.75em 0 0 0;
+}
+#image-focus-overlay .help-overlay.hidden {
+	bottom: -2em;
+}
+
+/*=--------------=*/
+/*= Slide number =*/
+/*=--------------=*/
+
+#image-focus-overlay .image-number {
+	position: absolute;
+	z-index: 2;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	font-size: 1.5rem;
+	left: 1em;
+	top: 1em;
+	font-weight: 600;
+	text-shadow:
+		0 0 3px #fff,
+		0 0 5px #fff,
+		0 0 8px #fff,
+		0 0 13px #fff;
+	width: 1.5em;
+	text-align: right;
+	white-space: nowrap;
+	transition: top 0.3s ease;
+}
+#image-focus-overlay .image-number::before {
+	content: "#";
+	opacity: 0.3;
+}
+#image-focus-overlay .image-number::after {
+	content: " of " attr(data-number-of-images);
+	opacity: 0.3;
+}
+#image-focus-overlay .image-number:hover::before,
+#image-focus-overlay .image-number:hover::after {
+	opacity: 1.0;
+}
+#image-focus-overlay .image-number.hidden {
+	top: -1.25em;
+}
+
+/*=-------------------=*/
+/*= Slideshow buttons =*/
+/*=-------------------=*/
+
+#image-focus-overlay .slideshow-buttons {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	display: flex;
+	justify-content: space-between;
+	pointer-events: none;
+}
+#image-focus-overlay .slideshow-buttons button {
+	font-size: 3rem;
+	color: #ddd;
+	border: none;
+	background-color: transparent;
+	position: relative;
+	left: 0;
+	transition:
+		left 0.3s ease;
+	pointer-events: auto;
+	cursor: pointer;
+	width: 4rem;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-origin: content-box;
+}
+#image-focus-overlay .slideshow-buttons button.next {
+	padding: 0.25em 0.25em 0.25em 0.375em;
+}
+#image-focus-overlay .slideshow-buttons button.previous {
+	padding: 0.25em 0.375em 0.25em 0.25em;
+}
+#image-focus-overlay .slideshow-buttons button svg {
+	pointer-events: none;
+	fill: currentColor;
+}
+#image-focus-overlay .slideshow-buttons button::selection {
+	background-color: transparent;
+}
+@media only screen and (hover: hover) {
+	#image-focus-overlay .slideshow-buttons button:hover {
+		background-color: rgba(0, 0, 0, 0.1);
+		color: #777;
+	}
+	#image-focus-overlay .slideshow-buttons button:not(:disabled):hover svg {
+		filter:
+			drop-shadow(0 0 1px #fff)
+			drop-shadow(0 0 3px #fff);
+	}
+}
+#image-focus-overlay .slideshow-buttons button:active {
+	transform: none;
+	color: #888;
+}
+#image-focus-overlay .slideshow-buttons button:disabled {
+	text-shadow: none;
+	background-color: transparent;
+	color: #ddd;
+	cursor: default;
+	opacity: 0.4;
+}
+#image-focus-overlay .slideshow-button.previous.hidden {
+	left: -1.75em;
+}
+#image-focus-overlay .slideshow-button.next.hidden {
+	left: 1.75em;
+}
+
+/*=---------=*/
+/*= Tooltip =*/
+/*=---------=*/
+
+.image-wrapper {
+	position: relative;
+	display: block;
+	margin: auto;
+}
+.image-wrapper::after {
+	content: "Click to enlarge";
+	display: block;
+	position: absolute;
+	margin: auto;
+	left: 0;
+	right: 0;
+	bottom: 10px;
+	padding: 6px 15px 7px 15px;
+	font-size: 1rem;
+	font-family: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
+	background-color: rgba(0, 0, 0, 0.75);
+	color: #fff;
+	border-radius: 5px;
+	opacity: 0.0;
+	transition: opacity 0.15s ease;
+	pointer-events: none;
+}
+@supports (width: -moz-fit-content) {
+	.image-wrapper,
+	.image-wrapper::after {
+		width: -moz-fit-content;
+	}
+}
+@supports (width: fit-content) {
+	.image-wrapper,
+	.image-wrapper::after {
+		width: fit-content;
+	}
+}
+.image-wrapper:hover::after {
+	opacity: 1.0;
+}
+

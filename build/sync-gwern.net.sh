@@ -44,13 +44,13 @@ else
 
     (cd ~/wiki/ && git status) &
     bold "Pulling infrastructure updates…"
-    (cd ./static/ && git status && git pull --verbose 'http://gwern.obormot.net/static/.git' || true)
+    (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
 
     bold "Compiling…"
     cd ./static/build
     compile () { TMPDIR="$(mktemp --directory)/"; ghc -O2 -fforce-recomp -tmpdir "$TMPDIR" -Wall -rtsopts -threaded --make "$@"; rm -rf "$TMPDIR"; }
-    compile hakyll.hs &
-    compile generateLinkBibliography.hs &
+    compile hakyll.hs
+    compile generateLinkBibliography.hs
     compile generateDirectory.hs &
     compile generateBacklinks.hs &
     compile preprocess-markdown.hs &

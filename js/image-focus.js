@@ -1,4 +1,4 @@
-/* Image-focus.js http://share.obormot.net/misc/gwern/image-focus.js */
+/* Image-focus.js */
 /* Written by Obormot, 15 February 2019 */
 /* License: GPL (derivative work of https://www.pmwiki.org/wiki/Cookbook/ImgFocus ) */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
@@ -157,8 +157,8 @@ function focusImage(imageToFocus) {
 		let imageBoundingBox = image.getBoundingClientRect();
 
 		//  Calculate resize factor.
-		var factor = (image.height > 10 && image.width > 10) || event.deltaY < 0 
-					 ? 1 + Math.sqrt(Math.abs(event.deltaY))/100.0 
+		var factor = (image.height > 10 && image.width > 10) || event.deltaY < 0
+					 ? 1 + Math.sqrt(Math.abs(event.deltaY))/100.0
 					 : 1;
 
 		//  Resize.
@@ -304,7 +304,7 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.keyUp", "image-focus.js", 3);
 
 		let allowedKeys = [ " ", "Spacebar", "Escape", "Esc", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Up", "Down", "Left", "Right" ];
-		if (   !allowedKeys.includes(event.key) 
+		if (   !allowedKeys.includes(event.key)
 			|| getComputedStyle(GW.imageFocus.overlay).display == "none")
 			return;
 
@@ -407,7 +407,7 @@ function setFocusedImageCursor() {
 
 	let focusedImage = GW.currentlyFocusedImage;
 	if (!focusedImage) return;
-	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) 
+	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth)
 								? "move" : "";
 }
 
