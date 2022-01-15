@@ -185,10 +185,13 @@ generateDirectoryItems parent current ds =
  where parent' :: T.Text
        parent' = T.pack $ takeDirectory parent
        generateDirectoryItem :: FilePath -> [Block]
-       generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) [Str (T.pack $ directoryPrefix current d), Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d)] (T.pack d, "")]]
-       -- subdirectories are 'down', while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out' (left) because 'right' would imply some sort of 'inward'
-       directoryPrefix :: FilePath -> FilePath -> String
-       directoryPrefix currentd d' = if ("/"++currentd) `isPrefixOf` d' then "↓ " else "← "
+       -- subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
+       generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) (if directoryPrefixDown current d then
+                                                                     [Str "↓ ", Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d)] else
+                                                                     [Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d), Str " →"])
+                                         (T.pack d, "")]]
+       directoryPrefixDown :: FilePath -> FilePath -> Bool
+       directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
 
 generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath)] -> Block
 generateListItems p = BulletList (map generateItem p)
