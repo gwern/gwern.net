@@ -179,19 +179,26 @@ generateDirectoryItems parent current ds =
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
       -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
      [RawBlock (Format "html") "<div id=\"directory-indexes\" class=\"columns\">\n"] ++
-     [BulletList $ [[Para [Link ("",["link-tag"],[]) [Str "🡱 Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]]] ++
+     [BulletList $ [[Para [
+                        Span ("",["directory-indexes-upwards"],[]) [
+                            Link ("",["link-tag"],[]) [Str "Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]
+                        ]
+                    ]] ++
        (filter (not . null) $ map generateDirectoryItem ds)] ++
      [RawBlock (Format "html") "</div>"]
  where parent' :: T.Text
        parent' = T.pack $ takeDirectory parent
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
-       generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) (if directoryPrefixDown current d then
-                                                                     [Str "🡳 ", Emph [Str $ T.pack $ replace "/docs/" "" $ takeDirectory d]] else
-                                                                     [Emph [Str $ T.pack $ replace "/docs/" "" $ takeDirectory d], Str " 🡲"])
-                                         (T.pack d, "")]]
+       generateDirectoryItem d = [Para [
+                                     Span ("",
+                                            if directoryPrefixDown current d then ["directory-indexes-downwards"] else ["directory-indexes-sideways"],
+                                            [])
+                                       [Link ("",["link-tag"],[]) [Emph [Str $ T.pack $ replace "/docs/" "" $ takeDirectory d]] (T.pack d, "")]
+                                 ]]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
+
 
 generateListItems :: [(FilePath, MetadataItem,FilePath,FilePath)] -> Block
 generateListItems p = BulletList (map generateItem p)
