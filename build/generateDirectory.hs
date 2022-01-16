@@ -85,7 +85,7 @@ generateDirectory mta dir'' = do
                    [Header 1 nullAttr [Str "Miscellaneous"]] ++
                    -- for lists, they *may* all be devoid of annotations and short
                    if not allUnannotatedUntitledP then [untitledLinksSection] else
-                     [RawBlock (Format "html") "<div class=\"columns\">\n\n",
+                     [RawBlock (Format "html") "<div id=\"miscellaneous-links-list\" class=\"columns\">\n\n",
                       untitledLinksSection,
                       RawBlock (Format "html") "</div>"])
 
@@ -178,7 +178,7 @@ generateDirectoryItems parent current ds =
   -- all directories have a parent directory with an index (eg. /docs/index has the parent /index), so we always link it.
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
       -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
-     [RawBlock (Format "html") "<div class=\"columns\">\n"] ++
+     [RawBlock (Format "html") "<div id=\"directory-indexes\" class=\"columns\">\n"] ++
      [BulletList $ [[Para [Link ("",["link-tag"],[]) [Str "🡱 Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]]] ++
        (filter (not . null) $ map generateDirectoryItem ds)] ++
      [RawBlock (Format "html") "</div>"]
@@ -187,8 +187,8 @@ generateDirectoryItems parent current ds =
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
        generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) (if directoryPrefixDown current d then
-                                                                     [Str "🡳 ", Emph (T.pack $ replace "/docs/" "" $ takeDirectory d)] else
-                                                                     [Emph (T.pack $ replace "/docs/" "" $ takeDirectory d), Str " 🡲"])
+                                                                     [Str "🡳 ", Emph [Str $ T.pack $ replace "/docs/" "" $ takeDirectory d]] else
+                                                                     [Emph [Str $ T.pack $ replace "/docs/" "" $ takeDirectory d], Str " 🡲"])
                                          (T.pack d, "")]]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
