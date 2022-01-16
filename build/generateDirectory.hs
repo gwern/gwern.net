@@ -13,7 +13,7 @@ import System.Directory (listDirectory, doesFileExist, doesDirectoryExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
+                    Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (pack, append, Text)
 import System.IO (stderr, hPrint)
@@ -187,8 +187,8 @@ generateDirectoryItems parent current ds =
        generateDirectoryItem :: FilePath -> [Block]
        -- subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
        generateDirectoryItem d = [Para [Link ("",["link-tag"],[]) (if directoryPrefixDown current d then
-                                                                     [Str "↓ ", Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d)] else
-                                                                     [Code nullAttr (T.pack $ replace "/docs/" "" $ takeDirectory d), Str " →"])
+                                                                     [Str "↓ ", Emph (T.pack $ replace "/docs/" "" $ takeDirectory d)] else
+                                                                     [Emph (T.pack $ replace "/docs/" "" $ takeDirectory d), Str " →"])
                                          (T.pack d, "")]]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
        directoryPrefixDown currentd d' = ("/"++currentd) `isPrefixOf` d'
