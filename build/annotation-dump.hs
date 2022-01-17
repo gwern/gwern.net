@@ -16,4 +16,4 @@ prune :: [(String,MetadataItem)] -> [(String,MetadataItem)]
 prune = filter (\(f,(b,_,_,_,_,_)) -> not (b=="" || "en.wikipedia.org" `isInfixOf` f))
 
 printSingleLine :: (String,MetadataItem) -> IO ()
-printSingleLine (f,(b,c,d,_,_,abst)) = putStrLn $ intercalate " , " ["\x1b[32m"++f++"\x1b[0m","\x1b[35m\""++b++"\"\x1b[0m",c,d,abst]
+printSingleLine (f,(b,c,d,_,tags,abst)) = putStrLn $ intercalate " , " ["\x1b[32m"++f++"\x1b[0m","\x1b[35m\""++b++"\"\x1b[0m",c,d,show tags,abst]
