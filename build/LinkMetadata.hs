@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-17 11:49:36 gwern"
+When:  Time-stamp: "2022-01-17 16:44:43 gwern"
 License: CC-0
 -}
 
@@ -15,7 +15,7 @@ import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
-import qualified Data.ByteString as B (appendFile)
+import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
@@ -28,7 +28,7 @@ import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Text.IO as TIO (readFile)
 import Data.Text.Titlecase (titlecase)
-import Data.Yaml as Y (decodeFileEither, encode, ParseException)
+import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import GHC.Generics (Generic)
 import Network.HTTP (urlDecode, urlEncode)
 import Network.URI (isURIReference, uriFragment, parseURIReference)
@@ -424,15 +424,24 @@ writeYaml path yaml = lock $ do
 
 -- skip all of the checks, validations, tag creation etc
 readYamlFast :: Path -> IO MetadataList
-readYamlFast yaml = do file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
-                       case file of
-                          Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
-                          Right y -> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
+readYamlFast yamlp = do file <- B.readFile yamlp
+                        let yaml = Y.decodeEither' file :: Either ParseException [[String]]
+                        case yaml of
+                           Left  _ -> let y = recoverYamlAttempt 25 yamlp file in print y >> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
+                           Right y -> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
                 where
                  convertListToMetadataFast :: [String] -> MetadataList
                  convertListToMetadataFast [u, t, a, d, di,     s] = [(u, (t,a,d,di,[], s))]
                  convertListToMetadataFast [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,[ts], s))]
                  convertListToMetadataFast                        e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
+
+recoverYamlAttempt :: Int -> Path -> B.ByteString -> [[String]]
+recoverYamlAttempt 0 yamlp _ = error $ "YAML file failed to parse; attempt to recover working YAML by dropping last lines failed. " ++ "File: "++ yamlp
+recoverYamlAttempt maxAttempts yamlp broken = let shrunken = B.intercalate "\n" $ init $ B.split 10 broken in
+                                                let yaml = Y.decodeEither' shrunken :: Either ParseException [[String]] in
+                                                  case yaml of
+                                                    Left  _ -> recoverYamlAttempt (maxAttempts - 1) yamlp shrunken
+                                                    Right y -> y
 
 readYaml :: Path -> IO MetadataList
 readYaml yaml = do filep <- doesFileExist yaml
