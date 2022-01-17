@@ -19,7 +19,7 @@ import qualified Data.Text as T (pack, append, Text)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, getSimilarLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, sed)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, getSimilarLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, sed, parseRawBlock)
 import Utils (writeUpdatedFile)
 
 main :: IO ()
@@ -70,7 +70,7 @@ generateDirectory mta dir'' = do
   -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at '/docs/foo/index'
   let abstract = case M.lookup ("/"++dir''++"index") mta of
                    Nothing -> []
-                   Just (_,_,_,_,_,dirAbstract) -> [RawBlock (Format "html") (T.pack dirAbstract)]
+                   Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
   let body =   abstract ++
 

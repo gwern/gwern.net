@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-16 22:35:16 gwern"
+When:  Time-stamp: "2022-01-17 11:49:36 gwern"
 License: CC-0
 -}
 
@@ -40,7 +40,7 @@ import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen,
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
                     readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
-                    Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div))
+                    Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div), Attr)
 import Text.Pandoc.Walk (walk, walkM)
 import Text.Regex (subRegex, mkRegex, matchRegex)
 import Text.Show.Pretty (ppShow)
@@ -293,12 +293,12 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
           addHasAnnotation _ _ z _ = z
 
-parseRawBlock :: Block -> Block
-parseRawBlock x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+parseRawBlock :: Attr -> Block -> Block
+parseRawBlock attr x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
                                           case markdown of
                                             Left e -> error (show x ++ ": " ++ show e)
-                                            Right (Pandoc _ markdown') -> Div nullAttr markdown'
-parseRawBlock x = x
+                                            Right (Pandoc _ markdown') -> Div attr markdown'
+parseRawBlock _ x = x
 
 generateAnnotationBlock :: Bool -> Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = case ann of
@@ -333,7 +333,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                                 [Str ")"]
                                          ) ++
                                          [Str ":"]),
-                                       BlockQuote [parseRawBlock $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
+                                       BlockQuote [parseRawBlock nullAttr $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
