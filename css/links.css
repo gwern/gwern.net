@@ -487,6 +487,28 @@ body.tags a.link-local::after {
     content: none;
 }
 
+/*=------------------------------=*/
+/*= Cross-Directory Links on Tag-Directory index pages =*/
+/*=------------------------------=*/
+/* Unicode arrows are either too small/thin, or break on many platforms, so we usual, we provide our own arrows. */
+.directory-indexes-upwards::after,
+.directory-indexes-sideways::after,
+.directory-indexes-downwards::after  {
+    content: "";
+    padding: 0 0.9em 0 0;
+    position: static;
+    background-repeat: no-repeat;
+    margin: 0 0 0 0.25em;
+    background-position-y: 0.15em;
+    }
+
+.directory-indexes-upwards::after {
+    background-image: url('/static/img/icons/arrow-up-thick.svg');    }
+.directory-indexes-sideways::after {
+    background-image: url('/static/img/icons/arrow-right-thick.svg'); }
+.directory-indexes-downwards::after {
+    background-image: url('/static/img/icons/arrow-down-thick.svg');  }
+
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
 /*=-------------------------------=*/
