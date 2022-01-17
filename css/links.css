@@ -503,11 +503,11 @@ body.tags a.link-local::after {
     }
 
 .directory-indexes-upwards::after {
-    background-image: url('/static/img/icons/arrow-up-thick.svg');    }
+    background-image: url('/static/img/icons/arrow-up.svg');    }
 .directory-indexes-sideways::after {
-    background-image: url('/static/img/icons/arrow-right-thick.svg'); }
+    background-image: url('/static/img/icons/arrow-right.svg'); }
 .directory-indexes-downwards::after {
-    background-image: url('/static/img/icons/arrow-down-thick.svg');  }
+    background-image: url('/static/img/icons/arrow-down.svg');  }
 
 /*=-------------------------------=*/
 /*= Textual per-domain link icons =*/
