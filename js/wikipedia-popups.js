@@ -139,7 +139,7 @@ Extracts = {
             Extracts.popup.addEventListener("mouseover", Extracts.divover);
             Extracts.popup.addEventListener("mouseout", Extracts.targetout);
 
-            /*  How much “breathing room” to give the target (i.e., offset of
+            /*  How much “breathing room” to give the target (ie. offset of
                 the popup).
                 */
             var popupBreathingRoom = {

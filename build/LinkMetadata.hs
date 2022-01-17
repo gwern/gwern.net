@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-12 10:37:54 gwern"
+When:  Time-stamp: "2022-01-16 22:35:16 gwern"
 License: CC-0
 -}
 
@@ -643,7 +643,7 @@ pageTagDB = M.fromList [
   , ("/notes/Scaling", ["ai/scaling"])
   , ("/notes/Small-groups", ["sociology"])
   , ("/docs/ai/sparsity/index", ["ai"])
-  , ("/notes/TBI", ["psychology/neuroscience"])
+  , ("/notes/TBI", ["psychiatry/traumatic-brain-injury"])
   , ("/notes/Variance-components", ["statistics"])
   , ("/Ontological-pantheism", ["philosophy"])
   , ("/Order-statistics", ["statistics/order"])
@@ -1259,6 +1259,14 @@ generateID url author date
        , ("https://arxiv.org/abs/2105.00572#facebook", "goyal-et-al-2021-xlmrxl")
        , ("https://sites.google.com/berkeley.edu/decision-transformer", "decisiontransformer-blog")
        , ("https://arxiv.org/abs/2107.03374#openai", "chen-et-al-2021-codex")
+       , ("https://arxiv.org/abs/2201.01763#facebook", "shi-et-al-2022-avhubert")
+       , ("https://arxiv.org/abs/2112.07887#microsoft", "zhang-et-al-2021-krissbert")
+       , ("https://arxiv.org/abs/2104.07885", "liu-et-al-2021-roberta")
+       , ("https://arxiv.org/abs/2105.08050#google", "liu-et-al-2021-gmlp")
+       , ("https://arxiv.org/abs/2105.12196#deepmind", "liu-et-al-2021-soccer")
+       , ("/static/js/wikipedia-popups.js", "achmiz-2019-wikipediapopups")
+       , ("https://arxiv.org/abs/2105.06597#microsoft", "zhang-et-al-2021-retgen")
+       , ("https://arxiv.org/abs/2106.10715", "zhang-et-al-2021-cpm2")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1466,6 +1474,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(1.644934\\approx \\pi^2/6\\)</span>", "1.644934 ≈ π<sup>2</sup>⁄6")
+          , ("<span class=\"math inline\">\\(\\operatorname{bessel0}(10)\\approx \\frac{\\sin(10)+\\cos(10)}{\\sqrt{\\pi x}}\\)</span>", "<code>bessel0(<em>x</em>) ≈ sin(<em>x</em>)+cos(<em>x</em>) / √π<em>x</em>")
           , ("<span class=\"math inline\">\\(P_B(f\\mid S)\\)</span>", "<em>P</em><sub><em>b</em></sub>(<em>f</em>|<em>S</em>)")
           , ("<span class=\"math inline\">\\(P_{SGD}(f\\mid S)\\)</span>", "<em>P</em><sub><em>SGD</em></sub>(<em>f</em>|<em>S</em>)")
           , ("<span class=\"math inline\">\\(6\\times 10^{-6}\\)</span>", "6×10<sup>−6</sup>")

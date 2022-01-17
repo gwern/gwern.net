@@ -1,5 +1,5 @@
 #!/bin/bash
-# When:  Time-stamp: "2021-12-17 14:47:03 gwern"
+# When:  Time-stamp: "2022-01-16 10:41:14 gwern"
 # see https://www.gwern.net/About#markdown-checker
 
 set +x
@@ -62,7 +62,7 @@ do
                   -e 'http://www.economist.com' -e 'http://www.theverge.com' -- "$PAGE"; }
         wrap λ "HTTP → HTTPS URLs"
 
-        ## ban articles written by John Hewitt; he endorses the pig-human pseudoscience, lies about research (eg claiming platypus genome proven to be a bird hybrid), and makes bad arguments (eg his criticism of senolytics because senescent cells do not have a single unique universal signature):
+        ## ban articles written by John Hewitt; he endorses the pig-human pseudoscience, lies about research (eg claiming platypus genome proven to be a bird hybrid), and makes bad arguments (eg. his criticism of senolytics because senescent cells do not have a single unique universal signature):
         λ(){ fgrep -e 'phys.org' -- "$PAGE" | fgp -v -e '2019-07-cat-science.html' -e '2017-08-cavemen-genetic-checkup.html' -e'2019-12-mouse-pups-born-eggs-derived.html'; }
         wrap λ "Phys.org link detected: make sure John Hewitt didn't write it"
 

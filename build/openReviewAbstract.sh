@@ -3,7 +3,7 @@
 # openReviewAbstract.sh: scrape paper metadata from OpenReview
 # Author: Gwern Branwen
 # Date: 2021-10-12
-# When:  Time-stamp: "2021-10-13 12:34:54 gwern"
+# When:  Time-stamp: "2022-01-16 10:41:49 gwern"
 # License: CC-0
 #
 # Shell script to scrape paper titles/date/author/abstract (TLDR if exists, then full abstract)/keywords from the OpenReview conference website.
@@ -15,7 +15,7 @@
 # Yannis M. Assael, Brendan Shillingford, Shimon Whiteson, Nando de Freitas
 # 2016-12-16
 # LipNet is the first end-to-end sentence-level lipreading model to simultaneously learn spatiotemporal visual features and a sequence model.
-# Lipreading is the task of decoding text from the movement of a speaker's mouth. Traditional approaches separated the problem into two stages: designing or learning visual features, and prediction. More recent deep lipreading approaches are end-to-end trainable (Wand et al., 2016; Chung & Zisserman, 2016a). However, existing work on models trained end-to-end perform only word classification, rather than sentence-level sequence prediction. Studies have shown that human lipreading performance increases for longer words (Easton & Basala, 1982), indicating the importance of features capturing temporal context in an ambiguous communication channel. Motivated by this observation, we present LipNet, a model that maps a variable-length sequence of video frames to text, making use of spatiotemporal convolutions, a recurrent network, and the connectionist temporal classification loss, trained entirely end-to-end. To the best of our knowledge, LipNet is the first end-to-end sentence-level lipreading model that simultaneously learns spatiotemporal visual features and a sequence model. On the GRID corpus, LipNet achieves 95.2% accuracy in sentence-level, overlapped speaker split task, outperforming experienced human lipreaders and the previous 86.4% word-level state-of-the-art accuracy (Gergen et al., 2016).
+# Lipreading is the task of decoding text from the movement of a speaker's mouth. Traditional approaches separated the problem into two stages: designing or learning visual features, and prediction. More recent deep lipreading approaches are end-to-end trainable (Wand et al 2016; Chung & Zisserman 2016a). However, existing work on models trained end-to-end perform only word classification, rather than sentence-level sequence prediction. Studies have shown that human lipreading performance increases for longer words (Easton & Basala, 1982), indicating the importance of features capturing temporal context in an ambiguous communication channel. Motivated by this observation, we present LipNet, a model that maps a variable-length sequence of video frames to text, making use of spatiotemporal convolutions, a recurrent network, and the connectionist temporal classification loss, trained entirely end-to-end. To the best of our knowledge, LipNet is the first end-to-end sentence-level lipreading model that simultaneously learns spatiotemporal visual features and a sequence model. On the GRID corpus, LipNet achieves 95.2% accuracy in sentence-level, overlapped speaker split task, outperforming experienced human lipreaders and the previous 86.4% word-level state-of-the-art accuracy (Gergen et al 2016).
 # Computer vision, Deep learning
 # $ openReviewAbstract.sh 'https://openreview.net/forum?id=bwq6O4Cwdl'
 # How Does SimSiam Avoid Collapse Without Negative Samples? Towards a Unified Understanding of Progress in SSL
