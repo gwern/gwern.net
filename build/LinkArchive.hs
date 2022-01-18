@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-01-15 10:24:51 gwern"
+When:  Time-stamp: "2022-01-17 21:07:21 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -96,7 +96,8 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
                                   Right Nothing   -> return True
                                   Left  _         -> return True)
                               pdl
-                         return $ M.fromList pdl'
+                         let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not ("https://www.gwern.net"`isPrefixOf`p)) pdl'
+                         return $ M.fromList pdl''
 
 {-
 rewriteLink:
