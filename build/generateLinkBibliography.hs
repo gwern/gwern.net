@@ -20,7 +20,7 @@ import qualified Data.Text as T (pack, unpack)
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Text.Pandoc (Inline(Code, Link, Str, Space), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
+import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
 
 import LinkMetadata (generateAnnotationBlock, getBackLink, getSimilarLink, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 import Query (extractURLs)
@@ -70,7 +70,12 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  =
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
         | otherwise = takeFileName f
-      author = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
+      authorShort = authorsTruncate aut
+      authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
+                    else Str (T.pack authorShort)
+      author = if aut=="" then []
+               else
+                 [Str ",", Space, authorSpan]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
   in
     if t=="" then

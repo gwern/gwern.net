@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-17 16:44:43 gwern"
+When:  Time-stamp: "2022-01-18 11:40:16 gwern"
 License: CC-0
 -}
 
@@ -307,7 +307,10 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                               Just (_,    _,_,_,_,"") -> nonAnnotatedLink
                               Just (tle,aut,dt,doi,ts,abst) ->
                                 let lid = let tmpID = (generateID f aut dt) in if tmpID=="" then "" else (T.pack "linkBibliography-") `T.append` tmpID
-                                    author = if aut=="" then [Space] else [Space, Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorsTruncate aut else aut)]]
+                                    authorShort = authorsTruncate aut
+                                    authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                                 else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
+                                    author = if aut=="" then [Space] else [Space, authorSpan]
                                     date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similar"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
@@ -1306,9 +1309,10 @@ authorsToCite url author date =
 citeToID :: String -> String
 citeToID = filter (\c -> c/='.' && c/='\'' && c/='’') . map toLower . replace " " "-" . replace " & " "-"
 
--- for link bibliographies / tag pages, better truncate author lists at a reasonable length:
+-- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
+-- (We can make it relatively short because the full author list will be preserved as part of it.)
 authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 180 a in before ++ (if null after then "" else (head $ split ", " after) ++ "…")
+authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ ", …")
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l

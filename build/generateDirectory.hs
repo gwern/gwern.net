@@ -222,7 +222,11 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) =
        f'       = if "http"`isPrefixOf`f then f else if "index" `isSuffixOf` f then takeDirectory f else takeFileName f
        title    = if t=="" then [Code nullAttr (T.pack f')] else [Str (T.pack $ "“"++t++"”")]
        prefix   = if t=="" then [] else [Code nullAttr (T.pack f'), Str ": "]
-       author   = if aut=="" then [] else [Str ",", Space, Str (T.pack $ authorsTruncate aut)]
+       -- we display short authors by default, but we keep a tooltip of the full author list for on-hover should the reader need it.
+       authorShort = authorsTruncate aut
+       authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
+                     else Str (T.pack $ authorShort)
+       author   = if aut=="" then [] else [Str ",", Space, authorSpan]
        date     = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
        tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan tgs]
        backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["link-local", "backlink"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]
