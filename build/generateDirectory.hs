@@ -181,7 +181,7 @@ generateDirectoryItems parent current ds =
      [RawBlock (Format "html") "<div id=\"directory-indexes\" class=\"columns\">\n"] ++
      [BulletList $ [[Para [
                         Span ("",["directory-indexes-upwards"],[]) [
-                            Link ("",["link-tag"],[]) [Str "Parent directory"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]
+                            Link ("",["link-tag"],[]) [Str "Parent"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]
                         ]
                     ]] ++
        (filter (not . null) $ map generateDirectoryItem ds)] ++

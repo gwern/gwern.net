@@ -500,6 +500,7 @@ body.tags a.link-local::after {
     background-repeat: no-repeat;
     margin: 0 0 0 0.25em;
     background-position-y: 0.15em;
+    font-size: 0.8em;
     }
 
 .directory-indexes-upwards::after {
