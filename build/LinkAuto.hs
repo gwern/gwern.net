@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-01-15 16:30:43 gwern"
+When:  Time-stamp: "2022-01-17 22:17:46 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -1254,7 +1254,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]ecurity[ -]through[ -]obscurity", "https://en.wikipedia.org/wiki/Security_through_obscurity")
         , ("[Ss]elegiline", "https://en.wikipedia.org/wiki/Selegiline")
         , ("[Ss]emaglutide", "https://en.wikipedia.org/wiki/Semaglutide")
-        , ("[Ss]enescen(ce|t).?", "https://en.wikipedia.org/wiki/Cellular_senescence")
+        , ("([Cc]ell(ular)?[Ss]enescen(ce|t).?|[Ss]enescen(ce|t).?)", "https://en.wikipedia.org/wiki/Cellular_senescence")
         , ("[Ss]enolytics?", "https://en.wikipedia.org/wiki/Senolytic")
         , ("[Ss]equential analysis", "https://en.wikipedia.org/wiki/Sequential_analysis")
         , ("[Ss]exual selection", "https://en.wikipedia.org/wiki/Sexual_selection")
@@ -1360,4 +1360,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(GSS|General Social Survey)", "https://en.wikipedia.org/wiki/General_Social_Survey")
         , ("([Hh]aplotypes?)", "https://en.wikipedia.org/wiki/Haplotype")
         , ("[Ss]ummary [Ss]tatistics?", "https://en.wikipedia.org/wiki/Summary_statistics")
+        , ("[Pp]enetrance", "https://en.wikipedia.org/wiki/Penetrance")
         ]

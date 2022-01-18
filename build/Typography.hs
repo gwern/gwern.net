@@ -150,7 +150,7 @@ breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' |
                                  Str (T.replace " /\8203 " " / " $ T.replace " /\8203" " /" $ T.replace "/\8203 " "/ " $ -- fix redundant \8203s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
                                                    T.replace "/" "/\8203" s) else x
 breakSlashesInline x = x
--- the link-underlining hack, using drop-shadows, causes many problems with characters like slashes 'eating' nearby characters; a phrase like "A/B testing" is not usually a problem because the slash is properly kerned, but inside a link, the '/' will eat at 'B' and other characters where the top-left comes close to the top of the slash. (We may be able to drop this someday if CSS support for underlining with skip-ink ever solidifies.)
+-- the link-underlining hack, using drop-shadows, causes many problems with characters like slashes 'eating' nearby characters; a phrase like "A/B testing" is not usually a problem because the slash is properly kerned, but inside a link, the '/' will eat at 'B' and other characters where the top-left comes close to the top of the slash. (NOTE: We may be able to drop this someday if CSS support for underlining with skip-ink ever solidifies.)
 -- The usual solution is to insert a HAIR SPACE or THIN SPACE. Here, we descend inside Link nodes to their Str to  add both <wbr> (line-breaking is still an issue AFAIK) and HAIR SPACE (THIN SPACE proved to be too much).
 breakSlashesPlusHairSpaces x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ')) s then
                                  Str (T.replace " /\8203 " " / " $ T.replace " /\8203" " /" $ T.replace "/\8203 " "/ " $
