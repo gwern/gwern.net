@@ -81,7 +81,7 @@ cleanAnchors = map cleanAnchor
 -- return True if matches any blacklist conditions
 filterURLs :: T.Text -> Bool
 filterURLs    u = "$"`T.isPrefixOf`u || "\8383"`T.isPrefixOf`u || "#"`T.isPrefixOf`u || "/static/img/"`T.isPrefixOf`u || "/newsletter/20"`T.isPrefixOf`u ||
-                  u `elem` ["http://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"]
+                  u `elem` ["https://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"]
 filterAnchors :: S.Set T.Text -> T.Text -> Bool
 filterAnchors d t = T.length t > anchorLengthMaximum ||
                     S.member (T.toLower t) d ||

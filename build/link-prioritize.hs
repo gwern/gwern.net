@@ -17,7 +17,7 @@ $ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runhaskell -istatic/build
 4 : http://groups.google.com/group/brain-training/browse_thread/thread/3008683d4b314f6/5e833c4c0df9fb9b
 4 : #jaeggi-2010
 4 : #jaeggi-2008
-3 : http://www.newsweek.com/2010/06/18/this-is-your-brain-aging.print.html
+3 : https://www.newsweek.com/2010/06/18/this-is-your-brain-aging.print.html
 3 : http://www.mindsparke.com/
 3 : http://www.klingberglab.se/pub/McNab2008.pdf
 ...
@@ -34,7 +34,7 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 7 http://predictionbook.com/users/gwern
 6 https://old.reddit.com/r/TOUHOUMUSIC/search?q=author%3Agwern&sort=new&restrict_sr=on&t=all
 ...
-1 http://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a
+1 https://17th-angel.tumblr.com/post/11409371268/anno-a-transfer-student-opens-the-door-with-a
 1 http://1000enpark.com/park/tokyo/oota/photo_heiwajima/p_main.jpg
 1 http://10000yearclock.net/
 1 http://0xeb.net/wp-content/uploads/2018/02/StarCraft_EUD_Emulator.pdf
