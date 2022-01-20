@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-01-17 22:17:46 gwern"
+When:  Time-stamp: "2022-01-19 18:30:16 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -421,7 +421,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Apollo 11", "https://en.wikipedia.org/wiki/Apollo_11")
         , ("Arab slave trade", "https://en.wikipedia.org/wiki/Barbary_slave_trade")
         , ("Archive ?Team", "https://en.wikipedia.org/wiki/Archive_Team")
-        , ("Artbreeder", "https://artbreeder.com/")
+        , ("Artbreeder", "https://www.artbreeder.com/")
         , ("Arthur C\\. Clarke", "https://en.wikipedia.org/wiki/Arthur_C._Clarke")
         , ("Arthur Schopenhauer", "https://en.wikipedia.org/wiki/Arthur_Schopenhauer")
         , ("Asuka Langley Soryu", "https://en.wikipedia.org/wiki/Asuka_Langley_Soryu")
@@ -581,7 +581,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Franz Ferdinand", "https://en.wikipedia.org/wiki/Archduke_Franz_Ferdinand_of_Austria")
         , ("FreeBSD", "https://en.wikipedia.org/wiki/FreeBSD")
         , ("Freeman Dyson", "https://en.wikipedia.org/wiki/Freeman_Dyson")
-        , ("Friendship [Ii]s Optimal", "http://www.fimfiction.net/story/62074/Friendship-is-Optimal")
+        , ("Friendship [Ii]s Optimal", "https://www.fimfiction.net/story/62074/Friendship-is-Optimal")
         , ("GAIL", "https://arxiv.org/abs/1606.03476")
         , ("GANSpace", "https://github.com/harskish/ganspace")
         , ("GANs?", "https://en.wikipedia.org/wiki/Generative_adversarial_network")
@@ -1042,7 +1042,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Cc]eiling effects?", "https://en.wikipedia.org/wiki/Ceiling_effect_(statistics)")
         , ("[Cc]erebral cortexe?s?", "https://en.wikipedia.org/wiki/Cerebral_cortex")
         , ("[Cc]holine", "https://en.wikipedia.org/wiki/Choline")
-        , ("[Cc]ognitive [Bb]ias(es)?", "https://en.wikipedia.org/wiki/Cognitive_bias")
+        , ("[Cc]ognitive [Bb]iase?s?", "https://en.wikipedia.org/wiki/Cognitive_bias")
         , ("[Cc]ommoditize [Yy]our [Cc]omplement", "/Complement")
         , ("[Cc]ommon ?[Cc]rawl", "https://en.wikipedia.org/wiki/Common_Crawl")
         , ("[Cc]omparative advantage", "https://en.wikipedia.org/wiki/Comparative_advantage")
@@ -1133,7 +1133,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Hh]yper ?[Nn]etworks", "https://arxiv.org/abs/1609.09106#google")
         , ("[Hh]yperbolic discounting", "https://en.wikipedia.org/wiki/Hyperbolic_discounting")
         , ("[Ii]diopathic hypersomnia", "https://en.wikipedia.org/wiki/Idiopathic_hypersomnia")
-        , ("[Ii]nclusionists?", "http://meta.wikimedia.org/wiki/Inclusionism")
+        , ("[Ii]nclusionists?", "https://meta.wikimedia.org/wiki/Inclusionism")
         , ("[Ii]ncretin", "https://en.wikipedia.org/wiki/Incretin")
         , ("[Ii]nequality of arithmetic and geometric means", "https://en.wikipedia.org/wiki/Inequality_of_arithmetic_and_geometric_means")
         , ("[Ii]nverted pendulum", "https://en.wikipedia.org/wiki/Inverted_pendulum")
@@ -1340,7 +1340,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Aa]ctinidine", "https://en.wikipedia.org/wiki/Actinidine")
         , ("(Gibbs sampl(er|ing)|Gibbs (learning )?algorithm.?)", "https://en.wikipedia.org/wiki/Gibbs_sampling")
         , ("(Felis catus|[Dd]omestic(ed)? cat.?|[Cc]ats?)", "https://en.wikipedia.org/wiki/Cat")
-        , ("([Dd]rosophila( [Mm]elanogaster)?|D. [Mm]elanogaster|[Dd]rosophila)", "https://en.wikipedia.org/wiki/Drosophila_melanogaster")
+        , ("(Drosophila melanogaster|D. [Mm]elanogaster|[Dd]rosophila)", "https://en.wikipedia.org/wiki/Drosophila_melanogaster")
         , ("[Cc]ross[ -]entropy", "https://en.wikipedia.org/wiki/Cross_entropy")
         , ("[Ee]ntropy", "https://en.wikipedia.org/wiki/Entropy_(information_theory)") -- doesn't look like most of my uses are physics but information theory
         , ("(([Rr]andomi[zs]ed )?[Cc]ontrol(led)? ((clinical[ -])?[Tt]rials?|[Ee]xperiment)|RCTs?)", "https://en.wikipedia.org/wiki/Randomized_controlled_trial")

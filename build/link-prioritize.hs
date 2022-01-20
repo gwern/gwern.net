@@ -14,7 +14,7 @@ Simple use: (because it uses the LinkMetadata module, invoking it from a differe
 
 $ ~/wiki/static/build/link-extractor.hs DNB-FAQ.page | runhaskell -istatic/build/ ./static/build/link-prioritize.hs
 175 : !W
-4 : http://groups.google.com/group/brain-training/browse_thread/thread/3008683d4b314f6/5e833c4c0df9fb9b
+4 : https://groups.google.com/g/brain-training/browse_thread/thread/3008683d4b314f6/5e833c4c0df9fb9b
 4 : #jaeggi-2010
 4 : #jaeggi-2008
 3 : https://www.newsweek.com/2010/06/18/this-is-your-brain-aging.print.html

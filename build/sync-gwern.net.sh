@@ -367,7 +367,7 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. docs/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --exclude=".*" --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --exclude=".*" --exclude='preprocess-markdown' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
     rsync --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
@@ -380,7 +380,7 @@ else
     bold "Expiring ≤100 updated files…"
     # expire CloudFlare cache to avoid hassle of manual expiration: (if more than 100, we've probably done some sort of major systemic change & better to flush whole cache or otherwise investigate manually)
     # NOTE: 'bot-fighting' CloudFlare settings must be largely disabled, otherwise CF will simply CAPTCHA or block outright the various curl/linkchecker tests as 'bots'.
-    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | fgrep -v 'images/thumbnails/' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | sort | head -100) https://www.gwern.net/sitemap.xml https://www.gwern.net/index"
+    EXPIRE="$(find . -type f -mtime -1 -not -wholename "*/\.*/*" -not -wholename "*/_*/*" | fgrep -v 'images/thumbnails/' | sed -e 's/\.page$//' -e 's/^\.\/\(.*\)$/https:\/\/www\.gwern\.net\/\1/' | sort | head -100) https://www.gwern.net/sitemap.xml https://www.gwern.net/"
     for URL in $EXPIRE; do
         echo -n "Expiring: $URL "
         ( curl --silent --request POST "https://api.cloudflare.com/client/v4/zones/57d8c26bc34c5cfa11749f1226e5da69/purge_cache" \
@@ -468,7 +468,7 @@ else
           cm "text/html" 'https://www.gwern.net/atom.xml'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/cs/2012-terencetao-anonymity.html'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/docs/silk-road/2013-06-07-premiumdutch-profile.htm'
-          cm "text/html; charset=utf-8" 'https://www.gwern.net/index'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Attention'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Faster'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
@@ -494,12 +494,12 @@ else
     wrap λ "The live MIME types are incorrect"
 
     ## known-content check:
-    λ(){ curl --silent 'https://www.gwern.net/index' | tr -d '­' | fgrep --quiet 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/index content-check failed";
+    λ(){ curl --silent 'https://www.gwern.net/' | tr -d '­' | fgrep --quiet 'This Is The Website</span> of <strong>Gwern Branwen</strong>' || echo "/ content-check failed";
          curl --silent 'https://www.gwern.net/Zeo'   | tr -d '­' | fgrep --quiet 'lithium orotate' || echo "/Zeo Content-check failed"; }
     wrap λ "Known-content check of index/Zeo"
 
     ## did any of the key pages mysteriously vanish from the live version?
-    linkchecker --threads=5 --check-extern --recursion-level=1 'https://www.gwern.net/index'
+    linkchecker --threads=5 --check-extern --recursion-level=1 'https://www.gwern.net/'
     ## - traffic checks/alerts are done in Google Analytics: alerts on <900 pageviews/daily, <40s average session length/daily.
     ## - latency/downtime checks are done in `updown.io` (every 1h, 1s response-time for /index)
     set +e
