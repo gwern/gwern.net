@@ -61,6 +61,8 @@ typographyTransform = walk (breakSlashes . breakEquals) .
 -- → [Str "biggan means big"]
 -- walk smallcapsfyInline [Str "GPT-2-117M is a neural language model with ~117,000,000 parameters (fitting in 150MB) but smaller than GPT-2-1.5b and easily trained on a P100 using FP16; it is difficult to reach GPT-like levels"]
 -- → RawInline (Format "html") "<span class=\"smallcaps-auto\">GPT-2-117M</span> is a neural language model with ~117,000,000 parameters (fitting in 150MB) but smaller than <span class=\"smallcaps-auto\">GPT-2-1</span>.5b and easily trained on a P100 using FP16; it is difficult to reach <span class=\"smallcaps-auto\">GPT</span>-like levels"
+-- walk smallcapsfyInline [Str "MS COCO"]
+-- → [Span ("",[],[]) [Span ("",["smallcaps-auto"],[]) [Str "MS COCO"]]]
 --
 -- Whole-document examples:
 --
@@ -117,7 +119,7 @@ smallcapsfyRegex = R.makeRegex
    "[A-Z&][A-Z&][A-Z&] [A-Z&][A-Z&]|" ++
    -- walk smallcapsfyInline [Str "WP RSS bot"]
    -- → [RawInline (Format "html") "<span class=\"smallcaps-auto\">WP RSS</span> bot"]
-   "[A-Z&][A-Z&] [A-Z&][A-Z&][A-Z&]|" ++
+   "[A-Z&][A-Z&] [A-Z&][A-Z&][A-Z&]+|" ++
    -- special-case AM/PM like "9:30AM" or "1PM" or "5:55 PM" (WARNING: Pandoc will typically parse spaces into 'Space' AST nodes, making it hard to match on things like "5 PM")
    "[[:digit:]]+ ?[AP]M|" ++
    "\\??[AP]M|" ++ -- special-case handling for all the "?AM--?PM" in /Morning-writing:
