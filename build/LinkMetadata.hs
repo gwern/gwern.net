@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-21 16:33:07 gwern"
+When:  Time-stamp: "2022-01-23 18:29:38 gwern"
 License: CC-0
 -}
 
@@ -434,8 +434,8 @@ readYamlFast yamlp = do file <- B.readFile yamlp
                            Right y -> (return $ concatMap convertListToMetadataFast y) :: IO MetadataList
                 where
                  convertListToMetadataFast :: [String] -> MetadataList
-                 convertListToMetadataFast [u, t, a, d, di,     s] = [(u, (t,a,d,di,[], s))]
-                 convertListToMetadataFast [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,[ts], s))]
+                 convertListToMetadataFast [u, t, a, d, di,     s] = [(u, (t,a,d,di,tag2TagsWithDefault u "", s))]
+                 convertListToMetadataFast [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,tag2TagsWithDefault u ts, s))]
                  convertListToMetadataFast                        e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
 
 recoverYamlAttempt :: Int -> Path -> B.ByteString -> [[String]]
@@ -456,9 +456,9 @@ readYaml yaml = do filep <- doesFileExist yaml
                           Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
                  convertListToMetadata :: Backlinks -> [String] -> MetadataList
-                 convertListToMetadata f [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags f u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata f [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags f u $ tag2TagsWithDefault u ts, s))]
-                 convertListToMetadata _                       e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
+                 convertListToMetadata bldb [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags bldb u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata bldb [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags bldb u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata _                         e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
 
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
