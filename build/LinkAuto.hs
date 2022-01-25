@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-01-19 18:30:16 gwern"
+When:  Time-stamp: "2022-01-25 11:37:39 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -150,6 +150,10 @@ mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
 -- Optimization: take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
 -- This avoids redundancy with links added by hand or other filters.
+--
+-- NOTE: This can be used to disable link rewrites by manually adding a link. In cases of self-links (eg /Modafinil will contain the word 'modafinil' and get a rewrite to /Modafinil, leading to a useless self-link), it is easier to add a link to disable the rewrite than to figure out how to filter out that one exact rewrite only on that page. This link can be hidden to avoid distracting the reader.
+-- So to disable the modafinil rewrite on /Modafinil, one could insert into the Markdown a line like:
+-- `<span style="display:none;"><a href="/Modafinil">null</a></span> <!-- LinkAuto override: disable self-linking -->`
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://www.gwern.net/" "/") $ extractURLs p in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)
