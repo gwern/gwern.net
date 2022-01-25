@@ -227,5 +227,5 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                   Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
                                   Just (t,_,_,_,tags,_) ->
                                       [Para
-                                        [Link ("", ["docMetadata", "backlinksNot", "idNot"], [("embeddingDistance", T.pack $ take 7 $ show distance), ("linkTags", show tags) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
+                                        [Link ("", ["docMetadata", "backlinksNot", "idNot"], [("embeddingDistance", T.pack $ take 7 $ show distance), ("linkTags", T.pack $ unwords tags) ]) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
                                         ]

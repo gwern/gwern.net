@@ -35,7 +35,7 @@
 }
 .has-content::before {
     background-position: 100% 100%, 0 100%;
-    top: 0.5em; /* WARNING: this needs to be 0.5em rather than 'unset' to avoid the '|_' problem on Chrome where the '|' gets pushed to somewhere on the next line, which is distracting & ugly. However, this doesn't seem to be entirely right a solution either? In *some* cases it produces a gap at the corner... But those are far more minor than leaving it 'unset', so 0.5em it is. */
+    top: 0.52em; /* WARNING: this needs to be ~0.5em rather than 'unset' to avoid the '|_' problem on Chrome where the '|' gets pushed to somewhere on the next line, which is distracting & ugly. However, this doesn't seem to be entirely right a solution either? In *some* cases it produces a gap at the corner... But those are far more minor than leaving it 'unset', so 0.5em it is. */
     bottom: 0.1em;
     width: 1px;
 }
