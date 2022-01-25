@@ -101,12 +101,12 @@ if (window.Extracts) {
             let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
             //  For local-archive links, include archive link with original.
-            return `<a
+            return `[<a
                     class="popframe-title-link-archived"
                     title="Open ${target.href} in a new window (desktop) or current (mobile)"
                     href="${target.href}"
                     target="${linkTarget}"
-                        >[ARCHIVED]</a>` +
+                        >ARCHIVED</a>]` +
                 `<span class="separator">·</span>` +
                 `<a
                     class="popframe-title-link"

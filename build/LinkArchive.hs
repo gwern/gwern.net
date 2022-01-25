@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-01-24 21:12:51 gwern"
+When:  Time-stamp: "2022-01-25 11:45:02 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -30,7 +30,7 @@ Details:
 
     - `/docs/www/` is excluded from the `sitemap.xml` & `sync-gwern.net` compile-time checks, blocked in `robots.txt`, `rel="canonical"` is set in the mirrors by SingleFile, additional`rel="archive nofollow"` attributes are set on each link when used in Gwern.net, and noarchive/noindex/nofollow/nocache are set as HTTP headers by nginx for `/docs/www/`; exposing thousands of mirrors to the rest of the Internet risks causing SEO issues, high bandwidth consumption, and legal or social problems
 - links are rewritten to point the `href` to `wiki/docs/www/$DOMAIN($URL)/SHA1($URL).html`; like inflation-adjustments or link popups, the original `href` is stored as a span (eg. `<a href="https://foo.com">foo</a>` → `<a rel="archive nofollow" data-url-original="https://foo.com" href="/docs/www/foo.com/cf934d97a8012ba1c2d354d6cd39e77535fd0fb9.html">foo</a></span>`)
-- the `data-url-original` metadata is used by `popups.js` to add to link popups a '[original]' hyperlink (using the JS templating, something like `<p>..."Title" <a href="${target.dataset.urlOriginal}" title="Original (live) Internet version of ${target.dataset.popupTitle}">[original]</a>...</p>`)
+- the `data-url-original` metadata is used by `popups.js` to add to link popups a '[original]' hyperlink (using the JS templating, something like `<p>..."Title" [<a href="${target.dataset.urlOriginal}" title="Original (live) Internet version of ${target.dataset.popupTitle}">original</a>]...</p>`)
 
 There are approximately 30k external links on Gwern.net as of October 2019, of which perhaps 5k need to be mirrored; I estimate this will take up somewhere on the order of ~50GB and add a few dollars to S3 hosting costs. (After exclusions, my archive was 5300 links (excluding optional PDFs) / 20GB in February 2020.)
 But it'll be worth it to forestall thousands of dying links, regular reader frustration, and a considerable waste of my time every month dealing with the latest broken links.

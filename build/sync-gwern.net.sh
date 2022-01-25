@@ -271,7 +271,7 @@ else
                -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
                -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e '<span class="cit' -e 'gwsed' -e 'full.full' -e ',,' \
                -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
-               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -- ./metadata/*.yaml;
+               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -- ./metadata/*.yaml;
          # look for YAML linebreaking at a hyphen:
         egrep -v '^- - http' ./metadata/*.yaml | egrep '[a-zA-Z0-9>]-$'; }
     wrap λ "Check possible syntax errors in YAML metadata database"
