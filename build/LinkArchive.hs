@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-01-17 21:07:21 gwern"
+When:  Time-stamp: "2022-01-24 21:12:51 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -945,11 +945,12 @@ whiteList url
       , "https://www.jetbrains.com/lp/mono/" -- low quality
       , "linusakesson.net" -- low quality (YT embed breaks)
       , "https://willcrichton.net/nota/" -- interactive
-      , "http://trixter.oldskool.org/" -- low quality (YT embed breaks)
+      , "https://trixter.oldskool.org/" -- low quality (YT embed breaks)
       , "http://www.michaelburge.us/2019/05/21/marai-agent.html" -- low quality (YT embed breaks)
       , "https://pol.is/home" -- homepage
       , "http://images.google.com/images" -- interactive (search engine query)
       , "https://danijar.com/project/apd/" -- video embed
-      , "http://lispm.de/symbolics-lisp-machine-ergonomics" -- video embd
+      , "http://lispm.de/symbolics-lisp-machine-ergonomics" -- video embed
+      , "https://github.com/ocrmypdf/OCRmyPDF"
       ] = True
     | otherwise = False

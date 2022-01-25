@@ -316,7 +316,7 @@ headerSelflink x = x
 -- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
 -- read HTML string with TagSoup, process `<img>` tags to read the file's dimensions, and hardwire them;
 -- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
--- Further, specify 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (https://bugzilla.mozilla.org/show_bug.cgi?id=1542784), standardized as https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes with >63% global availability + backwards compatibility (https://www.caniuse.com/#feat=loading-lazy-attr https://github.com/whatwg/html/pull/3752  https://web.dev/native-lazy-loading/).
+-- Further, specify 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (https://bugzilla.mozilla.org/show_bug.cgi?id=1542784), standardized as https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes with >63% global availability + backwards compatibility (https://caniuse.com/#feat=loading-lazy-attr https://github.com/whatwg/html/pull/3752  https://web.dev/native-lazy-loading/).
 -- Pandoc feature request to push the lazy loading upstream: https://github.com/jgm/pandoc/issues/6197
 addImgDimensions :: String -> IO String
 addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg . parseTags

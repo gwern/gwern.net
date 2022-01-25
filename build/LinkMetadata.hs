@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-23 18:29:38 gwern"
+When:  Time-stamp: "2022-01-24 11:48:06 gwern"
 License: CC-0
 -}
 
@@ -1284,6 +1284,8 @@ generateID url author date
        , ("https://arxiv.org/abs/1711.08393", "wu-et-al-2017-blockdrop")
        , ("https://openreview.net/forum?id=rk6H0ZbRb", "cubuk-et-al-2018-adversarialexamples")
        , ("https://openreview.net/forum?id=St1giarCHLP", "song-et-al-2021-ddim")
+       , ("https://learningtopredict.github.io/#google", "freeman-et-al-2019-blog")
+       , ("https://arxiv.org/abs/1910.13038#google", "freeman-et-al-2019-paper")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1896,6 +1898,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<h3>Abstract</h3>", "")
           , ("<h3>SUMMARY</h3>", "")
           , ("<h3>Summary</h3>", "")
+          , ("<abstract abstract-type=\"summary\">", "")
           , ("</abstract>", "")
           , ("<abstract>", "")
           , ("<abstract>\n  ", "")
@@ -2087,6 +2090,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" cm(3)", " cm<sup>3</sup>")
           , (" R2", " R<sup>2</sup>")
           , ("R2 = ", "R<sup>2</sup> = ")
+          , ("z-score", "<em>z</em>-score")
+          , ("Z-score", "<em>z</em>-score")
+          , ("z-scores", "<em>z</em>-scores")
           , ("<em>p<\\/em>=", "<em>p</em> = ")
           , ("P = ", "<em>p</em> = ")
           , ("P values", "<em>p</em>-values")

@@ -367,7 +367,7 @@ else
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. docs/*), just force a hash-based sync every time:
     bold "Syncing static/…"
-    rsync --exclude=".*" --exclude='preprocess-markdown' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
+    rsync --exclude=".*" --exclude='preprocess-markdown' --exclude='generateSimilar' --chmod='a+r' --recursive --checksum --copy-links --verbose --itemize-changes --stats ./static/ gwern@176.9.41.242:"/home/gwern/gwern.net/static"
     ## Likewise, force checks of the Markdown pages but skip symlinks (ie. non-generated files):
     bold "Syncing pages…"
     rsync --exclude=".*" --chmod='a+r' --recursive --checksum --quiet --info=skip0 ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
