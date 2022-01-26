@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-01-25 11:45:02 gwern"
+When:  Time-stamp: "2022-01-25 19:32:46 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -952,5 +952,6 @@ whiteList url
       , "https://danijar.com/project/apd/" -- video embed
       , "http://lispm.de/symbolics-lisp-machine-ergonomics" -- video embed
       , "https://github.com/ocrmypdf/OCRmyPDF"
+      , "https://boardgamegeek.com" -- stable
       ] = True
     | otherwise = False

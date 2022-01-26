@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-26 16:13:02 gwern"
+When:  Time-stamp: "2022-01-26 17:38:13 gwern"
 License: CC-0
 -}
 
@@ -19,7 +19,7 @@ import qualified Data.ByteString as B (appendFile, readFile, intercalate, split,
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
-import qualified Data.Text as T (append, head, pack, unpack, Text)
+import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
@@ -351,7 +351,7 @@ rewriteAnchors f = T.pack . replace "href=\"#" ("href=\""++f++"#") . T.unpack
 -- Compile tags down into a Span containing a list of links to the respective /docs/ directory indexes which will contain a copy of all annotations corresponding to that tag/directory.
 --
 -- Simple version:
--- > tagsToLinksSpan ["economics", "genetics/heritable", "psychology/writing"]
+-- > tagsToLinksSpan "economics, genetics/heritable, psychology/writing"
 -- →
 -- Span ("",["link-tags"],[])
 --   [Link ("",["link-tag"],[]) [Str "economics"] ("/docs/economics/index",""),Str ", ",
@@ -373,13 +373,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-local", "link-tags"], []) $
-                       tail $ intersperseTagList $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
- where
-        -- step through the list of Links; if the displayed text starts with a '/', then it was a sub-tag according to `condenseTags`; plus-separate the sub-tags, but comma-separate the rest; this will prefix a stray `Str ", "` which should be discarded. We add a WORD JOINER to ensure that the '+' remains associated with the sub-tag it's prefixed to when line-breaking.
-        intersperseTagList :: [Inline] -> [Inline]
-        intersperseTagList [] = []
-        intersperseTagList (t@(Link _ [Str s] _):rest) = (if T.head s /= '/' then [Str ", ", t] else [Str "\8288+", t]) ++ intersperseTagList rest
-        intersperseTagList x = x
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
@@ -1412,8 +1406,6 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+) \\.", " <a href=\"\\1\">\\1</a> ."),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">\\1</a> .</p>"),
         (" (https://github.com/[a-zA-Z0-9_\\.\\?/-]+) ?\\.</p>", " <a href=\"\\1\">Github</a>.</p>"),
-        ("https://youtu\\.be/([a-zA-Z0-9]+)", "https://www.youtube.com/watch?v=\\1"),
-        (" https://youtu\\.be/([a-zA-Z0-9]+)", " <a href=\"https://www.youtube.com/watch?v=\\1\">YouTube</a>"),
         -- try to rewrite half-parenthesis lists like '(( 1) foo; 2) bar' into '(1) foo; (2) bar' for consistency & parentheses-checking:
         ("\\(10\\) (.*) 11\\)", " (10) \\1 (11)"),
         (" 10\\) (.*) 11\\)", " (10) \\1 (11)"),
