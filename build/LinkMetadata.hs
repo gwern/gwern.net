@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-26 12:17:52 gwern"
+When:  Time-stamp: "2022-01-26 16:13:02 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan) where
+module LinkMetadata (isLocalLink, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -22,7 +22,8 @@ import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, l
 import qualified Data.Text as T (append, head, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
-import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, (\\))
+import Data.Function (on)
+import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
@@ -425,6 +426,15 @@ type Metadata = M.Map Path MetadataItem                                --
 type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)
 type MetadataList = [(Path, MetadataItem)]
 type Path = String
+
+sortItemDate :: [MetadataItem] -> [MetadataItem]
+sortItemDate = sortBy (flip compare `on` third)
+
+sortItemPathDate :: [(Path,MetadataItem)] -> [(Path,MetadataItem)]
+sortItemPathDate = sortBy (flip compare `on` (third . snd))
+
+third :: MetadataItem -> String
+third (_,_,date,_,_,_) = date
 
 writeYaml :: Path -> MetadataList -> IO ()
 writeYaml path yaml = lock $ do
