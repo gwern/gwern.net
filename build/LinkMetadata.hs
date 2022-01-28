@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-26 17:38:13 gwern"
+When:  Time-stamp: "2022-01-27 12:32:22 gwern"
 License: CC-0
 -}
 
@@ -23,7 +23,7 @@ import qualified Data.Text as T (append, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
-import Data.List (intercalate, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
+import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
@@ -2183,15 +2183,36 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("p-value", "<em>p</em>-value")
           , ("ﬁ", "fi")
           , (" ", " ")
+          -- many uses of 'approximately' are weasel-wordy which add nothing whatsoever semantically, so we can drop the '~':
+          , ("~linearly", "linearly")
+          , ("~every", "every")
+          , ("~isometrically", "isometrically")
+          , ("~solving", "solving")
+          , ("~simulate", "simulate")
+          , ("~this", "Approximately this")
+          , ("~equivalent", "equivalent")
+          , ("~the", "the")
+          , ("~one ", "~1")
+          , ("~zero ", "~0")
+          , ("~identical", "near-identical")
+          , ("approximately ", "~")
+          , ("Approximately ", "~")
           , ("∼", "~")
           , ("GxE", "G×E")
           , (" 10x", " 10×")
           , (" 100x", " 100×")
           , (" 2x", " 2×")
           , (" 3x", " 3×")
+          , ("~twice", "~2×")
+          , ("five times", "5×")
+          , ("5 years", "55 years")
+          , ("Fifty-five years", "55 years")
           , ("<p> ", "<p>")
           , ("+/-", "±")
           , ("<sup>~</sup>", "~")
+          , ("one-third", "1⁄3<sup>rd</sup>")
+          , ("one-quarter", "1⁄4<sup>th</sup>")
+          , ("three and a half", "3.5")
           , (" 11th", " 11<sup>th</sup>")
           , (" 12th", " 12<sup>th</sup>")
           , (" 13th", " 13<sup>th</sup>")

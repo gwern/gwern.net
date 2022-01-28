@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-01-26 12:17:33 gwern"
+When:  Time-stamp: "2022-01-27 23:12:57 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -447,7 +447,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Bayesian [Ss]earch [Tt]heory", "https://en.wikipedia.org/wiki/Bayesian_search_theory")
         , ("Bayesian decision", "https://en.wikipedia.org/wiki/Subjective_expected_utility")
         , ("Bayesian optimization", "https://en.wikipedia.org/wiki/Bayesian_optimization")
-        , ("Berkson's paradox", "https://en.wikipedia.org/wiki/Berkson%27s_paradox")
+        , ("Berkson[’']s paradox", "https://en.wikipedia.org/wiki/Berkson%27s_paradox")
         , ("BiT", "https://arxiv.org/abs/1912.11370#google")
         , ("Bias in Mental Testing", "https://en.wikipedia.org/wiki/Bias_in_Mental_Testing")
         , ("BigBird", "https://arxiv.org/abs/2007.14062#google")
@@ -529,7 +529,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Der Ring des Nibelungen", "https://en.wikipedia.org/wiki/Der_Ring_des_Nibelungen")
         , ("Digi ?[Cc]ash", "https://en.wikipedia.org/wiki/DigiCash")
         , ("Dinosaur Comics", "https://en.wikipedia.org/wiki/Dinosaur_Comics")
-        , ("Disney animators' strike", "https://en.wikipedia.org/wiki/Disney_animators%27_strike")
+        , ("Disney animators[’'] strike", "https://en.wikipedia.org/wiki/Disney_animators%27_strike")
         , ("DistilBERT", "https://arxiv.org/abs/1910.01108")
         , ("Domenico Starnone", "https://en.wikipedia.org/wiki/Domenico_Starnone")
         , ("Donald Keene", "https://en.wikipedia.org/wiki/Donald_Keene")
@@ -576,7 +576,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Flickr", "https://en.wikipedia.org/wiki/Flickr")
         , ("Flowers for Algernon", "https://en.wikipedia.org/wiki/Flowers_for_Algernon")
         , ("Flynn [Ee]ffect", "https://en.wikipedia.org/wiki/Flynn_effect")
-        , ("Foucault's Pendulum", "https://en.wikipedia.org/wiki/Foucault%27s_Pendulum")
+        , ("Foucault[’']s Pendulum", "https://en.wikipedia.org/wiki/Foucault%27s_Pendulum")
         , ("Fourier identity", "https://en.wikipedia.org/wiki/Fourier_transform")
         , ("Francis Fukuyama", "https://en.wikipedia.org/wiki/Francis_Fukuyama")
         , ("Frank Dikötter", "https://en.wikipedia.org/wiki/Frank_Dik%C3%B6tter")
@@ -669,7 +669,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("James C\\. Scott", "https://en.wikipedia.org/wiki/James_C._Scott")
         , ("Jargon File", "https://en.wikipedia.org/wiki/Jargon_File")
         , ("Jeanne Calment", "https://en.wikipedia.org/wiki/Jeanne_Calment")
-        , ("Jensen's inequality", "https://en.wikipedia.org/wiki/Jensen%27s_inequality")
+        , ("Jensen[’']s inequality", "https://en.wikipedia.org/wiki/Jensen%27s_inequality")
         , ("John Carreyrou", "https://en.wikipedia.org/wiki/John_Carreyrou")
         , ("John D\\. Arnold", "https://en.wikipedia.org/wiki/John_D._Arnold")
         , ("John L\\. Leal", "https://en.wikipedia.org/wiki/John_L._Leal")
@@ -751,7 +751,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Monte Carlo (simulates?|estimates?|simulations?|approximations?|implementations?|methods?)?", "https://en.wikipedia.org/wiki/Monte_Carlo_method")
         , ("Monte Carlo algorithm", "https://en.wikipedia.org/wiki/Monte_Carlo_algorithm")
         , ("Moore's [Ll]aw", "https://en.wikipedia.org/wiki/Moore%27s_law")
-        , ("Moravec's paradox", "https://en.wikipedia.org/wiki/Moravec%27s_paradox")
+        , ("Moravec[’']s paradox", "https://en.wikipedia.org/wiki/Moravec%27s_paradox")
         , ("Mt\\. ?Gox", "https://en.wikipedia.org/wiki/Mt._Gox")
         , ("Mu[Zz]ero Unplugged", "https://arxiv.org/abs/2104.06294#deepmind")
         , ("Mu[Zz]ero", "https://arxiv.org/abs/1911.08265#deepmind") -- MuZero

@@ -60,7 +60,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                   interwikiurl u a = let a' = if u=="https://en.wikipedia.org/wiki/" then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
                                        u `T.append` T.pack (replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
                   deunicode :: String -> String
-                  deunicode = replace "’" "\'" . replace " " " " . replace " " " "
+                  deunicode = replace "‘" "\'" . replace "’" "\'" . replace " " " " . replace " " " "
 convertInterwikiLinks x = x
 
 -- If True, a URL is a regular English Wikipedia article. If False, it's something else, like a talk page or history page etc.

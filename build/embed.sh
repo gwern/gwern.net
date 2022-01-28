@@ -3,10 +3,10 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2021-12-16 17:07:27 gwern"
+# When:  Time-stamp: "2022-01-27 19:31:43 gwern"
 # License: CC-0
 #
-# Shell script to pass a document into the OpenAI API Embedding endpoint (https://beta.openai.com/docs/api-reference/embeddings). Authentication via shell environment variable.
+# Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings https://openai.com/blog/introducing-text-and-code-embeddings/ https://arxiv.org/abs/2201.10005#openai https://beta.openai.com/docs/guides/embeddings/use-cases ). Authentication via shell environment variable.
 #
 # Example:
 # $ embed.sh "foo bar"
