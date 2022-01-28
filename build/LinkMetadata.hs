@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-27 12:32:22 gwern"
+When:  Time-stamp: "2022-01-28 16:42:42 gwern"
 License: CC-0
 -}
 
@@ -373,7 +373,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-local", "link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
@@ -391,6 +391,53 @@ condenseTags ts = map (\t -> let previousList = map prefixfy $ takeWhile (/=t) t
                   ts
   where prefixfy  s = let prefix = reverse $ dropWhile (/= '/') $ reverse s in if prefix=="" then s else init prefix
         postfixfy s = "/" ++ (reverse $ takeWhile (/= '/') $ reverse s)
+
+-- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the directory-tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
+abbreviateTag :: T.Text -> T.Text
+abbreviateTag = T.pack . replaceMany tagRewrites . T.unpack
+  where tagRewrites :: [(String,String)]
+        tagRewrites = [("reinforcement-learning", "RL")
+                      , ("psychiatry/traumatic-brain-injury", "TBI")
+                      , ("psychology/european-journal-of-parapsychology", "EJP")
+                      , ("reinforcement-learning/preference-learning", "preference learning")
+                      , ("reinforcement-learning/meta-learning", "meta learning")
+                      , ("genetics/selection/index-selection", "index selection")
+                      , ("reinforcement-learning/deepmind", "DM")
+                      , ("reinforcement-learning/openai", "OA")
+                      , ("technology/digital-antiquarian", "Filfre")
+                      , ("history/public-domain-review", "Public Domain Review")
+                      , ("reinforcement-learning/oa5", "OA5")
+                      , ("reinforcement-learning/alphastar", "AlphaStar")
+                      , ("reinforcement-learning/alphago", "AlphaGo")
+                      , ("reinforcement-learning/muzero", "MuZero")
+                      , ("silk-road/william-pickard", "William Pickard")
+                      , ("nootropic/quantified-self", "QS")
+                      , ("philosophy/frank-p-ramsey", "Frank Ramsey")
+                      , ("cs/end-to-end-principle", "end-to-end")
+                      , ("lesswrong-survey/hpmor", "HP:MoR")
+                      , ("history/s-l-a-marshall", "SLAM")
+                      , ("modafinil/darknet-market", "modafinil DNM")
+                      , ("ai/text-style-transfer", "text style transfer")
+                      , ("conscientiousness", "Conscientiousness")
+                      , ("tominaga-nakamoto", "Tominaga Nakamoto")
+                      , ("longevity/semaglutide", "-glutide")
+                      , ("psychology/okcupid", "OKCupid")
+                      , ("philosophy/brethren-of-purity", "Brethren of Purity")
+                      , ("existential-risk", "x-risk")
+                      , ("ai/highleyman", "Highleyman")
+                      , ("ai/gpt/dall-e", "DALL·E")
+                      , ("ai/stylegan", "StyleGAN")
+                      , ("ai/gan", "GAN")
+                      , ("iq/anne-roe", "Anne Roe")
+                      , ("ai/gpt/lamda", "LaMDA")
+                      , ("ai/gpt/codex", "Codex")
+                      , ("dual-n-back", "DNB")
+                      , ("vitamin-d", "Vitamin D")
+                      , ("iq/smpy", "SMPY")
+                      , ("ai/clip", "CLIP")
+                      , ("iq/ses", "IQ/SES")
+                      , ("ai/gpt", "GPT")
+                      ]
 
 -------------------------------------------------------------------------------------------------------------------------------
 
