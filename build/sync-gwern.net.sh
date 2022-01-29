@@ -29,7 +29,7 @@ if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) &
           -n $(command -v static/build/anchor-checker.php) && -n $(command -v php) && -n $(command -v static/build/generateDirectory.hs) && \
           -n $(command -v static/build/generateLinkBibliography.hs) && \
           -n $(command -v static/build/generateBacklinks.hs) ]] && \
-          -n $(command -v static/build/generateSimilar.hs) ]] && \
+          -n $(command -v static/build/generateSimilarLinks.hs) ]] && \
        [ -z "$(pgrep hakyll)" ];
 then
     red "Dependencies missing or Hakyll already running?"
@@ -54,7 +54,7 @@ else
     compile generateDirectory.hs &
     compile generateBacklinks.hs &
     compile preprocess-markdown.hs &
-    ## NOTE: generateSimilar.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
+    ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
     wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" || true # backup in case of corruption
