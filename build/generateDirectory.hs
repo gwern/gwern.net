@@ -64,7 +64,7 @@ generateDirectory mta dir'' = do
   let titledLinksSections   = generateSections titledLinks
   let untitledLinksSection  = generateListItems untitledLinks
 
-  let header = generateYAMLHeader dir''
+  let header = generateYAMLHeader dir'' (getNewestDate links)
   let directorySection = generateDirectoryItems parentDirectory' dir'' dirs
 
   -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at '/docs/foo/index'
@@ -98,20 +98,21 @@ generateDirectory mta dir'' = do
     Right p' -> do let contentsNew = (T.pack header) `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
 
-generateYAMLHeader :: FilePath -> String
-generateYAMLHeader d = "---\n" ++
-                       "title: /" ++ d ++ " Directory Listing\n" ++
-                       "author: 'N/A'\n" ++
-                       "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>, most recent first.\n" ++
-                       "tags: index\n" ++
-                       "created: 2009-01-01\n" ++
-                       "status: in progress\n" ++
-                       "confidence: log\n" ++
-                       "importance: 0\n" ++
-                       "cssExtension: drop-caps-de-zs\n" ++
-                       "index: true\n" ++
-                       "...\n" ++
-                       "\n"
+generateYAMLHeader :: FilePath -> String -> String
+generateYAMLHeader d date = concat [ "---\n",
+                       "title: /" ++ d ++ " Directory Listing\n",
+                       "author: 'N/A'\n",
+                       "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>, most recent first.\n",
+                       "tags: index\n",
+                       "created: 2009-01-01\n",
+                       if date=="" then "" else "modified: " ++ date ++ "\n",
+                       "status: in progress\n",
+                       "confidence: log\n",
+                       "importance: 0\n",
+                       "cssExtension: drop-caps-de-zs\n",
+                       "index: true\n",
+                       "...\n",
+                       "\n"]
 
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
@@ -154,6 +155,11 @@ listTagged m dir = if not ("docs/" `isPrefixOf` dir) then return [] else
 -- We generally prefer to reverse this to descending order, to show newest-first.
 sortByDate :: [(FilePath,MetadataItem,FilePath,FilePath)] -> [(FilePath,MetadataItem,FilePath,FilePath)]
 sortByDate = sortBy (\(f,(_,_,d,_,_,_),_,_) (f',(_,_,d',_,_,_),_,_) -> if not (null d && null d') then (if d > d' then GT else LT) else (if f > f' then GT else LT))
+
+-- assuming already-descending-sorted input from `sortByDate`, output the date of the first (ie. newest) item:
+getNewestDate :: [(FilePath,MetadataItem,FilePath,FilePath)] -> String
+getNewestDate [] = ""
+getNewestDate ((_,(_,_,date,_,_,_),_,_):_) = date
 
 -- how do we handle files with appended data, which are linked like '/docs/reinforcement-learning/2020-bellemare.pdf#google' but exist as files as '/docs/reinforcement-learning/2020-bellemare.pdf'? We can't just look up the *filename* because it's missing the # fragment, and the annotation is usually for the full path including the fragment. If a lookup fails, we fallback to looking for any annotation with the file as a *prefix*, and accept the first match.
 lookupFallback :: Metadata -> String -> (FilePath, MetadataItem)
