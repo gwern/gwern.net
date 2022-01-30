@@ -21,8 +21,8 @@ Annotations = {
         GWLog("Annotations.cleanup", "annotations.js", 1);
 
         //  Remove staging element for annotations.
-        if (Extracts.annotationsWorkspace)
-            Extracts.annotationsWorkspace.remove();
+        if (Annotations.annotationsWorkspace)
+            Annotations.annotationsWorkspace.remove();
 
         //  Remove content load event handlers.
         GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", signalAnnotationLoaded);
