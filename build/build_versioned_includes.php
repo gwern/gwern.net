@@ -28,7 +28,7 @@ $files = [
 	"inlined-fonts"
 ];
 
-for ($files as $file) {
+foreach ($files as $file) {
 	$infile = file_get_contents("{$static_root}/templates/{$file}-template.html");
 
 	$outfile = preg_replace_callback('/"\/static\/(.+?)"/i', 'VersionAssetHref', $infile);
