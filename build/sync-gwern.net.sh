@@ -273,7 +273,10 @@ else
                -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
                -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -- ./metadata/*.yaml;
          # look for YAML linebreaking at a hyphen:
-        egrep -v '^- - http' ./metadata/*.yaml | egrep '[a-zA-Z0-9>]-$'; }
+        egrep -v '^- - http' ./metadata/*.yaml | egrep '[a-zA-Z0-9>]-$';
+        # look for punctuation inside links; unless it's a full sentence or a quote, generally prefer to put punctuation outside:
+        egrep -e '[.,:;-<!]</a>' -e '\]</a>' -- ./metadata/*.yaml | fgrep -v -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>';
+       }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
     λ(){ fgrep '{#' $(find _site/ -type f -name "index"); }
@@ -557,7 +560,8 @@ else
                                -e 'This PDF document was made available from www.rand.org as a public' -e 'A journal for the publication of original scientific research' \
                                -e 'This is a PDF file of an unedited manuscript that has been accepted for publication.' \
                                -e 'Additional services and information for ' -e 'Access to this document was granted through an Emerald subscription' \
-                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers' -e "$LL" -e 'eScholarship.org' )
+                               -e 'PLEASE SCROLL DOWN FOR ARTICLE' -e 'ZEW Discussion Papers' -e "$LL" -e 'eScholarship.org' \
+                  -e 'Full Terms & Conditions of access and use can be found at' )
             if [ "$HEADER" != "" ]; then echo "Header: $@"; fi;
         }
         export -f checkSpamHeader

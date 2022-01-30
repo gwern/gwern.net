@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-29 16:28:35 gwern"
+When:  Time-stamp: "2022-01-30 18:20:30 gwern"
 License: CC-0
 -}
 
@@ -1245,7 +1245,6 @@ generateID url author date
        , ("https://scholars-stage.org/the-utterly-dysfunctional-belt-and-road/", "greer-beltandroad")
        , ("https://scholars-stage.org/passages-i-highlighted-in-my-copy-of-only-yesterday-an-informal-history-of-the-1920s/", "greer-only-yesterday")
        , ("https://seclab.bu.edu/papers/reddit-WACCO2019.pdf", "bradley-stringhini-2019-2")
-       , ("https://share.obormot.net/misc/gwern/wikipedia-popups.js", "achmiz-2019-2")
        , ("https://sites.google.com/view/videopredictioncapacity", "villegas-et-al-2019-2")
        , ("https://slatestarcodex.com/2019/04/22/1960-the-year-the-singularity-was-cancelled/", "alexander-population-growth")
        , ("https://slatestarcodex.com/2020/01/08/what-intellectual-progress-did-i-make-in-the-2010s/", "alexander-2020-2")
@@ -1389,7 +1388,7 @@ generateID url author date
        , ("https://arxiv.org/abs/2104.07885", "liu-et-al-2021-roberta")
        , ("https://arxiv.org/abs/2105.08050#google", "liu-et-al-2021-gmlp")
        , ("https://arxiv.org/abs/2105.12196#deepmind", "liu-et-al-2021-soccer")
-       , ("/static/js/wikipedia-popups.js", "achmiz-2019-wikipediapopups")
+       , ("/static/js/old/wikipedia-popups.js", "achmiz-2019-wikipediapopups")
        , ("https://arxiv.org/abs/2105.06597#microsoft", "zhang-et-al-2021-retgen")
        , ("https://arxiv.org/abs/2106.10715", "zhang-et-al-2021-cpm2")
        , ("https://arxiv.org/abs/1703.09844", "huang-et-al-2017-msdnet")
@@ -1399,6 +1398,12 @@ generateID url author date
        , ("https://openreview.net/forum?id=St1giarCHLP", "song-et-al-2021-ddim")
        , ("https://learningtopredict.github.io/#google", "freeman-et-al-2019-blog")
        , ("https://arxiv.org/abs/1910.13038#google", "freeman-et-al-2019-paper")
+       , ("https://arxiv.org/abs/2111.00396", "gu-et-al-2021-s4")
+       , ("https://arxiv.org/abs/2008.07669", "gu-et-al-2021-hippo")
+       , ("https://arxiv.org/abs/2112.01573", "liu-et-al-2021-fusedream")
+       , ("https://arxiv.org/abs/2108.01072#baidu", "yu-et-al-2021-s2mlpv2")
+       , ("https://arxiv.org/abs/2106.07477#baidu", "yu-et-al-2021-s2mlp")
+       , ("https://arxiv.org/abs/2107.10224", "chen-et-al-2021-cyclemlp")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1781,6 +1786,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" L-∞", " <em>L</em><sub>∞</sub>")
           , (" L∞", " <em>L</em><sub>∞</sub>")
           -- rest:
+          , ("(PsycINFO Database Record", "")
           , ("</p> <p>", "</p>\n<p>")
           , ("</p><p>", "</p>\n<p>")
           , ("</li> <li>", "</li>\n<li>")
