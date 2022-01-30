@@ -99,7 +99,7 @@ Annotations = {
         */
     stageAnnotation: (annotationRawHTML) => {
         Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${annotationRawHTML}</div>`);
-        return Annotations.annotationsWorkspace.lastElementChild;;
+        return Annotations.annotationsWorkspace.lastElementChild;
     },
 
     /*  Load, stage, and process the annotation for the given identifier string.
