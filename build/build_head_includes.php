@@ -23,7 +23,7 @@
 $includes = [
 	[ 'colors.css', 'id="inlined-styles-colors"' ],
 	[ 'initial.css', 'id="inlined-styles"' ],
-	[ 'dark-mode.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)"' ],
+	[ 'dark-mode-GENERATED.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)"' ],
 	[ 'gw-inline.js' ],
 	[ 'darkmode-inline.js' ],
 ];
@@ -48,7 +48,7 @@ foreach ($includes as $include) {
 			$dir_prefix = __DIR__ . "/../js/";
 			break;
 		case "style":
-			$dir_prefix = __DIR__ . "/../css/";
+			$dir_prefix = __DIR__ . "/../css/include/";
 			break;
 		default:
 			break;

@@ -8,6 +8,7 @@
  In template or page:
  
  	<!--#include virtual="/static/includes/inlined-foot.html"-->
+ 	<!--#include virtual="/static/includes/inlined-fonts.html"-->
 
  (Pages must be .shtml (not .html) for this to work.)
  
@@ -22,11 +23,18 @@
  
 $static_root = __DIR__ . "/..";
 
-$infile = file_get_contents("{$static_root}/templates/inlined-foot-template.html");
+$files = [
+	"inlined-foot",
+	"inlined-fonts"
+];
 
-$outfile = preg_replace_callback('/"\/static\/(.+?)"/i', 'VersionAssetHref', $infile);
+foreach ($files as $file) {
+	$infile = file_get_contents("{$static_root}/templates/{$file}-template.html");
 
-file_put_contents("{$static_root}/includes/inlined-foot.html", $outfile);
+	$outfile = preg_replace_callback('/"\/static\/(.+?)"/i', 'VersionAssetHref', $infile);
+
+	file_put_contents("{$static_root}/includes/{$file}.html", $outfile);
+}
 
 function VersionAssetHref($m) {
 	global $static_root;
