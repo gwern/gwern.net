@@ -569,14 +569,14 @@ Extracts = {
 
         //  Mark sections with ‘§’ symbol.
         if (    target.hash > "" 
-        	&& !popFrame.classList.contains("external-page-embed" 
+        	&& !popFrame.classList.contains("external-page-embed") 
             // links with an org notation for link icons 
             // (eg. 'https://arxiv.org/abs/2006.07159#google') 
             // should not get a section mark
         	&& !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", 
         		 "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", 
         		 "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", 
-        		 "uber", "yandex"].includes(target.hash)))
+        		 "uber", "yandex"].includes(target.hash))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
