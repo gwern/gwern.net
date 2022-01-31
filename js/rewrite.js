@@ -179,11 +179,12 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /*****************************************/
 /*  Returns the current selection as HTML.
     */
-function getSelectionHTML() {
-    let container = document.createElement("div");
-    container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
-    return container.innerHTML;
-}
+//	NOTE: This function appears to currently be unused. —SA, 2022-01-31
+// function getSelectionHTML() {
+//     let container = document.createElement("div");
+//     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
+//     return container.innerHTML;
+// }
 
 /*********************/
 /* FULL-WIDTH BLOCKS */

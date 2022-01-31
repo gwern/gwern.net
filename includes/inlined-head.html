@@ -2009,7 +2009,8 @@ GW.logSourcePadLength = 18;
 GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
 
 function GWLog (string, source = "", level = 1) {
-    if (GW.logLevel < level) return;
+    if (GW.logLevel < level)
+    	return;
 
     let time = Date.now();
     let ms = `${(time % 1000)}`.padStart(3,'0');
@@ -2077,9 +2078,10 @@ Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
         if (event.button === 0 || event.key === ' ')
             fn(event);
     };
-    if (includeMouseDown) this.addEventListener("mousedown", ael);
     this.addEventListener("click", ael);
     this.addEventListener("keyup", ael);
+    if (includeMouseDown)
+    	this.addEventListener("mousedown", ael);
 }
 
 /*  Swap classes on the given element.

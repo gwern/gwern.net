@@ -17,6 +17,7 @@ Annotations = {
     /*  General.
         */
 
+	//	Called in: nowhere
     cleanup: () => {
         GWLog("Annotations.cleanup", "annotations.js", 1);
 
@@ -32,6 +33,7 @@ Annotations = {
         GW.notificationCenter.fireEvent("Annotations.cleanupDidComplete");
     },
 
+	//	Called in: Annotations.js (doWhenPageLoaded)
     setup: () => {
         GWLog("Annotations.setup", "annotations.js", 1);
 
@@ -68,7 +70,9 @@ Annotations = {
             Annotations.cachedAnnotations[info.identifier] = "LOADING_FAILED";
 
             GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: info.identifier });
-        }, { condition: (info) => info.document == Annotations.annotationsWorkspace });
+        }, { 
+        	condition: (info) => info.document == Annotations.annotationsWorkspace 
+        });
 
         //  Fire setup-complete event.
         GW.notificationCenter.fireEvent("Annotations.setupDidComplete");
@@ -81,6 +85,7 @@ Annotations = {
     /*  Returns true iff a processed and cached annotation exists for the given
         identifier string.
         */
+    //	Called in: extracts-annotations.js
     cachedAnnotationExists: (annotationIdentifier) => {
         let cachedAnnotation = Annotations.cachedAnnotations[annotationIdentifier];
         return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
@@ -90,6 +95,7 @@ Annotations = {
         either “LOADING_FAILED” (if loading the annotation was attempted but
         failed) or null (if the annotation has not been loaded).
         */
+    //	Called in: extracts-annotations.js
     annotationForIdentifier: (annotationIdentifier) => {
         return Annotations.cachedAnnotations[annotationIdentifier];
     },
@@ -97,6 +103,7 @@ Annotations = {
     /*  Construct a usable DOM object from the raw HTML of an annotation,
         by inserting it as a child of the annotations workspace element.
         */
+    //	Called in: Annotations.loadAnnotation
     stageAnnotation: (annotationRawHTML) => {
         Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${annotationRawHTML}</div>`);
         return Annotations.annotationsWorkspace.lastElementChild;
@@ -104,6 +111,7 @@ Annotations = {
 
     /*  Load, stage, and process the annotation for the given identifier string.
         */
+    //	Called in: extracts-annotations.js
     loadAnnotation: (annotationIdentifier) => {
         GWLog("Annotations.loadAnnotation", "annotations.js", 2);
 
@@ -116,8 +124,11 @@ Annotations = {
             annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
         } else {
             //  Local annotation.
-            annotationURL = new URL("https://" + location.hostname + Annotations.annotationsBasePathname
-                            + fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) + ".html");
+            annotationURL = new URL("https://" 
+            						+ location.hostname 
+            						+ Annotations.annotationsBasePathname
+            						+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) 
+            						+ ".html");
         }
 
         doAjax({
@@ -129,7 +140,9 @@ Annotations = {
 
                     let targetSection;
                     if (annotationURL.hash > "") {
-                        targetSection = response["remaining"]["sections"].find(section => section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1));
+                        targetSection = response["remaining"]["sections"].find(section => 
+                        	section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1)
+                        );
 
                         if (!targetSection) {
                             GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
@@ -142,10 +155,14 @@ Annotations = {
                         }
                     }
 
-                    let responseHTML = targetSection ? targetSection["text"] : response["lead"]["sections"][0]["text"];
+                    let responseHTML = targetSection 
+                    				   ? targetSection["text"] 
+                    				   : response["lead"]["sections"][0]["text"];
                     annotation = Annotations.stageAnnotation(responseHTML);
 
-                    annotation.dataset["titleHTML"] = (annotationURL.hash > "") ? targetSection["line"] : response["lead"]["displaytitle"];
+                    annotation.dataset["titleHTML"] = annotationURL.hash > "" 
+                    								  ? targetSection["line"] 
+                    								  : response["lead"]["displaytitle"];
 
                     Annotations.processWikipediaEntry(annotation, annotationURL);
                 } else {
@@ -179,6 +196,7 @@ Annotations = {
 
     /*  Used to generate extracts.
         */
+    //	Called in: extracts-annotations.js
     referenceDataForAnnotationIdentifier: (annotationIdentifier) => {
         let referenceEntry = Annotations.cachedAnnotations[annotationIdentifier];
 
@@ -191,6 +209,9 @@ Annotations = {
 
     /*  Returns true iff the given identifier string is a Wikipedia URL.
         */
+    //	Called in: Annotations.loadAnnotation
+    //	Called in: Annotations.referenceDataForAnnotationIdentifier
+    //	Called in: extracts-annotations.js
     isWikipediaLink: (annotationIdentifier) => {
         if (/^[\?\/]/.test(annotationIdentifier))
             return false;
@@ -202,6 +223,7 @@ Annotations = {
 
     /*  Annotations generated server-side and hosted locally.
         */
+    //	Called in: Annotations.referenceDataForAnnotationIdentifier
     referenceDataForLocalAnnotation: (referenceEntry) => {
         let referenceElement = referenceEntry.querySelector(Annotations.annotationReferenceElementSelectors.map(selector =>
             `${Annotations.annotationReferenceElementSelectorPrefix}${selector}`
@@ -235,13 +257,14 @@ Annotations = {
             dateHTML:       (dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
             tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
             backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
-            similarHTML:    (similarElement   ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
+            similarHTML:    (similarElement ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
             abstractHTML:   referenceEntry.querySelector("blockquote div").innerHTML
         };
     },
 
     /*  Wikipedia entries (page summaries or sections).
         */
+    //	Called in: Annotations.referenceDataForAnnotationIdentifier
     referenceDataForWikipediaEntry: (referenceEntry) => {
         return {
             element:        referenceEntry,
@@ -249,13 +272,14 @@ Annotations = {
             authorHTML:     `<span class="data-field author">Wikipedia</span>`,
             dateHTML:       ``,
             tagsHTML:       ``,
-            backlinksHTML:       ``,
+            backlinksHTML:  ``,
             abstractHTML:   referenceEntry.innerHTML
         };
     },
 
     /*  Elements to excise from a Wikipedia entry.
         */
+    //	Called in: Annotations.processWikipediaEntry
     wikipediaEntryExtraneousElementSelectors: [
         ".mw-ref",
         ".shortdescription",
@@ -270,6 +294,7 @@ Annotations = {
 
     /*  Process an already-staged annotation retrieved from a Wikipedia entry.
         */
+    //	Called in: Annotations.loadAnnotation
     processWikipediaEntry: (annotation, annotationURL) => {
         //  Remove unwanted elements.
         annotation.querySelectorAll(Annotations.wikipediaEntryExtraneousElementSelectors.join(", ")).forEach(element => {
