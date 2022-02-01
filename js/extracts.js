@@ -192,13 +192,13 @@ Extracts = {
     /*  This array defines the types of ‘targets’ (ie. annotated links,
         links pointing to available content such as images or code files,
         citations, etc.) that Extracts supports.
-        The fields in each entry are: 
+        The fields in each entry are:
         	1. Type name
         	2. Type predicate function (of the Extracts object) for identifying
         	   targets of the type; returns true iff target is of that type
-        	3. Class(es) to be added to targets of the type (these are added 
+        	3. Class(es) to be added to targets of the type (these are added
         	   during initial processing)
-        	4. Fill function (of the Extracts object); called to fill a 
+        	4. Fill function (of the Extracts object); called to fill a
         	   pop-frame for a target of that type with content
         	5. Class(es) to be added to a pop-frame for targets of that type
         */
@@ -568,14 +568,14 @@ Extracts = {
         }
 
         //  Mark sections with ‘§’ symbol.
-        if (    target.hash > "" 
-        	&& !popFrame.classList.contains("external-page-embed") 
-            // links with an org notation for link icons 
-            // (eg. 'https://arxiv.org/abs/2006.07159#google') 
+        if (    target.hash > ""
+        	&& !popFrame.classList.contains("external-page-embed")
+            // links with an org notation for link icons
+            // (eg. 'https://arxiv.org/abs/2006.07159#google')
             // should not get a section mark
-        	&& !["alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", 
-        		 "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", 
-        		 "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", 
+        	    && !["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "deepmind", "eleutherai", "elementai",
+        		     "facebook", "flickr", "google", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri",
+        		     "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork",
         		 "uber", "yandex"].includes(target.hash))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
