@@ -4,20 +4,26 @@ if (window.Extracts) {
     /*=-------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "ANNOTATION",
-        "isAnnotatedLink",
-        "has-annotation",
-        "annotationForTarget",
-        "annotation"
+        "ANNOTATION",				// Type name
+        "isAnnotatedLink",			// Type predicate function
+        "has-annotation",			// Target classes to add
+        "annotationForTarget",		// Pop-frame fill function
+        "annotation"				// Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
+	//	Used in: Extracts.setUpAnnotationLoadEventWithin
     Extracts.annotatedTargetSelectors = [ "a.docMetadata" ];
 
+	//	Called by: extracts.js (as `predicateFunctionName`)
+	//	Called by: extracts.js
+	//	Called by: extracts-content.js
     Extracts.isAnnotatedLink = (target) => {
         return target.classList.contains("docMetadata");
     };
 
-    //  An annotation for a link.
+    /*  An annotation for a link.
+    	*/
+    //	Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.annotationForTarget = (target) => {
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
@@ -78,6 +84,7 @@ if (window.Extracts) {
             + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
     };
 
+	//	Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
     Extracts.titleForPopFrame_ANNOTATION = (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -90,9 +97,14 @@ if (window.Extracts) {
         //  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
         if (   target.hash > ""
             && (   (   target.hostname == location.hostname
-                       // annotations for local archive links with an org notation for link icons (eg. ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook') should not get a section mark
-                    && !([ "alibaba", "allen", "amazon", "baidu", "deepmind", "eleutherai", "facebook", "google", "googlebrain", "lighton", "microsoft", "miri", "nvidia", "openai", "pdf", "salesforce", "tencent", "tensorfork", "uber", "yandex"
-                           ].includes(target.hash)))
+                    // annotations for local archive links with an org notation 
+                    // for link icons (eg. ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook') 
+                    // should not get a section mark
+                    && !([ "alibaba", "allen", "amazon", "baidu", "deepmind", 
+                    	   "eleutherai", "facebook", "google", "googlebrain", 
+                    	   "lighton", "microsoft", "miri", "nvidia", "openai", 
+                    	   "pdf", "salesforce", "tencent", "tensorfork", "uber", 
+                    	   "yandex"].includes(target.hash)))
                 || Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
@@ -119,6 +131,7 @@ if (window.Extracts) {
         }
     };
 
+	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_ANNOTATION = (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -160,6 +173,8 @@ if (window.Extracts) {
 
     Extracts.annotationLoadHoverDelay = 25;
 
+	//	Called by: extracts.js
+	//	Called by: extracts-options.js
     Extracts.setUpAnnotationLoadEventWithin = (container) => {
         GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts-annotations.js", 1);
 
@@ -230,6 +245,7 @@ if (window.Extracts) {
     /*  Refresh (respawn or reload) a pop-frame for an annotated target after
         its annotation (fragment) loads.
         */
+    //	Called by: Extracts.annotationForTarget
     Extracts.refreshPopFrameAfterAnnotationLoads = (target) => {
         GWLog("Extracts.refreshPopFrameAfterAnnotationLoads", "extracts-annotations.js", 2);
 

@@ -1,9 +1,11 @@
 if (window.Extracts) {
+	/**********/
 	/*	Popins.
 		*/
 
 // 	Extracts.popinOptionsEnabled = true;
 
+	//	Called by: extracts.js
 	Extracts.showPopinOptionsDialogPopinTitleBarButton = () => {
 		let button = Popins.titleBarComponents.optionsButton();
 
@@ -19,14 +21,17 @@ if (window.Extracts) {
 		return button;
 	};
 
+	/**********/
 	/*	Popups.
 		*/
 
+	//	Used in: extracts.js
 	Extracts.popupOptionsEnabled = true;
 
 	Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
 	Extracts.popupOptionsDialog = null;
 
+	//	Called by: extracts.js
 	Extracts.showPopupOptionsDialogPopupTitleBarButton = () => {
 		let button = Popups.titleBarComponents.optionsButton();
 
@@ -41,6 +46,7 @@ if (window.Extracts) {
 		return button;
 	};
 
+	//	Called by: Extracts.savePopupOptions
 	Extracts.disableExtractPopups = () => {
 		GWLog("Extracts.disableExtractPopups", "extracts.js", 1);
 
@@ -49,6 +55,7 @@ if (window.Extracts) {
 		Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
 	};
 
+	//	Called by: Extracts.savePopupOptions
 	Extracts.enableExtractPopups = () => {
 		GWLog("Extracts.enableExtractPopups", "extracts.js", 1);
 
@@ -71,6 +78,7 @@ if (window.Extracts) {
 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
 	};
 
+	//	Called by: Extracts.injectPopupsDisabledShowPopupOptionsDialogButton
 	Extracts.showPopupOptionsDialog = () => {
 		GWLog("Extracts.showPopupOptionsDialog", "extracts.js", 1);
 
@@ -144,6 +152,7 @@ if (window.Extracts) {
 		Extracts.popupOptionsDialog.style.display = "";
 	};
 
+	//	Called by: Extracts.showPopupOptionsDialog
 	Extracts.fadePopupOptionsDialog = () => {
 		GWLog("Extracts.fadePopupOptionsDialog", "extracts.js", 1);
 
@@ -151,6 +160,7 @@ if (window.Extracts) {
 		setTimeout(Extracts.hidePopupOptionsDialog, 150);
 	};
 
+	//	Called by: Extracts.fadePopupOptionsDialog
 	Extracts.hidePopupOptionsDialog = () => {
 		GWLog("Extracts.hidePopupOptionsDialog", "extracts.js", 1);
 
@@ -162,6 +172,7 @@ if (window.Extracts) {
 		}
 	};
 
+	//	Called by: Extracts.showPopupOptionsDialog
 	Extracts.savePopupOptions = () => {
 		GWLog("Extracts.savePopupOptions", "extracts.js", 1);
 
@@ -171,6 +182,9 @@ if (window.Extracts) {
 			Extracts.disableExtractPopups();
 	};
 
+	//	Called by: Extracts.disableExtractPopups
+	//	Called by: extracts-options.js (at end of file)
+	//	Called by: extracts.js
 	Extracts.injectPopupsDisabledShowPopupOptionsDialogButton = () => {
 		GWLog("Extracts.injectPopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
 
@@ -197,6 +211,7 @@ if (window.Extracts) {
 			"updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener");
 	};
 
+	//	Called by: Extracts.injectPopupsDisabledShowPopupOptionsDialogButton
 	Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility = (event) => {
 		GWLog("updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "rewrite.js", 3);
 
@@ -212,6 +227,8 @@ if (window.Extracts) {
 			Extracts.popupsDisabledShowPopupOptionsDialogButton.classList.toggle("hidden", false);
 	};
 
+	//	Called by: Extracts.enableExtractPopups
+	//	Called by: extracts.js
 	Extracts.removePopupsDisabledShowPopupOptionsDialogButton = () => {
 		GWLog("Extracts.removePopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
 
