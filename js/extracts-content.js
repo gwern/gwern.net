@@ -484,7 +484,7 @@ if (window.Extracts) {
     Extracts.localCodeFileForTarget = (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
-        let setPopFrameContent = Popups.setPopFrameContent;
+        let setPopFrameContent = Extracts.popFrameProvider.setPopFrameContent;
 
         target.popFrame.classList.toggle("loading", true);
         doAjax({

@@ -9,8 +9,10 @@ Popins = {
 	/*	Implementation.
 		*/
 
+	//	Used in: Popins.containingDocumentForTarget
 	rootDocument: document.firstElementChild,
 
+	//	Called by: Popins.setup
 	cleanup: () => {
 		GWLog("Popins.cleanup", "popins.js", 1);
 
@@ -20,6 +22,7 @@ Popins = {
 		});
 	},
 
+	//	Called by: popins.js (doWhenPageLoaded)
 	setup: () => {
 		GWLog("Popins.setup", "popins.js", 1);
 
@@ -29,6 +32,7 @@ Popins = {
 		GW.notificationCenter.fireEvent("Popins.setupDidComplete");
 	},
 
+	//	Called by: extracts.js
 	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
@@ -64,6 +68,7 @@ Popins = {
 		});
 	},
 
+	//	Called by: extracts.js
 	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
@@ -106,21 +111,28 @@ Popins = {
 	/*	Helpers.
 		*/
 
+	//	Called by: extracts.js
+	//	Called by: extracts-content.js
 	scrollElementIntoViewInPopFrame: (element) => {
 		let popin = element.closest(".popin");
 		popin.scrollView.scrollTop = element.getBoundingClientRect().top - popin.contentView.getBoundingClientRect().top;
 	},
 
+	//	Called by: Popins.injectPopinForTarget
 	containingDocumentForTarget: (target) => {
 		let containingPopin = target.closest(".popin");
 		return (containingPopin ? containingPopin.contentView : Popins.rootDocument);
 	},
 
+	//	Called by: Popins.targetClicked (event handler)
+	//	Called by: Popins.cleanup
+	//	Called by: extracts.js
 	allSpawnedPopins: () => {
 		//  TODO: make this more efficient! (keep a running array or somesuch)
 		return Array.from(document.querySelectorAll(".popin"));
 	},
 
+	//	Called by: Popins.addTitleBarToPopin
 	popinStackNumber: (popin) => {
 		//  If there’s another popin in the ‘stack’ below this one…
 		let popinBelow = (   popin.nextElementSibling 
@@ -137,7 +149,9 @@ Popins = {
 	/*	Popin title bars.
 		*/
 
-	//  Add title bar to a popin which has a populated .titleBarContents.
+	/*  Add title bar to a popin which has a populated .titleBarContents.
+		*/
+	//	Called by: Popins.injectPopinForTarget
 	addTitleBarToPopin: (popin) => {
 		//  Set class ‘has-title-bar’ on the popin.
 		popin.classList.add("has-title-bar");
@@ -172,7 +186,8 @@ Popins = {
 		});
 	},
 
-	//  Elements and methods related to popin title bars.
+	/*  Elements and methods related to popin title bars.
+		*/
 	titleBarComponents: {
 		genericButton: () => {
 			let button = document.createElement("BUTTON");
@@ -210,6 +225,7 @@ Popins = {
 	/*	Popin spawning.
 		*/
 
+	//	Called by: Popins.injectPopinForTarget
 	newPopin: (target) => {
 		GWLog("Popins.newPopin", "popins.js", 2);
 
@@ -227,11 +243,14 @@ Popins = {
 		return popin;
 	},
 
+	//	Called by: extracts.js
+	//	Called by: extracts-content.js
 	setPopFrameContent: (popin, contentHTML) => {
 		popin.contentView.innerHTML = contentHTML;
 		return (contentHTML > "");
 	},
 
+	//	Called by: Popins.targetClicked (event handler)
 	injectPopinForTarget: (target) => {
 		GWLog("Popins.injectPopinForTarget", "popins.js", 2);
 
@@ -280,6 +299,9 @@ Popins = {
 		GW.notificationCenter.fireEvent("Popins.popinDidInject", { popin: target.popin });
 	},
 
+	//	Called by: Popins.injectPopinForTarget
+	//	Called by: extracts.js
+	//	Called by: extracts-annotations.js
 	scrollPopinIntoView: (popin) => {
 		let popinViewportRect = popin.getBoundingClientRect();
 
@@ -290,6 +312,11 @@ Popins = {
 		}
 	},
 
+	//	Called by: Popins.cleanup
+	//	Called by: Popins.targetClicked (event handler)
+	//	Called by: Popins.removeTargetsWithin
+	//	Called by: Popins.titleBarComponents.closeButton
+	//	Called by: Popins.injectPopinForTarget
 	removePopin: (popin) => {
 		GWLog("Popins.removePopin", "popins.js", 2);
 
@@ -310,6 +337,7 @@ Popins = {
 		Popins.detachPopinFromTarget(popin);
 	},
 
+	//	Called by: Popins.removePopin
 	detachPopinFromTarget: (popin) => {
 		GWLog("Popins.detachPopinFromTarget", "popins.js", 2);
 
@@ -322,6 +350,7 @@ Popins = {
 	/*	Event listeners.
 		*/
 
+	//	Added by: Popins.addTargetsWithin
 	targetClicked: (event) => {
 		GWLog("Popins.targetClicked", "popins.js", 2);
 

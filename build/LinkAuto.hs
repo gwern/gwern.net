@@ -920,7 +920,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("StumpWM", "https://en.wikipedia.org/wiki/StumpWM")
         , ("StyleGAN2s?", "https://arxiv.org/abs/1912.04958#nvidia")
         , ("Super(GLUE|Glue)", "https://arxiv.org/abs/1905.00537")
-        , ("Suphx", "https://arxiv.org/abs/2003.13590#msr")
+        , ("Suphx", "https://arxiv.org/abs/2003.13590#microsoft")
         , ("SwAV", "https://arxiv.org/abs/2006.09882#facebook")
         , ("Swee[Tt]ango", "https://en.wikipedia.org/wiki/SweeTango")
         , ("Switch Transformers?", "https://arxiv.org/abs/2101.03961#google")
