@@ -340,6 +340,7 @@ Popups = {
 	//	Called by: Popups.collapsePopup
 	//	Called by: Popups.zoomPopup
 	//	Called by: Popups.pinPopup
+	//	Called by: extracts.js
 	detachPopupFromTarget: (popup) => {
 		GWLog("Popups.detachPopupFromTarget", "popups.js", 2);
 
