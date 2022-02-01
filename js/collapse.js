@@ -5,6 +5,9 @@
     per non-recursive call to expandCollapseBlocksToReveal(), even if recursive
     expansion occurred.)
     */
+//	Called by: expandCollapseBlocksToReveal (recursively)
+//	Called by: revealElement
+//	Called by: GW.selectionChanged (event listener)
 function expandCollapseBlocksToReveal(node) {
     GWLog("expandCollapseBlocksToReveal", "collapse.js", 2);
 
@@ -17,7 +20,8 @@ function expandCollapseBlocksToReveal(node) {
     /*  If the given element is not within any collapsed block, there is nothing
         to do.
         */
-    if (!isWithinCollapsedBlock(element)) return false;
+    if (!isWithinCollapsedBlock(element))
+    	return false;
 
     //  Expand the nearest collapse block.
     let collapseParent = element.closest(".collapse");
@@ -38,8 +42,10 @@ function expandCollapseBlocksToReveal(node) {
     return expansionOccurred;
 }
 
+//	Called by: expandCollapseBlocksToReveal
+//	Called by: prepareCollapseBlocks
 function updateDisclosureButtonTitle(disclosureButton) {
-    GWLog("expandCollapseBlocksToReveal", "collapse.js", 3);
+    GWLog("updateDisclosureButtonTitle", "collapse.js", 3);
 
 	let collapsedStateTitle = "This is a collapsed region; mouse click to expand it. Collapsed text can be sections, code, text samples, or long digressions which most users will not read, and interested readers can opt into.";
 	let expandedStateTitle = "This is an expanded collapse region; mouse click to collapse it.";
@@ -49,6 +55,7 @@ function updateDisclosureButtonTitle(disclosureButton) {
 
 /*  Returns true if the given collapse block is currently collapsed.
     */
+//	Called by: isWithinCollapsedBlock
 function isCollapsed(collapseBlock) {
     return !collapseBlock.classList.contains("expanded");
 }
@@ -56,17 +63,22 @@ function isCollapsed(collapseBlock) {
 /*  Returns true if the given element is within a currently-collapsed collapse
     block.
     */
+//	Called by: isWithinCollapsedBlock (recursively)
+//	Called by: expandCollapseBlocksToReveal
+//	Called by: sidenotes.js
 function isWithinCollapsedBlock(element) {
     /*  If the element is not within a collapse block at all, it obviously can't
         be within a *currently-collapsed* collapse block.
         */
     let collapseParent = element.closest(".collapse");
-    if (!collapseParent) return false;
+    if (!collapseParent)
+    	return false;
 
     /*  If the element is within a collapse block and that collapse block is
         currently collapsed, then the condition is satisfied...
         */
-    if (isCollapsed(collapseParent)) return true;
+    if (isCollapsed(collapseParent))
+    	return true;
 
     /*  BUT the collapse block that the element is in, even if *it* is not
         itself collapsed, could be *within* another collapse block!
@@ -76,6 +88,7 @@ function isWithinCollapsedBlock(element) {
 
 /*  Inject disclosure buttons and otherwise prepare the collapse blocks.
     */
+//	Called by: GW.rewriteFunctions.processCollapseBlocks (content load handler)
 function prepareCollapseBlocks(loadEventInfo) {
 	GWLog("prepareCollapseBlocks", "collapse.js", 1);
 
@@ -151,6 +164,7 @@ function prepareCollapseBlocks(loadEventInfo) {
 
 /*	Removes disclosure buttons and expands collapse blocks.
 	*/
+//	Called by: GW.rewriteFunctions.processCollapseBlocks (content load handler)
 function expandLockCollapseBlocks(loadEventInfo) {
 	GWLog("expandLockCollapseBlocks", "collapse.js", 2);
 
@@ -179,6 +193,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /*	Ensure that the given element is scrolled into view when layout is complete.
 	*/
+//	Called by: revealElement
+//	Called by: prepareCollapseBlocks
+//	Called by: sidenotes.js
 function scrollElementIntoView(element, offset = 0) {
     GWLog("scrollElementIntoView", "collapse.js", 2);
 
@@ -193,6 +210,8 @@ function scrollElementIntoView(element, offset = 0) {
 
 /*	Expand collapse blocks to reveal the given element, and scroll it into view.
 	*/
+//	Called by: revealTarget
+//	Called by: sidenotes.js
 function revealElement(element, scrollIntoView = true) {
     GWLog("revealElement", "collapse.js", 2);
 
@@ -205,6 +224,9 @@ function revealElement(element, scrollIntoView = true) {
 
 /*  Return the element targeted by the URL hash, or null.
     */
+//	Called by: revealTarget
+//	Called by: prepareCollapseBlocks
+//	Called by: sidenotes.js
 function getHashTargetedElement() {
 	//  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
 	if (GW.isFirefox() && location.hash.startsWith("#:~:"))
@@ -217,6 +239,7 @@ function getHashTargetedElement() {
 
 /*  Reveal the element targeted by the URL hash. Do the same on hash change.
     */
+//	Called by: GW.hashUpdated (event handler)
 function revealTarget() {
     GWLog("revealTarget", "collapse.js", 1);
 
