@@ -811,6 +811,10 @@ addScrollListener(updateScrollState, "updateScrollStateScrollListener");
 function isPageScrollingEnabled() {
     return !(document.documentElement.classList.contains("no-scroll"));
 }
+/*	Pass true or false to enable or disable (respectively) page scrolling.
+	Calling this function with no arguments toggles the state (enables if 
+	currently disabled, or vice versa).
+ */
 function togglePageScrolling(enable) {
     if (typeof enable == "undefined")
         enable = document.documentElement.classList.contains("no-scroll");
