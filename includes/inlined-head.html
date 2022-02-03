@@ -2585,6 +2585,7 @@ GW.notificationCenter = {
                     if (phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAt(i).phase))
                         break;
                 }
+
                 /*	If neither of the break conditions in the loop were 
                 	encountered, i is now equal to the handler array length,
                 	and the new handler will be added to the end of the array.
@@ -2611,20 +2612,27 @@ GW.notificationCenter = {
                         j++;
                         break;
                     }
-                    //	TODO: fix the bug that happens here if targetPhaseIndex
-                    //	is 0!
-                    if (phaseOrder.slice(0, targetPhaseIndex - 1).includes(phaseAt(j).phase)) {
+
+                    /*	There are no “earlier phases” if the target phase index 
+                    	is either 0 or out of array bounds of the phase order.
+                    	(The latter will happen if the target phase is not in
+                    	 the defined phase order for the given event.)
+                    */
+                    if (   targetPhaseIndex > 0
+                    	&& targetPhaseIndex < phaseOrder.length
+                    	&& phaseOrder.slice(0, targetPhaseIndex - 1).includes(phaseAt(j).phase)) {
                         j++;
                         break;
                     }
                 }
+
                 /*	If neither of the break conditions in the loop were 
-                	encountered, j is now equal to -1 [TODO: WHICH IS WRONG!!!],
-                	and the new handler will be inserted before the last element
-                	of the array [TODO: WHICH IS WRONG!!!].
+                	encountered, j is now equal to -1; in this case, set j to
+                	the handlers array length, such that the new handler will be
+                	added to the end of the array.
                 	Otherwise, it’ll be inserted in the appropriate place.
                  */
-                insertAt = j;
+                insertAt = defval(handlers.length, j, -1);
             } else {
             	/*	The handler is assigned to be called during the specified
             		phase.
@@ -2645,6 +2653,7 @@ GW.notificationCenter = {
                     if (phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAt(k).phase))
                         break;
                 }
+
                 /*	If neither of the break conditions in the loop were 
                 	encountered, k is now equal to the handler array length,
                 	and the new handler will be added to the end of the array.
@@ -2659,11 +2668,10 @@ GW.notificationCenter = {
 		 */
         GW.notificationCenter.eventHandlers[eventName].splice(insertAt, 0, { f: f, options: options });
     },
-    //	TODO: remove third argument
     /*	Unregister the event handler with the given handler function from the
     	specified named event (if such a handler exists).
      */
-    removeHandlerForEvent: (eventName, f, options = { }) => {
+    removeHandlerForEvent: (eventName, f) => {
         if (GW.notificationCenter.eventHandlers[eventName] == null)
             return;
 
