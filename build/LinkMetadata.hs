@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-01-30 18:20:30 gwern"
+When:  Time-stamp: "2022-02-02 11:34:35 gwern"
 License: CC-0
 -}
 
@@ -1404,6 +1404,9 @@ generateID url author date
        , ("https://arxiv.org/abs/2108.01072#baidu", "yu-et-al-2021-s2mlpv2")
        , ("https://arxiv.org/abs/2106.07477#baidu", "yu-et-al-2021-s2mlp")
        , ("https://arxiv.org/abs/2107.10224", "chen-et-al-2021-cyclemlp")
+       , ("https://arxiv.org/abs/2002.05709#google", "chen-et-al-2020-simclrv1")
+       , ("https://arxiv.org/abs/2006.10029#google", "chen-et-al-2020-simclrv2")
+       , ("https://arxiv.org/abs/2108.13341#huawei", "guo-et-al-2021-hiremlp")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1497,6 +1500,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           ("<strong>ABSTRACT</strong><br/>", ""),
           ("<strong>Abstract</strong><br/>", ""),
          ("</p> ?<p>", "</p>\n<p>"),
+         ("</p>\n<p>", "</p> <p>"),
          ("</p>\n \n<p>", "</p>\n<p>"),
          ("  *", " "), -- squeeze whitespace
          (" \\( ", " ("),
@@ -1612,6 +1616,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(S&#39;\\)</span>", "<em>S</em>′")
+          , ("<span class=\"math inline\">\\(S&#39; \\subset S\\)</span>", "<em>S</em>′ ⊂ <em>S</em>")
+          , ("<span class=\"math inline\">\\(2^S \\to \\mathbb{R}\\)</span>", "2<sup><em>S</em></sup> ⟶ ℝ")
           , ("<span class=\"math inline\">\\(μ\\)</span>", "𝜇")
           , ("<span class=\"math inline\">\\(e^{-kq^2}.\\)</span>", "<em>e</em><sup>−<em>kq</em><sup>2</sup></sup>")
           , ("<span class=\"math inline\">\\(1.644934\\approx \\pi^2/6\\)</span>", "1.644934 ≈ π<sup>2</sup>⁄6")
@@ -1929,6 +1936,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("statistically significant", "statistically-significant")
           , ("clinical significance", "clinical-significance")
           , ("clinically significant", "clinically-significant")
+          , ("<strong>Conclusions</strong>\n<p>", "<p><strong>Conclusions</strong>: ")
           , ("<p>Conclusions: ", "<p><strong>Conclusions</strong>: ")
           , ("\n <strong>Conclusion</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
           , ("\n <strong>Results</strong>\n<p>", "<p><strong>Results</strong>: ")
@@ -2209,6 +2217,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" cm(3)", " cm<sup>3</sup>")
           , (" R2", " R<sup>2</sup>")
           , ("R2 = ", "R<sup>2</sup> = ")
+          , ("top-k", "top-<em>k</em>")
           , ("z-score", "<em>z</em>-score")
           , ("Z-score", "<em>z</em>-score")
           , ("z-scores", "<em>z</em>-scores")
@@ -2364,6 +2373,12 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" eg ", " eg. ")
           , ("eg., ", "eg. ")
           , ("e.g., ", "eg. ")
+          , ("labell", "label")
+          , ( "optimise", "optimize")
+          , ("organise", "organize")
+          , ("totall", "total")
+          , ("minimis", "minimiz")
+          , ("maximis", "maximiz")
           , (" C. elegans", " <em>C. elegans</em>")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")

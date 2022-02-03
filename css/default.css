@@ -1041,6 +1041,10 @@ a.footnote-ref {
     margin: 1em 0 0 0;
 }
 
+/* On directory indexes, titles may include '19th' century, which with the default size & padding makes the ' TH ' really stand out. eg. https://www.gwern.net/docs/sociology/index#johow-et-al-2019-section '“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019' */
+h1 sub, h1 sup, h2 sub, h2 sup  { font-size: 60%;  }
+.markdownBody h2 a:link > sub, .markdownBody h2 a:link > sup { padding-left: 0em; }
+
 /*=------------------------=*/
 /*= Back-to-citation links =*/
 /*=------------------------=*/
