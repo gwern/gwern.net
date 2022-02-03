@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-01-30 14:53:45 gwern"
+When:  Time-stamp: "2022-02-02 18:20:37 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -300,7 +300,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(OpenAI 5|OA ?5)", "https://openai.com/five/")
         , ("(Openness|Openness to Experience)", "https://en.wikipedia.org/wiki/Openness_to_Experience")
         , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://science.sciencemag.org/content/364/6443/859#deepmind")
-        , ("(POMDP|[Pp]artially [Oo]bservable [Mm]arkov [Dd]ecision [Pp]rocess)", "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process")
+        , ("(POMDPs?|[Pp]artially [Oo]bservable [Mm]arkov [Dd]ecision [Pp]rocess?e?s)", "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process")
         , ("(PPO|[Pp]roximal [Pp]olicy [Oo]ptimization)", "https://arxiv.org/abs/1707.06347#openai")
         , ("(PTSD|[Pp]ost.?traumatic stress disorder)", "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder")
         , ("(PaintsTransfer/)?style2paints", "https://github.com/lllyasviel/style2paints")
@@ -362,7 +362,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("([Ll]iability[ -]threshold model(s|ing)?|[Ll]iability[ -]thresholds?)", "https://en.wikipedia.org/wiki/Liability_threshold_model")
         , ("([Ll]ight[ -]therapy|[Pp]hototherapy)", "https://en.wikipedia.org/wiki/Light_therapy")
         , ("([Ll]ow [Ll]evel [Ll]aser [Tt]herapy|LLLT)", "https://en.wikipedia.org/wiki/Low_level_laser_therapy")
-        , ("([Mm]arkov [Dd]ecision [Pp]rocess|MDP)", "https://en.wikipedia.org/wiki/Markov_decision_process")
+        , ("([Mm]arkov [Dd]ecision [Pp]rocess|MDP)s?", "https://en.wikipedia.org/wiki/Markov_decision_process")
         , ("([Mm]ulti-?[Ll]evel|[Hh]ierarchical linear|[Hh]ierarchical|[Ll]inear mixed[ -]effects?|[Ll]inear mixed|[Mm]ixed[ -]effects?|[Mm]ixed|[Nn]ested data|[Rr]andom-effects|[Rr]andom parameter) model(s|ing)?", "https://en.wikipedia.org/wiki/Multilevel_model")
         , ("([Nn]egative selection|[Pp]urifying selection)", "https://en.wikipedia.org/wiki/Negative_selection_(natural_selection)")
         , ("([Nn]ormal distribution.?|Gaussian distribution.?|[Nn]ormally[ -]distributed)", "https://en.wikipedia.org/wiki/Normal_distribution")
@@ -1160,7 +1160,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ll]oad leveling", "https://en.wikipedia.org/wiki/Load_management")
         , ("[Ll]ocus [Cc]oeruleus", "https://en.wikipedia.org/wiki/Locus_coeruleus")
         , ("[Ll]ogistic regression", "https://en.wikipedia.org/wiki/Logistic_regression")
-        , ("[Ll]oss function", "https://en.wikipedia.org/wiki/Loss_function")
+        , ("[Ll]oss functions?", "https://en.wikipedia.org/wiki/Loss_function")
         , ("[Ll]ucid dream(s|ing|er)", "https://en.wikipedia.org/wiki/Lucid_dream")
         , ("[Ll]ucid dreaming", "https://en.wikipedia.org/wiki/Lucid_dreaming")
         , ("[Mm]aximum [Ll]ikelihood", "https://en.wikipedia.org/wiki/Maximum_likelihood_estimation")
@@ -1366,4 +1366,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ss]ummary [Ss]tatistics?", "https://en.wikipedia.org/wiki/Summary_statistics")
         , ("[Pp]enetrance", "https://en.wikipedia.org/wiki/Penetrance")
         , ("(Alpha[Ff]old ?2?|AF2)", "https://www.nature.com/articles/s41586-021-03819-2#deepmind") -- AlphaFold
+        , ("OLS( regressions?|regression models?)?", "https://en.wikipedia.org/wiki/Ordinary_least_squares")
+        , ("[Ee]nsemble?s( learning| methods?)", "https://en.wikipedia.org/wiki/Ensemble_learning")
         ]
