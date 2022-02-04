@@ -2227,7 +2227,8 @@ function addScrollListener(fn, name) {
     }
     document.addEventListener("scroll", wrapper, { once: true, passive: true });
 
-    // Retain a reference to the scroll listener, if a name is provided.
+    /*	Retain a reference to the scroll listener, if a name is provided.
+     */
     if (typeof name != "undefined") {
         GW.scrollListeners[name] = wrapper;
     }
@@ -2317,6 +2318,33 @@ function cancelDoWhenMatchMedia(name) {
 /*****************/
 /* NOTIFICATIONS */
 /*****************/
+/*	The GW.notificationCenter object allows us to register handler functions for
+	named events. Any number of handlers may be registered for any given named 
+	event, and when that event is fired, all of its registered handlers will be 
+	called. Because event handlers are registered for events by event name 
+	(which may be any string we like), a handler may be registered for an event 
+	at any time and at any location in the code. (In other words, an event does 
+	not need to first be “defined”, nor needs to “exist” in any way, in order 
+	for a handler to be registered for it.)
+
+	We can also make the calling of any given event handler conditional (with a 
+	user-defined, handler-specific condition function [closure] that dynamically 
+	determines whether its associated handler should be called or not, when the 
+	event the handler was registered for is fired), specify that an event 
+	handler should be called only once or many times, and group handlers for a 
+	particular event into named “phases” (to ensure that certain handlers for an
+	event are always called before/after others).
+
+	Events themselves are also user-defined. Causing an event to fire is as 
+	simple as calling GW.notificationCenter.fireEvent() and providing an event 
+	name (which may be any string), plus an event info dictionary (which may 
+	contain any keys and values we deem necessary, and which will be passed to 
+	the handler functions); this will trigger the calling of all the handlers
+	that have been registered for that event name.
+
+	See the comments on specific elements of GW.notificationCenter, below, for
+	more information.
+ */
 GW.notificationCenter = {
 	/*	Dictionary of registered event handlers for named events.
 
@@ -2395,13 +2423,15 @@ GW.notificationCenter = {
 		key of an event handler options dictionary, above.)
 	 */
     eventHandlers: { },
+
     /*	Defined event handler phases for certain named events.
     	(See definition of the ‘phase’ key of an event handler options 
     	 dictionary, above, for more info.)
 
     	Phases are defined in execution order. For example, when the 
-    	GW.contentDidLoad event fires, event handlers are called in the 
-    	following order:
+    	GW.contentDidLoad event (whose handler phases are defined as follows:
+    	`[ "rewrite", "eventListeners" ]`) fires, event handlers are called in 
+    	the following order:
     	
     	1. Handlers assigned to be called before the ‘rewrite’ phase (i.e., 
     	   those with ‘<rewrite’ as the value of their ‘phase’ key in their
@@ -2428,6 +2458,7 @@ GW.notificationCenter = {
     handlerPhaseOrders: {
         "GW.contentDidLoad": [ "rewrite", "eventListeners" ]
     },
+
     /*	Register a new event handler for the named event. Arguments are:
 
 		- ‘eventName’
@@ -2668,6 +2699,7 @@ GW.notificationCenter = {
 		 */
         GW.notificationCenter.eventHandlers[eventName].splice(insertAt, 0, { f: f, options: options });
     },
+
     /*	Unregister the event handler with the given handler function from the
     	specified named event (if such a handler exists).
      */
@@ -2677,11 +2709,13 @@ GW.notificationCenter = {
 
         GW.notificationCenter.eventHandlers[eventName].removeIf(handler => handler.f == f);
     },
+
     /*	Unregister all registered event handlers from the specified named event.
      */
     removeAllHandlersForEvent: (eventName) => {
         GW.notificationCenter.eventHandlers[eventName] = null;
     },
+
     /*	Fire an event with the given name and event info dictionary.
 
     	In addition to printing a console log message (if the log level is set 
@@ -2698,7 +2732,7 @@ GW.notificationCenter = {
 
     	The event info dictionary may contain various, mostly event-specific,
     	keys and values. The one common key/value that any event’s info 
-    	dictionary should contain is the ‘source’ key, whose value should be a
+    	dictionary may contain is the ‘source’ key, whose value should be a
     	string identifying the function, browser event, or other context which 
     	caused the given event to be fired (such as ‘DOMContentLoaded’ or
     	‘Annotations.loadAnnotation’). In addition to any ways in which it may
@@ -2740,6 +2774,7 @@ GW.notificationCenter = {
 
         	/*	If the handler options specified a true value for the ‘once’ 
         		key, we unregister this handler after having called it once.
+
         		(Note that in the case of a once-only handler that’s called 
         		 conditionally, i.e. one with a specified condition function, 
         		 regardless of how many times the named event fires, the handler 
