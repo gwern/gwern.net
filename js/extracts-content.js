@@ -52,7 +52,49 @@
 
 		(See rewrite.js for more information about the keys and values of the
 		 GW.contentDidLoad event.)
- */
+
+	GW.contentDidLoad {
+            source: "Extracts.rewritePopFrameContent_BACKLINKS_LINK"
+            document: 
+            	The contentView of the pop-frame.
+            location: 
+            	URL of the backlinks source file.
+            isMainDocument: false
+            needsRewrite: false
+            clickable: false
+            collapseAllowed: false
+            isCollapseBlock: false
+            isFullPage: false
+            fullWidthPossible: false
+        }
+        Fired at the last stage of preparing a backlinks pop-frame for spawning 
+        (after the pop-frame’s content has been loaded from the local backlinks
+        frame cache).
+
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
+
+ 	GW.contentDidLoad {
+            source: "Extracts.refreshPopFrameAfterBacklinksLoad"
+            document: 
+            	The contentView of the pop-frame.
+            location: 
+            	URL of the backlinks source file.
+            isMainDocument: false
+            needsRewrite: true
+            clickable: false
+            collapseAllowed: false
+            isCollapseBlock: false
+            isFullPage: false
+            fullWidthPossible: false
+        }
+        Fired at the last stage of preparing a backlinks pop-frame for spawning 
+        (after the pop-frame’s content has been freshly loaded via a network 
+        request).
+
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
+*/
 
 if (window.Extracts) {
     /*=-----------------=*/
@@ -83,7 +125,7 @@ if (window.Extracts) {
 		let targetPage = Extracts.targetPageForBacklinksLink(target);
 		
 		if (Extracts.backlinksCache[targetPage]) {
-			return Extracts.backlinksCache[targetPage].outerHTML;
+			return Extracts.backlinksCache[targetPage].innerHTML;
 		} else {
 			Extracts.refreshPopFrameAfterBacklinksLoad(target);
 

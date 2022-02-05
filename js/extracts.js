@@ -32,12 +32,18 @@
 		spawning (after the pop-frame’s content has been loaded from the cache
 		of local pages).
 
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
+
 	GW.contentDidLoad {
 			source: "Extracts.refreshPopFrameAfterLocalPageLoads"
 		}
 		Fired at the last stage of preparing a local page embed pop-frame for
 		spawning (after the pop-frame’s content has been freshly loaded via
 		a network request).
+
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
  */
 
 Extracts = {
