@@ -27,6 +27,12 @@
 
 	GW.contentDidLoad {
 			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
+            document: 
+            	The contentView of the pop-frame.
+            location: 
+            	URL of the local page (including anchor, if any).
+            flags: 
+            	0 (no flags set)
 		}
 		Fired at the last stage of preparing a local page embed pop-frame for
 		spawning (after the pop-frame’s content has been loaded from the cache
@@ -37,6 +43,12 @@
 
 	GW.contentDidLoad {
 			source: "Extracts.refreshPopFrameAfterLocalPageLoads"
+			document: 
+            	The contentView of the pop-frame.
+			location: 
+            	URL of the local page (including anchor, if any).
+			flags: (  GW.contentDidLoadEvent.needsRewrite
+					| GW.contentDidLoadEvent.isFullPage)
 		}
 		Fired at the last stage of preparing a local page embed pop-frame for
 		spawning (after the pop-frame’s content has been freshly loaded via
@@ -638,14 +650,8 @@ Extracts = {
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE",
             document: popFrame.contentView,
-            isMainDocument: false,
-            needsRewrite: false,
-            clickable: false,
-            collapseAllowed: false,
-            isCollapseBlock: false,
-            isFullPage: false,
             location: Extracts.locationForTarget(target),
-            fullWidthPossible: false
+            flags: 0
         });
 
         //  Scroll to the target.
@@ -742,14 +748,9 @@ Extracts = {
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Extracts.refreshPopFrameAfterLocalPageLoads",
                     document: target.popFrame.contentView,
-                    isMainDocument: false,
-                    needsRewrite: true,
-                    clickable: false,
-                    collapseAllowed: false,
-                    isCollapseBlock: false,
-                    isFullPage: true,
                     location: Extracts.locationForTarget(target),
-                    fullWidthPossible: false
+                    flags: (  GW.contentDidLoadEvent.needsRewrite
+                    		| GW.contentDidLoadEvent.isFullPage)
                 });
 
                 //  Re-spawn, or fill and rewrite, the pop-frame.
