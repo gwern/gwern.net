@@ -113,7 +113,8 @@ if (window.Extracts) {
 
 	//	Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isBacklinksLink = (target) => {
-        return target.id == "backlink";
+        return (   target.classList.contains("backlink") 
+        		&& target.pathname.startsWith("/metadata/annotations/backlinks/"));
     };
 
     /*  Backlinks for a page (from the ‘backlinks’ link in #page-metadata).
@@ -695,7 +696,7 @@ if (window.Extracts) {
             || Extracts.isAnnotatedLink(target))
             return false;
 
-        if (target.id == "backlink")
+        if (Extracts.isBacklinksLink(target))
         	return false;
 
         let codeFileURLRegExp = new RegExp(
