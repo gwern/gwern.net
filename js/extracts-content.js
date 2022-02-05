@@ -55,6 +55,137 @@
  */
 
 if (window.Extracts) {
+    /*=-----------------=*/
+    /*= BACKLINKS LINKS =*/
+    /*=-----------------=*/
+
+    Extracts.targetTypeDefinitions.insertBefore([
+        "BACKLINKS_LINK",				// Type name
+        "isBacklinksLink",				// Type predicate function
+        "has-content",					// Target classes to add
+        "backlinksForTarget",			// Pop-frame fill function
+        "backlinks"						// Pop-frame classes
+    ], (def => def[0] == "LOCAL_PAGE"));
+
+	Extracts.backlinksCache = { }
+
+	//	Called by: extracts.js (as `predicateFunctionName`)
+    Extracts.isBacklinksLink = (target) => {
+        return target.id == "backlink";
+    };
+
+    /*  Backlinks for a page (from the ‘backlinks’ link in #page-metadata).
+     */
+    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    Extracts.backlinksForTarget = (target) => {
+        GWLog("Extracts.backlinksForTarget", "extracts-content.js", 2);
+
+		let targetPage = Extracts.targetPageForBacklinksLink(target);
+		
+		if (Extracts.backlinksCache[targetPage]) {
+			return Extracts.backlinksCache[targetPage].outerHTML;
+		} else {
+			Extracts.refreshPopFrameAfterBacklinksLoad(target);
+
+			return `&nbsp;`;
+		}
+    };
+
+	/*	Page whose backlinks a backlinks link contains.
+	 */
+	//	Called by: Extracts.backlinksForTarget
+	Extracts.targetPageForBacklinksLink = (target) => {
+		return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/backlinks\/(.+?)\.html$/.exec(target.pathname)[1]));
+	};
+
+	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    Extracts.rewritePopFrameContent_BACKLINKS_LINK = (popFrame) => {
+        let target = popFrame.spawningTarget;
+
+        //  Fire a contentDidLoad event.
+        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+            source: "Extracts.rewritePopFrameContent_BACKLINKS_LINK",
+            document: popFrame.contentView,
+            location: Extracts.locationForTarget(target),
+            isMainDocument: false,
+            needsRewrite: false,
+            clickable: false,
+            collapseAllowed: false,
+            isCollapseBlock: false,
+            isFullPage: false,
+            fullWidthPossible: false
+        });
+    };
+
+	//	Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
+    Extracts.titleForPopFrame_BACKLINKS_LINK = (popFrame) => {
+        let target = popFrame.spawningTarget;
+        let targetPage = Extracts.targetPageForBacklinksLink(target);
+        let popFrameTitleText = `Backlinks for ${targetPage}`;
+
+        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
+    };
+
+    /*  Refresh (respawn or reload) a pop-frame for a backlinks link after the
+        backlinks source loads.
+     */
+    //	Called by: Extracts.backlinksForTarget
+    Extracts.refreshPopFrameAfterBacklinksLoad = (target) => {
+        GWLog("Extracts.refreshPopFrameAfterBacklinksLoad", "extracts-content.js", 2);
+
+        target.popFrame.classList.toggle("loading", true);
+
+        doAjax({
+            location: target.href,
+            onSuccess: (event) => {
+                if (!target.popFrame)
+                    return;
+
+                //	Inject the backlinks source into the pop-frame.
+                Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
+
+				//	Cache the backlinks source.
+				let targetPage = Extracts.targetPageForBacklinksLink(target);
+				Extracts.backlinksCache[targetPage] = target.popFrame.contentView;
+
+                /*  Trigger the rewrite pass by firing the requisite event.
+                    */
+                GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+                    source: "Extracts.refreshPopFrameAfterBacklinksLoad",
+                    document: target.popFrame.contentView,
+                    location: Extracts.locationForTarget(target),
+                    isMainDocument: false,
+                    needsRewrite: true,
+                    clickable: false,
+                    collapseAllowed: false,
+                    isCollapseBlock: false,
+                    isFullPage: false,
+                    fullWidthPossible: false
+                });
+
+                //  Re-spawn, or fill and rewrite, the pop-frame.
+                if (Extracts.popFrameProvider == Popups) {
+                    Popups.spawnPopup(target);
+                } else if (Extracts.popFrameProvider == Popins) {
+                    Extracts.fillPopFrame(target.popin);
+                    target.popin.classList.toggle("loading", false);
+
+                    Extracts.rewritePopinContent(target.popin);
+
+                    requestAnimationFrame(() => {
+                        Popins.scrollPopinIntoView(target.popin);
+                    });
+                }
+            },
+            onFailure: (event) => {
+                if (!target.popFrame)
+                    return;
+
+                target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+            }
+        });
+    };
+
     /*=-----------=*/
     /*= CITATIONS =*/
     /*=-----------=*/
@@ -98,7 +229,7 @@ if (window.Extracts) {
 
         /*  Do not spawn footnote popup if the {side|foot}note it points to is
             visible.
-            */
+         */
         if (Array.from(allNotesForCitation(target)).findIndex(note => Popups.isVisible(note)) != -1)
             return null;
 
@@ -107,7 +238,7 @@ if (window.Extracts) {
 
         /*  Add event listeners to highlight citation when its footnote
             popup is hovered over.
-            */
+         */
         popup.addEventListener("mouseenter", (event) => {
             target.classList.toggle("highlighted", true);
         });
@@ -129,13 +260,13 @@ if (window.Extracts) {
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_CITATION",
             document: popFrame.contentView,
+            location: Extracts.locationForTarget(target),
             isMainDocument: false,
             needsRewrite: false,
             clickable: false,
             collapseAllowed: false,
             isCollapseBlock: false,
             isFullPage: false,
-            location: Extracts.locationForTarget(target),
             fullWidthPossible: false
         });
     };
@@ -191,7 +322,7 @@ if (window.Extracts) {
         /*  Remove the .targeted class from a targeted citation (if any)
             inside the popup (to prevent confusion with the citation that
             the spawning link points to, which will be highlighted).
-            */
+         */
         popup.querySelectorAll(".footnote-ref.targeted").forEach(targetedCitation => {
             targetedCitation.classList.remove("targeted");
         });
@@ -208,13 +339,13 @@ if (window.Extracts) {
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
             document: popup.contentView,
+            location: Extracts.locationForTarget(target),
             isMainDocument: false,
             needsRewrite: false,
             clickable: false,
             collapseAllowed: false,
             isCollapseBlock: false,
             isFullPage: false,
-            location: Extracts.locationForTarget(target),
             fullWidthPossible: false
         });
     }
@@ -524,6 +655,9 @@ if (window.Extracts) {
             || Extracts.isAnnotatedLink(target))
             return false;
 
+        if (target.id == "backlink")
+        	return false;
+
         let codeFileURLRegExp = new RegExp(
               '('
             + Extracts.codeFileExtensions.map(ext => `\\.${ext}`).join("|")
@@ -536,7 +670,7 @@ if (window.Extracts) {
         file, stored on the server as an HTML fragment. If present, we embed
         that. If there’s no such fragment, then we just embed the contents of
         the actual code file, in a <pre>-wrapped <code> element.
-        */
+     */
     //	Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.localCodeFileForTarget = (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);

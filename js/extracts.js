@@ -33,7 +33,7 @@
 		of local pages).
 
 	GW.contentDidLoad {
-			source: "Extracts.externalPageEmbedForTarget"
+			source: "Extracts.refreshPopFrameAfterLocalPageLoads"
 		}
 		Fired at the last stage of preparing a local page embed pop-frame for
 		spawning (after the pop-frame’s content has been freshly loaded via
@@ -734,7 +734,7 @@ Extracts = {
                 /*  Trigger the rewrite pass by firing the requisite event.
                     */
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-                    source: "Extracts.externalPageEmbedForTarget",
+                    source: "Extracts.refreshPopFrameAfterLocalPageLoads",
                     document: target.popFrame.contentView,
                     isMainDocument: false,
                     needsRewrite: true,
