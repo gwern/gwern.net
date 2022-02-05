@@ -6,9 +6,9 @@
 /*	Events fired by rewrite.js:
 
 	Rewrite.fullWidthMediaDidLoad
-		Fired when a full-width figure image or video is loaded. This event is
-		only fired after the initial page load completes (i.e., it is triggered
-		by lazy-loading of media elements).
+		Fired when a full-width image or video is loaded. This event is only 
+		fired after the initial page load completes (i.e., it is triggered by 
+		lazy-loading of media elements).
 
 	Rewrite.pageLayoutWillComplete
 		Fired just before the page layout process completes. The value of the
