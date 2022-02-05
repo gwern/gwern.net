@@ -1,3 +1,14 @@
+/*******************************************/
+/*	Events fired by extracts-annotations.js:
+
+	GW.contentDidLoad {
+			source: "Extracts.rewritePopFrameContent_ANNOTATION"
+		}
+		Fired when an annotation pop-frame has been filled with content (i.e.,
+		the annotation), at the last stage of preparing the pop-frame for 
+		spawning (being injected into the page and positioned).
+ */
+
 if (window.Extracts) {
     /*=-------------=*/
     /*= ANNOTATIONS =*/

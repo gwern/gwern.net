@@ -1975,6 +1975,16 @@ a[href*='docs/.*/*.pdf#org=google']::after {
 if (typeof window.GW == "undefined")
     window.GW = { };
 
+/********************************/
+/*	Events fired by gw-inline.js:
+
+	GW.contentDidLoad {
+			source: "DOMContentLoaded"
+		}
+		Fired when the browser DOMContentLoaded event fires. Loaded content is
+		the full page itself.
+ */
+
 /*****************/
 /* MEDIA QUERIES */
 /*****************/
@@ -2903,7 +2913,8 @@ function setMode(modeOption) {
 
     // Inject the appropriate styles.
     let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");
-    if (darkModeStyles == null) return;
+    if (darkModeStyles == null)
+    	return;
     if (modeOption == 'auto') {
         darkModeStyles.media = "all and (prefers-color-scheme: dark)";
     } else if (modeOption == 'dark') {

@@ -9,6 +9,28 @@ Author: Said Achmiz
 license: MIT (derivative of footnotes.js, which is PD)
 */
 
+/********************************/
+/*	Events fired by sidenotes.js:
+
+	Sidenotes.didLoad
+		Fired when the Sidenotes object has loaded.
+
+	Sidenotes.setupDidComplete
+		Fired just before the ‘setup’ function returns.
+
+	Sidenotes.cleanupDidComplete
+		Fired just before the ‘cleanup’ function returns.
+
+	Sidenotes.sidenotesDidConstruct
+		Fired after HTML structure of sidenotes has been created and injected
+		into the page, and event listeners have been attached.
+
+	Sidenotes.sidenotePositionsDidUpdate
+		Fired after sidenote positions have been calculated (or re-calculated),
+		either after the initial page load or after, e.g., some change in
+		viewport dimensions.
+ */
+
 Sidenotes = {
 	/*  The `sidenoteSpacing` constant defines the minimum vertical space that
 		is permitted between adjacent sidenotes; any less, and they are
@@ -424,7 +446,8 @@ Sidenotes = {
 			load process.
 			*/
 		let markdownBody = document.querySelector("#markdownBody");
-		if (!markdownBody) return;
+		if (!markdownBody)
+			return;
 
 		/*  Add the sidenote columns (removing them first if they already exist).
 			*/
@@ -487,7 +510,7 @@ Sidenotes = {
 			*/
 		Sidenotes.deconstructSidenotes();
 
-		GW.notificationCenter.fireEvent("Sidenotes.sidenotesDidDeconstruct");
+		GW.notificationCenter.fireEvent("Sidenotes.cleanupDidComplete");
 	},
 
 	/*  Q:  Why is this setup function so long and complex?

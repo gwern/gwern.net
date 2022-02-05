@@ -4,6 +4,19 @@
 Original author:  Lukas Mathis (2010-04-20)
 License: public domain ("And some people have asked me about a license for this piece of code. I think it’s far too short to get its own license, so I’m relinquishing any copyright claims. Consider the code to be public domain. No attribution is necessary.")
 	*/
+/*****************************/
+/*	Events fired by popins.js:
+
+	Popins.didLoad
+		Fired when the Popins object has loaded.
+
+	Popins.setupDidComplete
+		Fired just before the ‘setup’ function returns.
+
+	Popins.popinDidInject
+		Fired after a popin has been spawned and injected into the page.
+ */
+
 Popins = {
 	/******************/
 	/*	Implementation.

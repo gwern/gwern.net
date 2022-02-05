@@ -1,3 +1,35 @@
+/**********************************/
+/*	Events fired by annotations.js:
+
+	Annotations.didLoad
+		Fired when the Annotations object has loaded.
+
+	Annotations.setupDidComplete
+		Fired just before the ‘setup’ function returns.
+
+	Annotations.cleanupDidComplete
+		Fired just before the ‘cleanup’ function returns.
+
+	Annotations.annotationDidLoad
+		Fired after a new annotation has been loaded and cached.
+
+	Annotations.annotationLoadDidFail
+		Fired when a new annotation has failed to load, and the load failure
+		has been recorded in the annotations cache.
+
+	GW.contentDidLoad {
+			source: "Annotations.loadAnnotation"
+		}
+		Fired after a new annotation has been loaded and staged (and, if it is
+		a Wikipedia entry, cleaned up / rectified), but not cached yet.
+
+	GW.contentLoadDidFail {
+			source: "Annotations.loadAnnotation"
+		}
+		Fired when a new annotation has failed to load (but before the load
+		failure has been recorded in the annotations cache).
+ */
+
 Annotations = {
     /*****************/
     /*  Configuration.

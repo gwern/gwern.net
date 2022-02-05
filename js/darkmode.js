@@ -260,7 +260,8 @@ function updateModeSelectorState() {
 
 	// Find the mode selector widget.
     let modeSelector = document.querySelector("#mode-selector");
-    if (modeSelector == null) return;
+    if (modeSelector == null)
+    	return;
 
     // Clear current buttons state.
     modeSelector.querySelectorAll("button").forEach(button => {

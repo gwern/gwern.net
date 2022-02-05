@@ -1,3 +1,22 @@
+/***************************************/
+/*	Events fired by extracts-content.js:
+
+	GW.contentDidLoad {
+			source: "Extracts.rewritePopFrameContent_CITATION"
+		}
+		Fired when a citation (i.e., footnote) pop-frame has been filled with 
+		content (i.e., the footnote), at the last stage of preparing the 
+		pop-frame for spawning (being injected into the page and positioned).
+
+	GW.contentDidLoad {
+			source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
+		}
+		Fired when a citation back-link pop-frame has been filled with content
+		(i.e., the text surrounding the reference which links to the footnote), 
+		at the last stage of preparing the pop-frame for spawning (being 
+		injected into the page and positioned).
+ */
+
 if (window.Extracts) {
     /*=-----------=*/
     /*= CITATIONS =*/

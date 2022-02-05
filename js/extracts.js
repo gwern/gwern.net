@@ -13,6 +13,33 @@
 
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/static/build/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
+/*******************************/
+/*	Events fired by extracts.js:
+
+	Extracts.didLoad
+		Fired when the Extracts object has loaded.
+
+	Extracts.setupDidComplete
+		Fired just before the ‘setup’ function returns.
+
+	Extracts.cleanupDidComplete
+		Fired just before the ‘cleanup’ function returns.
+
+	GW.contentDidLoad {
+			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
+		}
+		Fired at the last stage of preparing a local page embed pop-frame for
+		spawning (after the pop-frame’s content has been loaded from the cache
+		of local pages).
+
+	GW.contentDidLoad {
+			source: "Extracts.externalPageEmbedForTarget"
+		}
+		Fired at the last stage of preparing a local page embed pop-frame for
+		spawning (after the pop-frame’s content has been freshly loaded via
+		a network request).
+ */
+
 Extracts = {
     /*  Target containers.
         */
@@ -570,13 +597,17 @@ Extracts = {
         //  Mark sections with ‘§’ symbol.
         if (    target.hash > ""
         	&& !popFrame.classList.contains("external-page-embed")
-            // links with an org notation for link icons
-            // (eg. 'https://arxiv.org/abs/2006.07159#google')
-            // should not get a section mark
-        	    && !["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", "deepmind", "eleutherai", "elementai",
-        		     "facebook", "flickr", "google", "googledeepmind", "huawei", "intel", "laion", "lighton", "microsoft", "microsoftnvidia", "miri",
-        		     "nvidia", "openai", "pdf", "salesforce", "sensetime", "snapchat", "tencent", "tensorfork",
-        		 "uber", "yandex"].includes(target.hash))
+				/*	Links with an org notation for link icons 
+					(eg. 'https://arxiv.org/abs/2006.07159#google')
+					should not get a section mark.
+				 */
+        	    && !["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", 
+        	    	 "deepmind", "eleutherai", "elementai", "facebook", "flickr", 
+        	    	 "google", "googledeepmind", "huawei", "intel", "laion", 
+        	    	 "lighton", "microsoft", "microsoftnvidia", "miri",
+        		     "nvidia", "openai", "pdf", "salesforce", "sensetime", 
+        		     "snapchat", "tencent", "tensorfork", "uber", "yandex"
+        		     ].includes(target.hash))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);

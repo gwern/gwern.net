@@ -19,7 +19,8 @@ function setMode(modeOption) {
 
     // Inject the appropriate styles.
     let darkModeStyles = document.querySelector("#inlined-dark-mode-styles, #dark-mode-styles");
-    if (darkModeStyles == null) return;
+    if (darkModeStyles == null)
+    	return;
     if (modeOption == 'auto') {
         darkModeStyles.media = "all and (prefers-color-scheme: dark)";
     } else if (modeOption == 'dark') {

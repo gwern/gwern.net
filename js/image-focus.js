@@ -3,6 +3,16 @@
 /* License: GPL (derivative work of https://www.pmwiki.org/wiki/Cookbook/ImgFocus ) */
 /* Lightweight dependency-free JavaScript library for "click to focus/zoom" images in HTML web pages. Originally coded for Obormot.net / GreaterWrong.com. */
 
+/**********************************/
+/*	Events fired by image-focus.js:
+
+	ImageFocus.didLoad
+		Fired when all image-focus code has loaded.
+
+	ImageFocus.setupDidComplete
+		Fired just before the ‘imageFocusSetup’ function returns.
+ */
+
 /***************/
 /* IMAGE FOCUS */
 /***************/
@@ -238,13 +248,16 @@ function focusImage(imageToFocus) {
 		window.onmousemove = "";
 
 		//  We only want to do anything on left-clicks.
-		if (event.button != 0) return;
+		if (event.button != 0)
+			return;
 
 		//  Don’t unfocus if click was on a slideshow next/prev button!
-		if (event.target.closest(".slideshow-button")) return;
+		if (event.target.closest(".slideshow-button"))
+			return;
 
 		//  We also don’t want to do anything if clicked on the help overlay.
-		if (event.target.closest(".help-overlay")) return;
+		if (event.target.closest(".help-overlay"))
+			return;
 
 		let focusedImage = GW.currentlyFocusedImage;
 		if ((event.target == focusedImage || event.target.tagName == "HTML") &&
@@ -261,7 +274,8 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.mouseDown", "image-focus.js", 2);
 
 		//  We only want to do anything on left-clicks.
-		if (event.button != 0) return;
+		if (event.button != 0)
+			return;
 
 		event.preventDefault();
 
@@ -291,10 +305,12 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.doubleClick", "image-focus.js", 2);
 
 		//  Don’t unfocus if click was on a slideshow next/prev button!
-		if (event.target.closest(".slideshow-button")) return;
+		if (event.target.closest(".slideshow-button"))
+			return;
 
 		//  We also don’t want to do anything if clicked on the help overlay.
-		if (event.target.closest(".help-overlay")) return;
+		if (event.target.closest(".help-overlay"))
+			return;
 
 		unfocusImageOverlay();
 	});
@@ -382,7 +398,8 @@ function resetFocusedImagePosition() {
 	GWLog("resetFocusedImagePosition", "image-focus.js", 2);
 
 	let focusedImage = GW.currentlyFocusedImage;
-	if (!focusedImage) return;
+	if (!focusedImage)
+		return;
 
 	let sourceImage = document.querySelector(GW.imageFocus.focusedImageSelector);
 
@@ -406,7 +423,8 @@ function setFocusedImageCursor() {
 	GWLog("setFocusedImageCursor", "image-focus.js", 2);
 
 	let focusedImage = GW.currentlyFocusedImage;
-	if (!focusedImage) return;
+	if (!focusedImage)
+		return;
 	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth)
 								? "move" : "";
 }
@@ -468,7 +486,8 @@ function focusNextImage(next = true) {
 	let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
 	var indexOfFocusedImage = getIndexOfFocusedImage();
 
-	if (next ? (++indexOfFocusedImage == images.length) : (--indexOfFocusedImage == -1)) return;
+	if (next ? (++indexOfFocusedImage == images.length) : (--indexOfFocusedImage == -1))
+		return;
 
 	//  Remove existing image.
 	GW.currentlyFocusedImage.remove();

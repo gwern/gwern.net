@@ -3,6 +3,16 @@
 if (typeof window.GW == "undefined")
     window.GW = { };
 
+/********************************/
+/*	Events fired by gw-inline.js:
+
+	GW.contentDidLoad {
+			source: "DOMContentLoaded"
+		}
+		Fired when the browser DOMContentLoaded event fires. Loaded content is
+		the full page itself.
+ */
+
 /*****************/
 /* MEDIA QUERIES */
 /*****************/
