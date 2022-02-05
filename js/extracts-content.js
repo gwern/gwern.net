@@ -11,13 +11,8 @@
             	which may not necessarily be the main page, as citations may 
             	also occur in embedded pages - is currently in sidenotes mode 
             	or not).
-            isMainDocument: false
-            needsRewrite: false
-            clickable: false
-            collapseAllowed: false
-            isCollapseBlock: false
-            isFullPage: false
-            fullWidthPossible: false
+            flags:
+            	0 (no flags set)
 		}
 		Fired when a citation (i.e., footnote) pop-frame has been filled with 
 		content (i.e., the footnote), at the last stage of preparing the 
@@ -37,13 +32,8 @@
             	footnote/sidenote which spawned the popup. (If there are 
             	multiple instances of the citation on the page, this will be the
             	URL of the first one, and that is what the popup will contain.)
-            isMainDocument: false
-            needsRewrite: false
-            clickable: false
-            collapseAllowed: false
-            isCollapseBlock: false
-            isFullPage: false
-            fullWidthPossible: false
+            flags:
+            	0 (no flags set)
 		}
 		Fired when a citation back-link pop-frame has been filled with content
 		(i.e., the text surrounding the reference which links to the footnote), 
@@ -59,13 +49,8 @@
             	The contentView of the pop-frame.
             location: 
             	URL of the backlinks source file.
-            isMainDocument: false
-            needsRewrite: false
-            clickable: false
-            collapseAllowed: false
-            isCollapseBlock: false
-            isFullPage: false
-            fullWidthPossible: false
+            flags:
+            	0 (no flags set)
         }
         Fired at the last stage of preparing a backlinks pop-frame for spawning 
         (after the pop-frame’s content has been loaded from the local backlinks
@@ -80,13 +65,7 @@
             	The contentView of the pop-frame.
             location: 
             	URL of the backlinks source file.
-            isMainDocument: false
-            needsRewrite: true
-            clickable: false
-            collapseAllowed: false
-            isCollapseBlock: false
-            isFullPage: false
-            fullWidthPossible: false
+            flags: GW.contentDidLoadEventFlags.needsRewrite
         }
         Fired at the last stage of preparing a backlinks pop-frame for spawning 
         (after the pop-frame’s content has been freshly loaded via a network 
@@ -150,13 +129,7 @@ if (window.Extracts) {
             source: "Extracts.rewritePopFrameContent_BACKLINKS_LINK",
             document: popFrame.contentView,
             location: Extracts.locationForTarget(target),
-            isMainDocument: false,
-            needsRewrite: false,
-            clickable: false,
-            collapseAllowed: false,
-            isCollapseBlock: false,
-            isFullPage: false,
-            fullWidthPossible: false
+            flags: 0
         });
     };
 
@@ -195,13 +168,7 @@ if (window.Extracts) {
                     source: "Extracts.refreshPopFrameAfterBacklinksLoad",
                     document: target.popFrame.contentView,
                     location: Extracts.locationForTarget(target),
-                    isMainDocument: false,
-                    needsRewrite: true,
-                    clickable: false,
-                    collapseAllowed: false,
-                    isCollapseBlock: false,
-                    isFullPage: false,
-                    fullWidthPossible: false
+                    flags: GW.contentDidLoadEventFlags.needsRewrite
                 });
 
                 //  Re-spawn, or fill and rewrite, the pop-frame.
@@ -302,13 +269,7 @@ if (window.Extracts) {
             source: "Extracts.rewritePopFrameContent_CITATION",
             document: popFrame.contentView,
             location: Extracts.locationForTarget(target),
-            isMainDocument: false,
-            needsRewrite: false,
-            clickable: false,
-            collapseAllowed: false,
-            isCollapseBlock: false,
-            isFullPage: false,
-            fullWidthPossible: false
+            flags: 0
         });
     };
 
@@ -381,13 +342,7 @@ if (window.Extracts) {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK",
             document: popup.contentView,
             location: Extracts.locationForTarget(target),
-            isMainDocument: false,
-            needsRewrite: false,
-            clickable: false,
-            collapseAllowed: false,
-            isCollapseBlock: false,
-            isFullPage: false,
-            fullWidthPossible: false
+            flags: 0
         });
     }
 

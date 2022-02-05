@@ -70,59 +70,76 @@
 			URL of the annotated link!). For Wikipedia annotations, this will be
 			the URL of the API request to retrieve the annotation data.
 
-		‘isMainDocument’ (key)
-			Boolean value which specifies whether the loaded content is the main
-			page itself, or some content loaded within the main page (which 
-			might be a content fragment like an annotation, or an entire other
-			local page loaded in a pop-frame, or something else).
+		‘flags’ (key)
+			Bit field containing various flags (combined via bitwise OR). The
+			values of the flags are defined in GW.contentDidLoadEventFlags.
 
-			The value of this key should be true only once per page session,
-			when the initial page content is loaded (and the GW.contentDidLoad
-			event is called from a listener for the DOMContentLoaded browser
-			event).
+			(Note that event handlers for the ‘GW.contentDidLoad’ event can 
+			 access the values of these flags directly via property access on 
+			 the event, e.g. the following two expressions are equivalent:
+			 
+			 eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0 
+			 
+			 eventInfo.needsRewrite
 
-		‘needsRewrite’ (key)
-			Boolean value which specifies whether the loaded content needs to
-			be processed through a rewrite pass (i.e., to have its typography
-			rectified, HTML structure adjusted, etc.). If this value is false,
-			then the loaded content has already had rewriting performed (this
-			will be the case when the content is being loaded from a local 
-			cache), and only needs to have event listeners attached, positioning
-			adjusted, and other such treatment that doesn’t modify the content.
+			 It is recommended that the latter form be used.)
 
-		‘clickable’ (key)
-			Currently unused. Reserved for future use.
+			The flags are:
 
-		‘collapseAllowed’ (key)
-			Boolean value which specifies whether the loaded content is 
-			permitted to have collapsed sections. Generally false for all but
-			the main page (because collapsing/un-collapsing interactions are
-			awkward and confusing in pop-frames and similar embedded content
-			elements). If the value of this key is false, then any collapse 
-			blocks in the loaded content will be automatically expanded (if 
-			present) or simply not enabled in the first place, and all content
-			in collapsible sections will be visible at all times.
+			‘isMainDocument’
+				Specifies whether the loaded content is the main page itself, or
+				some content loaded within the main page (which might be a 
+				content fragment like an annotation, or an entire other local 
+				page loaded in a pop-frame, or something else).
 
-		‘isCollapseBlock’ (key)
-			Currently unused. Reserved for future use.
+				The value of this key should be true only once per page session,
+				when the initial page content is loaded (and the 
+				GW.contentDidLoad event is called from a listener for the 
+				DOMContentLoaded browser event).
 
-		‘isFullPage’ (key)
-			Boolean value which specifies whether the loaded content is a whole
-			local page. True for the main page load, and also for loads of whole
-			other local pages (for embedding into a pop-frame); false in all
-			other cases (fragments of a page, e.g. footnotes; annotations; etc.)
+			‘needsRewrite’
+				Specifies whether the loaded content needs to be processed 
+				through a rewrite pass (i.e., to have its typography rectified,
+				HTML structure adjusted, etc.). If this value is false, then the
+				loaded content has already had rewriting performed (this will be
+				the case when the content is being loaded from a local cache), 
+				and only needs to have event listeners attached, positioning
+				adjusted, and other such treatment that doesn’t modify the 
+				content.
 
-			If true, the loaded content will contain a main content element
-			(`#markdownBody`) as well as a page metadata block 
-			(`#page-metadata`).
+			‘clickable’
+				Currently unused. Reserved for future use.
 
-		‘fullWidthPossible’ (key)
-			Boolean value which specifies whether full-width elements are 
-			permitted in the loaded content. Generally true only for the main
-			page load. If false, elements marked as full-width will be laid out
-			as if for a mobile (narrow) viewport, regardless of the actual 
-			dimensions of the loaded content’s container (i.e. they will not
-			actually be “full-width”).
+			‘collapseAllowed’
+				Specifies whether the loaded content is permitted to have 
+				collapsed sections. Generally false for all but the main page 
+				(because collapsing/un-collapsing interactions are awkward and 
+				confusing in pop-frames and similar embedded content elements). 
+				If the value of this key is false, then any collapse blocks in 
+				the loaded content will be automatically expanded (if present) 
+				or simply not enabled in the first place, and all content in 
+				collapsible sections will be visible at all times.
+
+			‘isCollapseBlock’
+				Currently unused. Reserved for future use.
+
+			‘isFullPage’
+				Specifies whether the loaded content is a whole local page. True
+				for the main page load, and also for loads of whole other local 
+				pages (for embedding into a pop-frame); false in all other cases
+				(fragments of a page, e.g. footnotes; annotations; etc.)
+
+				If true, the loaded content will contain a main content element
+				(`#markdownBody`) as well as a page metadata block 
+				(`#page-metadata`).
+
+			‘fullWidthPossible’
+				Specifies whether full-width elements are permitted in the 
+				loaded content. Generally true only for the main page load. If 
+				false, elements marked as full-width will be laid out as if for 
+				a mobile (narrow) viewport, regardless of the actual dimensions 
+				of the loaded content’s container (i.e. they will not actually
+				be “full-width”).
  */
 
 GW.rewriteFunctions = { };

@@ -8,13 +8,8 @@
             location: 
             	URL of the annotated target (NOT the URL of the annotation
             	resource!).
-            isMainDocument: false
-            needsRewrite: false
-            clickable: false
-            collapseAllowed: false
-            isCollapseBlock: false
-            isFullPage: false
-            fullWidthPossible: false
+            flags:
+            	0 (no flags set)
 		}
 		Fired when an annotation pop-frame has been filled with content (i.e.,
 		the annotation), at the last stage of preparing the pop-frame for 
@@ -182,14 +177,8 @@ if (window.Extracts) {
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
             document: popFrame.contentView,
-            isMainDocument: false,
-            needsRewrite: false,
-            clickable: false,
-            collapseAllowed: false,
-            isCollapseBlock: false,
-            isFullPage: false,
             location: Extracts.locationForTarget(target),
-            fullWidthPossible: false
+            flags: 0
         });
     };
 

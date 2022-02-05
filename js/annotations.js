@@ -27,20 +27,14 @@
 
 	GW.contentDidLoad {
 			source: "Annotations.loadAnnotation"
+			document: Annotations.annotationsWorkspace
+			location: 
+				The URL of the annotation resource.
 			identifier:
 				The identifier string for the annotation.
 				(See the Extracts.targetIdentifier function in extracts.js for 
 				 details.)
-			document: Annotations.annotationsWorkspace
-			location: 
-				The URL of the annotation resource.
-			isMainDocument: false
-            needsRewrite: true
-            clickable: false
-            collapseAllowed: false
-            isCollapseBlock: false
-            isFullPage: false
-            fullWidthPossible: false
+			flags: GW.contentDidLoadEventFlags.needsRewrite
 
 		}
 		Fired after a new annotation has been loaded and staged (and, if it is
@@ -51,13 +45,13 @@
 
 	GW.contentLoadDidFail {
 			source: "Annotations.loadAnnotation"
+			document: Annotations.annotationsWorkspace
+			location: 
+				The URL of the annotation resource.
 			identifier:
 				The identifier string for the annotation.
 				(See the Extracts.targetIdentifier function in extracts.js for 
 				 details.)
-			document: Annotations.annotationsWorkspace
-			location: 
-				The URL of the annotation resource.
 		}
 		Fired when a new annotation has failed to load (but before the load
 		failure has been recorded in the annotations cache).
@@ -240,23 +234,17 @@ Annotations = {
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Annotations.loadAnnotation",
                     document: annotation,
-                    identifier: annotationIdentifier,
-                    isMainDocument: false,
-                    needsRewrite: true,
-                    clickable: false,
-                    collapseAllowed: false,
-                    isCollapseBlock: false,
-                    isFullPage: false,
                     location: annotationURL,
-                    fullWidthPossible: false
+                    identifier: annotationIdentifier,
+                    flags: GW.contentDidLoadEventFlags.needsRewrite
                 });
             },
             onFailure: (event) => {
                 GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
                     source: "Annotations.loadAnnotation",
                     document: Annotations.annotationsWorkspace,
-                    identifier: annotationIdentifier,
-                    location: annotationURL
+                    location: annotationURL,
+                    identifier: annotationIdentifier
                 });
             }
         });

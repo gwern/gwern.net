@@ -1980,6 +1980,16 @@ if (typeof window.GW == "undefined")
 
 	GW.contentDidLoad {
 			source: "DOMContentLoaded"
+			document: 
+				The main element (i.e., <html>) of the main page.
+			location: 
+				URL of the main page, as loaded.
+			flags: (  GW.contentDidLoadEventFlags.isMainDocument
+					| GW.contentDidLoadEventFlags.needsRewrite
+					| GW.contentDidLoadEventFlags.clickable
+					| GW.contentDidLoadEventFlags.collapseAllowed
+					| GW.contentDidLoadEventFlags.isFullPage
+					| GW.contentDidLoadEventFlags.fullWidthPossible)
 		}
 		Fired when the browser DOMContentLoaded event fires. Loaded content is
 		the full page itself.
@@ -2726,6 +2736,14 @@ GW.notificationCenter = {
         GW.notificationCenter.eventHandlers[eventName] = null;
     },
 
+	/*	Event-specific pre-fire processing functions. Keys are event names.
+		Values are functions that take the event info as an argument, and return
+		modified event info.
+	*/
+	prefireProcessors: {
+
+	},
+
     /*	Fire an event with the given name and event info dictionary.
 
     	In addition to printing a console log message (if the log level is set 
@@ -2769,6 +2787,13 @@ GW.notificationCenter = {
         if (GW.notificationCenter.eventHandlers[eventName] == null)
             return;
 
+		/*	If event-specific pre-fire processing is needed, do it.
+		 */
+		if (GW.notificationCenter.prefireProcessors[eventName])
+			eventInfo = GW.notificationCenter.prefireProcessors[eventName](eventInfo);
+
+		/*	Call all registered handlers, in order.
+		 */
         for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
             let handler = GW.notificationCenter.eventHandlers[eventName][i];
             /*	If a condition function is provided, call it to determine 
@@ -2797,6 +2822,29 @@ GW.notificationCenter = {
             }
         }
     }
+};
+
+/*	Event-specific boolean flags for the ‘GW.contentDidLoad’ event.
+
+	See rewrite.js for details on the meaning of these flags.
+ */
+GW.contentDidLoadEventFlags = {
+	isMainDocument:		1 << 0,
+	needsRewrite:		1 << 1,
+	clickable:			1 << 2,
+	collapseAllowed:	1 << 3,
+	isCollapseBlock:	1 << 4,
+	isFullPage:			1 << 5,
+	fullWidthPossible:	1 << 6
+};
+
+/*	Event-specific pre-fire processing for the ‘GW.contentDidLoad’ event.
+ */
+GW.notificationCenter.prefireProcessors["GW.contentDidLoad"] = (eventInfo) => {
+	for ([flagName, flagValue] of Object.entries(GW.contentDidLoadEventFlags))
+		eventInfo[flagName] = (0 != (eventInfo.flags & flagValue));
+
+	return eventInfo;
 };
 
 /****************/
@@ -2874,14 +2922,13 @@ window.addEventListener("DOMContentLoaded", () => {
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
         document: document.firstElementChild,
-        isMainDocument: true,
-        needsRewrite: true,
-        clickable: true,
-        collapseAllowed: true,
-        isCollapseBlock: false,
-        isFullPage: true,
         location: new URL(location.href),
-        fullWidthPossible: true
+        flags: (  GW.contentDidLoadEventFlags.isMainDocument
+        		| GW.contentDidLoadEventFlags.needsRewrite
+        		| GW.contentDidLoadEventFlags.clickable
+        		| GW.contentDidLoadEventFlags.collapseAllowed
+        		| GW.contentDidLoadEventFlags.isFullPage
+        		| GW.contentDidLoadEventFlags.fullWidthPossible)
     });
 });
 window.addEventListener("load", () => {
