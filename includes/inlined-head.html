@@ -2015,7 +2015,7 @@ GW.isFirefox = () => {
 /********************/
 
 GW.logLevel = localStorage.getItem("gw-log-level") || 0;
-GW.logSourcePadLength = 18;
+GW.logSourcePadLength = 28;
 GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
 
 function GWLog (string, source = "", level = 1) {
