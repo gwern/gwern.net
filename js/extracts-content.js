@@ -163,9 +163,7 @@ if (window.Extracts) {
     Extracts.titleForPopFrame_BACKLINKS_LINK = (popFrame) => {
         let target = popFrame.spawningTarget;
         let targetPage = Extracts.targetPageForBacklinksLink(target);
-        let popFrameTitleText = `Backlinks for ${targetPage}`;
-
-        return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
+        return `${targetPage} (Backlinks)`;
     };
 
     /*  Refresh (respawn or reload) a pop-frame for a backlinks link after the
