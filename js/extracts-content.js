@@ -3,18 +3,55 @@
 
 	GW.contentDidLoad {
 			source: "Extracts.rewritePopFrameContent_CITATION"
+            document: 
+            	The contentView of the pop-frame.
+            location: 
+            	URL of (i.e., anchor-link to) the footnote (or sidenote; this 
+            	depends on whether the page in which the citation appears - 
+            	which may not necessarily be the main page, as citations may 
+            	also occur in embedded pages - is currently in sidenotes mode 
+            	or not).
+            isMainDocument: false
+            needsRewrite: false
+            clickable: false
+            collapseAllowed: false
+            isCollapseBlock: false
+            isFullPage: false
+            fullWidthPossible: false
 		}
 		Fired when a citation (i.e., footnote) pop-frame has been filled with 
 		content (i.e., the footnote), at the last stage of preparing the 
 		pop-frame for spawning (being injected into the page and positioned).
 
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
+
 	GW.contentDidLoad {
 			source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
+            document: 
+            	The contentView of the popup (not “pop-frame”, but “popup”; 
+            	citation back-links can only spawn popups; they act as simple 
+            	anchor-links in popins mode).
+            location: 
+            	URL of (i.e., anchor-link to) the citation which references the
+            	footnote/sidenote which spawned the popup. (If there are 
+            	multiple instances of the citation on the page, this will be the
+            	URL of the first one, and that is what the popup will contain.)
+            isMainDocument: false
+            needsRewrite: false
+            clickable: false
+            collapseAllowed: false
+            isCollapseBlock: false
+            isFullPage: false
+            fullWidthPossible: false
 		}
 		Fired when a citation back-link pop-frame has been filled with content
 		(i.e., the text surrounding the reference which links to the footnote), 
 		at the last stage of preparing the pop-frame for spawning (being 
 		injected into the page and positioned).
+
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
  */
 
 if (window.Extracts) {
@@ -475,10 +512,11 @@ if (window.Extracts) {
     ], (def => def[0] == "LOCAL_PAGE"));
 
 	//	Used in: Extracts.isLocalCodeFileLink
-    Extracts.codeFileExtensions = [ "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html",
-                                    "opml", "xml",
-                                    /* Non-syntax highlighted (due to lack of known format or potential size): */
-                                    "txt", "json", "jsonl", "csv" ];
+    Extracts.codeFileExtensions = [ 
+    	"R", "css", "hs", "js", "patch", "sh", "php", "conf", "html", "opml", "xml",
+		// Non-syntax highlighted (due to lack of known format or potential size):
+		"txt", "json", "jsonl", "csv" 
+	];
 
 	//	Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isLocalCodeFileLink = (target) => {

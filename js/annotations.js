@@ -10,24 +10,60 @@
 	Annotations.cleanupDidComplete
 		Fired just before the ‘cleanup’ function returns.
 
-	Annotations.annotationDidLoad
+	Annotations.annotationDidLoad {
+			identifier:
+				The identifier string for the annotation. (See the 
+				Extracts.targetIdentifier function in extracts.js for details.)
+		}
 		Fired after a new annotation has been loaded and cached.
 
-	Annotations.annotationLoadDidFail
+	Annotations.annotationLoadDidFail {
+			identifier:
+				The identifier string for the annotation. (See the 
+				Extracts.targetIdentifier function in extracts.js for details.)
+		}
 		Fired when a new annotation has failed to load, and the load failure
 		has been recorded in the annotations cache.
 
 	GW.contentDidLoad {
 			source: "Annotations.loadAnnotation"
+			identifier:
+				The identifier string for the annotation.
+				(See the Extracts.targetIdentifier function in extracts.js for 
+				 details.)
+			document: Annotations.annotationsWorkspace
+			location: 
+				The URL of the annotation resource.
+			isMainDocument: false
+            needsRewrite: true
+            clickable: false
+            collapseAllowed: false
+            isCollapseBlock: false
+            isFullPage: false
+            fullWidthPossible: false
+
 		}
 		Fired after a new annotation has been loaded and staged (and, if it is
 		a Wikipedia entry, cleaned up / rectified), but not cached yet.
 
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
+
 	GW.contentLoadDidFail {
 			source: "Annotations.loadAnnotation"
+			identifier:
+				The identifier string for the annotation.
+				(See the Extracts.targetIdentifier function in extracts.js for 
+				 details.)
+			document: Annotations.annotationsWorkspace
+			location: 
+				The URL of the annotation resource.
 		}
 		Fired when a new annotation has failed to load (but before the load
 		failure has been recorded in the annotations cache).
+
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
  */
 
 Annotations = {

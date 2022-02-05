@@ -3,10 +3,25 @@
 
 	GW.contentDidLoad {
 			source: "Extracts.rewritePopFrameContent_ANNOTATION"
+            document: 
+            	The contentView of the pop-frame.
+            location: 
+            	URL of the annotated target (NOT the URL of the annotation
+            	resource!).
+            isMainDocument: false
+            needsRewrite: false
+            clickable: false
+            collapseAllowed: false
+            isCollapseBlock: false
+            isFullPage: false
+            fullWidthPossible: false
 		}
 		Fired when an annotation pop-frame has been filled with content (i.e.,
 		the annotation), at the last stage of preparing the pop-frame for 
 		spawning (being injected into the page and positioned).
+
+		(See rewrite.js for more information about the keys and values of the
+		 GW.contentDidLoad event.)
  */
 
 if (window.Extracts) {
