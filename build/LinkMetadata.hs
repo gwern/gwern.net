@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-02 11:34:35 gwern"
+When:  Time-stamp: "2022-02-04 12:20:28 gwern"
 License: CC-0
 -}
 
@@ -444,7 +444,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                       , ("psychology/neuroscience", "neuroscience")
                       , ("psychology/european-journal-of-parapsychology", "EJP")
                       , ("psychiatry/traumatic-brain-injury", "TBI")
-                      , ("genetics/heritable/rare-variants", "rare genes")
+                      , ("genetics/heritable/rare-variants", "rare gene")
                       , ("genetics/heritable/emergenesis", "emergenesis")
                       , ("sociology/abandoned-footnotes", "Abandoned Footnotes")
                       , ("statistics/survival-analysis", "survival analysis")
@@ -454,25 +454,25 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                       , ("psychiatry/schizophrenia", "SCZ")
                       , ("longevity/john-bjorksten", "John Bjorksten")
                       , ("genetics/gametogenesis", "gametogenesis")
-                      , ("genetics/correlation", "genetic correlations")
+                      , ("genetics/correlation", "genetic correlation")
                       , ("genetics/heritable", "heritability")
                       , ("longevity/senolytic", "senolytics")
                       , ("genetics/microbiome", "microbiome")
                       , ("economics/georgism", "Georgism")
                       , ("bitcoin/pirateat40", "Pirateat40")
-                      , ("psychology/novelty", "novelty u-curve")
+                      , ("psychology/novelty", "novelty U-curve")
                       , ("spaced-repetition", "SRS")
                       , ("fiction/text-game", "text games")
-                      , ("cat/catnip/survey", "catnip surveys")
-                      , ("modafinil/survey", "modafinil surveys")
-                      , ("lesswrong-survey", "LW surveys")
+                      , ("cat/catnip/survey", "catnip survey")
+                      , ("modafinil/survey", "modafinil survey")
+                      , ("lesswrong-survey", "LW survey")
                       , ("genetics/editing", "genetic engineering")
                       , ("japanese/zeami", "Zeami")
-                      , ("history/medici", "The Medici")
-                      , ("biology/portia", "Portia spiders")
+                      , ("history/medici", "Medici")
+                      , ("biology/portia", "Portia spider")
                       , ("bitcoin/nashx", "Nash eXchange")
                       , ("wikipedia", "WP")
-                      , ("sunk-cost", "sunk costs")
+                      , ("sunk-cost", "sunk cost")
                       , ("radiance", "Radiance")
                       , ("long-now", "Long Now")
                       , ("japanese", "Japan")
@@ -482,7 +482,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                       , ("bitcoin", "Bitcoin")
                       , ("touhou", "Touhou")
                       , ("zeo", "sleep")
-                      , ("co2", "CO2")
+                      , ("co2", "CO₂")
                       ]
         tagRewritesRegexes  :: [(String,String)]
         tagRewritesRegexes = [("^cs/", "CS/")
@@ -1407,6 +1407,13 @@ generateID url author date
        , ("https://arxiv.org/abs/2002.05709#google", "chen-et-al-2020-simclrv1")
        , ("https://arxiv.org/abs/2006.10029#google", "chen-et-al-2020-simclrv2")
        , ("https://arxiv.org/abs/2108.13341#huawei", "guo-et-al-2021-hiremlp")
+       , ("/docs/genetics/heritable/2016-domingue.pdf", "domingue-et-al-2016-gcta")
+       , ("https://openai.com/blog/jukebox/", "jukebox-blog")
+       , ("https://cdn.openai.com/papers/jukebox.pdf", "jukebox-paper")
+       , ("https://arxiv.org/abs/1812.01243#sensetime", "shen-et-al-2018-linerattention")
+       , ("https://arxiv.org/abs/1805.08166", "chen-et-al-2018-learningtensorprograms")
+       , ("https://arxiv.org/abs/1812.02353", "chen-et-al-2018-topk")
+       , ("https://arxiv.org/abs/1809.04184", "chen-et-al-2018-multiscalenas")
       ]
 
 authorsToCite :: String -> String -> String -> String
