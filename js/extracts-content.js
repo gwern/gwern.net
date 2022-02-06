@@ -44,30 +44,30 @@
 		 GW.contentDidLoad event.)
 
 	GW.contentDidLoad {
-            source: "Extracts.rewritePopFrameContent_BACKLINKS_LINK"
+            source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
             document: 
             	The contentView of the pop-frame.
             location: 
-            	URL of the backlinks source file.
+            	URL of the aux-links source file.
             flags:
             	0 (no flags set)
         }
-        Fired at the last stage of preparing a backlinks pop-frame for spawning 
-        (after the pop-frame’s content has been loaded from the local backlinks
+        Fired at the last stage of preparing an aux-links pop-frame for spawning 
+        (after the pop-frame’s content has been loaded from the local aux-links
         frame cache).
 
 		(See rewrite.js for more information about the keys and values of the
 		 GW.contentDidLoad event.)
 
  	GW.contentDidLoad {
-            source: "Extracts.refreshPopFrameAfterBacklinksLoad"
+            source: "Extracts.refreshPopFrameAfterAuxLinksLoad"
             document: 
             	The contentView of the pop-frame.
             location: 
-            	URL of the backlinks source file.
+            	URL of the aux-links source file.
             flags: GW.contentDidLoadEventFlags.needsRewrite
         }
-        Fired at the last stage of preparing a backlinks pop-frame for spawning 
+        Fired at the last stage of preparing a aux-links pop-frame for spawning 
         (after the pop-frame’s content has been freshly loaded via a network 
         request).
 
@@ -77,56 +77,68 @@
 
 if (window.Extracts) {
     /*=-----------------=*/
-    /*= BACKLINKS LINKS =*/
+    /*= AUXILIARY LINKS =*/
     /*=-----------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "BACKLINKS_LINK",				// Type name
-        "isBacklinksLink",				// Type predicate function
-        "has-content",					// Target classes to add
-        "backlinksForTarget",			// Pop-frame fill function
-        "backlinks"						// Pop-frame classes
+        "AUX_LINKS_LINK",		// Type name
+        "isAuxLinksLink",		// Type predicate function
+        "has-content",			// Target classes to add
+        "auxLinksForTarget",	// Pop-frame fill function
+        "aux-links"				// Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	Extracts.backlinksCache = { }
+	Extracts.auxLinksCache = { }
 
+	//	Called by: Extracts.isAuxLinksLink
+	//	Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
+	Extracts.auxLinksLinkType = (target) => {
+		if (target.pathname.startsWith("/metadata/annotations/") == false)
+			return null;
+
+		return /^\/metadata\/annotations\/([^\/]+?)/.exec(target.pathname)[1];
+	};
+
+	//	Called by: Extracts.isLocalCodeFileLink
 	//	Called by: extracts.js (as `predicateFunctionName`)
-    Extracts.isBacklinksLink = (target) => {
-        return (   target.classList.contains("backlink") 
-        		&& target.pathname.startsWith("/metadata/annotations/backlinks/"));
+    Extracts.isAuxLinksLink = (target) => {
+    	let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        return (auxLinksLinkType && target.classList.contains(auxLinksLinkType));
     };
 
-    /*  Backlinks for a page (from the ‘backlinks’ link in #page-metadata).
+	/*	Page or document for whom the aux-links are.
+	 */
+	//	Called by: Extracts.auxLinksForTarget
+	//	Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
+	//	Called by: Extracts.refreshPopFrameAfterAuxLinksLoad
+	Extracts.targetOfAuxLinksLink = (target) => {
+		return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/[^\/]+?\/(.+?)\.html$/.exec(target.pathname)[1]));
+	};
+
+    /*  Backlinks, similar-links, etc.
      */
     //	Called by: extracts.js (as `popFrameFillFunctionName`)
-    Extracts.backlinksForTarget = (target) => {
-        GWLog("Extracts.backlinksForTarget", "extracts-content.js", 2);
+    Extracts.auxLinksForTarget = (target) => {
+        GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-		let targetPage = Extracts.targetPageForBacklinksLink(target);
+		let targetOfAuxLinksLink = Extracts.targetOfAuxLinksLink(target);
 		
-		if (Extracts.backlinksCache[targetPage]) {
-			return Extracts.backlinksCache[targetPage].innerHTML;
+		if (Extracts.auxLinksCache[targetOfAuxLinksLink]) {
+			return Extracts.auxLinksCache[targetOfAuxLinksLink].innerHTML;
 		} else {
-			Extracts.refreshPopFrameAfterBacklinksLoad(target);
+			Extracts.refreshPopFrameAfterAuxLinksLoad(target);
 
 			return `&nbsp;`;
 		}
     };
 
-	/*	Page whose backlinks a backlinks link contains.
-	 */
-	//	Called by: Extracts.backlinksForTarget
-	Extracts.targetPageForBacklinksLink = (target) => {
-		return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/backlinks\/(.+?)\.html$/.exec(target.pathname)[1]));
-	};
-
 	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    Extracts.rewritePopFrameContent_BACKLINKS_LINK = (popFrame) => {
+    Extracts.rewritePopFrameContent_AUX_LINKS_LINK = (popFrame) => {
         let target = popFrame.spawningTarget;
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-            source: "Extracts.rewritePopFrameContent_BACKLINKS_LINK",
+            source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK",
             document: popFrame.contentView,
             location: Extracts.locationForTarget(target),
             flags: 0
@@ -134,18 +146,24 @@ if (window.Extracts) {
     };
 
 	//	Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
-    Extracts.titleForPopFrame_BACKLINKS_LINK = (popFrame) => {
+    Extracts.titleForPopFrame_AUX_LINKS_LINK = (popFrame) => {
         let target = popFrame.spawningTarget;
-        let targetPage = Extracts.targetPageForBacklinksLink(target);
-        return `${targetPage} (Backlinks)`;
+        let targetPage = Extracts.targetOfAuxLinksLink(target);
+    	let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        switch (auxLinksLinkType) {
+        	case "backlinks":
+		        return `${targetPage} (Backlinks)`;
+        	case "similars":
+        		return `{targetPage} (Similar)`;
+        }
     };
 
-    /*  Refresh (respawn or reload) a pop-frame for a backlinks link after the
-        backlinks source loads.
+    /*  Refresh (respawn or reload) a pop-frame for a aux-link link after the
+        aux-links source loads.
      */
-    //	Called by: Extracts.backlinksForTarget
-    Extracts.refreshPopFrameAfterBacklinksLoad = (target) => {
-        GWLog("Extracts.refreshPopFrameAfterBacklinksLoad", "extracts-content.js", 2);
+    //	Called by: Extracts.auxLinksForTarget
+    Extracts.refreshPopFrameAfterAuxLinksLoad = (target) => {
+        GWLog("Extracts.refreshPopFrameAfterAuxLinksLoad", "extracts-content.js", 2);
 
         target.popFrame.classList.toggle("loading", true);
 
@@ -155,17 +173,17 @@ if (window.Extracts) {
                 if (!target.popFrame)
                     return;
 
-                //	Inject the backlinks source into the pop-frame.
+                //	Inject the aux-links source into the pop-frame.
                 Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
 
-				//	Cache the backlinks source.
-				let targetPage = Extracts.targetPageForBacklinksLink(target);
-				Extracts.backlinksCache[targetPage] = target.popFrame.contentView;
+				//	Cache the aux-links source.
+				let targetOfAuxLinksLink = Extracts.targetOfAuxLinksLink(target);
+				Extracts.auxLinksCache[targetOfAuxLinksLink] = target.popFrame.contentView;
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                     */
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-                    source: "Extracts.refreshPopFrameAfterBacklinksLoad",
+                    source: "Extracts.refreshPopFrameAfterAuxLinksLoad",
                     document: target.popFrame.contentView,
                     location: Extracts.locationForTarget(target),
                     flags: GW.contentDidLoadEventFlags.needsRewrite
@@ -651,7 +669,7 @@ if (window.Extracts) {
             || Extracts.isAnnotatedLink(target))
             return false;
 
-        if (Extracts.isBacklinksLink(target))
+        if (Extracts.isAuxLinksLink(target))
         	return false;
 
         let codeFileURLRegExp = new RegExp(
