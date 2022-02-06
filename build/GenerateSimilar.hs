@@ -5,6 +5,7 @@ module GenerateSimilar where
 
 import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, Str), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
+import Control.Monad (when)
 import Data.List ((\\), intercalate,  nub)
 import Data.List.Utils (replace)
 import Data.Maybe (fromJust)
@@ -194,17 +195,21 @@ findNearest f 20 $ head edb
 findN f 20 $ head edb
 -}
 
-writeOutMatch :: Metadata -> (String, [(String,Double)]) -> IO ()
-writeOutMatch md (p,matches) =
+writeOutMatch :: Metadata -> Bool -> (String, [(String,Double)]) -> IO ()
+writeOutMatch md onlyMissing (p,matches) =
   do case M.lookup p md of
        Nothing -> return ()
        Just (_,_,_,_,_,abst) -> do
              let similarLinksHtmlFragment = generateMatches md p abst matches
-             let f = take 274 $ "metadata/annotations/similar/" ++ urlEncode p ++ ".html"
-             writeUpdatedFile "similar" f similarLinksHtmlFragment
-             -- HACK: write out a duplicate 'metadata/annotations/similar/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
-             -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if… we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
-             writeUpdatedFile "similar" (f++".html") similarLinksHtmlFragment
+             let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
+             -- optimization: we do the first pass with 'writeOutMatch md True' to only write out similar-links which don't exist on disk.
+             -- On a second pass with 'writeOutMatch md False', we check all matches.
+             exists <- doesFileExist f
+             when ((onlyMissing && not exists) || (not onlyMissing)) $ do
+                writeUpdatedFile "similars" f similarLinksHtmlFragment
+                -- HACK: write out a duplicate 'metadata/annotations/similars/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
+                -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if… we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
+                writeUpdatedFile "similars" (f++".html") similarLinksHtmlFragment
 
 generateMatches :: Metadata -> String -> String -> [(String,Double)] -> T.Text
 generateMatches md p abst matches =

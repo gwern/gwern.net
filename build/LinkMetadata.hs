@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-04 12:20:28 gwern"
+When:  Time-stamp: "2022-02-05 20:22:51 gwern"
 License: CC-0
 -}
 
@@ -313,8 +313,8 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                                  else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                     author = if aut=="" then [Space] else [Space, authorSpan]
                                     date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
-                                    backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlink"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
-                                    similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similar"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
+                                    backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
+                                    similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
@@ -852,7 +852,7 @@ data Failure = Temporary | Permanent deriving Show
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
 linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (Left Permanent)
-                 | "/metadata/annotations/similar/"   `isPrefixOf` l' = return (Left Permanent)
+                 | "/metadata/annotations/similars/"   `isPrefixOf` l' = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for directory-tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l' = return $ Right (l', (wikipediaURLToTitle l', "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l' = arxiv l'

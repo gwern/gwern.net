@@ -13,3 +13,4 @@ build/link-extractor
 build/link-suggester
 build/generateSimilar
 build/preprocess-markdown
+build/generateSimilarLinks

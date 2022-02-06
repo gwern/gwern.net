@@ -76,7 +76,7 @@ else
     ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
 
     bold "Updating backlinks…"
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similar/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS) &
+    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similars/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
