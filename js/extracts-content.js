@@ -96,7 +96,7 @@ if (window.Extracts) {
 		if (target.pathname.startsWith("/metadata/annotations/") == false)
 			return null;
 
-		return /^\/metadata\/annotations\/([^\/]+?)/.exec(target.pathname)[1];
+		return /^\/metadata\/annotations\/([^\/]+)/.exec(target.pathname)[1];
 	};
 
 	//	Called by: Extracts.isLocalCodeFileLink

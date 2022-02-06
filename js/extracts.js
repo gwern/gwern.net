@@ -47,8 +47,8 @@
             	The contentView of the pop-frame.
 			location: 
             	URL of the local page (including anchor, if any).
-			flags: (  GW.contentDidLoadEvent.needsRewrite
-					| GW.contentDidLoadEvent.isFullPage)
+			flags: (  GW.contentDidLoadEventFlags.needsRewrite
+					| GW.contentDidLoadEventFlags.isFullPage)
 		}
 		Fired at the last stage of preparing a local page embed pop-frame for
 		spawning (after the pop-frame’s content has been freshly loaded via
@@ -749,8 +749,8 @@ Extracts = {
                     source: "Extracts.refreshPopFrameAfterLocalPageLoads",
                     document: target.popFrame.contentView,
                     location: Extracts.locationForTarget(target),
-                    flags: (  GW.contentDidLoadEvent.needsRewrite
-                    		| GW.contentDidLoadEvent.isFullPage)
+                    flags: (  GW.contentDidLoadEventFlags.needsRewrite
+                    		| GW.contentDidLoadEventFlags.isFullPage)
                 });
 
                 //  Re-spawn, or fill and rewrite, the pop-frame.
