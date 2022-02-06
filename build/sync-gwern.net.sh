@@ -37,7 +37,7 @@ else
     set -e
 
     # lower priority of everything we run (some of it is expensive):
-    renice -n 19 "$$" > /dev/null
+    renice -n 15 "$$" > /dev/null
 
     ## Parallelization:
     N="$(if [ ${#} == 0 ]; then echo 25; else echo "$1"; fi)"

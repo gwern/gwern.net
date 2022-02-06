@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-06 12:16:09 gwern"
+When:  Time-stamp: "2022-02-06 16:48:04 gwern"
 License: CC-0
 -}
 
@@ -410,7 +410,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                       , ("ai/gpt/lamda", "LaMDA")
                       , ("iq/anne-roe", "Anne Roe")
                       , ("ai/gan", "GAN")
-                      , ("ai/stylegan", "StyleGAN")
+                      , ("ai/stylegan", "Style GAN")
                       , ("ai/gpt/dall-e", "DALL·E")
                       , ("ai/highleyman", "Highleyman")
                       , ("existential-risk", "x-risk")
@@ -494,6 +494,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^iq$", "IQ")
                              , ("^eva/", "NGE")
                              , ("^tcs/", "TDCS")
+                             , ("^gan$", "GAN")
                              ]
 
 -------------------------------------------------------------------------------------------------------------------------------
