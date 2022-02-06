@@ -140,9 +140,10 @@ embeddings2ForestConfigurable ls nt pvd es =
               (length $ (\(_,_,embedding) -> embedding) $ head es) -- dimension of each datapoint (eg. 1024 for ada-similarity embeddings, 12288 for davinci)
       nTrees = nt -- ???
       projectionVectorDimension = pvd -- ???
+      randSeed = 8
   in
     runIdentity $
-    forest 5 (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $
+    forest randSeed (fpMaxTreeDepth cfg) minLeafSize nTrees (fpDataChunkSize cfg) (fpProjNzDensity cfg) projectionVectorDimension $
     embeddings2Conduit es
  where
    embeddings2Conduit :: Embeddings -> ConduitT () (Embed DVector Double String) Identity ()
@@ -161,12 +162,16 @@ findNearest f k e = map (\(dist,Embed _ p) -> (p,dist)) $ knnEmbedding f k e
 
 -- we'll keep the distance to insert into the metadata for debugging purposes.
 findN :: Forest -> Int -> Embedding -> (String,[(String,Double)])
-findN f k e@(p1,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2) $ findNearest f k e in
+findN f k e@(p1,_,_) = let results = take bestNEmbeddings $ nub $ filter (\(p2,_) -> p1 /= p2 && not (blackList p2)) $ findNearest f k e in
                  -- NOTE: 'knn' is the fastest (and most accurate?), but seems to return duplicate results, so requesting 10 doesn't return 10 unique hits.
                  -- (I'm not sure why, the rp-tree docs don't mention or warn about this that I noticed…)
-                 -- If that happens, back off and request more k up to a max of 150.
-                 if k>150 then (p1, [])
+                 -- If that happens, back off and request more k up to a max of 50.
+                 if k>50 then (p1, [])
                  else if length results < bestNEmbeddings then findN f (k*2) e else (p1,results)
+
+-- some weird cases: for example, “Estimating the effect-size of gene dosage on cognitive ability across the coding genome” is somehow close to *every* embedding...?
+blackList :: String -> Bool
+blackList p = p `elem` ["https://www.biorxiv.org/content/10.1101/2020.04.03.024554v1.full"]
 
 -- hyperparameterSweep :: Embeddings -> [(Double, (Int,Int,Int))]
 -- hyperparameterSweep edb =
@@ -205,9 +210,6 @@ writeOutMatch md (p,matches) =
              let similarLinksHtmlFragment = generateMatches md p abst matches
              let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
              writeUpdatedFile "similars" f similarLinksHtmlFragment
-             -- HACK: write out a duplicate 'metadata/annotations/similars/foo.html.html' file to provide a 'syntax-highlighted' version that the popups fallback will render as proper HTML
-             -- We overload the syntax-highlighting feature to make similar-links popup *partially* work (doesn't enable full suite of features like recursive popups); right now, when popups.js tries to load the similar-links `$PAGE.html`, it treats it as a raw source code file, and tries to fetch the *syntax-highlighted* version, `$PAGE.html.html` (which doesn't exist & thus errors out). But what if… we claimed the original HTML *was* the 'syntax-highlighted (HTML) version'? Then wouldn't popups.js then render it as HTML, and accidentally Just Work?
-             writeUpdatedFile "similars" (f++".html") similarLinksHtmlFragment
 
 generateMatches :: Metadata -> String -> String -> [(String,Double)] -> T.Text
 generateMatches md p abst matches =
@@ -215,7 +217,7 @@ generateMatches md p abst matches =
          let alreadyLinked = extractLinks False $ T.pack abst
              matchesPruned = filter (\(p2,_) -> T.pack p2 `notElem` alreadyLinked) matches
 
-             similar = BulletList $ map (generateItem md) matchesPruned
+             similar = BulletList $ filter (not . null) $ map (generateItem md) matchesPruned
 
              pandoc = Pandoc nullMeta [similar]
              html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
