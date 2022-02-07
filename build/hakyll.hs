@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-01-30 22:30:14 gwern"
+When: Time-stamp: "2022-02-06 19:25:53 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -67,7 +67,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToString)
-import LinkMetadata (isLocalLink, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
+import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
@@ -257,7 +257,7 @@ pandocTransform md adb p = -- linkAuto needs to run before convertInterwikiLinks
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
-                              let pbth = isLocalLink $ walk headerSelflink pbt
+                              let pbth = isLocalLinkWalk $ walk headerSelflink pbt
                               walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) pbth
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")

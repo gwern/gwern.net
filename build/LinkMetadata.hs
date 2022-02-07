@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-06 16:48:04 gwern"
+When:  Time-stamp: "2022-02-06 19:54:03 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLink, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate) where
+module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -60,18 +60,20 @@ import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear)
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
 -- we exclude several directories (docs/, static/, images/) entirely; a Gwern.net page is then any link without a file extension (ie. a '.' in the URL - we guarantee that no Markdown essay has a period inside its URL).
 -- Local links get the 'link-local' class.
-isLocalLink :: Pandoc -> Pandoc
-isLocalLink = walk isLocalLink'
-  where isLocalLink' :: Inline -> Inline
-        isLocalLink' y@(Link (a,b,c) e (f,g)) =
-          let f' = replace "https://www.gwern.net" "" $ T.unpack f in
-            (if
-                not ("/" `isPrefixOf` f') ||
-              ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
-             then y else
-               (if takeExtension f' /= "" then y else
-                  Link (a, "link-local" : b, c) e (f, g)))
-        isLocalLink' x = x
+isLocalLinkWalk :: Pandoc -> Pandoc
+isLocalLinkWalk = walk isLocalLink
+
+isLocalLink :: Inline -> Inline
+isLocalLink y@(Link (a,b,c) e (f,g)) = if isLocalPath f then Link (a, "link-local" : b, c) e (f, g) else y
+isLocalLink x = x
+
+isLocalPath :: T.Text -> Bool
+isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
+    (if
+        not ("/" `isPrefixOf` f') ||
+      ("/images/" `isPrefixOf` f' || "/static/" `isPrefixOf` f')
+     then False else
+       (if takeExtension f' /= "" then False else True))
 
 -------------------------------------------------------------------------------------------------------------------------------
 

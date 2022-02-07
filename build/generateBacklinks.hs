@@ -20,7 +20,7 @@ import Control.Monad (forM_, unless)
 import Control.Monad.Parallel as Par (mapM)
 
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata (sed, hasAnnotation, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions)
+import LinkMetadata (sed, hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions)
 import Query (extractLinksWith)
 import Utils (writeUpdatedFile)
 
@@ -61,10 +61,15 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        -- (NOTE: This will fail if the default generated link ID has been overridden to disambiguate, unfortunately, and
                                        -- it'll just pop up the page as a whole. It would be difficult to rewrite the schema and preserve all
                                        -- variant overrides...)
-                                       let ident = case M.lookup (T.unpack target) md of
+                                       let selfIdent = case M.lookup (T.unpack target) md of
                                                              Nothing -> ""
-                                                             Just (_,aut,dt,_,_,_) -> let i = generateID (T.unpack target) aut dt in
-                                                                                      if i=="" then "" else "#" `T.append` i
+                                                             -- if we link to a top-level essay, then we want to insert the anchor to jump to the link use.
+                                                             -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
+                                                             -- it'll look at '/metadata/annotations/$FOO.html#$ID' instead2 of the actual '/metadata/annotations/$FOO.html'.
+                                                             -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://www.gwern.net/docs/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/docs/culture/2008-johnson.pdf').
+                                                             Just (_,aut,dt,_,_,_) -> if not (isLocalPath target) then "" else
+                                                                                           let i = generateID (T.unpack target) aut dt in
+                                                                                             if i=="" then "" else "#" `T.append` i
                                        let callerTitles = map (\u -> case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then T.tail u else u
                                                                       Just ("",_,_,_,_,_) -> if T.head u == '/' then T.tail u else u
@@ -75,7 +80,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let content = BulletList $
                                             map (\(u,c,t) -> [Para [Link ("", "idNot":"backlinksNot":c, [])
                                                                   [Str t]
-                                                                  (u`T.append`ident, "")]
+                                                                  (if isLocalPath u then u`T.append`selfIdent else u, "")]
                                                    ]
                                                 ) callers'
 
