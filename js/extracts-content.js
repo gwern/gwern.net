@@ -106,25 +106,14 @@ if (window.Extracts) {
         return (auxLinksLinkType && target.classList.contains(auxLinksLinkType));
     };
 
-	/*	Page or document for whom the aux-links are.
-	 */
-	//	Called by: Extracts.auxLinksForTarget
-	//	Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
-	//	Called by: Extracts.refreshPopFrameAfterAuxLinksLoad
-	Extracts.targetOfAuxLinksLink = (target) => {
-		return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/[^\/]+?\/(.+?)\.html$/.exec(target.pathname)[1]));
-	};
-
     /*  Backlinks, similar-links, etc.
      */
     //	Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.auxLinksForTarget = (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-		let targetOfAuxLinksLink = Extracts.targetOfAuxLinksLink(target);
-		
-		if (Extracts.auxLinksCache[targetOfAuxLinksLink]) {
-			return Extracts.auxLinksCache[targetOfAuxLinksLink].innerHTML;
+		if (Extracts.auxLinksCache[target.pathname]) {
+			return Extracts.auxLinksCache[target.pathname].innerHTML;
 		} else {
 			Extracts.refreshPopFrameAfterAuxLinksLoad(target);
 
@@ -145,6 +134,13 @@ if (window.Extracts) {
         });
     };
 
+	/*	Page or document for whom the aux-links are.
+	 */
+	//	Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
+	Extracts.targetOfAuxLinksLink = (target) => {
+		return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/[^\/]+?\/(.+?)\.html$/.exec(target.pathname)[1]));
+	};
+
 	//	Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
     Extracts.titleForPopFrame_AUX_LINKS_LINK = (popFrame) => {
         let target = popFrame.spawningTarget;
@@ -154,7 +150,7 @@ if (window.Extracts) {
         	case "backlinks":
 		        return `${targetPage} (Backlinks)`;
         	case "similars":
-        		return `{targetPage} (Similar)`;
+        		return `${targetPage} (Similar)`;
         }
     };
 
@@ -177,8 +173,7 @@ if (window.Extracts) {
                 Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
 
 				//	Cache the aux-links source.
-				let targetOfAuxLinksLink = Extracts.targetOfAuxLinksLink(target);
-				Extracts.auxLinksCache[targetOfAuxLinksLink] = target.popFrame.contentView;
+				Extracts.auxLinksCache[target.pathname] = target.popFrame.contentView;
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                     */
