@@ -5,7 +5,7 @@ module Main where
 
 import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
-                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,Str))
+                     Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,RawInline), Format(..))
 import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
@@ -79,7 +79,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let callers' = zip3 callers callerClasses callerTitles
                                        let content = BulletList $
                                             map (\(u,c,t) -> [Para [Link ("", "idNot":"backlinksNot":c, [])
-                                                                  [Str t]
+                                                                  [RawInline (Format "html") t]
                                                                   (if isLocalPath u then u`T.append`selfIdent else u, "")]
                                                    ]
                                                 ) callers'
