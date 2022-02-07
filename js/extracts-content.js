@@ -151,6 +151,8 @@ if (window.Extracts) {
 		        return `${targetPage} (Backlinks)`;
         	case "similars":
         		return `${targetPage} (Similar)`;
+        	default:
+        		return `${targetPage}`;
         }
     };
 
