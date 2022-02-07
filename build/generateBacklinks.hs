@@ -67,9 +67,8 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                              -- if the backlink caller is actually another annotation (and so has a '.' in it), we want to add no anchor because that will break the annotation lookup:
                                                              -- it'll look at '/metadata/annotations/$FOO.html#$ID' instead2 of the actual '/metadata/annotations/$FOO.html'.
                                                              -- (eg. for Boehm et al 1993's "backlinks", there will be a 'Hierarchy in the Library' backlink which would point at 'https://www.gwern.net/docs/culture/2008-johnson.pdf#boehm-et-al-1993' , which has no annotation, because it's annotated as '/docs/culture/2008-johnson.pdf').
-                                                             Just (_,aut,dt,_,_,_) -> if not (isLocalPath target) then "" else
-                                                                                           let i = generateID (T.unpack target) aut dt in
-                                                                                             if i=="" then "" else "#" `T.append` i
+                                                             Just (_,aut,dt,_,_,_) -> let i = generateID (T.unpack target) aut dt in
+                                                                                        if i=="" then "" else "#" `T.append` i
                                        let callerTitles = map (\u -> case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then T.tail u else u
                                                                       Just ("",_,_,_,_,_) -> if T.head u == '/' then T.tail u else u
