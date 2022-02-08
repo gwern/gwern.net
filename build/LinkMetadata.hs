@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-06 19:54:03 gwern"
+When:  Time-stamp: "2022-02-07 18:07:32 gwern"
 License: CC-0
 -}
 
@@ -436,6 +436,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                       , ("reinforcement-learning/alphastar", "AlphaStar")
                       , ("reinforcement-learning/oa5", "OA5")
                       , ("history/public-domain-review", "Public Domain Review")
+                      , ("technology", "tech")
                       , ("technology/digital-antiquarian", "Filfre")
                       , ("reinforcement-learning/openai", "OA")
                       , ("reinforcement-learning/deepmind", "DM")
@@ -497,6 +498,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^eva/", "NGE")
                              , ("^tcs/", "TDCS")
                              , ("^gan$", "GAN")
+                             , ("^psychology/", "psych/")
+                             , ("^technology/", "tech/")
                              ]
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -1062,7 +1065,7 @@ processArxivAbstract u a = let cleaned = runPure $ do
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")] a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim"), ("$", "\\$")] a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
@@ -1451,7 +1454,7 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’') . map toLower . replace 
 -- for link bibliographies / tag pages, better truncate author lists at a reasonable length.
 -- (We can make it relatively short because the full author list will be preserved as part of it.)
 authorsTruncate :: String -> String
-authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ ", et al")
+authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ " et al")
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l

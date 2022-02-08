@@ -3,7 +3,7 @@
 
 module GenerateSimilar where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, Str), runPure, Pandoc(..))
+import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline), Format(..), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
 import Data.List.Utils (replace)
@@ -234,5 +234,5 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                     [Para
                                       [Link ("", ["docMetadata", "backlinksNot", "idNot"], [("embeddingDistance", T.pack $ take 7 $ show distance)] ++
                                               if null tags then [] else [("linkTags", T.pack $ unwords tags) ]
-                                            ) [Str $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
+                                            ) [RawInline (Format "html") $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
                                     ]
