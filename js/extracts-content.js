@@ -312,6 +312,11 @@ if (window.Extracts) {
         return Extracts.localTranscludeForTarget(target);
     };
 
+	/*	This “special testing function” is used to exclude certain targets which
+		have already been categorized as (in this case) `CITATION_BACK_LINK` 
+		targets. It returns false if the target is to be excluded, true 
+		otherwise. Excluded targets will not spawn pop-frames.
+	 */
 	//	Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
     Extracts.testTarget_CITATION_BACK_LINK = (target) => {
         return (Extracts.popFrameProvider != Popins);
@@ -621,6 +626,11 @@ if (window.Extracts) {
         }
     };
 
+	/*	This “special testing function” is used to exclude certain targets which
+		have already been categorized as (in this case) `LOCAL_DOCUMENT` 
+		targets. It returns false if the target is to be excluded, true 
+		otherwise. Excluded targets will not spawn pop-frames.
+	 */
 	//	Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
     Extracts.testTarget_LOCAL_DOCUMENT = (target) => {
         return (!(   Extracts.popFrameProvider == Popins

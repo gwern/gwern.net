@@ -74,6 +74,7 @@ Extracts = {
         ].join(", "),
         excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
         //	See comment at Extracts.isLocalPageLink for info on this function.
+        //	Called by: pop-frame providers (popins.js or popups.js).
         testTarget: (target) => {
             let targetTypeInfo = Extracts.targetTypeInfo(target);
             if (targetTypeInfo) {
@@ -579,6 +580,11 @@ Extracts = {
         return (target.closest("#sidebar") != null);
     },
 
+	/*	This “special testing function” is used to exclude certain targets which
+		have already been categorized as (in this case) `LOCAL_PAGE` targets. It
+		returns false if the target is to be excluded, true otherwise. Excluded
+		targets will not spawn pop-frames.
+	 */
 	//	Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_LOCAL_PAGE: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
@@ -590,7 +596,9 @@ Extracts = {
     preparePopup_LOCAL_PAGE: (popup) => {
         let target = popup.spawningTarget;
 
-        //  Designate section links spawned by the TOC (for special styling).
+        /*  Designate popups spawned from section links in the the TOC (for 
+        	special styling).
+         */
         if (Extracts.isTOCLink(target))
             popup.classList.add("toc-section");
 
@@ -614,9 +622,11 @@ Extracts = {
                 popFrameTitleText = Extracts.cachedPageTitles[target.pathname] || target.pathname;
             } else {
                 //  Sections of other pages.
-                let nearestBlockElement = Extracts.nearestBlockElement(Extracts.targetDocument(target).querySelector(decodeURIComponent(target.hash)));
+                let targetDocument = Extracts.targetDocument(target);
+                let nearestBlockElement = Extracts.nearestBlockElement(targetDocument.querySelector(decodeURIComponent(target.hash)));
                 popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-                                    ? (nearestBlockElement.firstElementChild.textContent + ` (${Extracts.cachedPageTitles[target.pathname] || target.pathname})`)
+                                    ? (  nearestBlockElement.firstElementChild.textContent 
+                                       + ` (${Extracts.cachedPageTitles[target.pathname] || target.pathname})`)
                                     : (target.pathname + target.hash);
             }
         }
