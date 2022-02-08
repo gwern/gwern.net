@@ -1,31 +1,31 @@
     <!-- Load the rest of the CSS. Note that we do not need any JS hacks here: HTML allows <link> stylesheets in the body: https://html.spec.whatwg.org/multipage/links.html#body-ok https://jakearchibald.com/2016/link-in-body/ -->
-    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1613365249" />
-    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1643908358" />
-    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1643327388" />
+    <link rel="stylesheet" type="text/css" href="/static/css/fonts.css?v=1635614623" />
+    <link rel="stylesheet" type="text/css" href="/static/css/default.css?v=1643902216" />
+    <link rel="stylesheet" type="text/css" href="/static/css/links.css?v=1644279637" />
 
     <!-- JS library for spawning popups -->
-    <script src="/static/js/popups.js?v=1644014995" defer></script>
-    <script src="/static/js/popins.js?v=1644014819" defer></script>
+    <script src="/static/js/popups.js?v=1644020542" defer></script>
+    <script src="/static/js/popins.js?v=1644020542" defer></script>
     <!-- JS library for annotating hyperlinks with introduction/summary from various sources; not lazy-loaded as (almost) all pages have popups -->
-    <script src="/static/js/annotations.js?v=1644099465" defer></script>
-    <script src="/static/js/extracts.js?v=1644246188" defer></script>
-    <script src="/static/js/extracts-annotations.js?v=1644099571" defer></script>
-    <script src="/static/js/extracts-content.js?v=1644195209" defer></script>
-    <script src="/static/js/extracts-options.js?v=1643684786" defer></script>
+    <script src="/static/js/annotations.js?v=1644104151" defer></script>
+    <script src="/static/js/extracts.js?v=1644259288" defer></script>
+    <script src="/static/js/extracts-annotations.js?v=1644104151" defer></script>
+    <script src="/static/js/extracts-content.js?v=1644199024" defer></script>
+    <script src="/static/js/extracts-options.js?v=1643685321" defer></script>
 
     $if(index)$ <!-- Stuff we don’t need on /index gets conditionally loaded: --> $else$
 
     <!-- JS library for clickable/zoomable images, for images larger than can be displayed in -->
     <!-- the body: /static/js/image-focus.js -->
     <!-- not lazy-loaded due to various bugs -->
-    <script src="/static/js/image-focus.js?v=1644020423" defer></script>
+    <script src="/static/js/image-focus.js?v=1644020542" defer></script>
 
     <!-- sort tables: https://mottie.github.io/tablesorter/docs/ ; requires JQuery, which has been prepended to avoid multiple JS page loads & race conditions -->
     <script>
     if (document.querySelector("table")) {
         var js = document.createElement("script");
         js.type = "text/javascript";
-        js.src = "/static/js/tablesorter.js?v=1604173830";
+        js.src = "/static/js/tablesorter.js?v=1609212245";
         document.body.appendChild(js);
     }
     </script>
@@ -33,9 +33,9 @@
     $endif$
 
     <!-- Misc JS: 1. Collapsed sections: insert a toggle to expand them; 2. cover source-code block listings too (for large R sections especially); 3. type setting stuff -->
-    <script src="/static/js/typography.js?v=1628454900" defer></script>
-    <script src="/static/js/rewrite.js?v=1644103088" defer></script>
-    <script src="/static/js/collapse.js?v=1644018925" defer></script>
+    <script src="/static/js/typography.js?v=1610806737" defer></script>
+    <script src="/static/js/rewrite.js?v=1644104151" defer></script>
+    <script src="/static/js/collapse.js?v=1644020542" defer></script>
 
     <!-- Dark Mode theme switcher (lets users toggle between regular black-on-white CSS, and dark mode) -->
-    <script src="/static/js/darkmode.js?v=1644020366" defer></script>
+    <script src="/static/js/darkmode.js?v=1644020542" defer></script>
