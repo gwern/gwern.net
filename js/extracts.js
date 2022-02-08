@@ -856,7 +856,9 @@ Extracts = {
 
         let target = popin.spawningTarget;
 
-        //  Call generic prepare function.
+        /*  Call generic pop-frame prepare function (which will attempt to fill 
+        	the popin).
+         */
         if ((popin = Extracts.preparePopFrame(popin)) == null)
             return null;
 
@@ -973,7 +975,9 @@ Extracts = {
             return existingPopup;
         }
 
-        //  Call generic prepare function.
+        /*  Call generic pop-frame prepare function (which will attempt to fill 
+        	the popup).
+         */
         if ((popup = Extracts.preparePopFrame(popup)) == null)
             return null;
 
