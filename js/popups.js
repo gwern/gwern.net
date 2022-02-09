@@ -1156,7 +1156,13 @@ Popups = {
 		if (spawnPoint) target.lastMouseEnterLocation = spawnPoint;
 		else spawnPoint = target.lastMouseEnterLocation;
 
-		let targetViewportRect = target.getBoundingClientRect();
+		/*	When the target’s bounding rect is composed of multiple client rects
+			(as when the target is a link that wraps across a line break), we 
+			must select the right rect, to prevent the popup from spawning far
+			away from the cursor.
+		 */
+		let targetViewportRect =    Array.from(target.getClientRects()).find(rect => pointWithinRect(spawnPoint, rect)) 
+								 || target.getBoundingClientRect();
 
 		//	Prevent popup cycling in Chromium.
 		popup.style.visibility = "hidden";
