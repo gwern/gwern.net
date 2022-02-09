@@ -2205,13 +2205,22 @@ Element.prototype.swapClasses = function (classes, whichToAdd) {
     this.classList.remove(classes[1 - whichToAdd]);
 };
 
+/*	Returns true if the point is within the given rect, false otherwise.
+ */
+function pointWithinRect(point, rect) {
+	return (   point.x >= rect.left
+			&& point.x <= rect.right
+			&& point.y >= rect.top
+			&& point.y <= rect.bottom);
+}
+
 /*  Returns true if the given rects intersect, false otherwise.
  */
 function doRectsIntersect(rectA, rectB) {
-    return (rectA.top < rectB.bottom &&
-            rectA.bottom > rectB.top &&
-            rectA.left < rectB.right &&
-            rectA.right > rectB.left);
+    return (   rectA.top < rectB.bottom 
+    		&& rectA.bottom > rectB.top 
+    		&& rectA.left < rectB.right 
+    		&& rectA.right > rectB.left);
 }
 
 /*  Returns true if the given element intersects the given rect,

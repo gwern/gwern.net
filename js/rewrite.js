@@ -78,9 +78,9 @@
 			 access the values of these flags directly via property access on 
 			 the event, e.g. the following two expressions are equivalent:
 			 
-			 eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0 
+			   eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0 
 			 
-			 eventInfo.needsRewrite
+			   eventInfo.needsRewrite
 
 			 It is recommended that the latter form be used.)
 
