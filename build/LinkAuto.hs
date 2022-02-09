@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-02-06 13:59:21 gwern"
+When:  Time-stamp: "2022-02-08 19:25:19 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -1338,4 +1338,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Alpha[Ff]old ?2?|AF2)", "https://www.nature.com/articles/s41586-021-03819-2#deepmind") -- AlphaFold
         , ("OLS( regressions?|regression models?)?", "https://en.wikipedia.org/wiki/Ordinary_least_squares")
         , ("[Ee]nsemble?s( learning| methods?)", "https://en.wikipedia.org/wiki/Ensemble_learning")
+        , ("fMRIs?( machine| study| experiment| data| task| responses)", "https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging")
         ]
