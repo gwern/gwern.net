@@ -3,16 +3,16 @@
 
 	GW.contentDidLoad {
 			source: "Extracts.rewritePopFrameContent_ANNOTATION"
-            document: 
+            document:
             	The contentView of the pop-frame.
-            location: 
+            location:
             	URL of the annotated target (NOT the URL of the annotation
             	resource!).
             flags:
             	0 (no flags set)
 		}
 		Fired when an annotation pop-frame has been filled with content (i.e.,
-		the annotation), at the last stage of preparing the pop-frame for 
+		the annotation), at the last stage of preparing the pop-frame for
 		spawning (being injected into the page and positioned).
 
 		(See rewrite.js for more information about the keys and values of the
@@ -68,7 +68,7 @@ if (window.Extracts) {
         if (   referenceData.element.dataset.urlOriginal != undefined
             && referenceData.element.dataset.urlOriginal != target.href) {
             originalLinkHTML = `<span class="originalURL">[<a
-                            title="Link to original URL for ‘${referenceData.element.textContent}’"
+                            title="Link to original URL for ${referenceData.element.textContent}"
                             href="${referenceData.element.dataset.urlOriginal}"
                             target="${linkTarget}"
                             alt="Original URL for this archived link; may be broken."
@@ -118,13 +118,13 @@ if (window.Extracts) {
         //  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
         if (   target.hash > ""
             && (   (   target.hostname == location.hostname
-                    // annotations for local archive links with an org notation 
-                    // for link icons (eg. ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook') 
+                    // annotations for local archive links with an org notation
+                    // for link icons (eg. ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook')
                     // should not get a section mark
-                    && !([ "alibaba", "allen", "amazon", "baidu", "deepmind", 
-                    	   "eleutherai", "facebook", "google", "googlebrain", 
-                    	   "lighton", "microsoft", "miri", "nvidia", "openai", 
-                    	   "pdf", "salesforce", "tencent", "tensorfork", "uber", 
+                    && !([ "alibaba", "allen", "amazon", "baidu", "deepmind",
+                    	   "eleutherai", "facebook", "google", "googlebrain",
+                    	   "lighton", "microsoft", "miri", "nvidia", "openai",
+                    	   "pdf", "salesforce", "tencent", "tensorfork", "uber",
                     	   "yandex"].includes(target.hash)))
                 || Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
