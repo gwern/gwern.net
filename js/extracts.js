@@ -283,11 +283,25 @@ Extracts = {
     //	Called by: Extracts.fillPopFrame
     //	Called by: extracts-annotations.js
     targetIdentifier: (target) => {
-        return    target.dataset.urlOriginal
-               || (target.hostname == location.hostname
-                   ? target.pathname + target.hash
-                   : target.href);
-    },
+		if (target.dataset.urlOriginal) {
+			let originalURL = new URL(target.dataset.urlOriginal);
+
+			/*	Special cases where the original URL of the target does not 
+				match the target’s proper identifier (possibly due to outgoing
+				link rewriting).
+			 */
+			if (originalURL.hostname == "ar5iv.org") {
+				originalURL.hostname = "arxiv.org";
+				originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
+			}
+
+			return originalURL.href;
+		} else {
+			return (target.hostname == location.hostname
+				   ? target.pathname + target.hash
+				   : target.href);
+		}
+	},
 
     /*  Returns true if the two targets will spawn identical popups
         (that is, if they are of the same type, and have the same identifiers).
