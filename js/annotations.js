@@ -55,9 +55,6 @@
 		}
 		Fired when a new annotation has failed to load (but before the load
 		failure has been recorded in the annotations cache).
-
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
  */
 
 Annotations = {
@@ -162,22 +159,11 @@ Annotations = {
         return Annotations.cachedAnnotations[annotationIdentifier];
     },
 
-    /*  Construct a usable DOM object from the raw HTML of an annotation,
-        by inserting it as a child of the annotations workspace element.
-        */
-    //	Called in: Annotations.loadAnnotation
-    stageAnnotation: (annotationRawHTML) => {
-        Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${annotationRawHTML}</div>`);
-        return Annotations.annotationsWorkspace.lastElementChild;
-    },
-
-    /*  Load, stage, and process the annotation for the given identifier string.
-        */
-    //	Called in: extracts-annotations.js
-    loadAnnotation: (annotationIdentifier) => {
-        GWLog("Annotations.loadAnnotation", "annotations.js", 2);
-
-        let annotationURL;
+	/*	Returns the URL of the annotation resource for the given identifier.
+	 */
+	//	Called by: Annotations.loadAnnotation
+	annotationURLForIdentifier: (annotationIdentifier) => {
+		let annotationURL;
         if (Annotations.isWikipediaLink(annotationIdentifier)) {
             //  Wikipedia entry.
             annotationURL = new URL(annotationIdentifier);
@@ -193,44 +179,54 @@ Annotations = {
             						+ ".html");
         }
 
+        return annotationURL;
+	},
+
+    /*  Construct a usable DOM object from the raw HTML of an annotation,
+        by inserting it as a child of the annotations workspace element.
+        */
+    //	Called by: Annotations.loadAnnotation
+    stageAnnotation: (annotationRawHTML) => {
+        Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${annotationRawHTML}</div>`);
+        return Annotations.annotationsWorkspace.lastElementChild;
+    },
+
+    /*  Load, stage, and process the annotation for the given identifier string.
+        */
+    //	Called in: extracts-annotations.js
+    loadAnnotation: (annotationIdentifier) => {
+        GWLog("Annotations.loadAnnotation", "annotations.js", 2);
+
+		/*	Get URL of the annotation resource.
+		 */
+        let annotationURL = Annotations.annotationURLForIdentifier(annotationIdentifier);
+
+		/*	Retrieve the annotation resource and stage the annotation.
+		 */
         doAjax({
             location: annotationURL.href,
             onSuccess: (event) => {
                 let annotation;
                 if (Annotations.isWikipediaLink(annotationIdentifier)) {
-                    let response = JSON.parse(event.target.responseText);
+                	annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(event.target.responseText, annotationURL);
+                	if (!annotation) {
+						GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
+							source: "Annotations.loadAnnotation",
+							document: Annotations.annotationsWorkspace,
+							identifier: annotationIdentifier,
+							location: annotationURL
+						});
+                	}
 
-                    let targetSection;
-                    if (annotationURL.hash > "") {
-                        targetSection = response["remaining"]["sections"].find(section => 
-                        	section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1)
-                        );
-
-                        if (!targetSection) {
-                            GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-                                source: "Annotations.loadAnnotation",
-                                document: Annotations.annotationsWorkspace,
-                                identifier: annotationIdentifier,
-                                location: annotationURL
-                            });
-                            return;
-                        }
-                    }
-
-                    let responseHTML = targetSection 
-                    				   ? targetSection["text"] 
-                    				   : response["lead"]["sections"][0]["text"];
-                    annotation = Annotations.stageAnnotation(responseHTML);
-
-                    annotation.dataset["titleHTML"] = annotationURL.hash > "" 
-                    								  ? targetSection["line"] 
-                    								  : response["lead"]["displaytitle"];
-
-                    Annotations.processWikipediaEntry(annotation, annotationURL);
+                    Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
                 } else {
                     annotation = Annotations.stageAnnotation(event.target.responseText);
                 }
 
+				/*	Fire GW.contentDidLoad event to trigger a rewrite pass and 
+					then cause the annotation to be cached (and trigger the
+					Annotations.annotationDidLoad event to fire as well).
+				 */
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Annotations.loadAnnotation",
                     document: annotation,
@@ -263,23 +259,9 @@ Annotations = {
         }
     },
 
-    /*  Returns true iff the given identifier string is a Wikipedia URL.
-        */
-    //	Called in: Annotations.loadAnnotation
-    //	Called in: Annotations.referenceDataForAnnotationIdentifier
-    //	Called in: extracts-annotations.js
-    isWikipediaLink: (annotationIdentifier) => {
-        if (/^[\?\/]/.test(annotationIdentifier))
-            return false;
-
-        let url = new URL(annotationIdentifier);
-
-        return (url && /(.+?)\.wikipedia\.org/.test(url.hostname));
-    },
-
     /*  Annotations generated server-side and hosted locally.
         */
-    //	Called in: Annotations.referenceDataForAnnotationIdentifier
+    //	Called by: Annotations.referenceDataForAnnotationIdentifier
     referenceDataForLocalAnnotation: (referenceEntry) => {
         let referenceElement = referenceEntry.querySelector(Annotations.annotationReferenceElementSelectors.map(selector =>
             `${Annotations.annotationReferenceElementSelectorPrefix}${selector}`
@@ -318,9 +300,31 @@ Annotations = {
         };
     },
 
+	/*******************************/
+	/* EXTERNAL ANNOTATION SOURCES */
+	/*******************************/
+
+	/*************/
+	/*	Wikipedia.
+	 */
+
+    /*  Returns true iff the given identifier string is a Wikipedia URL.
+        */
+    //	Called by: Annotations.loadAnnotation
+    //	Called by: Annotations.referenceDataForAnnotationIdentifier
+    //	Called in: extracts-annotations.js
+    isWikipediaLink: (annotationIdentifier) => {
+        if (/^[\?\/]/.test(annotationIdentifier))
+            return false;
+
+        let url = new URL(annotationIdentifier);
+
+        return (url && /(.+?)\.wikipedia\.org/.test(url.hostname));
+    },
+
     /*  Wikipedia entries (page summaries or sections).
         */
-    //	Called in: Annotations.referenceDataForAnnotationIdentifier
+    //	Called by: Annotations.referenceDataForAnnotationIdentifier
     referenceDataForWikipediaEntry: (referenceEntry) => {
         return {
             element:        referenceEntry,
@@ -333,9 +337,41 @@ Annotations = {
         };
     },
 
+	/*	Returns a staged annotation, given the full response text of a Wikipedia
+		API response.
+	 */
+	//	Called by: Annotations.loadAnnotation
+	stagedAnnotationFromWikipediaAPIResponse: (responseText, annotationURL) => {
+		let response = JSON.parse(responseText);
+
+		let targetSection;
+		if (annotationURL.hash > "") {
+			targetSection = response["remaining"]["sections"].find(section => 
+				section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1)
+			);
+
+			/*	Check whether we have tried to load a page section which does 
+				not exist on the requested wiki page.
+			 */
+			if (!targetSection)
+				return null;
+		}
+
+		let responseHTML = targetSection 
+						   ? targetSection["text"] 
+						   : response["lead"]["sections"][0]["text"];
+
+		annotation = Annotations.stageAnnotation(responseHTML);
+		annotation.dataset["titleHTML"] = annotationURL.hash > "" 
+										  ? targetSection["line"] 
+										  : response["lead"]["displaytitle"];
+
+		return annotation;
+	},
+
     /*  Elements to excise from a Wikipedia entry.
         */
-    //	Called in: Annotations.processWikipediaEntry
+    //	Called by: Annotations.postProcessStagedWikipediaAnnotation
     wikipediaEntryExtraneousElementSelectors: [
         ".mw-ref",
         ".shortdescription",
@@ -348,10 +384,11 @@ Annotations = {
         ".Template-Fact"
     ],
 
-    /*  Process an already-staged annotation retrieved from a Wikipedia entry.
+    /*  Post-process an already-staged annotation created from a Wikipedia 
+    	entry (do HTML cleanup, etc.).
         */
-    //	Called in: Annotations.loadAnnotation
-    processWikipediaEntry: (annotation, annotationURL) => {
+    //	Called by: Annotations.loadAnnotation
+    postProcessStagedWikipediaAnnotation: (annotation, annotationURL) => {
         //  Remove unwanted elements.
         annotation.querySelectorAll(Annotations.wikipediaEntryExtraneousElementSelectors.join(", ")).forEach(element => {
             element.remove();
