@@ -13,6 +13,8 @@ import System.IO (stderr, hPutStrLn)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)
 import System.IO.Unsafe (unsafePerformIO)
+import Text.Regex (subRegex, mkRegex)
+import Data.List.Utils (replace)
 
 -- Auto-update the current year.
 currentYear :: Int
@@ -51,3 +53,13 @@ printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
 -- <https://stackoverflow.com/questions/38955348/is-there-a-fixed-point-operator-in-haskell>
 fixedPoint :: Eq a => (a -> a) -> a -> a
 fixedPoint = until =<< ((==) =<<)
+
+sed :: String -> String -> (String -> String)
+sed before after s = subRegex (mkRegex before) s after
+-- list of regexp string rewrites
+sedMany :: [(String,String)] -> (String -> String)
+sedMany regexps s = foldr (uncurry sed) s regexps
+
+-- list of fixed string rewrites
+replaceMany :: [(String,String)] -> (String -> String)
+replaceMany rewrites s = foldr (uncurry replace) s rewrites

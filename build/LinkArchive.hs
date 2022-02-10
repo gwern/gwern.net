@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-08 22:11:12 gwern"
+When:  Time-stamp: "2022-02-09 23:28:35 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -42,6 +42,7 @@ module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 import Control.Monad (filterM)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
+import Data.List.Utils (replace)
 import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
@@ -55,7 +56,7 @@ import Network.URI.TLD (parseTLD)
 import Text.Pandoc (Inline(Link))
 import Text.Show.Pretty (ppShow)
 
-import Utils (writeUpdatedFile, printGreen, printRed)
+import Utils (writeUpdatedFile, printGreen, printRed, sed)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -76,7 +77,7 @@ localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescri
          let padding = if targetDescription == "" then "" else " "
          let targetDescription' = T.unpack targetDescription ++ padding ++ "(Original URL: " ++ T.unpack targetURL ++ " )"
          -- specify that the rewritten links are mirrors & to be ignored:
-         let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original",targetURL)]
+         let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original", T.pack (transformURLsForLinking (T.unpack targetURL)))]
          let archivedLink = Link (identifier, classes++["localArchive"], pairs++archiveAttributes) b (T.pack targetURL', T.pack targetDescription')
          return archivedLink
 localizeLink _ x = return x
@@ -116,13 +117,13 @@ rewriteLink adb url = do
       Just (Left firstSeen) -> if (today - firstSeen < archiveDelay) && not ("pdf" `isInfixOf` url)
         then return Nothing
         else do
-          archive <- archiveURL url
+          archive <- archiveURL (transformURLsForArchiving url)
           insertLinkIntoDB (Right archive) url
           return archive
       Just (Right archive) -> if archive == Just "" then printRed ("Error! Tried to return a link to a non-existent archive! " ++ url) >> return Nothing else return archive
 
 archiveDelay :: Integer
-archiveDelay = 60
+archiveDelay = 0
 
 insertLinkIntoDB :: ArchiveMetadataItem -> String -> IO ()
 insertLinkIntoDB a url = do adb <- readArchiveMetadata
@@ -139,6 +140,12 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
                      ExitSuccess -> do printGreen ( "Archiving (LinkArchive.hs): " ++ l ++ " returned: " ++ U.toString stdout)
                                        return $ Just $ U.toString stdout
                      ExitFailure _ -> printRed (l ++ " : archiving failed: " ++ U.toString stderr') >> return Nothing
+
+-- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then we also want to rewrite it to use the Ar5iv (HTML5 version) service, and provide *both*.
+transformURLsForArchiving :: String -> String
+transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2"
+transformURLsForLinking   :: String -> String
+transformURLsForLinking   = replace "https://arxiv.org/abs/" "https://ar5iv.org/html/"
 
 -- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of URLs we always archive even if otherwise on a safe domain:
 -- 1. some matches we always want to skip
@@ -306,7 +313,6 @@ whiteList url
       , "nongnu.org"
       , "safebooru.org"
       , "derpibooru.org"
-      , "arxiv.org" -- stable
       , "biorxiv.org" -- stable
       , "medrxiv.org" -- stable
       , "publicdomainreview.org" -- stable
@@ -957,5 +963,38 @@ whiteList url
       , "https://wy-lang.org/" -- homepage
       , "https://ali-design.github.io/gan_steerability/" -- video embed
       , "https://github.com/" -- stable
+      , "https://xbpeng.github.io/projects/VDB/index.html" -- video embed
+      , "https://news.ycombinator.com/newest" -- updated
+      , "https://news.ycombinator.com/news" -- updated
+      , "http://www.packomania.com/" -- low quality/updated
+      , "https://metarationality.com/rational-pcr" -- video embed
+      , "https://ashish-kmr.github.io/rma-legged-robots/" -- video embed
+      , "https://www.clinicaltrialsregister.eu/ctr-search/search" -- interactive
+      , "https://imagelibrary.bgu.ac.il/pf.tlx/O6ORSOx-nut" -- already mirrored locally
+      , "https://wudao.aminer.cn/CogView/index.html" -- interactive
+      , "https://tfhub.dev/google/collections/gtr/1" -- source code/docs/updated
+      , "https://universome.github.io/stylegan-v" -- video embed
+      , "https://openaipublic.blob.core.windows.net/webgpt-answer-viewer/index.html" -- interactive
+      , "http://recur-env.eba-rm3fchmn.us-east-2.elasticbeanstalk.com/" -- interactive
+      , "https://bit.ly/3niE5FS" -- interactive
+      , "https://pandoc.org/" -- homepage
+      , "https://caniuse.com/" -- updated
+      , "https://www.vesta.earth/" -- homepage
+      , "https://www.janelia.org/project-team/flyem/hemibrain" -- video embeds
+      , "https://seegrid.com/" -- homepage
+      , "https://www.sixdegreesofwikipedia.com/" -- interactive
+      , "https://rdiff-backup.net/" -- homepage
+      , "https://conifer.rhizome.org/" -- homepage
+      , "https://manifold.markets/" -- homepage
+      , "https://highnoongmt.wordpress.com/" -- homepage
+      , "https://fanfox.net/manga/oyasumi_punpun/v08/c084/15.html" -- blocks mirroring
+      , "https://mru.org/development-economics" -- video embeds
+      , "https://www.pluralsight.com/" -- interactive
+      , "https://www.sapa-project.org/" -- homepage
+      , "https://www.cram.com/topics/popular" -- updated
+      , "https://www.cram.com" -- homepage
+      , "https://knowyourmeme.com/memes/" -- stable/updated
+      , "https://wellcomecollection.org/" -- low quality
+      , "https://cognitivemedium.com/" -- stable
       ] = True
     | otherwise = False

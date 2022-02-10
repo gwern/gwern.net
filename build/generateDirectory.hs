@@ -19,8 +19,8 @@ import qualified Data.Text as T (pack, append, Text)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, getSimilarLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, sed, parseRawBlock)
-import Utils (writeUpdatedFile)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, getSimilarLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock)
+import Utils (writeUpdatedFile, sed)
 
 main :: IO ()
 main = do dirs <- getArgs

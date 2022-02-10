@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-07 18:07:32 gwern"
+When:  Time-stamp: "2022-02-09 19:17:03 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 -- 1. bugs in packages: rxvist doesn't appear to support all bioRxiv/medRxiv schemas, including the '/early/' links, forcing me to use curl+Tagsoup; the R library 'fulltext' crashes on examples like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock, sed, replaceMany, generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate) where
+module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -43,7 +43,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div), Attr)
 import Text.Pandoc.Walk (walk, walkM)
-import Text.Regex (subRegex, mkRegex, matchRegex)
+import Text.Regex (mkRegex, matchRegex)
 import Text.Show.Pretty (ppShow)
 
 import qualified Control.Monad.Parallel as Par (mapM_)
@@ -54,7 +54,7 @@ import Typography (typographyTransform)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import Query (extractURLs)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -1465,15 +1465,6 @@ trim :: String -> String
 trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
   where badChars c = isSpace c || (c=='-')
 
-sed :: String -> String -> (String -> String)
-sed before after s = subRegex (mkRegex before) s after
--- list of regexp string rewrites
-sedMany :: [(String,String)] -> (String -> String)
-sedMany regexps s = foldr (uncurry sed) s regexps
-
--- list of fixed string rewrites
-replaceMany :: [(String,String)] -> (String -> String)
-replaceMany rewrites s = foldr (uncurry replace) s rewrites
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
