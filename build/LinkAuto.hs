@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-02-08 19:25:19 gwern"
+When:  Time-stamp: "2022-02-10 22:19:02 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -228,6 +228,7 @@ customDefinitions :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> [(T.Text, R.R
 customDefinitions subsetter = customDefinitionsR $ definitionsValidate $ subsetter custom -- delimit & compile
 
 -- descending order, longest match to shortest (for regex priority):
+-- WARNING: we appear to be hitting some sort of exponential slowdown despite the optimizations. From now on, delete at least one rewrite for every added rewrite. Many are unnecessary.
 custom :: [(T.Text, T.Text)]
 custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
           ("15\\.ai", "https://fifteen.ai/")
@@ -235,8 +236,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(A2C|A3C|[Aa]synchronous [Aa]dvantage [Aa]ctor-[Cc]ritic)", "https://arxiv.org/abs/1602.01783#deepmind")
         , ("(ADHD|[Aa]ttention[ -][Dd]eficit [Hh]yperactivity [Dd]isorder)s?", "https://en.wikipedia.org/wiki/Attention_deficit_hyperactivity_disorder")
         , ("(AFQT|ASVAB|Armed Forces Qualification Test|Armed Services Vocational Aptitude Battery)", "https://en.wikipedia.org/wiki/Armed_Services_Vocational_Aptitude_Battery")
-        , ("(ATreeC|TreeQN)", "https://arxiv.org/abs/1710.11417")
-        , ("(Ainu people|Ainu)", "https://en.wikipedia.org/wiki/Ainu_people")
         , ("(Akaike [Ii]nformation [Cc]riterion|AIC)", "https://en.wikipedia.org/wiki/Akaike_information_criterion")
         , ("(Alexey )?Guzey", "https://guzey.com/")
         , ("(Alpha ?Zero|Alpha0)", "/docs/reinforcement-learning/alphago/2018-silver.pdf#deepmind")
@@ -536,7 +535,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Douglas Engelbart", "https://en.wikipedia.org/wiki/Douglas_Engelbart")
         , ("Douglas Hofstadter", "https://en.wikipedia.org/wiki/Douglas_Hofstadter")
         , ("Drake equation", "https://en.wikipedia.org/wiki/Drake_equation")
-        , ("Drôme", "https://en.wikipedia.org/wiki/Dr%C3%B4me")
         , ("Dunbar's [Nn]umber", "https://en.wikipedia.org/wiki/Dunbar%27s_number")
         , ("Dune", "https://en.wikipedia.org/wiki/Dune_%28novel%29")
         , ("E. ?T. Jaynes", "https://en.wikipedia.org/wiki/E.T._Jaynes")
@@ -727,11 +725,9 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Mark Pilgrim", "https://en.wikipedia.org/wiki/Mark_Pilgrim")
         , ("Markdown", "https://en.wikipedia.org/wiki/Markdown")
         , ("Matthew effects?", "https://en.wikipedia.org/wiki/Matthew_effect")
-        , ("McRaven", "https://en.wikipedia.org/wiki/William_H._McRaven")
         , ("Medici [Bb]ank", "https://en.wikipedia.org/wiki/Medici_Bank")
         , ("Meena", "https://arxiv.org/abs/2001.09977#google")
         , ("Megatron(LM)?", "https://nv-adlr.github.io/MegatronLM")
-        , ("Merchant fees?", "https://en.wikipedia.org/wiki/Interchange_fee")
         , ("Met HD", "https://en.wikipedia.org/wiki/Metropolitan_Opera_Live_in_HD")
         , ("Meta[Mm]ath", "https://en.wikipedia.org/wiki/Metamath")
         , ("Michael Nielsen", "https://michaelnielsen.org/")
@@ -831,7 +827,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Richard Dawkins", "https://en.wikipedia.org/wiki/Richard_Dawkins")
         , ("Rietveld et al 2013", "/docs/iq/2013-rietveld.pdf")
         , ("Robert Bakewell", "https://en.wikipedia.org/wiki/Robert_Bakewell_(agriculturalist)")
-        , ("Robert Bringhurst", "https://en.wikipedia.org/wiki/Robert_Bringhurst")
         , ("Robin Hanson", "https://en.wikipedia.org/wiki/Robin_Hanson")
         , ("Ross (William )?Ulbricht", "https://en.wikipedia.org/wiki/Ross_Ulbricht")
         , ("Rotten\\.com", "https://en.wikipedia.org/wiki/Rotten.com")
@@ -847,12 +842,10 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("SWA", "https://arxiv.org/abs/1803.05407")
         , ("Saddam Hussein", "https://en.wikipedia.org/wiki/Saddam_Hussein")
         , ("Samuel Johnson", "https://en.wikipedia.org/wiki/Samuel_Johnson")
-        , ("Samuel T. Cohen", "https://en.wikipedia.org/wiki/Samuel_T._Cohen")
         , ("Sandia National Laboratories", "https://en.wikipedia.org/wiki/Sandia_National_Laboratories")
         , ("(Satoshi Nakamoto|Nakamoto)", "https://en.wikipedia.org/wiki/Satoshi_Nakamoto")
         , ("Saul Kripke", "https://en.wikipedia.org/wiki/Saul_Kripke")
         , ("Schelling point", "https://en.wikipedia.org/wiki/Focal_point_(game_theory)")
-        , ("Scholes", "https://en.wikipedia.org/wiki/Myron_Scholes")
         , ("Scott Aaronson", "https://en.wikipedia.org/wiki/Scott_Aaronson")
         , ("Scott Alexander", "https://astralcodexten.substack.com/")
         , ("Scott Sumner", "https://en.wikipedia.org/wiki/Scott_Sumner")
@@ -863,7 +856,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Shawn Presser", "https://nitter.hu/theshawwn")
         , ("Shikishi", "https://en.wikipedia.org/wiki/Princess_Shikishi")
         , ("Shinji Ikari", "https://en.wikipedia.org/wiki/Shinji_Ikari")
-        , ("Shonen Sunday", "https://en.wikipedia.org/wiki/Shonen_Sunday")
         , ("Shortformer", "https://arxiv.org/abs/2012.15832")
         , ("SimC[Ll][Rr]", "https://arxiv.org/abs/2002.05709#google")
         , ("SimSiam", "https://arxiv.org/abs/2011.10566#facebook")
@@ -949,7 +941,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("V100", "https://en.wikipedia.org/wiki/Volta_(microarchitecture)#Products")
         , ("VGG(-?16)", "https://arxiv.org/abs/1409.1556")
         , ("([Vv]ector [Qq]uantized [Vv]ariational [Aa]uto[Ee]ncoder|VQ-VAE)(-?[:graph:]+)?.?", "https://arxiv.org/abs/1906.00446#deepmind")
-        , ("Vergina Sun", "https://en.wikipedia.org/wiki/Vergina_Sun")
         , ("Vi[Zz][Dd]oom", "https://arxiv.org/abs/1605.02097")
         , ("VideoGPT", "https://arxiv.org/abs/2104.10157")
         , ("Virtual You[Tt]uber", "https://en.wikipedia.org/wiki/Virtual_YouTuber")
@@ -961,11 +952,9 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Web[Vv]ision", "https://arxiv.org/abs/1708.02862")
         , ("Wen[Ll]an", "https://arxiv.org/abs/2103.06561")
         , ("Western Union", "https://en.wikipedia.org/wiki/Western_Union")
-        , ("William Faulkner", "https://en.wikipedia.org/wiki/William_Faulkner")
         , ("William Gibson", "https://en.wikipedia.org/wiki/William_Gibson")
         , ("Wired", "https://en.wikipedia.org/wiki/Wired_%28magazine%29")
         , ("Wisconsin Longitudinal Study", "https://www.ssc.wisc.edu/wlsresearch/about/description.php")
-        , ("Wittgenstein on Rules and Private Language", "https://en.wikipedia.org/wiki/Wittgenstein_on_Rules_and_Private_Language")
         , ("Wittgenstein", "https://en.wikipedia.org/wiki/Ludwig_Wittgenstein")
         , ("Worm", "https://parahumans.wordpress.com/category/stories-arcs-1-10/arc-1-gestation/1-01/")
         , ("XLM-R", "https://arxiv.org/abs/1911.02116#facebook")
