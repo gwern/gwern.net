@@ -1,4 +1,4 @@
-/*******************************************/
+s/*******************************************/
 /*	Events fired by extracts-annotations.js:
 
 	GW.contentDidLoad {
@@ -51,13 +51,23 @@ if (window.Extracts) {
         let annotationIdentifier = Extracts.targetIdentifier(target);
 
         if (Annotations.annotationForIdentifier(annotationIdentifier) == null) {
+			/*	If the annotation has yet to be loaded, we’ll ask for it to load,
+				and meanwhile wait, and do nothing yet.
+			 */
             Extracts.refreshPopFrameAfterAnnotationLoads(target);
             return `&nbsp;`;
         } else if (Annotations.annotationForIdentifier(annotationIdentifier) == "LOADING_FAILED") {
+        	/*	If we’ve already tried and failed to load the annotation, we
+        		will not try loading again, and just show the “loading failed”
+        		message.
+        	 */
             target.popFrame.classList.add("loading-failed");
             return `&nbsp;`;
         }
 
+		/*	Retrieve HTML/text components of the annotation (constructed from 
+			a retrieved, and presumably cached, annotation source).
+		 */
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
         //  Open link in same window on mobile, new window on desktop.
