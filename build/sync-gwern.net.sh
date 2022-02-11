@@ -122,7 +122,7 @@ else
                               -e 's/\([a-z]\)…\([0-9]\)/\1⁠…⁠\2/g' -e 's/\([a-z]\)…<sub>\([0-9]\)/\1⁠…⁠<sub>\2/g' -e 's/\([a-z]\)<sub>…\([0-9]\)/\1⁠<sub>…⁠\2/g' -e 's/\([a-z]\)<sub>…<\/sub>\([0-9]\)/\1⁠<sub>…⁠<\/sub>\2/g' \
                               -e 's/\([a-z]\)⋯\([0-9]\)/\1⁠⋯⁠\2/g' -e 's/\([a-z]\)⋯<sub>\([0-9]\)/\1⁠⋯⁠<sub>\2/g' \
                               -e 's/\([a-z]\)⋱<sub>\([0-9]\)/\1⁠⋱⁠<sub>\2/g' -e 's/\([a-z]\)<sub>⋱\([0-9]\)/\1<sub>⁠⋱⁠\2/g' \
-                              -e 's/  / /g' -e 's/​​/​/g' -e 's/​ ​​ ​/​ /g' \
+                              -e 's/  / /g' -e 's/​​/​/g' -e 's/​ ​​ ​/​ /g' -e 's/​ ​ ​ ​  / /g' -e 's/​ ​ ​ ​/ /g' -e 's/​ ​ ​ / /g' -e 's/  / /g' \
                             "$@"; }; export -f nonbreakSpace;
     find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
     find ./_site/metadata/annotations/ -maxdepth 1 -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
@@ -271,7 +271,7 @@ else
                -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
                -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e '<span class="cit' -e 'gwsed' -e 'full.full' -e ',,' \
                -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
-               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -- ./metadata/*.yaml;
+               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -- ./metadata/*.yaml;
          # look for YAML linebreaking at a hyphen:
         egrep -v '^- - http' ./metadata/*.yaml | egrep '[a-zA-Z0-9>]-$';
         # look for punctuation inside links; unless it's a full sentence or a quote, generally prefer to put punctuation outside:
