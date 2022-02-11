@@ -638,15 +638,21 @@ Extracts = {
                 //  Sections of other pages.
                 let targetDocument = Extracts.targetDocument(target);
                 let nearestBlockElement = Extracts.nearestBlockElement(targetDocument.querySelector(decodeURIComponent(target.hash)));
+                let pageTitleOrPath = Extracts.cachedPageTitles[target.pathname] || target.pathname;
                 popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-                                    ? (  nearestBlockElement.firstElementChild.textContent 
-                                       + ` (${Extracts.cachedPageTitles[target.pathname] || target.pathname})`)
-                                    : (target.pathname + target.hash);
+                                    ? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
+                                    : `${target.hash} (${pageTitleOrPath})`;
             }
         }
 
         //  Mark sections with ‘§’ symbol.
         if (    target.hash > ""
+        	/*	The following condition will be false (i.e., popFrameTitleText
+        		WILL start with a ‘#’) if the hash points not to a section, but
+        		to a link or some other element. In that case, we don’t want a
+        		section mark!
+        	 */
+        	&& !(popFrameTitleText.startsWith("#"))
         	&& !popFrame.classList.contains("external-page-embed")
 				/*	Links with an org notation for link icons 
 					(eg. 'https://arxiv.org/abs/2006.07159#google')
