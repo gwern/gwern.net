@@ -521,6 +521,7 @@ a[href*="andrewgelman.com"]::after,
 a[href*="animenewsnetwork.com"]::after,
 a[href*="arstechnica.com"]::after,
 a[href*="arxiv.org"]::after,
+a[href*="ar5iv.org"]::after,
 a[href*="psyarxiv.com"]::after,
 a[href*="bbc.com"]::after,
 a[href*="bbc.co.uk"]::after,
@@ -776,9 +777,10 @@ a[href*="theinterval.org"]::after {
     bottom: 0.2em;
 }
 
-/* ArXiv: Chi (their logo is too bizarre & off-putting to use, in addition to not working in monochrome) */
+/* ArXiv: Chi (their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image) */
 a[href*="arxiv.org"]::after,
-a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after {
+a[href$="arxiv.org/pdf/.*\.pdf#page=.*"]::after,
+a[href*="ar5iv.org"]::after {
     content: "\1D6D8"; /* (𝛘) MATHEMATICAL BOLD SMALL CHI; bold makes it show up better when tiny */
     opacity: 0.75;
     bottom: 0.4em;
@@ -1125,6 +1127,7 @@ a[href*="tumblr.com"]::after,
 a[href*="t.umblr.com"]::after,
 a[href*="#facebook"]::after,
 a[href*="#facebook"][href*="arxiv.org"]::after,
+a[href*="#facebook"][href*="ar5iv.org"]::after,
 a[href*='docs/.*/*.pdf#.*facebook']::after,
 a[href*="facebook.com"]::after,
 a[href*="bitcointalk.org"]::after,
@@ -1134,6 +1137,8 @@ a[href*="#google"]::after,
 a[href*="#org=google"]::after,
 a[href*="#google"][href*="arxiv.org"]::after,
 a[href*="#org=google"][href*="arxiv.org"]::after,
+a[href*="#google"][href*="ar5iv.org"]::after,
+a[href*="#org=google"][href*="ar5iv.org"]::after,
 a[href*='docs/.*/*.pdf#.*google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after {
     content: "";
@@ -1187,6 +1192,7 @@ a[href*="tumblr.com"]:hover::after,
 a[href*="t.umblr.com"]:hover::after,
 a[href*="#facebook"]:hover::after,
 a[href*="#facebook"][href*="arxiv.org"]:hover::after,
+a[href*="#facebook"][href*="ar5iv.org"]:hover::after,
 a[href*='docs/.*/*.pdf#.*facebook']:hover::after,
 a[href*="facebook.com"]:hover::after,
 a[href*="bitcointalk.org"]:hover::after,
@@ -1196,6 +1202,8 @@ a[href*="#google"]:hover::after,
 a[href*="#org=google"]:hover::after,
 a[href*="#google"][href*="arxiv.org"]:hover::after,
 a[href*="#org=google"][href*="arxiv.org"]:hover::after,
+a[href*="#google"][href*="ar5iv.org"]:hover::after,
+a[href*="#org=google"][href*="ar5iv.org"]:hover::after,
 a[href*='docs/.*/*.pdf#.*google']:hover::after,
 a[href*='docs/.*/*.pdf#org=google']:hover::after {
     opacity: 0.3;
@@ -1636,6 +1644,7 @@ a[href*="t.umblr.com"]::after {
     */
 a[href*="#facebook"]::after,
 a[href*="#facebook"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
+a[href*="#facebook"][href*="ar5iv.org"]::after,
 a[href*='docs/.*/*.pdf#.*facebook']::after, /* override the default PDF selector */
 a[href*="facebook.com"]::after {
     background-image: url('/static/img/icons/facebook.svg');
@@ -1666,6 +1675,8 @@ a[href*="#google"]::after,
 a[href*="#org=google"]::after,
 a[href*="#google"][href*="arxiv.org"]::after, /* override the default Arxiv selector */
 a[href*="#org=google"][href*="arxiv.org"]::after,
+a[href*="#google"][href*="ar5iv.org"]::after,
+a[href*="#org=google"][href*="ar5iv.org"]::after,
 a[href*='docs/.*/*.pdf#.*google']::after,
 a[href*='docs/.*/*.pdf#org=google']::after { /* override the default PDF selector */
     background-image: url('/static/img/icons/google.svg');
