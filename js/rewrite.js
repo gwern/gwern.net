@@ -505,15 +505,21 @@ function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
         	annotatedLink.removeEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave);
 
         //  Bind events.
-        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${target.href}']`);
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${annotatedLink.href}']`);
         if (targetAnalogueInLinkBibliography) {
         	let containingSection = targetAnalogueInLinkBibliography.closest("section");
         	if (containingSection) {
 				annotatedLink.addEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter = (event) => {
+					clearTimeout(containingSection.highlightFadeTimer);
+					containingSection.classList.toggle("highlight-fading", false);
 					containingSection.classList.toggle("highlighted", true);
 				});
 				annotatedLink.addEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave = (event) => {
-					containingSection.classList.toggle("highlighted", false);
+					containingSection.classList.toggle("highlight-fading", true);
+					containingSection.highlightFadeTimer = setTimeout(() => {
+						containingSection.classList.toggle("highlight-fading", false);
+						containingSection.classList.toggle("highlighted", false);
+					}, 150);
 				});
         	}
         }

@@ -4352,6 +4352,11 @@ section.highlighted::before {
 	height: calc(100% + 1.25em);
 	outline: 3px double var(--GW-section-highlighted-border-color);
 	z-index: -1;
+	transition:
+        outline 0.15s ease 0.05s;
+}
+section.highlight-fading::before {
+	outline: 3px double transparent;
 }
 
 /*********************/
