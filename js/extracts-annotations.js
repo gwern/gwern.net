@@ -77,7 +77,7 @@ if (window.Extracts) {
         let originalLinkHTML = "";
         if (   referenceData.element.dataset.urlOriginal != undefined
                && referenceData.element.dataset.urlOriginal != target.href) {
-            let originalURLText = referenceData.element.dataset.urlOriginal.includes("ar5iv") ? "HTML" : "live";
+            let originalURLText = referenceData.element.dataset.urlOriginal.includes("ar5iv") ? `<span class="smallcaps">HTML</span>` : "live";
             originalLinkHTML = `<span class="originalURL">[<a
                             title="Link to original URL for ${referenceData.element.textContent}"
                             href="${referenceData.element.dataset.urlOriginal}"
@@ -99,7 +99,7 @@ if (window.Extracts) {
 
         let tagBacklinks = `${similarLinksHtml}</p>`;
         if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = `${similarLinksHtml}</p>`; } else {
-            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `; <span class="data-field link-tags">${referenceData.tagsHTML}${similarLinksHtml}</p>`; } else {
+            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `; <span class="data-field link-tags">${referenceData.tagsHTML}</span>${similarLinksHtml}</p>`; } else {
                 if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.backlinksHTML}${similarLinksHtml}</p>`; } else {
                     if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.tagsHTML}; ${referenceData.backlinksHTML}${similarLinksHtml}</p>`; }
                 }

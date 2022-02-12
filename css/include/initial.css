@@ -873,15 +873,15 @@ a code {
     the 'o' in 'micro' will be partially erased and look like a 'c' without
     some sort of extra spacing
     */
-.markdownBody a:link > .smallcaps,
-.markdownBody a:link > .smallcaps-auto {
-    margin-left: 0.7px;
+.markdownBody a:link .smallcaps,
+.markdownBody a:link .smallcaps-auto {
+    margin-left: 0.8px;
 }
 
 /*  Like above, but for subscripts and superscripts
     */
-.markdownBody a:link > sub,
-.markdownBody a:link > sup {
+.markdownBody a:link sub,
+.markdownBody a:link sup {
     padding-left: 0.125em;
 }
 

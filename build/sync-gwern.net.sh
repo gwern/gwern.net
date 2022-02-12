@@ -52,7 +52,6 @@ else
     compile hakyll.hs
     compile generateLinkBibliography.hs
     compile generateDirectory.hs &
-    compile generateBacklinks.hs &
     compile preprocess-markdown.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
     wait
@@ -74,9 +73,6 @@ else
 
     bold "Updating link bibliographies…"
     ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
-
-    bold "Updating backlinks…"
-    (find . -name "*.page" -or -wholename "./metadata/annotations/*.html" | egrep -v -e '/index.page' -e '_site/' -e './metadata/annotations/backlinks/' -e 'docs/www/' -e 'docs/link-bibliography/' -e './metadata/annotations/similars/' -e '^#' | sort | ./static/build/generateBacklinks +RTS -N"$N" -RTS) &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -271,7 +267,7 @@ else
                -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
                -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e '<span class="cit' -e 'gwsed' -e 'full.full' -e ',,' \
                -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
-               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -- ./metadata/*.yaml;
+               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -- ./metadata/*.yaml;
          # look for YAML linebreaking at a hyphen:
         egrep -v '^- - http' ./metadata/*.yaml | egrep '[a-zA-Z0-9>]-$';
         # look for punctuation inside links; unless it's a full sentence or a quote, generally prefer to put punctuation outside:
@@ -545,7 +541,7 @@ else
          done; }
     wrap λ "Archives of broken links"
 
-    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" | sort | parallel --max-args=100 file | grep -v 'PDF document' | cut -d ':' -f 1)"
+    λ(){ BROKEN_PDFS="$(find ./ -type f -name "*.pdf" -not -size 0 | sort | parallel --max-args=100 file | grep -v 'PDF document' | cut -d ':' -f 1)"
          for BROKEN_PDF in $BROKEN_PDFS; do
              echo "$BROKEN_PDF"; grep --before-context=3 "$BROKEN_PDF" ./metadata/archive.hs;
          done; }
@@ -592,7 +588,7 @@ else
                                   pdftk "$FILE" input_pw output "$TEMP" && mv "$TEMP" "$FILE";
                               fi; }
          export -f checkEncryption
-         find ./ -type f -name "*.pdf" | parallel checkEncryption; }
+         find ./ -type f -name "*.pdf" -not -size 0 | parallel checkEncryption; }
     wrap λ "'Encrypted' PDFs (fix with pdftk: 'pdftk $PDF input_pw output foo.pdf')" &
 
     ## DjVu is deprecated (due to SEO: no search engines will crawl DjVu, turns out!):
