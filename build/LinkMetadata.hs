@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-10 18:12:12 gwern"
+When:  Time-stamp: "2022-02-11 19:40:21 gwern"
 License: CC-0
 -}
 
@@ -408,11 +408,12 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                       , ("iq/smpy", "SMPY")
                       , ("vitamin-d", "Vitamin D")
                       , ("dual-n-back", "DNB")
-                      , ("ai/codex", "Codex")
+                      , ("ai/gpt/codex", "Codex")
                       , ("ai/gpt/lamda", "LaMDA")
                       , ("iq/anne-roe", "Anne Roe")
                       , ("ai/gan", "GAN")
-                      , ("ai/stylegan", "Style GAN")
+                      , ("/stylegan", "StyleGAN")
+                      , ("ai/stylegan", "StyleGAN")
                       , ("ai/gpt/dall-e", "DALL·E")
                       , ("ai/highleyman", "Highleyman")
                       , ("existential-risk", "x-risk")
@@ -1421,6 +1422,9 @@ generateID url author date
        , ("https://arxiv.org/abs/1805.08166", "chen-et-al-2018-learningtensorprograms")
        , ("https://arxiv.org/abs/1812.02353", "chen-et-al-2018-topk")
        , ("https://arxiv.org/abs/1809.04184", "chen-et-al-2018-multiscalenas")
+       , ("https://arxiv.org/abs/2111.12527", "zhang-et-al-2021-morphmlp")
+       , ("https://arxiv.org/abs/2102.05379", "hoogeboom-et-al-2021-categorical")
+       , ("https://arxiv.org/abs/2111.05826#google", "saharia-et-al-2021-palette")
       ]
 
 authorsToCite :: String -> String -> String -> String

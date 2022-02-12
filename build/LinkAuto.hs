@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-02-10 22:19:02 gwern"
+When:  Time-stamp: "2022-02-11 19:37:35 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -1033,7 +1033,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Dd]eep brain stimulation", "https://en.wikipedia.org/wiki/Deep_brain_stimulation")
         , ("[Dd]efault [Mm]ode [Nn]etwork", "https://en.wikipedia.org/wiki/Default_mode_network")
         , ("[Dd]eliberate practice", "https://en.wikipedia.org/wiki/Practice_(learning_method)#Deliberate_practice")
-        , ("[Dd]emand [Cc]haracteristics", "https://en.wikipedia.org/wiki/Demand_characteristics")
+        , ("[Dd]emand [Cc]haracteristics?", "https://en.wikipedia.org/wiki/Demand_characteristics")
         , ("[Dd]emographic transition", "https://en.wikipedia.org/wiki/Demographic_transition")
         , ("[Dd]endritic spines?", "https://en.wikipedia.org/wiki/Dendritic_spine")
         , ("[Dd]esigner drug", "https://en.wikipedia.org/wiki/Designer_drug")
@@ -1041,10 +1041,9 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Dd]igit[ -]span", "https://en.wikipedia.org/wiki/Digit_span")
         , ("[Dd]iminishing returns?", "https://en.wikipedia.org/wiki/Diminishing_returns")
         , ("[Dd]itche?s?", "https://en.wikipedia.org/wiki/Ditch_(fortification)")
-        , ("[Dd]octrine [Oo]f ([Tt]he )?[Dd]ouble [Ee]ffect", "https://en.wikipedia.org/wiki/Principle_of_double_effect")
         , ("[Dd]ominant [Aa]ssurance [Cc]ontract", "https://en.wikipedia.org/wiki/Assurance_contract#Dominant_assurance_contracts")
         , ("[Dd]opamine", "https://en.wikipedia.org/wiki/Dopamine")
-        , ("[Dd]ouble descent", "https://openai.com/blog/deep-double-descent/")
+        , ("[Dd]ouble[ -]descent", "https://openai.com/blog/deep-double-descent/")
         , ("[Dd]ouble[ -]spend(ing)?", "https://en.wikipedia.org/wiki/Double-spending")
         , ("[Dd]oujin(shi)?", "https://en.wikipedia.org/wiki/Doujinshi")
         , ("[Dd]ynamic programming", "https://en.wikipedia.org/wiki/Dynamic_programming")
@@ -1053,7 +1052,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ee]nd[ -][Tt]o[ -][Ee]nd", "/docs/cs/end-to-end-principle/index")
         , ("[Ee]nhanced weathering", "https://en.wikipedia.org/wiki/Enhanced_weathering")
         , ("[Ee]pistasis", "https://en.wikipedia.org/wiki/Epistasis")
-        , ("[Ee]thogram", "https://en.wikipedia.org/wiki/Ethogram")
         , ("[Ee]verything [Ii]s [Cc]orrelated", "/Everything")
         , ("[Ee]xenatide", "https://en.wikipedia.org/wiki/Exenatide")
         , ("[Ee]xperience curves?", "https://en.wikipedia.org/wiki/Experience_curve_effects")
@@ -1328,4 +1326,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("OLS( regressions?|regression models?)?", "https://en.wikipedia.org/wiki/Ordinary_least_squares")
         , ("[Ee]nsemble?s( learning| methods?)", "https://en.wikipedia.org/wiki/Ensemble_learning")
         , ("fMRIs?( machine| study| experiment| data| task| responses)", "https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging")
+        , ("MuJoCo", "https://mujoco.org/")
         ]
