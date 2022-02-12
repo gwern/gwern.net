@@ -128,15 +128,18 @@ if (window.Extracts) {
 
         //  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
         if (   target.hash > ""
-            && (   (   target.hostname == location.hostname
-                    // annotations for local archive links with an org notation
-                    // for link icons (eg. ‘https://www.gwern.net/docs/ai/2020-bell.pdf#facebook')
-                    // should not get a section mark
-                    && !([ "alibaba", "allen", "amazon", "baidu", "deepmind",
-                           "eleutherai", "facebook", "google", "googlebrain",
-                           "lighton", "microsoft", "miri", "nvidia", "openai",
-                           "pdf", "salesforce", "tencent", "tensorfork", "uber",
-                           "yandex"].includes(target.hash)))
+            && (   (    target.hostname == location.hostname
+					/*	Annotations for local archive links with an org notation
+						for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
+						should not get a section mark.
+					 */
+					&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", 
+						  "deepmind", "eleutherai", "elementai", "facebook", "flickr", 
+						  "google", "googledeepmind", "huawei", "intel", "laion", 
+						  "lighton", "microsoft", "microsoftnvidia", "miri",
+						  "nvidia", "openai", "pdf", "salesforce", "sensetime", 
+						  "snapchat", "tencent", "tensorfork", "uber", "yandex"
+						  ].includes(target.hash.substr(1))))
                 || Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
