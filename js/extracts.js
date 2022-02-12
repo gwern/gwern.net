@@ -664,7 +664,7 @@ Extracts = {
         	    	 "lighton", "microsoft", "microsoftnvidia", "miri",
         		     "nvidia", "openai", "pdf", "salesforce", "sensetime", 
         		     "snapchat", "tencent", "tensorfork", "uber", "yandex"
-        		     ].includes(target.hash))
+        		     ].includes(target.hash.substr(1)))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
@@ -824,7 +824,7 @@ Extracts = {
 
         if (Extracts.cachedPages[target.pathname]) {
             //  Give the pop-frame an identifying class.
-            target.popFrame.classList.toggle("external-page-embed", "page-" + target.pathname.substring(1), true);
+            target.popFrame.classList.toggle("external-page-embed", "page-" + target.pathname.substr(1), true);
 
             return Extracts.cachedPages[target.pathname].innerHTML;
         } else {
