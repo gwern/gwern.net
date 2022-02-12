@@ -635,7 +635,8 @@ a[href*="microsoft"]::after,
 a[href*="myanimelist.net"]::after,
 a[href*="animenewsnetwork.com"]::after,
 a[href*="fda.gov"]::after,
-a[href*="predictionbook.com"]::after {
+a[href*="predictionbook.com"]::after,
+a[href*="nvidia"]::after {
     font-family: var(--GW-sans-serif-font-stack);
 }
 
@@ -932,6 +933,15 @@ a[href*="nature.com"]::after {
     font-size: 1em;
     bottom: 0.2em;
     opacity: 0.70;
+}
+
+/* Nvidia: https://en.wikipedia.org/wiki/Nvidia#cite_note-2 yeah no */
+a[href*="nvidia"]::after {
+    content: "N";
+    /* Override video icons */
+    background-image: none;
+    opacity: 1;
+    height: 1em;
 }
 
 a[href*="link.springer.com"]::after {
