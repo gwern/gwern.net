@@ -4335,6 +4335,30 @@ To hack around this issue (which surely has a better answer), and since in some 
     content: none;
 }
 
+/***************/
+/* ANNOTATIONS */
+/***************/
+
+section.highlighted {
+	position: relative;
+}
+section.highlighted::before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: -0.5em;
+	left: -1.25em;
+	width: calc(100% + 2em);
+	height: calc(100% + 1.25em);
+	outline: 3px double var(--GW-section-highlighted-border-color);
+	z-index: -1;
+	transition:
+        outline 0.15s ease 0.05s;
+}
+section.highlight-fading::before {
+	outline: 3px double transparent;
+}
+
 /*********************/
 /* SEQUENTIAL NAV UI */
 /*********************/
