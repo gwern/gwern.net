@@ -490,6 +490,45 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 						  && info.document.parentElement.id == "annotations-workspace") 
 });
 
+/******************************************************************************/
+/*  Bind mouse hover events to, when hovering over an annotated link, highlight
+	that annotation (as viewed in a tags directory, for instance).
+    */
+function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
+    GWLog("bindSectionHighlightEventsToAnnotatedLinks", "rewrite.js", 1);
+
+    loadEventInfo.document.querySelectorAll(".docMetadata").forEach(annotatedLink => {
+        //  Unbind existing events, if any.
+        if (annotatedLink.annotatedLinkMouseEnter)
+        	annotatedLink.removeEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter);
+        if (annotatedLink.annotatedLinkMouseLeave)
+        	annotatedLink.removeEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave);
+
+        //  Bind events.
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${target.href}']`);
+        if (targetAnalogueInLinkBibliography) {
+        	let containingSection = targetAnalogueInLinkBibliography.closest("section");
+        	if (containingSection) {
+				annotatedLink.addEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter = (event) => {
+					containingSection.classList.toggle("highlighted", true);
+				});
+				annotatedLink.addEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave = (event) => {
+					containingSection.classList.toggle("highlighted", false);
+				});
+        	}
+        }
+    });
+}
+
+/***********************************************************/
+/*  Add content load handler for processing annotated links.
+    */
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotatedLinks = (info) => {
+    GWLog("GW.rewriteFunctions.processAnnotatedLinks", "rewrite.js", 2);
+
+    bindSectionHighlightEventsToAnnotatedLinks(info);
+}, { phase: "eventListeners" });
+
 /*************/
 /* FOOTNOTES */
 /*************/
@@ -581,8 +620,10 @@ function bindNoteHighlightEventsToCitations(loadEventInfo) {
 
     loadEventInfo.document.querySelectorAll(".footnote-ref").forEach(citation => {
         //  Unbind existing events, if any.
-        if (citation.citationMouseEnter) citation.removeEventListener("mouseenter", citation.citationMouseEnter);
-        if (citation.citationMouseLeave) citation.removeEventListener("mouseleave", citation.citationMouseLeave);
+        if (citation.citationMouseEnter)
+        	citation.removeEventListener("mouseenter", citation.citationMouseEnter);
+        if (citation.citationMouseLeave)
+        	citation.removeEventListener("mouseleave", citation.citationMouseLeave);
 
         //  Bind events.
         let notesForCitation = allNotesForCitation(citation);

@@ -163,6 +163,27 @@ if (window.Extracts) {
         }
     };
 
+	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+	Extracts.preparePopup_ANNOTATION = (popup) => {
+        let target = popup.spawningTarget;
+
+        /*  Do not spawn annotation popup if the annotation is already visible
+        	on screen. (This may occur if the target is in a popup that was 
+        	spawned from a backlinks popup for this same annotation as viewed on
+        	a tag index page, for example.)
+         */
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${target.href}']`);
+        if (targetAnalogueInLinkBibliography) {
+        	let containingSection = targetAnalogueInLinkBibliography.closest("section");
+        	if (   containingSection
+        		&& Popups.isVisible(containingSection)) {
+        		return null;
+        	}
+        }
+
+		return popup;	
+	};
+
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_ANNOTATION = (popFrame) => {
         let target = popFrame.spawningTarget;

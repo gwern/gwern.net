@@ -107,6 +107,10 @@
     --GW-sidenote-scrollbar-thumb-hover-color: #999;
     --GW-sidenote-self-link-border-color: #aaa;
 
+	/*	Annotations.
+		*/
+	--GW-section-highlighted-border-color: #666;
+
     /*  Tables.
         */
     --GW-table-border-color: #000;
