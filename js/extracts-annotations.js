@@ -78,7 +78,7 @@ if (window.Extracts) {
         if (   referenceData.element.dataset.urlOriginal != undefined
                && referenceData.element.dataset.urlOriginal != target.href) {
             let originalURLText = referenceData.element.dataset.urlOriginal.includes("ar5iv") ? `<span class="smallcaps">HTML</span>` : "live";
-            originalLinkHTML = `<span class="originalURL">[<a
+            originalLinkHTML = ` <span class="originalURL">[<a
                             title="Link to original URL for ${referenceData.element.textContent}"
                             href="${referenceData.element.dataset.urlOriginal}"
                             target="${linkTarget}"
@@ -133,11 +133,11 @@ if (window.Extracts) {
 						for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
 						should not get a section mark.
 					 */
-					&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", 
-						  "deepmind", "eleutherai", "elementai", "facebook", "flickr", 
-						  "google", "googledeepmind", "huawei", "intel", "laion", 
+					&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance",
+						  "deepmind", "eleutherai", "elementai", "facebook", "flickr",
+						  "google", "googledeepmind", "huawei", "intel", "laion",
 						  "lighton", "microsoft", "microsoftnvidia", "miri",
-						  "nvidia", "openai", "pdf", "salesforce", "sensetime", 
+						  "nvidia", "openai", "pdf", "salesforce", "sensetime",
 						  "snapchat", "tencent", "tensorfork", "uber", "yandex"
 						  ].includes(target.hash.substr(1))))
                 || Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
@@ -171,7 +171,7 @@ if (window.Extracts) {
         let target = popup.spawningTarget;
 
         /*  Do not spawn annotation popup if the annotation is already visible
-        	on screen. (This may occur if the target is in a popup that was 
+        	on screen. (This may occur if the target is in a popup that was
         	spawned from a backlinks popup for this same annotation as viewed on
         	a tag index page, for example.)
          */
@@ -184,7 +184,7 @@ if (window.Extracts) {
         	}
         }
 
-		return popup;	
+		return popup;
 	};
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
