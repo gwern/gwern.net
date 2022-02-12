@@ -6,8 +6,8 @@
 /*	Events fired by rewrite.js:
 
 	Rewrite.fullWidthMediaDidLoad
-		Fired when a full-width image or video is loaded. This event is only 
-		fired after the initial page load completes (i.e., it is triggered by 
+		Fired when a full-width image or video is loaded. This event is only
+		fired after the initial page load completes (i.e., it is triggered by
 		lazy-loading of media elements).
 
 	Rewrite.pageLayoutWillComplete
@@ -23,34 +23,34 @@
 /*	NOTE on the GW.contentDidLoad event:
 
 	This event is fired whenever any new local page content is loaded (whether
-	this means “loaded via a network request”, “loaded from cache”, 
+	this means “loaded via a network request”, “loaded from cache”,
 	“constructed from existing page elements”, or any other process by which
 	a new unit of page content is created). This includes the initial page
 	load, but also such things as pop-frames being spawned, annotations being
 	lazy-loaded, etc.
 
-	Many event handlers are attached to this event, because a great deal of 
+	Many event handlers are attached to this event, because a great deal of
 	processing must take place before newly-loaded page content is ready for
 	presentation to the user. Typography rectification must take place; the HTML
-	structure of certain page elements (such as tables, figures, etc.) must be 
-	reconfigured; CSS classes must be added; various event listeners attached; 
+	structure of certain page elements (such as tables, figures, etc.) must be
+	reconfigured; CSS classes must be added; various event listeners attached;
 	etc. Most of this file (rewrite.js) consists of exactly such “content load
 	handlers”, a.k.a. “rewrite functions”. (Additional content load handlers are
-	defined elsewhere in the code, as appropriate; e.g. the handler that 
-	attaches event listeners to annotated links to load annotations when the 
+	defined elsewhere in the code, as appropriate; e.g. the handler that
+	attaches event listeners to annotated links to load annotations when the
 	user mouses over such links, which is found in annotations.js.)
 
-	The GW.contentDidLoad event has the following named handler phases (see 
-	gw-inline.js for details on what this means): 
+	The GW.contentDidLoad event has the following named handler phases (see
+	gw-inline.js for details on what this means):
 
 		[ "rewrite", "eventListeners" ]
 
 	The GW.contentDidLoad event should have the following keys and values in its
-	event info dictionary (see gw-inline.js for details on event info 
+	event info dictionary (see gw-inline.js for details on event info
 	dictionaries):
 
 		‘source’ (key)
-			String that indicates function (or event name, if fired from a 
+			String that indicates function (or event name, if fired from a
 			browser event listener) from which the event is fired (such as
 			‘Annotation.loadAnnotation’).
 
@@ -66,7 +66,7 @@
 			For the main page, the represented URL will be `location.href`. For
 			pop-frames and the like, the represented URL will be the `href`
 			attribute of the spawning target. For local annotations, this will
-			be the URL of the annotation resource on the local server (NOT the 
+			be the URL of the annotation resource on the local server (NOT the
 			URL of the annotated link!). For Wikipedia annotations, this will be
 			the URL of the API request to retrieve the annotation data.
 
@@ -74,12 +74,12 @@
 			Bit field containing various flags (combined via bitwise OR). The
 			values of the flags are defined in GW.contentDidLoadEventFlags.
 
-			(Note that event handlers for the ‘GW.contentDidLoad’ event can 
-			 access the values of these flags directly via property access on 
+			(Note that event handlers for the ‘GW.contentDidLoad’ event can
+			 access the values of these flags directly via property access on
 			 the event, e.g. the following two expressions are equivalent:
-			 
-			   eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0 
-			 
+
+			   eventInfo.flags & GW.contentDidLoadEventFlags.needsRewrite != 0
+
 			   eventInfo.needsRewrite
 
 			 It is recommended that the latter form be used.)
@@ -88,36 +88,36 @@
 
 			‘isMainDocument’
 				Specifies whether the loaded content is the main page itself, or
-				some content loaded within the main page (which might be a 
-				content fragment like an annotation, or an entire other local 
+				some content loaded within the main page (which might be a
+				content fragment like an annotation, or an entire other local
 				page loaded in a pop-frame, or something else).
 
 				The value of this key should be true only once per page session,
-				when the initial page content is loaded (and the 
-				GW.contentDidLoad event is called from a listener for the 
+				when the initial page content is loaded (and the
+				GW.contentDidLoad event is called from a listener for the
 				DOMContentLoaded browser event).
 
 			‘needsRewrite’
-				Specifies whether the loaded content needs to be processed 
+				Specifies whether the loaded content needs to be processed
 				through a rewrite pass (i.e., to have its typography rectified,
 				HTML structure adjusted, etc.). If this value is false, then the
 				loaded content has already had rewriting performed (this will be
-				the case when the content is being loaded from a local cache), 
+				the case when the content is being loaded from a local cache),
 				and only needs to have event listeners attached, positioning
-				adjusted, and other such treatment that doesn’t modify the 
+				adjusted, and other such treatment that doesn’t modify the
 				content.
 
 			‘clickable’
 				Currently unused. Reserved for future use.
 
 			‘collapseAllowed’
-				Specifies whether the loaded content is permitted to have 
-				collapsed sections. Generally false for all but the main page 
-				(because collapsing/un-collapsing interactions are awkward and 
-				confusing in pop-frames and similar embedded content elements). 
-				If the value of this key is false, then any collapse blocks in 
-				the loaded content will be automatically expanded (if present) 
-				or simply not enabled in the first place, and all content in 
+				Specifies whether the loaded content is permitted to have
+				collapsed sections. Generally false for all but the main page
+				(because collapsing/un-collapsing interactions are awkward and
+				confusing in pop-frames and similar embedded content elements).
+				If the value of this key is false, then any collapse blocks in
+				the loaded content will be automatically expanded (if present)
+				or simply not enabled in the first place, and all content in
 				collapsible sections will be visible at all times.
 
 			‘isCollapseBlock’
@@ -125,19 +125,19 @@
 
 			‘isFullPage’
 				Specifies whether the loaded content is a whole local page. True
-				for the main page load, and also for loads of whole other local 
+				for the main page load, and also for loads of whole other local
 				pages (for embedding into a pop-frame); false in all other cases
 				(fragments of a page, e.g. footnotes; annotations; etc.)
 
 				If true, the loaded content will contain a main content element
-				(`#markdownBody`) as well as a page metadata block 
+				(`#markdownBody`) as well as a page metadata block
 				(`#page-metadata`).
 
 			‘fullWidthPossible’
-				Specifies whether full-width elements are permitted in the 
-				loaded content. Generally true only for the main page load. If 
-				false, elements marked as full-width will be laid out as if for 
-				a mobile (narrow) viewport, regardless of the actual dimensions 
+				Specifies whether full-width elements are permitted in the
+				loaded content. Generally true only for the main page load. If
+				false, elements marked as full-width will be laid out as if for
+				a mobile (narrow) viewport, regardless of the actual dimensions
 				of the loaded content’s container (i.e. they will not actually
 				be “full-width”).
  */
@@ -192,8 +192,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     wrapTables(info);
     if (info.fullWidthPossible)
         wrapFullWidthTables(info);
-}, { 
-	phase: "rewrite", 
+}, {
+	phase: "rewrite",
 	condition: (info) => info.needsRewrite
 });
 
@@ -275,9 +275,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     wrapFigures(info);
     if (info.fullWidthPossible)
         markFullWidthFigures(info);
-}, { 
-	phase: "rewrite", 
-	condition: (info) => info.needsRewrite 
+}, {
+	phase: "rewrite",
+	condition: (info) => info.needsRewrite
 });
 
 /***************/
@@ -316,9 +316,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
     if (info.fullWidthPossible)
         wrapFullWidthPreBlocks(info);
-}, { 
-	phase: "rewrite", 
-	condition: (info) => info.needsRewrite 
+}, {
+	phase: "rewrite",
+	condition: (info) => info.needsRewrite
 });
 
 /**************/
@@ -483,11 +483,11 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
     rectifyTypographyInAnnotation(info);
     setImageDimensionsInAnnotation(info);
-}, { 
-	phase: "rewrite", 
-	condition: (info) => (   info.isMainDocument == false 
+}, {
+	phase: "rewrite",
+	condition: (info) => (   info.isMainDocument == false
 						  && info.needsRewrite
-						  && info.document.parentElement.id == "annotations-workspace") 
+						  && info.document.parentElement.id == "annotations-workspace")
 });
 
 /******************************************************************************/
@@ -665,9 +665,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.injectFootnotesTOCLink", "rewrite.js", 2);
 
     injectFootnotesTOCLink(info);
-}, { 
-	phase: "rewrite", 
-	condition: (info) => info.isMainDocument 
+}, {
+	phase: "rewrite",
+	condition: (info) => info.isMainDocument
 });
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
     GWLog("GW.rewriteFunctions.processCitations", "rewrite.js", 2);
@@ -763,9 +763,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.processPageMetadata", "rewrite.js", 2);
 
     fixPageMetadataClass(info);
-}, { 
-	phase: ">rewrite", 
-	condition: (info) => info.isMainDocument 
+}, {
+	phase: ">rewrite",
+	condition: (info) => info.isMainDocument
 });
 
 /*********/
@@ -791,9 +791,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.processMiscellaneousRewrites", "rewrite.js", 2);
 
     cleanUpImageAltText(info);
-}, { 
-	phase: "rewrite", 
-	condition: (info) => info.needsRewrite 
+}, {
+	phase: "rewrite",
+	condition: (info) => info.needsRewrite
 });
 
 /*************/
@@ -828,8 +828,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.processDropCaps", "rewrite.js", 2);
 
     applyDropCapsClasses(info);
-}, { 
-	phase: "rewrite", 
+}, {
+	phase: "rewrite",
 	condition: (info) => info.isMainDocument
 });
 
@@ -861,9 +861,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.injectBackToTopLink", "rewrite.js", 2);
 
     injectBackToTopLink(info);
-}, { 
-	phase: "rewrite", 
-	condition: (info) => info.isMainDocument 
+}, {
+	phase: "rewrite",
+	condition: (info) => info.isMainDocument
 });
 
 /*******************************************************************************/
@@ -987,5 +987,5 @@ doWhenPageLoaded(() => {
 
 /*****************************************************************************************/
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
-/* Settings: 'prefetch' (loads HTML of target) after 800ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */
-let t,e;const n=new Set,o=document.createElement("link"),z=o.relList&&o.relList.supports&&o.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype,s="instantAllowQueryString"in document.body.dataset,a=true,r="instantWhitelist"in document.body.dataset,c="instantMousedownShortcut"in document.body.dataset,d=1111;let l=800,u=!1,f=!1,m=!1;if("instantIntensity"in document.body.dataset){const t=document.body.dataset.instantIntensity;if("mousedown"==t.substr(0,"mousedown".length))u=!0,"mousedown-only"==t&&(f=!0);else if("viewport"==t.substr(0,"viewport".length))navigator.connection&&(navigator.connection.saveData||navigator.connection.effectiveType&&navigator.connection.effectiveType.includes("2g"))||("viewport"==t?document.documentElement.clientWidth*document.documentElement.clientHeight<45e4&&(m=!0):"viewport-all"==t&&(m=!0));else{const e=parseInt(t);isNaN(e)||(l=e)}}if(z){const n={capture:!0,passive:!0};if(f||document.addEventListener("touchstart",function(t){e=performance.now();const n=t.target.closest("a");if(!h(n))return;v(n.href)},n),u?c||document.addEventListener("mousedown",function(t){const e=t.target.closest("a");if(!h(e))return;v(e.href)},n):document.addEventListener("mouseover",function(n){if(performance.now()-e<d)return;const o=n.target.closest("a");if(!h(o))return;o.addEventListener("mouseout",p,{passive:!0}),t=setTimeout(()=>{v(o.href),t=void 0},l)},n),c&&document.addEventListener("mousedown",function(t){if(performance.now()-e<d)return;const n=t.target.closest("a");if(t.which>1||t.metaKey||t.ctrlKey)return;if(!n)return;n.addEventListener("click",function(t){1337!=t.detail&&t.preventDefault()},{capture:!0,passive:!1,once:!0});const o=new MouseEvent("click",{view:window,bubbles:!0,cancelable:!1,detail:1337});n.dispatchEvent(o)},n),m){let t;(t=window.requestIdleCallback?t=>{requestIdleCallback(t,{timeout:1500})}:t=>{t()})(()=>{const t=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){const n=e.target;t.unobserve(n),v(n.href)}})});document.querySelectorAll("a").forEach(e=>{h(e)&&t.observe(e)})})}}function p(e){e.relatedTarget&&e.target.closest("a")==e.relatedTarget.closest("a")||t&&(clearTimeout(t),t=void 0)}function h(t){if(t&&t.href&&(!r||"instant"in t.dataset)&&(a||t.origin==location.origin||"instant"in t.dataset)&&["http:","https:"].includes(t.protocol)&&("http:"!=t.protocol||"https:"!=location.protocol)&&(s||!t.search||"instant"in t.dataset)&&!(t.hash&&t.pathname+t.search==location.pathname+location.search||"noInstant"in t.dataset))return!0}function v(t){if(n.has(t))return;const e=document.createElement("link");console.log("Prefetched: "+t);e.rel="prefetch",e.href=t,document.head.appendChild(e),n.add(t)};
+/* Settings: 'prefetch' (loads HTML of target) after 1600ms hover (desktop) or mouse-down-click (mobile); TODO: left in logging for testing during experiment */
+let t,e;const n=new Set,o=document.createElement("link"),z=o.relList&&o.relList.supports&&o.relList.supports("prefetch")&&window.IntersectionObserver&&"isIntersecting"in IntersectionObserverEntry.prototype,s="instantAllowQueryString"in document.body.dataset,a=true,r="instantWhitelist"in document.body.dataset,c="instantMousedownShortcut"in document.body.dataset,d=1111;let l=1600,u=!1,f=!1,m=!1;if("instantIntensity"in document.body.dataset){const t=document.body.dataset.instantIntensity;if("mousedown"==t.substr(0,"mousedown".length))u=!0,"mousedown-only"==t&&(f=!0);else if("viewport"==t.substr(0,"viewport".length))navigator.connection&&(navigator.connection.saveData||navigator.connection.effectiveType&&navigator.connection.effectiveType.includes("2g"))||("viewport"==t?document.documentElement.clientWidth*document.documentElement.clientHeight<45e4&&(m=!0):"viewport-all"==t&&(m=!0));else{const e=parseInt(t);isNaN(e)||(l=e)}}if(z){const n={capture:!0,passive:!0};if(f||document.addEventListener("touchstart",function(t){e=performance.now();const n=t.target.closest("a");if(!h(n))return;v(n.href)},n),u?c||document.addEventListener("mousedown",function(t){const e=t.target.closest("a");if(!h(e))return;v(e.href)},n):document.addEventListener("mouseover",function(n){if(performance.now()-e<d)return;const o=n.target.closest("a");if(!h(o))return;o.addEventListener("mouseout",p,{passive:!0}),t=setTimeout(()=>{v(o.href),t=void 0},l)},n),c&&document.addEventListener("mousedown",function(t){if(performance.now()-e<d)return;const n=t.target.closest("a");if(t.which>1||t.metaKey||t.ctrlKey)return;if(!n)return;n.addEventListener("click",function(t){1337!=t.detail&&t.preventDefault()},{capture:!0,passive:!1,once:!0});const o=new MouseEvent("click",{view:window,bubbles:!0,cancelable:!1,detail:1337});n.dispatchEvent(o)},n),m){let t;(t=window.requestIdleCallback?t=>{requestIdleCallback(t,{timeout:1500})}:t=>{t()})(()=>{const t=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){const n=e.target;t.unobserve(n),v(n.href)}})});document.querySelectorAll("a").forEach(e=>{h(e)&&t.observe(e)})})}}function p(e){e.relatedTarget&&e.target.closest("a")==e.relatedTarget.closest("a")||t&&(clearTimeout(t),t=void 0)}function h(t){if(t&&t.href&&(!r||"instant"in t.dataset)&&(a||t.origin==location.origin||"instant"in t.dataset)&&["http:","https:"].includes(t.protocol)&&("http:"!=t.protocol||"https:"!=location.protocol)&&(s||!t.search||"instant"in t.dataset)&&!(t.hash&&t.pathname+t.search==location.pathname+location.search||"noInstant"in t.dataset))return!0}function v(t){if(n.has(t))return;const e=document.createElement("link");console.log("Prefetched: "+t);e.rel="prefetch",e.href=t,document.head.appendChild(e),n.add(t)};
