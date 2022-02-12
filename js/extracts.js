@@ -653,18 +653,7 @@ Extracts = {
         		section mark!
         	 */
         	&& !(popFrameTitleText.startsWith("#"))
-        	&& !popFrame.classList.contains("external-page-embed")
-				/*	Links with an org notation for link icons 
-					(eg. 'https://arxiv.org/abs/2006.07159#google')
-					should not get a section mark.
-				 */
-        	    && !["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance", 
-        	    	 "deepmind", "eleutherai", "elementai", "facebook", "flickr", 
-        	    	 "google", "googledeepmind", "huawei", "intel", "laion", 
-        	    	 "lighton", "microsoft", "microsoftnvidia", "miri",
-        		     "nvidia", "openai", "pdf", "salesforce", "sensetime", 
-        		     "snapchat", "tencent", "tensorfork", "uber", "yandex"
-        		     ].includes(target.hash.substr(1)))
+        	&& !popFrame.classList.contains("external-page-embed"))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
