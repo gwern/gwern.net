@@ -29,7 +29,7 @@ import Utils (writeUpdatedFile, printGreen)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 2
-anchorLengthMaximum = 330
+anchorLengthMaximum = 173
 
 -- | Map over the filenames
 main :: IO ()
@@ -799,7 +799,7 @@ whiteList = M.fromList [
     , [ "Silk Road"  ]
     )
   , ( "https://en.wikipedia.org/wiki/Social_status"
-    , [  "status" ]
+    , [  "social status" ]
     )
   , ( "/Mnemosyne"
     , [ "spaced repetition" ]
@@ -850,7 +850,7 @@ whiteList = M.fromList [
     )
   , ( "https://en.wikipedia.org/wiki/Unicode" , [ "Unicode" ] )
   , ( "https://en.wikipedia.org/wiki/Usenet"
-    , [ "Usenet" , "online" ]
+    , [ "Usenet" ]
     )
   , ( "https://en.wikipedia.org/wiki/Valerian_(herb)"
     , [ "Valerian" , "valerian" ]
