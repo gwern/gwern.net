@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2021-12-13 13:38:10 gwern"
+# When:  Time-stamp: "2022-02-12 14:14:33 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -53,7 +53,7 @@ else
         MIME_REMOTE=$(timeout 20s curl --user-agent "$USER_AGENT" \
                           --write-out '%{content_type}' --silent -L -o /dev/null "$URL" || echo "Unsuccessful: $1 $HASH" 1>&2 && exit 1)
 
-        if [[ "$URL" =~ .*'.pdf'.* || "$URL" =~ .*'_pdf'.* || "$URL" =~ '#pdf'.* || "$URL" =~ .*'/pdf/'.* ]];
+        if [[ "$MIME_REMOTE" =~ "application/pdf".* || "$URL" =~ .*'.pdf'.* || "$URL" =~ .*'_pdf'.* || "$URL" =~ '#pdf'.* || "$URL" =~ .*'/pdf/'.* ]];
         then
 
             timeout --kill-after=120s 120s wget --user-agent="$USER_AGENT" \
