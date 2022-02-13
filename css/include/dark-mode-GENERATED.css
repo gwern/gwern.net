@@ -710,3 +710,12 @@ a[href*="meltingasphalt.com"]::after,
 a[href*="neweva.blog103.fc2.com"]::after {
 	filter: none;
 }
+
+/*	This is a temporary hack, to ensure that the OpenAI icon gets inverted in
+	dark mode even when the link is to an arxiv URL. It should be removed once
+	a more principled approach to linkicons has been implemented.
+	—SA, 2021-02-13
+ */
+a[href*='openai']::after {
+	filter: invert(1);
+}
