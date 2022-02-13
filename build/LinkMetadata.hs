@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-12 18:16:47 gwern"
+When:  Time-stamp: "2022-02-13 23:07:27 gwern"
 License: CC-0
 -}
 
@@ -375,7 +375,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-local", "link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], []) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
@@ -1431,6 +1431,12 @@ generateID url author date
        , ("https://arxiv.org/abs/2102.05379", "hoogeboom-et-al-2021-categorical")
        , ("https://arxiv.org/abs/2111.05826#google", "saharia-et-al-2021-palette")
        , ("https://arxiv.org/abs/2105.02446", "li-et-al-2021-diffsinger")
+       , ("https://arxiv.org/abs/1811.10192", "zhou-et-al-2018-tweedie")
+       , ("https://arxiv.org/abs/1811.10201", "cheng-et-al-2018-instanas")
+       , ("https://arxiv.org/abs/1901.04615", "haj-ali-et-al-2019-compiler")
+       , ("(https://arxiv.org/abs/2002.11296#google", "tay-et-al-2020-sinkhorn")
+       , ("https://arxiv.org/abs/2009.14794#google", "choromanski-et-al-2020-favorplus")
+       , ("https://openreview.net/forum?id=lsQCDXjOl3k", "ho-salimans-2021-jointguidance")
       ]
 
 authorsToCite :: String -> String -> String -> String
