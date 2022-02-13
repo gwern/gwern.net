@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2022-02-12 14:14:33 gwern"
+# When:  Time-stamp: "2022-02-12 17:59:58 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -24,7 +24,9 @@
 # set -e
 # set -x
 
-USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:90.0) Gecko/20100201 Firefox/93.0"
+sleep 5s
+
+USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.1"
 
 TARGET=""
 ## NOTE: anchor-handling is tricky. We need to drop everything after '#' because it's technically not part of the

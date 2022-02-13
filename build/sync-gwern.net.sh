@@ -46,12 +46,15 @@ else
     bold "Pulling infrastructure updates…"
     (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
 
+    ## check validity of annotation database before spending time compiling:
+    gwa > /dev/null
+
     bold "Compiling…"
     cd ./static/build
     compile () { TMPDIR="$(mktemp --directory)/"; ghc -O2 -fforce-recomp -tmpdir "$TMPDIR" -Wall -rtsopts -threaded --make "$@"; rm -rf "$TMPDIR"; }
     compile hakyll.hs
     compile generateLinkBibliography.hs
-    compile generateDirectory.hs &
+    compile generateDirectory.hs
     compile preprocess-markdown.hs &
     ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
     wait
@@ -247,7 +250,7 @@ else
          egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
                -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
-               -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -- ./metadata/*.yaml;
+               -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -- ./metadata/*.yaml;
          fgrep --color=always -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
                -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '>>' \
                -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
@@ -267,7 +270,8 @@ else
                -e '<h1' -e '</h1>' -e '<h2' -e '</h2>' -e '<h3' -e '</h3>' -e '<h4' -e '</h4>' -e '<h5' -e '</h5>' \
                -e '</strong>::' -e ' bya ' -e '?gi=' -e ' ]' -e '<span class="cit' -e 'gwsed' -e 'full.full' -e ',,' \
                -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
-               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -- ./metadata/*.yaml;
+               -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' \
+               -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -- ./metadata/*.yaml;
          # look for YAML linebreaking at a hyphen:
         egrep -v '^- - http' ./metadata/*.yaml | egrep '[a-zA-Z0-9>]-$';
         # look for punctuation inside links; unless it's a full sentence or a quote, generally prefer to put punctuation outside:

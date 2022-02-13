@@ -299,10 +299,10 @@ whiteList = M.fromList [
     , [ "Animal Breeding Plans" ]
     )
     , ( "https://arxiv.org/abs/1801.01290" , [ "SAC" ] )
-  , ( "https://arxiv.org/abs/1807.03819"
+  , ( "https://arxiv.org/abs/1807.03819#googledeepmind"
     , [ "Dehghani et al 2018" , "Universal Transformers" ]
     )
-  , ( "https://arxiv.org/abs/1707.02968"
+  , ( "https://arxiv.org/abs/1707.02968#google"
     , [ "Revisiting Unreasonable Effectiveness of Data in Deep Learning Era"
       , "Sun et al 2017"
       ]

@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-11 12:17:51 gwern"
+When:  Time-stamp: "2022-02-12 17:58:30 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -168,7 +168,7 @@ While the logic is a little opaque to readers, I think this handles Arxiv much m
 -- 3. after that, we may want to skip various filetypes and domains
 whiteList :: String -> Bool
 whiteList url
-  | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = True -- TODO: after fixing all existing Citeseer links, set this rule to False
+  | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
   | any (`isPrefixOf` url) ["/", "./", "../", "https://www.gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/docs/"] = True
   | any (`isSuffixOf` url) [".pdf"] = False
   | any (`isSuffixOf` url) ["/pdf"] = False

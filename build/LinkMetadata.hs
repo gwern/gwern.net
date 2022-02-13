@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-12 10:46:43 gwern"
+When:  Time-stamp: "2022-02-12 18:16:47 gwern"
 License: CC-0
 -}
 
@@ -412,7 +412,10 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/gpt/codex", "Codex")
           , ("ai/gpt/lamda", "LaMDA")
           , ("iq/anne-roe", "Anne Roe")
+          , ("/diffusion", "diffusion model")
+          , ("ai/diffusion", "diffusion model")
           , ("ai/gan", "GAN")
+          , ("/gan", "GAN")
           , ("/stylegan", "StyleGAN")
           , ("ai/stylegan", "StyleGAN")
           , ("ai/gpt/dall-e", "DALL·E")
@@ -2313,6 +2316,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("p-value", "<em>p</em>-value")
           , ("ﬁ", "fi")
           , (" ", " ")
+          , ("DALL-E", "DALL·E")
           -- many uses of 'approximately' are weasel-wordy which add nothing whatsoever semantically, so we can drop the '~':
           , ("~linearly", "linearly")
           , ("~every", "every")
