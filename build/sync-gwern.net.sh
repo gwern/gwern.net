@@ -539,7 +539,7 @@ else
     bold "Checking for HTML/PDF/image anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
                          parallel --max-args=100 "fgrep --ignore-case --files-with-matches \
-                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" | sort)"
+                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" -e 'Download Limit Exceeded' -e 'Access Denied' | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS;
          do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
          done; }

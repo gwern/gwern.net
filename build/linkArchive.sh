@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2022-02-12 17:59:58 gwern"
+# When:  Time-stamp: "2022-02-13 13:03:06 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -98,7 +98,7 @@ else
 
             if [[ -f "$TARGET" ]]; then
                 ## Check for error pages which nevertheless returned validly:
-                ERROR_404=$(fgrep '404 Not Found' "$TARGET")
+                ERROR_404=$(fgrep -e '404 Not Found' -e 'Download Limit Exceeded' -e 'Access Denied' "$TARGET")
                 if [[ -z "$ERROR_404" ]]; then
                     mkdir --parents "./docs/www/$DOMAIN/"
                     mv "$TARGET" "./docs/www/$DOMAIN/$HASH.html"
