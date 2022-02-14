@@ -26,6 +26,8 @@ import Data.FileStore.Utils (runShellCommand)
 import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown, nullAttr)
 import Text.Pandoc.Walk (walk, walkM)
 
+import Utils (addClass)
+
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = walk linkPdf .
                       walk (breakSlashes . breakEquals) .
@@ -37,15 +39,11 @@ typographyTransform = walk linkPdf .
 -- → Link ("",["link-pdf"],[]) [Str "foo"] ("/docs/foo.pdf","Foo & Bar 2022")
 -- → <a href="/docs/foo.pdf" class="link-pdf" title="Foo &amp; Bar 2022">foo</a>
 linkPdf :: Inline -> Inline
-linkPdf x@(Link (i, classes, ks) [s] (url, tt))
-    | "link-pdf" `elem` classes = x
-    | not $
-        any (`T.isInfixOf` url)
-          [".pdf", "/pdf", "type=pdf", ".epub",
-           "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu",
-           "eprint.iacr.org", "pdfs.semanticscholar.org"]
-      = x
-    | otherwise = Link (i, "link-pdf" : classes, ks) [s] (url, tt)
+linkPdf x@(Link _ _ (url, _)) =
+  if any (`T.isInfixOf` url) [".pdf", "/pdf", "type=pdf", ".epub",
+                              "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu",
+                              "eprint.iacr.org", "pdfs.semanticscholar.org"]
+      then addClass "link-pdf" x else x
 linkPdf x = x
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg. Bringhurst 2004, _Elements_ pg47; cf. https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
@@ -165,9 +163,9 @@ breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
 breakSlashesInline x@(SmallCaps _) = x
 breakSlashesInline x@Code{}        = x
-breakSlashesInline (Link a@(i,c,ks) [Str ss] (t,"")) = if ss == t then
+breakSlashesInline (Link a@_ [Str ss] (t,"")) = if ss == t then
                                                 -- if an autolink like '<https://example.com>' which converts to 'Link () [Str "https://example.com"] ("https://example.com","")' or '[Para [Link ("",["uri"],[]) [Str "https://www.example.com"] ("https://www.example.com","")]]' (NOTE: we cannot rely on there being a "uri" class), then we mark it up as Code and skip it:
-                                                 Link (i,"uri":c,ks) [Code nullAttr ss] (t,"")
+                                                 addClass "uri" $ Link a [Code nullAttr ss] (t,"")
                                                 else
                                                  Link a (walk breakSlashesPlusHairSpaces [Str ss]) (t,"")
 breakSlashesInline (Link a ss ts) = Link a (walk breakSlashesPlusHairSpaces ss) ts
@@ -209,7 +207,7 @@ invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) =
                                                           return x else
                                                             do (color,_,_) <- invertFile p
                                                                if not color then return x else
-                                                                 return (Link (htmlid, "invertible-auto":classes, kvs) xs (p,t))
+                                                                 return $ addClass "invertible-auto" $ Link (htmlid, classes, kvs) xs (p, t)
 invertImageInline x = return x
 
 invertFile :: T.Text -> IO (Bool, String, String)

@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-12 17:58:30 gwern"
+When:  Time-stamp: "2022-02-14 17:44:33 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -56,7 +56,7 @@ import Network.URI.TLD (parseTLD)
 import Text.Pandoc (Inline(Link))
 import Text.Show.Pretty (ppShow)
 
-import Utils (writeUpdatedFile, printGreen, printRed, sed)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -78,7 +78,7 @@ localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescri
          let targetDescription' = T.unpack targetDescription ++ padding ++ "(Original URL: " ++ T.unpack targetURL ++ " )"
          -- specify that the rewritten links are mirrors & to be ignored:
          let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original", T.pack (transformURLsForLinking (T.unpack targetURL)))]
-         let archivedLink = Link (identifier, classes++["localArchive"], pairs++archiveAttributes) b (T.pack targetURL', T.pack targetDescription')
+         let archivedLink = addClass "localArchive" $ Link (identifier, classes, pairs++archiveAttributes) b (T.pack targetURL', T.pack targetDescription')
          return archivedLink
 localizeLink _ x = return x
 
@@ -1016,5 +1016,8 @@ whiteList url
       , "https://arxiv.org/abs/physics/"
       , "https://arxiv.org/abs/cond-mat/"
       , "https://arxiv.org/abs/cs/"
+      , "https://sebastianrisi.com/self_assembling_ai/" -- video embeds
+      , "https://brainwindows.wordpress.com/2009/10/14/playing-quake-with-a-real-mouse/" -- video embed
+      , "https://medium.com/mindsoft/rats-in-doom-eb6c52c73aca" -- video embed
       ] = True
     | otherwise = False

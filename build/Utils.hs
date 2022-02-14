@@ -8,7 +8,7 @@ import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Pandoc (def, nullMeta, runPure,
-                    writerColumns, writePlain, Block, Pandoc(Pandoc))
+                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span))
 import System.IO (stderr, hPutStrLn)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)
@@ -17,10 +17,11 @@ import Text.Regex (subRegex, mkRegex)
 import Data.List.Utils (replace)
 
 -- Auto-update the current year.
+{-# NOINLINE currentYear #-}
 currentYear :: Int
 currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime
 
--- Write only when changed, to reduce sync overhead; creates parent directories as necesary; writes to tempfile in /tmp/ (at a specified template name), and does an atomic rename to the final file.
+-- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final file.
 writeUpdatedFile :: String -> FilePath -> T.Text -> IO ()
 writeUpdatedFile template target contentsNew =
   do existsOld <- doesFileExist target
@@ -40,6 +41,16 @@ simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in -
                          case md of
                            Left _ -> error $ "Failed to render: " ++ show md
                            Right md' -> md'
+
+-- Add or remove a class to a Link or Span; this is a null op if the class is already present or it is not a Link/Span.
+addClass :: T.Text -> Inline -> Inline
+addClass clss x@(Span (i, clsses, ks) s)           = if clss `elem` clsses then x else Span (i, clss:clsses, ks) s
+addClass clss x@(Link (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Link (i, clss:clsses, ks) s (url, tt)
+addClass _    x = x
+removeClass :: T.Text -> Inline -> Inline
+removeClass clss x@(Span (i, clsses, ks) s)           = if clss `notElem` clsses then x else Span (i, filter (==clss) clsses, ks) s
+removeClass clss x@(Link (i, clsses, ks) s (url, tt)) = if clss `notElem` clsses then x else Link (i, filter (==clss) clsses, ks) s (url, tt)
+removeClass _    x = x
 
 -- print normal progress messages to stderr in bold green:
 printGreen :: String -> IO ()
