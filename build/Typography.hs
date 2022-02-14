@@ -27,9 +27,26 @@ import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown, nullAttr)
 import Text.Pandoc.Walk (walk, walkM)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk (breakSlashes . breakEquals) .
+typographyTransform = walk linkPdf .
+                      walk (breakSlashes . breakEquals) .
                       walk smallcapsfyInlineCleanup . walk smallcapsfy .
                       rulersCycle 3
+
+-- to simplify the CSS link icons, because we often want to override PDF icons to instead show organization icons or archive status, we do the PDF logic at compile-time and set a PDF class, '.link-pdf'.
+-- λ linkPdf $ Link nullAttr [Str "foo"] ("/docs/foo.pdf", "Foo & Bar 2022")
+-- → Link ("",["link-pdf"],[]) [Str "foo"] ("/docs/foo.pdf","Foo & Bar 2022")
+-- → <a href="/docs/foo.pdf" class="link-pdf" title="Foo &amp; Bar 2022">foo</a>
+linkPdf :: Inline -> Inline
+linkPdf x@(Link (i, classes, ks) [s] (url, tt))
+    | "link-pdf" `elem` classes = x
+    | not $
+        any (`T.isInfixOf` url)
+          [".pdf", "/pdf", "type=pdf", ".epub",
+           "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu",
+           "eprint.iacr.org", "pdfs.semanticscholar.org"]
+      = x
+    | otherwise = Link (i, "link-pdf" : classes, ks) [s] (url, tt)
+linkPdf x = x
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg. Bringhurst 2004, _Elements_ pg47; cf. https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
 -- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg. in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
@@ -148,11 +165,11 @@ breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
 breakSlashesInline x@(SmallCaps _) = x
 breakSlashesInline x@Code{}        = x
-breakSlashesInline (Link a@(i,c,ks) [Str ss] (t,""))  = if ss == t then
+breakSlashesInline (Link a@(i,c,ks) [Str ss] (t,"")) = if ss == t then
                                                 -- if an autolink like '<https://example.com>' which converts to 'Link () [Str "https://example.com"] ("https://example.com","")' or '[Para [Link ("",["uri"],[]) [Str "https://www.example.com"] ("https://www.example.com","")]]' (NOTE: we cannot rely on there being a "uri" class), then we mark it up as Code and skip it:
-                                                (Link (i,["uri"]++c,ks) [Code nullAttr ss] (t,""))
+                                                 Link (i,"uri":c,ks) [Code nullAttr ss] (t,"")
                                                 else
-                                                Link a (walk breakSlashesPlusHairSpaces [Str ss]) (t,"")
+                                                 Link a (walk breakSlashesPlusHairSpaces [Str ss]) (t,"")
 breakSlashesInline (Link a ss ts) = Link a (walk breakSlashesPlusHairSpaces ss) ts
 breakSlashesInline x@(Str s) = if T.any (\t -> t=='/' && not (t=='<' || t=='>' || t ==' ' || t == '\8203')) s then -- things get tricky if we mess around with raw HTML, so we bail out for anything that even *looks* like it might be HTML tags & has '<>' or a HAIR SPACE or ZERO WIDTH SPACE already
                                  Str (T.replace " /\8203 " " / " $ T.replace " /\8203" " /" $ T.replace "/\8203 " "/ " $ -- fix redundant \8203s to make HTML source nicer to read; 2 cleanup substitutions is easier than using a full regexp rewrite
@@ -240,7 +257,6 @@ invertImagePreview f = do utcFile <- getModificationTime f
                             void $ runShellCommand "./" Nothing "firefox" [f']
                             threadDelay 5000000
                             removeFile f'
-                          return ()
 
 imageMagickColor :: FilePath -> FilePath -> IO Float
 imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
