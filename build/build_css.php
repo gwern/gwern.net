@@ -1,9 +1,9 @@
 <?php
 
-$css_dir = __DIR__ . "/../css";
+$css_include_dir = __DIR__ . "/../css/include";
 $build_dir = __DIR__;
 
-`php {$build_dir}/color-scheme-convert.php {$css_dir}/include/colors.css 1 "Lab" 0.55 > {$css_dir}/include/components/colors-dark-GENERATED.css`;
-`cat {$css_dir}/include/components/colors-dark-GENERATED.css {$css_dir}/include/components/dark-mode-adjustments.css > {$css_dir}/include/dark-mode-GENERATED.css`;
+`php {$build_dir}/color-scheme-convert.php {$css_include_dir}/colors.css 1 "Lab" 0.55 > {$css_include_dir}/components/colors-dark-GENERATED.css`;
+`cat {$css_include_dir}/components/colors-dark-GENERATED.css {$css_include_dir}/components/dark-mode-adjustments.css > {$css_include_dir}/dark-mode-GENERATED.css`;
 
 ?>

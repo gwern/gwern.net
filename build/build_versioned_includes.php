@@ -36,6 +36,8 @@ foreach ($files as $file) {
 	file_put_contents("{$static_root}/includes/{$file}.html", $outfile);
 }
 
+## FUNCTIONS
+
 function VersionAssetHref($m) {
 	global $static_root;
 

@@ -6,6 +6,7 @@ $force = @$argv[1] == "--force";
 $build_dir = __DIR__;
 $static_dir = "{$build_dir}/..";
 
+## Components of generated/assembled inlined style sheets.
 $css_components = [
 	"{$static_dir}/css/include/colors.css",
 	"{$static_dir}/css/include/components/dark-mode-adjustments.css"
@@ -16,6 +17,7 @@ if ($force || (`git diff-index --cached HEAD -- {$css_components}`)) {
 	`git add {$static_dir}/css/.`;
 }
 
+## Inlined styles and scripts.
 $head_includes = [
 	"{$static_dir}/css/include/colors.css",
 	"{$static_dir}/css/include/dark-mode-GENERATED.css",
@@ -29,6 +31,27 @@ if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
 	`git add {$static_dir}/includes/.`;
 }
 
+## Fonts and font CSS.
+$fonts_and_font_css = [
+	"{$static_dir}/css/fonts.css"
+];
+$font_path_patterns = [
+	"{$static_dir}/font/*/*.otf",
+	"{$static_dir}/font/*/*.ttf",
+	"{$static_dir}/font/*/*/*.otf",
+	"{$static_dir}/font/*/*/*.ttf"
+];
+foreach ($font_path_patterns as $pattern) {
+	$fonts_and_font_css = array_merge($fonts_and_font_css, glob($pattern));
+}
+$fonts_and_font_css = implode(" ", $fonts_and_font_css);
+if ($force || (`git diff-index --cached HEAD -- {$fonts_and_font_css}`)) {
+	require_once("{$build_dir}/build_versioned_font_css.php");
+	`touch {$static_dir}/css/fonts.css`;
+	`git add {$static_dir}/css/.`;
+}
+
+## External styles and scripts.
 $versioned_files = [
 	"{$static_dir}/css/default.css",
 	"{$static_dir}/css/fonts.css",
