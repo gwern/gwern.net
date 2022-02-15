@@ -3609,6 +3609,10 @@ To hack around this issue (which surely has a better answer), and since in some 
     height: var(--GW-popups-popup-max-height);
 }
 
+.popframe.local-code-file .popframe-content-view {
+    height: 100%;
+}
+
 /*┌────────────────┐*/
 /*│ Object popups. │*/
 /*└────────────────┘*/
