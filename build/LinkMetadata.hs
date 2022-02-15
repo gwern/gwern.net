@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-13 23:07:27 gwern"
+When:  Time-stamp: "2022-02-14 11:07:10 gwern"
 License: CC-0
 -}
 
@@ -1436,7 +1436,19 @@ generateID url author date
        , ("https://arxiv.org/abs/1901.04615", "haj-ali-et-al-2019-compiler")
        , ("(https://arxiv.org/abs/2002.11296#google", "tay-et-al-2020-sinkhorn")
        , ("https://arxiv.org/abs/2009.14794#google", "choromanski-et-al-2020-favorplus")
-       , ("https://openreview.net/forum?id=lsQCDXjOl3k", "ho-salimans-2021-jointguidance")
+       , ("https://openreview.net/forum?id=lsQCDXjOl3k#google", "ho-salimans-2021-jointguidance")
+       , ("https://arxiv.org/abs/2103.03206#deepmind", "jaegle-et-al-2021-perceiver")
+       , ("https://arxiv.org/abs/2107.14795#deepmind", "jaegle-et-al-2021-perceiverio")
+       , ("https://arxiv.org/abs/2103.14030", "liu-et-al-2021-swintranformer")
+       , ("https://arxiv.org/abs/2111.09883", "liu-et-al-2021-swintranformerv2")
+       , ("https://arxiv.org/abs/2110.02488#allen", "peng-et-al-2021-abc")
+       , ("https://arxiv.org/abs/2105.12842#google", "zhang-et-al-2021-nas")
+       , ("https://arxiv.org/abs/2108.09084", "wu-et-al-2021-fastformer")
+       , ("https://openreview.net/forum?id=TrjbxzRcnf-#google", "wu-et-al-2021-memorizingtransformer")
+       , ("https://arxiv.org/abs/2110.15943#facebook", "min-et-al-2021-metaicl")
+       , ("https://openai.com/blog/clip/", "radford-et-al-blog")
+       , ("https://arxiv.org/abs/2112.01071", "zhou-et-al-2021-denseclip")
+       , ("https://arxiv.org/abs/2111.13792", "zhou-et-al-2021-lafite")
       ]
 
 authorsToCite :: String -> String -> String -> String

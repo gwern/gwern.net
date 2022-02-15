@@ -47,7 +47,8 @@ else
     (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
 
     ## check validity of annotation database before spending time compiling:
-    gwa > /dev/null
+    bold "Checking annotations first…"
+    ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' &>/dev/null
 
     bold "Compiling…"
     cd ./static/build
@@ -88,7 +89,7 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     # cleanup post:
-    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor || true
+    rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -347,8 +348,8 @@ else
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
     λ() { for PAGE in $PAGES ./static/404.html; do
               HTML="${PAGE%.page}"
-            ANCHOR=$(static/build/anchor-checker.php ./_site/"$HTML")
-            if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
+              ANCHOR=$(static/build/anchor-checker.php ./_site/"$HTML")
+              if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
           done;
           }
     wrap λ "Anchors linked but not defined inside page?"
@@ -539,7 +540,7 @@ else
     bold "Checking for HTML/PDF/image anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
                          parallel --max-args=100 "fgrep --ignore-case --files-with-matches \
-                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" -e 'Download Limit Exceeded' -e 'Access Denied' | sort)"
+                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS;
          do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
          done; }
