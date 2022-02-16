@@ -4,11 +4,12 @@
 -- 1. adding smallcaps to capitalized phrases
 -- 2. adding line-break tags (`<wbr>` as Unicode ZERO WIDTH SPACE) to slashes so web browsers break at slashes in text
 -- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a cycling pattern, like `class="ruler-1"`/`class="ruler-2"`/`class="ruler-3"`/`class="ruler-1"`..., like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal rulers and other block elements within each section, it is not possible to do the usual trick like with blockquotes/lists).
-module Typography (invertImageInline, typographyTransform, imageMagickDimensions) where
+module Typography (invertImageInline, typographyTransform, imageMagickDimensions, titlecase') where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
+import Data.Char (toUpper)
 import Data.List (isPrefixOf)
 import Data.List.Utils (replace)
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
@@ -20,6 +21,7 @@ import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
 import Control.Concurrent (threadDelay)
+import Data.Text.Titlecase (titlecase)
 
 import Data.FileStore.Utils (runShellCommand)
 
@@ -296,3 +298,14 @@ rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
          let nthClass = T.pack $ "horizontalRule" ++ "-nth-" ++ show nth
          return $ Div ("", [nthClass], []) [HorizontalRule]
        addHrNth x = return x
+
+-- rewrite a string (presumably an annotation title) into a mixed-case 'title case' https://en.wikipedia.org/wiki/Title_case as we expect from headlines/titles
+-- uses <https://hackage.haskell.org/package/titlecase>
+-- TODO: This wrapper function exists to temporarily work around `titlecase`'s lack of hyphen handling: <https://github.com/nkaretnikov/titlecase/issues/7>. We crudely just uppercase every lowercase letter after a hyphen, not bothering with skipping prepositions/conjunctions/particles/etc. Hopefully titlecase will do better and we can remove this.
+titlecase' :: String -> String
+titlecase' "" = ""
+titlecase' t = titlecase $ titlecase'' t
+   where titlecase'' :: String -> String
+         titlecase'' "" = ""
+         titlecase'' t' = let (before,matched,after) = R.match (R.makeRegex ("-[a-z]"::String) :: R.Regex) t' :: (String,String,String)
+                          in before ++ map toUpper matched ++ titlecase'' after

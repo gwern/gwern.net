@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-14 11:07:10 gwern"
+When:  Time-stamp: "2022-02-15 19:50:50 gwern"
 License: CC-0
 -}
 
@@ -28,7 +28,6 @@ import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Text.IO as TIO (readFile)
-import Data.Text.Titlecase (titlecase)
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import GHC.Generics (Generic)
 import Network.HTTP (urlDecode, urlEncode)
@@ -50,7 +49,7 @@ import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
-import Typography (typographyTransform)
+import Typography (typographyTransform, titlecase')
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import Query (extractURLs)
@@ -181,7 +180,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $!
                                              let filepath = take 247 $ urlEncode u'
                                              let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
                                              when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                             let titleHtml    = typesetHtmlField "" $ titlecase a
+                                             let titleHtml    = typesetHtmlField "" $ titlecase' a
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in smallcaps-ing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
@@ -1449,6 +1448,9 @@ generateID url author date
        , ("https://openai.com/blog/clip/", "radford-et-al-blog")
        , ("https://arxiv.org/abs/2112.01071", "zhou-et-al-2021-denseclip")
        , ("https://arxiv.org/abs/2111.13792", "zhou-et-al-2021-lafite")
+       , ("https://arxiv.org/abs/2102.02888#microsoft", "tang-et-al-2021-1bitadam")
+       , ("https://arxiv.org/abs/2002.11296#google", "tay-et-al-2020-sparsesinkhorn")
+       , ("https://arxiv.org/abs/2009.06732#google", "tay-et-al-2020-efficienttransformers")
       ]
 
 authorsToCite :: String -> String -> String -> String
