@@ -301,7 +301,7 @@ rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
 
 -- rewrite a string (presumably an annotation title) into a mixed-case 'title case' https://en.wikipedia.org/wiki/Title_case as we expect from headlines/titles
 -- uses <https://hackage.haskell.org/package/titlecase>
--- TODO: This wrapper function exists to temporarily work around `titlecase`'s lack of hyphen handling: <https://github.com/nkaretnikov/titlecase/issues/7>. We crudely just uppercase every lowercase letter after a hyphen, not bothering with skipping prepositions/conjunctions/particles/etc. Hopefully titlecase will do better and we can remove this.
+-- TODO: This wrapper function exists to temporarily work around `titlecase`'s lack of hyphen handling: <https://github.com/peti/titlecase/issues/5>. We crudely just uppercase every lowercase letter after a hyphen, not bothering with skipping prepositions/conjunctions/particles/etc. Hopefully titlecase will do better and we can remove this.
 titlecase' :: String -> String
 titlecase' "" = ""
 titlecase' t = titlecase $ titlecase'' t

@@ -82,7 +82,7 @@ else
     cd ./static/ && (git status; git pull; git push --verbose &)
     cd ./build/
     # Cleanup pre:
-    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor || true
+    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor ./static/build/link-suggester || true
 
     cd ../../ # go to site root
     bold "Building site…"
@@ -466,7 +466,7 @@ else
           cm "text/css" 'https://www.gwern.net/docs/statistics/order/beanmachine-multistage/style.css'
           cm "text/css" 'https://www.gwern.net/static/css/default.css'
           cm "text/css" 'https://www.gwern.net/static/css/fonts.css'
-          cm "text/css" 'https://www.gwern.net/static/css/initial.css'
+          cm "text/css" 'https://www.gwern.net/static/css/include/initial.css'
           cm "text/css" 'https://www.gwern.net/static/css/links.css'
           cm "text/csv; charset=utf-8" 'https://www.gwern.net/docs/statistics/2013-google-index.csv'
           cm "text/html" 'https://www.gwern.net/atom.xml'
@@ -475,6 +475,8 @@ else
           cm "text/html; charset=utf-8" 'https://www.gwern.net/'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Attention'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Faster'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/nootropics/Magnesium'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/zeo/CO2'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Movies'
@@ -589,6 +591,7 @@ else
 
     λ(){ checkEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                               if [ "$ENCRYPTION" != "" ]; then
+                                  echo "$@"
                                   TEMP=$(mktemp /tmp/encrypted-XXXX.pdf)
                                   pdftk "$FILE" input_pw output "$TEMP" && mv "$TEMP" "$FILE";
                               fi; }
