@@ -12,14 +12,14 @@
 
 	Annotations.annotationDidLoad {
 			identifier:
-				The identifier string for the annotation. (See the 
+				The identifier string for the annotation. (See the
 				Extracts.targetIdentifier function in extracts.js for details.)
 		}
 		Fired after a new annotation has been loaded and cached.
 
 	Annotations.annotationLoadDidFail {
 			identifier:
-				The identifier string for the annotation. (See the 
+				The identifier string for the annotation. (See the
 				Extracts.targetIdentifier function in extracts.js for details.)
 		}
 		Fired when a new annotation has failed to load, and the load failure
@@ -28,11 +28,11 @@
 	GW.contentDidLoad {
 			source: "Annotations.loadAnnotation"
 			document: Annotations.annotationsWorkspace
-			location: 
+			location:
 				The URL of the annotation resource.
 			identifier:
 				The identifier string for the annotation.
-				(See the Extracts.targetIdentifier function in extracts.js for 
+				(See the Extracts.targetIdentifier function in extracts.js for
 				 details.)
 			flags: GW.contentDidLoadEventFlags.needsRewrite
 
@@ -46,11 +46,11 @@
 	GW.contentLoadDidFail {
 			source: "Annotations.loadAnnotation"
 			document: Annotations.annotationsWorkspace
-			location: 
+			location:
 				The URL of the annotation resource.
 			identifier:
 				The identifier string for the annotation.
-				(See the Extracts.targetIdentifier function in extracts.js for 
+				(See the Extracts.targetIdentifier function in extracts.js for
 				 details.)
 		}
 		Fired when a new annotation has failed to load (but before the load
@@ -129,8 +129,8 @@ Annotations = {
             Annotations.cachedAnnotations[info.identifier] = "LOADING_FAILED";
 
             GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: info.identifier });
-        }, { 
-        	condition: (info) => info.document == Annotations.annotationsWorkspace 
+        }, {
+        	condition: (info) => info.document == Annotations.annotationsWorkspace
         });
 
         //  Fire setup-complete event.
@@ -172,10 +172,10 @@ Annotations = {
             annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
         } else {
             //  Local annotation.
-            annotationURL = new URL("https://" 
-            						+ location.hostname 
+            annotationURL = new URL("https://"
+            						+ location.hostname
             						+ Annotations.annotationsBasePathname
-            						+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier)) 
+            						+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier))
             						+ ".html");
         }
 
@@ -223,7 +223,7 @@ Annotations = {
                     annotation = Annotations.stageAnnotation(event.target.responseText);
                 }
 
-				/*	Fire GW.contentDidLoad event to trigger a rewrite pass and 
+				/*	Fire GW.contentDidLoad event to trigger a rewrite pass and
 					then cause the annotation to be cached (and trigger the
 					Annotations.annotationDidLoad event to fire as well).
 				 */
@@ -292,7 +292,9 @@ Annotations = {
             element:        referenceElement,
             titleHTML:      referenceElement.innerHTML.trimQuotes(),
             authorHTML:     (authorElement ? `<span class="data-field author">${authorList}</span>` : ``),
-            dateHTML:       (dateElement ? ` (<span class="data-field date">${dateElement.textContent}</span>)` : ``),
+            dateHTML:       (dateElement ? ` (<span class="data-field date" title="${dateElement.textContent}">` +
+                             dateElement.textContent.replace(/-[0-9][0-9]-[0-9][0-9]$/, "") +
+                             `</span>)` : ``),
             tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
             backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
             similarHTML:    (similarElement ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
@@ -346,24 +348,24 @@ Annotations = {
 
 		let targetSection;
 		if (annotationURL.hash > "") {
-			targetSection = response["remaining"]["sections"].find(section => 
+			targetSection = response["remaining"]["sections"].find(section =>
 				section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1)
 			);
 
-			/*	Check whether we have tried to load a page section which does 
+			/*	Check whether we have tried to load a page section which does
 				not exist on the requested wiki page.
 			 */
 			if (!targetSection)
 				return null;
 		}
 
-		let responseHTML = targetSection 
-						   ? targetSection["text"] 
+		let responseHTML = targetSection
+						   ? targetSection["text"]
 						   : response["lead"]["sections"][0]["text"];
 
 		annotation = Annotations.stageAnnotation(responseHTML);
-		annotation.dataset["titleHTML"] = annotationURL.hash > "" 
-										  ? targetSection["line"] 
+		annotation.dataset["titleHTML"] = annotationURL.hash > ""
+										  ? targetSection["line"]
 										  : response["lead"]["displaytitle"];
 
 		return annotation;
@@ -384,7 +386,7 @@ Annotations = {
         ".Template-Fact"
     ],
 
-    /*  Post-process an already-staged annotation created from a Wikipedia 
+    /*  Post-process an already-staged annotation created from a Wikipedia
     	entry (do HTML cleanup, etc.).
         */
     //	Called by: Annotations.loadAnnotation

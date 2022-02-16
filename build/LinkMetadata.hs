@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-15 19:50:50 gwern"
+When:  Time-stamp: "2022-02-16 12:58:17 gwern"
 License: CC-0
 -}
 
@@ -313,7 +313,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                     author = if aut=="" then [Space] else [Space, authorSpan]
-                                    date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
+                                    date = if dt=="" then [] else [Span ("", ["date"], [("title",T.pack dt)]) [Str (T.pack $ dateTruncate dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
@@ -1451,6 +1451,9 @@ generateID url author date
        , ("https://arxiv.org/abs/2102.02888#microsoft", "tang-et-al-2021-1bitadam")
        , ("https://arxiv.org/abs/2002.11296#google", "tay-et-al-2020-sparsesinkhorn")
        , ("https://arxiv.org/abs/2009.06732#google", "tay-et-al-2020-efficienttransformers")
+       , ("https://arxiv.org/abs/2201.12086#salesforce", "li-et-al-2022-blip")
+       , ("https://arxiv.org/abs/1703.04887", "yang-et-al-2017-seqgan")
+       , ("https://arxiv.org/abs/1709.00103", "zhong-et-al-2017-seq2sql")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1486,6 +1489,10 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’') . map toLower . replace 
 authorsTruncate :: String -> String
 authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ " et al")
 
+-- dates of the form 'YYYY-01-01' are invariably lies, and mean just 'YYYY'.
+dateTruncate :: String -> String
+dateTruncate d = if "-01-01" `isSuffixOf` d then take 4 d else d
+
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
                    -- | head l == '#' = l
@@ -1514,7 +1521,7 @@ initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "),
 wikipediaURLToTitle :: String -> String
 wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
 
--- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
+-- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+double-space, and general whitespace cleaning
 trimTitle :: String -> String
 trimTitle [] = ""
 trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg. "Compensatory conspicuous communication_ Low status increases jargon use"
