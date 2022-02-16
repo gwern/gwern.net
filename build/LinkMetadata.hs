@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-16 12:58:17 gwern"
+When:  Time-stamp: "2022-02-16 17:45:11 gwern"
 License: CC-0
 -}
 
@@ -278,14 +278,15 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
           hasAnnotationInline _ _ y = y
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
-          addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,_,abstrct) =
+          addHasAnnotation idBool forcep (Link (a,b,c) e (f,g)) (_,aut,dt,_,_,abstrct) =
            let a'
                  | not idBool = ""
                  | a == ""    = generateID (T.unpack f) aut dt
                  | otherwise  = a
                f' = linkCanonicalize $ T.unpack f
            in -- erase link ID?
-              if (length abstrct < 180) && not forcep then y else
+              if (length abstrct < 180) && not forcep then (Link (a',b,c) e (f,g)) -- always add the ID if possible
+              else
                 -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
                 -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
                 -- so we check for directory-tags and force them to not popup.
