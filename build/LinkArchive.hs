@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-14 17:44:33 gwern"
+When:  Time-stamp: "2022-02-17 10:11:23 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -802,7 +802,7 @@ whiteList url
       , "parametric.press/issue-01/unraveling" -- doesn't archive the interactive right
       , "vision-explorer.allenai.org/" -- interactive service
       , "aidungeon.io" -- updated/interactive service
-      , "www.tensorflow.org" -- technical documentation, better not point at potentially-outdated archives
+      , "www.tensorflow.org" -- stable/updated (technical documentation, better not point at potentially-outdated archives)
       , "bit-player.org" -- low-quality (interactive JS widgets didn't preserve right)
       , "www.themoneyillusion.com" -- low-quality
       , "cedar.wwu.edu/cedarbooks/4/" -- stable
@@ -889,7 +889,7 @@ whiteList url
       , "competicionmental.appspot.com" -- app/game/interactive
       , "lair.lighton.ai/akronomicon/" -- updated
       , "public.tableau.com" -- interactive visualizations
-      , "andyljones.com" -- give a chance
+      , "andyljones.com" -- stable? give a chance
       , "mlcommons.org" -- organization/homepage
       , "eleuther.ai" -- stable
       , "ieeexplore.ieee.org/abstract/" -- bad quality
@@ -1019,5 +1019,6 @@ whiteList url
       , "https://sebastianrisi.com/self_assembling_ai/" -- video embeds
       , "https://brainwindows.wordpress.com/2009/10/14/playing-quake-with-a-real-mouse/" -- video embed
       , "https://medium.com/mindsoft/rats-in-doom-eb6c52c73aca" -- video embed
+      , "https://podcasts.google.com/feed/aHR0cHM6Ly9yc3MuYWNhc3QuY29tL2Rhbm55aW50aGV2YWxsZXk/episode/MDI4NDI4ODMtZmE3YS00MzA2LTk1ZGItZjgzZDdlMzAwZThk" -- audio embed
       ] = True
     | otherwise = False
