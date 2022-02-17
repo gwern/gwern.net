@@ -60,10 +60,13 @@ printGreen s = hPutStrLn stderr $ "\x1b[32m" ++ s ++ "\x1b[0m"
 printRed :: String -> IO ()
 printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
 
--- Repeatedly apply `f` to an input until the input stops changing.
+-- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error reporting on the occasional infinite loop.
 -- <https://stackoverflow.com/questions/38955348/is-there-a-fixed-point-operator-in-haskell>
-fixedPoint :: Eq a => (a -> a) -> a -> a
-fixedPoint = until =<< ((==) =<<)
+fixedPoint :: (Show a, Eq a) => (a -> a) -> a -> a
+fixedPoint = fixedPoint' 100000
+ where fixedPoint' :: (Show a, Eq a) => Int -> (a -> a) -> a -> a
+       fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 100,000 iterations! Infinite loop? Final result: " ++ show i
+       fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
 sed :: String -> String -> (String -> String)
 sed before after s = subRegex (mkRegex before) s after
