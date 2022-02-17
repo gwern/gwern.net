@@ -111,11 +111,7 @@ Typography = {
 	},
 	processString: (str, replacementTypes = Typography.replacementTypes.ALL) => {
 		Typography.replacements(replacementTypes).forEach(replace => {
-			GWLog("---", "typography.js", 3);
-			GWLog(replace[0], "typography.js", 3);
-			GWLog(str, "typography.js", 3);
 			str = str.replace(replace[0], replace[1]);
-			GWLog(str, "typography.js", 3);
 		});
 		return str;
 	},
