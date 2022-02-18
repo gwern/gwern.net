@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2022-01-27 19:31:43 gwern"
+# When:  Time-stamp: "2022-02-17 14:41:19 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings https://openai.com/blog/introducing-text-and-code-embeddings/ https://arxiv.org/abs/2201.10005#openai https://beta.openai.com/docs/guides/embeddings/use-cases ). Authentication via shell environment variable.
@@ -29,6 +29,7 @@
 # Output: https://beta.openai.com/docs/guides/embeddings/types-of-embedding-models ada-similarity [1024], babbage-similarity [2048], curie-similarity [4096], davinci-similarity [12288, or 12×]
 ENGINE="curie-similarity"
 TEXT="$@"
+if [ "${#TEXT}" == 0 ]; then TEXT=$(</dev/stdin); fi
 TEXT_LENGTH="${#TEXT}"
 
 while [ $TEXT_LENGTH -gt 0 ]; do

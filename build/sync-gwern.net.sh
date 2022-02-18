@@ -37,7 +37,7 @@ else
     set -e
 
     # lower priority of everything we run (some of it is expensive):
-    renice -n 15 "$$" > /dev/null
+    renice -n 15 "$$" &>/dev/null
 
     ## Parallelization:
     N="$(if [ ${#} == 0 ]; then echo 25; else echo "$1"; fi)"
@@ -89,7 +89,7 @@ else
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     # cleanup post:
-    rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor || true
+    rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -355,7 +355,7 @@ else
     wrap λ "Anchors linked but not defined inside page?"
 
     ## Is the Internet up?
-    ping -q -c 5 google.com  &> /dev/null
+    ping -q -c 5 google.com  &>/dev/null
 
     # Sync:
     ## make sure nginx user can list all directories (x) and read all files (r)
@@ -672,7 +672,7 @@ else
         done
     fi
 
-    rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &> /dev/null || true
+    rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &>/dev/null || true
 
     bold "Sync successful"
 fi

@@ -298,7 +298,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Niels Bohr|Bohr)", "https://en.wikipedia.org/wiki/Niels_Bohr")
         , ("(OpenAI 5|OA ?5)", "https://openai.com/five/")
         , ("(Openness|Openness to Experience)", "https://en.wikipedia.org/wiki/Openness_to_Experience")
-        , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://science.sciencemag.org/content/364/6443/859#deepmind")
+        , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://www.science.org/doi/10.1126/science.aau6249")
         , ("(POMDPs?|[Pp]artially [Oo]bservable [Mm]arkov [Dd]ecision [Pp]rocess?e?s)", "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process")
         , ("(PPO|[Pp]roximal [Pp]olicy [Oo]ptimization)", "https://arxiv.org/abs/1707.06347#openai")
         , ("(PTSD|[Pp]ost.?traumatic stress disorder)", "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder")

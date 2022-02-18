@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2021-12-26 18:50:37 gwern"
+When:  Time-stamp: "2022-02-17 14:37:07 gwern"
 License: CC-0
 -}
 
@@ -22,8 +22,9 @@ parseMarkdownOrHTML md txt = let parsedEither = if md then runPure $ readMarkdow
                               Right doc -> doc
 
 
+-- True: Markdown; False: must be HTML
 extractLinksWith :: (Inline -> Bool) -> Bool -> T.Text -> [T.Text]
-extractLinksWith rule md txt  = extractURLsWith rule $ parseMarkdownOrHTML md txt
+extractLinksWith rule md txt = extractURLsWith rule $ parseMarkdownOrHTML md txt
 
 -- | Parse one Text string as a Pandoc Markdown document and return its URLs (as Strings)
 extractLinks :: Bool -> T.Text -> [T.Text]
