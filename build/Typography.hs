@@ -42,7 +42,7 @@ typographyTransform = walk linkPdf .
 -- → <a href="/docs/foo.pdf" class="link-pdf" title="Foo &amp; Bar 2022">foo</a>
 linkPdf :: Inline -> Inline
 linkPdf x@(Link _ _ (url, _)) =
-  if any (`T.isInfixOf` url) [".pdf", "/pdf", "type=pdf", ".epub",
+  if any (`T.isInfixOf` url) [".pdf", "/pdf", "type=pdf",
                               "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu",
                               "eprint.iacr.org", "pdfs.semanticscholar.org"]
       then addClass "link-pdf" x else x
