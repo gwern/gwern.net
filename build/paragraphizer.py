@@ -4,7 +4,7 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2022-02-18 22:52:59 gwern"
+# When:  Time-stamp: "2022-02-18 23:28:45 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" xclip -o | python paragraphizer.py
@@ -31,7 +31,10 @@ prompt = """Rewrite into paragraphs:
 
 \""""
 
-target = sys.stdin.read().strip()
+if len(sys.argv) == 0:
+    target = sys.stdin.read().strip()
+else:
+    target = sys.argv[1]
 
 postPrompt="\"\n\nTo:\n\n\""
 

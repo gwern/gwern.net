@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-18 19:35:46 gwern"
+When:  Time-stamp: "2022-02-18 23:53:18 gwern"
 License: CC-0
 -}
 
@@ -899,7 +899,8 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, processPubMedAbstract $ unlines abstrct))
+                             abstract' <- fmap processPubMedAbstract $ processParagraphizer $ unlines abstrct
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
@@ -920,8 +921,8 @@ pdf p = do let p' = takeWhile (/='#') p
                     let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
                     let ts = [] -- TODO: replace with ML call to infer tags
                     printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
-                    a <- fmap (fromMaybe "") $ doi2Abstract edoi'
-                    return $ Right (p, (filterMeta $ trimTitle $ cleanAbstractsHTML etitle, author, trim $ replace ":" "-" edate, edoi', ts, a))
+                    at <- fmap (fromMaybe "") $ doi2Abstract edoi'
+                    return $ Right (p, (filterMeta $ trimTitle $ cleanAbstractsHTML etitle, author, trim $ replace ":" "-" edate, edoi', ts, at))
                   _ -> return (Left Permanent)
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 -- case aMaybe of
@@ -951,8 +952,8 @@ doi2Abstract doi = if length doi < 7 then return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
-                                       Just a -> let trimmedAbstract = cleanAbstractsHTML a
-                                                 in return $ Just trimmedAbstract
+                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer a
+                                                    return $ Just trimmedAbstract
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
@@ -969,7 +970,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
-                                 let abstrct = cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                 abstrct <- fmap cleanAbstractsHTML $ processParagraphizer $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  let ts = [] -- TODO: replace with ML call to infer tags
                                  if abstrct == "" then return (Left Temporary) else
                                                    return $ Right (p, (title, author, date, doi, ts, abstrct))
@@ -995,7 +996,8 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
                          let doi = if not (null doiTmp) then doi else "10.48550/arXiv." ++ sed "https://arxiv.org/[a-z]+/([0-9]+\\.[0-9]+).*" "\\1" url
-                         let abst = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
+                         print (findTxt $ fst $ element "summary" tags)
+                         abst <- fmap (processArxivAbstract url) $ processParagraphizer $ findTxt $ fst $ element "summary" tags
                          let ts = [] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
                          if abst=="" then return (Left Temporary) else
@@ -1040,7 +1042,8 @@ openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                                let keywords' = if null keywords || keywords == [""] then "" else
                                                  if length keywords > 1 then (unlines $ init keywords) ++ "\n\n[Keywords: " ++ last keywords ++ "]"
                                                  else "[Keywords: " ++ concat keywords ++ "]"
-                               let abstractCombined = intercalate "\n\n" [tldr, desc, keywords']
+                               desc' <- processParagraphizer desc
+                               let abstractCombined = intercalate "\n\n" [tldr, desc', keywords']
                                return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
                                                    -- due to pseudo-LaTeX
                                                     processArxivAbstract p abstractCombined))
@@ -1082,6 +1085,13 @@ processArxivAbstract u a = let cleaned = runPure $ do
                  Left e -> error $ u ++ " : " ++ ppShow e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
 
+-- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
+processParagraphizer :: String -> IO String
+processParagraphizer a = if "\n\n" `isInfixOf` a then return a else
+  do (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a]
+     case status of
+       ExitFailure err -> printGreen (intercalate " : " [a, ppShow status, ppShow err, ppShow mb]) >> error "Paragraphizer failed!"
+       _ -> return $ trim $ U.toString mb
 
 --------------------------------------------
 -- String munging and processing
@@ -1543,6 +1553,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           ("<p>Abstract. ", "<p>"),
           ("<strong>ABSTRACT</strong><br/>", ""),
           ("<strong>Abstract</strong><br/>", ""),
+          ("R<sup>2</sup>D2", "R2D2"),
          ("</p> ?<p>", "</p>\n<p>"),
          ("</p>\n<p>", "</p> <p>"),
          ("</p>\n \n<p>", "</p>\n<p>"),
