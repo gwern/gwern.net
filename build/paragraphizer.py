@@ -4,14 +4,16 @@
 # paragraphizer.py: reformat a single paragraph into multiple paragraphs using GPT-3 neural nets
 # Author: Gwern Branwen
 # Date: 2022-02-18
-# When:  Time-stamp: "2022-02-18 23:28:45 gwern"
+# When:  Time-stamp: "2022-02-19 13:03:28 gwern"
 # License: CC-0
 #
 # Usage: $ OPENAI_API_KEY="sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" xclip -o | python paragraphizer.py
 #
 # Paragraphizer attempts to reformat a single run-on paragraph into multiple shorter paragraphs, presumably split by topic. This is particularly useful for research paper abstracts, which are usually written in a sequential fashion (along the lines of 'Background / Question / Data / Methods / Results / Conclusion') but not always formatted in topic-separated paragraphs. A jargon-heavy run-on abstract can be near-impossible to skim.
 #
-# Paragraphizer does this by a call to the OA API; I have found that a simple 'rewrite this as' zero-shot prompt works well with davinci-instruct models (and is unreliable with smaller models or plain davinci). The main failure mode is that it will not copy the abstract exactly, and may reword or expand on parts, which is highly undesirable, and would mean that it cannot be used to automatically reformat abstracts. (And if you aren't going to use Paragraphizer automatically, why bother? It doesn't take long to add linebreaks by hand.) That failure mode can be removed by simply checking that after removing the new newlines, it equals the original input (ie. the *only* difference is the inserted newlines). The result can still be bad
+# Paragraphizer does this by a call to the OA API; I have found that a simple 'rewrite this as' zero-shot prompt works well with davinci-instruct models (and is unreliable with smaller models or plain davinci). The main failure mode is that it will not copy the abstract exactly, and may reword or expand on parts, which is highly undesirable, and would mean that it cannot be used to automatically reformat abstracts. (And if you aren't going to use Paragraphizer automatically, why bother? It doesn't take long to add linebreaks by hand.) That failure mode can be removed by simply checking that after removing the new newlines, it equals the original input (ie. the *only* difference is the inserted newlines). The result can still be bad but it's probably at least better.
+#
+# WARNING: Newlines must be absent. GPT-3 remains quite fragile in dealing with Unicode and HTML: remove as much special formatting as possible like Unicode characters such as NON-BREAKING SPACE or HTML tags like `<p>` or HTML entities like `&amp;`. GPT-3 will either give up and do nothing, or mangle it (thereby failing the check & emitting the original input, wasting a call).
 #
 # Example:
 #
@@ -31,7 +33,7 @@ prompt = """Rewrite into paragraphs:
 
 \""""
 
-if len(sys.argv) == 0:
+if len(sys.argv) == 1:
     target = sys.stdin.read().strip()
 else:
     target = sys.argv[1]
@@ -44,4 +46,5 @@ result = openai.Completion.create(engine="text-davinci-001",
 if target == result.replace('\n\n', ' '):
     print(result)
 else:
+    # sys.stderr.write(result+'\n-----------------------------------------\n')
     print(target)

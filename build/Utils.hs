@@ -3,18 +3,19 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Text.IO as TIO (readFile, writeFile)
-import qualified Data.Text as T (Text)
+import qualified Data.Text as T (Text, pack, unpack)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Pandoc (def, nullMeta, runPure,
-                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span))
+                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span), readerExtensions, writerExtensions, readMarkdown, readHtml, writeMarkdown, pandocExtensions)
 import System.IO (stderr, hPutStrLn)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Regex (subRegex, mkRegex)
 import Data.List.Utils (replace)
+import Text.Show.Pretty (ppShow)
 
 -- Auto-update the current year.
 {-# NOINLINE currentYear #-}
@@ -41,6 +42,16 @@ simplifiedDoc p = let md = runPure $ writePlain def{writerColumns=100000} p in -
                          case md of
                            Left _ -> error $ "Failed to render: " ++ show md
                            Right md' -> md'
+
+toMarkdown :: String -> String
+toMarkdown abst = let clean = runPure $ do
+                                   pandoc <- readHtml def{readerExtensions=pandocExtensions} (T.pack abst)
+                                   md <- writeMarkdown def{writerExtensions = pandocExtensions, writerColumns=100000} pandoc
+                                   return $ T.unpack md
+                             in case clean of
+                                  Left e -> error $ ppShow e ++ ": " ++ abst
+                                  Right output -> output
+
 
 -- Add or remove a class to a Link or Span; this is a null op if the class is already present or it is not a Link/Span.
 addClass :: T.Text -> Inline -> Inline
