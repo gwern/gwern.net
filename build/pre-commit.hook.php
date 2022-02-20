@@ -64,6 +64,7 @@ $versioned_files = [
 	"{$static_dir}/js/extracts-content.js",
 	"{$static_dir}/js/extracts-options.js",
 	"{$static_dir}/js/image-focus.js",
+	"{$static_dir}/js/links.js",
 	"{$static_dir}/js/popins.js",
 	"{$static_dir}/js/popups.js",
 	"{$static_dir}/js/rewrite.js",

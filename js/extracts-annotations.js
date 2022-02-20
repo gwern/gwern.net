@@ -9,7 +9,7 @@
                 URL of the annotated target (NOT the URL of the annotation
                 resource!).
             flags:
-                0 (no flags set)
+                GW.contentDidLoadEventFlags.needsRewrite
         }
         Fired when an annotation pop-frame has been filled with content (i.e.,
         the annotation), at the last stage of preparing the pop-frame for
@@ -213,7 +213,7 @@ if (window.Extracts) {
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
             document: popFrame.contentView,
             location: Extracts.locationForTarget(target),
-            flags: 0
+            flags: GW.contentDidLoadEventFlags.needsRewrite
         });
     };
 
