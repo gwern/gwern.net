@@ -309,6 +309,7 @@ a[data-link-icon-type*='text']::after {
     padding: 0;
     background-image: none;
     background-size: unset;
+    line-height: 1;
 }
 a[data-link-icon-type*='sans']::after {
     font-family: var(--GW-sans-serif-font-stack);
@@ -380,19 +381,19 @@ a[data-link-icon*="\25B2"]::after {
 }
 
 a[data-link-icon='\2658']::after {
-    font-size: 1.2em;
-    line-height: 1;
+    --link-icon-size: 1.2em;
+    --link-icon-offset-y: 0.13em;
+
     font-weight: normal;
-    bottom: 0.13em;
 }
 
 a[data-link-icon='\2709']::after {
-    font-size: 1.1em;
+    --link-icon-size: 1.1em;
+	--link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.05em;
+
     font-weight: normal;
     opacity: 0.95;
-    left: 0.04em;
-    bottom: 0.05em;
-    line-height: 1;
 }
 
 a[data-link-icon='M\1D411']::after {
@@ -408,13 +409,15 @@ a[data-link-icon='\1D40C']::after {
 }
 
 a[data-link-icon='\1D6CC']::after {
-    font-size: 1em;
+    --link-icon-size: 1em;
+
     opacity: 0.6;
 }
 
 a[data-link-icon='\1D6D8']::after {
+    --link-icon-offset-y: 0.4em;
+
     opacity: 0.75;
-    bottom: 0.4em;
 }
 
 /****************************/
