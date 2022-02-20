@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-19 22:31:19 gwern"
+When:  Time-stamp: "2022-02-20 12:13:09 gwern"
 License: CC-0
 -}
 
@@ -166,6 +166,9 @@ readLinkMetadataAndCheck = do
              let balancedParens = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (\c -> c == '(' || c == ')') abst in
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
              unless (null balancedParens) $ error $ "Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
+
+             let unparagraphized = filter (\(_,(_,_,_,_,_,abst)) -> not (paragraphized abst)) custom
+             unless (null unparagraphized) $ printRed "Needs to be rewritten into paragraphs:" >> print (map fst unparagraphized)
 
              -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
@@ -1106,18 +1109,28 @@ processArxivAbstract a = let cleaned = runPure $ do
                  Left e -> error $ " : " ++ ppShow e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
 
+-- Is an annotation (HTML or Markdown) already If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
+-- and we will skip trying to break it up further.
+paragraphized :: String -> Bool
+paragraphized a = paragraphsMarkdown a || blockElements a || length (paragraphsHtml a) > 1
+ where
+   -- double newlines are only in Markdown strings, and split paragraphs:
+   paragraphsMarkdown :: String -> Bool
+   paragraphsMarkdown b = "\n\n" `isInfixOf` b
+   blockElements :: String -> Bool
+   -- full-blown lists or blockquotes also imply it's fully-formatted
+   blockElements b = "<ul>" `isInfixOf` b || "<ol>" `isInfixOf` b || "<blockquote>" `isInfixOf` b || "<figure>" `isInfixOf` b
+   -- annotations are wrapped in a '<p>...</p>' pair, unless they start with another block element; if there are two or more '<p>', then, there are at least two paragraphs (because it must be '<p>...</p> ... <p>...</p>') and it counts as being paragraphized.
+   paragraphsHtml :: String -> [(T.Text,T.Text)]
+   paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
+
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
 processParagraphizer :: String -> IO String
 processParagraphizer "" = return ""
 processParagraphizer a =
-  let paragraphsHtmlN    = length $ T.breakOnAll "<p>" (T.pack a)
-      paragraphsMarkdown = "\n\n" `isInfixOf` a
-      paragraphsHtml     = "<ul>" `isInfixOf` a || "<ol>" `isInfixOf` a || "<blockquote>" `isInfixOf` a -- full-blown lists or blockquotes also imply it's fully-formatted
-   -- If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
-   -- and we will skip trying to break it up further.
-   in if length a < 256 || paragraphsMarkdown || paragraphsHtml || paragraphsHtmlN > 1 then return a
-      else do let a' = if paragraphsHtmlN > 1 then a else replace "<p>" "" $ replace "</p>" "" a
+      if length a < 256 || paragraphized a then return a
+      else do let a' = replace "<p>" "" $ replace "</p>" "" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
               (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']
               case status of
