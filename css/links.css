@@ -148,7 +148,7 @@ a[data-link-icon-type='svg']::after {
     background-position-x: center;
     background-position-y: var(--link-icon-offset-y);
     background-repeat: no-repeat;
-    opacity: 0.5;
+    opacity: 0.45;
 }
 
 /*  Hover styles.
