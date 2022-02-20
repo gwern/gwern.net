@@ -377,8 +377,12 @@ a[data-link-icon='\2658']::after {
 }
 
 a[data-link-icon='\2709']::after {
+    font-size: 1.1em;
+    font-weight: normal;
     opacity: 0.95;
     left: 0.04em;
+    bottom: 0.05em;
+    line-height: 1;
 }
 
 a[data-link-icon='M\1D411']::after {
