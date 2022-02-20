@@ -17,6 +17,11 @@ Links = {
 	 */
 	//	Called by: rewrite.js
 	decorateLinksWithin: (doc) => {
+		/*	Track which graphical linkicons we’re making use of in this 
+			container (so we can add them to the style block later).
+		 */
+		let newLinkIcons = [ ];
+
 		doc.querySelectorAll("a").forEach(link => {
 			if (link.classList.contains("no-icon"))
 				return;
@@ -28,9 +33,73 @@ Links = {
 				link.dataset.linkIcon = iconInfo.icon;
 
 				if (iconInfo.type == "svg")
-					link.style.setProperty("--link-icon-url", `url('/static/img/icons/${iconInfo.icon}.svg')`);
+					newLinkIcons.push(iconInfo.icon);
 			}
 		});
+
+		/*	If we’re using any graphical linkicons in this container, add them
+			to the style block now.
+		 */
+		if (newLinkIcons > [])
+			Links.addGraphicalLinkIcons(newLinkIcons);
+	},
+
+	/*	All the graphical linkicons used on the page so far. Each entry in this
+		array is a linkicon name. (See the entries of type ‘svg’ in the 
+		Links.fileLinkTypes and Links.targetLinkTypes arrays, below, for what
+		values these linkicon names can have.
+	 */
+	graphicalLinkIcons: [ ],
+
+	/*	The style block that maps SVG linkicon names (which are associated with
+		link elements by means of the `data-link-icon` attribute) with SVG icon
+		file URLs, by means of a CSS variable (`--link-icon-url`) scoped to 
+		links with the icon name as the value of their `data-link-icon`
+		attribute. In other words, the style block contains a series of lines 
+		such as the following (the example is for an SVG linkicon with the name
+		‘worddoc’):
+
+		a[data-link-icon='worddoc'] { --link-icon-url: url('/static/img/icons/worddoc.svg'); }
+
+		And thus for every SVG linkicon used on the page.
+
+		(Note that this would not be necessary if the CSS3 `attr()` function 
+		 were usable for all properties (i.e. https://caniuse.com/css3-attr );
+		 in such a case we could do for SVG linkicons what we already do for
+		 textual linkicons, i.e. refer directly to the `data-link-icon` 
+		 attribute in the CSS. Alas, currently there is no browser support for
+		 this feature...)
+	 */
+	graphicalLinkIconsStyleBlock: null,
+
+	/*	Adds the given graphical linkicons to the style block. The newLinkIcons
+		argument is an array of SVG linkicon names. (This function also injects
+		the style block, if not already present.)
+	 */
+	//	Called by: Links.decorateLinksWithin
+	addGraphicalLinkIcons: (newLinkIcons) => {
+		/*	Only do anything to the style block if we have actually added any
+			linkicons (i.e. do a union of the existing linkicon array with the
+			new addition, and check for a changed count); otherwise, no need
+			to touch the style block and cause unnecessary re-rendering.
+		 */
+		let oldCount = Links.graphicalLinkIcons.length;
+		Links.graphicalLinkIcons = [...new Set([...(Links.graphicalLinkIcons), ...newLinkIcons])];
+		if (Links.graphicalLinkIcons.length == oldCount)
+			return;
+
+		//  Inject the style block, if need be.
+		if (Links.graphicalLinkIconsStyleBlock == null) {
+			document.body.insertAdjacentHTML("beforeend", `<style id="graphical-link-icons"></style>`);
+			Links.graphicalLinkIconsStyleBlock = document.querySelector("#graphical-link-icons");
+		}
+
+		/*	Generate the CSS for all the linkicons, and inject it into the style
+			block.
+		 */
+		Links.graphicalLinkIconsStyleBlock.innerHTML = Links.graphicalLinkIcons.map(icon => 
+			`a[data-link-icon='${icon}'] { --link-icon-url: url('/static/img/icons/${icon}.svg'); }`
+		).join("\n");
 	},
 
 	/*	Returns an info object that specifies linkicon and linkicon type for
