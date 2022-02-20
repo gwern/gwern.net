@@ -640,7 +640,6 @@ a[data-link-icon='n']::after {
 
 a[data-link-icon='s']::after {
     font-size: 1em;
->>>>>>> 4e47cf7f2139e0eb8b5735252f7562139e9ea3c3
 }
 
 a[href*="www.vanityfair.com"]::after {
@@ -711,33 +710,14 @@ a[data-link-icon='\2658']::after {
     bottom: 0.13em;
 }
 
-/* Microsoft: I don't think https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg is all that recognizable,
-   so make a logotype more like https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg : an italic sans "MS", shrunken & moved left to reduce visual impact. */
-a[href*="microsoft"]::after {
-    content: "MS";
-    font-style: italic;
-    left: -0.09em;
-    font-size: 0.65em;
-}
 
-/* MAL: the blue of their logo doesn't work, so just text */
-a[href*="myanimelist.net"]::after {
-    content: "MAL";
-}
-
-/* Gene Wolfe mailing list; no logo */
-a[href*="urth.net"]::after { /* primary user: lists.urth.net */
-    content: "U";
-}
-
-/* TinyLetter's icon, without color, isn't memorable enough; throw in the other email services */
-a[href*="tinyletter.com"]::after,
-a[href*="groups.google.com"]::after,
-a[href*="groups.yahoo.com"]::after,
-a[href*="www.mail-archive.com"]::after {
-    content: "\2709"; /* (✉) ENVELOPE */
+a[data-link-icon='\2709']::after {
+    font-size: 1.1em;
+    font-weight: normal;
     opacity: 0.95;
     left: 0.04em;
+    bottom: 0.05em;
+    line-height: 1;
 }
 
 a[data-link-icon='M\1D411']::after {
