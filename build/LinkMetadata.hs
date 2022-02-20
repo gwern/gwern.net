@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-19 13:19:07 gwern"
+When:  Time-stamp: "2022-02-19 21:21:26 gwern"
 License: CC-0
 -}
 
@@ -85,6 +85,26 @@ readLinkMetadata = do
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'partial' overrides 'auto'
              return final
+
+-- updateDatabases :: IO ()
+-- updateDatabases = mapM_ (\f -> fmap (writeLinkMetadata f . updateDatabase . M.fromList) $ readYaml f) ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
+
+-- updateDatabase :: (Path MetadataItem -> IO (Path MetadataItem)) -> Metadata -> IO Metadata
+updateDatabase :: IO ()
+updateDatabase = do let path = "metadata/custom-small.yaml"
+                    db <- (fmap M.fromList $ readYaml path) :: IO Metadata
+                    db' <- M.traverseWithKey (\_ item -> singleshotParagraphize item) db
+                    writeLinkMetadata (path++"-updated") db'
+
+singleshotParagraphize :: MetadataItem -> IO MetadataItem
+singleshotParagraphize (b,c,d,e,ts,f) = do f' <- processParagraphizer f
+                                           return (b,c,d,e,ts,f')
+
+writeLinkMetadata :: Path -> Metadata -> IO ()
+writeLinkMetadata path yaml = do let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ M.toList yaml -- flatten [(Path, (String, String, String, String, String))]
+
+                                 writeUpdatedFile "yaml" path newYaml
+
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
 readLinkMetadataAndCheck :: IO Metadata
@@ -257,11 +277,11 @@ annotateLink md target
                        -- some failures we don't want to cache because they may succeed when checked differently or later on or should be fixed:
                        Left Temporary -> return False
                        -- cache the failures too, so we don't waste time rechecking the PDFs every build; return False because we didn't come up with any new useful annotations:
-                       Left Permanent -> writeLinkMetadata target'' ("", "", "", "", [], "") >> return False
+                       Left Permanent -> appendLinkMetadata target'' ("", "", "", "", [], "") >> return False
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
                                        when (e=="") $ printGreen (f ++ ": " ++ show target ++ ": " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
-                                       forkIO (writeLinkMetadata target'' m) >> return True
+                                       forkIO (appendLinkMetadata target'' m) >> return True
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
@@ -855,10 +875,10 @@ rewriteLinkMetadata yaml = do old <- readYaml yaml
                               writeUpdatedFile "yaml" yaml newYaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
-writeLinkMetadata :: Path -> MetadataItem -> IO ()
-writeLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do printGreen (l ++ " : " ++ ppShow i)
-                                                     let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
-                                                     B.appendFile "metadata/auto.yaml" newYaml
+appendLinkMetadata :: Path -> MetadataItem -> IO ()
+appendLinkMetadata l i@(t,a,d,di,ts,abst) = lock $ do printGreen (l ++ " : " ++ ppShow i)
+                                                      let newYaml = Y.encode [(l,t,a,d,di, intercalate ", " ts,abst)]
+                                                      B.appendFile "metadata/auto.yaml" newYaml
 
 data Failure = Temporary | Permanent deriving Show
 
@@ -1089,20 +1109,25 @@ processArxivAbstract a = let cleaned = runPure $ do
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
 processParagraphizer :: String -> IO String
-processParagraphizer a = if "\n\n" `isInfixOf` a then return a else
-  do let paragraphsN = length $ T.breakOnAll "<p>" (T.pack a)
-     let a' = if paragraphsN > 1  then a else replace "<p>" "" $ replace "</p>" "" a
-     let a'' = trim $ replace "\160" " " $ toMarkdown a'
-     (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']
-     case status of
-       ExitFailure err -> printGreen (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb]) >> error "Paragraphizer failed!"
-       _ -> do let clean = runPure $ do
-                     pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack $ trim $ U.toString mb)
-                     html <- writeHtml5String safeHtmlWriterOptions pandoc
-                     return $ T.unpack html
-               case clean of
-                     Left e -> error $ ppShow e ++ ": " ++ a
-                     Right output -> return $ cleanAbstractsHTML output
+processParagraphizer a =
+  let paragraphsHtmlN    = length $ T.breakOnAll "<p>" (T.pack a)
+      paragraphsMarkdown = "\n\n" `isInfixOf` a
+      paragraphsHtml     = "<ul>" `isInfixOf` a || "<ol>" `isInfixOf` a || "<blockquote>" `isInfixOf` a -- full-blown lists or blockquotes also imply it's fully-formatted
+   -- If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
+   -- and we will skip trying to break it up further.
+   in if paragraphsMarkdown || paragraphsHtml || paragraphsHtmlN > 1 then return a
+      else do let a' = if paragraphsHtmlN > 1 then a else replace "<p>" "" $ replace "</p>" "" a
+              let a'' = trim $ replace "\160" " " $ toMarkdown a'
+              (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']
+              case status of
+                ExitFailure err -> printGreen (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb]) >> printRed "Paragraphizer failed!" >> return a
+                _ -> do let clean = runPure $ do
+                              pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack $ trim $ U.toString mb)
+                              html <- writeHtml5String safeHtmlWriterOptions pandoc
+                              return $ T.unpack html
+                        case clean of
+                              Left e -> error $ ppShow e ++ ": " ++ a
+                              Right output -> return $ cleanAbstractsHTML output
 
 --------------------------------------------
 -- String munging and processing
