@@ -139,8 +139,6 @@ smallcapsfyRegex = R.makeRegex
    -- walk smallcapsfyInline [Str "WP RSS bot"]
    -- → [RawInline (Format "html") "<span class=\"smallcaps-auto\">WP RSS</span> bot"]
    "[A-Z&][A-Z&] ?[A-Z&][A-Z&][A-Z&]+|" ++
-   -- "CSS & HTML"
-   "[A-Z]+ & [A-Z]+|" ++
    -- "MLP:FiM"
    "[A-Z]+:[A-Z]+[a-zA-Z]+|" ++
    -- special-case AM/PM like "9:30AM" or "1PM" or "5:55 PM" (WARNING: Pandoc will typically parse spaces into 'Space' AST nodes, making it hard to match on things like "5 PM")
