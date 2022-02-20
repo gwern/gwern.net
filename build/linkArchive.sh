@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2022-02-13 13:03:06 gwern"
+# When:  Time-stamp: "2022-02-19 09:22:26 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -104,7 +104,7 @@ else
                     mv "$TARGET" "./docs/www/$DOMAIN/$HASH.html"
                     echo -n "/docs/www/$DOMAIN/$HASH.html$ANCHOR"
                     ## open original vs archived in web browser so the user can check that it preserved OK, or if it needs to be handled manually or domain blacklisted:
-                    $WWW_BROWSER "./docs/www/$DOMAIN/$HASH.html$ANCHOR" "$1"
+                    $WWW_BROWSER "./docs/www/$DOMAIN/$HASH.html$ANCHOR" "$1" &
                 else
                     rm "$TARGET"
                     echo "Unsuccessful: $1 $HASH" 1>&2

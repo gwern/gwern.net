@@ -197,7 +197,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	condition: (info) => info.needsRewrite
 });
 
-
 /***********/
 /* FIGURES */
 /***********/
@@ -281,7 +280,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	condition: (info) => info.needsRewrite
 });
 
-
 /***************/
 /* CODE BLOCKS */
 /***************/
@@ -323,7 +321,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	condition: (info) => info.needsRewrite
 });
 
-
 /**************/
 /* TYPOGRAPHY */
 /**************/
@@ -337,7 +334,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 //     container.appendChild(window.getSelection().getRangeAt(0).cloneContents());
 //     return container.innerHTML;
 // }
-
 
 /*********************/
 /* FULL-WIDTH BLOCKS */
@@ -442,7 +438,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     setMarginsOnFullWidthBlocks(info);
 }, { phase: ">rewrite" });
 
-
 /***************************/
 /* ANNOTATIONS (FRAGMENTS) */
 /***************************/
@@ -510,8 +505,7 @@ function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
         	annotatedLink.removeEventListener("mouseleave", annotatedLink.annotatedLinkMouseLeave);
 
         //  Bind events.
-        let linkURL = fixedEncodeURIComponent(annotatedLink.href);
-        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${linkURL}']`);
+        let targetAnalogueInLinkBibliography = document.querySelector(`a[id^='linkBibliography'][href='${annotatedLink.href}']`);
         if (targetAnalogueInLinkBibliography) {
         	let containingSection = targetAnalogueInLinkBibliography.closest("section");
         	if (containingSection) {
@@ -540,7 +534,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
     bindSectionHighlightEventsToAnnotatedLinks(info);
 }, { phase: "eventListeners" });
-
 
 /*************/
 /* FOOTNOTES */
@@ -688,7 +681,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     bindNoteHighlightEventsToCitations(info);
 }, { phase: "eventListeners" });
 
-
 /*********/
 /* LINKS */
 /*********/
@@ -743,17 +735,6 @@ function directionalizeAnchorLinks(loadEventInfo) {
     });
 }
 
-/***************************************************************/
-/*	Add data attribute(s) that specify linkicons, brackets, etc.
-
-    Requires links.js to be loaded prior to this file.
- */
-function addLinkDecorationData(loadEventInfo) {
-    GWLog("addLinkDecorationData", "rewrite.js", 1);
-
-    Links.decorateLinksWithin(loadEventInfo.document);
-}
-
 /************************************************/
 /*  Add content load handler for link processing.
     */
@@ -762,10 +743,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
     addSpecialLinkClasses(info);
 
-    if (info.needsRewrite) {
+    if (info.needsRewrite)
         directionalizeAnchorLinks(info);
-        addLinkDecorationData(info);
-    }
 }, { phase: "rewrite" });
 
 /*****************/
@@ -795,7 +774,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	condition: (info) => info.isMainDocument
 });
 
-
 /*********/
 /* MISC. */
 /*********/
@@ -823,7 +801,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	phase: "rewrite",
 	condition: (info) => info.needsRewrite
 });
-
 
 /*************/
 /* DROP CAPS */
@@ -861,7 +838,6 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	phase: "rewrite",
 	condition: (info) => info.isMainDocument
 });
-
 
 /********************/
 /* BACK TO TOP LINK */
@@ -915,7 +891,6 @@ function updateBackToTopLinkVisibility(event) {
         GW.backToTop.classList.toggle("hidden", true);
 }
 
-
 /*****************/
 /* END OF LAYOUT */
 /*****************/
@@ -927,7 +902,6 @@ doWhenPageLoaded(() => {
         GW.notificationCenter.fireEvent("Rewrite.pageLayoutDidComplete");
     });
 }, { once: true });
-
 
 /**************************/
 /* BROKEN ANCHOR CHECKING */
@@ -979,7 +953,6 @@ function brokenAnchorCheck() {
 // 	});
 }
 doWhenDOMContentLoaded(brokenAnchorCheck);
-
 
 /********************/
 /* HASH REALIGNMENT */
