@@ -415,13 +415,11 @@ a[data-link-icon-type*='quad']::after {
     overflow-wrap: break-word;
     display: inline-block;
     text-align: center;
-    position: relative;
     left: 0;
     bottom: 0.3em;
     font-size: 0.55em;
     font-weight: bold;
 	line-height: 0.8;
-    margin: 0 0 0 2px;
 }
 
 /*  Quad-letter square icons in a sans face.
