@@ -265,6 +265,30 @@ Links = {
 
 /************************************/
 /*	LINKED FILE TYPE ICON DEFINITIONS
+
+	Each row of this array defines or specifies an icon, specifies how the icon
+	should be rendered, and lists a set of file extensions, to links to which
+	the icon should be applied.
+
+	Links are checked against each row’s file extension group in sequence; when
+	a  match is found, the icon specified by that row is assigned to the link 
+	(and no more rows are checked). (If a match is not found in this array, then
+	no linkicon data attributes are applied to the link.)
+
+	Fields in each row are:
+
+		[ ICON_NAME, ICON_TYPE, FILE_EXTENSIONS ]
+
+	(All fields are required for each entry.)
+
+	See comment on the Links.targetLinkTypes array, below, for information about
+	the ICON_NAME and ICON_TYPE fields.
+
+	FILE EXTENSIONS field values are strings, containing a space-separated list
+	of file extensions (without the dot, i.e. `txt` and not `.txt`). A link 
+	whose pathname ends with a dot followed by one of the listed file extensions
+	will be assigned the named icon. (File extensions should always be given in
+	lowercase.)
  */
 Links.fileLinkTypes = [
 	//	Textfiles.
