@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-19 21:21:26 gwern"
+When:  Time-stamp: "2022-02-19 22:31:19 gwern"
 License: CC-0
 -}
 
@@ -1109,13 +1109,14 @@ processArxivAbstract a = let cleaned = runPure $ do
 -- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
 -- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
 processParagraphizer :: String -> IO String
+processParagraphizer "" = return ""
 processParagraphizer a =
   let paragraphsHtmlN    = length $ T.breakOnAll "<p>" (T.pack a)
       paragraphsMarkdown = "\n\n" `isInfixOf` a
       paragraphsHtml     = "<ul>" `isInfixOf` a || "<ol>" `isInfixOf` a || "<blockquote>" `isInfixOf` a -- full-blown lists or blockquotes also imply it's fully-formatted
    -- If the input has more than one <p>, or if there is one or more double-newlines, that means this input is already multiple-paragraphs
    -- and we will skip trying to break it up further.
-   in if paragraphsMarkdown || paragraphsHtml || paragraphsHtmlN > 1 then return a
+   in if length a < 256 || paragraphsMarkdown || paragraphsHtml || paragraphsHtmlN > 1 then return a
       else do let a' = if paragraphsHtmlN > 1 then a else replace "<p>" "" $ replace "</p>" "" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
               (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']
@@ -2480,7 +2481,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("labell", "label")
           , ( "optimise", "optimize")
           , ("organise", "organize")
-          , ("totall", "total")
+          , ("totall ", "total ")
           , ("minimis", "minimiz")
           , ("maximis", "maximiz")
           , (" Pan Troglodytes", " <em>Pan Troglodytes</em>")

@@ -19,7 +19,8 @@ main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a)
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) $ args
           when (null links) $ error "Forgot links?"
-          let tags = filter (\arg -> (not (arg `elem` links))) args
+          let tags = map (filter (/=',')) $ -- we store tags comma-separated so sometimes we might leave in a stray tag when copy-pasting
+                filter (\arg -> (not (arg `elem` links))) args
           when (null tags) $ error "Forgot tags?"
 
           mapM_ (\arg' -> do filep <- doesDirectoryExist ("docs/"++arg')
