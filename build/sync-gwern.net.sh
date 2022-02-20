@@ -37,7 +37,7 @@ else
     set -e
 
     # lower priority of everything we run (some of it is expensive):
-    renice -n 15 "$$" > /dev/null
+    renice -n 15 "$$" &>/dev/null
 
     ## Parallelization:
     N="$(if [ ${#} == 0 ]; then echo 25; else echo "$1"; fi)"
@@ -47,7 +47,8 @@ else
     (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
 
     ## check validity of annotation database before spending time compiling:
-    gwa > /dev/null
+    bold "Checking annotations first…"
+    ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' &>/dev/null
 
     bold "Compiling…"
     cd ./static/build
@@ -81,14 +82,14 @@ else
     cd ./static/ && (git status; git pull; git push --verbose &)
     cd ./build/
     # Cleanup pre:
-    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor || true
+    rm --recursive --force -- ~/wiki/_cache/ ~/wiki/_site/ ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor ./static/build/link-suggester || true
 
     cd ../../ # go to site root
     bold "Building site…"
     time ./static/build/hakyll build +RTS -N"$N" -RTS || (red "Hakyll errored out!"; exit 1)
 
     # cleanup post:
-    rm --recursive --force -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks static/build/link-extractor || true
+    rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
 
     ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
@@ -347,14 +348,14 @@ else
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
     λ() { for PAGE in $PAGES ./static/404.html; do
               HTML="${PAGE%.page}"
-            ANCHOR=$(static/build/anchor-checker.php ./_site/"$HTML")
-            if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
+              ANCHOR=$(static/build/anchor-checker.php ./_site/"$HTML")
+              if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
           done;
           }
     wrap λ "Anchors linked but not defined inside page?"
 
     ## Is the Internet up?
-    ping -q -c 5 google.com  &> /dev/null
+    ping -q -c 5 google.com  &>/dev/null
 
     # Sync:
     ## make sure nginx user can list all directories (x) and read all files (r)
@@ -465,7 +466,7 @@ else
           cm "text/css" 'https://www.gwern.net/docs/statistics/order/beanmachine-multistage/style.css'
           cm "text/css" 'https://www.gwern.net/static/css/default.css'
           cm "text/css" 'https://www.gwern.net/static/css/fonts.css'
-          cm "text/css" 'https://www.gwern.net/static/css/initial.css'
+          cm "text/css" 'https://www.gwern.net/static/css/include/initial.css'
           cm "text/css" 'https://www.gwern.net/static/css/links.css'
           cm "text/csv; charset=utf-8" 'https://www.gwern.net/docs/statistics/2013-google-index.csv'
           cm "text/html" 'https://www.gwern.net/atom.xml'
@@ -474,6 +475,8 @@ else
           cm "text/html; charset=utf-8" 'https://www.gwern.net/'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Attention'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/notes/Faster'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/nootropics/Magnesium'
+          cm "text/html; charset=utf-8" 'https://www.gwern.net/zeo/CO2'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Anime'
           cm "text/html; charset=utf-8" 'https://www.gwern.net/reviews/Movies'
@@ -539,7 +542,7 @@ else
     bold "Checking for HTML/PDF/image anomalies…"
     λ(){ BROKEN_HTMLS="$(find ./ -type f -name "*.html" | fgrep --invert-match 'static/' | \
                          parallel --max-args=100 "fgrep --ignore-case --files-with-matches \
-                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title'" -e 'Download Limit Exceeded' -e 'Access Denied' | sort)"
+                         -e '404 Not Found' -e '<title>Sign in - Google Accounts</title' -e 'Download Limit Exceeded' -e 'Access Denied'" | sort)"
          for BROKEN_HTML in $BROKEN_HTMLS;
          do grep --before-context=3 "$BROKEN_HTML" ./metadata/archive.hs | fgrep --invert-match -e 'Right' -e 'Just' ;
          done; }
@@ -588,6 +591,7 @@ else
 
     λ(){ checkEncryption () { ENCRYPTION=$(exiftool -quiet -quiet -Encryption "$@");
                               if [ "$ENCRYPTION" != "" ]; then
+                                  echo "$@"
                                   TEMP=$(mktemp /tmp/encrypted-XXXX.pdf)
                                   pdftk "$FILE" input_pw output "$TEMP" && mv "$TEMP" "$FILE";
                               fi; }
@@ -668,7 +672,7 @@ else
         done
     fi
 
-    rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &> /dev/null || true
+    rm static/build/generateLinkBibliography static/build/*.hi static/build/*.o &>/dev/null || true
 
     bold "Sync successful"
 fi

@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-02-11 19:37:35 gwern"
+When:  Time-stamp: "2022-02-16 09:32:02 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
@@ -45,7 +45,7 @@ import Text.Pandoc (topDown, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
-import Utils (simplifiedDoc)
+import Utils (addClass, simplifiedDoc)
 import Query (extractURLs)
 
 -- test,test2 :: [Inline]
@@ -75,12 +75,12 @@ linkAutoFiltered subsetter p = let customDefinitions' = filterMatches p $ filter
 annotateFirstDefinitions :: Pandoc -> Pandoc
 annotateFirstDefinitions doc = evalState (walkM addFirstDefn doc) S.empty
   where addFirstDefn :: Inline -> State (S.Set T.Text) Inline
-        addFirstDefn x@(Link (ident,classes,values) il (t,tool)) = if "link-auto" `elem` classes then
+        addFirstDefn x@(Link a@(_,classes,_) il c@(t,_)) = if "link-auto" `elem` classes then
             do st <- get
-               if S.member t st then return (Span ("", ["link-auto-skipped"], []) il) -- Useful for debugging to annotate spans of text which *would* have been Links.
+               if S.member t st then return $ addClass "link-auto-skipped" $ Span nullAttr il -- Useful for debugging to annotate spans of text which *would* have been Links.
                  else do let st' = S.insert t st
                          put st'
-                         return $ Link (ident,classes++["link-auto-first"],values) il (t,tool)
+                         return $ addClass "link-auto-first" $ Link a il c
             else return x
         addFirstDefn x = return x
 
@@ -298,7 +298,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Niels Bohr|Bohr)", "https://en.wikipedia.org/wiki/Niels_Bohr")
         , ("(OpenAI 5|OA ?5)", "https://openai.com/five/")
         , ("(Openness|Openness to Experience)", "https://en.wikipedia.org/wiki/Openness_to_Experience")
-        , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://science.sciencemag.org/content/364/6443/859#deepmind")
+        , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://www.science.org/doi/10.1126/science.aau6249")
         , ("(POMDPs?|[Pp]artially [Oo]bservable [Mm]arkov [Dd]ecision [Pp]rocess?e?s)", "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process")
         , ("(PPO|[Pp]roximal [Pp]olicy [Oo]ptimization)", "https://arxiv.org/abs/1707.06347#openai")
         , ("(PTSD|[Pp]ost.?traumatic stress disorder)", "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder")
@@ -1253,8 +1253,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[tT]acit knowledge", "https://en.wikipedia.org/wiki/Tacit_knowledge")
         , ("\\/r\\/DecisionTheory", "https://old.reddit.com/r/DecisionTheory/")
         , ("[aA]dditive regression models", "https://en.wikipedia.org/wiki/Generalized_additive_model")
-        , ("[aA]dvpng", "https://en.wikipedia.org/wiki/AdvanceCOMP")
-        , ("[Aa]nise", "https://en.wikipedia.org/wiki/Anise")
         , ("[aA]rbtt", "http://arbtt.nomeata.de/")
         , ("brms", "https://github.com/paul-buerkner/brms")
         , ("[Cc]itronellol", "https://en.wikipedia.org/wiki/Citronellol")

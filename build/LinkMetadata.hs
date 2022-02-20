@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-13 23:07:27 gwern"
+When:  Time-stamp: "2022-02-19 13:19:07 gwern"
 License: CC-0
 -}
 
@@ -19,7 +19,7 @@ import qualified Data.ByteString as B (appendFile, readFile, intercalate, split,
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
 import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
-import qualified Data.Text as T (append, pack, unpack, Text)
+import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
@@ -28,7 +28,6 @@ import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Text.IO as TIO (readFile)
-import Data.Text.Titlecase (titlecase)
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import GHC.Generics (Generic)
 import Network.HTTP (urlDecode, urlEncode)
@@ -50,11 +49,11 @@ import qualified Control.Monad.Parallel as Par (mapM_)
 
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks)
-import Typography (typographyTransform)
+import Typography (typographyTransform, titlecase')
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import Query (extractURLs)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -124,7 +123,7 @@ readLinkMetadataAndCheck = do
 
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi) custom in
                  when (not (null badDoisDash)) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
-             -- about the only requirement for DOIs, aside from being made of graphical Unicode characters, is that they contain one '/':
+             -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              let badDoisSlash = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else not ('/' `elem` doi)) custom in
                when (not (null badDoisSlash)) $ error $ "Invalid DOI (missing mandatory forward slash): " ++ show badDoisSlash
 
@@ -181,7 +180,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $!
                                              let filepath = take 247 $ urlEncode u'
                                              let filepath' = "metadata/annotations/" ++ filepath ++ ".html"
                                              when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
-                                             let titleHtml    = typesetHtmlField "" $ titlecase a
+                                             let titleHtml    = typesetHtmlField "" $ titlecase' a
                                              let authorHtml   = typesetHtmlField "" b
                                              -- obviously no point in smallcaps-ing date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
@@ -279,14 +278,15 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
           hasAnnotationInline _ _ y = y
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
-          addHasAnnotation idBool forcep y@(Link (a,b,c) e (f,g)) (_,aut,dt,_,_,abstrct) =
+          addHasAnnotation idBool forcep (Link (a,b,c) e (f,g)) (_,aut,dt,_,_,abstrct) =
            let a'
                  | not idBool = ""
                  | a == ""    = generateID (T.unpack f) aut dt
                  | otherwise  = a
                f' = linkCanonicalize $ T.unpack f
            in -- erase link ID?
-              if (length abstrct < 180) && not forcep then y else
+              if (length abstrct < 180) && not forcep then (Link (a',b,c) e (f,g)) -- always add the ID if possible
+              else
                 -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
                 -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
                 -- so we check for directory-tags and force them to not popup.
@@ -314,7 +314,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                     author = if aut=="" then [Space] else [Space, authorSpan]
-                                    date = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
+                                    date = if dt=="" then [] else [Span ("", ["date"], [("title",T.pack dt)]) [Str (T.pack $ dateTruncate dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
@@ -899,7 +899,8 @@ pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/b
                         if length parsed < 5 then return (Left Permanent) else
                           do let (title:author:date:doi:abstrct) = parsed
                              let ts = [] -- TODO: replace with ML call to infer tags
-                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, processPubMedAbstract $ unlines abstrct))
+                             abstract' <- processParagraphizer $ processPubMedAbstract $ unlines abstrct
+                             return $ Right (l, (trimTitle title, initializeAuthors $ trim author, trim date, trim $ processDOI doi, ts, abstract'))
 
 pdf :: Path -> IO (Either Failure (Path, MetadataItem))
 pdf p = do let p' = takeWhile (/='#') p
@@ -920,8 +921,8 @@ pdf p = do let p' = takeWhile (/='#') p
                     let author = initializeAuthors $ trim $ if length eauthor' > length ecreator then eauthor' else ecreator
                     let ts = [] -- TODO: replace with ML call to infer tags
                     printGreen $ "PDF: " ++ p ++" DOI: " ++ edoi'
-                    a <- fmap (fromMaybe "") $ doi2Abstract edoi'
-                    return $ Right (p, (filterMeta $ trimTitle $ cleanAbstractsHTML etitle, author, trim $ replace ":" "-" edate, edoi', ts, a))
+                    at <- fmap (fromMaybe "") $ doi2Abstract edoi'
+                    return $ Right (p, (filterMeta $ trimTitle $ cleanAbstractsHTML etitle, author, trim $ replace ":" "-" edate, edoi', ts, at))
                   _ -> return (Left Permanent)
                 -- if there is no abstract, there's no point in displaying title/author/date since that's already done by tooltip+URL:
                 -- case aMaybe of
@@ -932,8 +933,8 @@ pdf p = do let p' = takeWhile (/='#') p
 filterMeta :: String -> String
 filterMeta ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
-       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc."]
-       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp"]
+       badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS"]
+       badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan"]
 
 -- nested JSON object: eg. 'jq .message.abstract'
 newtype Crossref = Crossref { message :: Message } deriving (Show,Generic)
@@ -951,8 +952,8 @@ doi2Abstract doi = if length doi < 7 then return Nothing
                                     Right j' -> let j'' = abstract $ message j' in
                                       case j'' of
                                        Nothing -> return Nothing
-                                       Just a -> let trimmedAbstract = cleanAbstractsHTML a
-                                                 in return $ Just trimmedAbstract
+                                       Just a -> do trimmedAbstract <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML a
+                                                    return $ Just trimmedAbstract
 
 -- handles medRxiv too (same codebase)
 biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", p, "--user-agent", "gwern+biorxivscraping@gwern.net"]
@@ -969,7 +970,7 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
-                                 let abstrct = cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                 abstrct <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  let ts = [] -- TODO: replace with ML call to infer tags
                                  if abstrct == "" then return (Left Temporary) else
                                                    return $ Right (p, (title, author, date, doi, ts, abstrct))
@@ -989,12 +990,13 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                  ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
                  _ -> do let (tags,_) = element "entry" $ parseTags $ U.toString bs
                          -- compile the title string because it may include math (usually a superscript, like "S$^2$-MLP: Spatial-Shift MLP Architecture for Vision" or "RL$^2$" etc)
-                         let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract url $ trimTitle $ findTxt $ fst $ element "title" tags
+                         let title = replace "<p>" "" $ replace "</p>" "" $ cleanAbstractsHTML $ processArxivAbstract $ trimTitle $ findTxt $ fst $ element "title" tags
                          let authors = initializeAuthors $ intercalate ", " $ getAuthorNames tags
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
-                         -- NOTE: Arxiv does not, as a matter of policy, provide its own DOIs (even though they easily could...), but sometimes things are published elsewhere & get updated to note that DOI:
-                         let doi = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
-                         let abst = processArxivAbstract url $ findTxt $ fst $ element "summary" tags
+                         -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
+                         let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
+                         let doi = if not (null doiTmp) then doi else "10.48550/arXiv." ++ sed "https://arxiv.org/[a-z]+/([0-9]+\\.[0-9]+).*" "\\1" url
+                         abst <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
                          if abst=="" then return (Left Temporary) else
@@ -1036,13 +1038,16 @@ openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                         ExitFailure _ -> printRed ("OpenReview download failed: " ++ p) >> return (Left Permanent)
                         _ -> do
                                let (title:author:date:tldr:desc:keywords) = lines $ U.toString bs
+                               print desc
                                let keywords' = if null keywords || keywords == [""] then "" else
-                                                 if length keywords > 1 then (unlines $ init keywords) ++ "\n\n[Keywords: " ++ last keywords ++ "]"
+                                                 if length keywords > 1 then (unlines $ init keywords) ++ "\n[Keywords: " ++ last keywords ++ "]"
                                                  else "[Keywords: " ++ concat keywords ++ "]"
-                               let abstractCombined = intercalate "\n\n" [tldr, desc, keywords']
+                               let tldr' = cleanAbstractsHTML $ processArxivAbstract tldr
+                               let desc' = cleanAbstractsHTML $ processArxivAbstract desc
+                               let abstractCombined = intercalate "\n" [tldr', desc', cleanAbstractsHTML $ processArxivAbstract keywords']
                                return $ Right (p, (trimTitle title, initializeAuthors $ trim author, date, "", [],
                                                    -- due to pseudo-LaTeX
-                                                    processArxivAbstract p abstractCombined))
+                                                     abstractCombined))
 
 processDOI :: String -> String
 processDOI = replace "–" "-" . replace "—" "-"
@@ -1065,22 +1070,39 @@ processPubMedAbstract abst = let clean = runPure $ do
                                   Right output -> cleanAbstractsHTML $ trim $ replace "<br/>" "" $ cleanAbstractsHTML output
 
 -- Arxiv makes multi-paragraph abstracts hard because the 'HTML' is actually LaTeX, so we need to special Pandoc preprocessing (for paragraph breaks, among other issues):
-processArxivAbstract :: String -> String -> String
-processArxivAbstract u a = let cleaned = runPure $ do
+processArxivAbstract :: String -> String
+processArxivAbstract a = let cleaned = runPure $ do
                                     let tex = sedMany [("\\\\citep?\\{([[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim"), ("$", "\\$")] a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")] a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
 
                                     writeHtml5String safeHtmlWriterOptions{writerWrapText=WrapNone, writerHTMLMathMethod = MathJax defaultMathJaxURL} pandoc
               in case cleaned of
-                 Left e -> error $ u ++ " : " ++ ppShow e ++ ": " ++ a
+                 Left e -> error $ " : " ++ ppShow e ++ ": " ++ a
                  Right output -> cleanAbstractsHTML $ T.unpack output
 
+-- If a String (which is not HTML!) is a single long paragraph (has no double-linebreaks), call out to paragraphizer.py, which will use GPT-3 to try to break it up into multiple more-readable paragraphs.
+-- This is quite tricky to use: it wants non-HTML plain text (any HTML will break GPT-3), but everything else wants HTML
+processParagraphizer :: String -> IO String
+processParagraphizer a = if "\n\n" `isInfixOf` a then return a else
+  do let paragraphsN = length $ T.breakOnAll "<p>" (T.pack a)
+     let a' = if paragraphsN > 1  then a else replace "<p>" "" $ replace "</p>" "" a
+     let a'' = trim $ replace "\160" " " $ toMarkdown a'
+     (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']
+     case status of
+       ExitFailure err -> printGreen (intercalate " : " [a, a', ppShow status, ppShow err, ppShow mb]) >> error "Paragraphizer failed!"
+       _ -> do let clean = runPure $ do
+                     pandoc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack $ trim $ U.toString mb)
+                     html <- writeHtml5String safeHtmlWriterOptions pandoc
+                     return $ T.unpack html
+               case clean of
+                     Left e -> error $ ppShow e ++ ": " ++ a
+                     Right output -> return $ cleanAbstractsHTML output
 
 --------------------------------------------
 -- String munging and processing
@@ -1436,7 +1458,25 @@ generateID url author date
        , ("https://arxiv.org/abs/1901.04615", "haj-ali-et-al-2019-compiler")
        , ("(https://arxiv.org/abs/2002.11296#google", "tay-et-al-2020-sinkhorn")
        , ("https://arxiv.org/abs/2009.14794#google", "choromanski-et-al-2020-favorplus")
-       , ("https://openreview.net/forum?id=lsQCDXjOl3k", "ho-salimans-2021-jointguidance")
+       , ("https://openreview.net/forum?id=lsQCDXjOl3k#google", "ho-salimans-2021-jointguidance")
+       , ("https://arxiv.org/abs/2103.03206#deepmind", "jaegle-et-al-2021-perceiver")
+       , ("https://arxiv.org/abs/2107.14795#deepmind", "jaegle-et-al-2021-perceiverio")
+       , ("https://arxiv.org/abs/2103.14030", "liu-et-al-2021-swintranformer")
+       , ("https://arxiv.org/abs/2111.09883", "liu-et-al-2021-swintranformerv2")
+       , ("https://arxiv.org/abs/2110.02488#allen", "peng-et-al-2021-abc")
+       , ("https://arxiv.org/abs/2105.12842#google", "zhang-et-al-2021-nas")
+       , ("https://arxiv.org/abs/2108.09084", "wu-et-al-2021-fastformer")
+       , ("https://openreview.net/forum?id=TrjbxzRcnf-#google", "wu-et-al-2021-memorizingtransformer")
+       , ("https://arxiv.org/abs/2110.15943#facebook", "min-et-al-2021-metaicl")
+       , ("https://openai.com/blog/clip/", "radford-et-al-blog")
+       , ("https://arxiv.org/abs/2112.01071", "zhou-et-al-2021-denseclip")
+       , ("https://arxiv.org/abs/2111.13792", "zhou-et-al-2021-lafite")
+       , ("https://arxiv.org/abs/2102.02888#microsoft", "tang-et-al-2021-1bitadam")
+       , ("https://arxiv.org/abs/2002.11296#google", "tay-et-al-2020-sparsesinkhorn")
+       , ("https://arxiv.org/abs/2009.06732#google", "tay-et-al-2020-efficienttransformers")
+       , ("https://arxiv.org/abs/2201.12086#salesforce", "li-et-al-2022-blip")
+       , ("https://arxiv.org/abs/1703.04887", "yang-et-al-2017-seqgan")
+       , ("https://arxiv.org/abs/1709.00103", "zhong-et-al-2017-seq2sql")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1472,6 +1512,10 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’') . map toLower . replace 
 authorsTruncate :: String -> String
 authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ " et al")
 
+-- dates of the form 'YYYY-01-01' are invariably lies, and mean just 'YYYY'.
+dateTruncate :: String -> String
+dateTruncate d = if "-01-01" `isSuffixOf` d then take 4 d else d
+
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
                    -- | head l == '#' = l
@@ -1484,7 +1528,7 @@ trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
-initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", "")] .
+initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "), (" ", " "), (" MA,", ","), (", MA,", ","), (" MS,", ","), ("Dr ", ""), (" PhD", ""), (" MRCGP", ""), (" OTR/L", ""), (" OTS", ""), (" FMedSci", ""), ("Prof ", ""), (" FRCPE", ""), (" FRCP", ""), (" FRS", ""), (" MD", ""), (",, ,", ", "), ("; ", ", "), (" ; ", ", "), (" , ", ", "), (" and ", ", "), (", & ", ", "), (", and ", ", "), (" MD,", " ,"), (" M. D.,", " ,"), (" MSc,", " ,"), (" PhD,", " ,"), (" Ph.D.,", " ,"), (" BSc,", ","), (" BSc(Hons)", ""), (" MHSc,", ","), (" BScMSc,", ","), (" ,,", ","), (" PhD1", ""), (" , BSc", ","), (" BA(Hons),1", ""), (" , BSc(Hons),1", ","), (" , MHSc,", ","), ("PhD,1,2 ", ""), ("PhD,1", ""), (" , BSc", ", "), (",1 ", ","), (" & ", ", "), (",,", ","), ("BA(Hons),", ","), (", (Hons),", ","), (", ,2 ", ","), (",2", ","), (" MSc", ","), (" , PhD,", ","), (" JD,", ","), ("MS,", ","), (" BS,", ","), (" MB,", ","), (" ChB", ""), ("Meena", "M."), ("and ", ", "), (", PhD1", ","), ("  DMSc", ""), (", (Hons),", ","), (",, ", ", "), (", ,,", ", "), (",,", ", "), ("\"", ""), ("'", "’"), ("OpenAI, :, ", ""), (" et al", ""), (" et al.", ""), (", et al.", "")] .
                        sedMany [
                          ("([a-zA-Z]+),([A-Z][a-z]+)", "\\1, \\2"), -- "Foo Bar,Quuz Baz" → "Foo Bar, Quuz Baz"
                          (",$", ""),
@@ -1500,7 +1544,7 @@ initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "),
 wikipediaURLToTitle :: String -> String
 wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
 
--- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+doublespace, and general whitespace cleaning
+-- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+double-space, and general whitespace cleaning
 trimTitle :: String -> String
 trimTitle [] = ""
 trimTitle t = let t' = reverse $ sedMany [("([a-z])_ ", "\\1: ")] $ -- a lot of Elsevier papers replace colons with underscores (‽) in PDF metadata eg. "Compensatory conspicuous communication_ Low status increases jargon use"
@@ -1520,6 +1564,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           ("<p>Abstract. ", "<p>"),
           ("<strong>ABSTRACT</strong><br/>", ""),
           ("<strong>Abstract</strong><br/>", ""),
+          ("R<sup>2</sup>D2", "R2D2"),
          ("</p> ?<p>", "</p>\n<p>"),
          ("</p>\n<p>", "</p> <p>"),
          ("</p>\n \n<p>", "</p>\n<p>"),
@@ -1532,6 +1577,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         (" *</p>", "</p>"),
         ("<em>R</em>  *<sup>2</sup>", "<em>R</em><sup>2</sup>"),
         -- regexp substitutions:
+        ("<p>This paper was accepted by [A-Z][a-z]+ [A-Z][a-z]+, .*\\.</p>", ""),
         -- cleanup bare URLs (particularly common in Arxiv abstracts when linking to Github):
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)$", " <a href=\"\\1\">\\1</a>$"),
         (" (https?://[a-zA-Z0-9_\\.\\?/-]+)</p>", " <a href=\"\\1\">\\1</a></p>"),
@@ -1578,12 +1624,15 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("<p><strong>([A-Z][a-z]+ [A-Za-z]+ [A-Za-z]+ [A-Za-z]+)<\\/strong>:</p> <p>", "<p><strong>\\1</strong>: "),
         ("<xref rid=\"sec[0-9]+\" ref-type=\"sec\">([A-Za-z]+ [0-9]+)</xref>", "<strong>\\1</strong>"), -- PLOS: '<xref rid="sec022" ref-type="sec">Experiment 3</xref>' etc.
         ("^en$", ""),
+        ("([0-9%]) – ([0-9])", "\\1–\\2"), -- space-separated en-dash ranges eg. "with a range of ~0.60 – 0.71 for height"
+        ("([0-9%]) – ([a-z])", "\\1—\\2"), -- a number-alphabet en-dash is usually an em-dash eg. "a Fréchet Inception Distance (FID) of 10.59 – beating the baseline BigGAN model—at"
         ("([a-zA-Z]) – ([[:punct:]])", "\\1—\\2"), -- en dash errors in WP abstracts: usually meant em-dash. eg. 'disc format – <a href="https://en.wikipedia.org/wiki/Universal_Media_Disc">Universal'
         ("([[:punct:]]) – ([a-zA-Z])", "\\1—\\2"),
-        ("([a-zA-Z]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
-        ("([a-zA-Z]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
+        ("([a-zA-Z’]) – ([a-zA-Z])", "\\1—\\2"), -- eg: "Aspects of General Intelligence – a Deep Phenotyping Approach"
+        ("([a-zA-Z’]) - ([a-zA-Z])", "\\1—\\2"), -- spaced hyphens: also usually em dashes: "Towards personalized human AI interaction - adapting the behavior of AI agents"
         (" = -([0-9])", " = −\\1"), -- eg. 'β = -0.08', HYPHEN to MINUS SIGN
-        ("([0-9]) x 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>"),
+        ("× ?10[-–—]([0-9]+)", "× 10<sup>−\\1</sup>"), -- the Unicode '×' seems to never match when used inside a range...?
+        ("([0-9]) [x×] 10[-–—]([0-9]+)", "\\1 × 10<sup>−\\2</sup>"),
         ("<sup>-([0-9]+)</sup>", "<sup>−\\1</sup>"), -- eg. '10<sup>-7</sup>', HYPHEN to MINUS SIGN
         ("([0-9]+%?)-([0-9]+)", "\\1–\\2"),
         ("([0-9]) %", "\\1%"),
@@ -1637,6 +1686,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("$\\mu$", "μ")
+          , ("<span class=\"math inline\">\\(\\mu\\)</span>", "μ")
+          , ("<span class=\"math inline\">\\mu</span>", "μ")
           , ("<span class=\"math inline\">\\(S&#39;\\)</span>", "<em>S</em>′")
           , ("<span class=\"math inline\">\\(S&#39; \\subset S\\)</span>", "<em>S</em>′ ⊂ <em>S</em>")
           , ("<span class=\"math inline\">\\(2^S \\to \\mathbb{R}\\)</span>", "2<sup><em>S</em></sup> ⟶ ℝ")
@@ -1972,6 +2024,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<p>Funding: ", "<p><strong>Funding</strong>: ")
           , ("( <em>n</em> =", "(<em>n</em> =")
           , ("<em>N</em> =", "<em>n</em> =")
+          , ("N = ", "<em>N</em> = ")
+          , ("n = ", "<em>n</em> = ")
           , ("(i)", "(1)")
           , (" i)", " (1)")
           , ("(ii)", "(2)")
@@ -2269,6 +2323,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("( ns = ", "(<em>ns</em> = ")
           , ("( n = ", "(<em>n</em> = ")
           , ("n = ", "<em>n</em> = ")
+          , ("(minimum p ", "(minimum <em>p</em> ")
           , ("(p = ", "(<em>p</em> = ")
           , (" p&lt;", " <em>p</em> < ")
           , (" p&gt;", " <em>p</em> > ")
@@ -2287,6 +2342,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\40p=",     "\40<em>p</em> = ")
           , (" n=",     " <em>n</em> = ")
           , ("( n=", "( <em>n</em> = ")
+          , (" n-back", " <em>n</em>-back")
           , ("( <em>p</em>", "(<em>p</em>")
           , (" p&lt;", " <em>p</em> &lt; ")
           , ("p = 0",   "<em>p</em> = 0")
@@ -2345,7 +2401,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" 3x", " 3×")
           , ("~twice", "~2×")
           , ("five times", "5×")
-          , ("5 years", "55 years")
+          , ("fifty-five years", "55 years")
           , ("Fifty-five years", "55 years")
           , ("<p> ", "<p>")
           , ("+/-", "±")
@@ -2380,6 +2436,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(12th", "(12<sup>th</sup>")
           , ("<code class=\"mw-highlight mw-highlight-lang-bash mw-content-ltr\" dir=\"ltr\">", "<code>")
           , ("ml-1", "ml<sup>−1</sup>")
+          , ("(10(9))", "(10<sup>9</sup>)")
           , ("Cmax", "C<sub>max</sub>")
           , ("<small></small>", "")
           , (" et al ", " et al ") -- et al: try to ensure no linebreaking of citations
@@ -2401,6 +2458,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("totall", "total")
           , ("minimis", "minimiz")
           , ("maximis", "maximiz")
+          , (" Pan Troglodytes", " <em>Pan Troglodytes</em>")
+          , ("(Pan Troglodytes)", "(<em>Pan Troglodytes</em>)")
           , (" C. elegans", " <em>C. elegans</em>")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
@@ -2409,6 +2468,14 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("pro-posed", "proposed")
           , ("case- control", "case-control")
           , ("high- g", "high-<em>g</em>")
+          , ("ap-proach", "approach")
+          , ("AsRL", "As RL")
+          , ("spaceusing", "space using")
+          , ("withits", "with its")
+          , ("languagemodel", "language model")
+          , ("questiongeneration", "question generation")
+          , ("wethen", "we then")
+          , ("successfullylearns", "successfully learns")
           , ("“ ", "“")
           , ("\t", "")
           , ("\t\t", "")
@@ -2419,6 +2486,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\n            <jats:sup>–6</jats:sup>\n            ", "<sup>–6</sup>")
           , ("\n            <jats:italic>in vitro</jats:italic>\n", " <em>in vitro</em>")
           , ("\n            <jats:italic>R</jats:italic>\n", "<em>R</em>")
+          , ("\8201", " ")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
             ]

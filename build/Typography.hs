@@ -4,11 +4,12 @@
 -- 1. adding smallcaps to capitalized phrases
 -- 2. adding line-break tags (`<wbr>` as Unicode ZERO WIDTH SPACE) to slashes so web browsers break at slashes in text
 -- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a cycling pattern, like `class="ruler-1"`/`class="ruler-2"`/`class="ruler-3"`/`class="ruler-1"`..., like a repeating pattern of stars/moon/sun/stars/moon/sun... CSS can do this with :nth, but only for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal rulers and other block elements within each section, it is not possible to do the usual trick like with blockquotes/lists).
-module Typography (invertImageInline, typographyTransform, imageMagickDimensions) where
+module Typography (invertImageInline, typographyTransform, imageMagickDimensions, titlecase') where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
+import Data.Char (toUpper)
 import Data.List (isPrefixOf)
 import Data.List.Utils (replace)
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
@@ -20,11 +21,14 @@ import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
 import Control.Concurrent (threadDelay)
+import Data.Text.Titlecase (titlecase)
 
 import Data.FileStore.Utils (runShellCommand)
 
 import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown, nullAttr)
 import Text.Pandoc.Walk (walk, walkM)
+
+import Utils (addClass)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = walk linkPdf .
@@ -37,15 +41,11 @@ typographyTransform = walk linkPdf .
 -- → Link ("",["link-pdf"],[]) [Str "foo"] ("/docs/foo.pdf","Foo & Bar 2022")
 -- → <a href="/docs/foo.pdf" class="link-pdf" title="Foo &amp; Bar 2022">foo</a>
 linkPdf :: Inline -> Inline
-linkPdf x@(Link (i, classes, ks) [s] (url, tt))
-    | "link-pdf" `elem` classes = x
-    | not $
-        any (`T.isInfixOf` url)
-          [".pdf", "/pdf", "type=pdf", ".epub",
-           "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu",
-           "eprint.iacr.org", "pdfs.semanticscholar.org"]
-      = x
-    | otherwise = Link (i, "link-pdf" : classes, ks) [s] (url, tt)
+linkPdf x@(Link _ _ (url, _)) =
+  if any (`T.isInfixOf` url) [".pdf", "/pdf", "type=pdf",
+                              "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu",
+                              "eprint.iacr.org", "pdfs.semanticscholar.org"]
+      then addClass "link-pdf" x else x
 linkPdf x = x
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg. Bringhurst 2004, _Elements_ pg47; cf. https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
@@ -165,9 +165,9 @@ breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
 breakSlashesInline x@(SmallCaps _) = x
 breakSlashesInline x@Code{}        = x
-breakSlashesInline (Link a@(i,c,ks) [Str ss] (t,"")) = if ss == t then
+breakSlashesInline (Link a@_ [Str ss] (t,"")) = if ss == t then
                                                 -- if an autolink like '<https://example.com>' which converts to 'Link () [Str "https://example.com"] ("https://example.com","")' or '[Para [Link ("",["uri"],[]) [Str "https://www.example.com"] ("https://www.example.com","")]]' (NOTE: we cannot rely on there being a "uri" class), then we mark it up as Code and skip it:
-                                                 Link (i,"uri":c,ks) [Code nullAttr ss] (t,"")
+                                                 addClass "uri" $ Link a [Code nullAttr ss] (t,"")
                                                 else
                                                  Link a (walk breakSlashesPlusHairSpaces [Str ss]) (t,"")
 breakSlashesInline (Link a ss ts) = Link a (walk breakSlashesPlusHairSpaces ss) ts
@@ -209,7 +209,7 @@ invertImageInline x@(Link (htmlid, classes, kvs) xs (p, t)) =
                                                           return x else
                                                             do (color,_,_) <- invertFile p
                                                                if not color then return x else
-                                                                 return (Link (htmlid, "invertible-auto":classes, kvs) xs (p,t))
+                                                                 return $ addClass "invertible-auto" $ Link (htmlid, classes, kvs) xs (p, t)
 invertImageInline x = return x
 
 invertFile :: T.Text -> IO (Bool, String, String)
@@ -298,3 +298,14 @@ rulersCycle modulus doc = evalState (walkM addHrNth doc) 0
          let nthClass = T.pack $ "horizontalRule" ++ "-nth-" ++ show nth
          return $ Div ("", [nthClass], []) [HorizontalRule]
        addHrNth x = return x
+
+-- rewrite a string (presumably an annotation title) into a mixed-case 'title case' https://en.wikipedia.org/wiki/Title_case as we expect from headlines/titles
+-- uses <https://hackage.haskell.org/package/titlecase>
+-- TODO: This wrapper function exists to temporarily work around `titlecase`'s lack of hyphen handling: <https://github.com/peti/titlecase/issues/5>. We crudely just uppercase every lowercase letter after a hyphen, not bothering with skipping prepositions/conjunctions/particles/etc. Hopefully titlecase will do better and we can remove this.
+titlecase' :: String -> String
+titlecase' "" = ""
+titlecase' t = titlecase $ titlecase'' t
+   where titlecase'' :: String -> String
+         titlecase'' "" = ""
+         titlecase'' t' = let (before,matched,after) = R.match (R.makeRegex ("-[a-z]"::String) :: R.Regex) t' :: (String,String,String)
+                          in before ++ map toUpper matched ++ titlecase'' after

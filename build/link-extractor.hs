@@ -2,17 +2,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- dependencies: libghc-pandoc-dev
 
--- usage: 'link-extract.hs [file]'; prints out a newline-delimited list of hyperlinks found in targeted Pandoc Markdown files when parsed.
+-- usage: 'link-extract.hs [file]'; prints out a newline-delimited list of hyperlinks found in targeted Pandoc Markdown .page files (or simple Pandoc-readable HTML .html files) when parsed.
 -- Hyperlinks are not necessarily to the WWW but can be internal or interwiki hyperlinks (eg. '/local/file.pdf' or '!W').
 
 module Main where
 
+import Data.List (isSuffixOf)
 import qualified Data.Text as T (append,  head, pack, unlines)
 import qualified Data.Text.IO as TIO (readFile, putStr)
 import System.Environment (getArgs)
 import System.FilePath (takeBaseName)
 
-import Query (extractLinks)
+import Query (extractLinksWith)
 
 -- | Map over the filenames
 main :: IO ()
@@ -26,7 +27,7 @@ main = do
 printURLs :: Bool -> FilePath -> IO ()
 printURLs printfilename file = do
   input <- TIO.readFile file
-  let converted = extractLinks True input
+  let converted = extractLinksWith (".page"`isSuffixOf`file) input
   -- rewrite self-links like "#discriminator-ranking" → "/Faces#discriminator-ranking" by prefixing the original Markdown filename's absolute-ized basename;
   -- this makes frequency counts more informative, eg. for deciding what sections to refactor out into standalone pages (because heavy cross-referencing
   -- *inside* a page is an important indicator of a section being 'too big', just like cross-page references are).

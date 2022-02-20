@@ -13,6 +13,7 @@ import qualified GenerateSimilar as GS (singleShotRecommendations)
 
 main :: IO ()
 main = do originalMarkdown <- TIO.getContents
+
           let clean = runPure $ do
                 pandoc <- readMarkdown def{readerExtensions=pandocExtensions} originalMarkdown
                 let pandoc' = walk convertInterwikiLinks pandoc
@@ -21,6 +22,7 @@ main = do originalMarkdown <- TIO.getContents
           let html = case clean of
                  Left e -> error $ show e ++ ": " ++ show originalMarkdown
                  Right output -> cleanAbstractsHTML $ T.unpack output
+          putStrLn html
 
           matchList <- GS.singleShotRecommendations html
-          putStrLn $ html ++ "\n\n<div class=\"collapse\">\n\n<p class=\"seeAlsoSeparator\"><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
+          putStrLn $ "<div class=\"collapse\">\n\n<p class=\"seeAlsoSeparator\"><strong>See Also</strong>:</p>\n\n" ++ T.unpack matchList ++ "\n</div>"
