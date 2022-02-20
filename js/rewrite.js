@@ -659,8 +659,9 @@ function bindNoteHighlightEventsToCitations(loadEventInfo) {
 function injectFootnotesTOCLink(loadEventInfo) {
     GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
 
+    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
     let TOCList = loadEventInfo.document.querySelector("#TOC > ul");
-    if (TOCList)
+    if (TOCList && footnotesSection)
         TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
 }
 
