@@ -326,23 +326,16 @@ a[data-link-icon-type*='overline']::after {
 /*  Logotype icons.
     */
 
-a[data-link-icon='M\1D411']::after {
-    opacity: 0.75;
-}
-
-a[data-link-icon='\1D40C']::after {
-    opacity: 0.7;
-}
-
-a[data-link-icon*="\25B2"]::after {
-    margin: 0 0 0 0px;
-    opacity: 0.75;
-}
-
 a[data-link-icon='MS']::after {
     margin: 0 0 0 2px;
     bottom: 0.3em;
     font-size: 0.65em;
+}
+
+a[data-link-icon='n']::after {
+    font-size: 1em;
+    bottom: 0.2em;
+    opacity: 0.70;
 }
 
 a[data-link-icon='s']::after {
@@ -353,20 +346,15 @@ a[data-link-icon='Vox']::after {
     font-size: 0.75em;
 }
 
+a[data-link-icon='\03C8']::after {
+    opacity: 0.75;
+    bottom: 0.4em;
+}
+
 a[data-link-icon='\2135']::after {
     font-weight: normal;
     font-size: 1em;
     margin: 0 2px 0 2px;
-}
-
-a[data-link-icon='\1D6D8']::after {
-    opacity: 0.75;
-    bottom: 0.4em;
-}
-
-a[data-link-icon='\03C8']::after {
-    opacity: 0.75;
-    bottom: 0.4em;
 }
 
 a[data-link-icon='\2585\2587\2583']::after {
@@ -376,24 +364,9 @@ a[data-link-icon='\2585\2587\2583']::after {
     margin: 0 0 0 4px;
 }
 
-a[data-link-icon='\1D401']::after {
-    opacity: 0.77;
-}
-
-a[data-link-icon='\1D6CC']::after {
-    font-size: 1em;
-    opacity: 0.6;
-}
-
-a[data-link-icon='\2709']::after {
-    opacity: 0.95;
-    left: 0.04em;
-}
-
-a[data-link-icon='n']::after {
-    font-size: 1em;
-    bottom: 0.2em;
-    opacity: 0.70;
+a[data-link-icon*="\25B2"]::after {
+    margin: 0 0 0 0px;
+    opacity: 0.75;
 }
 
 a[data-link-icon='\2658']::after {
@@ -401,6 +374,33 @@ a[data-link-icon='\2658']::after {
     line-height: 1;
     font-weight: normal;
     bottom: 0.13em;
+}
+
+a[data-link-icon='\2709']::after {
+    opacity: 0.95;
+    left: 0.04em;
+}
+
+a[data-link-icon='M\1D411']::after {
+    opacity: 0.75;
+}
+
+a[data-link-icon='\1D401']::after {
+    opacity: 0.77;
+}
+
+a[data-link-icon='\1D40C']::after {
+    opacity: 0.7;
+}
+
+a[data-link-icon='\1D6CC']::after {
+    font-size: 1em;
+    opacity: 0.6;
+}
+
+a[data-link-icon='\1D6D8']::after {
+    opacity: 0.75;
+    bottom: 0.4em;
 }
 
 /****************************/
