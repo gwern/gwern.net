@@ -2,6 +2,8 @@
 
 module LinkIcon (linkIcon) where
 
+import Data.List.Utils (hasKeyAL)
+import Data.Maybe (fromJust)
 import Data.Text as T (append, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
 import Text.Pandoc (Inline(Link))
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
@@ -22,9 +24,10 @@ import System.FilePath (takeExtension)
 -- TODO: the PDF checks are incomplete (and only look for ".pdf" essentially) but since I'm trying to remove all weird non-standard PDFs and host locally all PDFs with clean names & extensions, maybe that's a vestigial concern?
 linkIcon :: Inline -> Inline
 linkIcon x@(Link (_,cl,_) _ (u, _))
- -- Short-circuits for manual control (one can either disable icons with a `[Foo](URL){.no-icon}` class, or specify a preferred icon on a link, like `[Foo](URL){.link-icon="deepmind" .link-icon-type="svg"}` by specifying the attributes directly):
+ -- Short-circuits for manual control (one can either disable icons with a `[Foo](URL){.no-icon}` class, or specify a preferred icon on a link, like `[Foo](URL){.link-icon="deepmind" .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link icon, link icon type) rewrite:
  | "no-icon" `elem` cl = x
  | hasIcon x           = x
+ | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
  -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL.
  | u' "deepmind"  = aI "deepmind" "svg" -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
  | u' "facebook"  = aI "facebook" "svg"
@@ -156,6 +159,10 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
        iE :: [T.Text] -> Bool
        iE = anyInfix (extension u)
 linkIcon x = x
+
+-- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`)
+overrideLinkIcons :: [(T.Text, (T.Text,T.Text))]
+overrideLinkIcons = []
 
 hasIcon :: Inline -> Bool
 hasIcon (Link (_,_,ks) _ (_,_)) =
