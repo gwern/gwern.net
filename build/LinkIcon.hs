@@ -51,7 +51,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u' "haskell.org" && (extension u /= ".hs") = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
- | u'' "arxiv.org" || u'' "ar5iv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
+ | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
  | "theatlantic.com" `T.isSuffixOf` host u = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
  | "alignmentforum.org" `T.isSuffixOf` host u = aI "AF" "text"
  | "animenewsnetwork.com" `T.isSuffixOf` host u = aI "ANN" "text"
@@ -221,7 +221,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://www.animenewsnetwork.com/anime-spotlight/2018/summer/revue-starlight/.132471",  "ANN","text"),
          ("https://arstechnica.com/gadgets/2011/09/the-post-jobs-era-tim-cook-brings-philanthropy-back-to-apple/",  "ars","text,sans"),
          ("https://arxiv.org/abs/0707.1051",  "\120536","text"),
-         ("https://ar5iv.org/html/2112.11848",  "\120536","text"),
+         ("https://ar5iv.labs.arxiv.org/html/2112.11848",  "\120536","text"),
          ("https://www.bbc.com/news/business-43365710",  "BBC","text,sans"),
          ("http://news.bbc.co.uk/2/hi/8448731.stm",  "BBC","text,sans"),
          ("https://www.biorxiv.org/content/10.1101/013896v2.full",  "chi-dna","svg"),

@@ -27,11 +27,11 @@
 
 	GW.contentDidLoad {
 			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
-            document: 
+            document:
             	The contentView of the pop-frame.
-            location: 
+            location:
             	URL of the local page (including anchor, if any).
-            flags: 
+            flags:
             	0 (no flags set)
 		}
 		Fired at the last stage of preparing a local page embed pop-frame for
@@ -43,9 +43,9 @@
 
 	GW.contentDidLoad {
 			source: "Extracts.refreshPopFrameAfterLocalPageLoads"
-			document: 
+			document:
             	The contentView of the pop-frame.
-			location: 
+			location:
             	URL of the local page (including anchor, if any).
 			flags: (  GW.contentDidLoadEventFlags.needsRewrite
 					| GW.contentDidLoadEventFlags.isFullPage)
@@ -286,11 +286,11 @@ Extracts = {
 		if (target.dataset.urlOriginal) {
 			let originalURL = new URL(target.dataset.urlOriginal);
 
-			/*	Special cases where the original URL of the target does not 
+			/*	Special cases where the original URL of the target does not
 				match the target’s proper identifier (possibly due to outgoing
 				link rewriting).
 			 */
-			if (originalURL.hostname == "ar5iv.org") {
+			if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
 				originalURL.hostname = "arxiv.org";
 				originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
 			}
@@ -569,10 +569,10 @@ Extracts = {
         } else {
             /*  Otherwise, display the entire linked page.
 
-            	(Note that we might end up here because there is yet no 
+            	(Note that we might end up here because there is yet no
             	 pop-frame with the full linked document, OR because there is
             	 such a pop-frame but it’s a pinned popup or something (and thus
-            	 we didn’t want to despawn it and respawn it at this target’s 
+            	 we didn’t want to despawn it and respawn it at this target’s
             	 location).
         	 */
             return Extracts.externalPageEmbedForTarget(target);
@@ -610,7 +610,7 @@ Extracts = {
     preparePopup_LOCAL_PAGE: (popup) => {
         let target = popup.spawningTarget;
 
-        /*  Designate popups spawned from section links in the the TOC (for 
+        /*  Designate popups spawned from section links in the the TOC (for
         	special styling).
          */
         if (Extracts.isTOCLink(target))
@@ -837,7 +837,7 @@ Extracts = {
         //  Import the class(es) of the target.
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
-        popFrame.classList.remove("has-annotation", "has-content", "link-self", 
+        popFrame.classList.remove("has-annotation", "has-content", "link-self",
         	"link-local", "spawns-popup", "spawns-popin", "idNot", "backlinksNot");
 
         //  Add ‘markdownBody’ class.
@@ -865,7 +865,7 @@ Extracts = {
 
         let target = popin.spawningTarget;
 
-        /*  Call generic pop-frame prepare function (which will attempt to fill 
+        /*  Call generic pop-frame prepare function (which will attempt to fill
         	the popin).
          */
         if ((popin = Extracts.preparePopFrame(popin)) == null)
@@ -984,7 +984,7 @@ Extracts = {
             return existingPopup;
         }
 
-        /*  Call generic pop-frame prepare function (which will attempt to fill 
+        /*  Call generic pop-frame prepare function (which will attempt to fill
         	the popup).
          */
         if ((popup = Extracts.preparePopFrame(popup)) == null)
