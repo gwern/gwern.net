@@ -30,27 +30,27 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
  -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL.
  | u' "deepmind"  = aI "deepmind" "svg" -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
- | u' "facebook"  = aI "facebook" "svg"
+ | u' "facebook" || u' ".fb.com"  = aI "facebook" "svg"
  | u'' "groups.google.com" = aI "✉" "text"
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
  | u' "google" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
- | u' "nvidia"    = aI "nvidia" "text" -- Nvidia: https://en.wikipedia.org/wiki/Nvidia#cite_note-2 yeah no
+ | u' "nvidia"    = aI "N" "text" -- Nvidia: https://en.wikipedia.org/wiki/Nvidia#cite_note-2 yeah no
  | u' "openai"    = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers
- | u' "microsoft" = aI "microsoft" "text,sans,italic" -- Microsoft: I don’t think https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg  s all that recognizable, so make a logotype more like https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg : an italic sans "MS".
+ | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg  s all that recognizable, so make a logotype more like https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg : an italic sans "MS".
  -- Domains:
- | u'' "psyarxiv.com" = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
+ | u'' "psyarxiv.com" || u'' "files.osf.io" || u'' "osf.io" = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
  | u'' "unsongbook.com" = aI "ℵ" "text" -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.)
  | u'' "andrewgelman.com" || u'' "statmodeling.stat.columbia.edu" = aI "▅▇▃" "text" -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
  | u'' "meltingasphalt.com" = aI "▲" "text" -- Kevin Simler’s Melting Asphalt blog uses 3 triangles but that's too many, so we just use one. (▲) BLACK UP-POINTING TRIANGLE
  | "www.bloomberg.com" `T.isSuffixOf` host u = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
- | u'' "link.springer.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
+ | u'' "link.springer.com" || u'' "rd.springer.com" || u' ".biomedcentral.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
- | u' "haskell.org" && (extension u /= ".hs") = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
+ | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
  | "theatlantic.com" `T.isSuffixOf` host u = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
  | "alignmentforum.org" `T.isSuffixOf` host u = aI "AF" "text"
@@ -59,23 +59,32 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "bbc.com" `T.isSuffixOf` host u || "bbc.co.uk" `T.isSuffixOf` host u = aI "BBC" "text,sans" -- BBC: no usable logo
  | u' ".bmj.com" = aI "bmj" "text,sans" -- British Medical Journal or just ‘bmj’
  | u'' "www.cdc.gov" = aI "CDC" "text"
+ | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" || u'' "www.bronibooru.com" = aI "▱" "text" -- WHITE PARALLELOGRAM
  | u'' "www.justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
  | u'' "www.edge.org" = aI "E" "text,italic"
  | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’...
+ | u'' "everything2.com" = aI "E2" "text"
+ | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
- | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
- | u'' "www.fda.gov" || u'' "fis.fda.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
+ | u' "jamanetwork.com" = aI "JN" "text,sans" -- The Journal of the American Medical Association (JAMA)
+ | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" || u'' "www.evacommentary.org" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | u'' "www.fda.gov" || u'' "fis.fda.gov" || u'' "clinicaltrials.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
  | u'' "www.fanfiction.net" = aI "FF" "text" -- The FF.net logo is pretty crazy, and I don’t think anyone would recognize it in monochrome
+ | u' "mozilla.org" = aI "ff" "text" -- TODO: https://commons.wikimedia.org/wiki/File:Font_Awesome_5_brands_firefox.svg ?
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
- | u'' "www.lesswrong.com" || u'' "wiki.lesswrong.com" || u'' "www.greaterwrong.com" = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
+ | u'' "www.lesswrong.com" || u'' "sl4.org" || u'' "wiki.lesswrong.com" || u'' "www.greaterwrong.com" = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
+ | u'' "www.longecity.org" = aI "⧖" "text" -- Longecity “⧖” U+29D6 WHITE HOURGLASS UNICODE
+ | u'' "mattlakeman.org" = aI "ML" "text,sans"
+ | u'' "michaelnielsen.org" || u'' "quantum.country" || u'' "numinous.productions" || u'' "cognitivemedium.com" = aI "MN" "text"
  | u'' "myanimelist.net" = aI "MAL" "text,sans" -- MAL: the blue of their logo doesn’t work, so just text
  | u'' "www.motherjones.com" = aI "MJ" "text,sans"
  | u' ".nature.com" = aI "n" "text" -- Nature
- | anyInfix u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com"] = aI "NGE" "text" -- Primary user: forum.evageeks.org wiki.evageeks.org
+ | anyInfix u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = aI "NGE" "text" -- Primary user: forum.evageeks.org wiki.evageeks.org
+ | u'' "openreview.net" = aI "OR" "text,sans" -- doesn't seem to have any real logo or wordmark: <https://openreview.net/about>
  | u'' "www.overcomingbias.com" = aI "OB" "text" -- OB logo too bad to use
- | u'' "academic.oup.com" = aI "OUP" "text" -- Oxford Academic Journals / OUP
+ | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text" -- Oxford Academic Journals / OUP
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text"
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
  | u' "r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
@@ -84,15 +93,18 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.salon.com" = aI "s" "text"
  | u'' "scholars-stage.org" = aI "Ss" "text" -- Avoid the unfortunate connotations of ‘SS’
  | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) = aI "SSC" "text" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
+ | u'' "papers.ssrn.com" = aI "SSRN" "text,quad"
+ | u'' "plato.stanford.edu" = aI "SEP" "text"
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
- | u'' "www.urth.net" || u'' "lists.urth.net" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
+ | u'' "www.urth.net" || u'' "lists.urth.net" || u'' "www.wolfewiki.com" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
+ | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "V" "text"
  | u'' "www.vox.com" = aI "Vox" "text,italic"
  | u' "onlinelibrary.wiley.com" = aI "W" "text,sans" -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
  | u'' "blogs.wsj.com" || u'' "online.wsj.com" || u'' "www.wsj.com" = aI "WSJ" "text" -- The Wall Street Journal
  | anyInfix u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
- | u'' "yunnansourcing.com" = aI "ys" "text"
+ | u'' "yunnansourcing.com" || u'' "yunnansourcing.us" = aI "ys" "text"
  | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark...?
  -- Quad-letter-square icons.
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
@@ -105,15 +117,15 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
- | u'' "en.bitcoin.it" || u'' "bitcointalk.org" = aI "bitcoin" "svg"
+ | u'' "en.bitcoin.it" || u'' "bitcointalk.org" || u' "www.blockchain.com/btc/" = aI "bitcoin" "svg"
  | u'' "www.biorxiv.org" || u'' "www.medrxiv.org" = aI "chi-dna" "svg" -- BioRxiv (custom icon: italic Chi with DNA cross-strands).
  | u'' "distill.pub" = aI "distillpub" "svg" -- Distill ML journal.
  | u'' "www.dropbox.com" || u'' "dl.dropboxusercontent.com" = aI "dropbox" "svg" -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com
  | u'' "www.erowid.org" = aI "erowid" "svg"
  | u'' "www.filfre.net" = aI "F" "text" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
  | u'' "github.com" || u'' "copilot.github.com" || u'' "archiveprogram.github.com" || u'' "gist.github.com" || u'' "github.blog" = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
- | u'' "paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
- | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
+ | u'' "www.paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
+ | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
  | u'' "intelligence.org" = aI "miri" "svg" -- MIRI/intelligence.org.
  | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
@@ -131,11 +143,13 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "soundcloud.com" = aI "audio" "svg"
  | u' ".bandcamp.com" = aI "audio" "svg"
  | u'' "www.washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
- | anyInfix u ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
- | u' "www.wired.com" = aI "wired" "svg"
+ | anyInfix u ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
+ | u' ".fandom.com" = aI "FNDM" "text,quad,sans"
+ | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg"
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
+ | u'' "vimeo.com" = aI "file-video" "svg"
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
- | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt"] = aI "archive" "svg"
+ | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = aI "archive" "svg"
  | iE ["opml", "txt", "xml", "json", "jsonl", "page"] = aI "txt" "svg"
  | iE ["css", "hs", "js", "conf", "sh", "r", "R", "patch", "diff"] = aI "code" "svg"
  | iE ["doc", "docx"] = aI "worddoc" "svg"
@@ -205,6 +219,12 @@ isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive pattern url = let h = host url in
                                 h == pattern || ("/docs/www/"`T.append`pattern) `T.isPrefixOf` url
 
+-- -- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted from the backlinks database) and return
+-- -- > b <- LinkMetadata.readBacklinksDB
+-- -- > let urls = ppShow $ unmatchedURLs $ Data.Map.keys b
+-- unmatchedURLs :: [T.Text] -> [T.Text]
+-- unmatchedURLs = sort . filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && (not $ hasKeyAL "link-icon" ks)) $ linkIcon (Link nullAttr [] (url,"")))
+
 -- Test the /Lorem#link-icons test cases as unit-tests of `linkIcon`: it should, for every URL unit-test, generate the specified link-icon/link-icon-type. Return the list of mismatches for fixing.
 -- Here we test that URLs get assigned the appropriate icons; on /Lorem, we render them to check for CSS/visual glitches. Any new test-cases should be added to both.
 linkIconTest :: [(T.Text,T.Text,T.Text)]
@@ -273,8 +293,8 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text"),
          ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg"),
          ("https://meltingasphalt.com/interactive/going-critical/",  "\9650","text"),
-         ("https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/",  "microsoft","text,sans,italic"),
-         ("https://arxiv.org/abs/2003.13590#microsoft",  "microsoft","text,sans,italic"),
+         ("https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/",  "MS","text,sans,italic"),
+         ("https://arxiv.org/abs/2003.13590#microsoft",  "MS","text,sans,italic"),
          ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans,italic"),
          ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,sans"),
          ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text"),
@@ -288,7 +308,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://eva-fan.com/blog-entry-1198.html",  "NGE","text"),
          ("https://eva.onegeek.org/",  "NGE","text"),
          ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2793346/",  "nlm-ncbi","svg"),
-         ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "nvidia","text"),
+         ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "N","text"),
          ("https://6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg"),
          ("https://online.wsj.com/article/SB10000872396390443696604577647870908169992.html",  "WSJ","text"),
          ("/docs/ai/2020-chen.pdf#openai",  "openai","svg"),
@@ -348,7 +368,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://www.vanityfair.com/news/2012/10/michael-lewis-profile-barack-obama",  "VF","text"),
          ("https://www.vox.com/2015/5/27/8660249/bill-gates-spanish-flu-pandemic",  "Vox","text,italic"),
          ("https://www.wsj.com/news/articles/SB10001424052702303380004579521482247869874",  "WSJ","text"),
-         ("http://paulgraham.com/hundred.html",  "hn","svg"),
+         ("http://www.paulgraham.com/hundred.html",  "hn","svg"),
          ("https://news.ycombinator.com/item?id=10012625",  "hn","svg"),
          ("https://aino.bandcamp.com/track/--2",  "audio","svg"),
          ("https://poniesatdawn.bandcamp.com/",  "P@D","text"),
