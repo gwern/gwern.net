@@ -748,12 +748,14 @@ function directionalizeAnchorLinks(loadEventInfo) {
 /*	Add data attribute(s) that specify linkicons, brackets, etc.
 
     Requires links.js to be loaded prior to this file.
+    DEPRECATED due to moving linkicon attribute tagging to server-side code.
+    	—SA, 2022-02-21
  */
-function addLinkDecorationData(loadEventInfo) {
-    GWLog("addLinkDecorationData", "rewrite.js", 1);
-
-    Links.decorateLinksWithin(loadEventInfo.document);
-}
+// function addLinkDecorationData(loadEventInfo) {
+//     GWLog("addLinkDecorationData", "rewrite.js", 1);
+// 
+//     Links.decorateLinksWithin(loadEventInfo.document);
+// }
 
 /************************************************/
 /*  Add content load handler for link processing.
@@ -765,7 +767,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
     if (info.needsRewrite) {
         directionalizeAnchorLinks(info);
-        addLinkDecorationData(info);
+//         addLinkDecorationData(info);
     }
 }, { phase: "rewrite" });
 
