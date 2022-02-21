@@ -42,13 +42,16 @@ else
     ## Parallelization:
     N="$(if [ ${#} == 0 ]; then echo 25; else echo "$1"; fi)"
 
-    (cd ~/wiki/ && git status) &
+    (cd ~/wiki/ && git status || true) &
     bold "Pulling infrastructure updates…"
     (cd ./static/ && git status && git pull --verbose 'https://gwern.obormot.net/static/.git' || true)
 
     ## check validity of annotation database before spending time compiling:
     bold "Checking annotations first…"
     ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' &>/dev/null
+    λ(){ egrep -- '/[[:graph:]]\+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
+         fgrep -- '–' ./metadata/*.hs || true; }
+    wrap λ "En-dashes in URLs?"
 
     bold "Compiling…"
     cd ./static/build
