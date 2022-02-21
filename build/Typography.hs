@@ -28,25 +28,15 @@ import Data.FileStore.Utils (runShellCommand)
 import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown, nullAttr)
 import Text.Pandoc.Walk (walk, walkM)
 
+import LinkIcon (linkIcon)
+
 import Utils (addClass)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk linkPdf .
+typographyTransform = walk linkIcon .
                       walk (breakSlashes . breakEquals) .
                       walk smallcapsfyInlineCleanup . walk smallcapsfy .
                       rulersCycle 3
-
--- to simplify the CSS link icons, because we often want to override PDF icons to instead show organization icons or archive status, we do the PDF logic at compile-time and set a PDF class, '.link-pdf'.
--- λ linkPdf $ Link nullAttr [Str "foo"] ("/docs/foo.pdf", "Foo & Bar 2022")
--- → Link ("",["link-pdf"],[]) [Str "foo"] ("/docs/foo.pdf","Foo & Bar 2022")
--- → <a href="/docs/foo.pdf" class="link-pdf" title="Foo &amp; Bar 2022">foo</a>
-linkPdf :: Inline -> Inline
-linkPdf x@(Link _ _ (url, _)) =
-  if any (`T.isInfixOf` url) [".pdf", "/pdf", "type=pdf",
-                              "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu",
-                              "eprint.iacr.org", "pdfs.semanticscholar.org"]
-      then addClass "link-pdf" x else x
-linkPdf x = x
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more capital letters because with full capitals, they look too big and dominate the page (eg. Bringhurst 2004, _Elements_ pg47; cf. https://en.wikipedia.org/wiki/Small_caps#Uses http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
 -- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly grows tedious. It can also be done reasonably easily with a query-replace regexp eg. in Emacs `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil begin end)`, but still must be done manually because while almost all uses in regular text can be smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
