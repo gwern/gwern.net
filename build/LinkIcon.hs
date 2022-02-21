@@ -4,7 +4,7 @@ module LinkIcon (linkIcon, linkIconTest) where
 
 import Data.List.Utils (hasKeyAL)
 import Data.Maybe (fromJust)
-import Data.Text as T (append, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
+import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
 import System.FilePath (takeExtension)
@@ -31,7 +31,10 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL.
  | u' "deepmind"  = aI "deepmind" "svg" -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
  | u' "facebook"  = aI "facebook" "svg"
- | u' "google"    = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
+ | u'' "groups.google.com" = aI "✉" "text"
+ | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
+ | u'' "docs.google.com" = aI "worddoc" "svg"
+ | u' "google" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
  | u' "nvidia"    = aI "nvidia" "text" -- Nvidia: https://en.wikipedia.org/wiki/Nvidia#cite_note-2 yeah no
  | u' "openai"    = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers
  | u' "microsoft" = aI "microsoft" "text,sans,italic" -- Microsoft: I don’t think https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg  s all that recognizable, so make a logotype more like https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg : an italic sans "MS".
@@ -43,12 +46,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "www.bloomberg.com" `T.isSuffixOf` host u = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u'' "link.springer.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
- | u'' "groups.google.com" = aI "✉" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
- | u' "haskell.org" && (extension u /= "hs") = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
+ | u' "haskell.org" && (extension u /= ".hs") = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
  | "theatlantic.com" `T.isSuffixOf` host u = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
  | "alignmentforum.org" `T.isSuffixOf` host u = aI "AF" "text"
@@ -77,11 +79,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text"
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
  | u' "r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
- | u'' "science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
+ | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "slate.com" = aI "S" "text,sans"
  | u'' "www.salon.com" = aI "s" "text"
  | u'' "scholars-stage.org" = aI "Ss" "text" -- Avoid the unfortunate connotations of ‘SS’
- | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) || (u'' "slatestarcodex.com" && (extension u /= "pdf")) = aI "SSC" "text" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
+ | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) = aI "SSC" "text" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
  | u'' "www.urth.net" || u'' "lists.urth.net" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
@@ -95,10 +97,10 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  -- Quad-letter-square icons.
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans,italic"
- | u'' "www.nber.org" && (extension u /= "pdf") = aI "NBER" "text,quad"
+ | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
  | u'' "www.rand.org" = aI "RAND" "text,quad,sans"
- | u'' "sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S... but would anyone recognize it? Primary user: journals.sagepub.com
+ | u' ".sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S... but would anyone recognize it? Primary user: journals.sagepub.com
  | u'' "publicdomainreview.org" = aI "TPDR" "text,quad"
  | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -110,9 +112,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.erowid.org" = aI "erowid" "svg"
  | u'' "www.filfre.net" = aI "F" "text" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
  | u'' "github.com" || u'' "copilot.github.com" || u'' "archiveprogram.github.com" || u'' "gist.github.com" || u'' "github.blog" = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
- | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
- | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org"] || ("local-archive-link" `elem` cl && extension u /= "pdf") = aI "internetarchive" "svg"
+ | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
  | u'' "intelligence.org" = aI "miri" "svg" -- MIRI/intelligence.org.
  | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
@@ -134,6 +135,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "www.wired.com" = aI "wired" "svg"
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
+ | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt"] = aI "archive" "svg"
  | iE ["opml", "txt", "xml", "json", "jsonl", "page"] = aI "txt" "svg"
  | iE ["css", "hs", "js", "conf", "sh", "r", "R", "patch", "diff"] = aI "code" "svg"
  | iE ["doc", "docx"] = aI "worddoc" "svg"
@@ -142,10 +144,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | iE ["gif", "bmp", "ico", "jpg", "jpeg", "png", "svg", "xcf"] = aI "image" "svg"
  | iE ["mp3", "wav", "flac", "ogg", "rm"] = aI "audio" "svg"
  | iE ["swf", "mp4", "mkv", "webm"] = aI "file-video" "svg"
- | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt"] = aI "archive" "svg"
  | iE ["ebt", "mdb", "mht", "ttf"] = aI "misc" "svg"
  | iE ["epub"] = aI "EPUB" "text,sans,quad"
- | u'' "docs.google.com" = aI "worddoc" "svg"
  | u'' "imgur.com" || u'' "i.imgur.com"       = aI "image" "svg"
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = aI "code" "svg"
  | isLocal u && hasExtension ".php" u                     = aI "code" "svg"
@@ -159,7 +159,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
        aI :: T.Text -> T.Text -> Inline
        aI = addIcon x
        iE :: [T.Text] -> Bool
-       iE = anyInfix (extension u)
+       iE = any (== (T.drop 1 $ extension u))
 linkIcon x = x
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`)
@@ -264,7 +264,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://link.springer.com/article/10.1007/BF02253535",  "\9816","text"),
          ("https://longbets.org/",  "X","text,overline"),
          ("https://longnow.org/ideas/02014/08/21/lenski-long-term-evolution-experiment/",  "X","text,overline"),
-         ("https://groups.google.com/group/ankisrs/",  "google","svg"),
+         ("https://groups.google.com/group/ankisrs/",  "\9993","text"),
          ("http://groups.yahoo.com/group/givewell/message/287",  "\9993","text"),
          ("https://gwern.substack.com/",  "substack","svg"),
          ("https://www.tinyletter.com/",  "\9993","text"),
@@ -307,12 +307,12 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("http://cran.r-project.org/web/packages/censReg/index.html",  "R","text"),
          ("https://www.rand.org/pubs/monographs/MG1026.html",  "RAND","text,quad,sans"),
          ("https://old.reddit.com/r/Supplements/comments/mr0h1/taking_melatonin_forever/",  "reddit","svg"),
-         ("https://cro.sagepub.com/content/15/5/252.full.pdf+html",  "pdf","svg"),
+         ("https://cro.sagepub.com/content/15/5/252.full.pdf+html",  "SAGE","text,quad,sans"),
          ("https://www.salon.com/news/opinion/glenn_greenwald/2010/05/25/whistleblowers",  "s","text"),
-         ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ&oi=ao",  "google","svg"),
+         ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ&oi=ao",  "google-scholar","svg"),
          ("https://scholars-stage.org/meditations-on-maoism-ye-fus-hard-road-home/",  "Ss","text"),
          ("https://www.sciencedirect.com/science/article/pii/S0002929717301076",  "E","text"),
-         ("https://www.science.org/doi/10.1126/sciadv.aar3620",  "code","svg"),
+         ("https://www.science.org/doi/10.1126/sciadv.aar3620",  "S","text"),
          ("https://slate.com/health-and-science/2017/06/daryl-bem-proved-esp-is-real-showed-science-is-broken.html",  "S","text,sans"),
          ("https://slatestarcodex.com/2015/01/15/depression-is-not-a-proxy-for-social-dysfunction/",  "SSC","text"),
          ("https://unsongbook.com/",  "\8501","text"),
@@ -374,7 +374,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("/docs/creatine/2009-ling-data.xls",  "spreadsheet","svg"),
          ("/docs/cs/2010-nordhaus-nordhaus2007twocenturiesofproductivitygrowthincomputing-appendix.xlsx",  "spreadsheet","svg"),
          ("/docs/personal/google-cse.xml",  "google","svg"),
-         ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "google","svg"),
+         ("https://docs.google.com/document/d/1MhA3M5ucBD7ZXcWk57_MKZ5jEgPX6_YiKye_EFP-adg/edit",  "worddoc","svg"),
          ("/docs/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg"),
          ("/docs/ai/1962-bryson.pdf",  "pdf","svg"),
          ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg"),
@@ -392,7 +392,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("/static/build/linkAbstract.R",  "code","svg"),
          ("/static/css/links.css",  "code","svg"),
          ("/static/build/hakyll.hs",  "code","svg"),
-         ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern%27s_xmonad.hs",  "\120524","text"),
+         ("https://wiki.haskell.org/Xmonad/Config_archive/Gwern%27s_xmonad.hs",  "code","svg"),
          ("/static/templates/default.html",  "code","svg"),
          ("/static/js/sidenotes.js",  "code","svg"),
          ("/docs/ai/music/2019-12-22-gpt2-preferencelearning-gwern-abcmusic.patch",  "code","svg"),
@@ -402,12 +402,12 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("/static/nginx/twdne.conf",  "code","svg"),
          ("/docs/zeo/firmware-v2.6.3R-zeo.img",  "archive","svg"),
          ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx",  "archive","svg"),
-         ("/docs/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "code","svg"),
+         ("/docs/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg"),
          ("/docs/ai/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg"),
          ("/docs/ai/anime/2019-02-10-stylegan-holo-handselectedsamples.zip",  "archive","svg"),
          ("/images/cs/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg"),
          ("http://iqtest.dk/main.swf",  "file-video","svg"),
          ("/images/tea/tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg"),
          ("/docs/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg"),
-         ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "code","svg"),
+         ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg"),
          ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")]
