@@ -1,11 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkIcon (linkIcon) where
+module LinkIcon (linkIcon, linkIconTest) where
 
 import Data.List.Utils (hasKeyAL)
 import Data.Maybe (fromJust)
 import Data.Text as T (append, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
-import Text.Pandoc (Inline(Link))
+import Text.Pandoc (Inline(Link), nullAttr)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
 import System.FilePath (takeExtension)
 
@@ -48,92 +48,94 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.mail-archive.com" = aI "✉" "text"
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
- | u'' "haskell.org" && (extension u /= "hs") = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
+ | u' "haskell.org" && (extension u /= "hs") = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
  | "theatlantic.com" `T.isSuffixOf` host u = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
  | "alignmentforum.org" `T.isSuffixOf` host u = aI "AF" "text"
  | "animenewsnetwork.com" `T.isSuffixOf` host u = aI "ANN" "text"
  | u'' "arstechnica.com" = aI "ars" "text,sans" -- Ars is an orange box, not usable
  | "bbc.com" `T.isSuffixOf` host u || "bbc.co.uk" `T.isSuffixOf` host u = aI "BBC" "text,sans" -- BBC: no usable logo
+ | u' ".bmj.com" = aI "bmj" "text,sans" -- British Medical Journal or just ‘bmj’
  | u'' "www.cdc.gov" = aI "CDC" "text"
- | u'' "justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
+ | u'' "www.justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
  | u'' "www.edge.org" = aI "E" "text,italic"
- | u'' "economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’...
- | u'' "sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
- | u'' "evageeks.org" || u'' "evamonkey.com" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
- | u'' "fda.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
+ | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’...
+ | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
+ | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | u'' "www.fda.gov" || u'' "fis.fda.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
  | u'' "www.fanfiction.net" = aI "FF" "text" -- The FF.net logo is pretty crazy, and I don’t think anyone would recognize it in monochrome
- | u'' "goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
- | u'' "harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
+ | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
+ | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
- | u'' "lesswrong.com" || u'' "www.greaterwrong.com" = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
+ | u'' "www.lesswrong.com" || u'' "wiki.lesswrong.com" || u'' "www.greaterwrong.com" = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
  | u'' "myanimelist.net" = aI "MAL" "text,sans" -- MAL: the blue of their logo doesn’t work, so just text
  | u'' "www.motherjones.com" = aI "MJ" "text,sans"
- | u'' "nature.com" = aI "n" "text" -- Nature
+ | u' ".nature.com" = aI "n" "text" -- Nature
  | anyInfix u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com"] = aI "NGE" "text" -- Primary user: forum.evageeks.org wiki.evageeks.org
  | u'' "www.overcomingbias.com" = aI "OB" "text" -- OB logo too bad to use
  | u'' "academic.oup.com" = aI "OUP" "text" -- Oxford Academic Journals / OUP
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text"
- | u'' "theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
- | u'' "r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
+ | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
+ | u' "r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
  | u'' "science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "slate.com" = aI "S" "text,sans"
- | u'' "salon.com" = aI "s" "text"
+ | u'' "www.salon.com" = aI "s" "text"
  | u'' "scholars-stage.org" = aI "Ss" "text" -- Avoid the unfortunate connotations of ‘SS’
  | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) || (u'' "slatestarcodex.com" && (extension u /= "pdf")) = aI "SSC" "text" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
- | u'' "technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
+ | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
- | u'' "urth.net" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
+ | u'' "www.urth.net" || u'' "lists.urth.net" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
  | u'' "www.vox.com" = aI "Vox" "text,italic"
- | u'' "wiley.com" = aI "W" "text,sans" -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
- | u'' "wsj.com" = aI "WSJ" "text" -- The Wall Street Journal
+ | u' "onlinelibrary.wiley.com" = aI "W" "text,sans" -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
+ | u'' "blogs.wsj.com" || u'' "online.wsj.com" || u'' "www.wsj.com" = aI "WSJ" "text" -- The Wall Street Journal
  | anyInfix u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
  | u'' "yunnansourcing.com" = aI "ys" "text"
  | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark...?
  -- Quad-letter-square icons.
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans,italic"
- | u'' "nber.org" && (extension u /= "pdf") = aI "NBER" "text,quad"
- | u'' "pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
- | u'' "rand.org" = aI "RAND" "text,quad,sans"
+ | u'' "www.nber.org" && (extension u /= "pdf") = aI "NBER" "text,quad"
+ | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
+ | u'' "www.rand.org" = aI "RAND" "text,quad,sans"
  | u'' "sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S... but would anyone recognize it? Primary user: journals.sagepub.com
  | u'' "publicdomainreview.org" = aI "TPDR" "text,quad"
- | u'' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
+ | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
- | u'' "amazon.com" || u' "amazon.co." = aI "amazon" "svg"
- | u'' "bitcoin.it" || u'' "bitcointalk.org" = aI "bitcoin" "svg"
- | u'' "biorxiv.org" || u'' "medrxiv.org" = aI "chi-dna" "svg" -- BioRxiv (custom icon: italic Chi with DNA cross-strands).
+ | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
+ | u'' "en.bitcoin.it" || u'' "bitcointalk.org" = aI "bitcoin" "svg"
+ | u'' "www.biorxiv.org" || u'' "www.medrxiv.org" = aI "chi-dna" "svg" -- BioRxiv (custom icon: italic Chi with DNA cross-strands).
  | u'' "distill.pub" = aI "distillpub" "svg" -- Distill ML journal.
  | u'' "www.dropbox.com" || u'' "dl.dropboxusercontent.com" = aI "dropbox" "svg" -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com
- | u'' "erowid.org" = aI "erowid" "svg"
- | u'' "github.com" = aI "github" "svg" -- Github; I exclude github.io because that’s blogs.
+ | u'' "www.erowid.org" = aI "erowid" "svg"
+ | u'' "www.filfre.net" = aI "F" "text" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
+ | u'' "github.com" || u'' "copilot.github.com" || u'' "archiveprogram.github.com" || u'' "gist.github.com" || u'' "github.blog" = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
- | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "archive-team.org", "waybackmachine.org"] || ("local-archive-link" `elem` cl && extension u /= "pdf") = aI "internetarchive" "svg"
+ | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org"] || ("local-archive-link" `elem` cl && extension u /= "pdf") = aI "internetarchive" "svg"
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
  | u'' "intelligence.org" = aI "miri" "svg" -- MIRI/intelligence.org.
- | u'' "nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
- | u'' "nlm.nih.gov" = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
- | u'' "patreon.com" = aI "patreon" "svg" -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
+ | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
+ | u'' "www.ncbi.nlm.nih.gov" || u'' "pubmed.ncbi.nlm.nih.gov" = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
+ | u'' "www.patreon.com" = aI "patreon" "svg" -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
  | anyInfix u ["plos.org", "plosone.org", "plosbiology.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations... primary user: journals.plos.org
  | u' "reddit.com" = aI "reddit" "svg" -- old.reddit.com
  | anyInfix u ["overflow.net", "overflow.com", "stackexchange.com"] = aI "stackexchange" "svg" -- The *Exchange/*Overflow family of websites.
  | u' "substack.com" = aI "substack" "svg" -- gwern.substack.com
- | u'' "theguardian.com" || u'' "www.guardian.co.uk" = aI "theguardian" "svg" -- El Grauniad.
- | u'' "newyorker.com" = aI "thenewyorker" "svg" -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
+ | u'' "www.theguardian.com" || u'' "www.guardian.co.uk" = aI "theguardian" "svg" -- El Grauniad.
+ | u'' "www.newyorker.com" = aI "thenewyorker" "svg" -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' "tumblr.com" = aI "tumblr" "svg"
- | u'' "twitter.com" || u'' "nitter.hu" = aI "twitter" "svg"
- | u'' "uptontea.com" = aI "uptontea" "svg"
+ | u'' "twitter.com" || u'' "blog.twitter.com" || u'' "developer.twitter.com" || u'' "nitter.hu" = aI "twitter" "svg"
+ | u'' "www.uptontea.com" = aI "uptontea" "svg"
  | u'' "soundcloud.com" = aI "audio" "svg"
- | u'' "bandcamp.com" = aI "audio" "svg"
- | u'' "washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
+ | u' ".bandcamp.com" = aI "audio" "svg"
+ | u'' "www.washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
  | anyInfix u ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
- | u'' "wired.com" = aI "wired" "svg"
+ | u' "www.wired.com" = aI "wired" "svg"
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
  | iE ["opml", "txt", "xml", "json", "jsonl", "page"] = aI "txt" "svg"
- | iE ["css", "hs", "js", "conf", "sh", "r", "patch", "diff"] = aI "code" "svg"
+ | iE ["css", "hs", "js", "conf", "sh", "r", "R", "patch", "diff"] = aI "code" "svg"
  | iE ["doc", "docx"] = aI "worddoc" "svg"
  | iE ["xls", "xlsx", "ods"] = aI "spreadsheet" "svg"
  | iE ["csv"] = aI "csv" "svg"
@@ -202,3 +204,9 @@ host p = do case parseURIReference (T.unpack p) of
 isHostOrArchive :: T.Text -> T.Text -> Bool
 isHostOrArchive pattern url = let h = host url in
                                 h == pattern || ("/docs/www/"`T.append`pattern) `T.isPrefixOf` url
+
+linkIconTest :: [(T.Text,T.Text,T.Text)]
+linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
+                                                   /= (Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,""))
+                                                   )
+                                          []
