@@ -87,7 +87,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text" -- Oxford Academic Journals / OUP
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text"
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
- | u' "r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
+ | u'' "www.metafor-project.org" = aI "R" "text"
+ | u'' "cran.r-project.org" || u'' "www.r-project.org" || u'' "lme4.r-forge.r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
  | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "slate.com" = aI "S" "text,sans"
  | u'' "www.salon.com" = aI "s" "text"
