@@ -262,6 +262,7 @@ isHostOrArchive pattern url = let h = host url in
 -- -- > let urls = ppShow $ unmatchedURLs $ Data.Map.keys b
 -- unmatchedURLs :: [T.Text] -> [T.Text]
 -- unmatchedURLs = sort . filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && (not $ hasKeyAL "link-icon" ks)) $ linkIcon (Link nullAttr [] (url,"")))
+-- The results are particularly useful when piped into <https://www.gwern.net/haskell/lcps.hs> to get suggested prefixes/domains worth adding link-icons for.
 
 -- Test suite:
 --
