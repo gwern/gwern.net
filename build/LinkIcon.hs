@@ -50,9 +50,9 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
  | u' "google" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
- | u' "nvidia"    = aI "N" "text" -- Nvidia: https://en.wikipedia.org/wiki/Nvidia#cite_note-2 yeah no
+ | u' "nvidia"    = aI "N" "text,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai"    = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers
- | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg  s all that recognizable, so make a logotype more like https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg : an italic sans "MS".
+ | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
 
  -- Domains:
  | u'' "psyarxiv.com" || u'' "files.osf.io" || u'' "osf.io" = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
@@ -64,12 +64,12 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
- | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- https://en.wikipedia.org/wiki/MDPI chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
+ | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
- | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg
+ | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
  | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,sans"
- | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- https://en.wikipedia.org/wiki/Frontiers_Media multiple-cubes logo too busy for an icon, no Unicode equivalent
+ | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent
  | u'' "www.gutenberg.org" || u'' "gutenberg.ca" || u'' "gutenberg.net.au" = aI "PG" "text"
  | u'' "guzey.com" = aI "A" "text,sans"
  | u'' "www.forbes.com" = aI "F" "text"
@@ -86,14 +86,14 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" || u'' "www.bronibooru.com" = aI "▱" "text" -- WHITE PARALLELOGRAM
  | u'' "www.justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
  | u'' "www.edge.org" = aI "E" "text,italic"
- | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’...
+ | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’... There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.
  | u'' "everything2.com" = aI "E2" "text"
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u' "jamanetwork.com" = aI "JN" "text,sans" -- The Journal of the American Medical Association (JAMA)
  | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" || u'' "www.evacommentary.org" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | u'' "www.fda.gov" || u'' "fis.fda.gov" || u'' "clinicaltrials.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
- | u'' "www.fanfiction.net" = aI "FF" "text" -- The FF.net logo is pretty crazy, and I don’t think anyone would recognize it in monochrome
+ | u'' "www.fanfiction.net" = aI "FFN" "text,sans" -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with FireFox, so expand to "FFN".
  | u' "mozilla.org" = aI "firefox" "svg" -- <https://commons.wikimedia.org/wiki/File:Font_Awesome_5_brands_firefox.svg>
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
@@ -109,16 +109,15 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "openreview.net" = aI "OR" "text,sans" -- doesn't seem to have any real logo or wordmark: <https://openreview.net/about>
  | u'' "www.overcomingbias.com" = aI "OB" "text" -- OB logo too bad to use
  | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text" -- Oxford Academic Journals / OUP
- | u'' "www.poetryfoundation.org" = aI "POET" "text,quad,sans" -- https://www.poetryfoundation.org/ https://en.wikipedia.org/wiki/Poetry_Foundation logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad
+ | u'' "www.poetryfoundation.org" = aI "POET" "text,quad,sans" -- <https://www.poetryfoundation.org/> <https://en.wikipedia.org/wiki/Poetry_Foundation> logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text"
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
- | u'' "www.theverge.com" = aI "▽" "text" -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization https://en.wikipedia.org/wiki/The_Verge which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;
+ | u'' "www.theverge.com" = aI "▽" "text" -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;
  | u'' "www.quora.com" = aI "Q" "text" -- surprisingly, no one's taken 'Q' yet
- | u'' "www.metafor-project.org" = aI "R" "text"
- | u'' "cran.r-project.org" || u'' "www.r-project.org" || u'' "lme4.r-forge.r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
+ | u'' "cran.r-project.org" || u'' "www.r-project.org" || u'' "lme4.r-forge.r-project.org" || u'' "www.metafor-project.org" || u' "github.com/paul-buerkner/brms" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
  | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "www.sciencedaily.com" = aI "SD" "text,sans"
- | u'' "www.sciencenews.org" = aI "SN" "text,sans" -- https://en.wikipedia.org/wiki/Science_News
+ | u'' "www.sciencenews.org" = aI "SN" "text,sans" -- <https://en.wikipedia.org/wiki/Science_News>
  | u'' "sethroberts.net" = aI "SR" "text,sans" -- Logo is a sans 'S' on a red circle background; can't use 'S' because already used by Slate.
  | u'' "slate.com" = aI "S" "text,sans"
  | u'' "www.salon.com" = aI "s" "text"
@@ -143,7 +142,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans,italic"
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
- | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,sans"
+ | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,sans" -- NPR styles it in lowercase in their |n|p|r| logo
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
  | u'' "www.rand.org" = aI "RAND" "text,quad,sans"
  | u' ".sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S... but would anyone recognize it? Primary user: journals.sagepub.com
@@ -156,7 +155,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "distill.pub" = aI "distillpub" "svg" -- Distill ML journal.
  | u'' "www.dropbox.com" || u'' "dl.dropboxusercontent.com" = aI "dropbox" "svg" -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com
  | u'' "www.erowid.org" = aI "erowid" "svg"
- | u'' "www.filfre.net" = aI "F" "text" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
+ | u'' "www.filfre.net" = aI "TDA" "text,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
  | u'' "github.com" || u'' "copilot.github.com" || u'' "archiveprogram.github.com" || u'' "gist.github.com" || u'' "github.blog" = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' "www.paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
  | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
@@ -313,7 +312,7 @@ linkIconTestUnits =
          ("https://arxiv.org/abs/2004.13637#facebook",  "facebook","svg"),
          ("https://fis.fda.gov/sense/app/d10be6bb-494e-4cd2-82e4-0135608ddc13/sheet/45beeb74-30ab-46be-8267-5756582633b4/state/analysis",  "FDA","text,sans"),
          ("http://clinicaltrials.gov/show/NCT03429075",  "FDA","text,sans"),
-         ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "F","text"),
+         ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,sans"),
          ("https://archiveprogram.github.com/",  "github","svg"),
          ("https://www.goodreads.com/api",  "GR","text"),
          ("https://about.google/",  "google","svg"),
@@ -396,7 +395,7 @@ linkIconTestUnits =
          ("https://wavemotioncannon.com/2016/11/08/interview-hideaki-anno-vs-yoshiyuki-tomino-animage-071994/", "NGE", "text"),
          ("https://www.angelfire.com/anime4/mdwigs/Asuka.html", "NGE", "text"),
          ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2793346/",  "nlm-ncbi","svg"),
-         ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "N","text"),
+         ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "N","text,italic"),
          ("https://6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg"),
          ("https://online.wsj.com/article/SB10000872396390443696604577647870908169992.html",  "WSJ","text"),
          ("/docs/ai/2020-chen.pdf#openai",  "openai","svg"),
@@ -417,6 +416,7 @@ linkIconTestUnits =
          ("https://psyarxiv.com/gjh95/",   "ψ", "text"),
          ("https://osf.io/dhx48/",         "ψ", "text"),
          ("http://cran.r-project.org/web/packages/censReg/index.html",  "R","text"),
+         ("https://github.com/paul-buerkner/brms#overview",  "R","text"),
          ("https://www.rand.org/pubs/monographs/MG1026.html",  "RAND","text,quad,sans"),
          ("https://old.reddit.com/r/Supplements/comments/mr0h1/taking_melatonin_forever/",  "reddit","svg"),
          ("https://cro.sagepub.com/content/15/5/252.full.pdf+html",  "SAGE","text,quad,sans"),
@@ -472,7 +472,7 @@ linkIconTestUnits =
          ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", "𝕸", "text"),
          ("https://www.cell.com/ajhg/fulltext/S0002-9297(18)30405-1",  "CELL","text,quad,sans"),
          ("https://www.edge.org/conversation/alex_sandy_pentland-the-human-strategy",  "E","text,italic"),
-         ("https://www.fanfiction.net/s/10360716/1/The-Metropolitan-Man",  "FF","text"),
+         ("https://www.fanfiction.net/s/10360716/1/The-Metropolitan-Man",  "FFN","text,sans"),
          ("https://www.motherjones.com/kevin-drum/2018/02/an-updated-lead-crime-roundup-for-2018/",  "MJ","text,sans"),
          ("https://www.nber.org/papers/w16082",  "NBER","text,quad"),
          ("https://www.npr.org/2011/04/16/135450214/eight-is-too-much-for-short-sleepers", "npr", "text,sans"),
