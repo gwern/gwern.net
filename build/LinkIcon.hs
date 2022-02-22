@@ -100,7 +100,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
  | u'' "www.urth.net" || u'' "lists.urth.net" || u'' "www.wolfewiki.com" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
- | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "V" "text"
+ | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "VICE" "text,quad"
  | u'' "www.vox.com" = aI "Vox" "text,italic"
  | u' "onlinelibrary.wiley.com" = aI "W" "text,sans" -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
  | u'' "blogs.wsj.com" || u'' "online.wsj.com" || u'' "www.wsj.com" = aI "WSJ" "text" -- The Wall Street Journal
@@ -251,6 +251,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://www.medrxiv.org/content/10.1101/2020.05.18.20100685v2.full",  "chi-dna","svg"),
          ("https://en.bitcoin.it/wiki/Witcoin",  "bitcoin","svg"),
          ("https://bitcointalk.org/index.php?topic=82952.0;all",  "bitcoin","svg"),
+         ("https://www.blockchain.com/btc/address/15bD6fYs6p9D9wmniDtTBcQSyWXDYNDCwv", "bitcoin","svg"),
          ("https://www.bloomberg.com/news/2011-03-31/why-unemployment-rose-so-much-dropped-so-fast-commentary-by-alan-krueger.html",  "\119809","text"),
          ("https://bjo.bmj.com/content/93/8/997",  "bmj","text,sans"),
          ("https://danbooru.donmai.us/posts?tags=death_flag", "▱", "text"),
@@ -369,6 +370,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://old.reddit.com/r/Supplements/comments/mr0h1/taking_melatonin_forever/",  "reddit","svg"),
          ("https://cro.sagepub.com/content/15/5/252.full.pdf+html",  "SAGE","text,quad,sans"),
          ("https://www.salon.com/news/opinion/glenn_greenwald/2010/05/25/whistleblowers",  "s","text"),
+         ("https://plato.stanford.edu/entries/naturalism-india/", "SEP", "text"),
          ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ&oi=ao",  "google-scholar","svg"),
          ("https://scholars-stage.org/meditations-on-maoism-ye-fus-hard-road-home/",  "Ss","text"),
          ("https://www.sciencedirect.com/science/article/pii/S0002929717301076",  "E","text"),
@@ -378,6 +380,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://unsongbook.com/",  "\8501","text"),
          ("/docs/fiction/2011-yvain-iliadaslawsuit.html",  "SSC","text"),
          ("https://astralcodexten.substack.com/p/know-your-amphetamines",  "SSC","text"),
+         ("https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3774989", "SSRN", "text,quad"),
          ("https://stackoverflow.com/questions/1197575/can-scripts-be-inserted-with-innerhtml",  "stackexchange","svg"),
          ("https://mathoverflow.net/questions/32967/have-any-long-suspected-irrational-numbers-turned-out-to-be-rational",  "stackexchange","svg"),
          ("https://crypto.stackexchange.com/questions/2507/can-i-encrypt-user-input-in-a-way-i-cant-decrypt-it-for-a-certain-period-of-tim",  "stackexchange","svg"),
@@ -391,14 +394,23 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://nitter.hu/intent/user?screen_name=Hiramatz&tw_i=303521521249447936",  "twitter","svg"),
          ("https://www.uptontea.com/formosa-oolong-tea/taiwan-loose-leaf-oolong-tea/p/V00252/",  "uptontea","svg"),
          ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text"),
+         ("https://www.wolfewiki.com/pmwiki/pmwiki.php?n=Stories.SuzanneDelage", "U","text"),
+         ("https://www.vice.com/en/article/paabgg/i-bought-a-book-about-the-internet-from-1994-and-none-of-the-links-worked", "VICE", "text,quad"),
+         ("https://motherboard.vice.com/blog/the-silk-road-is-showing-cracks", "VICE", "text,quad"),
          ("https://www.washingtonpost.com/graphics/2018/investigations/dog-auction-rescue-groups-donations/",  "washingtonpost","svg"),
          ("https://diff.wikimedia.org/2009/11/26/wikipedias-volunteer-story/",  "wikipedia","svg"),
          ("https://foundation.wikimedia.org/wiki/Privacy_policy",  "wikipedia","svg"),
          ("https://en.wikipedia.org/wiki/File:Energy_density.svg",  "wikipedia","svg"),
          ("https://en.wikisource.org/wiki/Essays_on_Political_Economy/That_Which_Is_Seen,_and_That_Which_Is_Not_Seen",  "wikipedia","svg"),
          ("https://en.wiktionary.org/wiki/bien_pensant",  "wikipedia","svg"),
+         ("http://stats.grok.se/en/201109/Accountancy", "wikipedia","svg"),
+         ("https://en.wikibooks.org/wiki/Category:Book:Accountancy", "wikipedia","svg"),
+         ("https://en.wikiquote.org/wiki/Talk:Edsger_W._Dijkstra#Telescope", "wikipedia","svg"),
+         ("https://xtools.wmflabs.org/pages/index.php?name=Gwern&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects",  "wikipedia","svg"),
+         ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "FNDM","text,quad,sans"),
          ("https://onlinelibrary.wiley.com/doi/full/10.1111/brv.12407",  "W","text,sans"),
          ("https://www.wired.com/2012/01/everything-about-learning/",  "wired","svg"),
+         ("https://www.wired.co.uk/article/lsd-microdosing-drugs-silicon-valley", "wired","svg"),
          ("https://www.cdc.gov/nchs/nvss/births.htm",  "CDC","text"),
          ("https://www.cell.com/ajhg/fulltext/S0002-9297(18)30405-1",  "CELL","text,quad,sans"),
          ("https://www.edge.org/conversation/alex_sandy_pentland-the-human-strategy",  "E","text,italic"),
@@ -415,7 +427,9 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://soundcloud.com/leggysalad/girls-afternoon-appointments#play",  "audio","svg"),
          ("https://www.youtube.com/watch?v=cG7v9eCq2u4&t=33m49s",  "youtube","svg"),
          ("https://www.youtube.com/channel/UCeNwyKuv5SMnN6ovlpbz1SQ",  "youtube","svg"),
+         ("https://vimeo.com/28735982", "file-video", "svg"),
          ("https://yunnansourcing.com/",  "ys","text"),
+         ("https://yunnansourcing.us/", "ys","text"),
          ("https://what-if.xkcd.com/145/",  "XKCD","text,quad,sans"),
          ("/docs/cat/catnip/survey/2017-07-30-gs-pilot.csv",  "csv","svg"),
          ("/docs/iq/2014-tenijenhuis-supplement.doc",  "worddoc","svg"),
@@ -465,6 +479,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("/docs/spaced-repetition/michaellee-memoryretentionexperiments-data.tar",  "archive","svg"),
          ("/docs/ai/2015-06-03-karpathy-charrnn-visualization.tar.xz",  "archive","svg"),
          ("/docs/ai/anime/2019-02-10-stylegan-holo-handselectedsamples.zip",  "archive","svg"),
+         ("/docs/silk-road/usareshipper-profile.maff", "archive","svg"),
          ("/images/cs/2017-reddit-dhieno-theplace-timelapseevolution.mp4",  "file-video","svg"),
          ("http://iqtest.dk/main.swf",  "file-video","svg"),
          ("/images/tea/tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg"),
