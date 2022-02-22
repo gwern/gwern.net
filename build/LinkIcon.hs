@@ -50,7 +50,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
  | u' "google" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
- | u' "nvidia"    = aI "N" "text,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
+ | u' "nvidia"    = aI "N" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai"    = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
 
@@ -100,7 +100,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
  | u'' "www.lesswrong.com" || u'' "sl4.org" || u'' "wiki.lesswrong.com" || u'' "www.greaterwrong.com" = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
  | u'' "www.longecity.org" = aI "⧖" "text" -- Longecity “⧖” U+29D6 WHITE HOURGLASS UNICODE
- | u'' "mattlakeman.org" = aI "ML" "text,sans"
+ | u'' "mattlakeman.org" = aI "Matt" "text,quad,sans"
  | u'' "michaelnielsen.org" || u'' "quantum.country" || u'' "numinous.productions" || u'' "cognitivemedium.com" || u'' "neuralnetworksanddeeplearning.com" = aI "MN" "text"
  | u'' "myanimelist.net" = aI "MAL" "text,sans" -- MAL: the blue of their logo doesn’t work, so just text
  | u'' "www.motherjones.com" = aI "MJ" "text,sans"
@@ -193,7 +193,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | iE ["mp3", "wav", "flac", "ogg", "rm"] = aI "audio" "svg"
  | iE ["swf", "mp4", "mkv", "webm"] = aI "file-video" "svg"
  | iE ["ebt", "mdb", "mht", "ttf"] = aI "misc" "svg"
- | iE ["epub"] = aI "EPUB" "text,sans,quad"
+ | iE ["epub"] = aI "EPUB" "text,quad,sans"
  | u'' "imgur.com" || u'' "i.imgur.com"       = aI "image" "svg"
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = aI "code" "svg"
  | isLocal u && hasExtension ".php" u                     = aI "code" "svg"
@@ -356,7 +356,7 @@ linkIconTestUnits =
          ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text"),
          ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans"),
          ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text"),
-         ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "ML", "text,sans"),
+         ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "Matt", "text,quad,sans"),
          ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans"),
          ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text"),
          ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg"),
@@ -395,7 +395,7 @@ linkIconTestUnits =
          ("https://wavemotioncannon.com/2016/11/08/interview-hideaki-anno-vs-yoshiyuki-tomino-animage-071994/", "NGE", "text"),
          ("https://www.angelfire.com/anime4/mdwigs/Asuka.html", "NGE", "text"),
          ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2793346/",  "nlm-ncbi","svg"),
-         ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "N","text,italic"),
+         ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "N","text,sans,italic"),
          ("https://6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg"),
          ("https://online.wsj.com/article/SB10000872396390443696604577647870908169992.html",  "WSJ","text"),
          ("/docs/ai/2020-chen.pdf#openai",  "openai","svg"),
@@ -495,7 +495,7 @@ linkIconTestUnits =
          ("/docs/iq/2014-tenijenhuis-supplement.doc",  "worddoc","svg"),
          ("/docs/genetics/heritable/2015-mosing-supplement.docx",  "worddoc","svg"),
          ("/docs/dual-n-back/2012-zhong.ebt",  "misc","svg"),
-         ("/docs/ai/1992-dreyfus-whatcomputerstillcantdo.epub",  "EPUB","text,sans,quad"),
+         ("/docs/ai/1992-dreyfus-whatcomputerstillcantdo.epub",  "EPUB","text,quad,sans"),
          ("/docs/touhou/2013-c84-downloads.json",  "txt","svg"),
          ("/docs/ai/anime/2020-06-08-danbooru2019-palm-handannotations-export.jsonl",  "txt","svg"),
          ("/docs/touhou/2013-06-08-acircle-tohoarrange.mdb",  "misc","svg"),
