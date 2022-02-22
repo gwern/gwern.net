@@ -42,6 +42,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "no-icon" `elem` cl = x
  | hasIcon x           = x
  | hasKeyAL u overrideLinkIcons = let (i,it) = fromJust $ lookup u overrideLinkIcons in addIcon x i it
+
  -- organizational mentions or affiliations take precedence over domain or filetypes; typically matches anywhere in the URL.
  | u' "deepmind"  = aI "deepmind" "svg" -- DeepMind; match articles or anchors about DM too. Primary user: deepmind.com, DM papers on Arxiv
  | u' "facebook" || u' ".fb.com"  = aI "facebook" "svg"
@@ -52,6 +53,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "nvidia"    = aI "N" "text" -- Nvidia: https://en.wikipedia.org/wiki/Nvidia#cite_note-2 yeah no
  | u' "openai"    = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg  s all that recognizable, so make a logotype more like https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg : an italic sans "MS".
+
  -- Domains:
  | u'' "psyarxiv.com" || u'' "files.osf.io" || u'' "osf.io" = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
  | u'' "unsongbook.com" = aI "ℵ" "text" -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.)
@@ -62,8 +64,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
+ | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- https://en.wikipedia.org/wiki/MDPI chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
+ | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconLib torch icon https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg
+ | u'' "www.forbes.com" = aI "F" "text"
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
  | "theatlantic.com" `T.isSuffixOf` host u = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
@@ -73,6 +78,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "bbc.com" `T.isSuffixOf` host u || "bbc.co.uk" `T.isSuffixOf` host u = aI "BBC" "text,sans" -- BBC: no usable logo
  | u' ".bmj.com" = aI "bmj" "text,sans" -- British Medical Journal or just ‘bmj’
  | u'' "www.cdc.gov" = aI "CDC" "text"
+ | u'' "www.dailymail.co.uk" = aI "𝕸" "text" -- 𝕸 1D578 MATHEMATICAL BOLD FRAKTUR CAPITAL M
  | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" || u'' "www.bronibooru.com" = aI "▱" "text" -- WHITE PARALLELOGRAM
  | u'' "www.justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
  | u'' "www.edge.org" = aI "E" "text,italic"
@@ -111,20 +117,23 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "papers.ssrn.com" = aI "SSRN" "text,quad"
  | u'' "plato.stanford.edu" = aI "SEP" "text"
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
+ | u'' "texample.net" || u'' "ctan.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
  | u'' "www.urth.net" || u'' "lists.urth.net" || u'' "www.wolfewiki.com" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
- | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "VICE" "text,quad"
+ | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "VICE" "text,quad,italic"
  | u'' "www.vox.com" = aI "Vox" "text,italic"
  | u' "onlinelibrary.wiley.com" = aI "W" "text,sans" -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
  | u'' "blogs.wsj.com" || u'' "online.wsj.com" || u'' "www.wsj.com" = aI "WSJ" "text" -- The Wall Street Journal
  | anyInfix u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
  | u'' "yunnansourcing.com" || u'' "yunnansourcing.us" = aI "ys" "text"
  | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark...?
+
  -- Quad-letter-square icons.
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans,italic"
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
+ | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,sans"
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
  | u'' "www.rand.org" = aI "RAND" "text,quad,sans"
  | u' ".sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S... but would anyone recognize it? Primary user: journals.sagepub.com
@@ -163,6 +172,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg"
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
  | u'' "vimeo.com" = aI "file-video" "svg"
+
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
  | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = aI "archive" "svg"
  | iE ["opml", "txt", "xml", "json", "jsonl", "page"] = aI "txt" "svg"
@@ -179,6 +189,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = aI "code" "svg"
  | isLocal u && hasExtension ".php" u                     = aI "code" "svg"
  | anyInfix u [".pdf", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "eprint.iacr.org", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
+
+ -- Fallback
  | otherwise = x
  where u', u'' :: T.Text -> Bool
        -- simplest check for string anywhere
@@ -326,7 +338,10 @@ linkIconTestUnits =
          ("https://www.tinyletter.com/",  "\9993","text"),
          ("https://www.mail-archive.com/cryptography@metzdowd.com/msg09959.html",  "\9993","text"),
          ("https://marginalrevolution.com/",  "M\119825","text"),
+         ("https://www.econlib.org/archives/2016/10/what_do_crimina.html", "econlib", "svg"),
+         ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text"),
          ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "ML", "text,sans"),
+         ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans"),
          ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text"),
          ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg"),
          ("https://meltingasphalt.com/interactive/going-critical/",  "\9650","text"),
@@ -402,6 +417,8 @@ linkIconTestUnits =
          ("https://stackoverflow.com/questions/1197575/can-scripts-be-inserted-with-innerhtml",  "stackexchange","svg"),
          ("https://mathoverflow.net/questions/32967/have-any-long-suspected-irrational-numbers-turned-out-to-be-rational",  "stackexchange","svg"),
          ("https://crypto.stackexchange.com/questions/2507/can-i-encrypt-user-input-in-a-way-i-cant-decrypt-it-for-a-certain-period-of-tim",  "stackexchange","svg"),
+         ("https://ctan.org/pkg/marginnote", "TₑX","text"),
+         ("https://texample.net/tikz/examples/andler-optimal-lot-size/", "TₑX","text"),
          ("https://www.technologyreview.com/2011/06/21/193829/the-measured-life/",  "T","text,sans"),
          ("https://www.theatlantic.com/business/archive/2011/06/beware-the-stunning-pilot-program/240352/",  "A","text,italic"),
          ("https://www.theguardian.com/books/2013/jul/10/man-behind-dickens-dostoevsky-hoax",  "theguardian","svg"),
@@ -413,8 +430,8 @@ linkIconTestUnits =
          ("https://www.uptontea.com/formosa-oolong-tea/taiwan-loose-leaf-oolong-tea/p/V00252/",  "uptontea","svg"),
          ("http://lists.urth.net/pipermail/urth-urth.net/2010-December/019108.html",  "U","text"),
          ("https://www.wolfewiki.com/pmwiki/pmwiki.php?n=Stories.SuzanneDelage", "U","text"),
-         ("https://www.vice.com/en/article/paabgg/i-bought-a-book-about-the-internet-from-1994-and-none-of-the-links-worked", "VICE", "text,quad"),
-         ("https://motherboard.vice.com/blog/the-silk-road-is-showing-cracks", "VICE", "text,quad"),
+         ("https://www.vice.com/en/article/paabgg/i-bought-a-book-about-the-internet-from-1994-and-none-of-the-links-worked", "VICE", "text,quad,italic"),
+         ("https://motherboard.vice.com/blog/the-silk-road-is-showing-cracks", "VICE", "text,quad,italic"),
          ("https://www.washingtonpost.com/graphics/2018/investigations/dog-auction-rescue-groups-donations/",  "washingtonpost","svg"),
          ("https://diff.wikimedia.org/2009/11/26/wikipedias-volunteer-story/",  "wikipedia","svg"),
          ("https://foundation.wikimedia.org/wiki/Privacy_policy",  "wikipedia","svg"),
@@ -430,11 +447,14 @@ linkIconTestUnits =
          ("https://www.wired.com/2012/01/everything-about-learning/",  "wired","svg"),
          ("https://www.wired.co.uk/article/lsd-microdosing-drugs-silicon-valley", "wired","svg"),
          ("https://www.cdc.gov/nchs/nvss/births.htm",  "CDC","text"),
+         ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", "𝕸", "text"),
          ("https://www.cell.com/ajhg/fulltext/S0002-9297(18)30405-1",  "CELL","text,quad,sans"),
          ("https://www.edge.org/conversation/alex_sandy_pentland-the-human-strategy",  "E","text,italic"),
          ("https://www.fanfiction.net/s/10360716/1/The-Metropolitan-Man",  "FF","text"),
          ("https://www.motherjones.com/kevin-drum/2018/02/an-updated-lead-crime-roundup-for-2018/",  "MJ","text,sans"),
          ("https://www.nber.org/papers/w16082",  "NBER","text,quad"),
+         ("https://www.npr.org/2011/04/16/135450214/eight-is-too-much-for-short-sleepers", "npr", "text,sans"),
+         ("https://text.npr.org/974534021", "npr", "text,sans"),
          ("https://www.vanityfair.com/news/2012/10/michael-lewis-profile-barack-obama",  "VF","text"),
          ("https://www.vox.com/2015/5/27/8660249/bill-gates-spanish-flu-pandemic",  "Vox","text,italic"),
          ("https://www.wsj.com/news/articles/SB10001424052702303380004579521482247869874",  "WSJ","text"),
@@ -505,12 +525,7 @@ linkIconTestUnits =
          ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg"),
          ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")]
 
--- TODO: a TeX icon for texample.net, ctan.org
--- www.npr.org / text.npr.org
--- http://www.dailymail.co.uk/
--- https://www.econlib.org/
--- https://www.forbes.com/
--- www.mdpi.com
+-- TODO:
 -- https://www.poetryfoundation.org/
 -- https://www.sciencenews.org/
 -- https://www.theverge.com/
