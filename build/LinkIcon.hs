@@ -1,16 +1,30 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkIcon (linkIcon, linkIconTest) where
+module LinkIcon (linkIcon, rebuildSVGIconCSS) where
 
+import Control.Monad (when)
 import Data.List.Utils (hasKeyAL)
 import Data.Maybe (fromJust)
 import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
 import System.FilePath (takeExtension)
+import Data.Containers.ListUtils (nubOrd)
 
 -- Statically, at compile-time, define the link-icons for links. Doing this at runtime with CSS is entirely possible and originally done by links.css, but the logic becomes increasingly convoluted & bug-prone because of CSS properties like cascading & longest-matches, and exceptions like 'organization icon overrides PDF icon' become fertile sources of errors & regressions.
 -- Doing this at runtime in Haskell is easier and also reduces performance burden on the client browser.
+
+-- Generate a HTML <style>-delimited CSS block written to `static/includes/inlined-graphical-linkicon-styles.html` for transclusion into `default.html`.
+-- The SVG icons need to be specified like `("wikipedia","svg")` → `a[data-link-icon='wikipedia'] { --link-icon-url: url('/static/img/icons/wikipedia.svg'); }`.
+-- These could be written by hand every time a SVG-related icon is added/deleted/renamed, but that risks getting out of sync and triggering the bugs that moving our CSS link icons to compile-time server generation was supposed to end. We want more of a single source of truth.
+-- So, we generate them using the test-suite: every SVG icon must have a corresponding test. (You don't have a test? You come back later! One test one icon!) The test necessarily is redundant with the original definition, otherwise it doesn't test anything. But since it's there, we can reuse it. This lets us have our cake—writing a big `linkIcon` function mixing the SVG rules with the text rules freely, in whatever order is most convenient for expressing precedence/overriding—while still generating CSS code from normal data (the test suite entries).
+rebuildSVGIconCSS :: IO ()
+rebuildSVGIconCSS = do when (not $ null linkIconTest) $ error ("Error! Link icons failed match! : " ++ show linkIconTest)
+                       let svgs = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") linkIconTestUnits
+                       let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
+                             map (\svg -> "a[data-link-icon='" ++ svg ++ "'] { --link-icon-url: url('/static/img/icons/" ++ svg ++ ".svg'); }") svgs ++
+                             ["</style>"]
+                       writeFile "static/includes/inlined-graphical-linkicon-styles.html" html
 
 -- Based on <links.js>.
 -- The idea is to annotate every `<a>` with two new `data-` attributes, `data-link-icon` and `data-link-icon-type` which jointly specify the type & content of the icon. The link-icon for 'svg' type is overloaded to be a filename in `/static/img/icons/$LINKICON.svg`.
@@ -226,13 +240,17 @@ isHostOrArchive pattern url = let h = host url in
 -- unmatchedURLs :: [T.Text] -> [T.Text]
 -- unmatchedURLs = sort . filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && (not $ hasKeyAL "link-icon" ks)) $ linkIcon (Link nullAttr [] (url,"")))
 
+-- Test suite:
+--
 -- Test the /Lorem#link-icons test cases as unit-tests of `linkIcon`: it should, for every URL unit-test, generate the specified link-icon/link-icon-type. Return the list of mismatches for fixing.
 -- Here we test that URLs get assigned the appropriate icons; on /Lorem, we render them to check for CSS/visual glitches. Any new test-cases should be added to both.
-linkIconTest :: [(T.Text,T.Text,T.Text)]
+linkIconTest, linkIconTestUnits :: [(T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
                                                    /= (Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,""))
                                                    )
-               -- in /Lorem order:
+               linkIconTestUnits
+-- in /Lorem order:
+linkIconTestUnits =
         [("/static/img/icons/deepmind.svg",  "deepmind","svg"),
          ("https://academic.oup.com/ije/article/43/3/775/758445",  "OUP","text"),
          ("https://ajcn.nutrition.org/content/69/5/842.full", "OUP", "text"),
