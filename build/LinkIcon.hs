@@ -145,7 +145,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' ".bandcamp.com" = aI "audio" "svg"
  | u'' "www.washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
  | anyInfix u ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
- | u' ".fandom.com" = aI "FNDM" "text,quad,sans"
+ | u' ".fandom.com" = aI "♡" "text" -- formerly known as Wikia, renamed to 'Fandom' and adopted a heart-based logo: <https://en.wikipedia.org/wiki/Fandom_(website)#2016%E2%80%932018:_Fandom_brand>; this is an umbrella covering all the subdomains; more specific Fandom wikis go before in the list (like MLP)
  | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg"
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
  | u'' "vimeo.com" = aI "file-video" "svg"
@@ -407,7 +407,7 @@ linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
          ("https://en.wikibooks.org/wiki/Category:Book:Accountancy", "wikipedia","svg"),
          ("https://en.wikiquote.org/wiki/Talk:Edsger_W._Dijkstra#Telescope", "wikipedia","svg"),
          ("https://xtools.wmflabs.org/pages/index.php?name=Gwern&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects",  "wikipedia","svg"),
-         ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "FNDM","text,quad,sans"),
+         ("https://samuraijack.fandom.com/wiki/Episode_XL:_Jack_vs._the_Ninja", "♡","text"),
          ("https://onlinelibrary.wiley.com/doi/full/10.1111/brv.12407",  "W","text,sans"),
          ("https://www.wired.com/2012/01/everything-about-learning/",  "wired","svg"),
          ("https://www.wired.co.uk/article/lsd-microdosing-drugs-silicon-valley", "wired","svg"),
