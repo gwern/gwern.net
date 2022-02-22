@@ -310,7 +310,7 @@ a[data-link-icon-type*='text']::after {
     background-image: none;
     background-size: unset;
     line-height: 1;
-	overflow-wrap: normal;
+    overflow-wrap: normal;
 }
 a[data-link-icon-type*='sans']::after {
     font-family: var(--GW-sans-serif-font-stack);
@@ -623,7 +623,7 @@ a[data-link-icon='nlm-ncbi']::after {
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.15em;
 
-    opacity: 0.75;
+    opacity: 0.80;
 }
 a[data-link-icon='nlm-ncbi']:hover::after {
     opacity: 0.45;
@@ -653,7 +653,7 @@ a[data-link-icon='plos']::after {
     --link-icon-offset-x: 0.25em;
     --link-icon-offset-y: 0.25em;
 
-    opacity: 0.65;
+    opacity: 0.70;
 }
 
 a[data-link-icon='reddit']::after {

@@ -11,6 +11,8 @@ import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
 import System.FilePath (takeExtension)
 import Data.Containers.ListUtils (nubOrd)
 
+import Utils (writeUpdatedFile)
+
 -- Statically, at compile-time, define the link-icons for links. Doing this at runtime with CSS is entirely possible and originally done by links.css, but the logic becomes increasingly convoluted & bug-prone because of CSS properties like cascading & longest-matches, and exceptions like 'organization icon overrides PDF icon' become fertile sources of errors & regressions.
 -- Doing this at runtime in Haskell is easier and also reduces performance burden on the client browser.
 
@@ -24,7 +26,7 @@ rebuildSVGIconCSS = do when (not $ null linkIconTest) $ error ("Error! Link icon
                        let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
                              map (\svg -> "a[data-link-icon='" ++ svg ++ "'] { --link-icon-url: url('/static/img/icons/" ++ svg ++ ".svg'); }") svgs ++
                              ["</style>"]
-                       writeFile "static/includes/inlined-graphical-linkicon-styles.html" html
+                       writeUpdatedFile "svgicons" "static/includes/inlined-graphical-linkicon-styles.html" (T.pack html)
 
 -- Based on <links.js>.
 -- The idea is to annotate every `<a>` with two new `data-` attributes, `data-link-icon` and `data-link-icon-type` which jointly specify the type & content of the icon. The link-icon for 'svg' type is overloaded to be a filename in `/static/img/icons/$LINKICON.svg`.
@@ -76,7 +78,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
  | "theatlantic.com" `T.isSuffixOf` host u = aI "A" "text,italic" -- The Atlantic: replicate sloping by italics
- | "alignmentforum.org" `T.isSuffixOf` host u = aI "AF" "text"
+ | "alignmentforum.org" `T.isSuffixOf` host u || (u'' "www.greaterwrong.com" && u' "view=alignment-forum") = aI "AF" "text,sans"
  | "animenewsnetwork.com" `T.isSuffixOf` host u = aI "ANN" "text"
  | u'' "arstechnica.com" = aI "ars" "text,sans" -- Ars is an orange box, not usable
  | "bbc.com" `T.isSuffixOf` host u || "bbc.co.uk" `T.isSuffixOf` host u = aI "BBC" "text,sans" -- BBC: no usable logo
@@ -94,7 +96,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" || u'' "www.evacommentary.org" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | u'' "www.fda.gov" || u'' "fis.fda.gov" || u'' "clinicaltrials.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
  | u'' "www.fanfiction.net" = aI "FFN" "text,sans" -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with FireFox, so expand to "FFN".
- | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized
+ | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
@@ -140,7 +142,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
 
  -- Quad-letter-square icons.
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
- | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans,italic"
+ | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans"
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,sans" -- NPR styles it in lowercase in their |n|p|r| logo
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
@@ -178,7 +180,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
  | anyInfix u ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
  | u' ".fandom.com" = aI "♡" "text" -- formerly known as Wikia, renamed to 'Fandom' and adopted a heart-based logo: <https://en.wikipedia.org/wiki/Fandom_(website)#2016%E2%80%932018:_Fandom_brand>; this is an umbrella covering all the subdomains; more specific Fandom wikis go before in the list (like MLP)
- | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg"
+ | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg" -- an inversed "W" on a black background (Wiley is just a "W")
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
  | u'' "vimeo.com" = aI "file-video" "svg"
 
@@ -368,7 +370,7 @@ linkIconTestUnits =
          ("http://neuralnetworksanddeeplearning.com/chap6.html", "MN", "text"),
          ("https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/",  "MS","text,sans,italic"),
          ("https://arxiv.org/abs/2003.13590#microsoft",  "MS","text,sans,italic"),
-         ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans,italic"),
+         ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans"),
          ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", "FF", "text,sans"),
          ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,sans"),
          ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text"),
@@ -441,6 +443,7 @@ linkIconTestUnits =
          ("https://ctan.org/pkg/marginnote", "TₑX","text"),
          ("https://texample.net/tikz/examples/andler-optimal-lot-size/", "TₑX","text"),
          ("https://www.technologyreview.com/2011/06/21/193829/the-measured-life/",  "T","text,sans"),
+         ("https://www.alignmentforum.org/posts/HhWhaSzQr6xmBki8F/birds-planes-brains-and-ai-against-appeals-to-the-complexity", "AF","text,sans"),
          ("https://www.theatlantic.com/business/archive/2011/06/beware-the-stunning-pilot-program/240352/",  "A","text,italic"),
          ("https://www.theguardian.com/books/2013/jul/10/man-behind-dickens-dostoevsky-hoax",  "theguardian","svg"),
          ("https://www.theparisreview.org/blog/2018/04/25/the-strange-history-of-the-king-pine/",  "PR","text"),
