@@ -82,7 +82,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "bbc.com" `T.isSuffixOf` host u || "bbc.co.uk" `T.isSuffixOf` host u = aI "BBC" "text,sans" -- BBC: no usable logo
  | u' ".bmj.com" = aI "bmj" "text,sans" -- British Medical Journal or just ‘bmj’
  | u'' "www.cdc.gov" = aI "CDC" "text"
- | u'' "www.dailymail.co.uk" = aI "𝕸" "text" -- 𝕸 1D578 MATHEMATICAL BOLD FRAKTUR CAPITAL M
+ | u'' "www.dailymail.co.uk" = aI "𝔐" "text" -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
  | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" || u'' "www.bronibooru.com" = aI "▱" "text" -- WHITE PARALLELOGRAM
  | u'' "www.justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
  | u'' "www.edge.org" = aI "E" "text,italic"
@@ -469,7 +469,7 @@ linkIconTestUnits =
          ("https://www.wired.com/2012/01/everything-about-learning/",  "wired","svg"),
          ("https://www.wired.co.uk/article/lsd-microdosing-drugs-silicon-valley", "wired","svg"),
          ("https://www.cdc.gov/nchs/nvss/births.htm",  "CDC","text"),
-         ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", "𝕸", "text"),
+         ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", "𝔐", "text"),
          ("https://www.cell.com/ajhg/fulltext/S0002-9297(18)30405-1",  "CELL","text,quad,sans"),
          ("https://www.edge.org/conversation/alex_sandy_pentland-the-human-strategy",  "E","text,italic"),
          ("https://www.fanfiction.net/s/10360716/1/The-Metropolitan-Man",  "FFN","text,sans"),
