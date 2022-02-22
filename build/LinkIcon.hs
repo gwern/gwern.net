@@ -29,8 +29,8 @@ rebuildSVGIconCSS = do when (not $ null linkIconTest) $ error ("Error! Link icon
 -- Based on <links.js>.
 -- The idea is to annotate every `<a>` with two new `data-` attributes, `data-link-icon` and `data-link-icon-type` which jointly specify the type & content of the icon. The link-icon for 'svg' type is overloaded to be a filename in `/static/img/icons/$LINKICON.svg`.
 --
--- λ linkIcon $ Link nullAttr [Str "foo"] ("https://forums.evageeks.org/forum?id=2222", "")
--- Link ("",[],[("link-icon","EG"),("link-icon-type","text")]) [Str "foo"] ("https://forums.evageeks.org/forum?id=2222","")
+-- λ linkIcon $ Link nullAttr [Str "foo"] ("https://forum.evageeks.org/forum?id=2222", "")
+-- Link ("",[],[("link-icon","EG"),("link-icon-type","text")]) [Str "foo"] ("https://forum.evageeks.org/forum?id=2222","")
 -- λ linkIcon $ Link nullAttr [Str "foo"] ("/docs/foo.pdf", "Foo & Bar 2022")
 -- → Link ("",[],[("link-icon","pdf"),("link-icon-type","svg")]) [Str "foo"] ("/docs/foo.pdf","Foo & Bar 2022")
 -- → <a href="/docs/foo.pdf" data-link-icon="pdf" data-link-icon-type="svg" title="Foo &amp; Bar 2022">foo</a>
@@ -504,3 +504,20 @@ linkIconTestUnits =
          ("/docs/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg"),
          ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg"),
          ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")]
+
+-- TODO: a TeX icon for texample.net, ctan.org
+-- www.npr.org / text.npr.org
+-- http://www.dailymail.co.uk/
+-- https://www.econlib.org/
+-- https://www.forbes.com/
+-- www.mdpi.com
+-- https://www.poetryfoundation.org/
+-- https://www.sciencenews.org/
+-- https://www.theverge.com/
+-- https://guzey.com/
+-- https://sethroberts.net/
+-- https://www.quora.com/
+-- https://www.sciencedaily.com/releases/20
+-- https://www.gutenberg.org/ gutenberg.ca/ gutenberg.net.au/
+-- http://www.catb.org, esr.ibiblio.org ESR
+-- https://www.frontiersin.org/articles/10.3389/f https://en.wikipedia.org/wiki/Frontiers_Media

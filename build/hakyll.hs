@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-02-21 11:23:29 gwern"
+When: Time-stamp: "2022-02-21 21:21:32 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -71,15 +71,15 @@ import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationF
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
-import LinkIcon (linkIconTest)
+import LinkIcon (rebuildSVGIconCSS)
 import Utils (printGreen, printRed)
 
 main :: IO ()
 main = hakyll $ do
              tags <- buildTags "**.page" (fromCapture "tags/*")
 
-             preprocess $ printGreen ("Testing link icon matches…" :: String)
-             when (not $ null linkIconTest) $ preprocess $ printRed ("Error! Link icons failed match! (But continuing anyway because cosmetic) : " ++ show linkIconTest)
+             preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
+             preprocess rebuildSVGIconCSS
 
              preprocess $ printGreen ("Local archives parsing…" :: String)
              am <- preprocess readArchiveMetadata
@@ -160,6 +160,7 @@ main = hakyll $ do
              match "static/includes/inlined-head-escaped.html"  $ compile templateCompiler
              match "static/includes/inlined-fonts.html"  $ compile templateCompiler
              match "static/includes/inlined-foot.html"  $ compile templateCompiler
+             match "static/includes/inlined-graphical-linkicon-styles.html"  $ compile templateCompiler
 
 -- https://kyle.marek-spartz.org/posts/2014-12-09-hakyll-css-template-compiler.html
 -- cssTemplateCompiler :: Compiler (Item Template)
