@@ -67,7 +67,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- https://en.wikipedia.org/wiki/MDPI chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
- | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconLib torch icon https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg
+ | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg
  | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,sans"
  | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- https://en.wikipedia.org/wiki/Frontiers_Media multiple-cubes logo too busy for an icon, no Unicode equivalent
  | u'' "www.gutenberg.org" || u'' "gutenberg.ca" || u'' "gutenberg.net.au" = aI "PG" "text"
@@ -94,7 +94,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" || u'' "www.evacommentary.org" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | u'' "www.fda.gov" || u'' "fis.fda.gov" || u'' "clinicaltrials.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
  | u'' "www.fanfiction.net" = aI "FF" "text" -- The FF.net logo is pretty crazy, and I don’t think anyone would recognize it in monochrome
- | u' "mozilla.org" = aI "ff" "text" -- TODO: https://commons.wikimedia.org/wiki/File:Font_Awesome_5_brands_firefox.svg ?
+ | u' "mozilla.org" = aI "firefox" "svg" -- <https://commons.wikimedia.org/wiki/File:Font_Awesome_5_brands_firefox.svg>
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
@@ -370,7 +370,7 @@ linkIconTestUnits =
          ("https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/",  "MS","text,sans,italic"),
          ("https://arxiv.org/abs/2003.13590#microsoft",  "MS","text,sans,italic"),
          ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans,italic"),
-         ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", "ff", "text"),
+         ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", "firefox", "svg"),
          ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,sans"),
          ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text"),
          ("https://www.newyorker.com/books/page-turner/the-mystery-of-s-the-man-with-an-impossible-memory",  "thenewyorker","svg"),
