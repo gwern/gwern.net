@@ -94,7 +94,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" || u'' "www.evacommentary.org" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | u'' "www.fda.gov" || u'' "fis.fda.gov" || u'' "clinicaltrials.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
  | u'' "www.fanfiction.net" = aI "FFN" "text,sans" -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with FireFox, so expand to "FFN".
- | u' "mozilla.org" = aI "firefox" "svg" -- <https://commons.wikimedia.org/wiki/File:Font_Awesome_5_brands_firefox.svg>
+ | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
@@ -369,7 +369,7 @@ linkIconTestUnits =
          ("https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/",  "MS","text,sans,italic"),
          ("https://arxiv.org/abs/2003.13590#microsoft",  "MS","text,sans,italic"),
          ("https://mlp.fandom.com/wiki/A_Canterlot_Wedding_-_Part_1",  "MLPW","text,quad,sans,italic"),
-         ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", "firefox", "svg"),
+         ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", "FF", "text,sans"),
          ("https://myanimelist.net/anime/1370/Atama_Yama",  "MAL","text,sans"),
          ("https://blogs.nature.com/news/2011/09/reliability_of_new_drug_target.html",  "n","text"),
          ("https://www.newyorker.com/books/page-turner/the-mystery-of-s-the-man-with-an-impossible-memory",  "thenewyorker","svg"),
