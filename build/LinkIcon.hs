@@ -126,7 +126,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "papers.ssrn.com" = aI "SSRN" "text,quad"
  | u'' "plato.stanford.edu" = aI "SEP" "text"
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
- | u'' "texample.net" || u'' "ctan.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091
+ | u'' "texample.net" || u'' "ctan.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
  | u'' "www.urth.net" || u'' "lists.urth.net" || u'' "www.wolfewiki.com" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
