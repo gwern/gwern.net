@@ -310,6 +310,7 @@ a[data-link-icon-type*='text']::after {
     background-image: none;
     background-size: unset;
     line-height: 1;
+	overflow-wrap: normal;
 }
 a[data-link-icon-type*='sans']::after {
     font-family: var(--GW-sans-serif-font-stack);
