@@ -68,6 +68,10 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconLib torch icon https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg
+ | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,sans"
+ | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- https://en.wikipedia.org/wiki/Frontiers_Media multiple-cubes logo too busy for an icon, no Unicode equivalent
+ | u'' "www.gutenberg.org" || u'' "gutenberg.ca" || u'' "gutenberg.net.au" = aI "PG" "text"
+ | u'' "guzey.com" = aI "A" "text,sans"
  | u'' "www.forbes.com" = aI "F" "text"
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
  | u'' "arxiv.org" || u'' "ar5iv.labs.arxiv.org" = aI "𝛘" "text" --  ArXiv: Their skull+smiley logo is too bizarre & off-putting to use, in addition to not working as a tiny monochrome image (𝛘) MATHEMATICAL BOLD SMALL CHI (bold makes it show up better when tiny)
@@ -105,11 +109,17 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "openreview.net" = aI "OR" "text,sans" -- doesn't seem to have any real logo or wordmark: <https://openreview.net/about>
  | u'' "www.overcomingbias.com" = aI "OB" "text" -- OB logo too bad to use
  | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text" -- Oxford Academic Journals / OUP
+ | u'' "www.poetryfoundation.org" = aI "POET" "text,quad,sans" -- https://www.poetryfoundation.org/ https://en.wikipedia.org/wiki/Poetry_Foundation logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad
  | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text"
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
+ | u'' "www.theverge.com" = aI "▽" "text" -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization https://en.wikipedia.org/wiki/The_Verge which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;
+ | u'' "www.quora.com" = aI "Q" "text" -- surprisingly, no one's taken 'Q' yet
  | u'' "www.metafor-project.org" = aI "R" "text"
  | u'' "cran.r-project.org" || u'' "www.r-project.org" || u'' "lme4.r-forge.r-project.org" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
  | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
+ | u'' "www.sciencedaily.com" = aI "SD" "text,sans"
+ | u'' "www.sciencenews.org" = aI "SN" "text,sans" -- https://en.wikipedia.org/wiki/Science_News
+ | u'' "sethroberts.net" = aI "SR" "text,sans" -- Logo is a sans 'S' on a red circle background; can't use 'S' because already used by Slate.
  | u'' "slate.com" = aI "S" "text,sans"
  | u'' "www.salon.com" = aI "s" "text"
  | u'' "scholars-stage.org" = aI "Ss" "text" -- Avoid the unfortunate connotations of ‘SS’
@@ -339,6 +349,13 @@ linkIconTestUnits =
          ("https://www.mail-archive.com/cryptography@metzdowd.com/msg09959.html",  "\9993","text"),
          ("https://marginalrevolution.com/",  "M\119825","text"),
          ("https://www.econlib.org/archives/2016/10/what_do_crimina.html", "econlib", "svg"),
+         ("http://esr.ibiblio.org/?p=7183", "ESR","text,sans"),
+         ("http://www.catb.org/jargon/html/R/religious-issues.html", "ESR","text,sans"),
+         ("https://www.frontiersin.org/articles/10.3389/fnhum.2011.00134/full", "FS", "text,sans"),
+         ("https://gutenberg.ca/ebooks/smithcordwainer-onthegemplanet/smithcordwainer-onthegemplanet-00-h.html", "PG","text"),
+         ("https://gutenberg.net.au/ebooks02/0201141h.html", "PG","text"),
+         ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text"),
+         ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans"),
          ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text"),
          ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "ML", "text,sans"),
          ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans"),
@@ -387,6 +404,7 @@ linkIconTestUnits =
          ("https://openreview.net/forum?id=H1gtU9ZO-B", "OR", "text,sans"),
          ("https://arxiv.org/abs/1611.02779#openai",  "openai","svg"),
          ("https://www.overcomingbias.com/2009/07/stupider-than-you-realize.html",  "OB","text"),
+         ("https://www.poetryfoundation.org/poems/44399/pied-beauty", "POET", "text,quad,sans"),
          ("https://www.patreon.com/gwern",  "patreon","svg"),
          ("https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1000451",  "plos","svg"),
          ("https://speakingofmedicine.plos.org/2012/06/25/less-research-is-needed/",  "plos","svg"),
@@ -406,8 +424,11 @@ linkIconTestUnits =
          ("https://plato.stanford.edu/entries/naturalism-india/", "SEP", "text"),
          ("https://scholar.google.com/citations?user=9hEhCHYAAAAJ&oi=ao",  "google-scholar","svg"),
          ("https://scholars-stage.org/meditations-on-maoism-ye-fus-hard-road-home/",  "Ss","text"),
+         ("https://www.sciencedaily.com/releases/2007/05/070525204143.htm",  "SD","text,sans"),
          ("https://www.sciencedirect.com/science/article/pii/S0002929717301076",  "E","text"),
          ("https://www.science.org/doi/10.1126/sciadv.aar3620",  "S","text"),
+         ("https://www.sciencenews.org/view/generic/id/3735/title/Sleep_debt_exacts_deceptive_cost", "SN","text,sans"),
+         ("https://sethroberts.net/2008/10/03/diet-and-acne-continued/", "SR", "text,sans"),
          ("https://slate.com/health-and-science/2017/06/daryl-bem-proved-esp-is-real-showed-science-is-broken.html",  "S","text,sans"),
          ("https://slatestarcodex.com/2015/01/15/depression-is-not-a-proxy-for-social-dysfunction/",  "SSC","text"),
          ("https://unsongbook.com/",  "\8501","text"),
@@ -423,6 +444,7 @@ linkIconTestUnits =
          ("https://www.theatlantic.com/business/archive/2011/06/beware-the-stunning-pilot-program/240352/",  "A","text,italic"),
          ("https://www.theguardian.com/books/2013/jul/10/man-behind-dickens-dostoevsky-hoax",  "theguardian","svg"),
          ("https://www.theparisreview.org/blog/2018/04/25/the-strange-history-of-the-king-pine/",  "PR","text"),
+         ("https://www.theverge.com/2021/8/7/22614450/unopened-copy-super-mario-bros-sells-2-million-record", "▽", "text"),
          ("https://econlolcats.tumblr.com/",  "tumblr","svg"),
          ("https://tvtropes.org/pmwiki/pmwiki.php/Anime/MobileSuitGundamCharscounterattack",  "TV","text"),
          ("https://developer.twitter.com/en/docs/twitter-api/v1/rules-and-filtering/search-operators",  "twitter","svg"),
@@ -524,15 +546,3 @@ linkIconTestUnits =
          ("/docs/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg"),
          ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg"),
          ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")]
-
--- TODO:
--- https://www.poetryfoundation.org/
--- https://www.sciencenews.org/
--- https://www.theverge.com/
--- https://guzey.com/
--- https://sethroberts.net/
--- https://www.quora.com/
--- https://www.sciencedaily.com/releases/20
--- https://www.gutenberg.org/ gutenberg.ca/ gutenberg.net.au/
--- http://www.catb.org, esr.ibiblio.org ESR
--- https://www.frontiersin.org/articles/10.3389/f https://en.wikipedia.org/wiki/Frontiers_Media
