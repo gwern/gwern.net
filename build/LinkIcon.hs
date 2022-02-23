@@ -85,7 +85,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' ".bmj.com" = aI "bmj" "text,sans" -- British Medical Journal or just ‘bmj’
  | u'' "www.cdc.gov" = aI "CDC" "text"
  | u'' "www.dailymail.co.uk" = aI "𝔐" "text" -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
- | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" = aI "▱" "text" -- WHITE PARALLELOGRAM
+ | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" = aI "❐" "text" -- ❐ U+2750 UPPER RIGHT DROP-SHADOWED WHITE SQUARE
  | u'' "www.justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
  | u'' "www.edge.org" = aI "E" "text,italic"
  | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’... There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.
@@ -296,9 +296,9 @@ linkIconTestUnits =
          ("https://www.blockchain.com/btc/address/15bD6fYs6p9D9wmniDtTBcQSyWXDYNDCwv", "bitcoin","svg"),
          ("https://www.bloomberg.com/news/2011-03-31/why-unemployment-rose-so-much-dropped-so-fast-commentary-by-alan-krueger.html",  "\119809","text"),
          ("https://bjo.bmj.com/content/93/8/997",  "bmj","text,sans"),
-         ("https://danbooru.donmai.us/posts?tags=death_flag", "▱", "text"),
-         ("https://derpibooru.org/tags/artist-colon-thisponydoesnotexist", "▱", "text"),
-         ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "▱", "text"),
+         ("https://danbooru.donmai.us/posts?tags=death_flag", "❐", "text"),
+         ("https://derpibooru.org/tags/artist-colon-thisponydoesnotexist", "❐", "text"),
+         ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "❐", "text"),
          ("https://deepmind.com/blog/article/alphastar-mastering-real-time-strategy-game-starcraft-ii",  "deepmind","svg"),
          ("/docs/reinforcement-learning/alphago/2016-silver.pdf#deepmind",  "deepmind","svg"),
          ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg"),
