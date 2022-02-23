@@ -85,7 +85,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' ".bmj.com" = aI "bmj" "text,sans" -- British Medical Journal or just ‘bmj’
  | u'' "www.cdc.gov" = aI "CDC" "text"
  | u'' "www.dailymail.co.uk" = aI "𝔐" "text" -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
- | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" || u'' "www.bronibooru.com" = aI "▱" "text" -- WHITE PARALLELOGRAM
+ | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" = aI "▱" "text" -- WHITE PARALLELOGRAM
  | u'' "www.justice.gov" = aI "DoJ" "text" -- US federal Department of Justice
  | u'' "www.edge.org" = aI "E" "text,italic"
  | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’... There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.
@@ -299,7 +299,6 @@ linkIconTestUnits =
          ("https://danbooru.donmai.us/posts?tags=death_flag", "▱", "text"),
          ("https://derpibooru.org/tags/artist-colon-thisponydoesnotexist", "▱", "text"),
          ("https://safebooru.org/index.php?page=post&s=list&tags=heterochromia", "▱", "text"),
-         ("http://www.bronibooru.com/posts/40230", "▱", "text"),
          ("https://deepmind.com/blog/article/alphastar-mastering-real-time-strategy-game-starcraft-ii",  "deepmind","svg"),
          ("/docs/reinforcement-learning/alphago/2016-silver.pdf#deepmind",  "deepmind","svg"),
          ("https://arxiv.org/abs/1612.08810#deepmind",  "deepmind","svg"),
