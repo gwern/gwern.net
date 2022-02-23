@@ -334,6 +334,17 @@ a[data-link-icon-type*='overline']::after {
 /*  Logotype icons.
     */
 
+a[data-link-icon='⧖']::after {
+	--link-icon-size: 0.9em;
+	--link-icon-offset-y: 0.1em;
+	--link-icon-offset-x: 0.1em;
+}
+
+a[data-link-icon='♡']::after {
+	opacity: 1.0;
+	text-shadow: 0 0 0 currentColor;
+}
+
 a[data-link-icon='MS']::after {
     --link-icon-size: 0.65em;
     --link-icon-offset-y: 0.3em;
@@ -375,7 +386,7 @@ a[data-link-icon='\2585\2587\2583']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon*="\25B2"]::after {
+a[data-link-icon="\25B2"]::after {
     --link-icon-offset-x: 0;
     --link-icon-offset-y: 0.25em;
 
@@ -534,6 +545,10 @@ a[data-link-icon='dropbox']::after {
 
 
 a[data-link-icon='econlib']::after { /* torch */
+	--link-icon-size: 0.8em;
+	--link-icon-offset-x: 0.15em;
+	--link-icon-offset-y: 0.1em;
+
     opacity: 1;
 }
 
@@ -569,7 +584,7 @@ a[data-link-icon='google']::after {
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.25em;
 
-    opacity: 0.45;
+    opacity: 0.5;
 }
 
 a[data-link-icon='google-scholar']::after {
