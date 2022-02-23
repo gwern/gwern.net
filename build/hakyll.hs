@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-02-21 21:21:32 gwern"
+When: Time-stamp: "2022-02-23 16:57:53 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -72,7 +72,7 @@ import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
-import Utils (printGreen, printRed)
+import Utils (printGreen)
 
 main :: IO ()
 main = hakyll $ do

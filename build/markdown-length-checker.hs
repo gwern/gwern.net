@@ -1,7 +1,9 @@
 #! /usr/bin/env runhaskell
 {-# LANGUAGE OverloadedStrings #-}
 -- example usage: $ find ~/wiki/ -name "*.page" -exec runhaskell markdown-length-checker.hs {} \;
--- default: looks for lines >110 characters long inside codeblocks, which suggests source code that needs to be rewritten for more clarity.
+--
+-- default: looks for lines >110 characters long inside codeblocks, which suggests source code that
+-- needs to be rewritten for more clarity.
 import System.Environment (getArgs)
 import Text.Pandoc (def, readMarkdown, runPure, pandocExtensions, queryWith, readerExtensions, topDown, Block(CodeBlock, Null), Pandoc)
 import qualified Data.Text as T (append, drop, empty, length, lines, pack, unlines, Text)

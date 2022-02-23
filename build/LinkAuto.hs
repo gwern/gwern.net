@@ -4,29 +4,42 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-02-16 09:32:02 gwern"
+When:  Time-stamp: "2022-02-23 16:51:38 gwern"
 License: CC-0
 
-This is useful for automatically defining concepts, terms, and proper names using a single master updated list of regexp/URL pairs.
-(Terms like "BERT" or "GPT-3" or "RoBERTa" are too hard to all define manually on every appearance, particularly in abstracts/annotations which themselves may be generated automatically, so it makes more sense to try to do it automatically.)
+This is useful for automatically defining concepts, terms, and proper names using a single master
+updated list of regexp/URL pairs. (Terms like "BERT" or "GPT-3" or "RoBERTa" are too hard to all
+define manually on every appearance, particularly in abstracts/annotations which themselves may be
+generated automatically, so it makes more sense to try to do it automatically.)
 
-Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of greedy rewrites (eg. "GAN" vs "BigGAN").
-Regexps are sorted by length, longest-first, to further try to prioritize (so "BigGAN" would match before "GAN").
-For efficiency, we avoid String type conversion as much as possible.
-Regexp matching is done only within a Str node; therefore, mixed-formatting strings will not match.
-If a match is all inside italics/bold/smallcaps (eg. 'Emph [Str x]'), then it will match; if a match is split (eg. '...Str x1, Emph [Str x2], ...'), then it will fail.
+Regexps are guarded with space/punctuation/string-end-begin delimiters, to try to avoid problems of
+greedy rewrites (eg. "GAN" vs "BigGAN"). Regexps are sorted by length, longest-first, to further try
+to prioritize (so "BigGAN" would match before "GAN"). For efficiency, we avoid String type
+conversion as much as possible. Regexp matching is done only within a Str node; therefore,
+mixed-formatting strings will not match. If a match is all inside italics/bold/smallcaps (eg. 'Emph
+[Str x]'), then it will match; if a match is split (eg. '...Str x1, Emph [Str x2], ...'), then it
+will fail.
 
-A document is queried for URLs and all URLs already present or regexps without plain text matches are removed from the rewrite dictionary.
-This usually lets a document be skipped entirely as having no possible non-redundant matches.
+A document is queried for URLs and all URLs already present or regexps without plain text matches
+are removed from the rewrite dictionary. This usually lets a document be skipped entirely as having
+no possible non-redundant matches.
 
-Then, we walk the AST, running each remaining regexp against Str nodes.
-When there is a match, the matching substring is then rewritten to be a Link with the URL & class `link-auto` for the first regexp that matches.
+Then, we walk the AST, running each remaining regexp against Str nodes. When there is a match, the
+matching substring is then rewritten to be a Link with the URL & class `link-auto` for the first
+regexp that matches.
 
-After the regexp pass, we do an additional cleanup pass. How should we handle the case of a phrase like "GAN" or "GPT-3" appearing potentially scores or hundreds of times in page? Do we really want to  hyperlink *all* of them? Probably not.
-For the cleanup pass, we track 'seen' `link-auto` links in a Set, and if a link has been seen before, we remove it, leaving the text annotated with a simple Span 'link-auto-skipped' class.
-(In the future, we may drop this clean up pass, if we can find a good way to dynamically hide 'excess' links; one idea is define `.link-auto` CSS to de-style links, and then, on browser screen scroll, use JS to re-link-style the first instance of each URL. So only the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
+After the regexp pass, we do an additional cleanup pass. How should we handle the case of a phrase
+like "GAN" or "GPT-3" appearing potentially scores or hundreds of times in page? Do we really want
+to hyperlink *all* of them? Probably not. For the cleanup pass, we track 'seen' `link-auto` links in
+a Set, and if a link has been seen before, we remove it, leaving the text annotated with a simple
+Span 'link-auto-skipped' class. (In the future, we may drop this clean up pass, if we can find a
+good way to dynamically hide 'excess' links; one idea is define `.link-auto` CSS to de-style links,
+and then, on browser screen scroll, use JS to re-link-style the first instance of each URL. So only
+the first instance would be visible on each screen, minimizing redundancy/clutter/over-linking.)
 
-Bugs: will annotate phrases inside `Header` nodes, which breaks HTML validation. Does not attempt to handle `RawInline` or `RawBlock`, so writing raw HTML like `<a href="/Modafinil">foo</a>` will not be detected for the purposes of rewrite-short-circuiting or possibly rewriting at all.
+Bugs: will annotate phrases inside `Header` nodes, which breaks HTML validation. Does not attempt to
+handle `RawInline` or `RawBlock`, so writing raw HTML like `<a href="/Modafinil">foo</a>` will not
+be detected for the purposes of rewrite-short-circuiting or possibly rewriting at all.
 
 Dependencies: Pandoc, text, regex-tdfa, /static/build/Utils.hs, /static/build/Query.hs
 -}
@@ -148,19 +161,32 @@ mergeSpaces (Str x:Space:xs)       = mergeSpaces (Str (x`T.append`" "):xs)
 mergeSpaces (Str "":xs)            = mergeSpaces xs
 mergeSpaces (x:xs)                 = x:mergeSpaces xs
 
--- Optimization: take a set of definitions, and a document; query document for existing URLs; if a URL is already present, drop it from the definition list.
+-- Optimization: take a set of definitions, and a document; query document for existing URLs; if a
+-- URL is already present, drop it from the definition list.
 -- This avoids redundancy with links added by hand or other filters.
 --
--- NOTE: This can be used to disable link rewrites by manually adding a link. In cases of self-links (eg. /Modafinil will contain the word 'modafinil' and get a rewrite to /Modafinil, leading to a useless self-link), it is easier to add a link to disable the rewrite than to figure out how to filter out that one exact rewrite only on that page. This link can be hidden to avoid distracting the reader.
+-- NOTE: This can be used to disable link rewrites by manually adding a link. In cases of self-links
+-- (eg. /Modafinil will contain the word 'modafinil' and get a rewrite to /Modafinil, leading to a
+-- useless self-link), it is easier to add a link to disable the rewrite than to figure out how to
+-- filter out that one exact rewrite only on that page. This link can be hidden to avoid distracting
+-- the reader.
 -- So to disable the modafinil rewrite on /Modafinil, one could insert into the Markdown a line like:
 -- `<span style="display:none;">[null](/Modafinil)</span> <!-- LinkAuto override: disable self-linking -->`
 filterDefinitions :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterDefinitions p = let allLinks = S.fromList $ map (T.replace "https://www.gwern.net/" "/") $ extractURLs p in
                                           filter (\(_,_,linkTarget) -> linkTarget `notElem` allLinks)
 
--- Optimization: try to prune a set of definitions and a document. Convert document to plain text, and do a global search; if a regexp matches the plain text, it may or may not match the AST, but if it does not match the plain text, it should never match the AST?
--- Since generally <1% of regexps will match anywhere in the document, doing a single global check lets us discard that regexp completely, and not check at every node. So we can trade off doing 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) + plain-text-compilation, which in practice turns out to be a *huge* performance gain (>30×?) here.
--- Hypothetically, we can optimize this further: we can glue together regexps to binary search the list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible to create a 'regexp trie' where the leaves are associated with each original regexp, and search the trie in parallel for all matching leaves.
+-- Optimization: try to prune a set of definitions and a document. Convert document to plain text,
+-- and do a global search; if a regexp matches the plain text, it may or may not match the AST, but
+-- if it does not match the plain text, it should never match the AST?
+-- Since generally <1% of regexps will match anywhere in the document, doing a single global check
+-- lets us discard that regexp completely, and not check at every node. So we can trade off doing
+-- 𝑂(R × Nodes) regexp checks for doing 𝑂(R + Nodes) + plain-text-compilation, which in practice
+-- turns out to be a *huge* performance gain (>30×?) here.
+-- Hypothetically, we can optimize this further: we can glue together regexps to binary search the
+-- list for matching regexps, giving something like 𝑂(log R) passes. Alternately, it may be possible
+-- to create a 'regexp trie' where the leaves are associated with each original regexp, and search
+-- the trie in parallel for all matching leaves.
 filterMatches :: Pandoc -> [(T.Text, R.Regex, T.Text)] -> [(T.Text, R.Regex, T.Text)]
 filterMatches p definitions  = if False then -- T.length plain < 20000 then
                                  -- for short texts like annotations, the recursive tree is extremely expensive, so just do the straight-line version:
@@ -221,9 +247,22 @@ definitionsValidate defs = if nub (map fst defs) /= map fst defs
                          else defs
 
 -- Create sorted (by length) list of (string/compiled-regexp/substitution) tuples.
--- This can be filtered on the third value to remove redundant matches, and the first value can be concatenated into a single master regexp.
--- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex, (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a custom kind of Link). This would be a much more general form of text rewriting, which could support other features, such as turning into multiple links (eg. one link for each word in a phrase), abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard link substitution boilerplate would be provided by a helper function like 'link :: T.Text -> (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
--- I'm not sure how crazy I want to get with the rewrites, though. The regexp rewriting is expensive since it must look at all text. If you're doing those sorts of other rewrites, it'd generally be more sensible to require them to be marked up explicitly, which is vastly easier to program & more efficient. We'll see.
+-- This can be filtered on the third value to remove redundant matches, and the first value can be
+-- concatenated into a single master regexp.
+-- Possible future feature: instead of returning a simple 'T.Text' value as the definition, which is
+-- substituted by the rewrite code into a 'Link' element (the knowledge of which is hardwired), one
+-- could instead return a 'T.Text -> Inline' function instead (making the type '[(T.Text, R.Regex,
+-- (T.Text -> Inline))]'), to insert an arbitrary 'Inline' (not necessarily a Link, or possibly a
+-- custom kind of Link). This would be a much more general form of text rewriting, which could
+-- support other features, such as turning into multiple links (eg. one link for each word in a
+-- phrase), abbreviated phrases (a shorthand could be expanded to a Span containing arbitrary
+-- '[Inline]'), transclusion of large blocks of text, simplified DSLs of sorts, etc. The standard
+-- link substitution boilerplate would be provided by a helper function like 'link :: T.Text ->
+-- (T.Text -> Inline); link x = \match -> Link ... [Str match] (x,...)'.
+-- I'm not sure how crazy I want to get with the rewrites, though. The regexp rewriting is expensive
+-- since it must look at all text. If you're doing those sorts of other rewrites, it'd generally be
+-- more sensible to require them to be marked up explicitly, which is vastly easier to program &
+-- more efficient. We'll see.
 customDefinitions :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> [(T.Text, R.Regex, T.Text)]
 customDefinitions subsetter = customDefinitionsR $ definitionsValidate $ subsetter custom -- delimit & compile
 
@@ -1059,12 +1098,10 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ff]actor analysis", "https://en.wikipedia.org/wiki/Factor_analysis")
         , ("[Bb]i-?factor ?(model|models|modeling|analysis)?", "/docs/statistics/2019-markon.pdf")
         , ("[Ff]ast Fourier [Tt]ransform", "https://en.wikipedia.org/wiki/Fast_Fourier_transform")
-        , ("[Ff]eline facial pheromones?", "https://en.wikipedia.org/wiki/Cat_pheromone#Feline_facial_pheromone")
         , ("[Ff]entanyl", "https://en.wikipedia.org/wiki/Fentanyl")
         , ("[Ff]ixation", "https://en.wikipedia.org/wiki/Fixation_%28population_genetics%29")
         , ("[Ff]ixing effect", "https://en.wikipedia.org/wiki/Functional_fixedness")
         , ("[Ff]lehmen response", "https://en.wikipedia.org/wiki/Flehmen_response")
-        , ("[Ff]luorinert", "https://en.wikipedia.org/wiki/Fluorinert")
         , ("[Ff]urry", "https://en.wikipedia.org/wiki/Furry_fandom")
         , ("[Gg]alantamine", "https://en.wikipedia.org/wiki/Galantamine")
         , ("[Gg]ame theory", "https://en.wikipedia.org/wiki/Game_theory")
@@ -1076,7 +1113,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Gg]it", "https://en.wikipedia.org/wiki/Git_%28software%29")
         , ("[Gg]lucagon", "https://en.wikipedia.org/wiki/Glucagon")
         , ("[Hg]awala", "https://en.wikipedia.org/wiki/Hawala")
-        , ("[Hh]amartia", "https://en.wikipedia.org/wiki/Hamartia")
         , ("[Hh]angul", "https://en.wikipedia.org/wiki/Hangul")
         , ("[Hh]eavy water", "https://en.wikipedia.org/wiki/Heavy_water")
         , ("[Hh]eterozygo(sity|us)", "https://en.wikipedia.org/wiki/Zygosity#Heterozygous")

@@ -3,10 +3,11 @@
 # openReviewAbstract.sh: scrape paper metadata from OpenReview
 # Author: Gwern Branwen
 # Date: 2021-10-12
-# When:  Time-stamp: "2022-01-16 10:41:49 gwern"
+# When:  Time-stamp: "2022-02-23 16:42:00 gwern"
 # License: CC-0
 #
-# Shell script to scrape paper titles/date/author/abstract (TLDR if exists, then full abstract)/keywords from the OpenReview conference website.
+# Shell script to scrape paper titles/date/author/abstract (TLDR if exists, then full
+# abstract)/keywords from the OpenReview conference website.
 #
 # Examples:
 #

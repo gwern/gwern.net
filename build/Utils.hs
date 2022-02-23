@@ -22,7 +22,9 @@ import Text.Show.Pretty (ppShow)
 currentYear :: Int
 currentYear = unsafePerformIO $ fmap ((\(year,_,_) -> fromInteger year) . toGregorian . utctDay) Data.Time.Clock.getCurrentTime
 
--- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final file.
+-- Write only when changed, to reduce sync overhead; creates parent directories as necessary; writes
+-- to a temp file in /tmp/ (at a specified template name), and does an atomic rename to the final
+-- file.
 writeUpdatedFile :: String -> FilePath -> T.Text -> IO ()
 writeUpdatedFile template target contentsNew =
   do existsOld <- doesFileExist target
@@ -53,7 +55,8 @@ toMarkdown abst = let clean = runPure $ do
                                   Right output -> output
 
 
--- Add or remove a class to a Link or Span; this is a null op if the class is already present or it is not a Link/Span.
+-- Add or remove a class to a Link or Span; this is a null op if the class is already present or it
+-- is not a Link/Span.
 addClass :: T.Text -> Inline -> Inline
 addClass clss x@(Span (i, clsses, ks) s)           = if clss `elem` clsses then x else Span (i, clss:clsses, ks) s
 addClass clss x@(Link (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Link (i, clss:clsses, ks) s (url, tt)
@@ -71,8 +74,8 @@ printGreen s = hPutStrLn stderr $ "\x1b[32m" ++ s ++ "\x1b[0m"
 printRed :: String -> IO ()
 printRed s = hPutStrLn stderr $ "\x1b[41m" ++ s ++ "\x1b[0m"
 
--- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error reporting on the occasional infinite loop.
--- <https://stackoverflow.com/questions/38955348/is-there-a-fixed-point-operator-in-haskell>
+-- Repeatedly apply `f` to an input until the input stops changing. Show constraint for better error
+-- reporting on the occasional infinite loop.
 fixedPoint :: (Show a, Eq a) => (a -> a) -> a -> a
 fixedPoint = fixedPoint' 100000
  where fixedPoint' :: (Show a, Eq a) => Int -> (a -> a) -> a -> a

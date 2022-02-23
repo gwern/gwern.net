@@ -2,13 +2,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- dependencies: libghc-pandoc-dev
 
--- usage: 'lost-columns.hs [file]'; reads a Pandoc Markdown (or Pandoc-generated-HTML) file and looks for 'skinny tall' lists which are better rendered
--- as multiple columns (supported on gwern.net by special CSS triggered by '<div class="columns"></div>' wrappers).
+-- usage: 'lost-columns.hs [file]'; reads a Pandoc Markdown (or Pandoc-generated-HTML) file and
+-- looks for 'skinny tall' lists which are better rendered as multiple columns (supported on
+-- gwern.net by special CSS triggered by '<div class="columns"></div>' wrappers).
 --
--- A skinny tall list is defined as a list which is at least 8 items long (so you get at least 2×4 columns—a 2×2 square or 2×3 rectangle looks dumb),
--- and where the individual lines are all <75 characters wide (>half the width of a gwern.net line at the utmost).
+-- A skinny tall list is defined as a list which is at least 8 items long (so you get at least 2×4
+-- columns—a 2×2 square or 2×3 rectangle looks dumb), and where the individual lines are all <75
+-- characters wide (>half the width of a gwern.net line at the utmost).
 --
--- If a file already has the string '<div class="columns"' in it, it will be presumed to have been manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary reporting of false-positives.
+-- If a file already has the string '<div class="columns"' in it, it will be presumed to have been
+-- manually checked & all skinny lists correctly annotated, and skipped to avoid unnecessary
+-- reporting of false-positives.
 
 module Columns (listsTooLong, main) where
 
@@ -46,7 +50,8 @@ sublistsLengthMin = 8
 
 getLongLists :: Bool -> T.Text -> [Block]
 getLongLists htmlp txt = let parsedEither = if htmlp then runPure $ readHtml def{readerExtensions = pandocExtensions } txt else runPure $ readMarkdown def{readerExtensions = pandocExtensions } txt
-                        -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes as broken links, which throws many spurious warnings to stdout
+                        -- if we don't explicitly enable footnotes, Pandoc interprets the footnotes
+                        -- as broken links, which throws many spurious warnings to stdout
                    in case parsedEither of
                               Left _ -> []
                               Right (Pandoc _ pnd) -> listsTooLong pnd

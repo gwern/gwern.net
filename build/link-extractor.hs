@@ -2,8 +2,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- dependencies: libghc-pandoc-dev
 
--- usage: 'link-extract.hs [file]'; prints out a newline-delimited list of hyperlinks found in targeted Pandoc Markdown .page files (or simple Pandoc-readable HTML .html files) when parsed.
--- Hyperlinks are not necessarily to the WWW but can be internal or interwiki hyperlinks (eg. '/local/file.pdf' or '!W').
+-- usage: 'link-extract.hs [file]'; prints out a newline-delimited list of hyperlinks found in
+-- targeted Pandoc Markdown .page files (or simple Pandoc-readable HTML .html files) when parsed.
+--
+-- Hyperlinks are not necessarily to the WWW but can be internal or interwiki hyperlinks (eg.
+-- '/local/file.pdf' or '!W').
 
 module Main where
 

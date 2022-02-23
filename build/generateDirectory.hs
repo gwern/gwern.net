@@ -2,8 +2,14 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
--- Read directories like "docs/iodine/" for its files, as well as any files/links with annotations & the tag 'iodine'; generate a list item with the abstract in a blockquote where available; the full list is then turned into a directory listing, which gets compiled with Hakyll and gets the usual popup annotations.
--- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a directory (mostly showing random snippets).
+-- Read directories like "docs/iodine/" for its files, as well as any files/links with annotations &
+-- the tag 'iodine'; generate a list item with the abstract in a blockquote where available; the
+-- full list is then turned into a directory listing, which gets compiled with Hakyll and gets the
+-- usual popup annotations. We can then treat directories as 'tags', unifying two
+-- apparently-separate systems of organization.
+--
+-- Very nifty. Much nicer than simply browsing a list of filenames or even the Google search of a
+-- directory (mostly showing random snippets).
 
 import Control.Monad (filterM)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf, nub, sort, sortBy)

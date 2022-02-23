@@ -2,8 +2,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 -- dependencies: libghc-pandoc-dev, Unique, monad-parallel, Interwiki.hs
 
--- usage: 'find . -name "*.page" -or -name "*.html" | link-suggester.hs'; like 'link-extractor.hs', this extracts URLs from Markdown/HTML files
--- but with a focus on compiling `(anchor/target, URL)` pairs to be used for semi-automated link rewrites in Emacs.
+-- usage: 'find . -name "*.page" -or -name "*.html" | link-suggester.hs'; like 'link-extractor.hs'
+--
+-- This extracts URLs from Markdown/HTML files, but with a focus on compiling `(anchor/target, URL)`
+-- pairs to be used for semi-automated link rewrites in Emacs.
 
 module Main where
 

@@ -1,8 +1,13 @@
 #!/bin/bash
 
-# sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build can be done using 'runhaskell hakyll.hs build', but that is slow, semi-error-prone (did you remember to delete all intermediates?), and does no sanity checks or optimizations like compiling the MathJax to static CSS/fonts (avoiding multi-second JS delays).
+# sync-gwern.net.sh: shell script which automates a full build and sync of Gwern.net. A simple build
+# can be done using 'runhaskell hakyll.hs build', but that is slow, semi-error-prone (did you
+# remember to delete all intermediates?), and does no sanity checks or optimizations like compiling
+# the MathJax to static CSS/fonts (avoiding multi-second JS delays).
 #
-# This script automates all of that: it cleans up, compiles a hakyll binary for faster compilation, generates a sitemap XML file, optimizes the MathJax use, checks for many kinds of errors, uploads, and cleans up.
+# This script automates all of that: it cleans up, compiles a hakyll binary for faster compilation,
+# generates a sitemap XML file, optimizes the MathJax use, checks for many kinds of errors, uploads,
+# and cleans up.
 #
 # Author: Gwern Branwen
 # Date: 2016-10-01
@@ -19,7 +24,9 @@ wrap () { OUTPUT=$($1 2>&1)
              echo -e "$OUTPUT";
          fi; }
 
-# key dependencies: GHC, Hakyll, s3cmd, emacs, curl, tidy (HTML5 version), urlencode ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg. `npm i -g mathjax-node-page`), parallel, xargs, php7…
+# key dependencies: GHC, Hakyll, s3cmd, emacs, curl, tidy (HTML5 version), urlencode
+# ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
+# `npm i -g mathjax-node-page`), parallel, xargs, php7…
 
 if ! [[ -n $(command -v ghc) && -n $(command -v git) && -n $(command -v rsync) && -n $(command -v curl) && -n $(command -v ping) && \
           -n $(command -v tidy) && -n $(command -v linkchecker) && -n $(command -v du) && -n $(command -v rm) && -n $(command -v find) && \
@@ -60,8 +67,9 @@ else
     compile generateLinkBibliography.hs
     compile generateDirectory.hs
     compile preprocess-markdown.hs &
-    ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because they are too slow to run during a regular site build & don't need to be super-up-to-date anyway
-    wait
+    ## NOTE: generateSimilarLinks.hs & link-suggester.hs are done at midnight by a cron job because
+    ## they are too slow to run during a regular site build & don't need to be super-up-to-date
+    ## anyway    wait
     cd ../../
     cp ./metadata/auto.yaml "/tmp/auto-$(date +%s).yaml.bak" || true # backup in case of corruption
     cp ./metadata/archive.hs "/tmp/archive-$(date +%s).hs.bak"
@@ -69,7 +77,9 @@ else
 
     # We update the linkSuggestions.el in a cron job because too expensive, and vastly slows down build.
 
-    # Update the directory listing index pages: there are a number of directories we want to avoid, like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of docs, so we'll blacklist those:
+    # Update the directory listing index pages: there are a number of directories we want to avoid,
+    # like the various mirrors or JS projects, or directories just of data like CSVs, or dumps of
+    # docs, so we'll blacklist those:
     bold "Building directory indexes…"
     ./static/build/generateDirectory +RTS -N"$N" -RTS \
                 $(find docs/ fiction/ haskell/ newsletter/ nootropics/ notes/ reviews/ zeo/ -type d \
@@ -94,7 +104,10 @@ else
     # cleanup post:
     rm -- ./static/build/hakyll ./static/build/*.o ./static/build/*.hi ./static/build/generateDirectory ./static/build/generateLinkBibliography ./static/build/generateBacklinks ./static/build/link-extractor &>/dev/null || true
 
-    ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for making the rule a block dividing the two halves just doesn't work in any other way, but Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
+    ## WARNING: this is a crazy hack to insert a horizontal rule 'in between' the first 3 sections
+    ## on /index (Newest/Popular/Notable), and the rest (starting with Statistics); the CSS for
+    ## making the rule a block dividing the two halves just doesn't work in any other way, but
+    ## Pandoc Markdown doesn't let you write stuff 'in between' sections, either. So… a hack.
     sed -i -e 's/section id=\"statistics\"/hr class="horizontalRule-nth-1" \/> <section id="statistics"/' ./_site/index
 
     bold "Building sitemap.xml…"

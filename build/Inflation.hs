@@ -4,30 +4,31 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2022-01-06 14:20:52 gwern"
+-- When:  Time-stamp: "2022-02-23 16:48:50 gwern"
 -- License: CC-0
 --
--- Experimental Pandoc module for fighting https://en.wikipedia.org/wiki/Money_illusion by implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real price! (Misunderstanding of inflation may be getting worse over time: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008 )
+-- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
+-- implementing automatic inflation adjustment of nominal date-stamped dollar or Bitcoin amounts to
+-- provide real prices; Bitcoin's exchange rate has moved by multiple orders of magnitude over its
+-- early years (rendering nominal amounts deeply unintuitive), and this is particularly critical in
+-- any economics or technology discussion where a nominal price from 1950 is 11x the 2019 real
+-- price! (Misunderstanding of inflation may be getting worse over time:
+-- <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3469008> )
 --
--- Years/dates are specified in a variant of my interwiki link syntax; for example: '[$50]($2000)' or '[₿0.5](₿2017-01-01)'. Dollar amounts use year, and Bitcoins use full dates, as the greater temporal resolution is necessary. Inflation rates/exchange rates are specified in Inflation.hs and need to be manually updated every once in a while; if out of date, the last available rate is carried forward for future adjustments.
--- Dollars are inflation-adjusted using the CPI from 1913 to 1958, then the Personal Consumption Expenditures (PCE) Index thereafter, which is recommended by the Federal Reserve and others as more accurately reflecting consumer behavior & welfare than the CPI.
--- Bitcoins are exchange-rate-adjusted using a mix of Pizza Day, historical exchange rates, and Poloniex daily dumps, and their dollar-equivalent inflation-adjusted to the current year. Rates are linearly interpolated for missing in-between dates, and carried forwards/backwards when outside of the provided dataset of daily exchange rates.
-
-{- This general approach could be applied to many other financial assets.
-Stock prices would benefit from being reported in meaningful terms like net real return compared to an index like the S&P 500, as opposed to being reported in purely nominal terms: how often do we really care about the absolute return or %, compared to the return over alternatives like the default baseline of simple stock indexing? Typically, the question is not 'what is the return from investing in stock X 10 years ago?' but 'what is its return compared to simply leaving my money in my standard stock index?'. If X returns 70% but the S&P 500 returned 200%, then including any numbers like '70%' is actively misleading to the reader: it should actually be '−130%' or something, to incorporate the enormous opportunity cost of making such a lousy investment like X.
-Another example of the silliness of not thinking about the use: ever notice those stock tickers in financial websites like WSJ articles, where every mention of a company is followed by today's stock return ("Amazon (AMZN: 5%) announced Prime Day would be in July")? They're largely clutter: what does a stock being up 2.5% on the day I happen to read an article tell me, exactly? But what *could* we make them mean? In news articles, we have two categories of questions in mind:
-
-1. how it started: How did the efficient markets *react*?
-
-    When people look at stock price movements to interpret whether news is better or worse than expected, they are implicitly appealing to the EMH: "the market understands what this means, and the stock going up or down tells us what it thinks". So 'tickercruft' is a half-assed implicit 'event study' (which is only an event if you happen to read it within a few hours of publication—if even that). "GoodRx fell −25% when Amazon announced online pharmacy. Wow, that's serious!"
-
-    To improve the event study, we make this rigorous: the ticker is meaningful only if it captures the *event*. Each use must be time-bracketed: what exact time did the news break & how did the stock move in the next ~hour (or possibly day)? Then that movement is cached and displayed henceforth. It may not be perfect but it's a lot better than displaying stock movements from arbitrarily far in the future when the reader happens to be reading it.
-2. How's it been going since then?
-
-    When we read news, to generalize event studies, we are interested in the long-term outcome. "It's a bold strategy, Cotton. Let's see how it works out for them." So, similar to considering the net return for investment purposes, we can show the (net real index adjusted) return since publication. The net is a high-variance but unbiased estimator of every news article, and useful to know as foreshadowing: imagine reading an old article with the sentence "VISA welcomes its exciting new CEO John Johnson (V: -30%)." This is useful context. V being up 0.1% the day you read the article, is not.
-
-Tooling-wise, this is easy to support. They can be marked up the same way, eg. '[AMZN](!N "2019-04-27")' for Amazon/NASDAQ. For easier writing, since stock tickers tend to be unique (there are not many places other than stock names that strings like "AMZN" or "TSLA" would appear), the writer's text editor can run a few thousand regexp query-search-and-replaces (there are only so many stocks) to transform 'AMZN' → '[AMZN](!N "2019-04-27")' to inject the current day automatically. (This could also be done by the CMS automatically on sight, assuming first-seen = writing-date, although with Pandoc this has the disadvantage that round-tripping does not preserve the original Markdown formatting, and the Pandoc conventions can look pretty strange compared to 'normal' Markdown—at least mine, anyway.)
--}
+-- Years/dates are specified in a variant of my interwiki link syntax; for example: '[$50]($2000)'
+-- or '[₿0.5](₿2017-01-01)'. Dollar amounts use year, and Bitcoins use full dates, as the greater
+-- temporal resolution is necessary. Inflation rates/exchange rates are specified in Inflation.hs
+-- and need to be manually updated every once in a while; if out of date, the last available rate is
+-- carried forward for future adjustments.
+--
+-- Dollars are inflation-adjusted using the CPI from 1913 to 1958, then the Personal Consumption
+-- Expenditures (PCE) Index thereafter, which is recommended by the Federal Reserve and others as
+-- more accurately reflecting consumer behavior & welfare than the CPI.
+--
+-- Bitcoins are exchange-rate-adjusted using a mix of Pizza Day, historical exchange rates, and
+-- Poloniex daily dumps, and their dollar-equivalent inflation-adjusted to the current year. Rates
+-- are linearly interpolated for missing in-between dates, and carried forwards/backwards when
+-- outside of the provided dataset of daily exchange rates.
 
 {- Examples:
 Markdown → HTML:
@@ -1118,3 +1119,53 @@ bitcoinExchangeRate = M.mapWithKey (\dt amt -> inflationAdjustUS amt (read (take
   , ("2020-11-03", 13421.3033), ("2020-11-04", 13911.8702), ("2020-11-05", 14298.2002)
   , ("2020-11-06", 15542.6855), ("2020-11-07", 15522.4808)
   ]
+
+{- This general approach could be applied to many other financial assets.
+Stock prices would benefit from being reported in meaningful terms like net real return compared to
+an index like the S&P 500, as opposed to being reported in purely nominal terms: how often do we
+really care about the absolute return or %, compared to the return over alternatives like the
+default baseline of simple stock indexing? Typically, the question is not 'what is the return from
+investing in stock X 10 years ago?' but 'what is its return compared to simply leaving my money in
+my standard stock index?'. If X returns 70% but the S&P 500 returned 200%, then including any
+numbers like '70%' is actively misleading to the reader: it should actually be '−130%' or something,
+to incorporate the enormous opportunity cost of making such a lousy investment like X.
+
+Another example of the silliness of not thinking about the use: ever notice those stock tickers in
+financial websites like WSJ articles, where every mention of a company is followed by today's stock
+return ("Amazon (AMZN: 5%) announced Prime Day would be in July")? They're largely clutter: what
+does a stock being up 2.5% on the day I happen to read an article tell me, exactly? But what *could*
+we make them mean? In news articles, we have two categories of questions in mind:
+
+1. how it started: How did the efficient markets *react*?
+
+    When people look at stock price movements to interpret whether news is better or worse than
+    expected, they are implicitly appealing to the EMH: "the market understands what this means, and
+    the stock going up or down tells us what it thinks". So 'tickercruft' is a half-assed implicit
+    'event study' (which is only an event if you happen to read it within a few hours of
+    publication—if even that). "GoodRx fell −25% when Amazon announced online pharmacy. Wow, that's
+    serious!"
+
+    To improve the event study, we make this rigorous: the ticker is meaningful only if it captures
+    the *event*. Each use must be time-bracketed: what exact time did the news break & how did the
+    stock move in the next ~hour (or possibly day)? Then that movement is cached and displayed
+    henceforth. It may not be perfect but it's a lot better than displaying stock movements from
+    arbitrarily far in the future when the reader happens to be reading it.
+2. How's it been going since then?
+
+    When we read news, to generalize event studies, we are interested in the long-term outcome.
+    "It's a bold strategy, Cotton. Let's see how it works out for them." So, similar to considering
+    the net return for investment purposes, we can show the (net real index adjusted) return since
+    publication. The net is a high-variance but unbiased estimator of every news article, and useful
+    to know as foreshadowing: imagine reading an old article with the sentence "VISA welcomes its
+    exciting new CEO John Johnson (V: -30%)." This is useful context. V being up 0.1% the day you
+    read the article, is not.
+
+Tooling-wise, this is easy to support. They can be marked up the same way, eg. '[AMZN](!N
+"2019-04-27")' for Amazon/NASDAQ. For easier writing, since stock tickers tend to be unique (there
+are not many places other than stock names that strings like "AMZN" or "TSLA" would appear), the
+writer's text editor can run a few thousand regexp query-search-and-replaces (there are only so many
+stocks) to transform 'AMZN' → '[AMZN](!N "2019-04-27")' to inject the current day automatically.
+(This could also be done by the CMS automatically on sight, assuming first-seen = writing-date,
+although with Pandoc this has the disadvantage that round-tripping does not preserve the original
+Markdown formatting, and the Pandoc conventions can look pretty strange compared to 'normal'
+Markdown—at least mine, anyway.) -}
