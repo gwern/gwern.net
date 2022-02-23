@@ -315,6 +315,9 @@ a[data-link-icon-type*='text']::after {
 a[data-link-icon-type*='sans']::after {
     font-family: var(--GW-sans-serif-font-stack);
 }
+a[data-link-icon-type*='mono']::after {
+	font-family: var(--GW-monospaced-font-stack);
+}
 a[data-link-icon-type*='bold']::after {
     font-weight: bold;
 }
@@ -466,6 +469,12 @@ a[data-link-icon-type*='quad']::after {
     */
 a[data-link-icon-type*='quad'][data-link-icon-type*='sans']::after {
     margin: 0;
+}
+
+/*  Quad-letter square icons in a monospaced face.
+    */
+a[data-link-icon-type*='quad'][data-link-icon-type*='mono']::after {
+	letter-spacing: 0.05em;
 }
 
 a[data-link-icon='VICE']::after {
