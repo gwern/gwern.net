@@ -371,9 +371,10 @@ a[data-link-icon='Ss']::after {
 
 a[data-link-icon='Vox']::after {
     --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.1em; /* shift left a bit */
 }
 
-a[data-link-icon='\03C8']::after {
+a[data-link-icon='ψ']::after {
     --link-icon-offset-y: 0.4em;
 
     opacity: 0.75;
@@ -385,7 +386,7 @@ a[data-link-icon='ℵ']::after {
     font-weight: normal;
 }
 
-a[data-link-icon='\2585\2587\2583']::after {
+a[data-link-icon='▅▇▃']::after {
     --link-icon-size: 0.5em;
     --link-icon-offset-x: 0.25em;
 
@@ -393,7 +394,7 @@ a[data-link-icon='\2585\2587\2583']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon="\25B2"]::after {
+a[data-link-icon="▲"]::after {
     --link-icon-offset-x: 0;
     --link-icon-offset-y: 0.25em;
 
@@ -404,19 +405,13 @@ a[data-link-icon='▱']::after {
     --link-icon-size: 1em;
     opacity: 0.95;
 }
+
 a[data-link-icon='▽']::after {
     --link-icon-size: 1em;
     opacity: 0.95;
 }
 
-a[data-link-icon='♘']::after {
-    --link-icon-size: 1.2em;
-    --link-icon-offset-y: 0.13em;
-    --link-icon-offset-x: -0.05em;
-    font-weight: bold;
-}
-
-a[data-link-icon='\2709']::after {
+a[data-link-icon='✉']::after {
     --link-icon-size: 1.1em;
     --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.05em;
@@ -425,32 +420,28 @@ a[data-link-icon='\2709']::after {
     opacity: 0.95;
 }
 
-a[data-link-icon='M\1D411']::after {
+a[data-link-icon='M𝐑']::after {
     opacity: 0.75;
 }
 
-a[data-link-icon='\1D401']::after {
+a[data-link-icon='𝐁']::after {
     opacity: 0.77;
 }
 
-a[data-link-icon='\1D40C']::after {
+a[data-link-icon='𝐌']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon='\1D6CC']::after {
+a[data-link-icon='𝛌']::after {
     --link-icon-size: 1em;
 
     opacity: 0.6;
 }
 
-a[data-link-icon='\1D6D8']::after {
+a[data-link-icon='𝛘']::after {
     --link-icon-offset-y: 0.4em;
 
     opacity: 0.75;
-}
-
-a[data-link-icon='Vox']::after {
-    --link-icon-offset-x: 0.1em; /* shift left a bit */
 }
 
 /****************************/
