@@ -102,7 +102,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
  | u'' "www.lesswrong.com" || u'' "sl4.org" || u'' "wiki.lesswrong.com" || u'' "www.greaterwrong.com" = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
  | u'' "www.longecity.org" = aI "⧖" "text" -- Longecity “⧖” U+29D6 WHITE HOURGLASS UNICODE
- | u'' "mattlakeman.org" = aI "Matt" "text,quad,sans"
+ | u'' "mattlakeman.org" = aI "MATT" "text,quad,sans"
  | u'' "michaelnielsen.org" || u'' "quantum.country" || u'' "numinous.productions" || u'' "cognitivemedium.com" || u'' "neuralnetworksanddeeplearning.com" = aI "MN" "text"
  | u'' "myanimelist.net" = aI "MAL" "text,sans" -- MAL: the blue of their logo doesn’t work, so just text
  | u'' "www.motherjones.com" = aI "MJ" "text,sans"
@@ -359,7 +359,7 @@ linkIconTestUnits =
          ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text"),
          ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans"),
          ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text"),
-         ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "Matt", "text,quad,sans"),
+         ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "MATT", "text,quad,sans"),
          ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans"),
          ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text"),
          ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg"),
