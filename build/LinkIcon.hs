@@ -66,7 +66,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
- | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
+ | u'' "www.mdpi.com" = aI "MDPI" "text,quad,mono" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
  | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
@@ -360,7 +360,7 @@ linkIconTestUnits =
          ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans"),
          ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text"),
          ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "MATT", "text,quad,sans"),
-         ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans"),
+         ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,mono"),
          ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text"),
          ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg"),
          ("https://meltingasphalt.com/interactive/going-critical/",  "\9650","text"),
