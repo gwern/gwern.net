@@ -702,6 +702,17 @@ a[data-link-icon='reddit']::after {
     opacity: 0.60;
 }
 
+a[data-link-icon='springerlink']::after {
+	--link-icon-size: 0.9em;
+	--link-icon-offset-x: 0.1em;
+	--link-icon-offset-y: 0.1em;
+
+	opacity: 0.8;
+}
+a[data-link-icon='springerlink']:hover::after {
+	opacity: 0.5;
+}
+
 a[data-link-icon='stackexchange']::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.1em;
