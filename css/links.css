@@ -379,8 +379,8 @@ a[data-link-icon='\03C8']::after {
     opacity: 0.75;
 }
 
-a[data-link-icon='\2135']::after {
-    --link-icon-size: 0.8em;
+a[data-link-icon='ℵ']::after {
+    --link-icon-size: 0.9em;
 
     font-weight: normal;
 }
