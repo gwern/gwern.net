@@ -8,7 +8,7 @@ import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Pandoc (def, nullMeta, runPure,
-                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span), readerExtensions, writerExtensions, readMarkdown, readHtml, writeMarkdown, pandocExtensions)
+                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
 import System.IO (stderr, hPutStrLn)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)

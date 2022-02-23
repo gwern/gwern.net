@@ -1,7 +1,7 @@
 {- LinkArchive.hs: module for generating Pandoc external links which are rewritten to a local static mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-22 16:21:31 gwern"
+When:  Time-stamp: "2022-02-22 19:48:25 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -42,7 +42,6 @@ module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 import Control.Monad (filterM)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
-import Data.List.Utils (replace)
 import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)

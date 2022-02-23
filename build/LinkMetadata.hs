@@ -1,7 +1,7 @@
 {- LinkMetadata.hs: module for generating Pandoc links which are annotated with metadata, which can then be displayed to the user as 'popups' by /static/js/popups.js. These popups can be excerpts, abstracts, article introductions etc, and make life much more pleasant for the reader - hxbover over link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-20 12:13:09 gwern"
+When:  Time-stamp: "2022-02-22 23:26:43 gwern"
 License: CC-0
 -}
 
@@ -85,26 +85,6 @@ readLinkMetadata = do
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'partial' overrides 'auto'
              return final
-
--- updateDatabases :: IO ()
--- updateDatabases = mapM_ (\f -> fmap (writeLinkMetadata f . updateDatabase . M.fromList) $ readYaml f) ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
-
--- updateDatabase :: (Path MetadataItem -> IO (Path MetadataItem)) -> Metadata -> IO Metadata
-updateDatabase :: IO ()
-updateDatabase = do let path = "metadata/custom-small.yaml"
-                    db <- (fmap M.fromList $ readYaml path) :: IO Metadata
-                    db' <- M.traverseWithKey (\_ item -> singleshotParagraphize item) db
-                    writeLinkMetadata (path++"-updated") db'
-
-singleshotParagraphize :: MetadataItem -> IO MetadataItem
-singleshotParagraphize (b,c,d,e,ts,f) = do f' <- processParagraphizer f
-                                           return (b,c,d,e,ts,f')
-
-writeLinkMetadata :: Path -> Metadata -> IO ()
-writeLinkMetadata path yaml = do let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ M.toList yaml -- flatten [(Path, (String, String, String, String, String))]
-
-                                 writeUpdatedFile "yaml" path newYaml
-
 
 -- read the annotation database, and do extensive semantic & syntactic checks for errors/duplicates:
 readLinkMetadataAndCheck :: IO Metadata
@@ -1129,7 +1109,7 @@ paragraphized a = paragraphsMarkdown a || blockElements a || length (paragraphsH
 processParagraphizer :: String -> IO String
 processParagraphizer "" = return ""
 processParagraphizer a =
-      if length a < 256 || paragraphized a then return a
+      if length a < 1024 || paragraphized a then return a
       else do let a' = replace "<p>" "" $ replace "</p>" "" a
               let a'' = trim $ replace "\160" " " $ toMarkdown a'
               (status,_,mb) <- runShellCommand "./" Nothing "python" ["static/build/paragraphizer.py", a'']

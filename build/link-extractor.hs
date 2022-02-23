@@ -13,7 +13,7 @@ import qualified Data.Text.IO as TIO (readFile, putStr)
 import System.Environment (getArgs)
 import System.FilePath (takeBaseName)
 
-import Query (extractLinksWith)
+import Query (extractLinks)
 
 -- | Map over the filenames
 main :: IO ()
@@ -27,7 +27,7 @@ main = do
 printURLs :: Bool -> FilePath -> IO ()
 printURLs printfilename file = do
   input <- TIO.readFile file
-  let converted = extractLinksWith (".page"`isSuffixOf`file) input
+  let converted = extractLinks (".page"`isSuffixOf`file) input
   -- rewrite self-links like "#discriminator-ranking" → "/Faces#discriminator-ranking" by prefixing the original Markdown filename's absolute-ized basename;
   -- this makes frequency counts more informative, eg. for deciding what sections to refactor out into standalone pages (because heavy cross-referencing
   -- *inside* a page is an important indicator of a section being 'too big', just like cross-page references are).

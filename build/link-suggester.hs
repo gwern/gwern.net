@@ -96,7 +96,7 @@ parseURLs file = do
 
 -- return True if matches any blacklist conditions
 filterURLs :: T.Text -> Bool
-filterURLs    u = "$"`T.isPrefixOf`u || "\8383"`T.isPrefixOf`u || "#"`T.isPrefixOf`u || "/static/img/"`T.isPrefixOf`u || "/newsletter/20"`T.isPrefixOf`u || "dropbox.com" `T.isInfixOf` u ||
+filterURLs    u = "$"`T.isPrefixOf`u || "\8383"`T.isPrefixOf`u || "#"`T.isPrefixOf`u || "/static/img/"`T.isPrefixOf`u || "/newsletter/20"`T.isPrefixOf`u || "dropbox.com" `T.isInfixOf` u || "https://www.harney.com"`T.isPrefixOf`u ||
                   u `elem` ["https://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"]
 filterAnchors :: S.Set T.Text -> T.Text -> Bool
 filterAnchors d t = T.length t > anchorLengthMaximum ||
