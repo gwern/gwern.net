@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2022-02-23 23:38:24 gwern"
+# When:  Time-stamp: "2022-02-24 12:25:16 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -22,9 +22,7 @@
 # Requires: sha1sum, SingleFile+chromium, timeout, curl, wget, ocrmypdf; pdftk recommended for 'decrypting' PDFs
 
 # set -e
-set -x
-
-sleep 5s
+# set -x
 
 USER_AGENT="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:96.0) Gecko/20100101 Firefox/96.1"
 
@@ -43,6 +41,9 @@ FILE=$(ls -U "docs/www/$DOMAIN/$HASH."* 2> /dev/null) || true
 if [[ -n "$FILE" ]]; then
     echo -n "/$FILE$ANCHOR"
 else
+
+    sleep 5s
+
     URL=$(echo "$@" | sed -e 's/https:\/\/arxiv\.org/https:\/\/export.arxiv.org/') # NOTE: http://export.arxiv.org/help/robots (we do the rewrite here to keep the directories & URLs as expected like `/docs/www/arxiv.org/`).
     ## 404?
     HTTP_STATUS=$(timeout 20s curl --user-agent "$USER_AGENT" \

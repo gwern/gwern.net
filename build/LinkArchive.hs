@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-23 22:26:42 gwern"
+When:  Time-stamp: "2022-02-24 13:25:32 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -100,7 +100,7 @@ import Data.Time.Calendar (toModifiedJulianDay)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString)
 import System.Exit (ExitCode(ExitFailure, ExitSuccess))
-
+import System.Posix.Files (getFileStatus, fileSize)
 import Data.FileStore.Utils (runShellCommand)
 import Network.URI.TLD (parseTLD)
 import Text.Pandoc (Inline(Link))
@@ -146,7 +146,10 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
                                                      else
                                                        if isNothing (parseTLD p) then
                                                         printRed ("Error! Invalid URI link in archive? " ++ show p ++ show u ++ show ami) >> return False
-                                                       else return True
+                                                       else do size <- getFileStatus (takeWhile (/='#') $ tail u) >>= \s -> return $ fileSize s
+                                                               if size == 0 then
+                                                                 printRed ("Error! Empty archive file. Not using: " ++ show p ++ show u ++ show ami) >> return False
+                                                                 else if size > 1024 then return True else return False
                                   Right Nothing   -> return True
                                   Left  _         -> return True)
                               pdl
