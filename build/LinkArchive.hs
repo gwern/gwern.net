@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-23 16:50:06 gwern"
+When:  Time-stamp: "2022-02-23 21:32:14 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -92,6 +92,7 @@ module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 import Control.Monad (filterM)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
+import Data.List.Utils (replace)
 import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text.IO as TIO (readFile)
 import qualified Data.Text as T (pack, unpack)
@@ -118,7 +119,10 @@ type Path = String
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
 localizeLink :: ArchiveMetadata -> Inline -> IO Inline
 localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
-  -- skip local archiving if matches the whitelist, or it has a manual annotation '.localArchive-not' class on it, like `[Foo](!W "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first linked, to avoid deletionist content rot)
+  -- skip local archiving if matches the whitelist, or it has a manual annotation '.localArchive-not' class on it, like
+  -- `[Foo](!W "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a
+  -- local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first
+  -- linked, to avoid deletionist content rot)
   if whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
     do targetURL' <- rewriteLink adb (T.unpack targetURL)
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
@@ -153,7 +157,8 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
 rewriteLink:
 1. Exit on whitelisted URLs.
 2. Access what we know about the URL, defaulting to "First I've heard of it.".
-3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of PDFs, which we locally archive immediately.)
+3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of PDFs, which we
+   locally archive immediately.)
 4. Return archive contents.
 -}
 rewriteLink :: ArchiveMetadata -> String -> IO String
@@ -190,28 +195,69 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
                                        return $ Just $ U.toString stdout
                      ExitFailure _ -> printRed (l ++ " : archiving failed: " ++ U.toString stderr') >> return Nothing
 
--- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then we also want to rewrite it to use the Ar5iv (HTML5 version) service, and provide *both*.
+-- sometimes we may want to do automated transformations of a URL *before* we check any whitelists. In the case of
+-- Arxiv, we want to generate the PDF equivalent of the HTML abstract landing page, so the PDF gets archived, but then
+-- we also want to rewrite it to use the Ar5iv (HTML5 version) service, and provide *both*.
+--
+-- In the case of OpenReview, the `forum?id=` is the peer reviews, which are worth reading, but we'd like to provide the
+-- PDF link too. We don't need a third version, just to provide the two, so this is easier than the Ar5iv rewrite.
 transformURLsForArchiving :: String -> String
-transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2"
+transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . replace "https://openreview.net/forum" "https://openreview.net/pdf"
 transformURLsForLinking   :: String -> String
 transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2"
 
 {- re URL transforms: Why?
 
-The status quo of Arxiv links is unsatisfactory. Linking to the abstract page is the worst of all worlds. The annotations for your standard Arxiv /abs/ landing page link provide almost all of the information that the abstract page does, and so the abstract page is redundant; the abstract page can't be popped-up either, as Arxiv is one of the many websites which sets headers blocking cross-site loads so your web browser will refuse to pop it up. So an Arxiv link requires at least 2 clicks to do anything useful: click on the title link, and then click on the `PDF` link. What to do?
+The status quo of Arxiv links is unsatisfactory. Linking to the abstract page is the worst of all worlds. The
+annotations for your standard Arxiv /abs/ landing page link provide almost all of the information that the abstract page
+does, and so the abstract page is redundant; the abstract page can't be popped-up either, as Arxiv is one of the many
+websites which sets headers blocking cross-site loads so your web browser will refuse to pop it up. So an Arxiv link
+requires at least 2 clicks to do anything useful: click on the title link, and then click on the `PDF` link. What to do?
 
-We could use only PDF links. Arxiv /abs/ links *could* be rewritten to go straight to /pdf/. The upside is that this would make clicking on the link meaningful (saving 1 click), and it would integrate into my local archiving system cleanly, so the link would be to a local mirror of the Arxiv PDF, which would be both faster & popup-able (saving 2 clicks while being nicer).
-But the downside is that then mobile users will have a bad experience (it might need to download and be viewed in an entirely separate app!) and people who don't want to deal with PDFs at that moment (eg. no night mode) would also prefer to not be shunted into a PDF when they could have been linked to a HTML landing page. Thus, if you hang around Reddit or Twitter or HN, you will see people or even outright bots responding to Arxiv PDF links with the /abs/ instead. This strikes me as fussy (I don't mind PDF links) but I can't deny that these people exist and seem to care.
+We could use only PDF links. Arxiv /abs/ links *could* be rewritten to go straight to /pdf/. The upside is that this
+would make clicking on the link meaningful (saving 1 click), and it would integrate into my local archiving system
+cleanly, so the link would be to a local mirror of the Arxiv PDF, which would be both faster & popup-able (saving 2
+clicks while being nicer).
+But the downside is that then mobile users will have a bad experience (it might need to download and be viewed in an
+entirely separate app!) and people who don't want to deal with PDFs at that moment (eg. no night mode) would also prefer
+to not be shunted into a PDF when they could have been linked to a HTML landing page. Thus, if you hang around Reddit or
+Twitter or HN, you will see people or even outright bots responding to Arxiv PDF links with the /abs/ instead. This
+strikes me as fussy (I don't mind PDF links) but I can't deny that these people exist and seem to care.
 
-Could we use non-abstract HTML links? Unlike BioRxiv/MedRxiv, where you can simply append `.full` and get a nice usable HTML version, Arxiv provides only the PDF, so it's unclear what other HTML page you could send people to. The good news is that there turns out there are projects to create HTML versions of Arxiv PDFs: [Arxiv-vanity](https://www.arxiv-vanity.com/) and a new one, [Ar5iv](https://ar5iv.labs.arxiv.org/). Both use the same trick: a LaTeX→HTML compiler https://github.com/brucemiller/LaTeXML . (As they use the same compiler, they are fairly similar, but Ar5iv appears to be much more ambitious & actively maintained and may be merged into Arxiv proper at some point, so I will consider just Ar5iv.) Compiling LaTeX to anything else is... hard. And many of the papers have rendering problems, major or minor, or are not present at all. (Ar5iv is about a month out of date. They served an error page before, but at my request changed it to redirect to Arxiv proper with the query parameter `fallback=original` (redirecting without an option apparently confuses non-gwern.net readers), so you can just rewrite your Arxiv links and not need to care about whether Ar5iv has it or not.) But they provide responsive reflowable HTML, justification/hyphenation, and dark mode, so for a mobile smartphone user, this is, for many users and many papers and many circumstances, better than your average 1-column paper, or constantly dragging on a 2-column paper. Still, it's not so much better that all the PDF readers will want to see the HTML version instead of the PDF version.
+Could we use non-abstract HTML links? Unlike BioRxiv/MedRxiv, where you can simply append `.full` and get a nice usable
+HTML version, Arxiv provides only the PDF, so it's unclear what other HTML page you could send people to. The good news
+is that there turns out there are projects to create HTML versions of Arxiv PDFs:
+[Arxiv-vanity](https://www.arxiv-vanity.com/) and a new one, [Ar5iv](https://ar5iv.labs.arxiv.org/). Both use the same
+trick: a LaTeX→HTML compiler <https://github.com/brucemiller/LaTeXML>. (As they use the same compiler, they are fairly
+similar, but Ar5iv appears to be much more ambitious & actively maintained and may be merged into Arxiv proper at some
+point, so I will consider just Ar5iv.) Compiling LaTeX to anything else is... hard. And many of the papers have
+rendering problems, major or minor, or are not present at all. (Ar5iv is about a month out of date. They served an error
+page before, but at my request changed it to redirect to Arxiv proper with the query parameter `fallback=original`
+(redirecting without an option apparently confuses non-gwern.net readers), so you can just rewrite your Arxiv links and
+not need to care about whether Ar5iv has it or not.) But they provide responsive reflowable HTML,
+justification/hyphenation, and dark mode, so for a mobile smartphone user, this is, for many users and many papers and
+many circumstances, better than your average 1-column paper, or constantly dragging on a 2-column paper. Still, it's not
+so much better that all the PDF readers will want to see the HTML version instead of the PDF version.
 
-So linking to the /abs/ makes no one happy; linking the PDF makes all mobile and some desktop users unhappy; and linking to the Ar5iv HTML version is the opposite. What to do? Well, why not link *both*? Popups already have a system for linking a local PDF or HTML archive of a URL, and also the URL: the PDF is the main link, and then a small `[LIVE]` link is provided to the original live un-archived URL. So we could rewrite every /abs/ link to /pdf/, which will then get archived & rewritten to the local archive, and then the 'original' URL gets quietly rewritten Arxiv → Ar5iv. To make it even more transparent, we swap 'LIVE' for 'HTML' (it's not really the 'live' link anymore, and 'HTML' tells the mobile user it may serve them better.) Mobile users see the PDF icon, avoid it, and go to `[HTML]`, desktop or PDF-enjoyers hover on it and without a click get their PDF, and after a bit of learning & adjustment (hopefully near-instant due to the icons & text labels), everyone gets their preferred medium to read the paper.
+So linking to the /abs/ makes no one happy; linking the PDF makes all mobile and some desktop users unhappy; and linking
+to the Ar5iv HTML version is the opposite. What to do? Well, why not link *both*? Popups already have a system for
+linking a local PDF or HTML archive of a URL, and also the URL: the PDF is the main link, and then a small `[LIVE]` link
+is provided to the original live un-archived URL. So we could rewrite every /abs/ link to /pdf/, which will then get
+archived & rewritten to the local archive, and then the 'original' URL gets quietly rewritten Arxiv → Ar5iv. To make it
+even more transparent, we swap 'LIVE' for 'HTML' (it's not really the 'live' link anymore, and 'HTML' tells the mobile
+user it may serve them better.) Mobile users see the PDF icon, avoid it, and go to `[HTML]`, desktop or PDF-enjoyers
+hover on it and without a click get their PDF, and after a bit of learning & adjustment (hopefully near-instant due to
+the icons & text labels), everyone gets their preferred medium to read the paper.
 
-The implementation is a little uglier than that because the popups JS code does not expect the original-URL data to be fiddled with, but it works now and is live on Gwern.net. (On some Arxiv links. Trying to download all the PDFs got my IP banned temporarily. I'll get the rest eventually.)
+The implementation is a little uglier than that because the popups JS code does not expect the original-URL data to be
+fiddled with, but it works now and is live on Gwern.net. (On some Arxiv links. Trying to download all the PDFs got my IP
+banned temporarily. I'll get the rest eventually.)
 
 While the logic is a little opaque to readers, I think this handles Arxiv much more cleanly than before. -}
 
--- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of URLs we always archive even if otherwise on a safe domain:
+-- whitelist of strings/domains which are safe to link to directly, either because they have a long history of stability
+-- & reader-friendly design, or attempting to archive them is pointless (eg. interactive services); and blacklist of
+-- URLs we always archive even if otherwise on a safe domain:
 -- 1. some matches we always want to skip
 -- 2. after that, we want to mirror PDFs everywhere (except Gwern.net because that's already 'mirrored')
 -- 3. after that, we may want to skip various filetypes and domains
