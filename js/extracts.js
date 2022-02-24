@@ -296,7 +296,7 @@ Extracts = {
                 originalURL.search = ""; /* erase the ?fallback=original query parameter necessary to make it redirect if no Ar5iv version is available */
             }
 
-            console.log("Returning: " + originalURL);
+            GWLog("Returning: " + originalURL, "extracts.js", 2);
             return originalURL.href;
         } else {
             return (target.hostname == location.hostname
