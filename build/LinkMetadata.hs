@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-23 21:59:27 gwern"
+When:  Time-stamp: "2022-02-23 22:27:29 gwern"
 License: CC-0
 -}
 
@@ -155,7 +155,7 @@ readLinkMetadataAndCheck = do
              unless (null balancedParens) $ error $ "Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
 
              let unparagraphized = filter (\(_,(_,_,_,_,_,abst)) -> not (paragraphized abst)) custom
-             unless (null unparagraphized) $ print "Needs to be rewritten into paragraphs:" >> print (map fst unparagraphized)
+             unless (null unparagraphized) $ print ("Needs to be rewritten into paragraphs:"::String) >> print (map fst unparagraphized)
 
              -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.

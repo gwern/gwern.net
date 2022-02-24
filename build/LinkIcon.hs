@@ -427,7 +427,7 @@ linkIconTestUnits =
          ("https://online.wsj.com/article/SB10000872396390443696604577647870908169992.html",  "WSJ","text"),
          ("/docs/ai/2020-chen.pdf#openai",  "openai","svg"),
          ("https://openai.com/blog/better-language-models/",  "openai","svg"),
-         ("https://openreview.net/forum?id=H1gtU9ZO-B", "OR", "text,sans"),
+         ("https://openreview.net/forum?id=xTJEN-ggl1b", "OR", "text,sans"),
          ("https://arxiv.org/abs/1611.02779#openai",  "openai","svg"),
          ("https://www.overcomingbias.com/2009/07/stupider-than-you-realize.html",  "OB","text"),
          ("https://www.poetryfoundation.org/poems/44399/pied-beauty", "POET", "text,quad,sans"),
