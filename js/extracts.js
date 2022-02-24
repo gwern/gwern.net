@@ -14,48 +14,48 @@
 // For an example of a Hakyll library which generates annotations for Wikipedia/Biorxiv/Arxiv/PDFs/arbitrarily-defined links, see https://www.gwern.net/static/build/LinkMetadata.hs ; for a live demonstration, see the links in https://www.gwern.net/newsletter/2019/07
 
 /*******************************/
-/*	Events fired by extracts.js:
+/*  Events fired by extracts.js:
 
-	Extracts.didLoad
-		Fired when the Extracts object has loaded.
+    Extracts.didLoad
+        Fired when the Extracts object has loaded.
 
-	Extracts.setupDidComplete
-		Fired just before the ‘setup’ function returns.
+    Extracts.setupDidComplete
+        Fired just before the ‘setup’ function returns.
 
-	Extracts.cleanupDidComplete
-		Fired just before the ‘cleanup’ function returns.
+    Extracts.cleanupDidComplete
+        Fired just before the ‘cleanup’ function returns.
 
-	GW.contentDidLoad {
-			source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
+    GW.contentDidLoad {
+            source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
             document:
-            	The contentView of the pop-frame.
+                The contentView of the pop-frame.
             location:
-            	URL of the local page (including anchor, if any).
+                URL of the local page (including anchor, if any).
             flags:
-            	0 (no flags set)
-		}
-		Fired at the last stage of preparing a local page embed pop-frame for
-		spawning (after the pop-frame’s content has been loaded from the cache
-		of local pages).
+                0 (no flags set)
+        }
+        Fired at the last stage of preparing a local page embed pop-frame for
+        spawning (after the pop-frame’s content has been loaded from the cache
+        of local pages).
 
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
+        (See rewrite.js for more information about the keys and values of the
+         GW.contentDidLoad event.)
 
-	GW.contentDidLoad {
-			source: "Extracts.refreshPopFrameAfterLocalPageLoads"
-			document:
-            	The contentView of the pop-frame.
-			location:
-            	URL of the local page (including anchor, if any).
-			flags: (  GW.contentDidLoadEventFlags.needsRewrite
-					| GW.contentDidLoadEventFlags.isFullPage)
-		}
-		Fired at the last stage of preparing a local page embed pop-frame for
-		spawning (after the pop-frame’s content has been freshly loaded via
-		a network request).
+    GW.contentDidLoad {
+            source: "Extracts.refreshPopFrameAfterLocalPageLoads"
+            document:
+                The contentView of the pop-frame.
+            location:
+                URL of the local page (including anchor, if any).
+            flags: (  GW.contentDidLoadEventFlags.needsRewrite
+                    | GW.contentDidLoadEventFlags.isFullPage)
+        }
+        Fired at the last stage of preparing a local page embed pop-frame for
+        spawning (after the pop-frame’s content has been freshly loaded via
+        a network request).
 
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
+        (See rewrite.js for more information about the keys and values of the
+         GW.contentDidLoad event.)
  */
 
 Extracts = {
@@ -73,8 +73,8 @@ Extracts = {
             ".sidenote-self-link"
         ].join(", "),
         excludedContainerElementsSelector: "h1, h2, h3, h4, h5, h6",
-        //	See comment at Extracts.isLocalPageLink for info on this function.
-        //	Called by: pop-frame providers (popins.js or popups.js).
+        //  See comment at Extracts.isLocalPageLink for info on this function.
+        //  Called by: pop-frame providers (popins.js or popups.js).
         testTarget: (target) => {
             let targetTypeInfo = Extracts.targetTypeInfo(target);
             if (targetTypeInfo) {
@@ -87,7 +87,7 @@ Extracts = {
                 if (containingPopFrame && Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
                     return false;
 
-				//	Added specified classes to the target.
+                //  Added specified classes to the target.
                 if (targetTypeInfo.targetClasses)
                     target.classList.add(...(targetTypeInfo.targetClasses.split(" ")));
 
@@ -112,16 +112,16 @@ Extracts = {
     /*  Infrastructure.
      */
 
-	//	Can be ‘Popups’ or ‘Popins’, currently.
+    //  Can be ‘Popups’ or ‘Popins’, currently.
     popFrameProviderName: null,
-    //	Can be the Popups or Popins object, currently.
+    //  Can be the Popups or Popins object, currently.
     popFrameProvider: null,
 
     /***********/
     /*  General.
      */
 
-	//	Called by: Extracts.cleanup
+    //  Called by: Extracts.cleanup
     removeTargetsWithin: (container) => {
         GWLog("Extracts.removeTargetsWithin", "extracts.js", 1);
 
@@ -139,7 +139,7 @@ Extracts = {
         Extracts.popFrameProvider.removeTargetsWithin(container, Extracts.targets, restoreTarget);
     },
 
-	//	Called by: extracts-options.js
+    //  Called by: extracts-options.js
     cleanup: () => {
         GWLog("Extracts.cleanup", "extracts.js", 1);
 
@@ -158,15 +158,15 @@ Extracts = {
             if (Extracts.popupOptionsEnabled)
                 Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
         } else {
-        	//	TODO: this!
+            //  TODO: this!
         }
 
         //  Fire cleanup-complete event.
         GW.notificationCenter.fireEvent("Extracts.cleanupDidComplete");
     },
 
-	//	Called by: Extracts.processTargetsInDocument
-	//	Called by: extracts-options.js
+    //  Called by: Extracts.processTargetsInDocument
+    //  Called by: extracts-options.js
     addTargetsWithin: (container) => {
         GWLog("Extracts.addTargetsWithin", "extracts.js", 1);
 
@@ -177,8 +177,8 @@ Extracts = {
         }
     },
 
-	//	Called by: extracts.js (doSetup)
-	//	Called by: extracts-options.js
+    //  Called by: extracts.js (doSetup)
+    //  Called by: extracts-options.js
     setup: () => {
         GWLog("Extracts.setup", "extracts.js", 1);
 
@@ -218,7 +218,7 @@ Extracts = {
         GW.notificationCenter.fireEvent("Extracts.setupDidComplete");
     },
 
-	//	Called by: Extracts.setup
+    //  Called by: Extracts.setup
     processTargetsInDocument: (doc = Extracts.rootDocument) => {
         GWLog("Extracts.processTargetsInDocument", "extracts.js", 2);
 
@@ -241,24 +241,24 @@ Extracts = {
         links pointing to available content such as images or code files,
         citations, etc.) that Extracts supports.
         The fields in each entry are:
-        	1. Type name
-        	2. Type predicate function (of the Extracts object) for identifying
-        	   targets of the type; returns true iff target is of that type
-        	3. Class(es) to be added to targets of the type (these are added
-        	   during initial processing)
-        	4. Fill function (of the Extracts object); called to fill a
-        	   pop-frame for a target of that type with content
-        	5. Class(es) to be added to a pop-frame for targets of that type
+            1. Type name
+            2. Type predicate function (of the Extracts object) for identifying
+               targets of the type; returns true iff target is of that type
+            3. Class(es) to be added to targets of the type (these are added
+               during initial processing)
+            4. Fill function (of the Extracts object); called to fill a
+               pop-frame for a target of that type with content
+            5. Class(es) to be added to a pop-frame for targets of that type
      */
     targetTypeDefinitions: [
         [ "LOCAL_PAGE",         "isLocalPageLink",      "has-content",      "localTranscludeForTarget",     "local-transclude"      ],
     ],
 
     /*  Returns full type info for the given target (in other words, the data
-    	from the appropriate row of the targetTypeDefinitions array), or null
-    	if the target is not matched by the predicate function of any known type.
+        from the appropriate row of the targetTypeDefinitions array), or null
+        if the target is not matched by the predicate function of any known type.
      */
-    //	Called by: many functions, all in extracts.js
+    //  Called by: many functions, all in extracts.js
     targetTypeInfo: (target) => {
         let info = { };
         for (definition of Extracts.targetTypeDefinitions) {
@@ -279,35 +279,37 @@ Extracts = {
         pages), or the relative url (for local links), or the full URL (for
         foreign links).
      */
-    //	Called by: Extracts.targetsMatch
-    //	Called by: Extracts.fillPopFrame
-    //	Called by: extracts-annotations.js
+    //  Called by: Extracts.targetsMatch
+    //  Called by: Extracts.fillPopFrame
+    //  Called by: extracts-annotations.js
     targetIdentifier: (target) => {
-		if (target.dataset.urlOriginal) {
-			let originalURL = new URL(target.dataset.urlOriginal);
+        if (target.dataset.urlOriginal) {
+            let originalURL = new URL(target.dataset.urlOriginal);
 
-			/*	Special cases where the original URL of the target does not
-				match the target’s proper identifier (possibly due to outgoing
-				link rewriting).
-			 */
-			if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
-				originalURL.hostname = "arxiv.org";
-				originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
-			}
+            /*  Special cases where the original URL of the target does not
+                match the target’s proper identifier (possibly due to outgoing
+                link rewriting).
+             */
+            if (originalURL.hostname == "ar5iv.labs.arxiv.org") {
+                originalURL.hostname = "arxiv.org";
+                originalURL.pathname = originalURL.pathname.replace("/html/", "/abs/");
+                originalURL.search = ""; /* erase the ?fallback=original query parameter necessary to make it redirect if no Ar5iv version is available */
+            }
 
-			return originalURL.href;
-		} else {
-			return (target.hostname == location.hostname
-				   ? target.pathname + target.hash
-				   : target.href);
-		}
-	},
+            console.log("Returning: " + originalURL);
+            return originalURL.href;
+        } else {
+            return (target.hostname == location.hostname
+                   ? target.pathname + target.hash
+                   : target.href);
+        }
+    },
 
     /*  Returns true if the two targets will spawn identical popups
         (that is, if they are of the same type, and have the same identifiers).
      */
-    //	Called by: Extracts.targets.testTarget
-    //	Called by: Extracts.spawnedPopupMatchingTarget
+    //  Called by: Extracts.targets.testTarget
+    //  Called by: Extracts.spawnedPopupMatchingTarget
     targetsMatch: (targetA, targetB) => {
         return    Extracts.targetIdentifier(targetA) == Extracts.targetIdentifier(targetB)
                && Extracts.targetTypeInfo(targetA).typeName == Extracts.targetTypeInfo(targetB).typeName;
@@ -319,16 +321,16 @@ Extracts = {
         target (link) that spawned the pop-frame that contains the transcluded
         content.
      */
-    //	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-    //	Called by: extracts-annotations.js
+    //  Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
+    //  Called by: extracts-annotations.js
     qualifyLinksInPopFrame: (popFrame) => {
         popFrame.querySelectorAll("a[href^='#']").forEach(anchorLink => {
             anchorLink.pathname = popFrame.spawningTarget.pathname;
         });
     },
 
-	//	Called by: Extracts.localTranscludeForTarget
-	//	Called by: Extracts.titleForPopFrame_LOCAL_PAGE
+    //  Called by: Extracts.localTranscludeForTarget
+    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     nearestBlockElement: (element) => {
         return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
     },
@@ -336,9 +338,9 @@ Extracts = {
     /*  This function fills a pop-frame for a given target with content. It
         returns true if the pop-frame successfully filled, false otherwise.
      */
-    //	Called by: Extracts.preparePopFrame
-    //	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-    //	Called by: extracts-annotations.js
+    //  Called by: Extracts.preparePopFrame
+    //  Called by: Extracts.refreshPopFrameAfterLocalPageLoads
+    //  Called by: extracts-annotations.js
     fillPopFrame: (popFrame) => {
         GWLog("Extracts.fillPopFrame", "extracts.js", 2);
 
@@ -359,44 +361,44 @@ Extracts = {
         }
     },
 
-	//	Called by: Extracts.targetDocument
-	//	Called by: Extracts.preparePopup
-	//	Called by: Extracts.preparePopin
-	//	Called by: extracts-annotations.js
+    //  Called by: Extracts.targetDocument
+    //  Called by: Extracts.preparePopup
+    //  Called by: Extracts.preparePopin
+    //  Called by: extracts-annotations.js
     popFrameHasLoaded: (popFrame) => {
         return !(popFrame.classList.contains("loading") || popFrame.classList.contains("loading-failed"));
     },
 
-	//	Called by: Extracts.titleForPopFrame
-	//	Called by: Extracts.titleForPopFrame_LOCAL_PAGE
-	//	Called by: extracts-annotations.js
-	//	Called by: extracts-content.js
+    //  Called by: Extracts.titleForPopFrame
+    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
+    //  Called by: extracts-annotations.js
+    //  Called by: extracts-content.js
     standardPopFrameTitleElementForTarget: (target, titleText) => {
         if (typeof titleText == "undefined")
             titleText = (target.hostname == location.hostname)
                         ? target.pathname + target.hash
                         : target.href;
 
-        /*	Because tab-handling is bad on mobile, readers expect the original
-        	remote URL to open up in-tab, as readers will be single-threaded;
-        	on desktop, we can open up in a tab for poweruser-browsing of
-        	tab-explosions.
+        /*  Because tab-handling is bad on mobile, readers expect the original
+            remote URL to open up in-tab, as readers will be single-threaded;
+            on desktop, we can open up in a tab for poweruser-browsing of
+            tab-explosions.
          */
-		let whichWindow = (Extracts.popFrameProvider == Popins) ? "current" : "new";
-		let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
-		return `<a
-			class="popframe-title-link"
-			href="${target.href}"
-			title="Open ${target.href} in ${whichWindow} window."
-			target="${linkTarget}"
-				>${titleText}</a>`;
+        let whichWindow = (Extracts.popFrameProvider == Popins) ? "current" : "new";
+        let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
+        return `<a
+            class="popframe-title-link"
+            href="${target.href}"
+            title="Open ${target.href} in ${whichWindow} window."
+            target="${linkTarget}"
+                >${titleText}</a>`;
     },
 
-    /*	Returns the contents of the title element for a pop-frame.
+    /*  Returns the contents of the title element for a pop-frame.
      */
-    //	Called by: Extracts.preparePopup
-    //	Called by: Extracts.preparePopin
-    //	Called by: Extracts.rewritePopinContent
+    //  Called by: Extracts.preparePopup
+    //  Called by: Extracts.preparePopin
+    //  Called by: Extracts.rewritePopinContent
     titleForPopFrame: (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -427,9 +429,9 @@ Extracts = {
         transcluded wholesale and embedded as a pop-frame (of class
         ‘external-page-embed’).
      */
-    //	Called by: Extracts.localTranscludeForTarget
-    //	Called by: Extracts.titleForPopFrame_LOCAL_PAGE
-    //	Called by: extracts-content.js
+    //  Called by: Extracts.localTranscludeForTarget
+    //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
+    //  Called by: extracts-content.js
     targetDocument: (target) => {
         if (target.hostname != location.hostname)
             return null;
@@ -451,17 +453,17 @@ Extracts = {
 
     /*  Returns the location (a URL object) of the document for a given target.
      */
-    //	Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
-    //	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-    //	Called by: extracts-annotations.js
-    //	Called by: extracts-content.js
+    //  Called by: Extracts.rewritePopFrameContent_LOCAL_PAGE
+    //  Called by: Extracts.refreshPopFrameAfterLocalPageLoads
+    //  Called by: extracts-annotations.js
+    //  Called by: extracts-content.js
     locationForTarget: (target) => {
         return new URL(target.href);
     },
 
     /*  Activate loading spinner for an object pop-frame.
      */
-    //	Called by: extracts-content.js
+    //  Called by: extracts-content.js
     setLoadingSpinner: (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -523,9 +525,9 @@ Extracts = {
         the pop-frame spawned by the given target.
      */
 
-    /*	Local links (to sections of the current page, or other site pages).
+    /*  Local links (to sections of the current page, or other site pages).
      */
-    //	Called by: Extracts.targetTypeInfo (as `predicateFunctionName`)
+    //  Called by: Extracts.targetTypeInfo (as `predicateFunctionName`)
     isLocalPageLink: (target) => {
         if (   target.hostname != location.hostname
             || Extracts.isAnnotatedLink(target))
@@ -542,8 +544,8 @@ Extracts = {
                 || target.hash > "");
     },
 
-	//	Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
-	//	Called by: extracts-content.js
+    //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
+    //  Called by: extracts-content.js
     localTranscludeForTarget: (target, unwrapFunction) => {
         GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
@@ -561,57 +563,57 @@ Extracts = {
          */
         let fullTargetDocument = Extracts.targetDocument(target);
         if (fullTargetDocument && target.hash > "") {
-        	/*	If there already is a pop-frame that displays the entire linked
-        		page, and if the link points to an anchor, display the linked
-        		section or element.
-        	 */
+            /*  If there already is a pop-frame that displays the entire linked
+                page, and if the link points to an anchor, display the linked
+                section or element.
+             */
             return unwrapFunction(Extracts.nearestBlockElement(fullTargetDocument.querySelector(decodeURIComponent(target.hash))));
         } else {
             /*  Otherwise, display the entire linked page.
 
-            	(Note that we might end up here because there is yet no
-            	 pop-frame with the full linked document, OR because there is
-            	 such a pop-frame but it’s a pinned popup or something (and thus
-            	 we didn’t want to despawn it and respawn it at this target’s
-            	 location).
-        	 */
+                (Note that we might end up here because there is yet no
+                 pop-frame with the full linked document, OR because there is
+                 such a pop-frame but it’s a pinned popup or something (and thus
+                 we didn’t want to despawn it and respawn it at this target’s
+                 location).
+             */
             return Extracts.externalPageEmbedForTarget(target);
         }
     },
 
     /*  TOC links.
      */
-    //	Called by: Extracts.testTarget_LOCAL_PAGE
-    //	Called by: Extracts.preparePopup_LOCAL_PAGE
+    //  Called by: Extracts.testTarget_LOCAL_PAGE
+    //  Called by: Extracts.preparePopup_LOCAL_PAGE
     isTOCLink: (target) => {
         return (target.closest("#TOC") != null);
     },
 
     /*  Links in the sidebar.
      */
-    //	Called by: Extracts.testTarget_LOCAL_PAGE
+    //  Called by: Extracts.testTarget_LOCAL_PAGE
     isSidebarLink: (target) => {
         return (target.closest("#sidebar") != null);
     },
 
-	/*	This “special testing function” is used to exclude certain targets which
-		have already been categorized as (in this case) `LOCAL_PAGE` targets. It
-		returns false if the target is to be excluded, true otherwise. Excluded
-		targets will not spawn pop-frames.
-	 */
-	//	Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
+    /*  This “special testing function” is used to exclude certain targets which
+        have already been categorized as (in this case) `LOCAL_PAGE` targets. It
+        returns false if the target is to be excluded, true otherwise. Excluded
+        targets will not spawn pop-frames.
+     */
+    //  Called by: Extracts.targets.testTarget (as `testTarget_${targetTypeInfo.typeName}`)
     testTarget_LOCAL_PAGE: (target) => {
         return (!(   Extracts.popFrameProvider == Popins
                   && (   Extracts.isTOCLink(target)
                       || Extracts.isSidebarLink(target))));
     },
 
-	//	Called by: Extracts.preparePopup (as `preparePopup_${targetTypeName}`)
+    //  Called by: Extracts.preparePopup (as `preparePopup_${targetTypeName}`)
     preparePopup_LOCAL_PAGE: (popup) => {
         let target = popup.spawningTarget;
 
         /*  Designate popups spawned from section links in the the TOC (for
-        	special styling).
+            special styling).
          */
         if (Extracts.isTOCLink(target))
             popup.classList.add("toc-section");
@@ -619,7 +621,7 @@ Extracts = {
         return popup;
     },
 
-	//	Called by: Extracts.titleForPopFrame (as `titleForPopFrame_${targetTypeName}`)
+    //  Called by: Extracts.titleForPopFrame (as `titleForPopFrame_${targetTypeName}`)
     titleForPopFrame_LOCAL_PAGE: (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -647,22 +649,22 @@ Extracts = {
 
         //  Mark sections with ‘§’ symbol.
         if (    target.hash > ""
-        	/*	The following condition will be false (i.e., popFrameTitleText
-        		WILL start with a ‘#’) if the hash points not to a section, but
-        		to a link or some other element. In that case, we don’t want a
-        		section mark!
-        	 */
-        	&& !(popFrameTitleText.startsWith("#"))
-        	&& !popFrame.classList.contains("external-page-embed"))
+            /*  The following condition will be false (i.e., popFrameTitleText
+                WILL start with a ‘#’) if the hash points not to a section, but
+                to a link or some other element. In that case, we don’t want a
+                section mark!
+             */
+            && !(popFrameTitleText.startsWith("#"))
+            && !popFrame.classList.contains("external-page-embed"))
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
 
         return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
     },
 
-	//	Called by: Extracts.rewritePopinContent_LOCAL_PAGE
-	//	Called by: Extracts.rewritePopupContent_LOCAL_PAGE
-	//	Called by: Extracts.rewritePopinContent (as `rewritePopFrameContent_${targetTypeName}`)
-	//	Called by: Extracts.rewritePopupContent (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: Extracts.rewritePopinContent_LOCAL_PAGE
+    //  Called by: Extracts.rewritePopupContent_LOCAL_PAGE
+    //  Called by: Extracts.rewritePopinContent (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: Extracts.rewritePopupContent (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_LOCAL_PAGE: (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -690,7 +692,7 @@ Extracts = {
             });
     },
 
-	//	Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
+    //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
     rewritePopinContent_LOCAL_PAGE: (popin) => {
         Extracts.rewritePopFrameContent_LOCAL_PAGE(popin);
 
@@ -718,7 +720,7 @@ Extracts = {
         });
     },
 
-	//	Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
+    //  Called by: Extracts.rewritePopupContent (as `rewritePopupContent_${targetTypeName}`)
     rewritePopupContent_LOCAL_PAGE: (popup) => {
         Extracts.rewritePopFrameContent_LOCAL_PAGE(popup);
 
@@ -747,7 +749,7 @@ Extracts = {
     cachedPages: { },
     cachedPageTitles: { },
 
-    //	Called by: Extracts.externalPageEmbedForTarget
+    //  Called by: Extracts.externalPageEmbedForTarget
     refreshPopFrameAfterLocalPageLoads: (target) => {
         GWLog("Extracts.refreshPopFrameAfterLocalPageLoads", "extracts.js", 2);
 
@@ -778,7 +780,7 @@ Extracts = {
                     document: target.popFrame.contentView,
                     location: Extracts.locationForTarget(target),
                     flags: (  GW.contentDidLoadEventFlags.needsRewrite
-                    		| GW.contentDidLoadEventFlags.isFullPage)
+                            | GW.contentDidLoadEventFlags.isFullPage)
                 });
 
                 //  Re-spawn, or fill and rewrite, the pop-frame.
@@ -804,7 +806,7 @@ Extracts = {
         });
     },
 
-    //	Called by: Extracts.localTranscludeForTarget
+    //  Called by: Extracts.localTranscludeForTarget
     externalPageEmbedForTarget: (target) => {
         GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
 
@@ -827,8 +829,8 @@ Extracts = {
     /*  Pop-frames (in general).
      */
 
-	//	Called by: Extracts.preparePopup
-	//	Called by: Extracts.preparePopin
+    //  Called by: Extracts.preparePopup
+    //  Called by: Extracts.preparePopin
     preparePopFrame: (popFrame) => {
         GWLog("Extracts.preparePopFrame", "extracts.js", 2);
 
@@ -838,7 +840,7 @@ Extracts = {
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-content", "link-self",
-        	"link-local", "spawns-popup", "spawns-popin", "idNot", "backlinksNot");
+            "link-local", "spawns-popup", "spawns-popin", "idNot", "backlinksNot");
 
         //  Add ‘markdownBody’ class.
         popFrame.contentView.classList.add("markdownBody");
@@ -859,14 +861,14 @@ Extracts = {
         ways necessary. After this function exits, the popin will appear on the
         screen.
      */
-    //	Called by: popins.js
+    //  Called by: popins.js
     preparePopin: (popin) => {
         GWLog("Extracts.preparePopin", "extracts.js", 2);
 
         let target = popin.spawningTarget;
 
         /*  Call generic pop-frame prepare function (which will attempt to fill
-        	the popin).
+            the popin).
          */
         if ((popin = Extracts.preparePopFrame(popin)) == null)
             return null;
@@ -900,9 +902,9 @@ Extracts = {
         return popin;
     },
 
-	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
-	//	Called by: extracts-annotations.js
-	//	Called by: extracts-content.js
+    //  Called by: Extracts.refreshPopFrameAfterLocalPageLoads
+    //  Called by: extracts-annotations.js
+    //  Called by: extracts-content.js
     rewritePopinContent: (popin) => {
         GWLog("Extracts.rewritePopinContent", "extracts.js", 2);
 
@@ -933,22 +935,22 @@ Extracts = {
     /*  Popups.
      */
 
-	//	Called by: Extracts.setup
-	//	Called by: extracts-options.js
+    //  Called by: Extracts.setup
+    //  Called by: extracts-options.js
     popupsEnabled: () => {
         return (localStorage.getItem("extract-popups-disabled") != "true");
     },
 
-	//	Called by: Extracts.preparePopup
+    //  Called by: Extracts.preparePopup
     spawnedPopupMatchingTarget: (target) => {
         return Popups.allSpawnedPopups().find(popup =>
                    Extracts.targetsMatch(target, popup.spawningTarget)
                 && Popups.popupIsEphemeral(popup));
     },
 
-    /*	Called by popups.js when adding a target.
+    /*  Called by popups.js when adding a target.
      */
-    //	(See Extracts.addTargetsWithin)
+    //  (See Extracts.addTargetsWithin)
     preparePopupTarget: (target) => {
         //  Remove the title attribute (saving it first);
         if (target.title) {
@@ -968,7 +970,7 @@ Extracts = {
         that content in whatever ways necessary. After this function exits, the
         popup will appear on the screen.
      */
-    //	(See also Extracts.addTargetsWithin)
+    //  (See also Extracts.addTargetsWithin)
     preparePopup: (popup) => {
         GWLog("Extracts.preparePopup", "extracts.js", 2);
 
@@ -985,7 +987,7 @@ Extracts = {
         }
 
         /*  Call generic pop-frame prepare function (which will attempt to fill
-        	the popup).
+            the popup).
          */
         if ((popup = Extracts.preparePopFrame(popup)) == null)
             return null;
@@ -1021,8 +1023,8 @@ Extracts = {
         return popup;
     },
 
-	//	Called by: Extracts.preparePopup
-	//	Called by: extracts-content.js
+    //  Called by: Extracts.preparePopup
+    //  Called by: extracts-content.js
     rewritePopupContent: (popup) => {
         GWLog("Extracts.rewritePopupContent", "extracts.js", 2);
 
