@@ -55,7 +55,7 @@ else
 
     ## check validity of annotation database before spending time compiling:
     bold "Checking annotations first…"
-    ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' &>/dev/null
+    ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'readLinkMetadataAndCheck' > /dev/null
     λ(){ egrep -- '/[[:graph:]]\+[0-9]–[0-9]' ./metadata/*.yaml ./metadata/*.hs || true;
          fgrep -- '–' ./metadata/*.hs || true; }
     wrap λ "En-dashes in URLs?"

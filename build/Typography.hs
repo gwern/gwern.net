@@ -151,9 +151,10 @@ smallcapsfyRegex = R.makeRegex
     -- match hyphen-separated acronyms like 'GPT-2-117M' but not small mixed like '150MB'/'P100'/'FP16'
     -- or hyphenated expressions with lowercase letters like 'BigGAN-level':
    "[A-Z&][A-Z&][A-Z&]+(-[[:digit:]]+|[A-Z&]+)+|" ++
-   -- "StyleGAN2-ADA"
-   "[A-Z0-9]+-[A-Z0-9]+|" ++
-     -- smallcaps entirety of "TPUv3", oldstyle numbers look odd when juxtaposed against smallcaps+lowercase
+   -- "StyleGAN2-ADA" but not "E-Prime"
+   "[A-Z0-9][A-Z0-9]+-[A-Z0-9]+|" ++
+   "[A-Z0-9]+-[A-Z0-9][A-Z0-9]+|" ++
+   -- smallcaps entirety of "TPUv3", oldstyle numbers look odd when juxtaposed against smallcaps+lowercase
    "[A-Z&][A-Z&][A-Z&]+([[:digit:]]+|[a-zA-Z&]+)+|" ++
    -- but we do want to continue across hyphens of all-uppercase strings like "YYYY-MM-DD" or "X-UNITER" or "DALL·E":
    "[A-Z&][A-Z&][A-Z&]+(-[A-Z&]+)+|" ++ "[A-Z&]+-[A-Z&][A-Z&][A-Z&]+|" ++ "[A-Z&]+\183[A-Z&]+|" ++
