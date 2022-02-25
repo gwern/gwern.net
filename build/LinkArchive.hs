@@ -2,13 +2,12 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-24 22:15:09 gwern"
+When:  Time-stamp: "2022-02-25 10:44:38 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
 
-{-
-Local Mirror design:
+{- Local Mirror design:
 
 Because link rot has proven difficult to keep up with on `gwern.net` using [ordinary reactive link
 archiving methods](https://www.gwern.net/Archiving-URLs), I am switching to *pre-emptive archiving*:
@@ -47,6 +46,12 @@ Details:
   current date is ≥ _n_ days later and `MIRROR_FILE` does not exist, then unless `Failed` is false
   (indicating the previous mirror attempt failed and it's probably a permanently broken link which
   must be updated manually), it is mirrored and rewritten, otherwise, just rewritten
+
+    - only one mirror is made per Hakyll run; because links are processed independently in parallel,
+      this is enforced by passing around an IORef. Simply downloading *all* links turns out to have
+      a lot of undesired consequences: bulk-adds of PDFs will trigger anti-bot defenses & corrupt PDFs
+      requiring extremely labor-intensive checks & repairs; and manual review of a dozen simultaneous
+      HTML snapshots can come at unwelcome, stressed-out times (which is _muri_).
 - mirrors are made using SingleFile, which runs Chromium to serialize a DOM
 
     - PDFs are just downloaded unconditionally because they are so easy to archive
@@ -83,13 +88,13 @@ There are approximately 30k external links on Gwern.net as of October 2019, of w
 to be mirrored; I estimate this will take up somewhere on the order of ~50GB and add a few dollars
 to S3 hosting costs. (After exclusions, my archive was 5300 links (excluding optional PDFs) / 20GB
 in February 2020.) But it'll be worth it to forestall thousands of dying links, regular reader
-frustration, and a considerable waste of my time every month dealing with the latest broken links.
--}
+frustration, and a considerable waste of my time every month dealing with the latest broken links. -}
 
 {-# LANGUAGE OverloadedStrings #-}
 module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 
 import Control.Monad (filterM)
+import Data.IORef (IORef, readIORef, writeIORef)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
 import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
 import Data.List.Utils (replace)
@@ -117,14 +122,14 @@ type ArchiveMetadata = M.Map Path ArchiveMetadataItem
 type Path = String
 
 -- Pandoc types: Link = Link Attr [Inline] Target; Attr = (String, [String], [(String, String)]); Target = (String, String)
-localizeLink :: ArchiveMetadata -> Inline -> IO Inline
-localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
+localizeLink :: ArchiveMetadata -> IORef Bool -> Inline -> IO Inline
+localizeLink adb archived x@(Link (identifier, classes, pairs) b (targetURL, targetDescription)) =
   -- skip local archiving if matches the whitelist, or it has a manual annotation '.localArchive-not' class on it, like
   -- `[Foo](!W "Bar"){.archive-not}` in which case we don't do any sort of 'archiving' such as rewriting to point to a
   -- local link (or possibly, in the future, rewriting WP links to point to the historical revision ID when first
   -- linked, to avoid deletionist content rot)
   if whiteList (T.unpack targetURL) || "archive-not" `elem` classes then return x else
-    do targetURL' <- rewriteLink adb (T.unpack targetURL)
+    do targetURL' <- rewriteLink adb archived (T.unpack targetURL)
        if targetURL' == T.unpack targetURL then return x -- no archiving has been done yet, return original
        else do -- rewrite & annotate link with local archive:
          let padding = if targetDescription == "" then "" else " "
@@ -133,7 +138,7 @@ localizeLink adb x@(Link (identifier, classes, pairs) b (targetURL, targetDescri
          let archiveAttributes = [("rel", "archived alternate nofollow"), ("data-url-original", T.pack (transformURLsForLinking (T.unpack targetURL)))]
          let archivedLink = addClass "localArchive" $ Link (identifier, classes, pairs++archiveAttributes) b (T.pack targetURL', T.pack targetDescription')
          return archivedLink
-localizeLink _ x = return x
+localizeLink _ _ x = return x
 
 readArchiveMetadata :: IO ArchiveMetadata
 readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata/archive.hs") :: IO ArchiveMetadataList
@@ -156,16 +161,14 @@ readArchiveMetadata = do pdl <- (fmap (read . T.unpack) $ TIO.readFile "metadata
                          let pdl'' = filter (\(p,_) -> "http"`isPrefixOf`p && not ("https://www.gwern.net"`isPrefixOf`p)) pdl'
                          return $ M.fromList pdl''
 
-{-
-rewriteLink:
-1. Exit on whitelisted URLs.
-2. Access what we know about the URL, defaulting to "First I've heard of it.".
-3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of PDFs, which we
-   locally archive immediately.)
-4. Return archive contents.
--}
-rewriteLink :: ArchiveMetadata -> String -> IO String
-rewriteLink adb url = do
+-- rewriteLink:
+-- 1. Exit on whitelisted URLs.
+-- 2. Access what we know about the URL, defaulting to "First I've heard of it.".
+-- 3. If we've never attempted to archive it and have known the url _n_ days, do so. (With the exception of PDFs, which we
+--    locally archive immediately.) Do only 1 archive per run by checking the IORef to see
+-- 4. Return archive contents.
+rewriteLink :: ArchiveMetadata -> IORef Bool -> String -> IO String
+rewriteLink adb archived url = do
   today <- currentDay
   -- print $ "checkLink: " ++ url
   fromMaybe url <$> if whiteList url then return Nothing else
@@ -174,9 +177,13 @@ rewriteLink adb url = do
       Just (Left firstSeen) -> if (today - firstSeen < archiveDelay) && not ("pdf" `isInfixOf` url)
         then return Nothing
         else do
-          archive <- archiveURL (transformURLsForArchiving url)
-          insertLinkIntoDB (Right archive) url
-          return archive
+          -- have we already done a link archive this run? If so, skip all additional link archives
+          archivedAlreadyP <- readIORef archived
+          if (not archivedAlreadyP) then (do archive <- archiveURL (transformURLsForArchiving url)
+                                             insertLinkIntoDB (Right archive) url
+                                             writeIORef archived True
+                                             return archive)
+          else return Nothing
       Just (Right archive) -> if archive == Just "" then printRed ("Error! Tried to return a link to a non-existent archive! " ++ url) >> return Nothing else return archive
 
 archiveDelay :: Integer

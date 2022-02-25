@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-24 23:04:49 gwern"
+When:  Time-stamp: "2022-02-25 10:37:18 gwern"
 License: CC-0
 -}
 
@@ -26,6 +26,7 @@ import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't 
 import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
+import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
 import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
@@ -183,10 +184,10 @@ warnParagraphizeYAML path = do yaml <- readYaml path
                                let unparagraphized = filter (\(_,(_,_,_,_,_,abst)) -> not (paragraphized abst)) yaml
                                unless (null unparagraphized) $ putStrLn $ ppShow (map fst unparagraphized)
 
-writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
-writeAnnotationFragments am md = void $! M.traverseWithKey (\p mi -> void $! forkIO $! writeAnnotationFragment am md p mi) md
-writeAnnotationFragment :: ArchiveMetadata -> Metadata -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $!
+writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Bool -> IO ()
+writeAnnotationFragments am md archived = void $! M.traverseWithKey (\p mi -> void $! forkIO $! writeAnnotationFragment am md archived p mi) md
+writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Bool -> Path -> MetadataItem -> IO ()
+writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > 180) $!
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
@@ -201,7 +202,7 @@ writeAnnotationFragment am md u i@(a,b,c,d,ts,e) = when (length e > 180) $!
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
                                              void $ createAnnotations md pandoc
                                              let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk convertInterwikiLinks $ walk linkAuto  pandoc
-                                             localizedPandoc <- walkM (localizeLink am) annotationPandoc
+                                             localizedPandoc <- walkM (localizeLink am archived) annotationPandoc
 
                                              let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
                                              annotationExisted <- doesFileExist filepath'

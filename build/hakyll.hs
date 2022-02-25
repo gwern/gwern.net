@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-02-23 16:57:53 gwern"
+When: Time-stamp: "2022-02-25 10:37:50 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -37,6 +37,7 @@ Explanations:
 import Control.Exception (onException)
 import Control.Monad (when, void)
 import Data.Char (toLower)
+import Data.IORef (newIORef, IORef)
 import Data.List (isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
@@ -88,8 +89,8 @@ main = hakyll $ do
              preprocess $ printGreen ("Popups parsing…" :: String)
              meta <- preprocess readLinkMetadataAndCheck
              preprocess $ printGreen ("Writing annotations…" :: String)
-             preprocess $ writeAnnotationFragments am meta
-
+             hasArchivedOnce <- preprocess $ newIORef False
+             preprocess $ writeAnnotationFragments am meta hasArchivedOnce
              preprocess $ printGreen ("Begin site compilation…" :: String)
              match "**.page" $ do
                  -- strip extension since users shouldn't care if HTML3-5/XHTML/etc (cool URLs); delete apostrophes/commas & replace spaces with hyphens
@@ -98,7 +99,7 @@ main = hakyll $ do
                           setExtension ""
                  -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
                  let readerOptions = defaultHakyllReaderOptions
-                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am)
+                 compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am hasArchivedOnce)
                      >>= loadAndApplyTemplate "static/templates/default.html" (postCtx tags)
                      >>= imgUrls
 
@@ -256,14 +257,14 @@ descField d = field d $ \item -> do
                          Left _          -> noResult "no description field"
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
-pandocTransform :: Metadata -> ArchiveMetadata -> Pandoc -> IO Pandoc
-pandocTransform md adb p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add docMetadata as necessary
+pandocTransform :: Metadata -> ArchiveMetadata -> IORef Bool -> Pandoc -> IO Pandoc
+pandocTransform md adb archived p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add docMetadata as necessary
                            do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
                               let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
                               let pbth = isLocalLinkWalk $ walk headerSelflink pbt
-                              walkM (\x -> localizeLink adb x >>= imageSrcset >>= invertImageInline) pbth
+                              walkM (\x -> localizeLink adb archived x >>= imageSrcset >>= invertImageInline) pbth
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
