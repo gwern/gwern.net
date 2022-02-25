@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-23 22:27:29 gwern"
+When:  Time-stamp: "2022-02-24 13:57:15 gwern"
 License: CC-0
 -}
 
@@ -2415,6 +2415,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("~equivalent", "equivalent")
           , ("~the", "the")
           , ("~one ", "~1")
+          , (" one tenth ", " 1⁄10<sup>th</sup>")
+          , (" two thirds ", " 2⁄4<sup>rds</sup>")
           , ("~zero ", "~0")
           , ("~identical", "near-identical")
           , ("approximately ", "~")
@@ -2484,8 +2486,26 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("totall ", "total ")
           , ("minimis", "minimiz")
           , ("maximis", "maximiz")
+          , ("(Calcarius lapponicus) ", "(<em>Calcarius lapponicus)</em> ")
+          , ("(Corvus brachyrhynchos) ", "(<em>Corvus brachyrhynchos)</em> ")
+          , ("(Felis catus)", "(<em>Felis catus</em>)")
+          , ("(Felis silvestris catus)", "(<em>Felis silvestris catus</em>)")
+          , ("(Panthera leo)", "(<em>Panthera leo</em>)")
+          , ("(Macaca fascicularis) ", "(<em>Macaca fascicularis)</em> ")
+          , ("(Orcinus orca) ", "(<em>Orcinus orca)</em> ")
+          , ("(Plectrophenax nivalis)", "(<em>Plectrophenax nivalis</em>)")
+          , ("(Poecilia reticulata)", "(<em>Poecilia reticulata</em>)")
           , (" Pan Troglodytes", " <em>Pan Troglodytes</em>")
+          , ("(Bacopa monniera)", "(<em>Bacopa monniera</em>)")
+          , ("(Canis latrans)", "(<em>Canis latrans</em>)")
+          , ("(Herpestes ichneumon)", "(<em>Herpestes ichneumon</em>)")
+          , ("(Lynx canadensis)", "(<em>Lynx canadensis</em>)")
+          , ("(Mammuthus primigenius)", "(<em>Mammuthus primigenius</em>)")
           , ("(Pan Troglodytes)", "(<em>Pan Troglodytes</em>)")
+          , ("(Psilocybe cubensis)", "(<em>Psilocybe cubensis</em>)")
+          , ("(Rattus norvegicus) ", "(<em>Rattus norvegicus)</em> ")
+          , ("(Taxidea taxus)", "(<em>Taxidea taxus</em>)")
+          , ("(Peromyscus leucopus)", "(<em>Peromyscus leucopus</em>)")
           , (" C. elegans", " <em>C. elegans</em>")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
