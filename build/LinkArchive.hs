@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-24 13:25:32 gwern"
+When:  Time-stamp: "2022-02-24 19:33:47 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -204,6 +204,7 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
 --
 -- In the case of OpenReview, the `forum?id=` is the peer reviews, which are worth reading, but we'd like to provide the
 -- PDF link too. We don't need a third version, just to provide the two, so this is easier than the Ar5iv rewrite.
+-- (Hypothetically, we could do Twitter→Nitter, Reddit.com→Old.Reddit.com, or LW→GW rewrites this way too.)
 transformURLsForArchiving :: String -> String
 transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . replace "https://openreview.net/forum" "https://openreview.net/pdf"
 transformURLsForLinking   :: String -> String
@@ -867,7 +868,6 @@ whiteList url
       , "fursona.app" -- redirect to Google Colab
       , "old.reddit.com/r/reinforcementlearning/search" -- service
       , "https://old.reddit.com/r/reinforcementlearning/" -- stable
-      -- , "openreview.net" -- stable? or if links break, might be better to link to paper
       , "usesthis.com" -- stable
       , "modafinil-store.com" -- dead
       , "https://huggingface.co/calculator/" -- interactive
