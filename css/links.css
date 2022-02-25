@@ -136,8 +136,8 @@ em .has-annotation {
     */
 a[data-link-icon-type='svg']::after {
     --link-icon-size: 0.6em;
-    --link-icon-offset-x: 0.25em;
-    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-x: 0.20em;
+    --link-icon-offset-y: 0.15em;
 
     content: "";
     position: static;
@@ -325,7 +325,7 @@ a[data-link-icon-type*='italic']::after {
     font-style: italic;
 
     --link-icon-size: 0.85em;
-    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-x: 0.10em;
 }
 a[data-link-icon-type*='overline']::after {
     text-decoration: overline;
@@ -351,6 +351,7 @@ a[data-link-icon='⧖']::after { /* Longecity */
 }
 
 a[data-link-icon='♡']::after { /* Fandom/Wikia */
+    --link-icon-offset-x: 0.05em;
     opacity: 1.0;
     text-shadow: 0 0 0 currentColor;
 }
@@ -733,7 +734,7 @@ a[data-link-icon='substack']::after {
 
 a[data-link-icon='theguardian']::after {
     --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.2em;
+    --link-icon-offset-x: 0.15em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.55;
