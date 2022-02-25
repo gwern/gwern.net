@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-25 10:37:18 gwern"
+When:  Time-stamp: "2022-02-25 11:21:02 gwern"
 License: CC-0
 -}
 
@@ -1507,6 +1507,8 @@ generateID url author date
        , ("https://arxiv.org/abs/2201.12086#salesforce", "li-et-al-2022-blip")
        , ("https://arxiv.org/abs/1703.04887", "yang-et-al-2017-seqgan")
        , ("https://arxiv.org/abs/1709.00103", "zhong-et-al-2017-seq2sql")
+       , ("/docs/ai/2019-brynjolfsson.pdf", "brynjolfsson-et-al-2019-nmt")
+       , ("/docs/economics/2019-brynjolfsson-3.pdf", "brynjolfsson-et-al-2019-productivityparadox")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1524,7 +1526,8 @@ authorsToCite url author date =
                            map (\c -> if isAlphaNum c then c else '-') $ uriFragment $ fromJust $ parseURIReference url
              -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
              suffix' = (let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
-                           if suffix == url then "" else " " ++ suffix) ++ extension
+                          -- eg. "/docs/economics/2019-brynjolfsson-3.pdf" → "Brynjolfsson et al 2019c"
+                           if suffix == url then "" else [['a'..'z'] !! ((read suffix :: Int) - 1)]  ) ++ extension
 
            in
            if authorCount >= 3 then
