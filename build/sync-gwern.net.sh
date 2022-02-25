@@ -255,6 +255,9 @@ else
     λ(){ egrep --color=always -e '^"~/' -e '\$";$' ./static/redirects/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
+    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
+    wrap λ "Annotations that need to be rewritten into paragraphs."
+
     λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
 

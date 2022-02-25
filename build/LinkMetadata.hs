@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-24 13:57:15 gwern"
+When:  Time-stamp: "2022-02-24 23:04:49 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate) where
+module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML) where
 
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (unless, void, when, forM_)
@@ -154,9 +154,6 @@ readLinkMetadataAndCheck = do
                                                                      count > 0 && (count `mod` 2 == 1) ) custom
              unless (null balancedParens) $ error $ "Link Annotation Error: unbalanced parentheses! " ++ show (map fst balancedParens)
 
-             let unparagraphized = filter (\(_,(_,_,_,_,_,abst)) -> not (paragraphized abst)) custom
-             unless (null unparagraphized) $ print ("Needs to be rewritten into paragraphs:"::String) >> print (map fst unparagraphized)
-
              -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
              partial <- readYaml "metadata/partial.yaml"
@@ -179,6 +176,12 @@ readLinkMetadataAndCheck = do
                                      error ("Link Annotation Error: tag does not match a directory! " ++ "Bad tag: '" ++ tag ++ "'\nBad annotation: " ++ show missingTags))
                tagsSet
              return final
+
+-- read a YAML database and look for annotations that need to be paragraphized.
+warnParagraphizeYAML :: FilePath -> IO ()
+warnParagraphizeYAML path = do yaml <- readYaml path
+                               let unparagraphized = filter (\(_,(_,_,_,_,_,abst)) -> not (paragraphized abst)) yaml
+                               unless (null unparagraphized) $ putStrLn $ ppShow (map fst unparagraphized)
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IO ()
 writeAnnotationFragments am md = void $! M.traverseWithKey (\p mi -> void $! forkIO $! writeAnnotationFragment am md p mi) md
