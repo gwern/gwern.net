@@ -316,7 +316,7 @@ a[data-link-icon-type*='sans']::after {
     font-family: var(--GW-sans-serif-font-stack);
 }
 a[data-link-icon-type*='mono']::after {
-	font-family: var(--GW-monospaced-font-stack);
+    font-family: var(--GW-monospaced-font-stack);
 }
 a[data-link-icon-type*='bold']::after {
     font-weight: bold;
@@ -337,21 +337,22 @@ a[data-link-icon-type*='overline']::after {
 /*  Logotype icons.
     */
 
-a[data-link-icon='❐']::after {
-	--link-icon-size: 0.8em;
-	--link-icon-offset-x: 0.15em;
-	--link-icon-offset-y: 0.15em;
+a[data-link-icon='❐']::after { /* Booru */
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.15em;
 }
 
-a[data-link-icon='⧖']::after {
-	--link-icon-size: 0.9em;
-	--link-icon-offset-y: 0.1em;
-	--link-icon-offset-x: 0.1em;
+a[data-link-icon='⧖']::after { /* Longecity */
+    --link-icon-size: 0.9em;
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.1em;
+    opacity: 0.8;
 }
 
-a[data-link-icon='♡']::after {
-	opacity: 1.0;
-	text-shadow: 0 0 0 currentColor;
+a[data-link-icon='♡']::after { /* Fandom/Wikia */
+    opacity: 1.0;
+    text-shadow: 0 0 0 currentColor;
 }
 
 a[data-link-icon='MS']::after {
@@ -475,7 +476,7 @@ a[data-link-icon-type*='quad'][data-link-icon-type*='sans']::after {
 /*  Quad-letter square icons in a monospaced face.
     */
 a[data-link-icon-type*='quad'][data-link-icon-type*='mono']::after {
-	letter-spacing: 0.05em;
+    letter-spacing: 0.05em;
 }
 
 a[data-link-icon='VICE']::after {
@@ -555,11 +556,11 @@ a[data-link-icon='dropbox']::after {
 
 
 a[data-link-icon='econlib']::after { /* torch */
-	--link-icon-size: 0.8em;
-	--link-icon-offset-x: 0.15em;
-	--link-icon-offset-y: 0.1em;
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.1em;
 
-    opacity: 1;
+    opacity: 0.75;
 }
 
 a[data-link-icon='erowid']::after {
@@ -689,7 +690,7 @@ a[data-link-icon='patreon']::after {
 
 a[data-link-icon='plos']::after {
     --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.25em;
+    --link-icon-offset-x: 0.20em;
     --link-icon-offset-y: 0.25em;
 
     opacity: 0.75;
@@ -704,14 +705,14 @@ a[data-link-icon='reddit']::after {
 }
 
 a[data-link-icon='springerlink']::after {
-	--link-icon-size: 0.9em;
-	--link-icon-offset-x: 0.1em;
-	--link-icon-offset-y: 0.1em;
+    --link-icon-size: 0.9em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.1em;
 
-	opacity: 0.8;
+    opacity: 0.8;
 }
 a[data-link-icon='springerlink']:hover::after {
-	opacity: 0.5;
+    opacity: 0.5;
 }
 
 a[data-link-icon='stackexchange']::after {
