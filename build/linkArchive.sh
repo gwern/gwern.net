@@ -3,7 +3,7 @@
 # linkArchive.sh: archive a URL through SingleFile and link locally
 # Author: Gwern Branwen
 # Date: 2020-02-07
-# When:  Time-stamp: "2022-02-24 12:25:16 gwern"
+# When:  Time-stamp: "2022-02-24 22:58:22 gwern"
 # License: CC-0
 #
 # Shell script to archive URLs/PDFs via SingleFile for use with LinkArchive.hs:
@@ -59,7 +59,7 @@ else
         if [[ "$MIME_REMOTE" =~ "application/pdf".* || "$URL" =~ .*'.pdf'.* || "$URL" =~ .*'_pdf'.* || "$URL" =~ '#pdf'.* || "$URL" =~ .*'/pdf/'.* ]];
         then
 
-            timeout --kill-after=500s 500s wget --user-agent="$USER_AGENT" \
+            timeout --kill-after=700s 700s wget --user-agent="$USER_AGENT" \
                     --quiet --output-file=/dev/null "$1" --output-document=/tmp/"$HASH".pdf
             TARGET=/tmp/"$HASH".pdf
             ## sometimes servers lie or a former PDF URL has linkrotted or changed to a HTML landing page, so we need to check
@@ -75,7 +75,8 @@ else
                 mv "$TARGET" "./docs/www/$DOMAIN/$HASH.pdf"
                 echo -n "/docs/www/$DOMAIN/$HASH.pdf$ANCHOR"
                 ## use my local custom installation of recent ocrmypdf + JBIG2 encoder to OCR & optimize PDFs I'm hosting:
-                (source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "./docs/www/$DOMAIN/$HASH.pdf" "./docs/www/$DOMAIN/$HASH.pdf") &
+                (source activate fastai && ocrmypdf --skip-text --optimize 3 --jbig2-lossy "./docs/www/$DOMAIN/$HASH.pdf" "./docs/www/$DOMAIN/$HASH.pdf")
+                $WWW_BROWSER "./docs/www/$DOMAIN/$HASH.pdf"
             else
                 echo "Unsuccessful: $1 $HASH" 1>&2
                 exit 1
@@ -89,7 +90,7 @@ else
             # CURRENT CLI from chrome://version: /home/gwern/snap/chromium/common/chromium/Default
             # REGULAR:                           /home/gwern/snap/chromium/common/chromium/Default
             set -x
-            timeout --kill-after=120s 120s \
+            timeout --kill-after=240s 240s \
                     ~/src/SingleFile/cli/single-file --browser-executable-path "$(command -v chromium-browser)" --compress-CSS --remove-scripts false \
                     `# --browser-extensions "$(find ~/snap/chromium/common/chromium/Default/Extensions/* -maxdepth 0 -type d | tr '\n' ',')"` \
                     --browser-args "[\"--profile-directory=Default\", \"--user-data-dir=/home/gwern/snap/chromium/common/chromium/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/cjpalhdlnbpafiamejdnhcphjbkeiagm/1.41.4_1/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/dmghijelimhndkbmpgbldicpogfkceaj/0.4.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/doojmbjmlfjjnbmnoijecmcbfeoakpjm/11.3.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/kkdpmhnladdopljabkgpacgpliggeeaf/1.12.2_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/mpiodijhokgodhhofbcjdecpffjipkle/1.19.30_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/nkbihfbeogaeaoehlefnkodbefgpgknn/10.9.3_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/oolchklbojaobiipbmcnlgacfgficiig/1.3.4_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/padekgcemlokbadohgkifijomclgjgif/2.5.21_0/\", \"--load-extension=/home/gwern/snap/chromium/common/chromium/Default/Extensions/pioclpoplcdbaefihamjohnefbikjilc/7.19.0_0/\"]" \
