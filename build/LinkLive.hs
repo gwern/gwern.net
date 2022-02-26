@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-26 12:05:46 gwern"
+When:  Time-stamp: "2022-02-26 13:16:48 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -24,7 +24,7 @@ tested & found bad, and testing is not done or ambiguous (due to practical issue
 a local archive or 404 or changed domain entirely). -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkLive (linkLive, linkLiveTest) where
+module LinkLive (linkLive, linkLiveTest, urlLive) where
 
 import Data.Text as T (isSuffixOf, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
@@ -36,15 +36,10 @@ linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
  | "link-live-not" `elem` cl = x
  | u `elem` overrideLinkLive = aL x
- | host u `elem` domainsSimple = aL x
- | Prelude.any (\d -> d `T.isSuffixOf` host u) domainsSub = aL x
- | otherwise = x
- where -- u', u'' :: T.Text -> Bool
-       -- simplest check for string anywhere
-       -- u' v = v `T.isInfixOf` u
-       -- more careful check:
-       -- u'' v = isHostOrArchive v u
-       aL :: Inline -> Inline
+ | otherwise = case urlLive u of
+                 Just True -> aL x
+                 _         -> x
+ where aL :: Inline -> Inline
        aL = addClass "link-live"
 linkLive x = x
 
@@ -52,8 +47,20 @@ linkLive x = x
 overrideLinkLive :: [T.Text]
 overrideLinkLive = []
 
-domainsSub, domainsSimple :: [T.Text]
-domainsSub = [".allennlp.org",
+-- Nothing = unknown/untested; Just True = known good; Just False = known bad
+urlLive :: T.Text -> Maybe Bool
+urlLive u | u'                    `elem`    goodDomainsSimple = Just True
+          | any (\d -> d `T.isSuffixOf` u') goodDomainsSub    = Just True
+          | u'                       `elem` badDomainsSimple  = Just False
+          | any (\d -> d `T.isSuffixOf` u') badDomainsSub     = Just False
+          | otherwise                                         = Nothing
+   where u' = host u
+
+-- b <- LinkMetadata.readBacklinksDB
+-- sort $ Utils.frequency $ map LinkIcon.host $ filter (Data.Maybe.isNothing . LinkLive.urlLive) $ filter ("."`Data.Text.isInfixOf`) $ Data.Map.keys b
+
+goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
+goodDomainsSub = [".allennlp.org",
         ".archive.org",
         ".archiveteam.org",
         ".bandcamp.com",
@@ -71,7 +78,7 @@ domainsSub = [".allennlp.org",
         ".tumblr.com",
         ".xkcd.com",
         ".wikipedia.org"]
-domainsSimple =
+goodDomainsSimple =
   ["1dollarscan.com",
     "80000hours.org",
     "abandonedfootnotes.blogspot.com",
@@ -82,6 +89,7 @@ domainsSimple =
     "ai.googleblog.com",
     "aje.oxfordjournals.org",
     "apenwarr.ca",
+    "archive.org",
     "archive.ph",
     "archivebox.io",
     "bam-dataset.org",
@@ -98,9 +106,10 @@ domainsSimple =
     "camelcamelcamel.com",
     "cat-unbound.org",
     "causal-effects.com",
+    "citeseerx.ist.psu.edu",
     "clinicaltrials.gov",
     "conifer.rhizome.org",
-    "cran.r-project.com",
+    "cran.r-project.org",
     "ctan.org",
     "danluu.com",
     "danwang.co",
@@ -118,8 +127,11 @@ domainsSimple =
     "en.wiktionary.org",
     "equilibriabook.com",
     "eurekamaga.com",
+    "everything2.com",
     "explorabl.es",
     "feeds.feedburner.com",
+    "files.eric.ed.gov",
+    "forum.effectivealtruism.org",
     "forum.evageeks.org",
     "foundation.wikimedia.org",
     "fullfrontal.moe",
@@ -129,6 +141,7 @@ domainsSimple =
     "iqcomparisonsite.com",
     "jamanetwork.com",
     "jasoncrawford.org",
+    "jtoomim.org",
     "kalzumeus.com",
     "keras.io",
     "kill-the-newsletter.com",
@@ -155,6 +168,8 @@ domainsSimple =
     "pandoc.org",
     "papers.ssrn.com",
     "parametric.press",
+    "patrickcollison.com",
+    "pdfs.semanticscholar.org",
     "personalitytest.net",
     "philpapers.org",
     "pinboard.in",
@@ -192,6 +207,7 @@ domainsSimple =
     "thisrentaldoesnotexist.com",
     "training.kalzumeus.com",
     "unsongbook.com",
+    "upload.wikimedia.org",
     "vast.ai",
     "videolectures.net",
     "wayback.archive-it.org",
@@ -224,7 +240,6 @@ domainsSimple =
     "www.equator-network.org",
     "www.equestriadaily.com",
     "www.evamonkey.com",
-    "www.everything2.com",
     "www.filfre.net",
     "www.find-more-books.com",
     "www.frontiersin.org",
@@ -252,13 +267,12 @@ domainsSimple =
     "www.npr.org",
     "www.ohyouprettythings.com",
     "www.overcomingbias.com",
-    "www.patrickcollison.com",
     "www.poetryfoundation.org",
     "www.proquest.com",
     "www.psychiatryinvestigation.org",
     "www.r-bloggers.com",
     "www.rdocumentation.org",
-    "www.ribbon-farm.com",
+    "www.ribbonfarm.com",
     "www.rifters.com",
     "www.sapa-project.org",
     "www.schneier.com",
@@ -268,6 +282,8 @@ domainsSimple =
     "www.shawwn.com",
     "www.simplify.so",
     "www.snpedia.com",
+    "www.stat.columbia.edu",
+    "www.stat.columbia.edu",
     "www.straighttalkonevidence.org",
     "www.tarsnap.com",
     "www.theatlantic.com",
@@ -288,8 +304,268 @@ domainsSimple =
     "www.wolfewiki.com",
     "www.wsj.com",
     "www.yalelawjournal.org",
+    "www.youtube.com",
     "xkcd.com",
-    "xtools.wmflabs.org"]
+    "xtools.wmflabs.org"
+    ]
+
+badDomainsSub = [".plos.org", ".royalsocietypublishing.org"]
+badDomainsSimple = ["1d4chan.org",
+   "abebooks.com",
+   "academia.edu",
+   "ai.facebook.com",
+   "ajcn.nutrition.org",
+   "anidb.net",
+   "ankiweb.net",
+   "annals.org",
+   "antilop.cc",
+   "app.inferkit.com",
+   "archive.foolz.us",
+   "archive.is",
+   "archive.recapthelaw.org",
+   "archpsyc.ama-assn.org",
+   "arstechnica.com",
+   "artbreeder.com",
+   "arxiv-vanity.com",
+   "arxiv.org",
+   "aur.archlinux.org",
+   "aurellem.org",
+   "babel.hathitrust.org",
+   "bakabt.me",
+   "betterworldbooks.com",
+   "bibliophilly.library.upenn.edu",
+   "bigquery.cloud.google.com",
+   "biomedcentral.com",
+   "bit-player.org",
+   "blog.fc2.com",
+   "book.realworldhaskell.org",
+   "books.google.com",
+   "ccc.de",
+   "cdm16630.contentdm.oclc.org",
+   "ciechanow.ski",
+   "clickotron.com",
+   "colab.research.google.com",
+   "creativecommons.org",
+   "cryptome.org",
+   "danbooru.donmai.us",
+   "darkdata.bc.edu",
+   "darknetlive.com",
+   "darwin-online.org.uk",
+   "de1.erowid.org",
+   "deepmind.com",
+   "derpibooru.org",
+   "dev.kanotype.net",
+   "developer.mozilla.org",
+   "discord.com",
+   "drive.google.com",
+   "dspace.mit.edu",
+   "duolingo.com",
+   "ectoranoana.jp",
+   "elifesciences.org",
+   "emacswiki.org",
+   "eric.ed.gov",
+   "erowid.org",
+   "eva.onegeek.org",
+   "examine.com",
+   "f1000research.com",
+   "fifteen.ai",
+   "fightaging.org",
+   "fis.fda.gov",
+   "flatisjustice.moe",
+   "folding.stanford.edu",
+   "folkrnn.org",
+   "fred.stlouisfed.org",
+   "gallica.bnf.fr",
+   "getlamp.com",
+   "gitcoin.co",
+   "github.com",
+   "gitlab.com",
+   "gmane.org",
+   "goo.gl",
+   "goproblems.com",
+   "gptprompts.wikidot.com",
+   "groups.google.com",
+   "gwern.shinyapps.io",
+   "halshs.archives-ouvertes.fr",
+   "haveibeenpwned.com",
+   "hn.algolia.com",
+   "httparchive.org",
+   "huggingface.co",
+   "hutter1.net",
+   "imgur.com",
+   "incompleteideas.net",
+   "inklingmarkets.com",
+   "iqout.com",
+   "iqtest.dk",
+   "isfdb.org",
+   "jacurutu.com",
+   "journals.sagepub.com",
+   "jwz.org",
+   "koeln.ccc.de",
+   "leaderboard.allenai.org",
+   "learnyouahaskell.com",
+   "libgen.org",
+   "liebertpub.com",
+   "link.springer.com",
+   "lists.urth.net",
+   "listudy.org",
+   "longbets.org",
+   "longreads.com",
+   "lwn.net",
+   "make.girls.moe",
+   "math.stackexchange.com",
+   "mathoverflow.net",
+   "mayoclinicproceedings.org",
+   "media.springernature.com",
+   "medium.com",
+   "mega.nz",
+   "meltingasphalt.com",
+   "millionshort.com",
+   "mnemosyne-proj.org",
+   "mru.org",
+   "myanimelist.net",
+   "nearlyfreespeech.net",
+   "neuralnetworksanddeeplearning.com",
+   "newegg.com",
+   "nicovideo.jp",
+   "nixnote.org",
+   "oglaf.com",
+   "old.reddit.com",
+   "onlinelibrary.wiley.com",
+   "openreview.net",
+   "orbis.stanford.edu",
+   "osf.io",
+   "paperswithcode.com",
+   "patch.com",
+   "pcdb.santafe.edu",
+   "pcpartpicker",
+   "peerj.com",
+   "perma.cc",
+   "philanthropy.com",
+   "philarchive.org",
+   "physicstoday.scitation.org",
+   "play.aidungeon.io",
+   "plos",
+   "pluralsight.com",
+   "popcon.debian.org",
+   "practicaltypography.com",
+   "predictionbook.com",
+   "programmablesearchengine.google.com",
+   "projecteuclid.org",
+   "proofofexistence.com",
+   "psyarxiv.com",
+   "publicsearch.ndcourts.gov",
+   "r-inla.org",
+   "readonlymemory.vg",
+   "rpubs.com",
+   "scholar.google.com",
+   "scienceblogs.com",
+   "scp-wiki.wikidot.com",
+   "serendipityrecs.com",
+   "sethroberts.net",
+   "silkroadvb5piz3r.onion",
+   "slashdot.org",
+   "slate.com",
+   "snopes.com",
+   "soundcloud.com",
+   "sourceforge.net",
+   "sparkfun.com",
+   "stackexchange.com",
+   "stackoverflow.com",
+   "substack.com",
+   "tasvideos.org",
+   "thecleverest.com",
+   "thegradient.pub",
+   "thepiratebay.org",
+   "thesecatsdonotexist.com",
+   "thessgac.org",
+   "thiscardoesnotexist",
+   "thismarketingblogdoesnotexist.com",
+   "thisponydoesnotexist.net",
+   "thisstorydoesnotexist.com",
+   "thisvesseldoesnotexist.com",
+   "tineye.com",
+   "tinyletter.com",
+   "tl.net",
+   "tom7.org",
+   "tomshardware.com",
+   "torservers.net",
+   "translate.google.com",
+   "treasurydirect.gov",
+   "trends.google.com",
+   "tryhaskell.org",
+   "tvtropes.org",
+   "unesdoc.unesco.org",
+   "urth.net",
+   "uscourts.gov",
+   "usesthis.com",
+   "vimeo.com",
+   "vision-explorer.allenai.org",
+   "vizhub.healthdata.org",
+   "waifu2x.udp.jp",
+   "waifulabs.com",
+   "websitedownloader.io",
+   "wellcomecollection.org",
+   "wikiwix.com",
+   "wolframlpha.com",
+   "worrydream.com",
+   "www.alexa.com",
+   "www.animenewsnetwork.com",
+   "www.bbc.co.uk",
+   "www.bbc.com",
+   "www.biorxiv.org",
+   "www.blog.sethroberts.net",
+   "www.bloomberg.com",
+   "www.bls.gov",
+   "www.bmj.com",
+   "www.catb.org",
+   "www.edge.org",
+   "www.erowid.org",
+   "www.fanfiction.net",
+   "www.goodreads.com",
+   "www.harney.com",
+   "www.imdb.com",
+   "www.impactcybertrust.org",
+   "www.jneurosci.org",
+   "www.jstatsoft.org",
+   "www.kaggle.com",
+   "www.kickstarter.com",
+   "www.mdpi.com",
+   "www.medrxiv.org",
+   "www.metaculus.com",
+   "www.moma.org",
+   "www.nature.com",
+   "www.nejm.org",
+   "www.newyorker.com",
+   "www.nytimes.com",
+   "www.patreon.com",
+   "www.paulgraham.com",
+   "www.pnas.org",
+   "www.projectrho.com",
+   "www.quora.com",
+   "www.rand.org",
+   "www.researchgate.net",
+   "www.rocketpunk-manifesto.com",
+   "www.scholarpedia.org",
+   "www.sciencedaily.com",
+   "www.scientificamerican.com",
+   "www.sethroberts.net",
+   "www.smbc-comics.com",
+   "www.smithsonianmag.com",
+   "www.ted.com",
+   "www.tensorflow.org",
+   "www.theguardian.com",
+   "www.theverge.com",
+   "www.timeanddate.com",
+   "www.uptontea.com",
+   "www.urth.net",
+   "www.vice.com",
+   "www.vox.com",
+   "www.wunderground.com",
+   "thehub7dnl5nmcz5.onion",
+   "silkroad5v7dywlc.onion",
+   "lacbzxobeprssrfx.onion"
+   ]
 
 url :: T.Text -> Inline
 url u = linkLive (Link nullAttr [] (u,""))
@@ -464,7 +740,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.equator-network.org/reporting-guidelines/", True)
     , ("https://www.equestriadaily.com/search/label/Music", True)
     , ("https://www.evamonkey.com/ask-john/has-evangelion-influenced-contemporary-gundam-anime.php", True)
-    , ("https://www.everything2.com/title/A+crow+shook+down+on+me", True)
+    , ("https://everything2.com/title/A+crow+shook+down+on+me", True)
     , ("https://www.filfre.net/2020/01/master-of-orion/", True)
     , ("https://www.find-more-books.com/", True)
     , ("https://www.frontiersin.org/articles/10.3389/fendo.2019.00845/full", True)
@@ -526,6 +802,8 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.yalelawjournal.org/note/amazons-antitrust-paradox", True)
     , ("https://xkcd.com/481/", True)
     , ("https://xtools.wmflabs.org/pages/index.php?name=Rhwawn&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects", True)
+    , ("https://cran.r-project.org/web/packages/BradleyTerry2/index.html", True)
+    , ("https://files.eric.ed.gov/fulltext/EJ746292.pdf", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
@@ -608,7 +886,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://examine.com/supplements/Piracetam/", False)
     , ("https://f1000research.com/articles/3-82/v1", False)
     , ("https://fifteen.ai/", False)
-    , ("https://files.eric.ed.gov/fulltext/EJ746292.pdf", False)
     , ("https://fis.fda.gov/sense/app/d10be6bb-494e-4cd2-82e4-0135608ddc13/sheet/45beeb74-30ab-46be-8267-5756582633b4/state/analysis", False)
     , ("https://flatisjustice.moe/TADNE", False)
     , ("https://folkrnn.org/", False)
@@ -665,7 +942,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://scholar.google.com/scholar?q=cat%20earwax%20OR%20%22ear%20wax%22%20smell%20OR%20taste%20%2D%22CAT%20scan%22", False)
     , ("https://scienceblogs.com/cognitivedaily/2009/04/16/a-quick-eye-exercise-can-impro", False)
     , ("https://scp-wiki.wikidot.com/scp-988", False)
-    , ("https://sites.google.com/a/deepmind.com/dqn/", False)
+    , ("https://deepmind.com/blog/agents-imagine-and-plan/", False)
     , ("https://slashdot.org/story/07/11/18/1319201/do-tiny-url-services-weaken-net-architecture", False)
     , ("https://slate.com/articles/life/seed/2001/04/the_rise_of_the_smart_sperm_shopper.single.html", False)
     , ("https://soundcloud.com/leggysalad/girls-afternoon-appointments", False)
@@ -762,4 +1039,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.uscourts.gov/services-forms/federal-court-reporting-program", False)
     , ("https://www.vice.com/en/article/gv5x4q/court-docs-show-a-university-helped-fbi-bust-silk-road-2-child-porn-suspects", False)
     , ("https://www.vox.com/xpress/2014/10/2/6875031/chickens-breeding-farming-boilers-giant", False)
+    , ("https://psyarxiv.com/kq4mn/", False)
     ]

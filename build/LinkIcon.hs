@@ -442,7 +442,7 @@ linkIconTestUnits =
          ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad"),
          ("https://psyarxiv.com/gjh95/",   "ψ", "text"),
          ("https://osf.io/dhx48/",         "ψ", "text"),
-         ("http://cran.r-project.org/web/packages/censReg/index.html",  "R","text"),
+         ("https://cran.r-project.org/web/packages/censReg/index.html",  "R","text"),
          ("https://github.com/paul-buerkner/brms#overview",  "R","text"),
          ("https://www.rand.org/pubs/monographs/MG1026.html",  "RAND","text,quad,sans"),
          ("https://old.reddit.com/r/Supplements/comments/mr0h1/taking_melatonin_forever/",  "reddit","svg"),

@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2022-02-26 10:37:19 gwern"
+When:  Time-stamp: "2022-02-26 12:32:53 gwern"
 License: CC-0
 Dependencies: none
 
@@ -52,10 +52,12 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 
 {-# LANGUAGE OverloadedStrings #-}
 import LinkMetadata (readLinkMetadata, Metadata)
+import Utils (frequency)
+
 import Control.Monad (when)
 import qualified Data.Map.Strict as M (lookup, size)
 import Data.List.Utils (replace)
-import Data.List (sort, group)
+import Data.List (sort)
 
 main :: IO ()
 main = do db <- readLinkMetadata
@@ -64,9 +66,6 @@ main = do db <- readLinkMetadata
           let urls' = filter (not . isAnnotated db) urls
           let uses = reverse $ sort $ frequency urls'
           mapM_ (\(n,url) -> putStrLn (show n ++ " " ++ url)) uses
-
-frequency :: Ord a => [a] -> [(Int,a)]
-frequency list = map (\l -> (length l, head l)) (group (sort list))
 
 isAnnotated :: Metadata -> String -> Bool
 isAnnotated md target =
