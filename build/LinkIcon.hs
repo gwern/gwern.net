@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkIcon (linkIcon, rebuildSVGIconCSS) where
+module LinkIcon (linkIcon, rebuildSVGIconCSS, host) where
 
 import Control.Monad (when)
 import Data.List.Utils (hasKeyAL)
