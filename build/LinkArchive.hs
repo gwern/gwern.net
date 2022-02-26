@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-25 10:44:38 gwern"
+When:  Time-stamp: "2022-02-26 15:16:19 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1128,5 +1128,6 @@ whiteList url
       , "https://jdlm.info/articles/2018/03/18/markov-decision-process-2048.html" -- interactive solver
       , "https://www.dailydot.com/crime/hive-silk-road-online-drug-culture-history/" -- video embed
       , "ar5iv.labs.arxiv.org" -- HTML mirror of Arxiv PDFs, regularly updated to improve compilation quality, and allows live popups so no need to mirror locally
+      , "digital.library.unt.edu/explore/partners/" -- search
       ] = True
     | otherwise = False

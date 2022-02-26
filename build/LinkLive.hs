@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-26 13:16:48 gwern"
+When:  Time-stamp: "2022-02-26 15:21:12 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -26,7 +26,7 @@ a local archive or 404 or changed domain entirely). -}
 {-# LANGUAGE OverloadedStrings #-}
 module LinkLive (linkLive, linkLiveTest, urlLive) where
 
-import Data.Text as T (isSuffixOf, Text)
+import Data.Text as T (isPrefixOf, isSuffixOf, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkIcon (host)
@@ -36,6 +36,7 @@ linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
  | "link-live-not" `elem` cl = x
  | u `elem` overrideLinkLive = aL x
+ | "/" `isPrefixOf` u = x -- local links shouldn't match anything, but to be safe, we'll check anyway.
  | otherwise = case urlLive u of
                  Just True -> aL x
                  _         -> x
@@ -306,7 +307,9 @@ goodDomainsSimple =
     "www.yalelawjournal.org",
     "www.youtube.com",
     "xkcd.com",
-    "xtools.wmflabs.org"
+    "xtools.wmflabs.org",
+    "mail.haskell.org",
+    "hackage.haskell.org"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org"]
@@ -565,6 +568,12 @@ badDomainsSimple = ["1d4chan.org",
    "thehub7dnl5nmcz5.onion",
    "silkroad5v7dywlc.onion",
    "lacbzxobeprssrfx.onion"
+   , "www.amazon.com"
+   , "hoogle.haskell.org"
+   , "www.science.org"
+   , "www.nber.org"
+   , "addons.mozilla.org"
+   , "www.discovermagazine.com"
    ]
 
 url :: T.Text -> Inline
@@ -804,6 +813,8 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://xtools.wmflabs.org/pages/index.php?name=Rhwawn&lang=en&wiki=wikipedia&namespace=0&redirects=noredirects", True)
     , ("https://cran.r-project.org/web/packages/BradleyTerry2/index.html", True)
     , ("https://files.eric.ed.gov/fulltext/EJ746292.pdf", True)
+    , ("https://mail.haskell.org/pipermail/haskell-cafe/2013-April/107389.html", True)
+    , ("https://hackage.haskell.org/package/archiver", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
@@ -1040,4 +1051,10 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.vice.com/en/article/gv5x4q/court-docs-show-a-university-helped-fbi-bust-silk-road-2-child-porn-suspects", False)
     , ("https://www.vox.com/xpress/2014/10/2/6875031/chickens-breeding-farming-boilers-giant", False)
     , ("https://psyarxiv.com/kq4mn/", False)
+    , ("https://www.amazon.com/Watamote-Complete-Collection-Blu-ray/dp/B00JXBLM72/", False)
+    , ("https://hoogle.haskell.org/?hoogle=IO_a_-%3E_IO_ThreadId", False)
+    , ("https://www.science.org/content/article/plan-replicate-50-high-impact-cancer-papers-shrinks-just-18", False)
+    , ("https://www.nber.org/papers/w13711", False)
+    , ("https://addons.mozilla.org/en-US/firefox/addon/lastpass-password-manager/", False)
+    , ("https://www.discovermagazine.com/planet-earth/brain-training-games-get-a-d-at-brain-training-tests", False)
     ]

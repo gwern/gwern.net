@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-02-25 10:37:50 gwern"
+When: Time-stamp: "2022-02-26 15:24:01 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -73,7 +73,8 @@ import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
-import Utils (printGreen)
+import LinkLive (linkLiveTest)
+import Utils (printGreen, printRed)
 
 main :: IO ()
 main = hakyll $ do
@@ -81,6 +82,10 @@ main = hakyll $ do
 
              preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
              preprocess rebuildSVGIconCSS
+
+             preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
+             let livelinks = linkLiveTest
+             when (not $ null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
 
              preprocess $ printGreen ("Local archives parsing…" :: String)
              am <- preprocess readArchiveMetadata
