@@ -219,7 +219,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "imgur.com" || u'' "i.imgur.com"       = aI "image" "svg"
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = aI "code" "svg"
  | isLocal u && hasExtension ".php" u                     = aI "code" "svg"
- | anyInfix u [".pdf", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "eprint.iacr.org", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
+ | anyInfix u [".pdf", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
 
  -- Fallback
  | otherwise = x
@@ -540,7 +540,6 @@ linkIconTestUnits =
          ("/docs/ai/1986-michie-onmachineintelligence.pdf#page=99",  "pdf","svg"),
          ("/docs/ai/1962-bryson.pdf",  "pdf","svg"),
          ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.108.7127&rep=rep1&type=pdf",  "pdf","svg"),
-         ("https://eprint.iacr.org/2013/782",  "pdf","svg"),
          ("https://pdfs.semanticscholar.org/00d3/6b267777b670abd1a3b98a21bf662245a7c4.pdf",  "pdf","svg"),
          ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.2289&rep=rep1&type=pdf",  "pdf","svg"),
          ("/docs/rotten.com/library/bio/hackers/robert-morris/morris.bmp",  "image","svg"),

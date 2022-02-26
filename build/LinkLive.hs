@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-26 15:21:12 gwern"
+When:  Time-stamp: "2022-02-26 16:16:37 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -215,7 +215,6 @@ goodDomainsSimple =
     "web.archive.org",
     "wiki.evageeks.org",
     "wiki.haskell.org",
-    "www-cs-faculty.stanford.edu",
     "www.aleph.se",
     "www.antipope.org",
     "www.archive-it.org",
@@ -310,9 +309,35 @@ goodDomainsSimple =
     "xtools.wmflabs.org",
     "mail.haskell.org",
     "hackage.haskell.org"
+    , ("online.wsj.com")
+    , ("www.microsoft.com")
+    , ("intelligence.org")
+    , ("eprint.iacr.org")
+    , ("www.explainxkcd.com")
+    , ("www.silverhandmeadery.com")
+    , ("www.nickbostrom.com")
+    , ("well.blogs.nytimes.com")
+    , ("www.gwern.net")
+    , ("rjlipton.wordpress.com")
+    , ("jaspervdj.be")
+    , ("jama.jamanetwork.com")
+    , ("blog.codinghorror.com")
+    , ("aiimpacts.org")
+    , ("web.archive.org")
+    , ("www.fhi.ox.ac.uk")
+    , ("www.cjas.org")
+    , ("blog.google")
+    , ("archinte.jamanetwork.com")
+    , ("aclanthology.org")
+    , ("www.clinicaltrials.gov")
+    , ("proceedings.mlr.press")
+    , ("diff.wikimedia.org")
+    , ("www.scottaaronson.com")
+    , ("www.eugenewei.com")
+    , ("www.alignmentforum.org")
     ]
 
-badDomainsSub = [".plos.org", ".royalsocietypublishing.org"]
+badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com", ".oxfordjournals.org"]
 badDomainsSimple = ["1d4chan.org",
    "abebooks.com",
    "academia.edu",
@@ -416,7 +441,6 @@ badDomainsSimple = ["1d4chan.org",
    "longreads.com",
    "lwn.net",
    "make.girls.moe",
-   "math.stackexchange.com",
    "mathoverflow.net",
    "mayoclinicproceedings.org",
    "media.springernature.com",
@@ -475,7 +499,6 @@ badDomainsSimple = ["1d4chan.org",
    "sparkfun.com",
    "stackexchange.com",
    "stackoverflow.com",
-   "substack.com",
    "tasvideos.org",
    "thecleverest.com",
    "thegradient.pub",
@@ -574,6 +597,44 @@ badDomainsSimple = ["1d4chan.org",
    , "www.nber.org"
    , "addons.mozilla.org"
    , "www.discovermagazine.com"
+   , ("motherboard.vice.com")
+   , ("pubmed.ncbi.nlm.nih.gov")
+   , ("www.newsweek.com")
+   , ("www.tandfonline.com")
+   , ("www.usenix.org")
+   , ("boardgamegeek.com")
+   , ("www.openphilanthropy.org")
+   , ("www.psychologytoday.com")
+   , ("news.bbc.co.uk")
+   , ("www.facebook.com")
+   , ("chronopause.com")
+   , ("gist.github.com")
+   , ("www.atlasobscura.com")
+   , ("if50.substack.com")
+   , ("escholarship.org")
+   , ("johakyu.net")
+   , ("knowyourmeme.com")
+   , ("gizmodo.com")
+   , ("aws.amazon.com")
+   , ("www.courtlistener.com")
+   , ("www.dtic.mil")
+   , ("www.teanobi.com")
+   , ("static-content.springer.com")
+   , ("developer.nvidia.com")
+   , ("homepage3.nifty.com")
+   , ("i.imgur.com")
+   , ("www.jstor.org")
+   , ("www.berkshirehathaway.com")
+   , ("www.buzzfeed.com")
+   , ("new.cognitivefun.net")
+   , ("intrade.com")
+   , ("gitlab.haskell.org")
+   , ("ascii.textfiles.com")
+   , ("www.rte.ie")
+   , ("www.jstatsoft.org")
+   , ("www.indiana.edu")
+   , ("www.fimfiction.net")
+   , ("www.ex.org")
    ]
 
 url :: T.Text -> Inline
@@ -815,6 +876,31 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://files.eric.ed.gov/fulltext/EJ746292.pdf", True)
     , ("https://mail.haskell.org/pipermail/haskell-cafe/2013-April/107389.html", True)
     , ("https://hackage.haskell.org/package/archiver", True)
+    , ("https://online.wsj.com/article/SB10001424053111903480904576512250915629460.html", True)
+    , ("https://www.microsoft.com/en-us/research/blog/zero-2-deepspeed-shattering-barriers-of-deep-learning-speed-scale/", True)
+    , ("https://intelligence.org/2016/09/12/new-paper-logical-induction/", True)
+    , ("https://eprint.iacr.org/2021/1273", True)
+    , ("https://www.explainxkcd.com/wiki/index.php/Randall", True)
+    , ("https://www.silverhandmeadery.com/portfolio-posts/dream-by-the-fire/", True)
+    , ("https://www.nickbostrom.com/astronomical/waste.html", True)
+    , ("https://well.blogs.nytimes.com/2009/06/08/worries-about-antioxidant-use-by-breast-cancer-patients/#more-6629", True)
+    , ("https://rjlipton.wordpress.com/the-gdel-letter/", True)
+    , ("https://jaspervdj.be/files/2011-gsoc-text-utf8-proposal.html", True)
+    , ("https://jama.jamanetwork.com/article.aspx?articleid=183580", True)
+    , ("https://blog.codinghorror.com/why-cant-programmers-program/", True)
+    , ("https://aiimpacts.org/wp-content/uploads/2019/02/image2.png", True)
+    , ("https://web.archive.org/web/20170419194138/https://www.princeton.edu/mudd/finding_aids/mathoral/pmcxrota.htm", True)
+    , ("https://www.fhi.ox.ac.uk/", True)
+    , ("http://www.cjas.org/~leng/anno-ikuhara.txt", True)
+    , ("https://blog.google/outreach-initiatives/small-business/google-ads-helping-businesses/", True)
+    , ("https://archinte.jamanetwork.com/article.aspx?articleid=414784", True)
+    , ("https://aclanthology.org/D15-1002/", True)
+    , ("https://www.clinicaltrials.gov/show/NCT02140554", True)
+    , ("https://proceedings.mlr.press/v119/huang20f.html", True)
+    , ("https://diff.wikimedia.org/2012/03/27/analysis-of-the-quality-of-newcomers-in-wikipedia-over-time/", True)
+    , ("https://www.scottaaronson.com/democritus/", True)
+    , ("https://www.eugenewei.com/blog/2017/5/11/jpeg-your-ideas", True)
+    , ("https://www.alignmentforum.org/posts/Haawpd5rZrzkzvYRC/an-162-foundation-models-a-paradigm-shift-within-ai", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
@@ -1057,4 +1143,43 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.nber.org/papers/w13711", False)
     , ("https://addons.mozilla.org/en-US/firefox/addon/lastpass-password-manager/", False)
     , ("https://www.discovermagazine.com/planet-earth/brain-training-games-get-a-d-at-brain-training-tests", False)
+    , ("https://ije.oxfordjournals.org/content/30/6/1251.full", False)
+    , ("https://motherboard.vice.com/read/this-researcher-is-tallying-arrests-from-dark-web-markets", False)
+    , ("https://pubmed.ncbi.nlm.nih.gov/8588288/", False)
+    , ("https://www.newsweek.com/i-cloned-my-dog-puppies-have-different-personalities-1674290", False)
+    , ("https://www.tandfonline.com/doi/full/10.1080/03949370.2021.1893826", False)
+    , ("https://www.usenix.org/legacy/events/sec99/full_papers/whitten/whitten.ps", False)
+    , ("https://boardgamegeek.com/boardgame/148931/coup-reformation", False)
+    , ("https://www.openphilanthropy.org/focus/global-catastrophic-risks/potential-risks-advanced-artificial-intelligence/what-should-we-learn-past-ai-forecasts", False)
+    , ("https://www.psychologytoday.com/us/blog/pristine-inner-experience/201110/not-everyone-conducts-inner-speech", False)
+    , ("http://news.bbc.co.uk/2/hi/uk_news/3723839.stm", False)
+    , ("https://www.facebook.com/permalink.php?story_fbid=224735391342335&id=100014176268390", False)
+    , ("http://chronopause.com/index.php/2011/02/11/thus-spake-curtis-henderson-part-5/", False)
+    , ("https://gist.github.com/SigridK/c16ddc7b0f2a5bc01ea23d69569c6c0b", False)
+    , ("https://www.atlasobscura.com/articles/what-bread-did-ancient-egyptians-eat", False)
+    , ("https://if50.substack.com/p/1999-king-of-dragon-pass", False)
+    , ("https://escholarship.org/uc/item/5bv8c7p3", False)
+    , ("http://johakyu.net/lib/2007/07/2007-07-27-000535.php", False)
+    , ("https://knowyourmeme.com/memes/tendies-stories", False)
+    , ("https://gizmodo.com/generation-cryo-fighting-death-in-the-frozen-unknown-1786446378", False)
+    , ("https://aws.amazon.com/blogs/opensource/keeping-open-source-open-open-distro-for-elasticsearch/", False)
+    , ("https://www.courtlistener.com/docket/4353251/united-states-v-ulbricht/", False)
+    , ("http://www.dtic.mil/cgi-bin/GetTRDoc?AD=ADA099503", False)
+    , ("http://www.teanobi.com/category_s/228.htm", False)
+    , ("https://static-content.springer.com/esm/art%3A10.1186%2Fs12917-017-0987-6/MediaObjects/12917_2017_987_MOESM2_ESM.xlsx", False)
+    , ("https://developer.nvidia.com/cuda-downloads", False)
+    , ("http://homepage3.nifty.com/mana/miyazaki-annno.html", False)
+    , ("https://i.imgur.com/jzZKreU.png", False)
+    , ("https://www.jstor.org/stable/10.1086/468061", False)
+    , ("https://www.berkshirehathaway.com/letters/letters.html", False)
+    , ("https://www.buzzfeed.com/joshdean/are-we-warming-up-to-cryonics", False)
+    , ("https://new.cognitivefun.net/", False)
+    , ("https://intrade.com/jsp/intrade/common/c_cd.jsp?conDetailID=702407&z=1285870999458", False)
+    , ("https://gitlab.haskell.org/ghc/ghc/-/issues/2143", False)
+    , ("http://ascii.textfiles.com/archives/1717", False)
+    , ("https://www.rte.ie/archives/2018/0322/949314-donegal-victorian-romantics/", False)
+    , ("https://www.jstatsoft.org/index.php/jss/article/download/v048i09/601", False)
+    , ("https://www.indiana.edu/~pcl/rgoldsto/interrelated/interrelated.html", False)
+    , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", False)
+    , ("http://www.ex.org/2.4/09-jpopconference_1.html", False)
     ]
