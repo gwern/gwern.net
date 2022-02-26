@@ -343,7 +343,7 @@ whiteList = M.fromList [
   , ( "http://garote.bdmonkeys.net/commandline/"
     , [ "In the Beginning was the Command Line" ]
     )
-  , ( "http://www.hpmor.com/"
+  , ( "https://www.hpmor.com/"
     , [ "Harry Potter and the Methods of Rationality" ]
     )
   , ( "http://leipper.org/manuals/zip-fill/safelocks_for_compscientist.pdf"

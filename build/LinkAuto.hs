@@ -304,7 +304,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Friedrich Nietzsche|Nietzsche)", "https://en.wikipedia.org/wiki/Friedrich_Nietzsche")
         , ("(Fujiwara (no )?Teika|Teika (no )?Fujiwara)", "https://en.wikipedia.org/wiki/Fujiwara_no_Teika")
         , ("(GSEM|[Gg]enomic SEM|[Gg]enomic [Ss]tructural [Ee]quation [Mm]odeling)", "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6520146/")
-        , ("(H?P?:?MoR|Methods [Oo]f Rationality)", "http://www.hpmor.com/")
+        , ("(H?P?:?MoR|Methods [Oo]f Rationality)", "https://www.hpmor.com/")
         , ("(Hacker News|HN)", "https://en.wikipedia.org/wiki/Hacker_News")
         , ("(Hamiltonian Monte Carlo|[Hh]ybrid Monte Carlo)", "https://en.wikipedia.org/wiki/Hamiltonian_Monte_Carlo")
         , ("(Hans J\\. Eysenck|Hans Jürgen Eysenck|Hans Eysenck|Eysenck[ian]?)", "https://en.wikipedia.org/wiki/Hans_Eysenck")
