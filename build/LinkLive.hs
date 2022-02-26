@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-26 16:16:37 gwern"
+When:  Time-stamp: "2022-02-26 18:31:24 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -57,7 +57,7 @@ urlLive u | u'                    `elem`    goodDomainsSimple = Just True
           | otherwise                                         = Nothing
    where u' = host u
 
--- b <- LinkMetadata.readBacklinksDB
+-- b <- LinkBacklink.readBacklinksDB
 -- sort $ Utils.frequency $ map LinkIcon.host $ filter (Data.Maybe.isNothing . LinkLive.urlLive) $ filter ("."`Data.Text.isInfixOf`) $ Data.Map.keys b
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
@@ -786,7 +786,6 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://wiki.archiveteam.org/index.php/Google_Reader", True)
     , ("https://wiki.evageeks.org/Episode_26%27#.22Last_B.22", True)
     , ("https://wiki.haskell.org/index.php?title=&search=&fulltext=Search", True)
-    , ("https://www-cs-faculty.stanford.edu/~knuth/faq.html", True)
     , ("https://www.archive-it.org/", True)
     , ("https://www.barnesandnoble.com/", True)
     , ("https://www.buzzricksons.jp/", True)

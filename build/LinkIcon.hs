@@ -279,7 +279,7 @@ isHostOrArchive pattern url = let h = host url in
 
 -- -- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted
 -- -- from the backlinks database) and return
--- -- > b <- LinkMetadata.readBacklinksDB
+-- -- > b <- LinkBacklink.readBacklinksDB
 -- -- > let urls = ppShow $ unmatchedURLs $ Data.Map.keys b
 -- unmatchedURLs :: [T.Text] -> [T.Text]
 -- unmatchedURLs = sort . filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && (not $ hasKeyAL "link-icon" ks)) $ linkIcon (Link nullAttr [] (url,"")))

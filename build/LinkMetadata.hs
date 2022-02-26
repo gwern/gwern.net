@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-26 10:32:36 gwern"
+When:  Time-stamp: "2022-02-26 18:29:39 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML) where
+module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML) where
 
 import Control.Concurrent (forkIO)
 import Control.Monad (unless, void, when, forM_)
@@ -23,7 +23,7 @@ import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (empty, elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
@@ -33,7 +33,6 @@ import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, s
 import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
-import Data.Text.IO as TIO (readFile)
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import GHC.Generics (Generic)
 import Network.HTTP (urlDecode, urlEncode)
@@ -58,6 +57,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase')
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
+import LinkBacklink
 import Query (extractURLs)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown)
 
@@ -226,19 +226,6 @@ typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerEx
                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
                                                 let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
                            restoreFloatRight orig $ T.unpack fieldHtml
-
-getXLink :: String -> FilePath -> IO FilePath
-getXLink linkType p = do
-                   let linkRaw = "/metadata/annotations/"++linkType++"/" ++
-                                                                   urlEncode (p++".html")
-                   linkExists <- doesFileExist $ tail linkRaw
-                   -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
-                   let link' = if not linkExists then "" else "/metadata/annotations/"++linkType++"/" ++
-                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' then urlEncode [t] else [t]) (p++".html"))
-                   return link'
-getBackLink, getSimilarLink :: FilePath -> IO FilePath
-getBackLink    = getXLink "backlinks"
-getSimilarLink = getXLink "similars"
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -524,28 +511,6 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              ]
 
 -------------------------------------------------------------------------------------------------------------------------------
-
-type Backlinks = M.Map T.Text [T.Text]
-
-readBacklinksDB :: IO Backlinks
-readBacklinksDB = do exists <- doesFileExist "metadata/backlinks.hs"
-                     bll <- if exists then TIO.readFile "metadata/backlinks.hs" else return ""
-                     if bll=="" then return M.empty else
-                       let bldb = M.fromList (read (T.unpack bll) :: [(T.Text,[T.Text])]) in
-                         return bldb
-writeBacklinksDB :: Backlinks -> IO ()
-writeBacklinksDB bldb = do let bll = M.toList bldb :: [(T.Text,[T.Text])]
-                           let bll' = sort $ map (\(a,b) -> (T.unpack a, sort $ map T.unpack b)) bll
-                           writeUpdatedFile "hakyll-backlinks" "metadata/backlinks.hs" (T.pack $ ppShow bll')
-
--- type Forwardlinks = M.Map T.Text [T.Text]
--- convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
--- convertBacklinksToForwardlinks = M.fromListWith (++) . convertBacklinks
-
--- convertBacklinks :: Backlinks -> [(T.Text,[T.Text])]
--- convertBacklinks = reverseList . M.toList
---   where reverseList :: [(a,[b])] -> [(b,[a])]
---         reverseList = concatMap (\(a,bs) -> zip bs [[a]])
 
 type Metadata = M.Map Path MetadataItem                                --
 type MetadataItem = (String, String, String, String, [String], String) -- (Title, Author, Date, DOI, Tags, Abstract)

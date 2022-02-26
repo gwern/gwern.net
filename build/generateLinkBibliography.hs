@@ -31,7 +31,8 @@ import Control.Monad.Parallel as Par (mapM_)
 
 import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
 
-import LinkMetadata (generateAnnotationBlock, getBackLink, getSimilarLink, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
+import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractURLs)
 import Utils (writeUpdatedFile)
 

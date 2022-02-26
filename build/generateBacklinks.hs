@@ -20,7 +20,8 @@ import Control.Monad (forM_, unless)
 import Control.Monad.Parallel as Par (mapM)
 
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions)
+import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, safeHtmlWriterOptions)
+import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
 import Utils (writeUpdatedFile, sed)
 

@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2022-02-26 12:32:53 gwern"
+When:  Time-stamp: "2022-02-26 18:41:24 gwern"
 License: CC-0
 Dependencies: none
 
@@ -51,13 +51,15 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-import LinkMetadata (readLinkMetadata, Metadata)
-import Utils (frequency)
+module Main where
 
 import Control.Monad (when)
 import qualified Data.Map.Strict as M (lookup, size)
 import Data.List.Utils (replace)
 import Data.List (sort)
+
+import LinkMetadata (readLinkMetadata, Metadata)
+import Utils (frequency)
 
 main :: IO ()
 main = do db <- readLinkMetadata

@@ -25,7 +25,8 @@ import qualified Data.Text as T (pack, append, Text)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, getBackLink, getSimilarLink, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock)
+import LinkBacklink (getBackLink, getSimilarLink)
 import Utils (writeUpdatedFile, sed)
 
 main :: IO ()
