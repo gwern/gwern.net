@@ -34,11 +34,12 @@ import Text.Pandoc (Inline(..), Block(..), Pandoc, topDown, nullAttr)
 import Text.Pandoc.Walk (walk, walkM)
 
 import LinkIcon (linkIcon)
+import LinkLive (linkLive)
 
 import Utils (addClass)
 
 typographyTransform :: Pandoc -> Pandoc
-typographyTransform = walk linkIcon .
+typographyTransform = walk (linkLive . linkIcon) .
                       walk (breakSlashes . breakEquals) .
                       walk smallcapsfyInlineCleanup . walk smallcapsfy .
                       rulersCycle 3

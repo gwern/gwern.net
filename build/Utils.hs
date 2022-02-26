@@ -14,6 +14,7 @@ import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Regex (subRegex, mkRegex)
+import Data.List (group, sort)
 import Data.List.Utils (replace)
 import Text.Show.Pretty (ppShow)
 
@@ -91,3 +92,6 @@ sedMany regexps s = foldr (uncurry sed) s regexps
 -- list of fixed string rewrites
 replaceMany :: [(String,String)] -> (String -> String)
 replaceMany rewrites s = foldr (uncurry replace) s rewrites
+
+frequency :: Ord a => [a] -> [(Int,a)]
+frequency list = map (\l -> (length l, head l)) (group (sort list))

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-25 10:37:18 gwern"
+When:  Time-stamp: "2022-02-26 10:32:36 gwern"
 License: CC-0
 -}
 
@@ -16,7 +16,7 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getBackLink, getSimilarLink, authorsToCite, authorsTruncate, Backlinks, readBacklinksDB, writeBacklinksDB, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML) where
 
-import Control.Concurrent (forkIO, threadDelay)
+import Control.Concurrent (forkIO)
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
@@ -415,6 +415,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
           , ("ai/anime", "anime AI")
+          , ("/gpt", "GPT")
           , ("ai/gpt", "GPT")
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "AI/MoE")
@@ -587,13 +588,16 @@ recoverYamlAttempt maxAttempts yamlp broken = let shrunken = B.intercalate "\n" 
                                                     Right y -> y
 
 readYaml :: Path -> IO MetadataList
-readYaml yaml = do filep <- doesFileExist yaml
-                   if not filep then return [] else do
-                        fdb <- readBacklinksDB
-                        file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
-                        case file of
-                          Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
-                          Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
+readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
+                               if filep then return yaml
+                               else do fileAbsoluteP <- doesFileExist ("/home/gwern/wiki/" ++ yaml)
+                                       if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml) >> return yaml
+                                       else return ("/home/gwern/wiki/" ++ yaml)
+                   fdb <- readBacklinksDB
+                   file <- Y.decodeFileEither yaml' :: IO (Either ParseException [[String]])
+                   case file of
+                     Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
+                     Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
                  convertListToMetadata :: Backlinks -> [String] -> MetadataList
                  convertListToMetadata bldb [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags bldb u $ tag2TagsWithDefault u "", s))]
@@ -958,7 +962,6 @@ instance FromJSON Message
 doi2Abstract :: String -> IO (Maybe String)
 doi2Abstract doi = if length doi < 7 then return Nothing
                    else do (_,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://api.crossref.org/works/"++doi, "--user-agent", "gwern+crossrefscraping@gwern.net"]
-                           threadDelay 1000000 -- delay 1s
                            if bs=="Resource not found." then return Nothing
                            else let j = eitherDecode bs :: Either String Crossref
                                 in case j of -- start unwrapping...
@@ -998,7 +1001,6 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                let arxivid = takeWhile (/='#') $ if "/pdf/" `isInfixOf` url && ".pdf" `isSuffixOf` url
                                  then replaceMany [("https://arxiv.org/pdf/", ""), (".pdf", "")] url
                                  else replace "https://arxiv.org/abs/" "" url
-               threadDelay 10000000 -- Arxiv anti-scraping is aggressive about blocking me despite hardly touching them, so add a long 5s timeout delay for each request...
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location","--silent","https://export.arxiv.org/api/query?search_query=id:"++arxivid++"&start=0&max_results=1", "--user-agent", "gwern+arxivscraping@gwern.net"]
                case status of
                  ExitFailure _ -> printRed ("Error: curl API call failed on Arxiv ID " ++ arxivid) >> return (Left Temporary)
@@ -1090,7 +1092,9 @@ processArxivAbstract a = let cleaned = runPure $ do
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")] a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim"),
+                                                           -- if we don't escape dollar signs, it breaks abstracts with dollar amounts like "a $700 GPU"
+                                                           ("$", "\\$")] a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
@@ -1507,6 +1511,8 @@ generateID url author date
        , ("https://arxiv.org/abs/2201.12086#salesforce", "li-et-al-2022-blip")
        , ("https://arxiv.org/abs/1703.04887", "yang-et-al-2017-seqgan")
        , ("https://arxiv.org/abs/1709.00103", "zhong-et-al-2017-seq2sql")
+       , ("/docs/ai/2019-brynjolfsson.pdf", "brynjolfsson-et-al-2019-nmt")
+       , ("/docs/economics/2019-brynjolfsson-3.pdf", "brynjolfsson-et-al-2019-productivityparadox")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1524,7 +1530,8 @@ authorsToCite url author date =
                            map (\c -> if isAlphaNum c then c else '-') $ uriFragment $ fromJust $ parseURIReference url
              -- handle cases like '/docs/statistics/peer-review/1975-johnson.pdf' vs '/docs/statistics/peer-review/1975-johnson-2.pdf'
              suffix' = (let suffix = sedMany [("^/docs/.*-([0-9][0-9]?)\\.[a-z]+$", "\\1")] url in
-                           if suffix == url then "" else " " ++ suffix) ++ extension
+                          -- eg. "/docs/economics/2019-brynjolfsson-3.pdf" → "Brynjolfsson et al 2019c"
+                           if suffix == url then "" else [['a'..'z'] !! ((read suffix :: Int) - 1)]  ) ++ extension
 
            in
            if authorCount >= 3 then
@@ -2468,6 +2475,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(12th", "(12<sup>th</sup>")
           , ("<code class=\"mw-highlight mw-highlight-lang-bash mw-content-ltr\" dir=\"ltr\">", "<code>")
           , ("ml-1", "ml<sup>−1</sup>")
+          , ("10(9)", "10<sup>9</sup>")
           , ("(10(9))", "(10<sup>9</sup>)")
           , ("Cmax", "C<sub>max</sub>")
           , ("<small></small>", "")
@@ -2510,6 +2518,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(Rattus norvegicus) ", "(<em>Rattus norvegicus)</em> ")
           , ("(Taxidea taxus)", "(<em>Taxidea taxus</em>)")
           , ("(Peromyscus leucopus)", "(<em>Peromyscus leucopus</em>)")
+          , ("(Globicephala melas)", "(<em>Globicephala melas</em>)")
           , (" C. elegans", " <em>C. elegans</em>")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")

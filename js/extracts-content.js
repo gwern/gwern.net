@@ -1,78 +1,78 @@
 /***************************************/
-/*	Events fired by extracts-content.js:
+/*  Events fired by extracts-content.js:
 
-	GW.contentDidLoad {
-			source: "Extracts.rewritePopFrameContent_CITATION"
-            document: 
-            	The contentView of the pop-frame.
-            location: 
-            	URL of (i.e., anchor-link to) the footnote (or sidenote; this 
-            	depends on whether the page in which the citation appears - 
-            	which may not necessarily be the main page, as citations may 
-            	also occur in embedded pages - is currently in sidenotes mode 
-            	or not).
+    GW.contentDidLoad {
+            source: "Extracts.rewritePopFrameContent_CITATION"
+            document:
+                The contentView of the pop-frame.
+            location:
+                URL of (i.e., anchor-link to) the footnote (or sidenote; this
+                depends on whether the page in which the citation appears -
+                which may not necessarily be the main page, as citations may
+                also occur in embedded pages - is currently in sidenotes mode
+                or not).
             flags:
-            	0 (no flags set)
-		}
-		Fired when a citation (i.e., footnote) pop-frame has been filled with 
-		content (i.e., the footnote), at the last stage of preparing the 
-		pop-frame for spawning (being injected into the page and positioned).
-
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
-
-	GW.contentDidLoad {
-			source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
-            document: 
-            	The contentView of the popup (not “pop-frame”, but “popup”; 
-            	citation back-links can only spawn popups; they act as simple 
-            	anchor-links in popins mode).
-            location: 
-            	URL of (i.e., anchor-link to) the citation which references the
-            	footnote/sidenote which spawned the popup. (If there are 
-            	multiple instances of the citation on the page, this will be the
-            	URL of the first one, and that is what the popup will contain.)
-            flags:
-            	0 (no flags set)
-		}
-		Fired when a citation back-link pop-frame has been filled with content
-		(i.e., the text surrounding the reference which links to the footnote), 
-		at the last stage of preparing the pop-frame for spawning (being 
-		injected into the page and positioned).
-
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
-
-	GW.contentDidLoad {
-            source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
-            document: 
-            	The contentView of the pop-frame.
-            location: 
-            	URL of the aux-links source file.
-            flags:
-            	0 (no flags set)
+                0 (no flags set)
         }
-        Fired at the last stage of preparing an aux-links pop-frame for spawning 
+        Fired when a citation (i.e., footnote) pop-frame has been filled with
+        content (i.e., the footnote), at the last stage of preparing the
+        pop-frame for spawning (being injected into the page and positioned).
+
+        (See rewrite.js for more information about the keys and values of the
+         GW.contentDidLoad event.)
+
+    GW.contentDidLoad {
+            source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
+            document:
+                The contentView of the popup (not “pop-frame”, but “popup”;
+                citation back-links can only spawn popups; they act as simple
+                anchor-links in popins mode).
+            location:
+                URL of (i.e., anchor-link to) the citation which references the
+                footnote/sidenote which spawned the popup. (If there are
+                multiple instances of the citation on the page, this will be the
+                URL of the first one, and that is what the popup will contain.)
+            flags:
+                0 (no flags set)
+        }
+        Fired when a citation back-link pop-frame has been filled with content
+        (i.e., the text surrounding the reference which links to the footnote),
+        at the last stage of preparing the pop-frame for spawning (being
+        injected into the page and positioned).
+
+        (See rewrite.js for more information about the keys and values of the
+         GW.contentDidLoad event.)
+
+    GW.contentDidLoad {
+            source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
+            document:
+                The contentView of the pop-frame.
+            location:
+                URL of the aux-links source file.
+            flags:
+                0 (no flags set)
+        }
+        Fired at the last stage of preparing an aux-links pop-frame for spawning
         (after the pop-frame’s content has been loaded from the local aux-links
         frame cache).
 
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
+        (See rewrite.js for more information about the keys and values of the
+         GW.contentDidLoad event.)
 
- 	GW.contentDidLoad {
+    GW.contentDidLoad {
             source: "Extracts.refreshPopFrameAfterAuxLinksLoad"
-            document: 
-            	The contentView of the pop-frame.
-            location: 
-            	URL of the aux-links source file.
+            document:
+                The contentView of the pop-frame.
+            location:
+                URL of the aux-links source file.
             flags: GW.contentDidLoadEventFlags.needsRewrite
         }
-        Fired at the last stage of preparing a aux-links pop-frame for spawning 
-        (after the pop-frame’s content has been freshly loaded via a network 
+        Fired at the last stage of preparing a aux-links pop-frame for spawning
+        (after the pop-frame’s content has been freshly loaded via a network
         request).
 
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
+        (See rewrite.js for more information about the keys and values of the
+         GW.contentDidLoad event.)
 */
 
 if (window.Extracts) {
@@ -81,47 +81,47 @@ if (window.Extracts) {
     /*=-----------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "AUX_LINKS_LINK",		// Type name
-        "isAuxLinksLink",		// Type predicate function
-        "has-content",			// Target classes to add
-        "auxLinksForTarget",	// Pop-frame fill function
-        "aux-links"				// Pop-frame classes
+        "AUX_LINKS_LINK",       // Type name
+        "isAuxLinksLink",       // Type predicate function
+        "has-content",          // Target classes to add
+        "auxLinksForTarget",    // Pop-frame fill function
+        "aux-links"             // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	Extracts.auxLinksCache = { }
+    Extracts.auxLinksCache = { }
 
-	//	Called by: Extracts.isAuxLinksLink
-	//	Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
-	Extracts.auxLinksLinkType = (target) => {
-		if (target.pathname.startsWith("/metadata/annotations/") == false)
-			return null;
+    //  Called by: Extracts.isAuxLinksLink
+    //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
+    Extracts.auxLinksLinkType = (target) => {
+        if (target.pathname.startsWith("/metadata/annotations/") == false)
+            return null;
 
-		return /^\/metadata\/annotations\/([^\/]+)/.exec(target.pathname)[1];
-	};
+        return /^\/metadata\/annotations\/([^\/]+)/.exec(target.pathname)[1];
+    };
 
-	//	Called by: Extracts.isLocalCodeFileLink
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: Extracts.isLocalCodeFileLink
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isAuxLinksLink = (target) => {
-    	let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        let auxLinksLinkType = Extracts.auxLinksLinkType(target);
         return (auxLinksLinkType && target.classList.contains(auxLinksLinkType));
     };
 
     /*  Backlinks, similar-links, etc.
      */
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.auxLinksForTarget = (target) => {
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
-		if (Extracts.auxLinksCache[target.pathname]) {
-			return Extracts.auxLinksCache[target.pathname].innerHTML;
-		} else {
-			Extracts.refreshPopFrameAfterAuxLinksLoad(target);
+        if (Extracts.auxLinksCache[target.pathname]) {
+            return Extracts.auxLinksCache[target.pathname].innerHTML;
+        } else {
+            Extracts.refreshPopFrameAfterAuxLinksLoad(target);
 
-			return `&nbsp;`;
-		}
+            return `&nbsp;`;
+        }
     };
 
-	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_AUX_LINKS_LINK = (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -134,32 +134,32 @@ if (window.Extracts) {
         });
     };
 
-	/*	Page or document for whom the aux-links are.
-	 */
-	//	Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
-	Extracts.targetOfAuxLinksLink = (target) => {
-		return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/[^\/]+?\/(.+?)\.html$/.exec(target.pathname)[1]));
-	};
+    /*  Page or document for whom the aux-links are.
+     */
+    //  Called by: Extracts.titleForPopFrame_AUX_LINKS_LINK
+    Extracts.targetOfAuxLinksLink = (target) => {
+        return decodeURIComponent(decodeURIComponent(/\/metadata\/annotations\/[^\/]+?\/(.+?)\.html$/.exec(target.pathname)[1]));
+    };
 
-	//	Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
+    //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
     Extracts.titleForPopFrame_AUX_LINKS_LINK = (popFrame) => {
         let target = popFrame.spawningTarget;
         let targetPage = Extracts.targetOfAuxLinksLink(target);
-    	let auxLinksLinkType = Extracts.auxLinksLinkType(target);
+        let auxLinksLinkType = Extracts.auxLinksLinkType(target);
         switch (auxLinksLinkType) {
-        	case "backlinks":
-		        return `${targetPage} (Backlinks)`;
-        	case "similars":
-        		return `${targetPage} (Similar)`;
-        	default:
-        		return `${targetPage}`;
+            case "backlinks":
+                return `${targetPage} (Backlinks)`;
+            case "similars":
+                return `${targetPage} (Similar)`;
+            default:
+                return `${targetPage}`;
         }
     };
 
     /*  Refresh (respawn or reload) a pop-frame for a aux-link link after the
         aux-links source loads.
      */
-    //	Called by: Extracts.auxLinksForTarget
+    //  Called by: Extracts.auxLinksForTarget
     Extracts.refreshPopFrameAfterAuxLinksLoad = (target) => {
         GWLog("Extracts.refreshPopFrameAfterAuxLinksLoad", "extracts-content.js", 2);
 
@@ -171,11 +171,11 @@ if (window.Extracts) {
                 if (!target.popFrame)
                     return;
 
-                //	Inject the aux-links source into the pop-frame.
+                //  Inject the aux-links source into the pop-frame.
                 Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
 
-				//	Cache the aux-links source.
-				Extracts.auxLinksCache[target.pathname] = target.popFrame.contentView;
+                //  Cache the aux-links source.
+                Extracts.auxLinksCache[target.pathname] = target.popFrame.contentView;
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                     */
@@ -214,19 +214,19 @@ if (window.Extracts) {
     /*=-----------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "CITATION",				// Type name
-        "isCitation",			// Type predicate function
-        null,					// Target classes to add
-        "citationForTarget",	// Pop-frame fill function
-        "footnote"				// Pop-frame classes
+        "CITATION",             // Type name
+        "isCitation",           // Type predicate function
+        null,                   // Target classes to add
+        "citationForTarget",    // Pop-frame fill function
+        "footnote"              // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isCitation = (target) => {
         return target.classList.contains("footnote-ref");
     };
 
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.citationForTarget = (target) => {
         GWLog("Extracts.citationForTarget", "extracts-content.js", 2);
 
@@ -237,7 +237,7 @@ if (window.Extracts) {
         });
     };
 
-	//	Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
+    //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
     Extracts.titleForPopFrame_CITATION = (popFrame) => {
         let target = popFrame.spawningTarget;
         let footnoteNumber = target.querySelector("sup").textContent;
@@ -246,7 +246,7 @@ if (window.Extracts) {
         return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
     };
 
-	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     Extracts.preparePopup_CITATION = (popup) => {
         let target = popup.spawningTarget;
 
@@ -275,7 +275,7 @@ if (window.Extracts) {
         return popup;
     };
 
-	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_CITATION = (popFrame) => {
         let target = popFrame.spawningTarget;
 
@@ -293,36 +293,36 @@ if (window.Extracts) {
     /*=---------------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "CITATION_BACK_LINK",				// Type name
-        "isCitationBackLink",				// Type predicate function
-        null,								// Target classes to add
-        "citationBackLinkForTarget",		// Pop-frame fill function
-        "citation-context"					// Pop-frame classes
+        "CITATION_BACK_LINK",               // Type name
+        "isCitationBackLink",               // Type predicate function
+        null,                               // Target classes to add
+        "citationBackLinkForTarget",        // Pop-frame fill function
+        "citation-context"                  // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isCitationBackLink = (target) => {
         return target.classList.contains("footnote-back");
     };
 
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.citationBackLinkForTarget = (target) => {
         GWLog("Extracts.citationBackLinkForTarget", "extracts-content.js", 2);
 
         return Extracts.localTranscludeForTarget(target);
     };
 
-	/*	This “special testing function” is used to exclude certain targets which
-		have already been categorized as (in this case) `CITATION_BACK_LINK` 
-		targets. It returns false if the target is to be excluded, true 
-		otherwise. Excluded targets will not spawn pop-frames.
-	 */
-	//	Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
+    /*  This “special testing function” is used to exclude certain targets which
+        have already been categorized as (in this case) `CITATION_BACK_LINK`
+        targets. It returns false if the target is to be excluded, true
+        otherwise. Excluded targets will not spawn pop-frames.
+     */
+    //  Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
     Extracts.testTarget_CITATION_BACK_LINK = (target) => {
         return (Extracts.popFrameProvider != Popins);
     };
 
-	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     Extracts.preparePopup_CITATION_BACK_LINK = (popup) => {
         let target = popup.spawningTarget;
 
@@ -336,7 +336,7 @@ if (window.Extracts) {
         return popup;
     };
 
-	//	Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
     Extracts.rewritePopupContent_CITATION_BACK_LINK = (popup) => {
         let target = popup.spawningTarget;
 
@@ -371,15 +371,15 @@ if (window.Extracts) {
     /*=---------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "VIDEO",				// Type name
-        "isVideoLink",			// Type predicate function
-        "has-content",			// Target classes to add
-        "videoForTarget",		// Pop-frame fill function
-        "video object"			// Pop-frame classes
+        "VIDEO",                // Type name
+        "isVideoLink",          // Type predicate function
+        "has-content",          // Target classes to add
+        "videoForTarget",       // Pop-frame fill function
+        "video object"          // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	// Called by: Extracts.isVideoLink
-	// Called by: Extracts.videoForTarget
+    // Called by: Extracts.isVideoLink
+    // Called by: Extracts.videoForTarget
     Extracts.youtubeId = (href) => {
         let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
         if (match && match[2].length == 11) {
@@ -389,7 +389,7 @@ if (window.Extracts) {
         }
     };
 
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isVideoLink = (target) => {
         if (Extracts.isAnnotatedLink(target))
             return false;
@@ -401,7 +401,7 @@ if (window.Extracts) {
         }
     };
 
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.videoForTarget = (target) => {
         GWLog("Extracts.videoForTarget", "extracts-content.js", 2);
 
@@ -426,21 +426,21 @@ if (window.Extracts) {
     /*=-----------------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "LOCAL_VIDEO",				// Type name
-        "isLocalVideoLink",			// Type predicate function
-        "has-content",				// Target classes to add
-        "localVideoForTarget",		// Pop-frame fill function
-        "video object"				// Pop-frame class
+        "LOCAL_VIDEO",              // Type name
+        "isLocalVideoLink",         // Type predicate function
+        "has-content",              // Target classes to add
+        "localVideoForTarget",      // Pop-frame fill function
+        "video object"              // Pop-frame class
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	//	Used in: Extracts.isLocalVideoLink
+    //  Used in: Extracts.isLocalVideoLink
     Extracts.videoFileExtensions = [ "mp4" ];
 
-	// These variables appear to currently be unused. —SA, 2022-01-31
-//	Extracts.videoMaxWidth = 634.0;
-//	Extracts.videoMaxHeight = 474.0;
+    // These variables appear to currently be unused. —SA, 2022-01-31
+//  Extracts.videoMaxWidth = 634.0;
+//  Extracts.videoMaxHeight = 474.0;
 
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isLocalVideoLink = (target) => {
         if (   target.hostname != location.hostname
             || Extracts.isAnnotatedLink(target))
@@ -454,7 +454,7 @@ if (window.Extracts) {
         return (target.pathname.match(videoFileURLRegExp) != null);
     };
 
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.localVideoForTarget = (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
@@ -482,7 +482,7 @@ if (window.Extracts) {
             `</video>`;
     };
 
-	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     Extracts.preparePopup_LOCAL_VIDEO = (popup) => {
         //  Mini title bar.
         popup.classList.add("mini-title-bar");
@@ -490,7 +490,7 @@ if (window.Extracts) {
         return popup;
     };
 
-	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_LOCAL_VIDEO = (popFrame) => {
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
@@ -501,21 +501,21 @@ if (window.Extracts) {
     /*=-----------------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "LOCAL_IMAGE",				// Type name
-        "isLocalImageLink",			// Type predicate function
-        "has-content",				// Target classes to add
-        "localImageForTarget",		// Pop-frame fill function
-        "image object"				// Pop-frame classes
+        "LOCAL_IMAGE",              // Type name
+        "isLocalImageLink",         // Type predicate function
+        "has-content",              // Target classes to add
+        "localImageForTarget",      // Pop-frame fill function
+        "image object"              // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	//	Used in: Extracts.isLocalImageLink
+    //  Used in: Extracts.isLocalImageLink
     Extracts.imageFileExtensions = [ "bmp", "gif", "ico", "jpeg", "jpg", "png", "svg" ];
 
-	//	Used in: Extracts.localImageForTarget
+    //  Used in: Extracts.localImageForTarget
     Extracts.imageMaxWidth = 634.0;
     Extracts.imageMaxHeight = 474.0;
 
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isLocalImageLink = (target) => {
         if (   target.hostname != location.hostname
             || Extracts.isAnnotatedLink(target))
@@ -529,7 +529,7 @@ if (window.Extracts) {
         return (target.pathname.match(imageFileURLRegExp) != null);
     };
 
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.localImageForTarget = (target) => {
         GWLog("Extracts.localImageForTarget", "extracts-content.js", 2);
 
@@ -553,7 +553,7 @@ if (window.Extracts) {
         return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
     };
 
-	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
+    //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
     Extracts.preparePopup_LOCAL_IMAGE = (popup) => {
         //  Mini title bar.
         popup.classList.add("mini-title-bar");
@@ -561,9 +561,9 @@ if (window.Extracts) {
         return popup;
     };
 
-	//	Called by: Extracts.rewritePopinContent_LOCAL_IMAGE
-	//	Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
-	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: Extracts.rewritePopinContent_LOCAL_IMAGE
+    //  Called by: Extracts.rewritePopupContent_LOCAL_IMAGE
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_LOCAL_IMAGE = (popFrame) => {
         //  Remove extraneous classes from images in image pop-frames.
         popFrame.querySelector("img").classList.remove("has-annotation", "has-content", "link-self", "link-local");
@@ -572,7 +572,7 @@ if (window.Extracts) {
         Extracts.setLoadingSpinner(popFrame);
     };
 
-	//	Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopupContent_${targetTypeName}`)
     Extracts.rewritePopinContent_LOCAL_IMAGE = (popin) => {
         Extracts.rewritePopFrameContent_LOCAL_IMAGE(popin);
 
@@ -580,7 +580,7 @@ if (window.Extracts) {
         popin.querySelector("img").classList.remove("spawns-popin");
     };
 
-	//	Called by: extracts.js (as `rewritePopinContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopinContent_${targetTypeName}`)
     Extracts.rewritePopupContent_LOCAL_IMAGE = (popup) => {
         Extracts.rewritePopFrameContent_LOCAL_IMAGE(popup);
 
@@ -596,14 +596,14 @@ if (window.Extracts) {
     /*=--------------------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "LOCAL_DOCUMENT",				// Type name
-        "isLocalDocumentLink",			// Type predicate function
-        "has-content",					// Target classes to add
-        "localDocumentForTarget",		// Pop-frame fill function
-        "local-document object"			// Pop-frame classes
+        "LOCAL_DOCUMENT",               // Type name
+        "isLocalDocumentLink",          // Type predicate function
+        "has-content",                  // Target classes to add
+        "localDocumentForTarget",       // Pop-frame fill function
+        "local-document object"         // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isLocalDocumentLink = (target) => {
         if (   target.hostname != location.hostname
             || Extracts.isAnnotatedLink(target))
@@ -614,7 +614,7 @@ if (window.Extracts) {
                     && target.pathname.match(/\.(html|pdf)$/i) != null));
     };
 
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.localDocumentForTarget = (target) => {
         GWLog("Extracts.localDocumentForTarget", "extracts-content.js", 2);
 
@@ -626,18 +626,18 @@ if (window.Extracts) {
         }
     };
 
-	/*	This “special testing function” is used to exclude certain targets which
-		have already been categorized as (in this case) `LOCAL_DOCUMENT` 
-		targets. It returns false if the target is to be excluded, true 
-		otherwise. Excluded targets will not spawn pop-frames.
-	 */
-	//	Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
+    /*  This “special testing function” is used to exclude certain targets which
+        have already been categorized as (in this case) `LOCAL_DOCUMENT`
+        targets. It returns false if the target is to be excluded, true
+        otherwise. Excluded targets will not spawn pop-frames.
+     */
+    //  Called by: extracts.js (as `testTarget_${targetTypeInfo.typeName}`)
     Extracts.testTarget_LOCAL_DOCUMENT = (target) => {
         return (!(   Extracts.popFrameProvider == Popins
                   && target.href.match(/\.pdf(#|$)/) != null));
     };
 
-	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_LOCAL_DOCUMENT = (popFrame) => {
         //  Set title of popup from page title.
         let iframe = popFrame.querySelector("iframe");
@@ -656,28 +656,28 @@ if (window.Extracts) {
     /*=---------------------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "LOCAL_CODE_FILE",				// Type name
-        "isLocalCodeFileLink",			// Type predicate function
-        "has-content",					// Target classes to add
-        "localCodeFileForTarget",		// Pop-frame fill function
-        "local-code-file"				// Pop-frame classes
+        "LOCAL_CODE_FILE",              // Type name
+        "isLocalCodeFileLink",          // Type predicate function
+        "has-content",                  // Target classes to add
+        "localCodeFileForTarget",       // Pop-frame fill function
+        "local-code-file"               // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-	//	Used in: Extracts.isLocalCodeFileLink
-    Extracts.codeFileExtensions = [ 
-    	"R", "css", "hs", "js", "patch", "sh", "php", "conf", "html", "opml", "xml",
-		// Non-syntax highlighted (due to lack of known format or potential size):
-		"txt", "json", "jsonl", "csv" 
-	];
+    //  Used in: Extracts.isLocalCodeFileLink
+    Extracts.codeFileExtensions = [
+        "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html", "opml", "xml",
+        // Non-syntax highlighted (due to lack of known format or potential size):
+        "txt", "json", "jsonl", "csv"
+    ];
 
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isLocalCodeFileLink = (target) => {
         if (   target.hostname != location.hostname
             || Extracts.isAnnotatedLink(target))
             return false;
 
         if (Extracts.isAuxLinksLink(target))
-        	return false;
+            return false;
 
         let codeFileURLRegExp = new RegExp(
               '('
@@ -692,7 +692,7 @@ if (window.Extracts) {
         that. If there’s no such fragment, then we just embed the contents of
         the actual code file, in a <pre>-wrapped <code> element.
      */
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.localCodeFileForTarget = (target) => {
         GWLog("Extracts.localCodeFileForTarget", "extracts-content.js", 2);
 
@@ -753,11 +753,11 @@ if (window.Extracts) {
     /*=----------------=*/
 
     Extracts.targetTypeDefinitions.insertBefore([
-        "FOREIGN_SITE",				// Type name
-        "isForeignSiteLink",		// Type predicate function
-        "has-content",				// Target classes to add
-        "foreignSiteForTarget",		// Pop-frame fill function
-        "foreign-site object"		// Pop-frame classes
+        "FOREIGN_SITE",             // Type name
+        "isForeignSiteLink",        // Type predicate function
+        "has-content",              // Target classes to add
+        "foreignSiteForTarget",     // Pop-frame fill function
+        "foreign-site object"       // Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
 	//	Called by: extracts.js (as `predicateFunctionName`)
@@ -769,7 +769,7 @@ if (window.Extracts) {
         return target.classList.contains("link-live");
     };
 
-    //	Called by: extracts.js (as `popFrameFillFunctionName`)
+    //  Called by: extracts.js (as `popFrameFillFunctionName`)
     Extracts.foreignSiteForTarget = (target) => {
         GWLog("Extracts.foreignSiteForTarget", "extracts-content.js", 2);
 
@@ -791,7 +791,7 @@ if (window.Extracts) {
         return `<iframe src="${url.href}" frameborder="0" sandbox></iframe>`;
     };
 
-	//	Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
+    //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     Extracts.rewritePopFrameContent_FOREIGN_SITE = (popFrame) => {
         //  Loading spinner.
         Extracts.setLoadingSpinner(popFrame);
