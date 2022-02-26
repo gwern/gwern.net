@@ -760,34 +760,13 @@ if (window.Extracts) {
         "foreign-site object"		// Pop-frame classes
     ], (def => def[0] == "LOCAL_PAGE"));
 
-    /* Domains which *would* be useful to live-popup, but set X-Frame-Options/Content-Security-Policy HTTP headers which mean browsers will refuse to load the popup (eg. https://support.mozilla.org/en-US/kb/xframe-neterror-page ):
-       old.reddit.com, arxiv.org, www.biorxiv.org, www.medrxiv.org, github.com, github.io, news.ycombinator.com */
-
-	//	Used in: Extracts.isForeignSiteLink
-    Extracts.qualifyingForeignDomains = [
-        "www.greaterwrong.com",
-        "greaterwrong.com",
-        "www.lesswrong.com",
-        "lesswrong.com",
-        /(.+?)\.wikipedia\.org/,
-        "nitter.hu",
-        /(.+?)\.eleuther\.ai/,
-        "bmk.sh"
-    ];
-
-	//	Used in: Extracts.isForeignSiteLink
-    Extracts.blacklistedForeignDomains = [
-    ];
-
 	//	Called by: extracts.js (as `predicateFunctionName`)
     Extracts.isForeignSiteLink = (target) => {
         if (   target.hostname == location.hostname
             || Extracts.isAnnotatedLink(target))
             return false;
 
-        return (   Extracts.qualifyingForeignDomains.includes(target.hostname)
-                || Extracts.qualifyingForeignDomains.findIndex(domainPattern => (domainPattern instanceof RegExp && domainPattern.test(target.hostname) == true)) != -1)
-            && !Extracts.blacklistedForeignDomains.includes(target.hostname);
+        return target.classList.contains("link-live");
     };
 
     //	Called by: extracts.js (as `popFrameFillFunctionName`)
