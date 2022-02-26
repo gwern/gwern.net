@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-26 18:31:24 gwern"
+When:  Time-stamp: "2022-02-26 18:53:10 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -24,13 +24,16 @@ tested & found bad, and testing is not done or ambiguous (due to practical issue
 a local archive or 404 or changed domain entirely). -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkLive (linkLive, linkLiveTest, urlLive) where
+module LinkLive (linkLive, linkLiveTest, urlLive, linkLivePrioritize) where
 
-import Data.Text as T (isPrefixOf, isSuffixOf, Text)
+import Data.List (sort)
+import Data.Maybe (isNothing)
+import Data.Map.Strict as M (keys)
+import Data.Text as T (isInfixOf, isPrefixOf, isSuffixOf, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
-import LinkIcon (host)
-import Utils (addClass)
+import LinkBacklink (readBacklinksDB)
+import Utils (addClass, frequency, host)
 
 linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
@@ -50,15 +53,17 @@ overrideLinkLive = []
 
 -- Nothing = unknown/untested; Just True = known good; Just False = known bad
 urlLive :: T.Text -> Maybe Bool
-urlLive u | u'                    `elem`    goodDomainsSimple = Just True
-          | any (\d -> d `T.isSuffixOf` u') goodDomainsSub    = Just True
-          | u'                       `elem` badDomainsSimple  = Just False
-          | any (\d -> d `T.isSuffixOf` u') badDomainsSub     = Just False
-          | otherwise                                         = Nothing
+urlLive u | u'            `elem`    goodDomainsSimple = Just True
+          | any (`T.isSuffixOf` u') goodDomainsSub    = Just True
+          | u'               `elem` badDomainsSimple  = Just False
+          | any (`T.isSuffixOf` u') badDomainsSub     = Just False
+          | otherwise                                 = Nothing
    where u' = host u
 
--- b <- LinkBacklink.readBacklinksDB
--- sort $ Utils.frequency $ map LinkIcon.host $ filter (Data.Maybe.isNothing . LinkLive.urlLive) $ filter ("."`Data.Text.isInfixOf`) $ Data.Map.keys b
+linkLivePrioritize :: IO [(Int, T.Text)]
+linkLivePrioritize = do b <- readBacklinksDB
+                        let urls = filter ("."`T.isInfixOf`) $ M.keys b
+                        return $ reverse $ sort $ Utils.frequency $ filter (/="") $ map host $ filter (isNothing . urlLive) urls
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org",
@@ -309,32 +314,32 @@ goodDomainsSimple =
     "xtools.wmflabs.org",
     "mail.haskell.org",
     "hackage.haskell.org"
-    , ("online.wsj.com")
-    , ("www.microsoft.com")
-    , ("intelligence.org")
-    , ("eprint.iacr.org")
-    , ("www.explainxkcd.com")
-    , ("www.silverhandmeadery.com")
-    , ("www.nickbostrom.com")
-    , ("well.blogs.nytimes.com")
-    , ("www.gwern.net")
-    , ("rjlipton.wordpress.com")
-    , ("jaspervdj.be")
-    , ("jama.jamanetwork.com")
-    , ("blog.codinghorror.com")
-    , ("aiimpacts.org")
-    , ("web.archive.org")
-    , ("www.fhi.ox.ac.uk")
-    , ("www.cjas.org")
-    , ("blog.google")
-    , ("archinte.jamanetwork.com")
-    , ("aclanthology.org")
-    , ("www.clinicaltrials.gov")
-    , ("proceedings.mlr.press")
-    , ("diff.wikimedia.org")
-    , ("www.scottaaronson.com")
-    , ("www.eugenewei.com")
-    , ("www.alignmentforum.org")
+    , "online.wsj.com"
+    , "www.microsoft.com"
+    , "intelligence.org"
+    , "eprint.iacr.org"
+    , "www.explainxkcd.com"
+    , "www.silverhandmeadery.com"
+    , "www.nickbostrom.com"
+    , "well.blogs.nytimes.com"
+    , "www.gwern.net"
+    , "rjlipton.wordpress.com"
+    , "jaspervdj.be"
+    , "jama.jamanetwork.com"
+    , "blog.codinghorror.com"
+    , "aiimpacts.org"
+    , "web.archive.org"
+    , "www.fhi.ox.ac.uk"
+    , "www.cjas.org"
+    , "blog.google"
+    , "archinte.jamanetwork.com"
+    , "aclanthology.org"
+    , "www.clinicaltrials.gov"
+    , "proceedings.mlr.press"
+    , "diff.wikimedia.org"
+    , "www.scottaaronson.com"
+    , "www.eugenewei.com"
+    , "www.alignmentforum.org"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com", ".oxfordjournals.org"]
@@ -597,44 +602,44 @@ badDomainsSimple = ["1d4chan.org",
    , "www.nber.org"
    , "addons.mozilla.org"
    , "www.discovermagazine.com"
-   , ("motherboard.vice.com")
-   , ("pubmed.ncbi.nlm.nih.gov")
-   , ("www.newsweek.com")
-   , ("www.tandfonline.com")
-   , ("www.usenix.org")
-   , ("boardgamegeek.com")
-   , ("www.openphilanthropy.org")
-   , ("www.psychologytoday.com")
-   , ("news.bbc.co.uk")
-   , ("www.facebook.com")
-   , ("chronopause.com")
-   , ("gist.github.com")
-   , ("www.atlasobscura.com")
-   , ("if50.substack.com")
-   , ("escholarship.org")
-   , ("johakyu.net")
-   , ("knowyourmeme.com")
-   , ("gizmodo.com")
-   , ("aws.amazon.com")
-   , ("www.courtlistener.com")
-   , ("www.dtic.mil")
-   , ("www.teanobi.com")
-   , ("static-content.springer.com")
-   , ("developer.nvidia.com")
-   , ("homepage3.nifty.com")
-   , ("i.imgur.com")
-   , ("www.jstor.org")
-   , ("www.berkshirehathaway.com")
-   , ("www.buzzfeed.com")
-   , ("new.cognitivefun.net")
-   , ("intrade.com")
-   , ("gitlab.haskell.org")
-   , ("ascii.textfiles.com")
-   , ("www.rte.ie")
-   , ("www.jstatsoft.org")
-   , ("www.indiana.edu")
-   , ("www.fimfiction.net")
-   , ("www.ex.org")
+   , "motherboard.vice.com"
+   , "pubmed.ncbi.nlm.nih.gov"
+   , "www.newsweek.com"
+   , "www.tandfonline.com"
+   , "www.usenix.org"
+   , "boardgamegeek.com"
+   , "www.openphilanthropy.org"
+   , "www.psychologytoday.com"
+   , "news.bbc.co.uk"
+   , "www.facebook.com"
+   , "chronopause.com"
+   , "gist.github.com"
+   , "www.atlasobscura.com"
+   , "if50.substack.com"
+   , "escholarship.org"
+   , "johakyu.net"
+   , "knowyourmeme.com"
+   , "gizmodo.com"
+   , "aws.amazon.com"
+   , "www.courtlistener.com"
+   , "www.dtic.mil"
+   , "www.teanobi.com"
+   , "static-content.springer.com"
+   , "developer.nvidia.com"
+   , "homepage3.nifty.com"
+   , "i.imgur.com"
+   , "www.jstor.org"
+   , "www.berkshirehathaway.com"
+   , "www.buzzfeed.com"
+   , "new.cognitivefun.net"
+   , "intrade.com"
+   , "gitlab.haskell.org"
+   , "ascii.textfiles.com"
+   , "www.rte.ie"
+   , "www.jstatsoft.org"
+   , "www.indiana.edu"
+   , "www.fimfiction.net"
+   , "www.ex.org"
    ]
 
 url :: T.Text -> Inline

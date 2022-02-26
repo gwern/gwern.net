@@ -1,17 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module LinkIcon (linkIcon, rebuildSVGIconCSS, host) where
+module LinkIcon (linkIcon, rebuildSVGIconCSS, linkIconPrioritize) where
 
-import Control.Monad (when)
+import Control.Monad (unless)
+import Data.List (sort)
 import Data.List.Utils (hasKeyAL)
+import qualified Data.Map.Strict as M (keys)
 import Data.Maybe (fromJust)
 import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
-import Network.URI (parseURIReference, uriAuthority, uriPath, uriRegName)
+import Network.URI (parseURIReference, uriPath)
 import System.FilePath (takeExtension)
 import Data.Containers.ListUtils (nubOrd)
 
-import Utils (writeUpdatedFile)
+import LinkBacklink (readBacklinksDB)
+import Utils (host, writeUpdatedFile)
 
 -- Statically, at compile-time, define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
@@ -34,7 +37,7 @@ import Utils (writeUpdatedFile)
 -- the text rules freely, in whatever order is most convenient for expressing
 -- precedence/overriding—while still generating CSS code from normal data (the test suite entries).
 rebuildSVGIconCSS :: IO ()
-rebuildSVGIconCSS = do when (not $ null linkIconTest) $ error ("Error! Link icons failed match! : " ++ show linkIconTest)
+rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons failed match! : " ++ show linkIconTest)
                        let svgs = nubOrd $ map (\(_,icon,_) -> T.unpack icon) $ filter (\(_, _, icontype) -> icontype == "svg") linkIconTestUnits
                        let html = unlines $ ["<style id=\"graphical-link-icons\">"] ++
                              map (\svg -> "a[data-link-icon='" ++ svg ++ "'] { --link-icon-url: url('/static/img/icons/" ++ svg ++ ".svg'); }") svgs ++
@@ -231,7 +234,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
        aI :: T.Text -> T.Text -> Inline
        aI = addIcon x
        iE :: [T.Text] -> Bool
-       iE = any (== (T.drop 1 $ extension u))
+       iE = elem (T.drop 1 $ extension u)
 linkIcon x = x
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`)
@@ -266,25 +269,18 @@ hasExtension ext p = extension p == ext
 extension :: T.Text -> T.Text
 extension = T.pack . maybe "" (takeExtension . uriPath) . parseURIReference . T.unpack
 
-host :: T.Text -> T.Text
-host p = do case parseURIReference (T.unpack p) of
-              Nothing -> ""
-              Just uri' -> do case uriAuthority uri' of
-                                Nothing -> ""
-                                Just uridomain' -> T.pack $ uriRegName uridomain'
-
 isHostOrArchive :: T.Text -> T.Text -> Bool
-isHostOrArchive pattern url = let h = host url in
-                                h == pattern || ("/docs/www/"`T.append`pattern) `T.isPrefixOf` url
+isHostOrArchive domain url = let h = host url in
+                                h == domain || ("/docs/www/"`T.append`domain) `T.isPrefixOf` url
 
--- -- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted
--- -- from the backlinks database) and return
--- -- > b <- LinkBacklink.readBacklinksDB
--- -- > let urls = ppShow $ unmatchedURLs $ Data.Map.keys b
--- unmatchedURLs :: [T.Text] -> [T.Text]
--- unmatchedURLs = sort . filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && (not $ hasKeyAL "link-icon" ks)) $ linkIcon (Link nullAttr [] (url,"")))
+-- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted
+-- from the backlinks database) and return.
 -- The results are particularly useful when piped into <https://www.gwern.net/haskell/lcps.hs> to
 -- get suggested prefixes/domains worth adding link-icons for.
+linkIconPrioritize :: IO [T.Text]
+linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
+                        return $ sort $ filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
+                                                 linkIcon (Link nullAttr [] (url,""))) $ M.keys b
 
 -- Test suite:
 --
@@ -295,7 +291,8 @@ isHostOrArchive pattern url = let h = host url in
 -- CSS/visual glitches. Any new test-cases should be added to both (with different URLs where possible).
 linkIconTest, linkIconTestUnits :: [(T.Text,T.Text,T.Text)]
 linkIconTest = filter (\(url, li, lit) -> linkIcon (Link nullAttr [] (url,""))
-                                                   /= (Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,""))
+                                          /=
+                                          Link ("",[], [("link-icon",li), ("link-icon-type", lit)]) [] (url,"")
                                                    )
                linkIconTestUnits
 -- in /Lorem order:

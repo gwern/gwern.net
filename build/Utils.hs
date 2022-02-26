@@ -4,6 +4,7 @@ module Utils where
 import Control.Monad (when)
 import Data.Text.IO as TIO (readFile, writeFile)
 import qualified Data.Text as T (Text, pack, unpack)
+import Network.URI (parseURIReference, uriAuthority, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
 import System.IO.Temp (emptySystemTempFile)
@@ -95,3 +96,10 @@ replaceMany rewrites s = foldr (uncurry replace) s rewrites
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = map (\l -> (length l, head l)) (group (sort list))
+
+host :: T.Text -> T.Text
+host p = case parseURIReference (T.unpack p) of
+              Nothing -> ""
+              Just uri' -> case uriAuthority uri' of
+                                Nothing -> ""
+                                Just uridomain' -> T.pack $ uriRegName uridomain'
