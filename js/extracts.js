@@ -839,7 +839,8 @@ Extracts = {
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-content", "link-self",
-            "link-local", "spawns-popup", "spawns-popin", "idNot", "backlinksNot");
+            "link-local", "spawns-popup", "spawns-popin", "idNot", 
+            "backlinksNot", "uri");
 
         //  Add ‘markdownBody’ class.
         popFrame.contentView.classList.add("markdownBody");
