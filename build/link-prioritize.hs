@@ -4,7 +4,7 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2022-02-23 16:54:00 gwern"
+When:  Time-stamp: "2022-02-26 10:37:19 gwern"
 License: CC-0
 Dependencies: none
 
@@ -50,27 +50,29 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 1 http://0b4af6cdc2f0c5998459-c0245c5c937c5dedcca3f1764ecc9b2f.r43.cf2.rackcdn.com/12061-woot13-bangert.pdf
 -}
 
+{-# LANGUAGE OverloadedStrings #-}
 import LinkMetadata (readLinkMetadata, Metadata)
-import qualified Data.Map.Strict as M (lookup)
+import Control.Monad (when)
+import qualified Data.Map.Strict as M (lookup, size)
 import Data.List.Utils (replace)
 import Data.List (sort, group)
-import Control.Monad (when)
 
 main :: IO ()
 main = do db <- readLinkMetadata
+          when (M.size db < 1000) $ error $ "Database too small? " ++ show db
           urls <- fmap lines getContents
-          let urls' = map (filterLink db) urls
+          let urls' = filter (not . isAnnotated db) urls
           let uses = reverse $ sort $ frequency urls'
-          mapM_ (\(n,url) -> when (url/="") $ putStrLn (show n ++ " " ++ url)) uses
+          mapM_ (\(n,url) -> putStrLn (show n ++ " " ++ url)) uses
 
 frequency :: Ord a => [a] -> [(Int,a)]
 frequency list = map (\l -> (length l, head l)) (group (sort list))
 
-filterLink :: Metadata -> String -> String
-filterLink md target =
+isAnnotated :: Metadata -> String -> Bool
+isAnnotated md target =
   let target' = replace "https://www.gwern.net/" "/" target in
     let annotated = M.lookup target' md in
       case annotated of
        -- the link has a valid annotation already defined (>100 chars, no meaningful abstract can be written in <100), so build & return;
-       Just (_,_,_,_,_,abstrct)  -> if length abstrct > 100 then "" else target'
-       Nothing -> target'
+       Just (_,_,_,_,_,abstrct)  -> length abstrct > 100
+       Nothing -> False

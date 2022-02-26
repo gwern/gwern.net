@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-25 21:41:02 gwern"
+When:  Time-stamp: "2022-02-26 10:32:36 gwern"
 License: CC-0
 -}
 
@@ -588,13 +588,16 @@ recoverYamlAttempt maxAttempts yamlp broken = let shrunken = B.intercalate "\n" 
                                                     Right y -> y
 
 readYaml :: Path -> IO MetadataList
-readYaml yaml = do filep <- doesFileExist yaml
-                   if not filep then return [] else do
-                        fdb <- readBacklinksDB
-                        file <- Y.decodeFileEither yaml :: IO (Either ParseException [[String]])
-                        case file of
-                          Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
-                          Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
+readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
+                               if filep then return yaml
+                               else do fileAbsoluteP <- doesFileExist ("/home/gwern/wiki/" ++ yaml)
+                                       if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml) >> return yaml
+                                       else return ("/home/gwern/wiki/" ++ yaml)
+                   fdb <- readBacklinksDB
+                   file <- Y.decodeFileEither yaml' :: IO (Either ParseException [[String]])
+                   case file of
+                     Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
+                     Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
                 where
                  convertListToMetadata :: Backlinks -> [String] -> MetadataList
                  convertListToMetadata bldb [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags bldb u $ tag2TagsWithDefault u "", s))]
@@ -1089,7 +1092,9 @@ processArxivAbstract a = let cleaned = runPure $ do
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")] a
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim"),
+                                                           -- if we don't escape dollar signs, it breaks abstracts with dollar amounts like "a $700 GPU"
+                                                           ("$", "\\$")] a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
