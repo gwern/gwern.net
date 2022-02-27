@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-26 20:38:19 gwern"
+When:  Time-stamp: "2022-02-26 20:48:14 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1006,6 +1006,8 @@ badDomainsSimple = ["1d4chan.org",
     , "benbest.com"
     , "bayes.wustl.edu"
     , "bactra.org"
+    , "nitro.biosci.arizona.edu"
+    , "cse.google.com"
    ]
 
 url :: T.Text -> Inline
@@ -1281,7 +1283,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://webcitation.org/5mYown8VS", True)
     , ("https://www.reuters.com/article/2011/11/26/us-vitamind-heartdisease-idUSTRE7AO1UM20111126", True)
     , ("https://mail.haskell.org/pipermail/haskell-cafe/2011-February/089183.html", True)
-    , ("http://gameprogrammingpatterns.com/dirty-flag.html", True)
+    , ("https://gameprogrammingpatterns.com/dirty-flag.html", True)
     , ("https://digital.library.unt.edu/explore/partners/TAMS/browse/?q=%22Julian+Stanley%22+OR+%22SMPY%22&sort=date_a&t=fulltext", True)
     , ("https://www.salon.com/2007/04/12/castaneda/", True)
     , ("https://www.metopera.org/season/in-cinemas/2019-20-season/akhnaten-live-in-hd/", True)

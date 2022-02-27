@@ -14,7 +14,7 @@ import System.FilePath (takeExtension)
 import Data.Containers.ListUtils (nubOrd)
 
 import LinkBacklink (readBacklinksDB)
-import Utils (host, writeUpdatedFile)
+import Utils (frequency, host, writeUpdatedFile)
 
 -- Statically, at compile-time, define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
@@ -162,6 +162,23 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | anyInfix u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
  | u'' "yunnansourcing.com" || u'' "yunnansourcing.us" = aI "ys" "text"
  | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark...?
+ | u'' "silkroadvb5piz3r.onion" = aI "SR1" "text,sans"
+ | u'' "beepb00p.xyz" = aI "\129302" "text" -- ROBOT FACE U+1F916
+ | u'' "antilop.cc" = aI "෴" "text" -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
+ | u'' "www.memteaimports.com" = aI "MT" "text,sans"
+ | u'' "forum.effectivealtruism.org" || u'' "www.effectivealtruism.org" = aI "EA" "text"
+ | u'' "boards.fireden.net" || u' "4channel.org"  = aI "4CH" "text,sans"
+ | u'' "www.kaggle.com" = aI "k" "text,sans"
+ | u'' "www.jneurosci.org" = aI "JN" "text"
+ | u'' "www.discovermagazine.com" = aI "D" "text"
+ | u'' "tl.net" = aI "TL" "text,sans"
+ | u'' "www.businessinsider.com" = aI "BI" "text,sans"
+ | u'' "gameprogrammingpatterns.com" = aI "GPP" "text,sans"
+ | u'' "dnstats.net" = aI "dn" "text,sans"
+ | u'' "www.newsweek.com" = aI "N" "text"
+ | u'' "www.thecut.com" = aI "TC" "text"
+ | u'' "www.scientificamerican.com" = aI "SA" "text"
+ | u'' "www.metopera.org" = aI "M" "text"
 
  -- Quad-letter-square icons.
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
@@ -173,6 +190,9 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' ".sagepub.com" = aI "SAGE" "text,quad,sans" -- Sage Journals’s logo is a circled S... but would anyone recognize it? Primary user: journals.sagepub.com
  | u'' "publicdomainreview.org" = aI "TPDR" "text,quad"
  | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
+ | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
+ | u'' "www.nejm.org" = aI "NEJM" "text,quad"
+
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
  | u'' "en.bitcoin.it" || u'' "bitcointalk.org" || u' "www.blockchain.com/btc/" = aI "bitcoin" "svg"
@@ -275,12 +295,14 @@ isHostOrArchive domain url = let h = host url in
 
 -- to find URLs worth defining new link icons for, pass through a list of URLs (perhaps extracted
 -- from the backlinks database) and return.
--- The results are particularly useful when piped into <https://www.gwern.net/haskell/lcps.hs> to
--- get suggested prefixes/domains worth adding link-icons for.
-linkIconPrioritize :: IO [T.Text]
+--
+-- The original raw results are particularly useful when piped into <https://www.gwern.net/haskell/lcps.hs> to
+-- get suggested prefixes/domains worth adding link-icons for, or one can just look at the domains by `host`:
+linkIconPrioritize :: IO [(Int,T.Text)]
 linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
-                        return $ sort $ filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
-                                                 linkIcon (Link nullAttr [] (url,""))) $ M.keys b
+                        return $ reverse $ sort $ frequency $ filter (/="") $ map host
+                          $ filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
+                                     linkIcon (Link nullAttr [] (url,""))) $ M.keys b
 
 -- Test suite:
 --
@@ -569,4 +591,25 @@ linkIconTestUnits =
          ("/images/tea/tea-mineralwaters-bestarm-sequential.webm",  "file-video","svg"),
          ("/docs/ai/music/2020-03-06-fifteenai-fluttershy-sithcode.mp3",  "audio","svg"),
          ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg"),
-         ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg")]
+         ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg"),
+         ("http://silkroadvb5piz3r.onion/index.php/silkroad/user/69a6bec290", "SR1", "text,sans"),
+         ("https://beepb00p.xyz/pkm-search.html", "\129302", "text"),
+         ("https://antilop.cc/sr/#assassination_plot", "෴", "text"),
+         ("https://www.memteaimports.com/tea/fern-stream-amber-oolong", "MT", "text,sans"),
+         ("https://forum.effectivealtruism.org/posts/nSot23sAjoZRgaEwa/2016-ai-risk-literature-review-and-charity-comparison", "EA", "text"),
+         ("https://www.effectivealtruism.org/articles/prospecting-for-gold-owen-cotton-barratt/#heavy-tailed-distributions", "EA", "text"),
+         ("https://boards.fireden.net/a/thread/185257999/", "4CH", "text,sans"),
+         ("https://boards.4channel.org/jp/", "4CH", "text,sans"),
+         ("https://www.kaggle.com/ultrajack/modern-renaissance-poetry", "k", "text,sans"),
+         ("https://www.jneurosci.org/content/32/12/4156.full", "JN", "text"),
+         ("https://www.discovermagazine.com/mind/the-brain-a-body-fit-for-a-freaky-big-brain", "D", "text"),
+         ("https://tl.net/blogs/283221-worker-rush-part-4-rising-up?view=all", "TL", "text,sans"),
+         ("https://www.businessinsider.com/this-is-what-happens-when-you-track-your-sleep-obsessively-2012-2", "BI", "text,sans"),
+         ("http://gameprogrammingpatterns.com/singleton.html", "GPP", "text,sans"),
+         ("https://dnstats.net/market/Amazon+Dark", "dn", "text,sans"),
+         ("https://www.newsweek.com/gene-editing-chinese-scientist-he-jiankui-missing-house-arrest-1240749", "N", "text"),
+         ("https://www.thecut.com/2019/05/the-tinder-hacker.html", "TC", "text"),
+         ("https://www.scientificamerican.com/article/the-mind-of-an-octopus/", "SA", "text"),
+         ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "M", "text"),
+         ("https://www.imdb.com/title/tt0923592/", "IMDb", "text,sans,quad"),
+         ("https://www.nejm.org/doi/full/10.1056/NEJM199604043341416", "NEJM", "text,quad") ]
