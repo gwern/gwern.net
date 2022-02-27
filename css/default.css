@@ -1687,8 +1687,7 @@ pre:hover {
 /* CODE BLOCKS */
 /***************/
 
-.uri, /* Pandoc sets a 'uri' class on naked/autolinks, which don't get a `<code>` wrapper even though they should (see https://github.com/jgm/pandoc/issues/7672 ) */
-code  {
+code {
     --GW-link-underline-background-color: var(--GW-code-element-background-color);
 
     border: 1px solid var(--GW-code-element-border-color);
@@ -1708,6 +1707,12 @@ code  {
     word-break: break-all;
     hyphens: none;
 }
+
+/*	Bare-URL links will be <a><code>http://foo.bar</code></a> */
+a code {
+	font-size: 0.9em;
+}
+
 pre {
     margin: 1.75em auto;
     border: 1px solid var(--GW-pre-element-border-color);
