@@ -87,6 +87,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | "www.bloomberg.com" `T.isSuffixOf` host u = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
  | u'' "link.springer.com" || u'' "rd.springer.com" || u' ".biomedcentral.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
+ | u'' "blog.givewell.org" || u'' "www.givewell.org" || u'' "files.givewell.org" || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
  | u'' "www.mdpi.com" = aI "MDPI" "text,quad,mono" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
@@ -115,7 +116,6 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "everything2.com" = aI "E2" "text"
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
- | u' "jamanetwork.com" = aI "JN" "text,sans" -- The Journal of the American Medical Association (JAMA)
  | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" || u'' "www.evacommentary.org" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | u'' "www.fda.gov" || u'' "fis.fda.gov" || u'' "clinicaltrials.gov" = aI "FDA" "text,sans" -- U.S. Food & Drug Administration
  | u'' "www.fanfiction.net" = aI "FFN" "text,sans" -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with FireFox, so expand to "FFN".
@@ -162,7 +162,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | anyInfix u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
  | u'' "yunnansourcing.com" || u'' "yunnansourcing.us" = aI "ys" "text"
  | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark...?
- | u'' "silkroadvb5piz3r.onion" = aI "SR1" "text,sans"
+ | u'' "silkroadvb5piz3r.onion" || u'' "silkroad5v7dywlc.onion" = aI "SR1" "text,sans"
  | u'' "beepb00p.xyz" = aI "\129302" "text" -- ROBOT FACE U+1F916
  | u'' "antilop.cc" = aI "෴" "text" -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
  | u'' "www.memteaimports.com" = aI "MT" "text,sans"
@@ -179,8 +179,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.thecut.com" = aI "TC" "text"
  | u'' "www.scientificamerican.com" = aI "SA" "text"
  | u'' "www.metopera.org" = aI "M" "text"
+ | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
+ | u'' "www.schneier.com" = aI "B.S." "text,sans" -- "Bruce Schneier": TODO: experiment with initials using periods - does this work as-is? How about quad? or using '﹒' SMALL FULL STOP U+FE52?
 
  -- Quad-letter-square icons.
+ | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans"
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
@@ -379,7 +382,9 @@ linkIconTestUnits =
          ("https://web.archive.org/web/19981202185145/http://www.ex.org/2.4/11-news.html",  "internetarchive","svg"),
          ("https://www.webcitation.org/6Qj7v6mqd",  "internetarchive","svg"),
          ("https://www.justice.gov/archive/usao/cac/Pressroom/2012/045.html",  "DoJ","text"),
-         ("http://archinte.jamanetwork.com/article.aspx?articleid=414283", "JN", "text,sans"),
+         ("http://archinte.jamanetwork.com/article.aspx?articleid=414283", "JAMA", "text,sans,quad"),
+         ("https://jamanetwork.com/journals/jama/fullarticle/201218", "JAMA", "text,sans,quad"),
+         ("http://jama.jamanetwork.com/article.aspx?articleid=183162", "JAMA", "text,sans,quad"),
          ("https://kk.org/books/out-of-control/",  "KK","text,sans"),
          ("https://link.springer.com/article/10.1007/BF02253535",  "\9816","text"),
          ("https://rd.springer.com/article/10.1007/s10071-021-01530-3",  "\9816","text"),
@@ -388,7 +393,7 @@ linkIconTestUnits =
          ("https://longnow.org/ideas/02014/08/21/lenski-long-term-evolution-experiment/",  "X","text,overline"),
          ("https://www.longecity.org/forum/topic/10464-modalert-is-this-what-modafinil-is-like/?&p=108566#entry108566", "⧖", "text"),
          ("https://groups.google.com/group/ankisrs/",  "\9993","text"),
-         ("http://groups.yahoo.com/group/givewell/message/287",  "\9993","text"),
+         ("http://groups.yahoo.com/group/tiffanygrantfanclub/message/5697",  "\9993","text"),
          ("https://gwern.substack.com/",  "substack","svg"),
          ("https://www.tinyletter.com/",  "\9993","text"),
          ("https://www.mail-archive.com/cryptography@metzdowd.com/msg09959.html",  "\9993","text"),
@@ -409,7 +414,7 @@ linkIconTestUnits =
          ("https://meltingasphalt.com/interactive/going-critical/",  "\9650","text"),
          ("https://michaelnielsen.org/blog/three-myths-about-scientific-peer-review/", "MN", "text"),
          ("https://quantum.country/qcvc", "MN", "text"),
-         ("https://numinous.productions/ttft/)", "MN", "text"),
+         ("https://numinous.productions/ttft/", "MN", "text"),
          ("https://cognitivemedium.com/srs-mathematics", "MN", "text"),
          ("http://neuralnetworksanddeeplearning.com/chap6.html", "MN", "text"),
          ("https://www.microsoft.com/en-us/research/blog/turing-nlg-a-17-billion-parameter-language-model-by-microsoft/",  "MS","text,sans,italic"),
@@ -593,6 +598,7 @@ linkIconTestUnits =
          ("/docs/rotten.com/library/culture/batman/theme-song/batmantv.rm",  "audio","svg"),
          ("/docs/rotten.com/library/bio/entertainers/comic/david-letterman/letterman_any_sense.wav",  "audio","svg"),
          ("http://silkroadvb5piz3r.onion/index.php/silkroad/user/69a6bec290", "SR1", "text,sans"),
+         ("http://silkroad5v7dywlc.onion/index.php?topic=2889.0", "SR1", "text,sans"),
          ("https://beepb00p.xyz/pkm-search.html", "\129302", "text"),
          ("https://antilop.cc/sr/#assassination_plot", "෴", "text"),
          ("https://www.memteaimports.com/tea/fern-stream-amber-oolong", "MT", "text,sans"),
@@ -612,4 +618,11 @@ linkIconTestUnits =
          ("https://www.scientificamerican.com/article/the-mind-of-an-octopus/", "SA", "text"),
          ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "M", "text"),
          ("https://www.imdb.com/title/tt0923592/", "IMDb", "text,sans,quad"),
-         ("https://www.nejm.org/doi/full/10.1056/NEJM199604043341416", "NEJM", "text,quad") ]
+         ("https://www.nejm.org/doi/full/10.1056/NEJM199604043341416", "NEJM", "text,quad"),
+         ("http://groups.yahoo.com/group/givewell/message/287", "GW", "text"),
+         ("https://files.givewell.org/files/DWDA%202009/Interventions/Iodine/Bautista%20et%20al%201982.pdf", "GW", "text"),
+         ("https://blog.givewell.org/2012/08/23/how-we-evaluate-a-study/", "GW", "text"),
+         ("https://www.givewell.org/giving101", "GW", "text"),
+         ("https://www.stuff.co.nz/manawatu-standard/news/69472334/kiwi-man-jailed-for-posting-drugs-from-las-vegas-to-mothers-house", "NZ", "text,sans"),
+         ("https://www.schneier.com/blog/archives/2011/08/terrorism_in_th.html", "B.S.", "text,sans")
+        ]
