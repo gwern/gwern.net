@@ -452,6 +452,18 @@ a[data-link-icon='𝛘']::after {
     opacity: 0.75;
 }
 
+a[data-link-icon='෴']::after { /* Moustache / antilop.cc */
+    --link-icon-offset-y: 0.5em;
+
+    opacity: 0.8;
+}
+
+a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
+    --link-icon-offset-y: 0.5em;
+
+    opacity: 0.75;
+}
+
 /****************************/
 /*  Quad-letter square icons.
     */

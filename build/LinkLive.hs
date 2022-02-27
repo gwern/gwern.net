@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-26 20:48:14 gwern"
+When:  Time-stamp: "2022-02-27 10:30:25 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -12,9 +12,9 @@ Live popups are an alternative to, or a further step from, annotations. They let
 a link instantly. This is useful when an annotation is not available, or when the reader has read
 the annotation and wants to go further.
 
-However, due to the March of Web Progress™, many websites set X headers or just plain
-don't work in a frame (often due to JS, and then often due to extremely reader-unfriendly design like giant
-headers or stickies). Perhaps only a quarter of external links work as live popups.
+However, due to the March of Web Progress™, many websites set X headers <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options>
+or just plain don't work in a frame (often due to JS, and then often due to extremely reader-unfriendly design
+like giant headers or stickies). Perhaps only a quarter of external links work as live popups.
 So we can't just offer it as an option on all links, that will waste reader time & trust, and they will
 learn to avoid the feature entirely and resent the visual clutter and trap of this 'feature'.
 
@@ -1919,4 +1919,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://benbest.com/nutrceut/melatonin.html#negative", False)
     , ("https://bayes.wustl.edu/etj/articles/general.background.ps.gz", False)
     , ("http://bactra.org/weblog/algae-2012-09.html", False)
+    , ("https://ar5iv.labs.arxiv.org/html/2001.04642?fallback=original", False)
     ]

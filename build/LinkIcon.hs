@@ -605,7 +605,7 @@ linkIconTestUnits =
          ("https://www.discovermagazine.com/mind/the-brain-a-body-fit-for-a-freaky-big-brain", "D", "text"),
          ("https://tl.net/blogs/283221-worker-rush-part-4-rising-up?view=all", "TL", "text,sans"),
          ("https://www.businessinsider.com/this-is-what-happens-when-you-track-your-sleep-obsessively-2012-2", "BI", "text,sans"),
-         ("http://gameprogrammingpatterns.com/singleton.html", "GPP", "text,sans"),
+         ("https://gameprogrammingpatterns.com/singleton.html", "GPP", "text,sans"),
          ("https://dnstats.net/market/Amazon+Dark", "dn", "text,sans"),
          ("https://www.newsweek.com/gene-editing-chinese-scientist-he-jiankui-missing-house-arrest-1240749", "N", "text"),
          ("https://www.thecut.com/2019/05/the-tinder-hacker.html", "TC", "text"),
