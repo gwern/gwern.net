@@ -493,6 +493,7 @@ a[data-link-icon='⛨']::after { /* Cambridge */
 /****************************/
 /* Triple-letter initials: too few for quad, but too big for regular font size/offset. Common with TLA orgs. */
 a[data-link-icon='ABC']::after,
+a[data-link-icon='AII']::after,
 a[data-link-icon='P@D']::after, /* Ponies At Dawn */
 a[data-link-icon='ANN']::after, /* Anime News Network*/
 a[data-link-icon='BBC']::after,
@@ -501,14 +502,17 @@ a[data-link-icon='CDC']::after,
 a[data-link-icon='ESR']::after, /* Eric S. Raymond */
 a[data-link-icon='FDA']::after,
 a[data-link-icon='FFN']::after,
+a[data-link-icon='FRK']::after,
 a[data-link-icon='GPP']::after,
 a[data-link-icon='KYM']::after,
 a[data-link-icon='MAL']::after, /* MyAnimeList: shrink & elevate */
 a[data-link-icon='MIT']::after,
+a[data-link-icon='MOR']::after,
 a[data-link-icon='NGE']::after, /* Evangelion: shrink & elevate */
 a[data-link-icon='ODT']::after, /* Otago Daily Times */
 a[data-link-icon='OUP']::after,
 a[data-link-icon='SEP']::after,
+a[data-link-icon='SFG']::after,
 a[data-link-icon='SOS']::after,
 a[data-link-icon='SSC']::after,
 a[data-link-icon='TDA']::after,
