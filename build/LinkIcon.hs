@@ -91,7 +91,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
  | u'' "www.mdpi.com" = aI "MDPI" "text,quad,mono" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
- | u'' "medium.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
+ | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
  | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,sans"
@@ -201,6 +201,12 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.cambridge.org" || u'' "journals.cambridge.org" || u'' "static.cambridge.org" = aI "⛨" "text" -- ⛨ BLACK CROSS ON SHIELD U+26E8, roughly imitating <https://en.wikipedia.org/wiki/Coat_of_arms_of_the_University_of_Cambridge>
  | u' "royalsocietypublishing.org" = aI "RS" "text" -- <https://en.wikipedia.org/wiki/Royal_Society>
  | u'' "nautil.us" = aI "🐚" "text" -- 🐚 SPIRAL SHELL (U+1F41A)
+ | u'' "www.sequentialtart.com" = aI "ST" "text,sans"
+ | u'' "www.psychologytoday.com" = aI "PT" "text,sans"
+ | u'' "www.odt.co.nz" = aI "ODT" "text"
+ | u'' "www.independent.co.uk" = aI "TI" "text" -- <https://en.wikipedia.org/wiki/File:The_Independent_news_logo.svg> swooping-hawk icon would be illegible as link icon
+ | u'' "www.fastcompany.com" = aI "FC" "text"
+ | u'' "knowyourmeme.com" = aI "KYM" "text"
 
  -- Quad-letter-square icons.
  | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -216,6 +222,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
+ | u'' "rjlipton.wordpress.com" = aI "P=NP" "text,quad"
+ | u' "https://mitpress.mit.edu/sites/default/files/sicp/" = aI "SICP" "text,quad,sans,italic"
+ | u' "https://mitpress.mit.edu/books/" = aI "MIT" "text,mono" -- if it's not _SICP_, fall back.x
+ | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
+ | u'' "gizmodo.com" = aI "GIZM" "text,mono"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -253,6 +264,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.telegraph.co.uk" = aI "the-telegraph" "svg" -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
  | u'' "www.openphilanthropy.org" = aI "open-philanthropy" "svg"
  | u'' "www.atlasobscura.com" = aI "atlas-obscura" "svg"
+ | u'' "blog.eleuther.ai" || u'' "www.eleuther.ai" || u'' "pile.eleuther.ai" || u'' "6b.eleuther.ai" = aI "eleutherai" "svg"
+ | u' ".apple.com" = aI "apple" "svg"
 
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
  | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = aI "archive" "svg"
@@ -327,9 +340,11 @@ isHostOrArchive domain url = let h = host url in
 -- get suggested prefixes/domains worth adding link-icons for, or one can just look at the domains by `host`:
 linkIconPrioritize :: IO [(Int,T.Text)]
 linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
-                        return $ reverse $ sort $ frequency $ filter (/="") $ map host
+                        return $ reverse $ sort $ frequency $ filter (`notElem` blackList) $ filter (/="") $ map host
                           $ filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
                                      linkIcon (Link nullAttr [] (url,""))) $ M.keys b
+  where blackList :: [T.Text]
+        blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com"]
 
 -- Test suite:
 --
@@ -435,6 +450,7 @@ linkIconTestUnits =
          ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "MATT", "text,quad,sans"),
          ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,mono"),
          ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text"),
+         ("https://towardsdatascience.com/stylegan2-projection-a-reliable-method-for-image-forensics-700922579236", "\119820","text"),
          ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg"),
          ("https://meltingasphalt.com/interactive/going-critical/",  "\9650","text"),
          ("https://michaelnielsen.org/blog/three-myths-about-scientific-peer-review/", "MN", "text"),
@@ -682,5 +698,22 @@ linkIconTestUnits =
          ("http://rsta.royalsocietypublishing.org/content/361/1813/2681.full.pdf", "RS", "text"),
          ("http://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text"),
          ("https://royalsocietypublishing.org/doi/10.1098/rsos.181393", "RS", "text"),
-         ("https://nautil.us/mapping-the-human-exposome-10595/", "🐚", "text")
+         ("https://nautil.us/mapping-the-human-exposome-10595/", "🐚", "text"),
+         ("http://www.sequentialtart.com/archive/july00/grant.shtml", "ST", "text,sans"),
+         ("https://www.psychologytoday.com/us/blog/life-bilingual/201906/the-bilingual-advantage-three-years-later", "PT", "text,sans"),
+         ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text"),
+         ("https://www.independent.co.uk/news/uk/this-britain/the-jousting-accident-that-turned-henry-viii-into-a-tyrant-1670421.html", "TI", "text"),
+         ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text"),
+         ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P=NP", "text,quad"),
+         ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SICP", "text,quad,sans,italic"),
+         ("https://mitpress.mit.edu/books/book-ground", "MIT", "text,mono"),
+         ("https://blog.eleuther.ai/announcing-20b/", "eleutherai", "svg"),
+         ("https://6b.eleuther.ai/", "eleutherai", "svg"),
+         ("https://www.eleuther.ai/projects/gpt-neo/", "eleutherai", "svg"),
+         ("https://pile.eleuther.ai/", "eleutherai", "svg"),
+         ("https://knowyourmeme.com/memes/navy-seal-copypasta", "KYM", "text"),
+         ("https://apps.apple.com/app/id307920888", "apple", "svg"),
+         ("https://machinelearning.apple.com/research/hey-siri", "apple", "svg"),
+         ("https://jaspervdj.be/hakyll/reference/Hakyll-Web-Redirect.html", "JVDJ", "text,quad,mono"),
+         ("https://gizmodo.com/weird-and-wonderful-movies-that-youll-never-get-to-see-5877874", "GIZM", "text,mono")
         ]

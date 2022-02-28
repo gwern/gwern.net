@@ -391,7 +391,7 @@ goodDomainsSimple =
     , "www.baltimoresun.com"
     , "unenumerated.blogspot.com"
     , "scottaaronson.blog"
-    , "rjlipton.wpcomstaging.com"
+    , "rjlipton.wordpress.com"
     , "mason.gmu.edu"
     , "ilovetypography.com"
     , "humanvarieties.org"
@@ -1323,7 +1323,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.baltimoresun.com/news/crime/bs-md-silk-road-employee-20131107-story.html", True)
     , ("https://unenumerated.blogspot.com/2011/05/bitcoin-what-took-ye-so-long.html", True)
     , ("https://scottaaronson.blog/?p=346", True)
-    , ("https://rjlipton.wpcomstaging.com/2014/07/21/shifts-in-algorithm-design/", True)
+    , ("https://rjlipton.wordpress.com/2014/07/21/shifts-in-algorithm-design/", True)
     , ("http://mason.gmu.edu/~rhanson/greatfilter.html", True)
     , ("https://ilovetypography.com/2019/03/14/the-first-printed-math-books/", True)
     , ("https://humanvarieties.org/2013/01/15/100-years-of-testing-negro-intelligence/", True)

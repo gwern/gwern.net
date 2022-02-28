@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" id="libre" viewBox="-1.15470053837925 -1.25 2.30940107675850 2.25">
+    <defs>
+        <path id="bezierTriangle" d="M 0 1 C -1.15470053837925 1, -1.44337567297406 0.5, -0.866025403784439 -0.5 C -0.288675134594813 -1.5, 0.288675134594813 -1.5, 0.866025403784439 -0.5 C 1.44337567297406 0.5, 1.15470053837925 1, 0 1 z" fill="white" shape-rendering="geometric-precision" />
+        <circle id="circle" cx="0" cy="0" r="1" fill="black" shape-rendering="geometric-precision" />
+    </defs>
+    <use id="bT1" href="#bezierTriangle" />
+    <use id="c2" href="#circle" transform="scale(0.965243487740224)" />
+    <use id="bt3" href="#bezierTriangle" transform="scale(-0.74535599249993)" />
+    <use id="c4" href="#circle" transform="scale(0.719450017808709)" />
+    <use id="bT5" href="#bezierTriangle" transform="scale(0.555555555555556)" />
+</svg>
