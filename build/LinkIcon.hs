@@ -180,12 +180,12 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.scientificamerican.com" = aI "SA" "text"
  | u'' "www.metopera.org" = aI "M" "text"
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
- | u'' "www.schneier.com" = aI "B.S." "text,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS"): TODO: experiment with initials using periods - does this work as-is? How about quad? or using '﹒' SMALL FULL STOP U+FE52? Or just "SOS"?
- | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly
+ | u'' "www.schneier.com" = aI "SOS" "text,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
+ | u'' "chronopause.com" = aI "M﹒D﹒" "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? or using '﹒' SMALL FULL STOP U+FE52? Or just "SOS"?
  | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts, similarly
  | u'' "www.antipope.org" = aI "C.S." "text,sans" -- Charles Stross, similarly
  | u'' "www.ribbonfarm.com" = aI "ℝ𝔽" "text,sans"
- | u'' "en.touhouwiki.net" = aI "☯" "text"
+ | u'' "en.touhouwiki.net" || u'' "touhou.fandom.com" || u'' "w.atwiki.jp" || u' "old.reddit.com/r/TOUHOUMUSIC/" = aI "☯" "text" -- NOTE: override Fandom catch-all
  | u'' "www.reuters.com" = aI "R" "text,sans" -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim
  | u'' "www.deviantart.com" = aI "DA" "text,sans" -- the official logo <https://en.wikipedia.org/wiki/File:DeviantArt_Logo.svg> isn't *too* bad and is at least 8 years old, but I don't recognize it so I doubt most readers would.
  | u'' "boardgamegeek.com" = aI "BGG" "text,sans" -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>
@@ -205,7 +205,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  -- Quad-letter-square icons.
  | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
- | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans"
+ | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans" -- NOTE: override Fandom catch-all
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,sans" -- NPR styles it in lowercase in their |n|p|r| logo
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
@@ -215,7 +215,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
  | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
- | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,sans,quad"
+ | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -649,9 +649,12 @@ linkIconTestUnits =
          ("https://blog.givewell.org/2012/08/23/how-we-evaluate-a-study/", "GW", "text"),
          ("https://www.givewell.org/giving101", "GW", "text"),
          ("https://www.stuff.co.nz/manawatu-standard/news/69472334/kiwi-man-jailed-for-posting-drugs-from-las-vegas-to-mothers-house", "NZ", "text,sans"),
-         ("https://www.schneier.com/blog/archives/2011/08/terrorism_in_th.html", "B.S.", "text,sans"),
+         ("https://www.schneier.com/blog/archives/2011/08/terrorism_in_th.html", "SOS", "text,sans"),
          ("https://www.ribbonfarm.com/2011/09/23/the-milo-criterion/", "ℝ𝔽", "text,sans"),
          ("https://en.touhouwiki.net/wiki/Iyokan", "☯", "text"),
+         ("https://touhou.fandom.com/wiki/Category:Music", "☯", "text"),
+         ("https://old.reddit.com/r/TOUHOUMUSIC/search?q=author%3Agwern&sort=new&restrict_sr=on&t=all", "☯", "text"),
+         ("https://w.atwiki.jp/toho/pages/948.html", "☯", "text"),
          ("https://www.reuters.com/article/us-astrazeneca-targacept/astrazeneca-targacept-drug-fails-depression-test-idUSTRE7A71KO20111108", "R", "text,sans"),
          ("https://www.deviantart.com/caji9i/art/stylegan-neural-ahegao-842847987", "DA", "text,sans"),
          ("https://boardgamegeek.com/boardgame/148931/coup-reformation", "BGG", "text,sans"),
@@ -660,12 +663,12 @@ linkIconTestUnits =
          ("https://www.smithsonianmag.com/history/native-intelligence-109314481/", "SM", "text"),
          ("https://www.openphilanthropy.org/brain-computation-report", "open-philanthropy", "svg"),
          ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic"),
-         ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans"),
+         ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M﹒D﹒", "text,sans"),
          ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text"),
          ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans"),
          ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,sans"),
-         ("http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", "IEEE", "text,sans,quad"),
-         ("https://spectrum.ieee.org/classical-chinese", "IEEE", "text,sans,quad"),
+         ("http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", "IEEE", "text,mono,quad"),
+         ("https://spectrum.ieee.org/classical-chinese", "IEEE", "text,mono,quad"),
          ("https://www.dailydot.com/crime/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans"),
          ("https://www.yudkowsky.net/rational/technical", "י", "text"),
          ("http://www.johndcook.com/blog/2010/09/13/applied-topology-and-dante-an-interview-with-robert-ghrist/", "JC", "text,sans"),

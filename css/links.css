@@ -464,6 +464,55 @@ a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
     opacity: 0.75;
 }
 
+a[data-link-icon='GPP']::after { /* Game Programming Patterns: shrink & elevate */
+    font-size: 0.6em;
+    --link-icon-offset-y: 0.6em;
+}
+
+a[data-link-icon='י']::after { /* Yudkowsky.net: darken, enlarge, left/up */
+    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-x: 0.05em;
+
+    opacity: 0.8;
+    font-size: 1.25em;
+}
+
+a[data-link-icon='🐚']::after { /* Nautilus */
+    --link-icon-offset-y: 0.3em;
+    --link-icon-offset-x: 0.1em;
+
+    opacity: 1;
+    font-size: 0.8em;
+}
+
+a[data-link-icon='⛨']::after { /* Cambridge */
+    --link-icon-offset-x: 0em;
+}
+
+/* Triple-letter initials: too few for quad, but too big for regular font size/offset. Common with TLAs. */
+a[data-link-icon='ABC']::after,
+a[data-link-icon='P@D']::after, /* Ponies At Dawn */
+a[data-link-icon='ANN']::after, /* Anime News Network*/
+a[data-link-icon='BBC']::after,
+a[data-link-icon='BGG']::after, /* Board Game Geek: shrink & elevate */
+a[data-link-icon='CDC']::after,
+a[data-link-icon='ESR']::after, /* Eric S. Raymond */
+a[data-link-icon='FDA']::after,
+a[data-link-icon='FFN']::after,
+a[data-link-icon='GPP']::after,
+a[data-link-icon='MAL']::after, /* MyAnimeList: shrink & elevate */
+a[data-link-icon='NGE']::after, /* Evangelion: shrink & elevate */
+a[data-link-icon='OUP']::after,
+a[data-link-icon='SEP']::after,
+a[data-link-icon='SOS']::after,
+a[data-link-icon='SSC']::after,
+a[data-link-icon='TDA']::after,
+a[data-link-icon='WSJ']::after {
+    font-size: 0.6em;
+    --link-icon-offset-y: 0.6em;
+}
+
+
 /****************************/
 /*  Quad-letter square icons.
     */
@@ -720,7 +769,7 @@ a[data-link-icon='reddit']::after {
 a[data-link-icon='springerlink']::after {
     --link-icon-size: 0.9em;
     --link-icon-offset-x: 0.1em;
-    --link-icon-offset-y: 0.1em;
+    --link-icon-offset-y: 0.05em;
 
     opacity: 0.8;
 }
@@ -826,6 +875,25 @@ a[data-link-icon='youtube']::after {
 }
 a[data-link-icon='youtube']:hover::after {
     opacity: 0.2;
+}
+
+a[data-link-icon='the-telegraph']::after { /* Darken & shift left */
+    opacity: 0.80;
+    --link-icon-offset-x: 0.1em;
+}
+
+a[data-link-icon='open-philanthropy']::after { /* Darken & shift left/up */
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.1em;
+    opacity: 0.90;
+}
+
+a[data-link-icon='atlas-obscura']::after { /* Darken & shift left/up */
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.1em;
+    opacity: 0.90;
 }
 
 /*=------------------=*/
