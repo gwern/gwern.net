@@ -388,8 +388,8 @@ a[data-link-icon='ψ']::after {
     opacity: 0.75;
 }
 
-a[data-link-icon='ℵ']::after {
-    --link-icon-size: 0.9em;
+a[data-link-icon='ℵ']::after { /* Unsong ALEF */
+    --link-icon-size: 0.8em;
 
     font-weight: normal;
 }
@@ -409,14 +409,20 @@ a[data-link-icon="▲"]::after {
     opacity: 0.75;
 }
 
-a[data-link-icon='▱']::after {
+a[data-link-icon='▱']::after { /* Booru */
     --link-icon-size: 1em;
     opacity: 0.95;
 }
 
-a[data-link-icon='▽']::after {
+a[data-link-icon='𝔐']::after {
     --link-icon-size: 1em;
     opacity: 0.95;
+}
+
+
+a[data-link-icon='▽']::after { /* The Verge */
+    --link-icon-size: 1em;
+    opacity: 0.90;
 }
 
 a[data-link-icon='✉']::after {
@@ -489,6 +495,7 @@ a[data-link-icon='⛨']::after { /* Cambridge */
     --link-icon-offset-x: 0em;
 }
 
+/****************************/
 /* Triple-letter initials: too few for quad, but too big for regular font size/offset. Common with TLAs. */
 a[data-link-icon='ABC']::after,
 a[data-link-icon='P@D']::after, /* Ponies At Dawn */
@@ -508,10 +515,10 @@ a[data-link-icon='SOS']::after,
 a[data-link-icon='SSC']::after,
 a[data-link-icon='TDA']::after,
 a[data-link-icon='WSJ']::after {
-    font-size: 0.6em;
     --link-icon-offset-y: 0.6em;
+    font-size: 0.6em;
+    opacity: 0.90;
 }
-
 
 /****************************/
 /*  Quad-letter square icons.
@@ -665,7 +672,7 @@ a[data-link-icon='google-scholar']::after {
     --link-icon-offset-x: 0.05em;
     --link-icon-offset-y: 0.3em;
 
-    opacity: 0.65;
+    opacity: 0.60;
 }
 a[data-link-icon='google-scholar']:hover::after {
     opacity: 0.4;
@@ -752,10 +759,10 @@ a[data-link-icon='patreon']::after {
 
 a[data-link-icon='plos']::after {
     --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.25em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.10em;
 
-    opacity: 0.75;
+    opacity: 0.80;
 }
 
 a[data-link-icon='reddit']::after {
