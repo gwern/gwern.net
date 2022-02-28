@@ -181,7 +181,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.metopera.org" = aI "M" "text"
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
  | u'' "www.schneier.com" = aI "SOS" "text,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
- | u'' "chronopause.com" = aI "M﹒D﹒" "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? or using '﹒' SMALL FULL STOP U+FE52? Or just "SOS"?
+ | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
  | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts, similarly
  | u'' "www.antipope.org" = aI "C.S." "text,sans" -- Charles Stross, similarly
  | u'' "www.ribbonfarm.com" = aI "ℝ𝔽" "text,sans"
@@ -222,11 +222,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
- | u'' "rjlipton.wordpress.com" = aI "P=NP" "text,quad"
- | u' "https://mitpress.mit.edu/sites/default/files/sicp/" = aI "SICP" "text,quad,sans,italic"
+ | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULL WIDTH EQUAL SIGN' turns out to be *too* big and stack up three high.
+ | u' "https://mitpress.mit.edu/sites/default/files/sicp/" = aI "SICP" "text,quad,sans"
  | u' "https://mitpress.mit.edu/books/" = aI "MIT" "text,mono" -- if it's not _SICP_, fall back.x
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
- | u'' "gizmodo.com" = aI "GIZM" "text,mono"
+ | u'' "gizmodo.com" = aI "GIZM" "text,quad,mono"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -679,7 +679,7 @@ linkIconTestUnits =
          ("https://www.smithsonianmag.com/history/native-intelligence-109314481/", "SM", "text"),
          ("https://www.openphilanthropy.org/brain-computation-report", "open-philanthropy", "svg"),
          ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic"),
-         ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M﹒D﹒", "text,sans"),
+         ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans"),
          ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text"),
          ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans"),
          ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,sans"),
@@ -704,8 +704,8 @@ linkIconTestUnits =
          ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text"),
          ("https://www.independent.co.uk/news/uk/this-britain/the-jousting-accident-that-turned-henry-viii-into-a-tyrant-1670421.html", "TI", "text"),
          ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text"),
-         ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P=NP", "text,quad"),
-         ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SICP", "text,quad,sans,italic"),
+         ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad"),
+         ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SICP", "text,quad,sans"),
          ("https://mitpress.mit.edu/books/book-ground", "MIT", "text,mono"),
          ("https://blog.eleuther.ai/announcing-20b/", "eleutherai", "svg"),
          ("https://6b.eleuther.ai/", "eleutherai", "svg"),
@@ -715,5 +715,5 @@ linkIconTestUnits =
          ("https://apps.apple.com/app/id307920888", "apple", "svg"),
          ("https://machinelearning.apple.com/research/hey-siri", "apple", "svg"),
          ("https://jaspervdj.be/hakyll/reference/Hakyll-Web-Redirect.html", "JVDJ", "text,quad,mono"),
-         ("https://gizmodo.com/weird-and-wonderful-movies-that-youll-never-get-to-see-5877874", "GIZM", "text,mono")
+         ("https://gizmodo.com/weird-and-wonderful-movies-that-youll-never-get-to-see-5877874", "GIZM", "text,quad,mono")
         ]
