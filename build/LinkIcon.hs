@@ -180,7 +180,18 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.scientificamerican.com" = aI "SA" "text"
  | u'' "www.metopera.org" = aI "M" "text"
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
- | u'' "www.schneier.com" = aI "B.S." "text,sans" -- "Bruce Schneier": TODO: experiment with initials using periods - does this work as-is? How about quad? or using '﹒' SMALL FULL STOP U+FE52?
+ | u'' "www.schneier.com" = aI "B.S." "text,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS"): TODO: experiment with initials using periods - does this work as-is? How about quad? or using '﹒' SMALL FULL STOP U+FE52? Or just "SOS"?
+ | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly
+ | u'' "www.rifters.com" = aI "P.W." "text,sans"
+ | u'' "www.ribbonfarm.com" = aI "ℝ𝔽" "text,sans"
+ | u'' "en.touhouwiki.net" = aI "☯" "text"
+ | u'' "www.reuters.com" = aI "R" "text,sans" -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim
+ | u'' "www.deviantart.com" = aI "DA" "text,sans" -- the official logo <https://en.wikipedia.org/wiki/File:DeviantArt_Logo.svg> isn't *too* bad and is at least 8 years old, but I don't recognize it so I doubt most readers would.
+ | u'' "boardgamegeek.com" = aI "BGG" "text,sans" -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>
+ | u'' "thehub7dnl5nmcz5.onion" = aI "Hub" "text,sans"
+ | u'' "www.smithsonianmag.com" = aI "SM" "text"
+ | u'' "scienceblogs.com" = aI "Sᵇ" "text,sans,italic"
+ | u'' "www.theage.com.au" = aI "A" "text"
 
  -- Quad-letter-square icons.
  | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -226,9 +237,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
  | anyInfix u ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
  | u' ".fandom.com" = aI "♡" "text" -- formerly known as Wikia, renamed to 'Fandom' and adopted a heart-based logo: <https://en.wikipedia.org/wiki/Fandom_(website)#2016%E2%80%932018:_Fandom_brand>; this is an umbrella covering all the subdomains; more specific Fandom wikis go before in the list (like MLP)
- | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg" -- an inversed "W" on a black background (Wiley is just a "W")
+ | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg" -- an inverse "W" on a black background (Wiley is just a "W")
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
  | u'' "vimeo.com" = aI "file-video" "svg"
+ | u'' "www.telegraph.co.uk" = aI "the-telegraph" "svg" -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
+ | u'' "www.openphilanthropy.org" = aI "open-philanthropy" "svg" --
 
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
  | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = aI "archive" "svg"
@@ -624,5 +637,18 @@ linkIconTestUnits =
          ("https://blog.givewell.org/2012/08/23/how-we-evaluate-a-study/", "GW", "text"),
          ("https://www.givewell.org/giving101", "GW", "text"),
          ("https://www.stuff.co.nz/manawatu-standard/news/69472334/kiwi-man-jailed-for-posting-drugs-from-las-vegas-to-mothers-house", "NZ", "text,sans"),
-         ("https://www.schneier.com/blog/archives/2011/08/terrorism_in_th.html", "B.S.", "text,sans")
+         ("https://www.schneier.com/blog/archives/2011/08/terrorism_in_th.html", "B.S.", "text,sans"),
+         ("https://www.ribbonfarm.com/2011/09/23/the-milo-criterion/", "ℝ𝔽", "text,sans"),
+         ("https://en.touhouwiki.net/wiki/Iyokan", "☯", "text"),
+         ("https://www.reuters.com/article/us-astrazeneca-targacept/astrazeneca-targacept-drug-fails-depression-test-idUSTRE7A71KO20111108", "R", "text,sans"),
+         ("https://www.deviantart.com/caji9i/art/stylegan-neural-ahegao-842847987", "DA", "text,sans"),
+         ("https://boardgamegeek.com/boardgame/148931/coup-reformation", "BGG", "text,sans"),
+         ("http://thehub7dnl5nmcz5.onion/index.php?topic=2261.msg17459", "Hub", "text,sans"),
+         ("https://www.telegraph.co.uk/culture/books/3601644/Adultery-was-his-thing.html", "the-telegraph", "svg"),
+         ("https://www.smithsonianmag.com/history/native-intelligence-109314481/", "SM", "text"),
+         ("https://www.openphilanthropy.org/brain-computation-report", "open-philanthropy", "svg"),
+         ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic"),
+         ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans"),
+         ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text"),
+         ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans")
         ]
