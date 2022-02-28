@@ -96,7 +96,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
  | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,sans"
  | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent
- | u'' "www.gutenberg.org" || u'' "gutenberg.ca" || u'' "gutenberg.net.au" = aI "PG" "text"
+ | u'' "www.gutenberg.org" || u'' "gutenberg.ca" || u'' "gutenberg.net.au" || u'' "www.fadedpage.com" = aI "PG" "text" -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.
  | u'' "guzey.com" = aI "A" "text,sans"
  | u'' "www.forbes.com" = aI "F" "text"
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
@@ -182,7 +182,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
  | u'' "www.schneier.com" = aI "B.S." "text,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS"): TODO: experiment with initials using periods - does this work as-is? How about quad? or using '﹒' SMALL FULL STOP U+FE52? Or just "SOS"?
  | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly
- | u'' "www.rifters.com" = aI "P.W." "text,sans"
+ | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts, similarly
+ | u'' "www.antipope.org" = aI "C.S." "text,sans" -- Charles Stross, similarly
  | u'' "www.ribbonfarm.com" = aI "ℝ𝔽" "text,sans"
  | u'' "en.touhouwiki.net" = aI "☯" "text"
  | u'' "www.reuters.com" = aI "R" "text,sans" -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim
@@ -192,6 +193,14 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.smithsonianmag.com" = aI "SM" "text"
  | u'' "scienceblogs.com" = aI "Sᵇ" "text,sans,italic"
  | u'' "www.theage.com.au" = aI "A" "text"
+ | u'' "www.abc.net.au" = aI "ABC" "text,sans" -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>
+ | u'' "www.dailydot.com" = aI "D." "text,sans"
+ | u'' "www.yudkowsky.net" = aI "י" "text" -- but of course: י HEBREW LETTER YUD 0x05D9
+ | u'' "www.johndcook.com" = aI "JC" "text,sans"
+ | u'' "www.candyjapan.com"  = aI "🍬" "text"
+ | u'' "www.cambridge.org" || u'' "journals.cambridge.org" || u'' "static.cambridge.org" = aI "⛨" "text" -- ⛨ BLACK CROSS ON SHIELD U+26E8, roughly imitating <https://en.wikipedia.org/wiki/Coat_of_arms_of_the_University_of_Cambridge>
+ | u' "royalsocietypublishing.org" = aI "RS" "text" -- <https://en.wikipedia.org/wiki/Royal_Society>
+ | u'' "nautil.us" = aI "🐚" "text" -- 🐚 SPIRAL SHELL (U+1F41A)
 
  -- Quad-letter-square icons.
  | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -206,6 +215,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "xkcd.com" = aI "XKCD" "text,quad,sans" -- covers explainxkcd.com, what-if.xkcd.com...
  | u'' "www.imdb.com" = aI "IMDb" "text,sans,quad"
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
+ | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,sans,quad"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -241,7 +251,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
  | u'' "vimeo.com" = aI "file-video" "svg"
  | u'' "www.telegraph.co.uk" = aI "the-telegraph" "svg" -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
- | u'' "www.openphilanthropy.org" = aI "open-philanthropy" "svg" --
+ | u'' "www.openphilanthropy.org" = aI "open-philanthropy" "svg"
+ | u'' "www.atlasobscura.com" = aI "atlas-obscura" "svg"
 
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
  | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = aI "archive" "svg"
@@ -418,6 +429,7 @@ linkIconTestUnits =
          ("https://gutenberg.ca/ebooks/smithcordwainer-onthegemplanet/smithcordwainer-onthegemplanet-00-h.html", "PG","text"),
          ("https://gutenberg.net.au/ebooks02/0201141h.html", "PG","text"),
          ("https://www.gutenberg.org/files/31663/31663-h/31663-h.htm", "PG","text"),
+         ("https://www.fadedpage.com/showbook.php?pid=20160325", "PG", "text"),
          ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans"),
          ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text"),
          ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "MATT", "text,quad,sans"),
@@ -650,5 +662,22 @@ linkIconTestUnits =
          ("https://scienceblogs.com/clock/2006/10/16/what-is-a-natural-sleep-patter", "Sᵇ", "text,sans,italic"),
          ("http://chronopause.com/chronopause.com/index.php/2011/08/05/science-fiction-double-feature-2-part-2/index.html", "M.D.", "text,sans"),
          ("https://www.theage.com.au/national/victoria/bitcoin-drug-millions-seized-in-victoria-20141015-116bby.html", "A", "text"),
-         ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans")
+         ("https://www.rifters.com/real/2009/01/iterating-towards-bethlehem.html", "P.W.", "text,sans"),
+         ("https://www.abc.net.au/news/2013-08-23/police-turn-attention-to-online-drug-trade/4908264", "ABC", "text,sans"),
+         ("http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", "IEEE", "text,sans,quad"),
+         ("https://spectrum.ieee.org/classical-chinese", "IEEE", "text,sans,quad"),
+         ("https://www.dailydot.com/crime/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans"),
+         ("https://www.yudkowsky.net/rational/technical", "י", "text"),
+         ("http://www.johndcook.com/blog/2010/09/13/applied-topology-and-dante-an-interview-with-robert-ghrist/", "JC", "text,sans"),
+         ("http://www.candyjapan.com/2013-year-in-review", "🍬", "text"),
+         ("http://journals.cambridge.org/production/action/cjoGetFulltext?fulltextid=1463440", "⛨", "text"),
+         ("https://static.cambridge.org/binary/version/id/urn:cambridge.org:id:binary-alt:20181009171208-81978-mediumThumb-S0033291718001873_fig1g.jpg?pub-status=live", "⛨", "text"),
+         ("https://www.cambridge.org/core/journals/journal-of-economic-history/article/two-centuries-of-productivity-growth-in-computing/856EC5947A5857296D3328FA154BA3A3", "⛨", "text"),
+         ("https://www.atlasobscura.com/articles/cyoa-choose-your-own-adventure-maps", "atlas-obscura", "svg"),
+         ("http://www.antipope.org/charlie/blog-static/2007/03/why_the_commercial_ebook_marke.html", "C.S.", "text,sans"),
+         ("http://rspb.royalsocietypublishing.org/content/284/1851/20162562", "RS", "text"),
+         ("http://rsta.royalsocietypublishing.org/content/361/1813/2681.full.pdf", "RS", "text"),
+         ("http://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text"),
+         ("https://royalsocietypublishing.org/doi/10.1098/rsos.181393", "RS", "text"),
+         ("https://nautil.us/mapping-the-human-exposome-10595/", "🐚", "text")
         ]
