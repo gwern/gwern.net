@@ -174,7 +174,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.businessinsider.com" = aI "BI" "text,sans"
  | u'' "gameprogrammingpatterns.com" = aI "GPP" "text,tri,sans"
  | u'' "dnstats.net" = aI "dn" "text,sans"
- | u'' "www.newsweek.com" = aI "N" "text"
+ | u'' "www.newsweek.com" = aI "NW" "text" -- logo is 'N' but there are too many 'N's floating around, so abbreviate 'Newsweek' as 'NW'
  | u'' "www.thecut.com" = aI "TC" "text"
  | u'' "www.scientificamerican.com" = aI "SA" "text"
  | u'' "www.metopera.org" = aI "M" "text"
@@ -247,7 +247,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "https://mitpress.mit.edu/books/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.x
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
  | u'' "gizmodo.com" = aI "GIZM" "text,quad,mono"
- | u'' "www.mdpi.com" = aI "MDPI" "text,quad,mono" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
+ | u'' "www.mdpi.com" = aI "MDPI" "text,quad" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
  | u'' "mattlakeman.org" = aI "MATT" "text,quad,sans"
  | u'' "www.poetryfoundation.org" = aI "POET" "text,quad,sans" -- <https://www.poetryfoundation.org/> <https://en.wikipedia.org/wiki/Poetry_Foundation> logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad
  | u'' "papers.ssrn.com" = aI "SSRN" "text,quad"
@@ -482,7 +482,7 @@ linkIconTestUnits =
          , ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans")
          , ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text")
          , ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "MATT", "text,quad,sans")
-         , ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,mono")
+         , ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad")
          , ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text")
          , ("https://towardsdatascience.com/stylegan2-projection-a-reliable-method-for-image-forensics-700922579236", "\119820","text")
          , ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg")
@@ -691,7 +691,7 @@ linkIconTestUnits =
          , ("https://www.businessinsider.com/this-is-what-happens-when-you-track-your-sleep-obsessively-2012-2", "BI", "text,sans")
          , ("https://gameprogrammingpatterns.com/singleton.html", "GPP", "text,tri,sans")
          , ("https://dnstats.net/market/Amazon+Dark", "dn", "text,sans")
-         , ("https://www.newsweek.com/gene-editing-chinese-scientist-he-jiankui-missing-house-arrest-1240749", "N", "text")
+         , ("https://www.newsweek.com/gene-editing-chinese-scientist-he-jiankui-missing-house-arrest-1240749", "NW", "text")
          , ("https://www.thecut.com/2019/05/the-tinder-hacker.html", "TC", "text")
          , ("https://www.scientificamerican.com/article/the-mind-of-an-octopus/", "SA", "text")
          , ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "M", "text")
