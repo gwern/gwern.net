@@ -177,7 +177,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.newsweek.com" = aI "NW" "text" -- logo is 'N' but there are too many 'N's floating around, so abbreviate 'Newsweek' as 'NW'
  | u'' "www.thecut.com" = aI "TC" "text"
  | u'' "www.scientificamerican.com" = aI "SA" "text"
- | u'' "www.metopera.org" = aI "M" "text"
+ | u'' "www.metopera.org" = aI "Met" "text,tri"
  | u'' "www.mirror.co.uk" = aI "M" "text,sans"
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
  | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
@@ -247,14 +247,14 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' "https://mitpress.mit.edu/books/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.x
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
  | u'' "gizmodo.com" = aI "GIZM" "text,quad,mono"
- | u'' "www.mdpi.com" = aI "MDPI" "text,quad" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG
+ | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be ans
  | u'' "mattlakeman.org" = aI "MATT" "text,quad,sans"
  | u'' "www.poetryfoundation.org" = aI "POET" "text,quad,sans" -- <https://www.poetryfoundation.org/> <https://en.wikipedia.org/wiki/Poetry_Foundation> logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad
  | u'' "papers.ssrn.com" = aI "SSRN" "text,quad"
  | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "VICE" "text,quad,italic"
  | u'' "www.courtlistener.com" || u'' "archive.recapthelaw.org"  || u'' "storage.courtlistener.com" || u'' "www.courtlistener.com" || u'' "www.pacer.uscourts.gov" || u'' "www.pacer.gov" || u'' "pcl.uscourts.gov" = aI "PACR" "text,quad"
  | u'' "www.nybooks.com" = aI "NYRB" "text,quad"
- | u'' "www.jstor.org" = aI "JSTR" "text,quad"
+ | u'' "www.jstor.org" = aI "JTOR" "text,quad" -- quad looks better skipping the thin 'S'
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -694,7 +694,7 @@ linkIconTestUnits =
          , ("https://www.newsweek.com/gene-editing-chinese-scientist-he-jiankui-missing-house-arrest-1240749", "NW", "text")
          , ("https://www.thecut.com/2019/05/the-tinder-hacker.html", "TC", "text")
          , ("https://www.scientificamerican.com/article/the-mind-of-an-octopus/", "SA", "text")
-         , ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "M", "text")
+         , ("https://www.metopera.org/season/2019-20-season/madama-butterfly/", "Met", "text,tri")
          , ("https://www.imdb.com/title/tt0923592/", "IMDb", "text,sans,quad")
          , ("https://www.nejm.org/doi/full/10.1056/NEJM199604043341416", "NEJM", "text,quad")
          , ("http://groups.yahoo.com/group/givewell/message/287", "GW", "text")
@@ -789,5 +789,5 @@ linkIconTestUnits =
          , ("https://www.scottaaronson.com/democritus/", "S.A.", "text,sans")
          , ("https://theconversation.com/altruism-in-birds-magpies-have-outwitted-scientists-by-helping-each-other-remove-tracking-devices-175246", "🗨", "text")
          , ("https://patch.com/california/davis/davis-pair-arrested-after-cops-intercept-3-000-suspected-ecstasy-pills-mail-serve", "P", "text,sans")
-         , ("http://www.jstor.org/stable/10.1086/468061", "JSTR", "text,quad")
+         , ("http://www.jstor.org/stable/10.1086/468061", "JTOR", "text,quad")
         ]

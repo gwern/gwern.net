@@ -495,7 +495,7 @@ a[data-link-icon='🐚']::after { /* Nautilus */
 }
 
 a[data-link-icon='⛨']::after { /* Cambridge */
-    --link-icon-offset-x: 0em;
+    --link-icon-offset-x: 0.10em; /* NOTE: this may be too much for Chrome, but the FF needs it */
 }
 
 
