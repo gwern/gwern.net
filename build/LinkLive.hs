@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-01 11:31:00 gwern"
+When:  Time-stamp: "2022-03-01 13:01:10 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -1063,6 +1063,799 @@ badDomainsSimple = ["1d4chan.org",
     , "www.willatworklearning.com"
     , "www.wdaz.com"
     , "www.wangafu.net"
+    , "www.wsmv.com"
+    , "www.wahpetondailynews.com"
+    , "www.wdrb.com"
+    , "www.thinkinginanutshell.com"
+    , "a16z.com"
+    , "about.netflix.com"
+    , "adage.com"
+    , "adcohearing.com"
+    , "advancedfertility.com"
+    , "ai-alignment.com"
+    , "ajph.aphapublications.org"
+    , "almanac.httparchive.org"
+    , "andrewbadr.com"
+    , "animesuperhero.com"
+    , "apastyle.apa.org"
+    , "api.research-repository.uwa.edu.au"
+    , "apps.ankiweb.net"
+    , "apps.dtic.mil"
+    , "archive-ouverte.unige.ch"
+    , "archive.ilr.cornell.edu"
+    , "archiveofourown.org"
+    , "ase.uva.nl"
+    , "au.news.yahoo.com"
+    , "azure.microsoft.com"
+    , "bartokdesign.com"
+    , "beautifultaiwantea.com"
+    , "beerconnoisseur.com"
+    , "bellroy.com"
+    , "berkshirehathaway.com"
+    , "bgr.com"
+    , "bioinfo.pl"
+    , "bitbucket.org"
+    , "bitcoins-code.de"
+    , "bjo.bmj.com"
+    , "bjp.rcpsych.org"
+    , "bjsm.bmj.com"
+    , "blog.darknedgy.net"
+    , "blog.ml.cmu.edu"
+    , "blog.mozilla.org"
+    , "blog.nuclino.com"
+    , "blog.torproject.org"
+    , "blog.twitter.com"
+    , "blogs.microsoft.com"
+    , "blogs.princeton.edu"
+    , "blogs.scientificamerican.com"
+    , "bluelight.org"
+    , "bmcmedresmethodol.biomedcentral.com"
+    , "bmcvetres.biomedcentral.com"
+    , "boa.unimib.it"
+    , "boston.conman.org"
+    , "bsapubs.onlinelibrary.wiley.com"
+    , "buddhism-for-vampires.com"
+    , "bugs.debian.org"
+    , "bugs.launchpad.net"
+    , "buttercupfestival.com"
+    , "cabinetmagazine.org"
+    , "caes.ucdavis.edu"
+    , "calgarysun.com"
+    , "capitalteas.com"
+    , "capsuleconnection.com"
+    , "case.edu"
+    , "casetext.com"
+    , "catless.ncl.ac.uk"
+    , "cep.lse.ac.uk"
+    , "cfa.org"
+    , "chem.tufts.edu"
+    , "chrome.google.com"
+    , "chroniclingamerica.loc.gov"
+    , "circ.ahajournals.org"
+    , "cis.org"
+    , "clarkesworldmagazine.com"
+    , "clinicalepigeneticsjournal.biomedcentral.com"
+    , "code.visualstudio.com"
+    , "collections.library.yale.edu"
+    , "collider.com"
+    , "comicsalliance.com"
+    , "community.arm.com"
+    , "community.nytimes.com"
+    , "console.aws.amazon.com"
+    , "console.cloud.google.com"
+    , "corante.com"
+    , "core.ac.uk"
+    , "cosmosmagazine.com"
+    , "coveryourtracks.eff.org"
+    , "cro.sagepub.com"
+    , "csimq-journals.rtu.lv"
+    , "csrc.nist.gov"
+    , "ctc.usma.edu"
+    , "cyber.harvard.edu"
+    , "dailyvoice.com"
+    , "dalspace.library.dal.ca"
+    , "danfrank.ca"
+    , "datasetsearch.research.google.com"
+    , "deadline.com"
+    , "deadspin.com"
+    , "dee.su"
+    , "dept.wofford.edu"
+    , "devblogs.microsoft.com"
+    , "developer.twitter.com"
+    , "dharmaoverground.org"
+    , "disease-connect.org"
+    , "dl.acm.org"
+    , "dnd.wizards.com"
+    , "docs.microsoft.com"
+    , "donate.torproject.org"
+    , "drugs-forum.com"
+    , "duplicity.nongnu.org"
+    , "e621.net"
+    , "eab.sagepub.com"
+    , "ec.toranoana.jp"
+    , "econ.vt.edu"
+    , "economics.stanford.edu"
+    , "eg-2.hatenablog.com"
+    , "ehp.niehs.nih.gov"
+    , "eiga.com"
+    , "ejlt.org"
+    , "eml.berkeley.edu"
+    , "en.chessbase.com"
+    , "eng.uber.com"
+    , "environhealthprevmed.biomedcentral.com"
+    , "eprints.lincoln.ac.uk"
+    , "eprints.nottingham.ac.uk"
+    , "ergodox-ez.com"
+    , "ero.sagepub.com"
+    , "esajournals.onlinelibrary.wiley.com"
+    , "espace.library.uq.edu.au"
+    , "eth.wiki"
+    , "ethics.emory.edu"
+    , "ethos.bl.uk"
+    , "every.to"
+    , "evigio.com"
+    , "exrx.net"
+    , "eztest.com"
+    , "faculty.virginia.edu"
+    , "fdaaa.trialstracker.net"
+    , "finance.yahoo.com"
+    , "floatingleaves.com"
+    , "fn.bmj.com"
+    , "fnb.sagepub.com"
+    , "fontsinuse.com"
+    , "food52.com"
+    , "forums.somethingawful.com"
+    , "freedom-to-tinker.com"
+    , "ftp.cs.ucla.edu"
+    , "gazette.com"
+    , "gcta.freeforums.net"
+    , "geneticalliance.org.uk"
+    , "genius.com"
+    , "genomemedicine.biomedcentral.com"
+    , "georgianjournal.ge"
+    , "geroprotectors.org"
+    , "getd.libs.uga.edu"
+    , "gigaom.com"
+    , "gigazine.net"
+    , "git-scm.com"
+    , "git.io"
+    , "gitgud.io"
+    , "gitlab.developers.cam.ac.uk"
+    , "gitlab.torproject.org"
+    , "godanriver.com"
+    , "granta.com"
+    , "grantland.com"
+    , "greekreporter.com"
+    , "hacks.mozilla.org"
+    , "hansard.parliament.uk"
+    , "hardcoresoftware.learningbyshipping.com"
+    , "harmreductionjournal.biomedcentral.com"
+    , "hashcat.net"
+    , "hazuma.hatenablog.com"
+    , "hcommons.org"
+    , "help.duckduckgo.com"
+    , "help.myspace.com"
+    , "hn-sicp.pbworks.com"
+    , "hoaxes.org"
+    , "hollisarchives.lib.harvard.edu"
+    , "home.inklingmarkets.com"
+    , "hrcak.srce.hr"
+    , "hum.sagepub.com"
+    , "icosahedron.website"
+    , "ide.mit.edu"
+    , "imagelibrary.bgu.ac.il"
+    , "images.google.com"
+    , "inews.co.uk"
+    , "infidels.org"
+    , "informallogic.ca"
+    , "interviews.slashdot.org"
+    , "irs.princeton.edu"
+    , "it.slashdot.org"
+    , "iterative.capital"
+    , "jacobsschool.ucsd.edu"
+    , "jalopnik.com"
+    , "jamestown.org"
+    , "japanintercultural.com"
+    , "jasbsci.biomedcentral.com"
+    , "jcsm.aasm.org"
+    , "jidinews.com"
+    , "jigsaw.w3.org"
+    , "jme.bmj.com"
+    , "jnnp.bmj.com"
+    , "jotengine.com"
+    , "journals.physiology.org"
+    , "journaltimes.com"
+    , "jpet.aspetjournals.org"
+    , "justpaste.it"
+    , "jyllands-posten.dk"
+    , "kettl.co"
+    , "kilthub.cmu.edu"
+    , "kotaku.com"
+    , "kyunghyuncho.me"
+    , "leaps.org"
+    , "learn.adafruit.com"
+    , "letterformarchive.org"
+    , "letters.temporarystate.net"
+    , "listserv.brown.edu"
+    , "lizadaly.com"
+    , "longnow.org"
+    , "machinelearning.apple.com"
+    , "mangans.blogspot.com"
+    , "marco.org"
+    , "martinottaway.com"
+    , "math.stackexchange.com"
+    , "mathoverflow.net"
+    , "mbio.asm.org"
+    , "meaningness.com"
+    , "mecha-guignol.com"
+    , "media.ccc.de"
+    , "media.githubusercontent.com"
+    , "medicine.osu.edu"
+    , "medieval.bodleian.ox.ac.uk"
+    , "metacpan.org"
+    , "metrics.torproject.org"
+    , "millercenter.org"
+    , "moz.com"
+    , "mpra.ub.uni-muenchen.de"
+    , "mujoco.org"
+    , "mysbfiles.stonybrook.edu"
+    , "n.neurology.org"
+    , "naldc.nal.usda.gov"
+    , "nansenundpiccard.de"
+    , "nationalinterest.org"
+    , "nearcyan.com"
+    , "nebia.com"
+    , "nectarcreek.com"
+    , "newhumanist.org.uk"
+    , "newrepublic.com"
+    , "news.gallup.com"
+    , "news.harvard.edu"
+    , "news.mit.edu"
+    , "news.samsung.com"
+    , "news.slashdot.org"
+    , "news.yahoo.com"
+    , "newsroom.collegeboard.org"
+    , "nori.com"
+    , "noscript.net"
+    , "nrl.northumbria.ac.uk"
+    , "ods.od.nih.gov"
+    , "omdia.tech.informa.com"
+    , "openscience.bmj.com"
+    , "opensource.org"
+    , "orbit.dtu.dk"
+    , "osnadocs.ub.uni-osnabrueck.de"
+    , "otakumode.com"
+    , "ourstarblazers.com"
+    , "p2pfoundation.ning.com"
+    , "packages.debian.org"
+    , "pain.wustl.edu"
+    , "papers.nips.cc"
+    , "par.nsf.gov"
+    , "partner.steamgames.com"
+    , "paste.laravel.io"
+    , "pay.reddit.com"
+    , "pcpartpicker.com"
+    , "people.tamu.edu"
+    , "phabricator.wikimedia.org"
+    , "pharmrev.aspetjournals.org"
+    , "physics.aps.org"
+    , "physoc.onlinelibrary.wiley.com"
+    , "pingpong.ki.se"
+    , "pioneer.app"
+    , "pixelpoppers.com"
+    , "pjreddie.com"
+    , "pni.princeton.edu"
+    , "poststar.com"
+    , "pps.sagepub.com"
+    , "priceonomics.com"
+    , "prisons.org.uk"
+    , "proceedings.neurips.cc"
+    , "psi.sagepub.com"
+    , "psmag.com"
+    , "pss.sagepub.com"
+    , "psych.wustl.edu"
+    , "psychology.gatech.edu"
+    , "psycnet.apa.org"
+    , "public.tableau.com"
+    , "pubs.aeaweb.org"
+    , "pubsonline.informs.org"
+    , "pure.au.dk"
+    , "pure.tue.nl"
+    , "pure.uva.nl"
+    , "pure.uvt.nl"
+    , "purse.io"
+    , "qualitysafety.bmj.com"
+    , "quoteinvestigator.com"
+    , "radiopublic.com"
+    , "rbej.biomedcentral.com"
+    , "rd.springer.com"
+    , "repec.org"
+    , "repository.si.edu"
+    , "repository.uel.ac.uk"
+    , "research.facebook.com"
+    , "research.vu.nl"
+    , "reset.me"
+    , "risk-engineering.org"
+    , "royalsocietypublishing.org"
+    , "rpds.princeton.edu"
+    , "rss.onlinelibrary.wiley.com"
+    , "runrepeat.com"
+    , "samsaffron.com"
+    , "scholar.harvard.edu"
+    , "science.nasa.gov"
+    , "searchengineland.com"
+    , "secure.flickr.com"
+    , "sembr.org"
+    , "sensebridge.net"
+    , "sgo.sagepub.com"
+    , "siepr.stanford.edu"
+    , "sites.google.com"
+    , "sites.google.com"
+    , "sive.rs"
+    , "skeptics.stackexchange.com"
+    , "skift.com"
+    , "spectrum.library.concordia.ca"
+    , "sss.sagepub.com"
+    , "stats.stackexchange.com"
+    , "steamcommunity.com"
+    , "stevecoast.com"
+    , "store.steampowered.com"
+    , "studenttheses.universiteitleiden.nl"
+    , "subterraneanpress.com"
+    , "suffolk.onthehub.com"
+    , "summerofcode.withgoogle.com"
+    , "sundhedsdatastyrelsen.dk"
+    , "super-memory.com"
+    , "superuser.com"
+    , "support.mozilla.org"
+    , "support.torproject.org"
+    , "swombat.com"
+    , "t.ly"
+    , "tails.boum.org"
+    , "taylorandfrancis.com"
+    , "teahabitat.com"
+    , "tealet.com"
+    , "tfhub.dev"
+    , "thecatsite.com"
+    , "thechineseteashop.com"
+    , "thecorrespondent.com"
+    , "theeagle.com"
+    , "theintercept.com"
+    , "themorningnews.org"
+    , "thesession.org"
+    , "thetakeout.com"
+    , "thewebconf.org"
+    , "thomasbarker.com"
+    , "thoughtbot.com"
+    , "tigersophia.blogspot.com"
+    , "timarit.is"
+    , "tobaccocontrol.bmj.com"
+    , "top500.org"
+    , "trialsjournal.biomedcentral.com"
+    , "tribune.com.pk"
+    , "truewetsuits.jp"
+    , "tuts4you.com"
+    , "tweelingenregister.vu.nl"
+    , "type-r.hatenablog.com"
+    , "ubc-emotionlab.ca"
+    , "uberty.org"
+    , "uitspraken.rechtspraak.nl"
+    , "uk.pi-supply.com"
+    , "umichrl.pbworks.com"
+    , "undark.org"
+    , "understandinguncertainty.org"
+    , "us.dantelabs.com"
+    , "vanishingpoint.air-nifty.com"
+    , "vault.si.com"
+    , "vgl.ucdavis.edu"
+    , "vgmdb.net"
+    , "vinecon.ucdavis.edu"
+    , "vosswater.com"
+    , "voxday.blogspot.com"
+    , "warosu.org"
+    , "wci.llnl.gov"
+    , "web-japan.org"
+    , "web.econ.ku.dk"
+    , "web.maths.unsw.edu.au"
+    , "whatis.suburbansenshi.com"
+    , "wordpress.org"
+    , "wudao.aminer.cn"
+    , "ww2.arb.ca.gov"
+    , "www-biba.inrialpes.fr"
+    , "www.abbiotec.com"
+    , "www.abc10.com"
+    , "www.abebooks.com"
+    , "www.academia.edu"
+    , "www.acpjournals.org"
+    , "www.actionnewsnow.com"
+    , "www.aei.org"
+    , "www.aera.net"
+    , "www.afr.com"
+    , "www.ahajournals.org"
+    , "www.aiwriter.email"
+    , "www.ajmadison.com"
+    , "www.ajnr.org"
+    , "www.alchemistowl.org"
+    , "www.alzforum.org"
+    , "www.ama-assn.org"
+    , "www.ams.org"
+    , "www.anime-planet.com"
+    , "www.annualreviews.org"
+    , "www.appbrain.com"
+    , "www.arkansasonline.com"
+    , "www.army.mil"
+    , "www.artofmanliness.com"
+    , "www.arxiv-vanity.com"
+    , "www.atsjournals.org"
+    , "www.avalonmagicplants.com"
+    , "www.baen.com"
+    , "www.baltcoffee.com"
+    , "www.barnstormjournal.org"
+    , "www.bartokdesign.com"
+    , "www.beelinereader.com"
+    , "www.behance.net"
+    , "www.ben-evans.com"
+    , "www.berkshireeagle.com"
+    , "www.berlin.de"
+    , "www.betterworldbooks.com"
+    , "www.bfi.org"
+    , "www.bfmtv.com"
+    , "www.bioworld.com"
+    , "www.birminghammail.co.uk"
+    , "www.blender.org"
+    , "www.bnlearn.com"
+    , "www.buffalonews.com"
+    , "www.businessinsider.jp"
+    , "www.businesswire.com"
+    , "www.bvp.com"
+    , "www.cabinetmagazine.org"
+    , "www.calnewport.com"
+    , "www.cambridge-news.co.uk"
+    , "www.campbellrivermirror.com"
+    , "www.cancer.gov"
+    , "www.cancerresearchuk.org"
+    , "www.carolinacoastonline.com"
+    , "www.cebm.ox.ac.uk"
+    , "www.change.org"
+    , "www.channel4.com"
+    , "www.chathamstartribune.com"
+    , "www.chess.com"
+    , "www.chessclub.com"
+    , "www.chicagobooth.edu"
+    , "www.chinafile.com"
+    , "www.churchofjesuschrist.org"
+    , "www.cisco.com"
+    , "www.citizenaudit.org"
+    , "www.clippershipteaco.com"
+    , "www.clubindustry.com"
+    , "www.cmajopen.ca"
+    , "www.cmu.edu"
+    , "www.cnet.com"
+    , "www.codespaces.com"
+    , "www.comicconnect.com"
+    , "www.consumerlab.com"
+    , "www.copenhagenconsensus.com"
+    , "www.copyright.gov"
+    , "www.counterpunch.org"
+    , "www.coursera.org"
+    , "www.courts.mo.gov"
+    , "www.courts.sa.gov.au"
+    , "www.cracked.com"
+    , "www.crd.york.ac.uk"
+    , "www.cs.cornell.edu"
+    , "www.cs.purdue.edu"
+    , "www.cs.york.ac.uk"
+    , "www.csail.mit.edu"
+    , "www.csub.edu"
+    , "www.dailyfinance.com"
+    , "www.dailystar.co.uk"
+    , "www.dantelabs.com"
+    , "www.darkowl.com"
+    , "www.dea.gov"
+    , "www.delawareonline.com"
+    , "www.derbytelegraph.co.uk"
+    , "www.designboom.com"
+    , "www.detectiveconanworld.com"
+    , "www.devever.net"
+    , "www.dharmaoverground.org"
+    , "www.dichtbij.nl"
+    , "www.dr.dk"
+    , "www.duolingo.com"
+    , "www.e-sanitas.edu.co"
+    , "www.ebay.co.uk"
+    , "www.ebay.com"
+    , "www.ecns.cn"
+    , "www.ed.ac.uk"
+    , "www.effectuation.org"
+    , "www.elastic.co"
+    , "www.elon.edu"
+    , "www.emacswiki.org"
+    , "www.energy.gov"
+    , "www.engadget.com"
+    , "www.english.upenn.edu"
+    , "www.enworld.org"
+    , "www.equilibretechnologies.com"
+    , "www.escholar.manchester.ac.uk"
+    , "www.eurekalert.org"
+    , "www.eurojust.europa.eu"
+    , "www.expert-reviews.com"
+    , "www.express.co.uk"
+    , "www.expressandstar.com"
+    , "www.faqs.org"
+    , "www.fightaging.org"
+    , "www.fincen.gov"
+    , "www.findagrave.com"
+    , "www.firstthings.com"
+    , "www.flashback.org"
+    , "www.foliosociety.com"
+    , "www.fool.com"
+    , "www.fordfoundation.org"
+    , "www.foreignaffairs.com"
+    , "www.fox6now.com"
+    , "www.foxcarolina.com"
+    , "www.foxnews.com"
+    , "www.frbsf.org"
+    , "www.freehaven.net"
+    , "www.fs.fed.us"
+    , "www.garda.ie"
+    , "www.genwaybio.com"
+    , "www.girlschase.com"
+    , "www.global.toshiba"
+    , "www.globaltimes.cn"
+    , "www.gloucestershirelive.co.uk"
+    , "www.gmp.police.uk"
+    , "www.gnu.org"
+    , "www.google.com"
+    , "www.gov.uk"
+    , "www.greenexercise.org"
+    , "www.gsb.stanford.edu"
+    , "www.guilford.com"
+    , "www.hakalalabs.com"
+    , "www.hamilton.edu"
+    , "www.hanselman.com"
+    , "www.harvardmagazine.com"
+    , "www.heraldnews.com"
+    , "www.highflightfoundation.org"
+    , "www.hindustantimes.com"
+    , "www.history.com"
+    , "www.historytoday.com"
+    , "www.hoover.org"
+    , "www.hrw.org"
+    , "www.htrnews.com"
+    , "www.ibtimes.co.uk"
+    , "www.ice.gov"
+    , "www.idnes.cz"
+    , "www.ietf.org"
+    , "www.iflscience.com"
+    , "www.illumina.com"
+    , "www.imf.org"
+    , "www.imminst.org"
+    , "www.inc.com"
+    , "www.infoplease.com"
+    , "www.informit.com"
+    , "www.insidehighered.com"
+    , "www.instagram.com"
+    , "www.intel.com"
+    , "www.irishcentral.com"
+    , "www.irishexaminer.com"
+    , "www.irishtimes.com"
+    , "www.ivfbabble.com"
+    , "www.jacc.org"
+    , "www.jackkinsella.ie"
+    , "www.janelia.org"
+    , "www.jetbrains.com"
+    , "www.joshdean.com"
+    , "www.journalnow.com"
+    , "www.jstage.jst.go.jp"
+    , "www.justice.gov"
+    , "www.jwz.org"
+    , "www.kadokawa.co.jp"
+    , "www.kctv5.com"
+    , "www.kgw.com"
+    , "www.kokos.cz"
+    , "www.kptv.com"
+    , "www.l-iz.de"
+    , "www.laphamsquarterly.org"
+    , "www.law.cornell.edu"
+    , "www.lemonde.fr"
+    , "www.leontiadis.info"
+    , "www.liebertpub.com"
+    , "www.lightspeedmagazine.com"
+    , "www.limeadery.com"
+    , "www.linode.com"
+    , "www.lloyds.com"
+    , "www.loc.gov"
+    , "www.locusmag.com"
+    , "www.loudountimes.com"
+    , "www.lshtm.ac.uk"
+    , "www.maa.org"
+    , "www.macrumors.com"
+    , "www.madboa.com"
+    , "www.manchestereveningnews.co.uk"
+    , "www.mansfieldnewsjournal.com"
+    , "www.mathematica.org"
+    , "www.mayoclinicproceedings.org"
+    , "www.mcsweeneys.net"
+    , "www.mediafire.com"
+    , "www.medicaldaily.com"
+    , "www.medicines.org.uk"
+    , "www.megaverse.info"
+    , "www.mercatus.org"
+    , "www.mesacc.edu"
+    , "www.mha.gov.sg"
+    , "www.mhlw.go.jp"
+    , "www.mining.com"
+    , "www.mit.edu"
+    , "www.mja.com.au"
+    , "www.mobihealthnews.com"
+    , "www.morinaga.co.jp"
+    , "www.msri.org"
+    , "www.muckrock.com"
+    , "www.myfonts.com"
+    , "www.nationaldefensemagazine.org"
+    , "www.nato.int"
+    , "www.nba.com"
+    , "www.nbr.co.nz"
+    , "www.ndss-symposium.org"
+    , "www.neuroscience.cam.ac.uk"
+    , "www.newadvent.org"
+    , "www.newegg.com"
+    , "www.newsandstar.co.uk"
+    , "www.newyorkfed.org"
+    , "www.nextnewdeal.net"
+    , "www.nicovideo.jp"
+    , "www.nicvape.com"
+    , "www.nimh.nih.gov"
+    , "www.nitrd.gov"
+    , "www.nlsinfo.org"
+    , "www.nngroup.com"
+    , "www.northwestgeorgianews.com"
+    , "www.notion.so"
+    , "www.nottinghampost.com"
+    , "www.nrdc.org"
+    , "www.nsa.gov"
+    , "www.ntticc.or.jp"
+    , "www.oglaf.com"
+    , "www.ohri.ca"
+    , "www.olin.edu"
+    , "www.oliverwinery.com"
+    , "www.om.nl"
+    , "www.optimizely.com"
+    , "www.oreilly.com"
+    , "www.osti.gov"
+    , "www.overthinkingit.com"
+    , "www.oxbridgenotes.com"
+    , "www.packtpub.com"
+    , "www.petcarerx.com"
+    , "www.petco.com"
+    , "www.phillymag.com"
+    , "www.pixiv.net"
+    , "www.plymouthherald.co.uk"
+    , "www.politie.nl"
+    , "www.polizei.bayern.de"
+    , "www.polizei.sachsen.de"
+    , "www.polygon.com"
+    , "www.popularmechanics.com"
+    , "www.postandcourier.com"
+    , "www.povertyactionlab.org"
+    , "www.preclinicaltrials.eu"
+    , "www.pressandjournal.co.uk"
+    , "www.progressive.org"
+    , "www.propublica.org"
+    , "www.prospecbio.com"
+    , "www.r-inla.org"
+    , "www.rbmojournal.com"
+    , "www.rean-wings.net"
+    , "www.rechem.ca"
+    , "www.reddit.com"
+    , "www.redliongrantchester.co.uk"
+    , "www.repository.cam.ac.uk"
+    , "www.rescuetime.com"
+    , "www.researchandmarkets.com"
+    , "www.richardwpatterson.com"
+    , "www.roangelo.net"
+    , "www.rollingstone.com"
+    , "www.rsm.nl"
+    , "www.rug.nl"
+    , "www.salesforce.com"
+    , "www.sandia.gov"
+    , "www.scmp.com"
+    , "www.scq.ubc.ca"
+    , "www.screendaily.com"
+    , "www.sdfertility.com"
+    , "www.seacoastonline.com"
+    , "www.sec.gov"
+    , "www.semanticscholar.org"
+    , "www.sendspace.com"
+    , "www.shine.cn"
+    , "www.shroomery.org"
+    , "www.si.edu"
+    , "www.simonsfoundation.org"
+    , "www.sld.cu"
+    , "www.slideshare.net"
+    , "www.smarthome.com"
+    , "www.snopes.com"
+    , "www.soci.org"
+    , "www.sophos.com"
+    , "www.spacedrepetition.com"
+    , "www.sparkfun.com"
+    , "www.spectator.co.uk"
+    , "www.speedtest.net"
+    , "www.spermbankcalifornia.com"
+    , "www.ssa.gov"
+    , "www.ssi.shimadzu.com"
+    , "www.startupschool.org"
+    , "www.stat.colostate.edu"
+    , "www.stats.govt.nz"
+    , "www.stroudnewsandjournal.co.uk"
+    , "www.taylorusa.com"
+    , "www.teamten.com"
+    , "www.teasetc.com"
+    , "www.tennessean.com"
+    , "www.tga.gov.au"
+    , "www.theadvertiser.com"
+    , "www.thediff.co"
+    , "www.thehomesecuritysuperstore.com"
+    , "www.theladders.com"
+    , "www.thelocal.de"
+    , "www.themarshallproject.org"
+    , "www.theroot.com"
+    , "www.thestar.com"
+    , "www.thetimes.co.uk"
+    , "www.thisamericanlife.org"
+    , "www.thv11.com"
+    , "www.ti.com"
+    , "www.timesofisrael.com"
+    , "www.tinyletter.com"
+    , "www.tn.gov"
+    , "www.topic.com"
+    , "www.toplessrobot.com"
+    , "www.torproject.org"
+    , "www.torservers.net"
+    , "www.townandcountrymag.com"
+    , "www.treasurydirect.gov"
+    , "www.tuftandneedle.com"
+    , "www.tweaktown.com"
+    , "www.twitch.tv"
+    , "www.typography.com"
+    , "www.uber.com"
+    , "www.ummah.com"
+    , "www.unicef.org"
+    , "www.unirioja.es"
+    , "www.upjohn.org"
+    , "www.uscourts.gov"
+    , "www.usgs.gov"
+    , "www.uso.org"
+    , "www.uv.es"
+    , "www.vg.no"
+    , "www.vitacost.com"
+    , "www.walesonline.co.uk"
+    , "www.washingtonexaminer.com"
+    , "www.watercoolertrivia.com"
+    , "www.wcscanada.org"
+    , "www.weizmann.ac.il"
+    , "www.welt.de"
+    , "www.whio.com"
+    , "www.who.int"
+    , "www.wickedlocal.com"
+    , "www.williamsondailynews.com"
+    , "www.wine-searcher.com"
+    , "www.winonadailynews.com"
+    , "www.wireheading.com"
+    , "www.worksinprogress.co"
+    , "www.wwltv.com"
+    , "www.wzzm13.com"
+    , "www.xilinx.com"
+    , "www.xn--4dbcyzi5a.com"
+    , "www.ycombinator.com"
+    , "www.york.ac.uk"
+    , "www2.bfi.org.uk"
+    , "www2.ed.gov"
+    , "www2.guidestar.org"
+    , "www2.psy.uq.edu.au"
+    , "www3.ntu.edu.sg"
+    , "wwwcn.cs.uni-duesseldorf.de"
+    , "yunnansourcing.us"
    ]
 
 url :: T.Text -> Inline
@@ -2030,4 +2823,797 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.willatworklearning.com/2005/11/research_review.html", False)
     , ("http://www.wdaz.com/news/3691219-number-defendants-charged-fentanyl-overdoses-5", False)
     , ("http://www.wangafu.net/~nickm/", False)
+    , ("http://www.wsmv.com/story/25667210/metro-police-seize", False)
+    , ("http://www.wahpetondailynews.com/oregon-man-accused-of-selling-fentanyl-that-led-to-nd/article_de0df64e-cf41-11e4-af1c-1b8df43f199d.html", False)
+    , ("http://www.wdrb.com/story/27892533/louisville-man-accused-of-obtaining-date-rape-drug-online", False)
+    , ("http://www.thinkinginanutshell.com/nootropics", False)
+    , ("http://bjp.rcpsych.org/cgi/content/full/179/1/46", False)
+    , ("http://boston.conman.org/2013/01/22.2", False)
+    , ("http://buttercupfestival.com/green/index.htm", False)
+    , ("http://catless.ncl.ac.uk/risks/16.41.html", False)
+    , ("http://danfrank.ca/the-most-loved-and-hated-classics-according-to-goodreads-users/", False)
+    , ("http://duplicity.nongnu.org/", False)
+    , ("http://eprints.lincoln.ac.uk/id/eprint/1932/1/MetaAnalysisPaper.pdf", False)
+    , ("http://eprints.nottingham.ac.uk/439/1/Willmot_NO_synthase_JFRBM.pdf", False)
+    , ("http://eztest.com/ez-test-tubes/", False)
+    , ("http://ftp.cs.ucla.edu/pub/stat_ser/r414.pdf", False)
+    , ("http://geroprotectors.org/?page=8&q%5Bs%5D=organism_name+asc", False)
+    , ("http://grantland.com/one-hundred-years-arm-bars-gracie-jiu-jitsu-mma/", False)
+    , ("http://hn-sicp.pbworks.com/w/page/9077106/FrontPage", False)
+    , ("http://hoaxes.org/archive/permalink/the_great_moon_hoax", False)
+    , ("http://images.google.com/images?amp;q=henry+darger&gbv=2&biw=1218&bih=673", False)
+    , ("http://jidinews.com/innernews/innernews/event/1204.html", False)
+    , ("http://journaltimes.com/news/local/crime-and-courts/woman-accused-of-receiving-pot-by-mail/article_3da750f2-96f9-53e9-b771-b1d88bb27368.html", False)
+    , ("http://mangans.blogspot.com/2009/07/scientific-impact-of-nations.html", False)
+    , ("http://nectarcreek.com/", False)
+    , ("http://nrl.northumbria.ac.uk/id/eprint/875/1/Scholey_Consumption%20of%20cocoa%20flavanols.pdf", False)
+    , ("http://p2pfoundation.ning.com/forum/topics/bitcoin-open-source", False)
+    , ("http://people.tamu.edu/~stevesmith/SmithMemory/SmithRothkopf1984.pdf", False)
+    , ("http://poststar.com/news/blotter/former-computer-shop-operator-pleads-guilty-to-drug-charges/article_b42b976e-8bf9-11e3-a353-001a4bcf887a.html", False)
+    , ("http://repec.org/sed2006/up.30684.1139268077.pdf", False)
+    , ("https://a16z.com/author/scott-kupor/", False)
+    , ("https://about.netflix.com/en/news/2017-on-netflix-a-year-in-bingeing", False)
+    , ("https://adage.com/article/special-report-tv-upfront/fewer-tv-commercials/313183", False)
+    , ("https://adcohearing.com/bvs_hear_loss.html", False)
+    , ("https://advancedfertility.com/2020/08/17/weight-bmi-and-fertility-and-ivf-success/", False)
+    , ("https://ai-alignment.com/", False)
+    , ("https://ajph.aphapublications.org/cgi/content/abstract/94/9/1580", False)
+    , ("https://almanac.httparchive.org/en/2019/", False)
+    , ("https://andrewbadr.com/log/11/anonymizing-bitcoin/", False)
+    , ("https://animesuperhero.com/forums/install/index.php?upgrade/", False)
+    , ("https://apastyle.apa.org/products/publication-manual-7th-edition", False)
+    , ("https://api.research-repository.uwa.edu.au/ws/portalfiles/portal/11790041/Flematti_MS.pdf", False)
+    , ("https://apps.ankiweb.net/docs/manual.html#filtered", False)
+    , ("https://apps.dtic.mil/dtic/tr/fulltext/u2/a224049.pdf", False)
+    , ("https://archive.ilr.cornell.edu/download/9851", False)
+    , ("https://archiveofourown.org/works/3673335", False)
+    , ("https://archive-ouverte.unige.ch/files/downloads/0/0/0/2/5/6/4/3/unige_25643_attachment01.pdf", False)
+    , ("https://ase.uva.nl/binaries/content/assets/subsites/amsterdam-school-of-economics/research/uva-econometrics/dp-2013/1303.pdf", False)
+    , ("https://au.news.yahoo.com/drug-warning-for-teens-17887955.html", False)
+    , ("https://azure.microsoft.com/en-us/blog/microsoft-showcases-the-azure-cloud-switch-acs/", False)
+    , ("https://bartokdesign.com/", False)
+    , ("https://beautifultaiwantea.com/", False)
+    , ("https://beerconnoisseur.com/articles/how-milwaukees-famous-beer-became-infamous", False)
+    , ("https://bellroy.com/", False)
+    , ("https://berkshirehathaway.com/letters/2016ltr.pdf", False)
+    , ("https://bgr.com/general/google-services-shut-down-study/", False)
+    , ("https://bioinfo.pl/pmid:17597168", False)
+    , ("https://bitbucket.org/djhshih/argparser", False)
+    , ("https://bitcoins-code.de/", False)
+    , ("https://bjo.bmj.com/content/93/8/997", False)
+    , ("https://bjsm.bmj.com/content/46/16/1144.2.abstract", False)
+    , ("https://blog.darknedgy.net/technology/2020/05/02/0/", False)
+    , ("https://blog.ml.cmu.edu/2022/01/21/why-spectral-normalization-stabilizes-gans-analysis-and-improvements/", False)
+    , ("https://blog.mozilla.org/security/2010/03/31/plugging-the-css-history-leak/", False)
+    , ("https://blog.nuclino.com/the-simple-genius-of-checklists-from-b-17-to-the-apollo-missions", False)
+    , ("https://blogs.microsoft.com/ai/openai-azure-supercomputer/", False)
+    , ("https://blogs.princeton.edu/notabilia/2020/05/20/what-could-be-better-pairing-and-comparing-the-scheide-and-kane-copies-of-fifteenth-century-books/", False)
+    , ("https://blogs.scientificamerican.com/observations/what-the-history-of-math-can-teach-us-about-the-future-of-ai/", False)
+    , ("https://blog.torproject.org/trip-report-october-fbi-conference/", False)
+    , ("https://blog.twitter.com/en_us/topics/company/2021/imperfect-by-design", False)
+    , ("https://bluelight.org/xf/", False)
+    , ("https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-4-13", False)
+    , ("https://bmcvetres.biomedcentral.com/articles/10.1186/s12917-017-0987-6", False)
+    , ("https://boa.unimib.it/retrieve/handle/10281/23046/29556/Watching_alone_relational_goods.pdf", False)
+    , ("https://bsapubs.onlinelibrary.wiley.com/doi/full/10.2307/2656597", False)
+    , ("https://buddhism-for-vampires.com/", False)
+    , ("https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=217243", False)
+    , ("https://bugs.launchpad.net/ubuntu/+source/unity-greeter/+bug/1538615", False)
+    , ("https://cabinetmagazine.org/issues/64/lucas.php", False)
+    , ("https://caes.ucdavis.edu/news/articles/2018/february/isolating-embryonic-stem-cells-in-cows-just-got-easier", False)
+    , ("https://calgarysun.com/2012/08/25/dmt-suspected-in-drug-lab", False)
+    , ("https://capitalteas.com/Himalayan_Golden_Monkey_organic_p/23495.htm", False)
+    , ("https://capsuleconnection.com/", False)
+    , ("https://case.edu/ech/articles/r/rowfant-club", False)
+    , ("https://casetext.com/case/united-states-v-5044-bitcoins", False)
+    , ("https://cep.lse.ac.uk/pubs/download/dp1490.pdf", False)
+    , ("https://cfa.org/cfa-history/", False)
+    , ("https://chem.tufts.edu/answersinscience/relativityofwrong.htm", False)
+    , ("https://chrome.google.com/webstore/detail/singlefile/mpiodijhokgodhhofbcjdecpffjipkle", False)
+    , ("https://chroniclingamerica.loc.gov/newspapers/", False)
+    , ("https://circ.ahajournals.org/cgi/content/meeting_abstract/120/18_MeetingAbstracts/S461-a", False)
+    , ("https://cis.org/articles/2010/teen-study.pdf", False)
+    , ("https://clarkesworldmagazine.com/watts_01_10/", False)
+    , ("https://clinicalepigeneticsjournal.biomedcentral.com/articles/10.1186/s13148%E2%80%93021%E2%80%9301218-y#Tab1", False)
+    , ("https://code.visualstudio.com/blogs/2021/09/29/bracket-pair-colorization", False)
+    , ("https://collections.library.yale.edu/catalog/2037169", False)
+    , ("https://collider.com/hideaki-anno-evangelion-interview/", False)
+    , ("https://comicsalliance.com/ask-chris-45-my-little-pony-meets-the-justice-league/", False)
+    , ("https://community.arm.com/arm-community-blogs/b/high-performance-computing-blog/posts/deep-learning-episode-4-supercomputer-vs-pong-ii", False)
+    , ("https://community.nytimes.com/comments/www.nytimes.com/2010/07/11/magazine/11cryonics-t.html?permid=44#comment44", False)
+    , ("https://console.aws.amazon.com/ec2/v2/home?region=us-east-1#LaunchInstanceWizard:ami=ami-b36981d8", False)
+    , ("https://console.cloud.google.com/bigquery?project=danbooru1", False)
+    , ("https://corante.com/drug-prices/erooms-law/", False)
+    , ("https://core.ac.uk/download/pdf/160476861.pdf", False)
+    , ("https://cosmosmagazine.com/biology/don-t-believe-the-mice", False)
+    , ("https://coveryourtracks.eff.org/static/browser-uniqueness.pdf", False)
+    , ("https://cro.sagepub.com/content/15/5/252.full.pdf+html", False)
+    , ("https://csimq-journals.rtu.lv/article/download/csimq.2019-21.04/1744", False)
+    , ("https://csrc.nist.gov/csrc/media/publications/conference-paper/1998/10/08/proceedings-of-the-21-nissc-1998/documents/early-cs-papers/karg74.pdf", False)
+    , ("https://ctc.usma.edu/wp-content/uploads/2016/11/Cradle-to-Grave2.pdf", False)
+    , ("https://cyber.harvard.edu/events/luncheon/2011/10/makohill", False)
+    , ("https://dailyvoice.com/connecticut/norwalk/police-fire/norwalk-police-bust-major-marijuana-operation-after-finding-pot-in-mail/582175/", False)
+    , ("https://dalspace.library.dal.ca/bitstream/handle/10222/56021/Heffernan-Amy-MSc-KINE-Nov-14.pdf?sequence=1", False)
+    , ("https://datasetsearch.research.google.com/search?query=poem+OR+poetry&docid=T3haTlmLU9Dl6xqYAAAAAA%3D%3D", False)
+    , ("https://deadline.com/2011/02/scott-rudin-closes-la-office-is-sony-move-imminent-105993/#comment-709877", False)
+    , ("https://deadspin.com/the-myth-of-the-myth-of-the-hot-hand-1588112937", False)
+    , ("https://dee.su/liberte", False)
+    , ("https://dept.wofford.edu/neuroscience/neuroseminar/pdffall2006/rusted-mem3.pdf", False)
+    , ("https://devblogs.microsoft.com/oldnewthing/", False)
+    , ("https://developer.twitter.com/en/docs/twitter-api/v1/rules-and-filtering/search-operators", False)
+    , ("https://dharmaoverground.org/web/guest/discussion/-/message_boards/message/2718243#_com_liferay_message_boards_web_portlet_MBPortlet_message_2718243", False)
+    , ("https://disease-connect.org/", False)
+    , ("https://dl.acm.org/action/downloadSupplement?doi=10.1145%2F3474085.3475293&file=MM21-fp0702.mp4.mp4", False)
+    , ("https://dnd.wizards.com/articles/news/dungeons-dragons-teams-my-little-pony", False)
+    , ("https://docs.microsoft.com/en-us/archive/blogs/larryosterman/one-in-a-million-is-next-tuesday", False)
+    , ("https://donate.torproject.org/", False)
+    , ("https://drugs-forum.com/threads/116671/", False)
+    , ("https://e621.net/posts", False)
+    , ("https://eab.sagepub.com/content/23/1/3.short", False)
+    , ("https://economics.stanford.edu/sites/default/files/economics_of_scaleup_20180316.pdf", False)
+    , ("https://econ.vt.edu/seminars/seminarpapers/2005/weinberg_100705_cc.pdf", False)
+    , ("https://ec.toranoana.jp/joshi_r/ec/item/040030048682/", False)
+    , ("https://eg-2.hatenablog.com/", False)
+    , ("https://ehp.niehs.nih.gov/doi/full/10.1289/ehp.1510037", False)
+    , ("https://eiga.com/news/20110830/11/", False)
+    , ("https://ejlt.org/article/view/320/424", False)
+    , ("https://eml.berkeley.edu/~jsteinsson/papers/giftofmoving.pdf", False)
+    , ("https://en.chessbase.com/post/a-history-of-cheating-in-chess-4", False)
+    , ("https://eng.uber.com/tag/forecasting/", False)
+    , ("https://environhealthprevmed.biomedcentral.com/articles/10.1186/s12199-020-00865-6", False)
+    , ("https://ergodox-ez.com/", False)
+    , ("https://ero.sagepub.com/content/1/3/2332858415599972?full", False)
+    , ("https://esajournals.onlinelibrary.wiley.com/doi/pdf/10.1890/ES10-00142.1", False)
+    , ("https://espace.library.uq.edu.au/view/UQ:281052", False)
+    , ("https://ethics.emory.edu/who-we-are/our-people/director.html", False)
+    , ("https://ethos.bl.uk/OrderDetails.do?uin=uk.bl.ethos.486142", False)
+    , ("https://eth.wiki/en/concepts/proof-of-stake-faqs", False)
+    , ("https://every.to/cybernaut/caught-in-the-study-web", False)
+    , ("https://evigio.com/post/generating-new-watch-designs-with-stylegan", False)
+    , ("https://exrx.net/Nutrition/Antioxidants/Antioxidants", False)
+    , ("https://faculty.virginia.edu/cogage/links/publications/", False)
+    , ("https://fdaaa.trialstracker.net/", False)
+    , ("https://finance.yahoo.com/news/Construction-Of-Chip-twst-2711924876.html", False)
+    , ("https://floatingleaves.com/index.php?main_page=index&cPath=29", False)
+    , ("https://fn.bmj.com/content/93/1/F45.short", False)
+    , ("https://fnb.sagepub.com/content/24/4_suppl2/S129.full.pdf", False)
+    , ("https://fontsinuse.com/typefaces/40498/ed-interlock", False)
+    , ("https://food52.com/blog/15159-we-taste-tested-17-types-of-sparkling-water-here-s-what-happened", False)
+    , ("https://forums.somethingawful.com/showthread.php?threadid=3882695", False)
+    , ("https://freedom-to-tinker.com/2011/05/24/you-might-also-privacy-risks-collaborative-filtering/", False)
+    , ("https://gazette.com/crime/air-force-academy-cadet-sentenced-for-dealing-drugs/article_76f47501-506c-52b0-8a33-f30632240e61.html", False)
+    , ("https://gcta.freeforums.net/thread/213/analysis-greml-results-multiple-cohorts", False)
+    , ("https://geneticalliance.org.uk/information/services-and-testing/how-can-i-access-preimplantation-genetic-diagnosis/#Question6", False)
+    , ("https://genius.com/The-notorious-big-ten-crack-commandments-lyrics", False)
+    , ("https://genomemedicine.biomedcentral.com/articles/10.1186/s13073-014-0091-5", False)
+    , ("https://georgianjournal.ge/society/34644-michel-houellebecq-a-french-author-shares-his-views-with-georgian-audience.html", False)
+    , ("https://getd.libs.uga.edu/pdfs/sutherland_pierre_201212_ma.pdf", False)
+    , ("https://gigaom.com/2013/03/13/chris-wetherll-google-reader/", False)
+    , ("https://gigazine.net/news/20190812-death-note-anonymity-entropy/", False)
+    , ("https://gitgud.io/AuroraPurgatio/aurorapurgatio", False)
+    , ("https://git.io/unadversarial", False)
+    , ("https://gitlab.developers.cam.ac.uk/cst/dtg/trvedata/local-first/-/commit/7a8819e817a85173af7033e64bcdcc5054b9af50?expanded=1#e74ca419c79e4a87cb170f6eb8a6c0d2719e1c73_0_726", False)
+    , ("https://gitlab.torproject.org/legacy/trac/-/wikis/doc/TorFAQ#DoIgetbetteranonymityifIrunarelay", False)
+    , ("https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks", False)
+    , ("https://godanriver.com/news/danville/three-suspects-arrested-charged-with-mailing-meth-into-county/article_d73f9598-c839-11e4-9dbd-974577bb449e.html", False)
+    , ("https://granta.com/the-man-with-two-heads/", False)
+    , ("https://greekreporter.com/2010/12/19/inside-the-minds-of-the-parlapanides-brothers/", False)
+    , ("https://hacks.mozilla.org/2021/05/improving-firefox-stability-on-linux/", False)
+    , ("https://hansard.parliament.uk/Lords/1986-06-12/debates/56392d7a-e823-45be-80b6-26711300c7aa/GruinardIslandCostOfDecontamination", False)
+    , ("https://hardcoresoftware.learningbyshipping.com/p/061-bsod-to-watson-the-reliability", False)
+    , ("https://harmreductionjournal.biomedcentral.com/articles/10.1186/s12954-019-0308-4", False)
+    , ("https://hashcat.net/wiki/doku.php?id=mask_attack", False)
+    , ("https://hazuma.hatenablog.com/entry/20090511/1242018681", False)
+    , ("https://hcommons.org/deposits/objects/hc:20220/datastreams/CONTENT/content?download=true#pdf", False)
+    , ("https://help.duckduckgo.com/duckduckgo-help-pages/results/syntax/", False)
+    , ("https://help.myspace.com/hc/en-us/articles/202233310-Where-Is-All-My-Old-Stuff-", False)
+    , ("https://hollisarchives.lib.harvard.edu/repositories/4/archival_objects/1033884", False)
+    , ("https://home.inklingmarkets.com/recent/markets", False)
+    , ("https://hrcak.srce.hr/file/210", False)
+    , ("https://hum.sagepub.com/content/30/5/431.full.pdf+html", False)
+    , ("https://icosahedron.website/@halcy/101654023952557254", False)
+    , ("https://ide.mit.edu/sites/default/files/publications/Multi-Sided%20Platform%20Strategy,%20Taxation%20and%20Regulation%20October%202019.pdf#page=14", False)
+    , ("https://imagelibrary.bgu.ac.il/pf.tlx/O6ORSOx-nut", False)
+    , ("https://inews.co.uk/opinion/why-i-donate-my-sperm-over-facebook-and-have-fathered-23-children-194142", False)
+    , ("https://infidels.org/library/modern/richard-carrier-kooks/", False)
+    , ("https://informallogic.ca/index.php/informal_logic/article/download/2132/1576", False)
+    , ("https://interviews.slashdot.org/story/11/09/06/1458254/Kevin-Kelly-Answers-Your-Questions", False)
+    , ("https://irs.princeton.edu/sites/irs/files/event/uploads/economics_of_scaleup_20171004.pdf", False)
+    , ("https://iterative.capital/thesis/", False)
+    , ("http://sites.google.com/site/computationalstylistics/home", False)
+    , ("https://it.slashdot.org/comments.pl?sid=2679325&cid=39089165", False)
+    , ("https://jacobsschool.ucsd.edu/news/release/791?id=791", False)
+    , ("https://jalopnik.com/you-have-no-idea-how-insanely-complex-modern-headlights-1840509448", False)
+    , ("https://jamestown.org/wp-content/uploads/2021/05/The-Prize-Why-Taiwan-and-its-Place-in-the-Global-Semiconductor-Supply-Chian-Matter-to-the-United-States.pdf#page=21", False)
+    , ("https://japanintercultural.com/free-resources/articles/over-worked-and-underpaid-japanese-employees-feel-the-burden-of-sabisu-zangyo/", False)
+    , ("https://jasbsci.biomedcentral.com/articles/10.1186/s40104-018-0304-7", False)
+    , ("https://jcsm.aasm.org/doi/10.5664/jcsm.7132", False)
+    , ("https://jigsaw.w3.org/css-validator/#validate-by-input", False)
+    , ("https://jme.bmj.com/content/37/4/249.abstract", False)
+    , ("https://jnnp.bmj.com/content/72/2/179.full", False)
+    , ("https://jotengine.com/transcriptions/Q0I0i33TaqCa9w4In0ZQCg", False)
+    , ("https://journals.physiology.org/doi/full/10.1152/ajpregu.2001.280.2.r602", False)
+    , ("https://jpet.aspetjournals.org/content/296/3/849", False)
+    , ("https://justpaste.it/7eovk", False)
+    , ("https://jyllands-posten.dk/indland/politiretsvaesen/ECE7542044/To-m%C3%A6nd-afsl%C3%B8ret-med-over-et-ton-doping/", False)
+    , ("https://kettl.co/", False)
+    , ("https://kilthub.cmu.edu/articles/What_Went_Wrong_Reflections_on_Science_by_Observation_and_The_Bell_Curve/6493139/files/11937863.pdf#page=2", False)
+    , ("https://kotaku.com/dont-let-a-little-thing-like-a-sex-video-slow-you-down-5856321", False)
+    , ("https://kyunghyuncho.me/brief-summary-of-the-panel-discussion-at-dl-workshop-icml-2015/", False)
+    , ("https://leaps.org/a-star-surgeon-left-a-trail-of-dead-patients-and-his-whistleblowers-were-punished/", False)
+    , ("https://learn.adafruit.com/adafruit-feather-32u4-adalogger", False)
+    , ("https://letterformarchive.org/news/view/the-complete-commercial-artist", False)
+    , ("https://letters.temporarystate.net/entry/3/", False)
+    , ("https://listserv.brown.edu/archives/cgi-bin/wa?A2=ind0001B&L=NAUSICAA&P=R748", False)
+    , ("https://lizadaly.com/", False)
+    , ("https://longnow.org/essays/richard-feynman-and-connection-machine/", False)
+    , ("https://machinelearning.apple.com/research/hey-siri", False)
+    , ("https://marco.org/2011/04/09/facebooks-open-compute-project", False)
+    , ("https://martinottaway.com/rhemmen/really-big-picture/", False)
+    , ("https://mathoverflow.net/questions/35468/widely-accepted-mathematical-results-that-were-later-shown-to-be-wrong/35554#35554#35554", False)
+    , ("https://math.stackexchange.com/questions/89030/expectation-of-the-maximum-of-gaussian-random-variables/89147#89147#89147", False)
+    , ("https://mbio.asm.org/content/3/2/e00036-12", False)
+    , ("https://meaningness.com/geeks-mops-sociopaths", False)
+    , ("https://mecha-guignol.com/2013/02/20/no-flcl-for-oldtaku/", False)
+    , ("https://media.ccc.de/v/35c3-9778-open_source_firmware", False)
+    , ("https://media.githubusercontent.com/media/sarabander/sicp-pdf/master/sicp.pdf", False)
+    , ("https://medicine.osu.edu/neuroscience/Documents/Nocturnal%20Light%20Exposure.pdf", False)
+    , ("https://medieval.bodleian.ox.ac.uk/catalog/manuscript_336", False)
+    , ("https://metacpan.org/release/LBROCARD/Net-VNC-0.36/view/bin/vnccapture", False)
+    , ("https://metrics.torproject.org/data.html", False)
+    , ("https://millercenter.org/the-presidency/presidential-speeches/march-23-1962-address-university-california-berkeley#dp-expandable-text", False)
+    , ("https://moz.com/ugc/google-alerts-vs-mention-vs-talkwalker", False)
+    , ("https://mpra.ub.uni-muenchen.de/74268/1/MPRA_paper_74268.pdf", False)
+    , ("https://mujoco.org/", False)
+    , ("https://mysbfiles.stonybrook.edu/~stfeldma/feldman_johnston_ideology.pdf", False)
+    , ("https://naldc.nal.usda.gov/download/CAT71326739/PDF", False)
+    , ("https://nansenundpiccard.de/de/Wir/Hanske", False)
+    , ("https://nationalinterest.org/bookreview/the-fallacy-human-freedom-8652?nopaging=1", False)
+    , ("https://nearcyan.com/this-anime-does-not-exist/", False)
+    , ("https://nebia.com/", False)
+    , ("https://newhumanist.org.uk/2365/lies-damn-lies-and-chinese-science", False)
+    , ("https://newrepublic.com/article/120178/problem-international-development-and-plan-fix-it", False)
+    , ("https://news.gallup.com/poll/222578/americans-weigh-shun-overweight-label.aspx", False)
+    , ("https://news.harvard.edu/gazette/story/2010/10/thinking-like-an-octopus/", False)
+    , ("https://news.mit.edu/2014/algorithm-recovers-speech-from-vibrations-0804", False)
+    , ("https://newsroom.collegeboard.org/", False)
+    , ("https://news.samsung.com/global/sock-horror-mystery-of-missing-socks-is-solved-scientists-reveal-why-socks-go-missing-in-the-wash-and-how-likely-it-is-to-happen", False)
+    , ("https://news.slashdot.org/story/07/10/31/0328239/call-for-halt-to-wikipedia-webcomic-deletions", False)
+    , ("https://news.yahoo.com/shattered-inside-the-secret-battle-to-save-americas-undercover-spies-in-the-digital-age-100029026.html", False)
+    , ("https://n.neurology.org/content/78/2/91.full", False)
+    , ("https://nori.com/", False)
+    , ("https://noscript.net/", False)
+    , ("https://ods.od.nih.gov/factsheets/Magnesium-HealthProfessional/", False)
+    , ("https://omdia.tech.informa.com/", False)
+    , ("https://openscience.bmj.com/content/4/1/e100051", False)
+    , ("https://opensource.org/licenses", False)
+    , ("https://orbit.dtu.dk/fedora/objects/orbit:134384/datastreams/file_a24346bd-b582-483e-b3f4-2efbc42682aa/content", False)
+    , ("https://osnadocs.ub.uni-osnabrueck.de/bitstream/urn:nbn:de:gbv:700-2008112111/2/E-Diss839_thesis.pdf", False)
+    , ("https://otakumode.com/news/5458c7dadb7b183963e68abf/Evangelion-20th-Anniversary-Bombshell-a-Mysterious-Work-Just-Like-Attack-on-Titan-and%E2%80%A6-Hideaki-Anno-Talk-Show-%E2%80%9CDirector-Edition%E2%80%9D-Report", False)
+    , ("https://ourstarblazers.com/vault/78/", False)
+    , ("https://packages.debian.org/sid/x11/xprintidle", False)
+    , ("https://pain.wustl.edu/c/BasicResearch/documents/Chennature2001.pdf", False)
+    , ("https://papers.nips.cc/paper/2003/file/9fb7b048c96d44a0337f049e0a61ff06-Paper.pdf", False)
+    , ("https://par.nsf.gov/servlets/purl/10013134", False)
+    , ("https://partner.steamgames.com/doc/steamdeck/faq", False)
+    , ("https://paste.laravel.io/f2419e15-ea7d-408a-8ff2-b8ee6d00ddd1/raw", False)
+    , ("https://pay.reddit.com/r/DarkNetMarkets/comments/2i07pq/the_number_of_multisig_transactions_doubled_on_evo/", False)
+    , ("https://pcpartpicker.com/list/nwQnZ8", False)
+    , ("https://phabricator.wikimedia.org/T270650", False)
+    , ("https://pharmrev.aspetjournals.org/content/57/1/79.long", False)
+    , ("https://physics.aps.org/articles/v7/47", False)
+    , ("https://physoc.onlinelibrary.wiley.com/doi/pdf/10.1113/jphysiol.2011.217919", False)
+    , ("https://pingpong.ki.se/public/pp/public_courses/course07397/published/1294674331157/resourceId/4002438/content/infoweb/node-2627050/Gottfredson_artikel.pdf", False)
+    , ("https://pioneer.app/", False)
+    , ("https://pixelpoppers.com/2010/12/why-i-quit-wow-and-started-working-out/", False)
+    , ("https://pjreddie.com/yolo/", False)
+    , ("https://pni.princeton.edu/john-hopfield/john-j.-hopfield-now-what", False)
+    , ("https://pps.sagepub.com/content/7/6/643.full", False)
+    , ("https://priceonomics.com/why-is-art-expensive/", False)
+    , ("https://prisons.org.uk/worker-at-brixton-jail-charged-with-trying-to-buy-gun-and-ammo/", False)
+    , ("https://proceedings.neurips.cc/paper/2016/hash/7ef605fc8dba5425d6965fbd4c8fbe1f-Abstract.html", False)
+    , ("https://psi.sagepub.com/content/12/1/3.full?ijkey=/bwNip9GMWEg2&keytype=ref&siteid=sppsi", False)
+    , ("https://psmag.com/social-justice/diy-diagnosis-extreme-athlete-uncovered-genetic-flaw-88763", False)
+    , ("https://pss.sagepub.com/content/24/4/562.full", False)
+    , ("https://psychology.gatech.edu/renglelab/2010/shipsteadredickengle.pdf", False)
+    , ("https://psych.wustl.edu/memory/Roddy%20article%20PDF%27s/Lyle%20et%20al%20(2008)_PBR.pdf", False)
+    , ("https://psycnet.apa.org/record/1982-13030-001", False)
+    , ("https://public.tableau.com/app/profile/jurijfedorov#!/vizhome/AnthropologysScienceWars/Field", False)
+    , ("https://pubs.aeaweb.org/doi/pdfplus/10.1257/aer.91.5.1539", False)
+    , ("https://pubsonline.informs.org/doi/suppl/10.1287/mnsc.2018.3032/suppl_file/mnsc.2018.3032-sm.pdf", False)
+    , ("https://pure.au.dk/portal/en/publications/low-risk-of-suicide-and-lithium-in-drinking-water-a-danish-individuallevel-cohort-study-using-spatial-analysis(5855ed41-d812-4ce4-b089-078be11c11fa).html", False)
+    , ("https://pure.tue.nl/ws/portalfiles/portal/142614149/J.R.Ubbink_09_09_2019_thesis_final.pdf", False)
+    , ("https://pure.uva.nl/ws/files/3216102/15320_Thesis.pdf#page=103", False)
+    , ("https://pure.uvt.nl/ws/portalfiles/portal/29125573/MTO_Flore_influence_of_gender_stereotype_CRiSP_2019.pdf#page=3", False)
+    , ("https://purse.io/", False)
+    , ("https://qualitysafety.bmj.com/content/21/10/819.abstract", False)
+    , ("https://quoteinvestigator.com/2012/12/30/yogi-didnt-say/", False)
+    , ("https://radiopublic.com/longform-MG7XaW/s1!316e8", False)
+    , ("https://rbej.biomedcentral.com/articles/10.1186/s12958-015-0029-9", False)
+    , ("https://rd.springer.com/chapter/10.1007/978-3-030-42504-3_15", False)
+    , ("https://repository.si.edu/bitstream/handle/10088/18355/nzp_changing_world_mcshea.pdf", False)
+    , ("https://repository.uel.ac.uk/download/489cc10ec6c30da0e7bbdfb33898364c46ac9dcc727169bd1850016053e45278/347037/2013_Dawkins_e-cig_survey.pdf", False)
+    , ("https://research.facebook.com/do-jobs-run-in-families/", False)
+    , ("https://research.vu.nl/en/publications/sports-participation-during-adolescence-a-shift-from-environmenta", False)
+    , ("https://reset.me/story/benefits-of-microdosing-with-lsd-and-psilocybin-mushrooms/", False)
+    , ("https://risk-engineering.org/concept/Rasmussen-practical-drift", False)
+    , ("https://royalsocietypublishing.org/doi/10.1098/rsos.170988", False)
+    , ("https://rpds.princeton.edu/papers/pdfs/case_paxson_morbidity.pdf", False)
+    , ("https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1740-9713.2006.00202.x", False)
+    , ("https://runrepeat.com/height-evolution-in-the-nba", False)
+    , ("https://samsaffron.com/archive/2012/06/07/testing-3-million-hyperlinks-lessons-learned#comment-31366", False)
+    , ("https://scholar.harvard.edu/files/rpande/files/moving_isolation_aer_submission.pdf", False)
+    , ("https://science.nasa.gov/science-news/science-at-nasa/2005/03jun_naps/", False)
+    , ("https://searchengineland.com/google-alerts-arent-working-148642", False)
+    , ("https://secure.flickr.com/photos/michellemaabelle/4630940195/", False)
+    , ("https://sembr.org/", False)
+    , ("https://sensebridge.net/projects/northpaw/", False)
+    , ("https://sgo.sagepub.com/content/5/2/2158244015579724", False)
+    , ("https://siepr.stanford.edu/system/files/shared/Final_Rosston_Savage_Waldman_02_04_10__1_.pdf", False)
+    , ("https://sites.google.com/view/mend-editing", False)
+    , ("https://sive.rs/srs", False)
+    , ("https://skeptics.stackexchange.com/questions/1700/do-bigger-or-more-monitors-increase-productivity/1701#1701#1701", False)
+    , ("https://skift.com/oral-history-of-booking-acquisition/", False)
+    , ("https://spectrum.library.concordia.ca/id/eprint/36253/1/2010_Mining_Writeprints_from_Anonymous_E-mails.pdf", False)
+    , ("https://sss.sagepub.com/content/44/4/638.long", False)
+    , ("https://stats.stackexchange.com/questions/9001/approximate-order-statistics-for-normal-random-variables/9010#9010#9010", False)
+    , ("https://steamcommunity.com/groups/steamworks/announcements/detail/1697229969000435735", False)
+    , ("https://stevecoast.com/2015/03/27/the-world-will-only-get-weirder/", False)
+    , ("https://store.steampowered.com/app/497780/Recursed/", False)
+    , ("https://studenttheses.universiteitleiden.nl/handle/1887/52994", False)
+    , ("https://subterraneanpress.com/magazine/fall_2013/the_truth_of_fact_the_truth_of_feeling_by_ted_chiang", False)
+    , ("https://suffolk.onthehub.com/2014/03/11/serious-an-lpti-supported-project-to-improve-students-learning-and-bar-performance/", False)
+    , ("https://summerofcode.withgoogle.com/", False)
+    , ("https://sundhedsdatastyrelsen.dk/da/404/?item=%2fda%2ftal-og-analyser%2fanalyser-og-rapporter%2fandre-analyser-og-rapporter%2fassisteret-reproduktion&user=extranet%5cAnonymous&site=sds", False)
+    , ("https://superuser.com/questions/1633073/why-are-tar-xz-files-15x-smaller-when-using-pythons-tar-library-compared-to-mac", False)
+    , ("https://support.mozilla.org/en-US/kb/firefox-page-info-window", False)
+    , ("https://support.torproject.org/", False)
+    , ("https://tails.boum.org/", False)
+    , ("https://taylorandfrancis.com/", False)
+    , ("https://teahabitat.com/", False)
+    , ("https://tealet.com/", False)
+    , ("https://tfhub.dev/google/collections/gtr/1", False)
+    , ("https://thecatsite.com/threads/my-cat-likes-earwax.69070/", False)
+    , ("https://thechineseteashop.com/", False)
+    , ("https://thecorrespondent.com/100/the-new-dot-com-bubble-is-here-its-called-online-advertising/13228924500-22d5fd24", False)
+    , ("https://theeagle.com/news/local/cc-world-s-first-cloned-cat-turns-years-old/article_d2aeac6e-2471-11ea-a5f2-7b6c21b2b4b4.html", False)
+    , ("https://theintercept.com/2016/08/03/gop-lawyer-chinese-owned-company-us-presidential-politics/", False)
+    , ("https://themorningnews.org/article/the-heretic", False)
+    , ("https://thesession.org/", False)
+    , ("https://thetakeout.com/inside-black-market-vintage-kool-aid-packet-collectors-1835123510", False)
+    , ("https://thewebconf.org/www2019/", False)
+    , ("https://thomasbarker.com/13/06/bitcoin-little-slice-future-shock", False)
+    , ("https://thoughtbot.com/blog/arduino-bathroom-occupancy-detector", False)
+    , ("https://timarit.is/page/131542", False)
+    , ("https://t.ly/supcon", False)
+    , ("https://tobaccocontrol.bmj.com/content/14/1/49.full", False)
+    , ("https://top500.org/lists/2010/11/performance_development/", False)
+    , ("https://trialsjournal.biomedcentral.com/articles/10.1186/s13063-015-1080-8", False)
+    , ("https://tribune.com.pk/story/1967033/3-amid-animal-cruelty-debate-80-south-koreas-sniffer-dogs-cloned", False)
+    , ("https://truewetsuits.jp/travel_guide/tokyo_books_music/manga/Mangano-mori+Ikebukuro/1995", False)
+    , ("https://tuts4you.com/download.php?view.2348", False)
+    , ("https://tweelingenregister.vu.nl/gpc", False)
+    , ("https://type-r.hatenablog.com/entries/2012/12/05", False)
+    , ("https://ubc-emotionlab.ca/wp-content/uploads/2012/09/Schimmack-2012-Effect-of-Significance-on-Article-Credibility.pdf", False)
+    , ("https://uitspraken.rechtspraak.nl/inziendocument?id=ECLI:NL:RBMNE:2014:4792", False)
+    , ("https://uk.pi-supply.com/products/pijuice-solar?v=7516fd43adaa", False)
+    , ("https://undark.org/2016/05/25/the-death-of-a-study-national-childrens-study/", False)
+    , ("https://understandinguncertainty.org/what-does-13-increased-risk-death-mean", False)
+    , ("http://super-memory.com/articles/theory.htm", False)
+    , ("https://us.dantelabs.com/collections/best-seller/products/whole-genome-sequencing-wgs-full-dna-analysis", False)
+    , ("https://vault.si.com/vault/2009/03/23/how-and-why-athletes-go-broke", False)
+    , ("https://vgl.ucdavis.edu/tests?field_species_target_id=216", False)
+    , ("https://vgmdb.net/product/9", False)
+    , ("https://vinecon.ucdavis.edu/wp-content/uploads/2019/04/cwe1201.pdf", False)
+    , ("https://vosswater.com/files/VOSS-Water-Quality-Report.pdf", False)
+    , ("https://voxday.blogspot.com/2016/03/rabid-puppies-2016-list.html", False)
+    , ("https://warosu.org/g/thread/69872559", False)
+    , ("https://wci.llnl.gov/fac/site300/cff/index.html", False)
+    , ("https://web.econ.ku.dk/tyran/Teaching/BEecon_MA/readings_BEecon/readings%20MA_Expecon/Wolfers%20and%20Zitzewitz_Prediction%20Markets_JEP2004.pdf", False)
+    , ("https://web-japan.org/trends00/honbun/tj010207.html", False)
+    , ("https://web.maths.unsw.edu.au/~jim/wrongthoughts.html", False)
+    , ("http://swombat.com/2012/2/27/modafinil-and-startups", False)
+    , ("https://wordpress.org/plugins/broken-link-checker/", False)
+    , ("https://wudao.aminer.cn/CogView/index.html", False)
+    , ("https://ww2.arb.ca.gov/our-work/programs/cap-and-trade-program", False)
+    , ("https://www2.bfi.org.uk/films-tv-people/4ce2b707390e5", False)
+    , ("https://www2.ed.gov/rschstat/eval/tech/evidence-based-practices/finalreport.pdf", False)
+    , ("https://www2.guidestar.org/profile/13-1624016", False)
+    , ("https://www2.psy.uq.edu.au/~uqbziets/Mosing%20et%20al%202015%20Did%20sexual%20selection%20shape%20human%20music.pdf", False)
+    , ("https://www3.ntu.edu.sg/czzhao/iq/test.htm", False)
+    , ("https://www.abbiotec.com/proteins/human-ngf-beta", False)
+    , ("https://www.abc10.com/news/article/251775/2/Cross-county-drug-ring-using-dark-Internet-site-busted-by-feds", False)
+    , ("https://www.abebooks.com/", False)
+    , ("https://www.academia.edu/24382120", False)
+    , ("https://www.acpjournals.org/doi/10.7326/M19-1326", False)
+    , ("https://www.aei.org/publication/abolish-the-sat-2/", False)
+    , ("https://www.aera.net/Research-Policy-Advocacy/AERA-Shaping-Research-Policy", False)
+    , ("https://www.afr.com/technology/ernst--young-16-million-bitcoin-auction-20160527-gp53i0", False)
+    , ("https://www.ahajournals.org/doi/full/10.1161/01.cir.94.5.878", False)
+    , ("https://www.aiwriter.email/", False)
+    , ("https://www.ajmadison.com/cgi-bin/ajmadison/ACQ189XS.html", False)
+    , ("https://www.alchemistowl.org/arrigo/Papers/Arrigo-Triulzi-PACSEC08-Project-Maux-II.pdf", False)
+    , ("https://www.alzforum.org/news/research-news/preimplantation-genetic-diagnosis-its-no-walk-park", False)
+    , ("https://www.ama-assn.org/", False)
+    , ("https://www.ams.org/notices/200605/fea-lang.pdf#page=12", False)
+    , ("https://www.anime-planet.com/anime/years/1992", False)
+    , ("https://www.annualreviews.org/doi/10.1146/annurev-psych-010416-044022", False)
+    , ("https://www.appbrain.com/app/n-back-maestro/org.urbian.android.games.nback", False)
+    , ("https://www.arkansasonline.com/news/2019/nov/28/airport-beagles-sniff-out-illicit-foods/", False)
+    , ("https://www.army.mil/article/56965/military_working_dogs_guardians_of_the_night", False)
+    , ("https://www.artofmanliness.com/character/manly-lessons/the-churchill-school-of-adulthood-lesson-2-establish-a-daily-routine/", False)
+    , ("https://www.arxiv-vanity.com/", False)
+    , ("https://www.atsjournals.org/doi/full/10.1164/ajrccm.162.3.9908040", False)
+    , ("https://www.avalonmagicplants.com/health/drug-test/en-cool-stuff-ez-drug-test-lsd", False)
+    , ("https://www.baen.com/Chapters/9781618249203/9781618249203___2.htm", False)
+    , ("https://www.baltcoffee.com/catalog/loose-tea-ribbon-bags", False)
+    , ("https://www.barnstormjournal.org/poetry/the-river-bridge/", False)
+    , ("https://www.beelinereader.com/", False)
+    , ("https://www.behance.net/gallery/35437979/Velocipedia", False)
+    , ("https://www.ben-evans.com/benedictevans/2016/4/28/winning-and-losing", False)
+    , ("https://www.berkshireeagle.com/ci_26681481/former-bard-college-at-simons-rock-student-avoids/", False)
+    , ("https://www.betterworldbooks.com/", False)
+    , ("https://www.bfi.org/about-bucky/resources/books/grunch-giants/foreword", False)
+    , ("https://www.bfmtv.com/societe/info-bfmtv-loire-un-cyberdealer-interpelle-premiere-france-674582.html", False)
+    , ("https://www.bioworld.com/content/another-miss-targacept-tc-5619-fails-adhd-trial-0", False)
+    , ("https://www.birminghammail.co.uk/news/midlands-news/man-who-bought-glock-pistol-11538095", False)
+    , ("https://www.blender.org/user-stories/japanese-anime-studio-khara-moving-to-blender/", False)
+    , ("https://www.bnlearn.com/", False)
+    , ("https://www.businessinsider.jp/post-185786", False)
+    , ("https://www.businesswire.com/news/home/20171121005280/en/Amazon-Celebrates-10th-Holiday-Season-Frustration-Free-Packaging", False)
+    , ("https://www.bvp.com/anti-portfolio", False)
+    , ("https://www.cabinetmagazine.org/issues/42/wiles.php", False)
+    , ("https://www.calnewport.com/books/deep-work/", False)
+    , ("https://www.cambridge-news.co.uk/Pok-mon-cards-used-supply-drugs-international/story-26465044-detail/story.html", False)
+    , ("https://www.campbellrivermirror.com/news/257558681.html", False)
+    , ("https://www.cancer.gov/about-cancer/causes-prevention/risk/tobacco/smokeless-fact-sheet#q2", False)
+    , ("https://www.cancerresearchuk.org/about-us", False)
+    , ("https://www.carolinacoastonline.com/news_times/article_87cc5f2c-3e8d-11e4-84f2-338083e94e20.html", False)
+    , ("https://www.cebm.ox.ac.uk/resources/ebm-tools/critical-appraisal-tools", False)
+    , ("https://www.change.org/p/google-keep-google-reader-running", False)
+    , ("https://www.channel4.com/news/drugs-dark-web-atlantis-silk-road-police-fbi", False)
+    , ("https://www.chessclub.com/ucc", False)
+    , ("https://www.chess.com/article/view/how-rybka-and-i-tried-to-beat-the-strongest-chess-computer-in-the-world", False)
+    , ("https://www.chicagobooth.edu/review/what-success-rock-climbing-tells-us-about-economic-growth", False)
+    , ("https://www.chinafile.com/library/nyrb-china-archive/chinese-shadows-bureaucracy-happiness-history", False)
+    , ("https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/121.45?lang=eng", False)
+    , ("https://www.cisco.com/c/en/us/obsolete/routers/cisco-7505-router.html", False)
+    , ("https://www.citizenaudit.org/", False)
+    , ("https://www.clippershipteaco.com/", False)
+    , ("https://www.clubindustry.com/studies/ihrsa-reports-57-million-health-club-members-276-billion-industry-revenue-2016", False)
+    , ("https://www.cmajopen.ca/content/2/2/E69.full", False)
+    , ("https://www.cmu.edu/epp/people/faculty/research/Fischhoff-Decision-Making-Competence-External-Validation-DMC.pdf", False)
+    , ("https://wwwcn.cs.uni-duesseldorf.de/publications/publications/library/Jerschow2010a.pdf", False)
+    , ("https://www.cnet.com/13506_3-20040008-17.html", False)
+    , ("https://www.codespaces.com/power-searching-with-google.html", False)
+    , ("https://www.comicconnect.com/item/916042", False)
+    , ("https://www.consumerlab.com/reviews/melatonin-supplements/melatonin/", False)
+    , ("https://www.copenhagenconsensus.com/publication/second-copenhagen-consensus-micronutrient-supplements-child-survival-best-practice", False)
+    , ("https://www.copyright.gov/comp3/chap300/ch300-copyrightable-authorship.pdf#Compendium%20300.indd%3A.122046%3A96431", False)
+    , ("https://www.counterpunch.org/2009/03/24/the-most-dangerous-person-in-the-world/", False)
+    , ("https://www.coursera.org/learn/probabilistic-graphical-models", False)
+    , ("https://www.courts.mo.gov/cnet/welcome.do", False)
+    , ("https://www.courts.sa.gov.au/SentencingRemarks/Pages/lightbox.aspx?IsDlg=1&Filter=4029", False)
+    , ("https://www.cracked.com/article_19497_6-terrifying-things-nobody-tells-you-about-donating-sperm.html", False)
+    , ("https://www.crd.york.ac.uk/prospero/display_record.php?RecordID=85216", False)
+    , ("https://www.csail.mit.edu/news/programmers-solve-mits-20-year-old-cryptographic-puzzle", False)
+    , ("https://www.cs.purdue.edu/homes/pfonseca/papers/eurosys2017-dsbugs.pdf", False)
+    , ("https://www.csub.edu/~mdulcich/documents/diffusion_of_responsibility.pdf", False)
+    , ("https://www.cs.york.ac.uk/fp/ART/download.html", False)
+    , ("https://www.dailystar.co.uk/news/weird-news/billionaires-cloned-dog-saves-lives-20895267", False)
+    , ("https://www.dantelabs.com/collections/our-tests/products/whole-genome-sequencing", False)
+    , ("https://www.darkowl.com/blog-content/darknet-whackamole", False)
+    , ("https://www.dea.gov/druginfo/ftp3.shtml", False)
+    , ("https://www.delawareonline.com/story/news/local/2015/01/13/doctor-sentenced-months-silk-road-drug-case/21716135/", False)
+    , ("https://www.derbytelegraph.co.uk/Derby-worker-Toyota-bought-drugs-dark-web/story-29112765-detail/story.html", False)
+    , ("https://www.designboom.com/technology/evolution-desk-harvard-innovation-lab-09-30-2014/", False)
+    , ("https://www.detectiveconanworld.com/wiki/The_Last_Wizard_of_the_Century#Situation", False)
+    , ("https://www.devever.net/~hl/growupdown", False)
+    , ("https://www.dharmaoverground.org/dharma-wiki/-/wiki/Main/MCTB/en", False)
+    , ("https://www.dichtbij.nl/woerden/regionaal-nieuws/artikel/3731781/woerdenaar-47-voor-5-jaar-de-cel-in-voor-drugshandel-en-opdracht-tot-moord.aspx", False)
+    , ("https://www.dr.dk/nyheder/indland/fbi-aktion-lukker-danske-narkohandlere-paa-nettet", False)
+    , ("https://www.duolingo.com/", False)
+    , ("https://www.ebay.com/itm/251266500210", False)
+    , ("https://www.ebay.co.uk/itm/48-LED-illuminator-light-CCTV-IR-Infrared-Night-Vision-/180410200537", False)
+    , ("https://www.ed.ac.uk/generation-scotland/", False)
+    , ("https://www.effectuation.org/wp-content/uploads/2017/05/Do-serial-entrepreneurs-1.pdf", False)
+    , ("https://www.elastic.co/blog/why-license-change-AWS", False)
+    , ("https://www.emacswiki.org/emacs/MarkdownMode", False)
+    , ("https://www.energy.gov/node/2518899", False)
+    , ("https://www.engadget.com/2010-09-18-intel-wants-to-charge-50-to-unlock-stuff-your-cpu-can-already-d.html", False)
+    , ("https://www.english.upenn.edu/people/paul-korshin", False)
+    , ("https://www.enworld.org/threads/dungeons-ponies-at-last.664106/", False)
+    , ("https://www.equilibretechnologies.com/", False)
+    , ("https://www.escholar.manchester.ac.uk/api/datastream?publicationPid=uk-ac-man-scw:227658&datastreamId=FULL-TEXT.PDF#pg=140", False)
+    , ("https://www.eurekalert.org/news-releases/636717", False)
+    , ("https://www.eurojust.europa.eu/press/PressReleases/Pages/2014/2014-11-07.aspx", False)
+    , ("https://www.expressandstar.com/news/local-news/2016/05/30/gun-importer-told-to-reveal-why-he-ordered-weapon-online/", False)
+    , ("https://www.express.co.uk/news/uk/44940/Caribbean-island-where-red-haired-locals-speak-with-Scottish-accent", False)
+    , ("https://www.fightaging.org/archives/2011/05/more-on-body-temperature-and-calorie-restriction/", False)
+    , ("https://www.fincen.gov/news/news-releases/fincen-awards-recognize-partnership-between-law-enforcement-and-financial", False)
+    , ("https://www.findagrave.com/memorial/7333144/john-von_neumann", False)
+    , ("https://www.firstthings.com/article/2019/12/notes-on-summer-camp", False)
+    , ("https://www.flashback.org/sp50195930", False)
+    , ("https://www.foliosociety.com/usa/the-book-of-the-new-sun.html", False)
+    , ("https://www.fool.com/investing/general/2014/12/12/122-things-everyone-should-know-about-investing-an.aspx", False)
+    , ("https://www.fordfoundation.org/media/2976/roads-and-bridges-the-unseen-labor-behind-our-digital-infrastructure.pdf", False)
+    , ("https://www.foreignaffairs.com/articles/middle-east/2013-08-14/business-habits-highly-effective-terrorists?page=show", False)
+    , ("https://www.fox6now.com/news/brookfield-man-faces-multiple-charges-related-to-drugs-trafficking", False)
+    , ("https://www.foxnews.com/world/germany-3-charged-for-illegally-making-selling-firearms", False)
+    , ("https://www.frbsf.org/economic-research/files/wp2017-25.pdf", False)
+    , ("https://www.freehaven.net/anonbib/topic.html", False)
+    , ("https://www.fs.fed.us/rm/pubs_journals/2000/rmrs_2000_mcdaniel_g001.pdf", False)
+    , ("https://www.garda.ie/en/?Page=14304", False)
+    , ("https://www.girlschase.com/content/how-have-sex-asian-girls", False)
+    , ("https://www.globaltimes.cn/content/1161960.shtml", False)
+    , ("https://www.global.toshiba/ww/news/corporate/2010/07/pr1401.html", False)
+    , ("https://www.gloucestershirelive.co.uk/Cheltenham-student-jailed-importing-cocaine-Costa/story-28599085-detail/story.html", False)
+    , ("https://www.gmp.police.uk/content/SocialTwitterFeed/A391702C29DD7E8D80257E210039C813", False)
+    , ("https://www.gnu.org/software/emacs/manual/html_node/emacs/Keyboard-Macro-Counter.html", False)
+    , ("https://www.google.com/reviews/w", False)
+    , ("https://www.gov.uk/government/news/phe-publishes-independent-expert-e-cigarettes-evidence-review", False)
+    , ("https://www.greenexercise.org/", False)
+    , ("https://www.gsb.stanford.edu/insights/itamar-simonson-what-makes-people-collect-things", False)
+    , ("https://www.guilford.com/books/Handbook-of-Psychopathy/Christopher-Patrick/9781462541232", False)
+    , ("https://www.hamilton.edu/documents/An-Analysis-of-the-Accuracy-of-Forecasts-in-the-Political-Media.pdf", False)
+    , ("https://www.hanselman.com/blog/everythings-broken-and-nobodys-upset", False)
+    , ("https://www.harvardmagazine.com/2012/03/twilight-of-the-lecture", False)
+    , ("https://www.heraldnews.com/story/news/crime/2015/06/03/fall-river-police-intercept-package/34419316007/", False)
+    , ("https://www.highflightfoundation.org/", False)
+    , ("https://www.hindustantimes.com/punjab/financial-fraud-punjab-cops-brush-with-darknet-bitcoins/story-w4YDmUJFDgkV12scPzWWxO.html", False)
+    , ("https://www.history.com/news/how-portraiture-shaped-royal-marriages", False)
+    , ("https://www.historytoday.com/archive/feature/heads-will-roll", False)
+    , ("https://www.hoover.org/publications/policy-review", False)
+    , ("https://www.hrw.org/news/2017/10/22/china-voice-biometric-collection-threatens-privacy", False)
+    , ("https://www.htrnews.com/story/news/local/2015/03/10/man-arrested-marijuana-shipments-two-rivers/24694327/", False)
+    , ("https://www.ibtimes.co.uk/dark-web-brixton-prison-worker-charged-trying-buy-glock-19-handgun-online-1546621", False)
+    , ("https://www.ice.gov/doclib/news/releases/2013/131107baltimore1.pdf", False)
+    , ("https://www.idnes.cz/brno/zpravy/bitcoiny-jihomoravska-policie-rozhovor.A160816_2266665_brno-zpravy_krut", False)
+    , ("https://www.ietf.org/rfc/rfc5005.txt", False)
+    , ("https://www.iflscience.com/technology/man-creates-traffic-jams-by-wheeling-around-99-cell-phones-in-a-trailer/", False)
+    , ("https://www.illumina.com/content/dam/illumina-marketing/documents/products/brochures/datasheet_omni_whole-genome_arrays.pdf", False)
+    , ("https://www.imf.org/~/media/Files/Publications/WP/2018/wp18268.ashx#pdf", False)
+    , ("https://www.inc.com/minda-zetlin/netflix-blockbuster-meeting-marc-randolph-reed-hastings-john-antioco.html", False)
+    , ("https://www.infoplease.com/us/government/elections/presidential-election-of-2008-electoral-and-popular-vote-summary", False)
+    , ("https://www.informit.com/articles/article.aspx?p=2213858", False)
+    , ("https://www.insidehighered.com/news/2009/06/16/ethics", False)
+    , ("https://www.instagram.com/nathanwpylestrangeplanet/", False)
+    , ("https://www.intel.com/pressroom/archive/releases/2007/20071025corp.htm", False)
+    , ("https://www.irishcentral.com/news/the-secret-irishman-likely-behind-bitcoin-the-internet-currency-code-131039168-237415801", False)
+    , ("https://www.irishexaminer.com/news/arid-30650036.html", False)
+    , ("https://www.irishtimes.com/news/let-s-be-clear-i-didn-t-invent-bitcoin-1.614532", False)
+    , ("https://www.ivfbabble.com/on-the-40th-anniversary-of-the-first-ivf-in-the-usa-the-first-baby-elizabeth-jordan-carr-looks-at-how-science-today-has-produced-a-new-world-first-baby-aurea/", False)
+    , ("https://www.jacc.org/doi/10.1016/j.jcin.2015.01.039", False)
+    , ("https://www.janelia.org/project-team/flyem/hemibrain", False)
+    , ("https://www.jetbrains.com/lp/mono/", False)
+    , ("https://www.journalnow.com/business/business_news/local/targacept-sale-to-catalyst-is-complete/article_8a0008c4-4dc2-5770-81db-758e527f177b.html", False)
+    , ("https://www.jstage.jst.go.jp/article/nikkashi1948/90/6/90_6_507/_pdf", False)
+    , ("https://www.justice.gov/usao-edca/press-release/file/918811/download", False)
+    , ("https://www.jwz.org/blog/2004/03/when-the-database-worms-eat-into-your-brain/", False)
+    , ("https://www.kadokawa.co.jp/product/201012000009/", False)
+    , ("https://www.kctv5.com/story/28250778/kansas-city-man-accused-of-possessing-35000-prescription-pills/", False)
+    , ("https://www.kgw.com/news/Wash-county-tactical-police-conducting-3-dawn-raids-236190011.html", False)
+    , ("https://www.kokos.cz/bradkoun/movies/8mm.txt", False)
+    , ("https://www.laphamsquarterly.org/future/trust-issues", False)
+    , ("https://www.law.cornell.edu/uscode/text/10/520", False)
+    , ("https://www.lemonde.fr/pixels/visuel/2015/03/06/google-memorial-le-petit-musee-des-projets-google-abandonnes_4588392_4408996.html", False)
+    , ("https://www.leontiadis.info/NLeontiadisEPP2014.pdf", False)
+    , ("https://www.liebertpub.com/doi/abs/10.1089/neu.2016.4846", False)
+    , ("https://www.limeadery.com/", False)
+    , ("https://www.linode.com/", False)
+    , ("https://www.l-iz.de/leben/faelle-unfaelle/2015/03/leipziger-ermittler-nehmen-drogenversand-shiny-flakes-hoch-78227", False)
+    , ("https://www.lloyds.com/News-and-Insight/News-and-Features/Archive/2007/07/A_hole_new_insurance_policy", False)
+    , ("https://www.loc.gov/collections/edison-company-motion-pictures-and-sound-recordings/about-this-collection/#vocal", False)
+    , ("https://www.lshtm.ac.uk/ncdeu/currentresearch/researchprojects/bwhhs/", False)
+    , ("https://www.maa.org/sites/default/files/images/images/upload_library/22/Polya/07468342.di020715.02p0066x.pdf", False)
+    , ("https://www.macrumors.com/2011/09/08/apple-institutes-new-charitable-matching-program-for-employees/", False)
+    , ("https://www.madboa.com/geek/gpg-quickstart/", False)
+    , ("https://www.manchestereveningnews.co.uk/news/greater-manchester-news/montgomery-byrne-jailed-dark-web-10743557", False)
+    , ("https://www.mansfieldnewsjournal.com/story/news/local/2015/03/11/court-hole-wall-suspects-tough-luck/70152120/", False)
+    , ("https://www.mathematica.org/-/media/publications/pdfs/nonexperimentalreps.pdf", False)
+    , ("https://www.mayoclinicproceedings.org/article/S0025-6196%2813%2900405-9/fulltext", False)
+    , ("https://www.mcsweeneys.net/articles/back-from-yet-another-globetrotting-adventure-indiana-jones-checks-his-mail-and-discovers-that-his-bid-for-tenure-has-been-denied", False)
+    , ("https://www.medicaldaily.com/psychologists-discover-how-people-subconsciously-become-their-favorite-fictional-characters-240435", False)
+    , ("https://www.medicines.org.uk/emc/medicine/23244/SPC", False)
+    , ("https://www.megaverse.info", False)
+    , ("https://www.mercatus.org/emergent-ventures", False)
+    , ("https://www.mesacc.edu/~thoqh49081/handouts/talmudpage.html", False)
+    , ("https://www.mha.gov.sg/", False)
+    , ("https://www.mhlw.go.jp/english/database/db-hw/report/5.html", False)
+    , ("https://www.mining.com/fifty-killed-in-a-knife-attack-at-a-chinese-colliery/", False)
+    , ("https://www.mja.com.au/journal/1999/171/9/iodine-deficiency-ambulatory-participants-sydney-teaching-hospital-australia", False)
+    , ("https://www.mobihealthnews.com/20772/exclusive-sleep-coach-company-zeo-is-shutting-down/", False)
+    , ("https://www.morinaga.co.jp/in/jelly/", False)
+    , ("https://www.msri.org/workshops/220", False)
+    , ("https://www.muckrock.com/news/archives/2014/feb/03/dea-parallel-construction-guides/", False)
+    , ("https://www.myfonts.com/fonts/urw/hangulatin-en/", False)
+    , ("https://www.nationaldefensemagazine.org/articles/2006/3/31/2006april--soldiers-marines-team-up-in-trailblazer-patrols", False)
+    , ("https://www.nato.int/docu/review/2008/04/AP_COST/EN/index.htm", False)
+    , ("https://www.nba.com/news/takeaways-2018-19-nba-roster-survey", False)
+    , ("https://www.nbr.co.nz/article/chch-man-sentenced-after-buying-amazon-illegal-drugs-website-ck-135659", False)
+    , ("https://www.ndss-symposium.org/wp-content/uploads/2019/02/ndss2019_02B-5_Wampler_paper.pdf", False)
+    , ("https://www.newadvent.org/fathers/03061.htm", False)
+    , ("https://www.newegg.com/acer-aspire-v15-nitro-black-edition-vn7-591g-70rt-gaming-entertainment/p/N82E16834314849", False)
+    , ("https://www.newsandstar.co.uk/news/carlisle-man-who-had-ecstasy-tablets-sent-to-friend-s-house-jailed-1.1061538/", False)
+    , ("https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr166.pdf", False)
+    , ("https://www.nextnewdeal.net/finance/", False)
+    , ("https://www.nicvape.com/store/p/48-1-liter-of-100-mg-ml.aspx", False)
+    , ("https://www.nimh.nih.gov/about/directors/thomas-insel/blog/2011/the-economics-of-health-care-reform", False)
+    , ("https://www.nitrd.gov/pubs/bluebooks/2001/asci.html", False)
+    , ("https://www.nlsinfo.org/content/cohorts/nlsy79-children", False)
+    , ("https://www.nngroup.com/articles/computer-skill-levels/", False)
+    , ("https://www.northwestgeorgianews.com/road-check-leads-to-meth-charges-for-rome-woman/article_367ea18e-1532-11eb-92a7-cf0f8ab22367.html", False)
+    , ("https://www.notion.so/GPT3-Dataset-Task-Model-b97a267d6f5f44e688ba4f7ec85c00cc", False)
+    , ("https://www.nottinghampost.com/Nottingham-philosophy-student-caught-importing/story-27890513-detail/story.html", False)
+    , ("https://www.nrdc.org/issues/minimize-harm-and-security-risks-nuclear-energy", False)
+    , ("https://www.nsa.gov/news-features/press-room/Article/1630570/national-cryptologic-museum-opens-new-exhibit-on-dr-john-nash/", False)
+    , ("https://www.ntticc.or.jp/pub/ic_mag/ic018/intercity/higashi_E.html", False)
+    , ("https://www.oglaf.com/glindr/", False)
+    , ("https://www.olin.edu/", False)
+    , ("https://www.om.nl/actueel/nieuwsberichten/@88570/aanhoudingen/", False)
+    , ("https://www.optimizely.com/insights/blog/how-does-page-load-time-impact-engagement/", False)
+    , ("https://www.oreilly.com/library/view/cjkv-information-processing/9780596156114/", False)
+    , ("https://www.osti.gov/biblio/10172219", False)
+    , ("https://www.overthinkingit.com/2012/11/08/my-little-pony-plato/", False)
+    , ("https://www.oxbridgenotes.com/articles/autodidactism/note_taking", False)
+    , ("https://www.packtpub.com/product/exploring-gpt-3/9781800563193", False)
+    , ("https://www.petcarerx.com/pcrx/ProductPages/Product.aspx?pid=10983", False)
+    , ("https://www.petco.com/shop/en/petcostore/product/friskies-salmon-canned-cat-food", False)
+    , ("https://www.phillymag.com/news/2007/06/18/medicine-this-will-keep-you-awake/", False)
+    , ("https://www.pixiv.net/users/38983753", False)
+    , ("https://www.plymouthherald.co.uk/Devon-man-partner-jailed-selling-drugs-dark-web/story-28829157-detail/story.html", False)
+    , ("https://www.politie.nl/nieuws/2015/maart/9/01-onderzoek-naar-verzilveren-440.000-euro-aan-bitcoins.html", False)
+    , ("https://www.polizei.bayern.de/aktuelles/pressemitteilungen/index.html?og2=0901100000000", False)
+    , ("https://www.polygon.com/2020/1/14/21064608/microsoft-kinect-history-rise-and-fall", False)
+    , ("https://www.popularmechanics.com/cars/a17477/why-the-hell-do-they-still-make-car-alarms/", False)
+    , ("https://www.povertyactionlab.org/sites/default/files/publications/49%20Does%20Price%20Matter%20in%20Charitable%20Giving%20Project.pdf", False)
+    , ("https://www.preclinicaltrials.eu/", False)
+    , ("https://www.pressandjournal.co.uk/fp/news/aberdeen-aberdeenshire/865699/top-banker-cleared-of-defrauding-pensioners-but-fined-for-selling-details-on-dark-web/", False)
+    , ("https://www.propublica.org/article/when-evidence-says-no-but-doctors-say-yes", False)
+    , ("https://www.prospecbio.com/beta_ngf_human", False)
+    , ("https://www.rbmojournal.com/article/S1472-6483(19)30381-5/fulltext", False)
+    , ("https://www.rechem.ca/index.php?_a=viewDoc&docId=8", False)
+    , ("https://www.reddit.com/comments/1x0p1b", False)
+    , ("https://www.redliongrantchester.co.uk/", False)
+    , ("https://www.repository.cam.ac.uk/bitstream/handle/1810/3484/RamseyText.html?sequence=5", False)
+    , ("https://www.rescuetime.com/teams", False)
+    , ("https://www.researchandmarkets.com/reportinfo.asp?report_id=305358", False)
+    , ("https://www.richardwpatterson.com/PattersonJMP11_18.pdf", False)
+    , ("https://www.r-inla.org/", False)
+    , ("https://www.rollingstone.com/culture/culture-features/smiley-face-murder-serial-killer-drowning-death-882042/", False)
+    , ("https://www.rsm.nl/fileadmin/Images_NEW/Departments/TOM/Calis_Thijmen_Thesis.pdf", False)
+    , ("https://www.rug.nl/ggdc/productivity/pwt/pwt-releases/pwt-6.1?lang=en", False)
+    , ("https://www.salesforce.com/products/einstein/ai-research/tl-dr-reinforced-model-abstractive-summarization/", False)
+    , ("https://www.sandia.gov/research/facilities/technology_deployment_centers/explosive_component.html", False)
+    , ("https://www.scmp.com/news/china/science/article/3002346/chinas-first-cloned-police-dog-reports-duty", False)
+    , ("https://www.scq.ubc.ca/files/63401nature.pdf", False)
+    , ("https://www.screendaily.com/awards/hideaki-anno-evangelion/5081255.article?blocktitle=INTERVIEWS&contentID=41866", False)
+    , ("https://www.sdfertility.com/fertility-treatments/genetic-testing/pgd", False)
+    , ("https://www.seacoastonline.com/story/news/education/2014/05/07/silas-students-to-show-lawmakers/37409876007/", False)
+    , ("https://www.sec.gov/Archives/edgar/data/1766502/000119312519124430/d665122ds1.htm", False)
+    , ("https://www.semanticscholar.org/paper/Donor-Sibling-Networks-as-a-Vehicle-for-Expanding-Hertz-Nelson/6e736c71cd499fa03af6dabad3009335a8259745?p2df#page=14", False)
+    , ("https://www.sendspace.com/file/ozr19p", False)
+    , ("https://www.shine.cn/news/metro/1909101776/", False)
+    , ("https://www.shroomery.org/forums/showflat.php/Number/18993960", False)
+    , ("https://www.si.edu/", False)
+    , ("https://www.simonsfoundation.org/2009/07/20/mathematicians-solve-45-year-old-kervaire-invariant-puzzle/", False)
+    , ("https://www.slideshare.net/codeblue_jp/igor-skochinsky-enpub", False)
+    , ("https://www.snopes.com/fact-check/school-lemonade-laxatives/", False)
+    , ("https://www.soci.org/Chemistry-and-Industry/CnI-Data/2010/24/Brussels-a-bittersweet-story", False)
+    , ("https://www.sophos.com/fr-fr/medialibrary/PDFs/technical%20papers/samosseikovb2009paper.pdf", False)
+    , ("https://www.spacedrepetition.com/", False)
+    , ("https://www.sparkfun.com/tutorials", False)
+    , ("https://www.spectator.co.uk/article/how-a-fraudulent-experiment-set-psychiatry-back-decades", False)
+    , ("https://www.speedtest.net/", False)
+    , ("https://www.spermbankcalifornia.com/sperm-bank-cost.html#Cryopreservation", False)
+    , ("https://www.ssa.gov/oact/STATS/table4c6.html", False)
+    , ("https://www.ssi.shimadzu.com/products/powders-particle-size-analyzers/index.html", False)
+    , ("https://www.startupschool.org/", False)
+    , ("https://www.stat.colostate.edu/~hooten/papers/pdf/Hooten_Hobbs_EcolMono_2015.pdf", False)
+    , ("https://www.stats.govt.nz/information-releases/births-and-deaths-year-ended-december-2018", False)
+    , ("https://www.stroudnewsandjournal.co.uk/news/14491113.Bussage_cannabis_dealer_Chance_Gough_avoids_jail_after_ordering_cocaine_delivery_from_Holland/", False)
+    , ("https://www.taylorusa.com/kitchen/thermometers/5-commercial-anti-microbial-instant-read-thermometer.html", False)
+    , ("https://www.teamten.com/lawrence/writings/coding-machines/", False)
+    , ("https://www.teasetc.com/", False)
+    , ("https://www.tennessean.com/story/news/crime/2014/06/01/xanax-pills-seized-hermitage/9847299/", False)
+    , ("https://www.tga.gov.au/personal-importation-scheme", False)
+    , ("https://www.theadvertiser.com/story/news/crime/2016/08/30/lafayette-man-sentenced-18-months-prison-shipping-drugs-via-silk-road/89604606/", False)
+    , ("https://www.thediff.co/p/how-bubbles-and-megaprojects-parallelize", False)
+    , ("https://www.thehomesecuritysuperstore.com/collections/driveway-alarms", False)
+    , ("https://www.theladders.com/research-2/3556/", False)
+    , ("https://www.thelocal.de/20160729/german-darknet-weapons-dealer-sentenced-to-5-years-jail", False)
+    , ("https://www.themarshallproject.org/2018/04/19/framed-for-murder-by-his-own-dna", False)
+    , ("https://www.theroot.com/exactly-how-black-is-black-america-1790895185", False)
+    , ("https://www.thestar.com/vancouver/2018/07/05/bc-lays-claim-to-14-million-us-in-bitcoin-from-drug-dealer-over-alleged-links-to-silk-road.html", False)
+    , ("https://www.thetimes.co.uk/article/dark-net-dealers-dragged-into-the-light-kx05bc3jd", False)
+    , ("https://www.thisamericanlife.org/668/transcript", False)
+    , ("https://www.thv11.com/news/crime/23-yr-old-allegedly-managed-ark-drug-ring-through-postal-service-/100936404", False)
+    , ("https://www.ti.com/product/MSP430F2003", False)
+    , ("https://www.timesofisrael.com/police-investigating-toddler-death-from-nicotine-overdose/", False)
+    , ("https://www.tinyletter.com/", False)
+    , ("https://www.tn.gov/education/early-learning/voluntary-pre-k.html", False)
+    , ("https://www.topic.com/the-62-year-old-child-genius", False)
+    , ("https://www.toplessrobot.com/2010/09/the_12_most_anti-american_anime.php", False)
+    , ("https://www.torproject.org/download/", False)
+    , ("https://www.torservers.net/donate.html", False)
+    , ("https://www.townandcountrymag.com/society/a12108750/personal-protection-dogs/", False)
+    , ("https://www.treasurydirect.gov/govt/reports/pd/histdebt/histdebt_histo5.htm", False)
+    , ("https://www.tuftandneedle.com/", False)
+    , ("https://www.tweaktown.com/news/32703/industry-analyst-still-unsure-of-the-significance-of-hynix-fire/index.html", False)
+    , ("https://www.twitch.tv/videos/416276005#openai", False)
+    , ("https://www.typography.com/blog/text-for-proofing-fonts", False)
+    , ("https://www.uber.com/us/en/beacon/", False)
+    , ("https://www.ummah.com/forum/forum/library/learn-arabic-and-other-languages/qur-an-and-islamic/390413-how-to-memorize-the-quran-and-never-forget-it?381181-How-to-Memorize-the-Quran-and-Never-Forget-it=", False)
+    , ("https://www.unicef.org/pon95/nutr0009.html", False)
+    , ("https://www.unirioja.es/cu/anromero/MofC12.pdf", False)
+    , ("https://www.upjohn.org/data-tools/employment-research-data-center/continuous-longitudinal-manpower-surveys", False)
+    , ("https://www.uscourts.gov/services-forms/federal-court-reporting-program", False)
+    , ("https://www.usgs.gov/special-topics/water-science-school/science/total-water-use-united-states", False)
+    , ("https://www.uso.org/about", False)
+    , ("https://www.uv.es/sestio/TechRep/tr14-03.pdf", False)
+    , ("https://www.vg.no/nyheter/innenriks/i/Ovnm1/fire-paagrepet-for-produksjon-og-nettsalg-av-narkotika", False)
+    , ("https://www.vitacost.com/natures-answer-valerian-root-alcohol-free-1-fl-oz", False)
+    , ("https://www.walesonline.co.uk/news/wales-news/silk-road-20-drug-dealer-9507820", False)
+    , ("https://www.washingtonexaminer.com/weekly-standard/the-history-of-russian-terrorism-dagger-and-swagger", False)
+    , ("https://www.watercoolertrivia.com/blog/gpt-3-vs-water-cooler-trivia-participants-a-human-vs-robot-showdown", False)
+    , ("https://www.wcscanada.org/portals/42/media/file/WSB_Ocelot.pdf", False)
+    , ("https://www.weizmann.ac.il/brain-sciences/labs/dudai/uploads/files/Science-2011-Edelson-108-11.pdf", False)
+    , ("https://www.welt.de/regionales/muenchen/article117869257/Fahnder-zerschlagen-Bitcoin-Drogenring-DarkNet.html", False)
+    , ("https://www.whio.com/news/news/crime-law/police-4-pound-of-pot-mailed-to-oxford/nkgqT/", False)
+    , ("https://www.who.int/classifications/classification-of-diseases", False)
+    , ("https://www.wickedlocal.com/story/weymouth-news/2015/03/27/police-weymouth-man-got-mdma/34892786007/", False)
+    , ("https://www.williamsondailynews.com/news/4846/two-pill-dealers-sentenced-to-federal-prison-for-drug-crimes/", False)
+    , ("https://www.wine-searcher.com/find/jackson+triggs+vidal+ice+rsrv+niagara+peninsula+ontario+canada/1", False)
+    , ("https://www.winonadailynews.com/news/local/crime-and-courts/winona-postal-inspector-sniffs-out-dope/article_1b24cfe9-75ef-5407-9d02-a916907f7259.html", False)
+    , ("https://www.wireheading.com/", False)
+    , ("https://www.worksinprogress.co/issue/better-eats/", False)
+    , ("https://www.wwltv.com/news/Laundry-List-of-Drugs-at-Uptown-Frat-House-Leads-to-Tulane-Student-Arrests-193450441.html", False)
+    , ("https://www.wzzm13.com/mb/news/crime/meth-laden-express-mail-parcel-brings-charges-for-holland-man/287645651", False)
+    , ("https://www.xilinx.com/prs_rls/silicon_spart/0333spartan3.htm", False)
+    , ("https://www.xn--4dbcyzi5a.com/2015/05/%D7%9E%D7%94%D7%95%D7%9C%D7%A0%D7%93-%D7%91%D7%90%D7%94%D7%91%D7%94-%D7%A0%D7%AA%D7%A4%D7%A1-%D7%A6%D7%A2%D7%99%D7%A8-%D7%A9%D7%94%D7%96%D7%9E%D7%99%D7%9F-%D7%97%D7%91%D7%99%D7%9C%D7%95%D7%AA-%D7%A7/", False)
+    , ("https://www.ycombinator.com/documents/", False)
+    , ("https://www.york.ac.uk/depts/maths/histstat/fisher274.pdf", False)
+    , ("https://yunnansourcing.us/", False)
+    , ("http://tigersophia.blogspot.com/2011/04/q-elves-dirtand-michelangelo.html", False)
+    , ("http://uberty.org/wp-content/uploads/2015/07/Norbert_Wiener_Cybernetics.pdf", False)
+    , ("http://umichrl.pbworks.com/w/page/7597597/Successes%20of%20Reinforcement%20Learning", False)
+    , ("http://vanishingpoint.air-nifty.com/blog/2008/08/post_7c10.html", False)
+    , ("http://whatis.suburbansenshi.com/index.php?title=Gemini_Sunrise", False)
+    , ("http://www.actionnewsnow.com/news/durham-couple-indicted-as-part-of-silk-road-2-0-crackdown/", False)
+    , ("http://www.ajnr.org/content/33/1/49.full", False)
+    , ("http://www.bartokdesign.com/japan/0-blog_news/spherical_drain_plug_1.php", False)
+    , ("http://www.berlin.de/polizei/polizeimeldungen/pressemitteilung.261025.php", False)
+    , ("http://www-biba.inrialpes.fr/Jaynes/cc18i.pdf", False)
+    , ("http://www.buffalonews.com/city-region/police-courts/former-ub-student-admits-using-bitcoins-while-dealing-in-drugs-20160823", False)
+    , ("http://www.chathamstartribune.com/news/article_92645de2-c7ed-11e4-8649-679fa666eaf8.html", False)
+    , ("http://www.cs.cornell.edu/~caruana/compression.kdd06.pdf", False)
+    , ("http://www.dailyfinance.com/2010/02/06/girl-scout-cookies-by-the-numbers-just-where-do-all-those-dolla/", False)
+    , ("http://www.ecns.cn/news/cns-wire/2019-03-19/detail-ifzfmzhu2193677.shtml", False)
+    , ("http://www.elon.edu/docs/e-web/academics/business/economics/faculty/rouse/2011-02-14%20The%20Impact%20of%20year%20round%20schooling.pdf", False)
+    , ("http://www.e-sanitas.edu.co/Diplomados/endocrino/modulo_11/Biblioteca/Record%20trial%20Ca%20%20Vit%20D%20Lancet%20April%2005.pdf", False)
+    , ("http://www.expert-reviews.com/doi/full/10.1586/ern.12.36", False)
+    , ("http://www.faqs.org/faqs/compression-faq/", False)
+    , ("http://www.foxcarolina.com/story/28631102/teen-arrested-after-allegedly-buying-lsd-online", False)
+    , ("http://www.genwaybio.com/recombinant-human-beta-ngf", False)
+    , ("http://www.hakalalabs.com/testing.html", False)
+    , ("http://www.imminst.org/", False)
+    , ("http://www.jackkinsella.ie/articles/janki-method", False)
+    , ("http://www.joshdean.com/files/articles/pdf/feat_clones44.pdf", False)
+    , ("http://www.kptv.com/story/15084456/battle-ground-schools-let-students-sleep-in", False)
+    , ("http://www.lightspeedmagazine.com/fiction/exhalation/", False)
+    , ("http://www.locusmag.com/2002/Issue09/GaimanWolfe.html", False)
+    , ("http://www.loudountimes.com/news/article/drug_charges_dropped_against_prominent_leesburg_businessman543", False)
+    , ("http://www.mediafire.com/error.php?errno=320&origin=download", False)
+    , ("http://www.mit.edu/people/rei/manga-inoue.html", False)
+    , ("http://www.neuroscience.cam.ac.uk/publications/download.php?id=11205", False)
+    , ("http://www.nicovideo.jp/watch/sm23047550", False)
+    , ("http://www.ohri.ca/programs/clinical_epidemiology/nos_manual.pdf", False)
+    , ("http://www.oliverwinery.com/index.cfm?method=storeproducts.showdrilldown&productid=565D8BC6-1CC4-FBB6-23C6-013703DB5D6A", False)
+    , ("http://www.polizei.sachsen.de/de/MI_2015_34938.htm", False)
+    , ("http://www.postandcourier.com/article/20130709/PC16/130709464/1177/lawyer-charleston-man-denies-connection-to-dea-bitcoin-seizure-and-illicit-silk-road-drug-marketplace", False)
+    , ("http://www.progressive.org/images/pdf/1179.pdf", False)
+    , ("http://www.rean-wings.net/chara01.html", False)
+    , ("http://www.roangelo.net/logwitt/logwitt5.html", False)
+    , ("http://www.sld.cu/galerias/pdf/sitios/revsalud/observational_research,_randomised.pdf", False)
+    , ("http://www.smarthome.com/seco-larm-sm-226l-garage-door-contacts-for-closed-circuits.html", False)
     ]
