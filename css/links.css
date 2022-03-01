@@ -425,7 +425,7 @@ a[data-link-icon='𝔐']::after {
 
 a[data-link-icon='▽']::after { /* The Verge */
     --link-icon-size: 1em;
-    opacity: 0.85;
+    opacity: 0.80;
 }
 
 a[data-link-icon='✉']::after {
@@ -504,6 +504,8 @@ a[data-link-icon='𝒩𝒴']::after { /* nymag.com New York Magazine */
 }
 
 a[data-link-icon='𝕳']::after { /* NZ Herald */
+    --link-icon-offset-y: 0.4em;
+
     opacity: 0.7;
 }
 
@@ -538,7 +540,7 @@ a[data-link-icon-type*='quad']::after {
     text-align: center;
     left: 0;
     bottom: 0.3em;
-    font-size: 0.55em;
+    font-size: 0.52em;
     font-weight: bold;
     line-height: 0.8;
     width: 1.5em;
@@ -726,9 +728,9 @@ a[data-link-icon='miri']::after {
 }
 
 a[data-link-icon='newyorktimes']::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.15em;
-    --link-icon-offset-y: 0.2em;
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.05em;
+    --link-icon-offset-y: 0.10em;
 
     opacity: 0.6;
 }
@@ -759,13 +761,12 @@ a[data-link-icon='openai']:hover::after {
 }
 
 a[data-link-icon='patreon']::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.25em;
+    --link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.10em;
+    --link-icon-offset-y: 0.15em;
 
     opacity: 0.65;
 }
-
 a[data-link-icon='plos']::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
