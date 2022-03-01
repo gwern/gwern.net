@@ -509,39 +509,16 @@ a[data-link-icon='𝕳']::after { /* NZ Herald */
 }
 
 /****************************/
-/* Triple-letter 'tri' initials: too few for quad, but too big for regular font size/offset. Common with TLA orgs. */
-a[data-link-icon='ABC']::after,
-a[data-link-icon='AII']::after,
-a[data-link-icon='P@D']::after, /* Ponies At Dawn */
-a[data-link-icon='ANN']::after, /* Anime News Network */
-a[data-link-icon='BBC']::after,
-a[data-link-icon='BGG']::after, /* Board Game Geek */
-a[data-link-icon='CDC']::after,
-a[data-link-icon='ESR']::after, /* Eric S. Raymond */
-a[data-link-icon='FDA']::after,
-a[data-link-icon='FFN']::after,
-a[data-link-icon='FRK']::after,
-a[data-link-icon='GPP']::after,
-a[data-link-icon='KYM']::after,
-a[data-link-icon='MAL']::after, /* MyAnimeList */
-a[data-link-icon='MIT']::after,
-a[data-link-icon='MoR']::after,
-a[data-link-icon='NGE']::after, /* Evangelion */
-a[data-link-icon='ODT']::after, /* Otago Daily Times */
-a[data-link-icon='OUP']::after,
-a[data-link-icon='SEP']::after,
-a[data-link-icon='SFG']::after,
-a[data-link-icon='SOS']::after,
-a[data-link-icon='SSC']::after,
-a[data-link-icon='TDA']::after,
-a[data-link-icon='WSJ']::after {
+/* Triple-letter 'tri' initials: too few for quad, but too big for
+   regular font size/offset. Common with TLA orgs. */
+a[data-link-icon-type*='tri']::after {
     --link-icon-offset-y: 0.6em;
     font-size: 0.6em;
     opacity: 0.90;
 }
 
 /****************************/
-/*  Quad-letter square icons.
+/*  Quad-letter 'quad' square icons.
     */
 a[data-link-icon-type*='quad']::after {
     text-indent: 0;
