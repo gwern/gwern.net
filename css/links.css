@@ -135,9 +135,9 @@ em .has-annotation {
 /*  Common styles.
     */
 a[data-link-icon-type='svg']::after {
-    --link-icon-size: 0.6em;
+    --link-icon-size: 0.55em;
     --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.15em;
+    --link-icon-offset-y: 0.10em;
 
     content: "";
     position: static;
@@ -317,9 +317,11 @@ a[data-link-icon-type*='sans']::after {
 }
 a[data-link-icon-type*='mono']::after {
     font-family: var(--GW-monospaced-font-stack);
+    opacity: 0.7;
 }
 a[data-link-icon-type*='bold']::after {
     font-weight: bold;
+    opacity: 0.83;
 }
 a[data-link-icon-type*='italic']::after {
     font-style: italic;
@@ -336,6 +338,13 @@ a[data-link-icon-type*='overline']::after {
 /******************/
 /*  Logotype icons.
     */
+
+a[data-link-icon='𝛘']::after { /* Arxiv */
+--link-icon-size: 0.7em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.6em;
+        opacity: 0.7;
+}
 
 a[data-link-icon='❐']::after { /* Booru */
     --link-icon-size: 0.8em;
@@ -358,7 +367,7 @@ a[data-link-icon='♡']::after { /* Fandom/Wikia */
 
 a[data-link-icon='MS']::after {
     --link-icon-size: 0.65em;
-    --link-icon-offset-y: 0.3em;
+    --link-icon-offset-y: 0.35em;
 }
 
 a[data-link-icon='n']::after {
@@ -402,7 +411,7 @@ a[data-link-icon='▅▇▃']::after {
     opacity: 0.7;
 }
 
-a[data-link-icon="▲"]::after { /* Melting Asphalt / Simmler */
+a[data-link-icon='▲']::after { /* Melting Asphalt / Simmler */
     --link-icon-offset-x: 0;
     --link-icon-offset-y: 0.25em;
 
@@ -490,14 +499,23 @@ a[data-link-icon='⛨']::after { /* Cambridge */
     --link-icon-offset-x: 0em;
 }
 
+
+a[data-link-icon='𝒩𝒴']::after { /* nymag.com New York Magazine */
+    opacity: 0.7;
+}
+
+a[data-link-icon='𝕳']::after { /* NZ Herald */
+    opacity: 0.7;
+}
+
 /****************************/
-/* Triple-letter initials: too few for quad, but too big for regular font size/offset. Common with TLA orgs. */
+/* Triple-letter 'tri' initials: too few for quad, but too big for regular font size/offset. Common with TLA orgs. */
 a[data-link-icon='ABC']::after,
 a[data-link-icon='AII']::after,
 a[data-link-icon='P@D']::after, /* Ponies At Dawn */
-a[data-link-icon='ANN']::after, /* Anime News Network*/
+a[data-link-icon='ANN']::after, /* Anime News Network */
 a[data-link-icon='BBC']::after,
-a[data-link-icon='BGG']::after, /* Board Game Geek: shrink & elevate */
+a[data-link-icon='BGG']::after, /* Board Game Geek */
 a[data-link-icon='CDC']::after,
 a[data-link-icon='ESR']::after, /* Eric S. Raymond */
 a[data-link-icon='FDA']::after,
@@ -505,10 +523,10 @@ a[data-link-icon='FFN']::after,
 a[data-link-icon='FRK']::after,
 a[data-link-icon='GPP']::after,
 a[data-link-icon='KYM']::after,
-a[data-link-icon='MAL']::after, /* MyAnimeList: shrink & elevate */
+a[data-link-icon='MAL']::after, /* MyAnimeList */
 a[data-link-icon='MIT']::after,
-a[data-link-icon='MOR']::after,
-a[data-link-icon='NGE']::after, /* Evangelion: shrink & elevate */
+a[data-link-icon='MoR']::after,
+a[data-link-icon='NGE']::after, /* Evangelion */
 a[data-link-icon='ODT']::after, /* Otago Daily Times */
 a[data-link-icon='OUP']::after,
 a[data-link-icon='SEP']::after,
@@ -662,9 +680,9 @@ a[data-link-icon='github']::after {
 }
 
 a[data-link-icon='google']::after {
-    --link-icon-size: 0.625em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.25em;
+    --link-icon-size: 0.6em;
+    --link-icon-offset-x: 0.09em;
+    --link-icon-offset-y: 0.2em;
 
     opacity: 0.5;
 }
@@ -741,11 +759,11 @@ a[data-link-icon='nlm-ncbi']:hover::after {
 }
 
 a[data-link-icon='openai']::after {
-    --link-icon-size: 0.8em;
-    --link-icon-offset-x: 0.13em;
+    --link-icon-size: 0.75em;
+    --link-icon-offset-x: 0.06em;
     --link-icon-offset-y: 0.14em;
 
-    opacity: 0.75;
+    opacity: 0.70;
 }
 a[data-link-icon='openai']:hover::after {
     opacity: 0.4;
@@ -795,13 +813,12 @@ a[data-link-icon='stackexchange']::after {
 }
 
 a[data-link-icon='substack']::after {
-    --link-icon-size: 0.7em;
+    --link-icon-size: 0.60em;
     --link-icon-offset-x: 0.2em;
     --link-icon-offset-y: 0.2em;
 
-    opacity: 0.6;
+    opacity: 0.55;
 }
-
 a[data-link-icon='theguardian']::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.15em;
@@ -887,7 +904,7 @@ a[data-link-icon='youtube']:hover::after {
 }
 
 a[data-link-icon='the-telegraph']::after { /* Darken & shift left */
-    opacity: 0.80;
+    opacity: 0.77;
     --link-icon-offset-x: 0.1em;
 }
 
@@ -895,7 +912,7 @@ a[data-link-icon='open-philanthropy']::after { /* Darken & shift left/up */
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.1em;
-    opacity: 0.90;
+    opacity: 0.95;
 }
 
 a[data-link-icon='atlas-obscura']::after { /* Darken & shift left/up */
@@ -918,6 +935,13 @@ a[data-link-icon='apple']::after { /* Darken, enlarge, & shift left/up */
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: 0.1em;
     opacity: 0.5;
+}
+
+a[data-link-icon='quanta']::after { /* Darken, enlarge, & shift left/up */
+ --link-icon-size: 1em;
+    --link-icon-offset-y: 0em;
+    --link-icon-offset-x: 0.1em;
+    opacity: 1;
 }
 
 /*=------------------=*/

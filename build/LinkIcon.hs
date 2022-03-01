@@ -75,7 +75,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
  | u' "google" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
- | u' "nvidia"    = aI "N" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
+ | u' "nvidia"  || u'' "nvlabs.github.io"   = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai"    = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
  | u'' "boingboing.net" = aI "bb" "text,mono"
@@ -214,7 +214,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "elifesciences.org" = aI "eL" "text,sans"
  | u'' "www.w3.org" = aI "W3" "text,sans"
  | u'' "www.metafilter.com" || u'' "ask.metafilter.com" = aI "MF" "text,sans,italic"
- | u'' "qz.com" = aI "QZ" "text,mono"
+ | u'' "qz.com" = aI "QZ" "text,sans"
  | u'' "blog.23andme.com" || u'' "23andme.com" = aI "23" "text"
  | u'' "www.ft.com" = aI "FT" "text"
  | u'' "techcrunch.com" = aI "TC" "text,mono"
@@ -243,7 +243,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
  | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULL WIDTH EQUAL SIGN' turns out to be *too* big and stack up three high.
- | u' "https://mitpress.mit.edu/sites/default/files/sicp/" = aI "SICP" "text,quad,sans"
+ | u' "https://mitpress.mit.edu/sites/default/files/sicp/" = aI "SI CP" "text,quad,sans"
  | u' "https://mitpress.mit.edu/books/" = aI "MIT" "text,mono" -- if it's not _SICP_, fall back.x
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
  | u'' "gizmodo.com" = aI "GIZM" "text,quad,mono"
@@ -254,7 +254,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "VICE" "text,quad,italic"
  | u'' "www.courtlistener.com" || u'' "archive.recapthelaw.org"  || u'' "storage.courtlistener.com" || u'' "www.courtlistener.com" || u'' "www.pacer.uscourts.gov" || u'' "www.pacer.gov" || u'' "pcl.uscourts.gov" = aI "PACR" "text,quad"
  | u'' "www.nybooks.com" = aI "NYRB" "text,quad"
- | u'' "www.jstor.org" = aI "JSTOR" "text,quad"
+ | u'' "www.jstor.org" = aI "JSTR" "text,quad"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -522,7 +522,8 @@ linkIconTestUnits =
          , ("https://www.angelfire.com/anime4/mdwigs/Asuka.html", "NGE", "text")
          , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2793346/",  "nlm-ncbi","svg")
          , ("https://www.clinicaltrials.gov/ct2/show/NCT01684306",  "nlm-ncbi","svg")
-         , ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "N","text,sans,italic")
+         , ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic")
+         , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
          , ("https://6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg")
          , ("https://online.wsj.com/article/SB10000872396390443696604577647870908169992.html",  "WSJ","text")
          , ("/docs/ai/2020-chen.pdf#openai",  "openai","svg")
@@ -741,9 +742,10 @@ linkIconTestUnits =
          , ("https://www.independent.co.uk/news/uk/this-britain/the-jousting-accident-that-turned-henry-viii-into-a-tyrant-1670421.html", "TI", "text")
          , ("https://www.fastcompany.com/40438376/after-a-comeback-23andme-faces-its-next-test", "FC", "text")
          , ("https://rjlipton.wordpress.com/2015/07/28/playing-chess-with-the-devil/", "P = NP", "text,quad")
-         , ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SICP", "text,quad,sans")
+         , ("https://mitpress.mit.edu/sites/default/files/sicp/full-text/sicp/book/node13.html", "SI CP", "text,quad,sans")
          , ("https://mitpress.mit.edu/books/book-ground", "MIT", "text,mono")
          , ("https://blog.eleuther.ai/announcing-20b/", "eleutherai", "svg")
+         , ("https://blog.eleuther.ai/year-one/", "eleutherai", "svg")
          , ("https://6b.eleuther.ai/", "eleutherai", "svg")
          , ("https://www.eleuther.ai/projects/gpt-neo/", "eleutherai", "svg")
          , ("https://pile.eleuther.ai/", "eleutherai", "svg")
@@ -763,7 +765,7 @@ linkIconTestUnits =
          , ("https://ask.metafilter.com/16136/Fog-Gun-Shower", "MF", "text,sans,italic")
          , ("https://www.metafilter.com/183095/On-having-sufficient-complexity-to-allow-for-arbitrary-computation", "MF", "text,sans,italic")
          , ("https://www.quantamagazine.org/the-busy-beaver-game-illuminates-the-fundamental-limits-of-math-20201210/", "quanta", "svg")
-         , ("https://qz.com/1028528/custos-startup-uses-bitcoin-bounties-to-make-pirates-rat-on-one-another/", "QZ", "text,mono")
+         , ("https://qz.com/1028528/custos-startup-uses-bitcoin-bounties-to-make-pirates-rat-on-one-another/", "QZ", "text,sans")
          , ("https://blog.23andme.com/23andme-research/you-scream-i-scream-our-genes-scream-for-ice-cream/", "23", "text")
          , ("https://www.ft.com/content/009050e4-75ea-11e2-9891-00144feabdc0", "FT", "text")
          , ("https://techcrunch.com/2013/02/23/the-chinese-are-coming-the-chinese-are-coming/", "TC", "text,mono")
@@ -787,5 +789,5 @@ linkIconTestUnits =
          , ("https://www.scottaaronson.com/democritus/", "S.A.", "text,sans")
          , ("https://theconversation.com/altruism-in-birds-magpies-have-outwitted-scientists-by-helping-each-other-remove-tracking-devices-175246", "🗨", "text")
          , ("https://patch.com/california/davis/davis-pair-arrested-after-cops-intercept-3-000-suspected-ecstasy-pills-mail-serve", "P", "text,sans")
-         , ("http://www.jstor.org/stable/10.1086/468061", "JSTOR", "text,quad")
+         , ("http://www.jstor.org/stable/10.1086/468061", "JSTR", "text,quad")
         ]
