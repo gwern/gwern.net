@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-02-27 10:30:25 gwern"
+When:  Time-stamp: "2022-03-01 11:31:00 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -530,6 +530,29 @@ goodDomainsSimple =
     , "caniuse.com"
     , "bldgblog.com"
     , "betabeat.com"
+    , "www.chinadaily.com.cn"
+    , "googlesystem.blogspot.com"
+    , "paulfchristiano.com"
+    , "people.csail.mit.edu"
+    , "quantifiedself.com"
+    , "socghop.appspot.com"
+    , "unenumerated.blogspot.com"
+    , "web.archive.org"
+    , "www.aging-us.com"
+    , "www.belfasttelegraph.co.uk"
+    , "www.benkuhn.net"
+    , "www.bostonglobe.com"
+    , "www.brainpreservation.org"
+    , "www.bu.edu"
+    , "www.c82.net"
+    , "www.catalogtree.net"
+    , "www.cia.gov"
+    , "www.dailymail.co.uk"
+    , "www.ft.com"
+    , "www.mangaupdates.com"
+    , "www.mentalfloss.com"
+    , "www.sacbee.com"
+    , "www.sankakucomplex.com"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com", ".oxfordjournals.org"]
@@ -1008,6 +1031,38 @@ badDomainsSimple = ["1d4chan.org",
     , "bactra.org"
     , "nitro.biosci.arizona.edu"
     , "cse.google.com"
+    , "www.alljapaneseallthetime.com"
+    , "www.buttercupfestival.com"
+    , "www.infinitychess.com"
+    , "apps.apple.com"
+    , "ar5iv.labs.arxiv.org"
+    , "money.cnn.com"
+    , "play.google.com"
+    , "polisen.se"
+    , "theconversation.com"
+    , "www.alternatehistory.com"
+    , "www.alzchem.com"
+    , "www.animeigo.com"
+    , "www.antonhowes.com"
+    , "www.apa.org"
+    , "www.artbreeder.com"
+    , "www.awe.gov.au"
+    , "www.backblaze.com"
+    , "www.belfastlive.co.uk"
+    , "www.bizjournals.com"
+    , "www.cambridgebrainsciences.com"
+    , "www.cato.org"
+    , "www.census.gov"
+    , "www.city-journal.org"
+    , "www.cnbc.com"
+    , "www.drugsdata.org"
+    , "www.jstor.org"
+    , "www.smh.com.au"
+    , "www.walmart.com"
+    , "www.williamsburgmarketplace.com"
+    , "www.willatworklearning.com"
+    , "www.wdaz.com"
+    , "www.wangafu.net"
    ]
 
 url :: T.Text -> Inline
@@ -1462,6 +1517,29 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://caniuse.com/?search=hyphenate", True)
     , ("https://bldgblog.com/2017/01/the-season-of-burning-trucks/", True)
     , ("http://betabeat.com/2011/07/another-midtown-restaurant-hudson-eatery-now-accepts-bitcoin/", True)
+    , ("http://www.chinadaily.com.cn/opinion/2011-09/17/content_13725092.htm", True)
+    , ("https://googlesystem.blogspot.com/2013/07/google-alerts-drops-rss-feeds.html", True)
+    , ("https://paulfchristiano.com/ea/", True)
+    , ("https://people.csail.mit.edu/mrub/VisualMic/", True)
+    , ("https://quantifiedself.com/blog/spaced-repetition-and-learning/", True)
+    , ("https://socghop.appspot.com/gsoc/student_project/show/google/gsoc2009/haskell/t124022467805", True)
+    , ("https://unenumerated.blogspot.com/2011/05/bitcoin-what-took-ye-so-long.html", True)
+    , ("https://web.archive.org/web/20160205133519/https://www.baka-tsuki.org/project/index.php?title=Utsuro_no_Hako:Volume_1", True)
+    , ("https://www.aging-us.com/article/100415/text", True)
+    , ("https://www.belfasttelegraph.co.uk/news/republic-of-ireland/article30724056.ece", True)
+    , ("https://www.benkuhn.net/11/", True)
+    , ("https://www.bostonglobe.com/ideas/2014/03/15/the-poor-neglected-gifted-child/rJpv8G4oeawWBBvXVtZyFM/story.html", True)
+    , ("https://www.brainpreservation.org/?path=prize", True)
+    , ("https://www.bu.edu/globalbeat/nuclear/Kristensen1097.html", True)
+    , ("https://www.c82.net/euclid/", True)
+    , ("https://www.catalogtree.net/about", True)
+    , ("https://www.cia.gov/news-information/press-releases-statements/2014-press-releases-statements/cia-declassifies-agency-role-in-publishing-doctor-zhivago.html", True)
+    , ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", True)
+    , ("https://www.ft.com/content/da7b86a3-a8a7-4a0b-a26f-38abda7e7f86", True)
+    , ("https://www.mangaupdates.com/series.html?id=2701", True)
+    , ("https://www.mentalfloss.com/article/94569/clair-patterson-scientist-who-determined-age-earth-and-then-saved-it", True)
+    , ("https://www.sacbee.com/news/local/crime/article2598075.html", True)
+    , ("https://www.sankakucomplex.com/2011/11/01/which-are-worse-the-seiyuu-or-their-creepy-fans/", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
@@ -1920,4 +1998,36 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://bayes.wustl.edu/etj/articles/general.background.ps.gz", False)
     , ("http://bactra.org/weblog/algae-2012-09.html", False)
     , ("https://ar5iv.labs.arxiv.org/html/2001.04642?fallback=original", False)
+    , ("http://www.alljapaneseallthetime.com/blog/you-dont-have-a-foreign-language-problem-you-have-an-adult-literacy-problem/", False)
+    , ("http://www.buttercupfestival.com/poetry.htm", False)
+    , ("http://www.infinitychess.com/Page/Public/Article/DefaultArticle.aspx?id=118", False)
+    , ("https://apps.apple.com/us/app/ankisrs/id373493387", False)
+    , ("https://ar5iv.labs.arxiv.org/html/2001.04642?fallback=original", False)
+    , ("https://money.cnn.com/magazines/fortune/fortune_archive/2006/04/03/8373034/index.htm", False)
+    , ("https://play.google.com/store/apps/details?id=com.ankerl.singlenback", False)
+    , ("https://polisen.se/Aktuellt/Nyheter/2015/Mars/Polisen-stoppade-droghandel-pa-natet/", False)
+    , ("https://theconversation.com/intelligence-inheritance-three-genes-that-add-to-your-iq-score-31397", False)
+    , ("https://www.alternatehistory.com/forum/threads/victoria.10/", False)
+    , ("https://www.alzchem.com/", False)
+    , ("https://www.animeigo.com/about/secret-history-animeigo", False)
+    , ("https://www.antonhowes.com/", False)
+    , ("https://www.apa.org/monitor/2011/09/achievement.aspx", False)
+    , ("https://www.artbreeder.com/", False)
+    , ("https://www.awe.gov.au/biosecurity-trade/cats-dogs/frequently-asked-questions", False)
+    , ("https://www.backblaze.com/blog/hard-drive-cost-per-gigabyte/", False)
+    , ("https://www.belfastlive.co.uk/news/belfast-news/northern-ireland-men-jailed-over-9147435", False)
+    , ("https://www.bizjournals.com/albany/stories/2010/01/11/focus2.html?page=all", False)
+    , ("https://www.cambridgebrainsciences.com/", False)
+    , ("https://www.cato.org/pubs/pas/pa-298.html", False)
+    , ("https://www.census.gov/newsroom/releases/archives/income_wealth/cb11-157.html", False)
+    , ("https://www.city-journal.org/html/it-hurts-therefore-i-am-12341.html", False)
+    , ("https://www.cnbc.com/2018/03/23/elon-musk-spacex-and-tesla-were-two-of-the-dumbest-business-ideas.html", False)
+    , ("https://www.drugsdata.org/faq.php", False)
+    , ("https://www.jstor.org/stable/10.1086/468061", False)
+    , ("https://www.smh.com.au/technology/teens-visit-hidden-website-for-drugs-20130319-2gddg.html", False)
+    , ("https://www.walmart.com/ip/Great-Value-Fudge-Mint-Cookies-10-oz/11997740", False)
+    , ("http://www.williamsburgmarketplace.com/webapp/wcs/stores/servlet/ProductView?categoryId=14332&catalogId=12122", False)
+    , ("http://www.willatworklearning.com/2005/11/research_review.html", False)
+    , ("http://www.wdaz.com/news/3691219-number-defendants-charged-fentanyl-overdoses-5", False)
+    , ("http://www.wangafu.net/~nickm/", False)
     ]
