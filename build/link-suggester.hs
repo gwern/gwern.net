@@ -349,7 +349,7 @@ whiteList = M.fromList [
   , ( "http://leipper.org/manuals/zip-fill/safelocks_for_compscientist.pdf"
     , [ "Safecracking for the computer scientist" ]
     )
-  , ( "http://mason.gmu.edu/~rhanson/extraord.pdf"
+  , ( "https://mason.gmu.edu/~rhanson/extraord.pdf"
     , [ "When Do Extraordinary Claims Give Extraordinary Evidence" ]
     )
   , ( "http://pediatrics.aappublications.org/content/122/2/e472.short"

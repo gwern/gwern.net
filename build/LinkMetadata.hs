@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-26 18:29:39 gwern"
+When:  Time-stamp: "2022-02-26 19:18:52 gwern"
 License: CC-0
 -}
 
@@ -426,7 +426,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("philosophy/ethics", "ethics")
           , ("philosophy/brethren-of-purity", "Brethren of Purity")
           , ("psychology/okcupid", "OKCupid")
-          , ("longevity/semaglutide", "-glutide")
+          , ("longevity/semaglutide", "glutide")
           , ("tominaga-nakamoto", "Tominaga Nakamoto")
           , ("conscientiousness", "Conscientiousness")
           , ("ai/text-style-transfer", "text style transfer")
@@ -444,6 +444,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("reinforcement-learning/oa5", "OA5")
           , ("history/public-domain-review", "Public Domain Review")
           , ("technology", "tech")
+          , ("technology/carbon-capture", "carbon capture")
           , ("technology/digital-antiquarian", "Filfre")
           , ("reinforcement-learning/openai", "OA")
           , ("reinforcement-learning/deepmind", "DM")

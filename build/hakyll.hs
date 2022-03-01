@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-02-26 15:24:01 gwern"
+When: Time-stamp: "2022-02-28 10:49:45 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -91,7 +91,7 @@ main = hakyll $ do
              am <- preprocess readArchiveMetadata
 
              -- popup metadata:
-             preprocess $ printGreen ("Popups parsing…" :: String)
+             preprocess $ printGreen ("Annotations parsing…" :: String)
              meta <- preprocess readLinkMetadataAndCheck
              preprocess $ printGreen ("Writing annotations…" :: String)
              hasArchivedOnce <- preprocess $ newIORef False
