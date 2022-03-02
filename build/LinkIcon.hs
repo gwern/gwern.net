@@ -126,7 +126,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
  | u'' "www.filfre.net" = aI "TDA" "text,tri,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
  | u'' "lwn.net" = aI "LWN" "text,tri,sans"
- | u' ".fast.ai" ||  u' "github.com/fastai/" = aI "F.ai" "text,tri,mono"
+ | u' ".fast.ai" ||  u' "github.com/fastai/" = aI "F.ai" "text,tri"
  | u'' "www.sfgate.com" = aI "SFG" "text,tri,sans"
  | u' ".cbslocal.com" || u'' "www.cbsnews.com" = aI "CBS" "text,tri,sans"
  | u'' "nypost.com" = aI "NYP" "text,tri,sans,italic"
@@ -294,7 +294,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "thisponydoesnotexist.net" = aI  "TPDE" "text,quad,sans"
  | u'' "pcdb.santafe.edu" = aI "PCDB" "text,quad,sans"
  | u'' "vndb.org" = aI "VNDB" "text,quad,sans"
- | u'' "www.huffpost.com" = aI "Huff" "text,quad,sans"
+ | u'' "www.huffpost.com" = aI "HUFF" "text,quad,sans"
  | u'' "longreads.com" = aI "Long" "text,quad"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
@@ -916,9 +916,9 @@ linkIconTestUnits =
          , ("https://pastebin.com/GrV3uYh5", "txt", "svg")
          , ("http://archives.cnn.com/2000/HEALTH/aging/04/19/hearing.loss.wmd/index.html", "CNN", "text,tri,sans")
          , ("https://lwn.net/Articles/286233/", "LWN", "text,tri,sans")
-         , ("https://www.huffpost.com/entry/bill-zeller-dead-princeto_n_805689", "Huff", "text,quad,sans")
+         , ("https://www.huffpost.com/entry/bill-zeller-dead-princeto_n_805689", "HUFF", "text,quad,sans")
          , ("http://summaries.cochrane.org/CD007176/antioxidant-supplements-for-prevention-of-mortality-in-healthy-participants-and-patients-with-various-diseases", "cochrane-collaboration", "svg")
-         , ("https://www.fast.ai/2018/04/30/dawnbench-fastai/", "F.ai", "text,tri,mono")
+         , ("https://www.fast.ai/2018/04/30/dawnbench-fastai/", "F.ai", "text,tri")
          , ("https://github.com/fastai/numerical-linear-algebra/blob/master/README.md","F.ai", "text,tri,mono")
          , ("https://www.esquire.com/entertainment/a36439327/planet-hollywood-origin-story-history-interview/", "ℰ", "text")
          , ("https://denver.cbslocal.com/2014/11/20/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "CBS", "text,tri,sans")
