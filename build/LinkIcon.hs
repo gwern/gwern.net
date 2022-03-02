@@ -74,8 +74,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "groups.google.com" = aI "✉" "text"
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
- | u' "google" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
- | u' "nvidia"  || u'' "nvlabs.github.io"   = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
+ | u' "google" || u'' "magenta.tensorflow.org" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
+ | u' "nvidia"  || u'' "nvlabs.github.io"  || u'' "nv-adlr.github.io" || u'' "nv-tlabs.github.io" = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai"    = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
  | u'' "boingboing.net" = aI "bb" "text,mono"
@@ -151,7 +151,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
  | u'' "plato.stanford.edu" = aI "SEP" "text,tri"
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
- | u'' "texample.net" || u'' "ctan.org" || u'' "www.tug.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
+ | u'' "texample.net" || u'' "ctan.org" || u'' "www.tug.org" || u'' "tug.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
  | u'' "www.urth.net" || u'' "lists.urth.net" || u'' "www.wolfewiki.com" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
@@ -166,7 +166,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "antilop.cc" = aI "෴" "text" -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
  | u'' "www.memteaimports.com" = aI "MT" "text,sans"
  | u'' "forum.effectivealtruism.org" || u'' "www.effectivealtruism.org" = aI "EA" "text"
- | u'' "boards.fireden.net" || u' "4channel.org"  = aI "4CH" "text,sans"
+ | u'' "boards.fireden.net" || u' "4channel.org" || u'' "archive.foolz.us"  = aI "4CH" "text,sans"
  | u'' "www.kaggle.com" = aI "k" "text,sans"
  | u'' "www.jneurosci.org" = aI "JN" "text"
  | u'' "www.discovermagazine.com" = aI "D" "text"
@@ -228,11 +228,16 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "theconversation.com" = aI "🗨" "text"
  | u'' "patch.com" = aI "P" "text,sans"
  | u'' "scp-wiki.wikidot.com" = aI "SCP" "text,tri,sans"
+ | u'' "latitude.io" || u'' "play.aidungeon.io" || u' "old.reddit.com/r/AIDungeon" || u'' "aidungeon.medium.com" || u' "https://www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
+ | u'' "www.gq.com" = aI "GQ" "text,sans"
+ | u'' "bls.gov" || u'' "data.bls.gov" || u'' "www.bls.gov" = aI "BLS" "text,sans"
+ | u'' "thegradient.pub" = aI "∇" "text"
 
  -- Quad-letter-square icons.
  | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans" -- NOTE: override Fandom catch-all
+ | u'' "www.fimfiction.net" = aI "FIMF" "text,quad,sans"
  | u'' "www.nber.org" && (extension u /= ".pdf") = aI "NBER" "text,quad"
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
  | u'' "www.pnas.org" = aI "PNAS" "text,quad" -- PNAS: they don’t have a real logo, but their favicon does a nice little compact square (white text on blue background), and we can replicate that in CSS (but just as black text on white background, per our monochrome theme) [On second thought, all of the icons using background squares, like HN/YC, are very intense and hard to visually balance. It's probably better to leave PNAS as just a quad-letter.]
@@ -256,6 +261,10 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.courtlistener.com" || u'' "archive.recapthelaw.org"  || u'' "storage.courtlistener.com" || u'' "www.courtlistener.com" || u'' "www.pacer.uscourts.gov" || u'' "www.pacer.gov" || u'' "pcl.uscourts.gov" = aI "PACR" "text,quad"
  | u'' "www.nybooks.com" = aI "NYRB" "text,quad"
  | u'' "www.jstor.org" = aI "JTOR" "text,quad" -- quad looks better skipping the thin 'S'
+ | u'' "thisanimedoesnotexist.ai" = aI "TADE" "text,quad,sans"
+ | u'' "www.thisfursonadoesnotexist.com" = aI "TFDE" "text,quad,sans"
+ | u'' "www.thiswaifudoesnotexist.net" = aI "TWDE" "text,quad,sans"
+ | u'' "thisponydoesnotexist.net" = aI  "TPDE" "text,quad,sans"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -341,7 +350,10 @@ hasIcon (Link (_,_,ks) _ (_,_)) =
 hasIcon _ = True
 
 hasIconURL :: T.Text -> Bool
-hasIconURL u = hasIcon $ linkIcon $ Link nullAttr [] (u,"")
+hasIconURL = hasIcon . getIcon
+
+getIcon :: T.Text -> Inline
+getIcon u = linkIcon $ Link nullAttr [] (u,"")
 
 addIcon :: Inline -> T.Text -> T.Text -> Inline
 addIcon x@(Link (idt,cl,ks) a (b,c)) icon iconType  =
@@ -384,7 +396,8 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                         --   filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
                         --              linkIcon (Link nullAttr [] (url,""))) $ M.keys b
   where blackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
-        blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com", "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com", "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com", "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am", "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com", "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md", "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net", "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com", "www.instructables.com", "www.baltimoresun.com", "www.aleph.se"]
+        blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com", "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com", "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com", "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am", "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com", "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md", "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net", "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com", "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net", "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com", "www.nausicaa.net", "www.hindawi.com", "www.eugenewei.com", "www.buzzfeed.com", "web.mit.edu", "karpathy.github.io", "infoproc.blogspot.com", "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de", "www.wakapoetry.net"]
+        -- TODO: creativecommons.org SVG, www.projectrho.com ρ, www.alcor.org SVG?, pcdb.santafe.edu PCDB quad, harpers.org H, foreignpolicy.com FP, www.unqualified-reservations.org UR, www.thenewatlantis.com NA, www.tensorflow.org TF, www.supermemo.com SM
         linkIconMin = 5 :: Int
 
 -- Test suite:
@@ -531,6 +544,8 @@ linkIconTestUnits =
          , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2793346/",  "nlm-ncbi","svg")
          , ("https://www.clinicaltrials.gov/ct2/show/NCT01684306",  "nlm-ncbi","svg")
          , ("https://blogs.nvidia.com/blog/2019/03/18/gaugan-photorealistic-landscapes-nvidia-research/",  "n","text,sans,italic")
+         , ("https://nv-adlr.github.io/MegatronLM",  "n","text,sans,italic")
+         , ("https://nv-tlabs.github.io/big-datasetgan/",  "n","text,sans,italic")
          , ("https://nvlabs.github.io/stylegan2/versions.html",  "n","text,sans,italic")
          , ("https://6thfloor.blogs.nytimes.com/2013/03/20/a-sham-procedure-leads-to-disappointing-m-s-news/",  "newyorktimes","svg")
          , ("https://online.wsj.com/article/SB10000872396390443696604577647870908169992.html",  "WSJ","text,tri")
@@ -576,6 +591,7 @@ linkIconTestUnits =
          , ("https://crypto.stackexchange.com/questions/2507/can-i-encrypt-user-input-in-a-way-i-cant-decrypt-it-for-a-certain-period-of-tim",  "stackexchange","svg")
          , ("https://ctan.org/pkg/marginnote", "TₑX","text")
          , ("https://tug.org/FontCatalogue/goudyinitialen/", "TₑX","text")
+         , ("https://www.tug.org/whatis.html", "TₑX","text")
          , ("https://texample.net/tikz/examples/andler-optimal-lot-size/", "TₑX","text")
          , ("https://www.technologyreview.com/2011/06/21/193829/the-measured-life/",  "T","text,sans")
          , ("https://www.alignmentforum.org/posts/HhWhaSzQr6xmBki8F/birds-planes-brains-and-ai-against-appeals-to-the-complexity", "AF","text,sans")
@@ -692,6 +708,7 @@ linkIconTestUnits =
          , ("https://www.effectivealtruism.org/articles/prospecting-for-gold-owen-cotton-barratt/#heavy-tailed-distributions", "EA", "text")
          , ("https://boards.fireden.net/a/thread/185257999/", "4CH", "text,sans")
          , ("https://boards.4channel.org/jp/", "4CH", "text,sans")
+         , ("http://archive.foolz.us/a/thread/77196171/#77207238", "4CH", "text,sans")
          , ("https://www.kaggle.com/ultrajack/modern-renaissance-poetry", "k", "text,sans")
          , ("https://www.jneurosci.org/content/32/12/4156.full", "JN", "text")
          , ("https://www.discovermagazine.com/mind/the-brain-a-body-fit-for-a-freaky-big-brain", "D", "text")
@@ -800,4 +817,20 @@ linkIconTestUnits =
          , ("http://www.jstor.org/stable/10.1086/468061", "JTOR", "text,quad")
          , ("https://scp-wiki.wikidot.com/antimemetics-division-hub#toc1", "SCP", "text,tri,sans")
          , ("https://www.ieee-security.org/TC/SPW2014/papers/5103a209.PDF", "pdf", "svg")
+         , ("https://thisanimedoesnotexist.ai/", "TADE", "text,quad,sans")
+         , ("https://www.thiswaifudoesnotexist.net/", "TWDE", "text,quad,sans")
+         , ("https://www.thisfursonadoesnotexist.com/", "TFDE", "text,quad,sans")
+         , ("https://thisponydoesnotexist.net/", "TPDE", "text,quad,sans")
+         , ("https://aidungeon.medium.com/introducing-ai-dungeon-translate-a50e35f6df83", "AID", "text,tri,sans")
+         , ("https://latitude.io/blog/how-we-accidentally-gave-our-bots-their-personalities/", "AID", "text,tri,sans")
+         , ("https://old.reddit.com/r/AIDungeon/comments/i1qhg0/the_dragon_ai_just_got_worse/", "AID", "text,tri,sans")
+         , ("https://old.reddit.com/r/AIDungeon/comments/i1qhg0/the_dragon_ai_just_got_worse/", "AID", "text,tri,sans")
+         , ("https://www.patreon.com/AIDungeon", "AID", "text,tri,sans")
+         , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", "FIMF", "text,quad,sans")
+         , ("https://magenta.tensorflow.org/music-transformer", "google", "svg")
+         , ("https://www.gq.com/story/the-last-true-hermit?printable=true", "GQ", "text,sans")
+         , ("https://bls.gov/news.release/archives/ecec_031986.pdf", "BLS", "text,sans")
+         , ("https://data.bls.gov/cgi-bin/cpicalc.pl?cost1=100&year1=1992&year2=2011", "BLS", "text,sans")
+         , ("https://www.bls.gov/cps/duration.htm", "BLS", "text,sans")
+         , ("https://thegradient.pub/gpt2-and-the-nature-of-intelligence/", "∇", "text")
         ]
