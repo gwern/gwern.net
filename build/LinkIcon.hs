@@ -227,6 +227,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "variety.com" = aI "𝓥" "text"
  | u'' "theconversation.com" = aI "🗨" "text"
  | u'' "patch.com" = aI "P" "text,sans"
+ | u'' "scp-wiki.wikidot.com" = aI "SCP" "text,tri,sans"
 
  -- Quad-letter-square icons.
  | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -272,7 +273,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
  | u'' "www.ncbi.nlm.nih.gov" || u'' "pubmed.ncbi.nlm.nih.gov" || u'' "www.clinicaltrials.gov" = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
  | u'' "www.patreon.com" = aI "patreon" "svg" -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
- | anyInfix u ["plos.org", "plosone.org", "plosbiology.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations... primary user: journals.plos.org
+ | anyInfix u ["plos.org", "plosone.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations... primary user: journals.plos.org
  | u' "reddit.com" = aI "reddit" "svg" -- old.reddit.com
  | anyInfix u ["overflow.net", "overflow.com", "stackexchange.com"] = aI "stackexchange" "svg" -- The *Exchange/*Overflow family of websites.
  | u' "substack.com" = aI "substack" "svg" -- gwern.substack.com
@@ -311,7 +312,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "imgur.com" || u'' "i.imgur.com"       = aI "image" "svg"
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = aI "code" "svg"
  | isLocal u && hasExtension ".php" u                     = aI "code" "svg"
- | anyInfix u [".pdf", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
+ | anyInfix u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
 
  -- Fallback
  | otherwise = x
@@ -482,7 +483,7 @@ linkIconTestUnits =
          , ("https://guzey.com/how-life-sciences-actually-work/", "A", "text,sans")
          , ("https://www.forbes.com/sites/andygreenberg/2013/09/05/follow-the-bitcoins-how-we-got-busted-buying-drugs-on-silk-roads-black-market/", "F", "text")
          , ("https://mattlakeman.org/2020/01/22/hill-billy-elegy-the-culture-of-white-american-poverty/",  "MATT", "text,quad,sans")
-         , ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad")
+         , ("https://www.mdpi.com/2220-9964/8/5/232/htm", "MDPI","text,quad,sans")
          , ("https://medium.com/craft-ventures/the-sharp-startup-when-paypal-found-product-market-fit-5ba47ad35d0b",  "\119820","text")
          , ("https://towardsdatascience.com/stylegan2-projection-a-reliable-method-for-image-forensics-700922579236", "\119820","text")
          , ("https://mega.nz/#!0JVxHQCD!C7ijBpRWNpcL_gubWFR-GTBDJTW1jXI6ThzSxwaw2aE",  "mega","svg")
@@ -506,7 +507,7 @@ linkIconTestUnits =
          , ("http://www.evacommentary.org/appendix/character-names.html", "EG", "text")
          , ("http://evaotaku.com/html/programbooks.html",  "NGE","text,tri")
          , ("http://gainax.co.jp/",  "NGE","text,tri")
-         , ("http://www.khara.co.jp/hideakianno/personal-biography.html",  "NGE","text,tri")
+         , ("https://www.khara.co.jp/hideakianno/personal-biography.html",  "NGE","text,tri")
          , ("https://eva-fan.com/blog-entry-1198.html",  "NGE","text,tri")
          , ("https://eva.onegeek.org/",  "NGE","text,tri")
          , ("http://johakyu.net/lib/2007/07/2007-07-27-000535.php", "NGE","text,tri")
@@ -538,7 +539,6 @@ linkIconTestUnits =
          , ("https://speakingofmedicine.plos.org/2012/06/25/less-research-is-needed/",  "plos","svg")
          , ("https://journals.plos.org/plosmedicine/article/fetchObject.action?uri=info:doi/10.1371/journal.pmed.0020124.t004&representation=PNG_M",  "plos","svg")
          , ("https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0023175&type=printable",  "plos","svg")
-         , ("https://www.plosbiology.org/article/info%3Adoi%2F10.1371%2Fjournal.pbio.0030050",  "plos","svg")
          , ("https://www.pnas.org/content/104/18/7582",  "PNAS","text,quad")
          , ("https://predictionbook.com/",  "?","text,sans,bold")
          , ("https://publicdomainreview.org/essay/the-lost-world-of-the-london-coffeehouse/",  "TPDR","text,quad")
@@ -790,4 +790,6 @@ linkIconTestUnits =
          , ("https://theconversation.com/altruism-in-birds-magpies-have-outwitted-scientists-by-helping-each-other-remove-tracking-devices-175246", "🗨", "text")
          , ("https://patch.com/california/davis/davis-pair-arrested-after-cops-intercept-3-000-suspected-ecstasy-pills-mail-serve", "P", "text,sans")
          , ("http://www.jstor.org/stable/10.1086/468061", "JTOR", "text,quad")
+         , ("https://scp-wiki.wikidot.com/antimemetics-division-hub#toc1", "SCP", "text,tri,sans")
+         , ("https://www.ieee-security.org/TC/SPW2014/papers/5103a209.PDF", "pdf", "svg")
         ]
