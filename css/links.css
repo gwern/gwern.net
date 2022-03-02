@@ -428,6 +428,10 @@ a[data-link-icon='▽']::after { /* The Verge */
     opacity: 0.80;
 }
 
+a[data-link-icon='∇']::after { /* The Gradient.pub */
+    opacity: 0.75;
+}
+
 a[data-link-icon='✉']::after {
     --link-icon-size: 1.1em;
     --link-icon-offset-x: 0.15em;

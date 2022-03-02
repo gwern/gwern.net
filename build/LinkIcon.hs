@@ -93,7 +93,6 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "blog.givewell.org" || u'' "www.givewell.org" || u'' "files.givewell.org" || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
- | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' "www.econlib.org" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
  | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,tri,sans"
@@ -182,10 +181,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
  | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
  | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
- | u'' "unenumerated.blogspot.com" || u' "szabo.best.vwh.net" || u' "nick-szabo" = aI "N.S." "text,sans"
- | u'' "scottaaronson.blog" || u'' "www.scottaaronson.com" = aI "S.A." "text,sans"
- | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts, similarly
- | u'' "www.antipope.org" = aI "C.S." "text,sans" -- Charles Stross, similarly
+ | u'' "vitalik.ca" || u' "/docs/economics/2018-buterin.pdf" = aI "V.B." "text,sans" -- Vitalik Buterin, similarly
+ | u'' "unenumerated.blogspot.com" || u' "szabo.best.vwh.net" || u' "nick-szabo" = aI "N.S." "text,sans" -- Nick Szabo
+ | u'' "scottaaronson.blog" || u'' "www.scottaaronson.com" = aI "S.A." "text,sans" -- Scott Aaronson
+ | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts
+ | u'' "www.antipope.org" = aI "C.S." "text,sans" -- Charles Stross
  | u'' "www.ribbonfarm.com" = aI "ℝ𝔽" "text,sans"
  | u'' "en.touhouwiki.net" || u'' "touhou.fandom.com" || u'' "w.atwiki.jp" || u' "old.reddit.com/r/TOUHOUMUSIC/" = aI "☯" "text" -- NOTE: override Fandom catch-all
  | u'' "www.reuters.com" = aI "R" "text,sans" -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim
@@ -232,6 +232,20 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.gq.com" = aI "GQ" "text,sans"
  | u'' "bls.gov" || u'' "data.bls.gov" || u'' "www.bls.gov" = aI "BLS" "text,sans"
  | u'' "thegradient.pub" = aI "∇" "text"
+ | u'' "www.projectrho.com" = aI "ρ" "text"
+ | u'' "harpers.org" = aI "H" "text"
+ | u'' "foreignpolicy.com" = aI "FP" "text"
+ | u'' "www.unqualified-reservations.org" = aI "UR" "text"
+ | u'' "www.thenewatlantis.com" = aI "NA" "text"
+ | u'' "www.supermemo.com" = aI "SM" "text,sans"
+ | u'' "qwantz.com" = aI "DC" "text,sans"
+ | u'' "qualiacomputing.com" = aI "QC" "text,sans"
+ | u'' "www.thelancet.com" = aI "L" "text"
+ | u'' "www.nngroup.com" = aI "NN" "text,sans"
+ | u'' "replicationindex.com" = aI "RI" "text,sans"
+ | u' ".yahoo.com" = aI "Y!" "text,sans"
+ | u' "github.com/huggingface/" || u'' "huggingface.co" || u' "medium.com/huggingface/" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
+ | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
 
  -- Quad-letter-square icons.
  | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -265,6 +279,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.thisfursonadoesnotexist.com" = aI "TFDE" "text,quad,sans"
  | u'' "www.thiswaifudoesnotexist.net" = aI "TWDE" "text,quad,sans"
  | u'' "thisponydoesnotexist.net" = aI  "TPDE" "text,quad,sans"
+ | u'' "pcdb.santafe.edu" = aI "PCDB" "text,quad,sans"
+ | u'' "vndb.org" = aI "VNDB" "text,quad,sans"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
@@ -274,6 +290,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.dropbox.com" || u'' "dl.dropboxusercontent.com" = aI "dropbox" "svg" -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com
  | u'' "www.erowid.org" || u'' "www.drugsdata.org" = aI "erowid" "svg"
  | u'' "www.filfre.net" = aI "TDA" "text,tri,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
+ | u' ".tensorflow.org" || u' "github.com/tensorflow/" || u' "medium.com/tensorflow/" = aI "tensorflow" "svg" -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
  | u'' "github.com" || u'' "copilot.github.com" || u'' "archiveprogram.github.com" || u'' "gist.github.com" || u'' "github.blog" = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' "www.paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
  | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
@@ -305,6 +322,11 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "blog.eleuther.ai" || u'' "www.eleuther.ai" || u'' "pile.eleuther.ai" || u'' "6b.eleuther.ai" = aI "eleutherai" "svg"
  | u' ".apple.com" = aI "apple" "svg"
  | u'' "www.quantamagazine.org" = aI "quanta" "svg"
+ | u'' "creativecommons.org" = aI "creative-commons" "svg" -- <https://creativecommons.org/about/downloads>
+ | u'' "www.alcor.org" = aI "alcor" "svg"
+
+ -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
+ | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
 
  -- Filetypes: (we need to parse & extract the extension because many would be too short and match too many URLs if mere infix matching was used)
  | iE ["tar", "zip", "xz", "img", "bin", "pkl", "onnx", "pt", "maff"] = aI "archive" "svg"
@@ -397,7 +419,6 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                         --              linkIcon (Link nullAttr [] (url,""))) $ M.keys b
   where blackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
         blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com", "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com", "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com", "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am", "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com", "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md", "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net", "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com", "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net", "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com", "www.nausicaa.net", "www.hindawi.com", "www.eugenewei.com", "www.buzzfeed.com", "web.mit.edu", "karpathy.github.io", "infoproc.blogspot.com", "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de", "www.wakapoetry.net"]
-        -- TODO: creativecommons.org SVG, www.projectrho.com ρ, www.alcor.org SVG?, pcdb.santafe.edu PCDB quad, harpers.org H, foreignpolicy.com FP, www.unqualified-reservations.org UR, www.thenewatlantis.com NA, www.tensorflow.org TF, www.supermemo.com SM
         linkIconMin = 5 :: Int
 
 -- Test suite:
@@ -833,4 +854,31 @@ linkIconTestUnits =
          , ("https://data.bls.gov/cgi-bin/cpicalc.pl?cost1=100&year1=1992&year2=2011", "BLS", "text,sans")
          , ("https://www.bls.gov/cps/duration.htm", "BLS", "text,sans")
          , ("https://thegradient.pub/gpt2-and-the-nature-of-intelligence/", "∇", "text")
+         , ("https://creativecommons.org/licenses/by-nc/3.0/", "creative-commons", "svg")
+         , ("http://www.projectrho.com/public_html/rocket/futurelang.php", "ρ", "text")
+         , ("http://pcdb.santafe.edu/", "PCDB", "text,quad,sans")
+         , ("https://harpers.org/archive/1954/12/the-jet-propelled-couch/?single=1", "H", "text")
+         , ("https://foreignpolicy.com/2010/11/23/death-by-a-thousand-cuts-2/", "FP", "text")
+         , ("https://www.unqualified-reservations.org/2007/08/james-burnhams-dante-politics-as-wish/", "UR", "text")
+         , ("https://www.thenewatlantis.com/publications/correlation-causation-and-confusion", "NA", "text")
+         , ("https://medium.com/tensorflow/fitting-larger-networks-into-memory-583e3c758ff9", "tensorflow", "svg")
+         , ("https://playground.tensorflow.org/", "tensorflow", "svg")
+         , ("https://www.tensorflow.org/tensorboard/get_started", "tensorflow", "svg")
+         , ("https://www.supermemo.com/en/archives1990-2015/articles/20rules", "SM", "text,sans")
+         , ("https://qwantz.com/index.php?comic=1896", "DC", "text,sans")
+         , ("https://vndb.org/c582", "VNDB", "text,quad,sans")
+         , ("https://qualiacomputing.com/2015/05/22/how-to-secretly-communicate-with-people-on-lsd/", "QC", "text,sans")
+         , ("http://www.thelancet.com/journals/lancet/article/PIIS0140-6736%2811%2960693-4/abstract", "L", "text")
+         , ("https://www.nngroup.com/articles/aesthetic-usability-effect/", "NN", "text,sans")
+         , ("https://replicationindex.com/2016/04/18/is-replicability-report-ego-depletionreplicability-report-of-165-ego-depletion-articles/", "RI", "text,sans")
+         , ("https://au.news.yahoo.com/brothers-in-court-over-online-drugs-14980079.html", "Y!", "text,sans")
+         , ("https://vitalik.ca/general/2017/09/14/prehistory.html", "V.B.", "text,sans")
+         , ("/docs/economics/2018-buterin.pdf", "V.B.", "text,sans")
+         , ("https://github.com/huggingface/transformers", "\129303", "text")
+         , ("https://huggingface.co/calculator/", "\129303", "text")
+         , ("https://medium.com/huggingface/distilbert-8cf3380435b5", "\129303", "text")
+         , ("https://forum.quantifiedself.com/t/indoor-air-quality-monitoring-health/799/40", "QS", "text,sans")
+         , ("https://quantifiedself.com/2014/04/eric-jain-sleep-moon-phases/", "QS", "text,sans")
+         , ("https://old.reddit.com/r/QuantifiedSelf/comments/1mfn0a/trying_to_detect_modafinils_stimulant_effect/", "QS", "text,sans")
+         , ("https://www.alcor.org/library/alcor-membership-statistics/", "alcor", "svg")
         ]
