@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-01 23:30:24 gwern"
+When:  Time-stamp: "2022-03-01 23:34:32 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -28,7 +28,7 @@ module LinkLive (linkLive, linkLiveTest, urlLive, linkLivePrioritize) where
 
 import Data.List (sort)
 import Data.Maybe (isNothing)
-import Data.Map.Strict as M (keys)
+import qualified Data.Map.Strict as M -- (keys)
 import Data.Text as T (isInfixOf, isPrefixOf, isSuffixOf, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
@@ -62,8 +62,13 @@ urlLive u | u'            `elem`    goodDomainsSimple = Just True
 
 linkLivePrioritize :: IO [(Int, T.Text)]
 linkLivePrioritize = do b <- readBacklinksDB
-                        let urls = filter ("."`T.isInfixOf`) $ M.keys b
-                        return $ reverse $ sort $ Utils.frequency $ filter (/="") $ map host $ filter (isNothing . urlLive) urls
+                        let b' = M.toList $ M.map length b
+                        let b'' = map (\(a,b) -> (host a,b)) $ filter (\(url,_) ->  (host url) `notElem` blackList && ((isNothing . urlLive) url) && ("." `T.isInfixOf` url)) b'
+                        let b''' =  M.fromListWith (+) b''
+                        return $ reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(a,b) -> (b,a)) $ M.toList b'''
+                        -- let urls = filter ("."`T.isInfixOf`) $ M.keys b
+                        -- return $ reverse $ sort $ Utils.frequency $ filter (/="") $ map host $ filter (isNothing . urlLive) urls
+  where blackList = []
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org",
@@ -2361,7 +2366,7 @@ badDomainsSimple = ["1d4chan.org",
     , "nces.ed.gov"
     , "mymodafinil.net"
     , "www.lanl.gov"
-    , "sparky.haskell.org:8080"
+    , "sparky.haskell.org"
     , "plaza.harmonix.ne.jp"
     , "hivemind-repo.s3-us-west-2.amazonaws.com"
     , "scp-wiki.wikidot.com"

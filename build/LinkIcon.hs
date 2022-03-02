@@ -5,7 +5,7 @@ module LinkIcon (linkIcon, rebuildSVGIconCSS, linkIconPrioritize) where
 import Control.Monad (unless)
 import Data.List (sort)
 import Data.List.Utils (hasKeyAL)
-import qualified Data.Map.Strict as M (keys)
+import qualified Data.Map.Strict as M -- (keys)
 import Data.Maybe (fromJust)
 import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
@@ -151,7 +151,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
  | u'' "plato.stanford.edu" = aI "SEP" "text,tri"
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
- | u'' "texample.net" || u'' "ctan.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
+ | u'' "texample.net" || u'' "ctan.org" || u'' "www.tug.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
  | u'' "www.urth.net" || u'' "lists.urth.net" || u'' "www.wolfewiki.com" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
@@ -340,6 +340,9 @@ hasIcon (Link (_,_,ks) _ (_,_)) =
                  Nothing -> False
 hasIcon _ = True
 
+hasIconURL :: T.Text -> Bool
+hasIconURL u = hasIcon $ linkIcon $ Link nullAttr [] (u,"")
+
 addIcon :: Inline -> T.Text -> T.Text -> Inline
 addIcon x@(Link (idt,cl,ks) a (b,c)) icon iconType  =
   if hasIcon x then x else Link (idt,cl,
@@ -370,12 +373,16 @@ isHostOrArchive domain url = let h = host url in
 --
 -- The original raw results are particularly useful when piped into <https://www.gwern.net/haskell/lcps.hs> to
 -- get suggested prefixes/domains worth adding link-icons for, or one can just look at the domains by `host`:
-linkIconPrioritize :: IO [(Int,T.Text)]
+-- linkIconPrioritize :: IO [(Int,T.Text)]
 linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
-                        return $ filter (\(n,_) -> n>= linkIconMin) $ reverse $ sort $ frequency $
-                          filter (`notElem` blackList) $ filter (/="") $ map host $
-                          filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
-                                     linkIcon (Link nullAttr [] (url,""))) $ M.keys b
+                        let b' = M.toList $ M.map length b
+                        let b'' = map (\(a,b) -> (host a,b)) $ filter (\(url,_) ->  (host url) `notElem` blackList && not (hasIconURL url) && ("." `T.isInfixOf` url)) b'
+                        let b''' =  M.fromListWith (+) b''
+                        return $ reverse $ sort $ filter ((/="") . snd) $ map (\(a,b) -> (b,a)) $ M.toList b'''
+                        -- return $ filter (\(n,_) -> n>= linkIconMin) $ reverse $ sort $ frequency $
+                        --   filter (`notElem` blackList) $ filter (/="") $ map host $
+                        --   filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
+                        --              linkIcon (Link nullAttr [] (url,""))) $ M.keys b
   where blackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
         blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com", "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com", "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com", "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am", "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com", "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md", "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net", "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com", "www.instructables.com", "www.baltimoresun.com", "www.aleph.se"]
         linkIconMin = 5 :: Int
@@ -568,6 +575,7 @@ linkIconTestUnits =
          , ("https://mathoverflow.net/questions/32967/have-any-long-suspected-irrational-numbers-turned-out-to-be-rational",  "stackexchange","svg")
          , ("https://crypto.stackexchange.com/questions/2507/can-i-encrypt-user-input-in-a-way-i-cant-decrypt-it-for-a-certain-period-of-tim",  "stackexchange","svg")
          , ("https://ctan.org/pkg/marginnote", "TₑX","text")
+         , ("https://tug.org/FontCatalogue/goudyinitialen/", "TₑX","text")
          , ("https://texample.net/tikz/examples/andler-optimal-lot-size/", "TₑX","text")
          , ("https://www.technologyreview.com/2011/06/21/193829/the-measured-life/",  "T","text,sans")
          , ("https://www.alignmentforum.org/posts/HhWhaSzQr6xmBki8F/birds-planes-brains-and-ai-against-appeals-to-the-complexity", "AF","text,sans")
