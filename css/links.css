@@ -135,9 +135,9 @@ em .has-annotation {
 /*  Common styles.
     */
 a[data-link-icon-type='svg']::after {
-    --link-icon-size: 0.55em;
+    --link-icon-size: 0.5em;
     --link-icon-offset-x: 0.20em;
-    --link-icon-offset-y: 0.10em;
+    --link-icon-offset-y: 0.25em;
 
     content: "";
     position: static;
@@ -515,17 +515,18 @@ a[data-link-icon='𝔐']::after { /* Daily Mail */
 
 a[data-link-icon='𝛌']::after { /* Haskell */
     font-size: 0.8em;
-    }
+}
 
 a[data-link-icon='𝓝']::after { /* Nintil */
     font-size: 0.8em;
-    }
+}
 
 /****************************/
 /* Triple-letter 'tri' initials: too few for quad, but too big for
    regular font size/offset. Common with TLA orgs. */
 a[data-link-icon-type*='tri']::after {
     --link-icon-offset-y: 0.6em;
+
     font-size: 0.6em;
     opacity: 0.90;
 }
@@ -557,6 +558,7 @@ a[data-link-icon-type*='quad'][data-link-icon-type*='sans']::after {
     */
 a[data-link-icon-type*='quad'][data-link-icon-type*='mono']::after {
     letter-spacing: 0.05em;
+	line-height: 0.85;
 }
 
 a[data-link-icon='VICE']::after {
@@ -567,6 +569,7 @@ a[data-link-icon='PNAS']::after {
     width: 1.4em;
 }
 
+a[data-link-icon='MDPI']::after,
 a[data-link-icon='EPUB']::after,
 a[data-link-icon='TPDR']::after,
 a[data-link-icon='NBER']::after {
