@@ -650,9 +650,11 @@ else
        if [[ $N -gt 50 ]]; then printf "%5d: %s\n" $N "$dir"; fi;
     done | sort --numeric-sort
 
-    ## Look for domains that may benefit from link icons now:
+    ## Look for domains that may benefit from link icons or link live status now:
     λ() { ghci -istatic/build/ ./static/build/LinkIcon.hs  -e 'linkIconPrioritize' | fgrep -v -e ' secs,' -e 'it :: [(Int, Text)]' -e '[]'; }
     wrap λ "Need link icons?"
+    λ() { ghci -istatic/build/ ./static/build/LinkLive.hs  -e 'linkLivePrioritize' | fgrep -v -e ' secs,' -e 'it :: [(Int, Text)]' -e '[]'; }
+    wrap λ "Need link live whitelist/blacklisting?"
 
     # if the first of the month, download all pages and check that they have the right MIME type and are not suspiciously small or redirects.
     if [ $(date +"%d") == "1" ]; then

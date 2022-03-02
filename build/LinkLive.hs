@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-02 10:04:45 gwern"
+When:  Time-stamp: "2022-03-02 11:21:06 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -28,12 +28,12 @@ module LinkLive (linkLive, linkLiveTest, urlLive, linkLivePrioritize) where
 
 import Data.List (sort)
 import Data.Maybe (isNothing)
-import qualified Data.Map.Strict as M -- (keys)
+import qualified Data.Map.Strict as M (fromListWith, toList, map)
 import Data.Text as T (isInfixOf, isPrefixOf, isSuffixOf, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB)
-import Utils (addClass, frequency, host)
+import Utils (addClass, host)
 
 linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
@@ -63,12 +63,17 @@ urlLive u | u'            `elem`    goodDomainsSimple = Just True
 linkLivePrioritize :: IO [(Int, T.Text)]
 linkLivePrioritize = do b <- readBacklinksDB
                         let b' = M.toList $ M.map length b
-                        let b'' = map (\(a,b) -> (host a,b)) $ filter (\(url,_) ->  (host url) `notElem` blackList && ((isNothing . urlLive) url) && ("." `T.isInfixOf` url)) b'
+                        let b'' = map (\(c,d) -> (host c,d)) $ filter (\(url',count) -> count >= linkLiveMinimum &&
+                                                                                       not ("pdf" `T.isInfixOf` url' || "PDF" `T.isInfixOf` url' || ".ps" `T.isInfixOf` url') &&
+                                                                                       host url' `notElem` blackList &&
+                                                                                       (isNothing . urlLive) url' &&
+                                                                                       ("." `T.isInfixOf` url')) b'
                         let b''' =  M.fromListWith (+) b''
-                        return $ reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(a,b) -> (b,a)) $ M.toList b'''
+                        return $ reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(e,f) -> (f,e)) $ M.toList b'''
                         -- let urls = filter ("."`T.isInfixOf`) $ M.keys b
                         -- return $ reverse $ sort $ Utils.frequency $ filter (/="") $ map host $ filter (isNothing . urlLive) urls
-  where blackList = []
+  where blackList = ["omega.albany.edu"]
+        linkLiveMinimum = 3
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org",
@@ -4157,7 +4162,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://uk.pi-supply.com/products/pijuice-solar?v=7516fd43adaa", False)
     , ("https://undark.org/2016/05/25/the-death-of-a-study-national-childrens-study/", False)
     , ("https://understandinguncertainty.org/what-does-13-increased-risk-death-mean", False)
-    , ("http://super-memory.com/articles/theory.htm", False)
+    , ("https://www.super-memory.com/articles/theory.htm", False)
     , ("https://us.dantelabs.com/collections/best-seller/products/whole-genome-sequencing-wgs-full-dna-analysis", False)
     , ("https://vault.si.com/vault/2009/03/23/how-and-why-athletes-go-broke", False)
     , ("https://vgl.ucdavis.edu/tests?field_species_target_id=216", False)

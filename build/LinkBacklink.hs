@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-01 22:17:12 gwern"
+When:  Time-stamp: "2022-03-02 11:15:30 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -14,11 +14,10 @@ Because every used link necessarily has a backlink (the document in which it is 
 is also a convenient way to get a list of all URLs. -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module LinkBacklink (getBackLink, getSimilarLink, Backlinks, readBacklinksDB, writeBacklinksDB,
-                     Forwardlinks, convertBacklinksToForwardlinks) where
+module LinkBacklink (getBackLink, getSimilarLink, Backlinks, readBacklinksDB, writeBacklinksDB) where
 
 import Data.List (sort)
-import qualified Data.Map.Strict as M (empty, fromList, fromListWith, toList, map, Map)
+import qualified Data.Map.Strict as M (empty, fromList, toList, Map) -- fromListWith,
 import qualified Data.Text as T (pack, unpack, Text)
 import Data.Text.IO as TIO (readFile)
 import Network.HTTP (urlEncode)
@@ -55,11 +54,11 @@ getSimilarLink = getXLink "similars"
 
 ----------------------
 
-type Forwardlinks = M.Map T.Text [T.Text]
-convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
-convertBacklinksToForwardlinks = M.fromListWith (++) . convertBacklinks
+-- type Forwardlinks = M.Map T.Text [T.Text]
+-- convertBacklinksToForwardlinks :: Backlinks -> Forwardlinks
+-- convertBacklinksToForwardlinks = M.fromListWith (++) . convertBacklinks
 
-convertBacklinks :: Backlinks -> [(T.Text,[T.Text])]
-convertBacklinks = reverseList . M.toList
-  where reverseList :: [(a,[b])] -> [(b,[a])]
-        reverseList = concatMap (\(a,bs) -> zip bs [[a]])
+-- convertBacklinks :: Backlinks -> [(T.Text,[T.Text])]
+-- convertBacklinks = reverseList . M.toList
+--   where reverseList :: [(a,[b])] -> [(b,[a])]
+--         reverseList = concatMap (\(a,bs) -> zip bs [[a]])

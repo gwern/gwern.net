@@ -5,7 +5,7 @@ module LinkIcon (linkIcon, rebuildSVGIconCSS, linkIconPrioritize) where
 import Control.Monad (unless)
 import Data.List (sort)
 import Data.List.Utils (hasKeyAL)
-import qualified Data.Map.Strict as M -- (keys)
+import qualified Data.Map.Strict as M (toList, fromListWith, map)
 import Data.Maybe (fromJust)
 import Data.Text as T (append, drop, head, isInfixOf, isPrefixOf, isSuffixOf, pack, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
@@ -14,7 +14,7 @@ import System.FilePath (takeExtension)
 import Data.Containers.ListUtils (nubOrd)
 
 import LinkBacklink (readBacklinksDB)
-import Utils (frequency, host, writeUpdatedFile)
+import Utils (host, writeUpdatedFile)
 
 -- Statically, at compile-time, define the link-icons for links. Doing this at runtime with CSS is
 -- entirely possible and originally done by links.css, but the logic becomes increasingly convoluted
@@ -407,19 +407,21 @@ isHostOrArchive domain url = let h = host url in
 --
 -- The original raw results are particularly useful when piped into <https://www.gwern.net/haskell/lcps.hs> to
 -- get suggested prefixes/domains worth adding link-icons for, or one can just look at the domains by `host`:
--- linkIconPrioritize :: IO [(Int,T.Text)]
+linkIconPrioritize :: IO [(Int,T.Text)]
 linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                         let b' = M.toList $ M.map length b
-                        let b'' = map (\(a,b) -> (host a,b)) $ filter (\(url,_) ->  (host url) `notElem` blackList && not (hasIconURL url) && ("." `T.isInfixOf` url)) b'
+                        let b'' = map (\(y,z) -> (host y,z)) $ filter (\(url,_) ->  host url `notElem` blackList &&
+                                                                                    not (hasIconURL url) &&
+                                                                                    ("." `T.isInfixOf` url)) b'
                         let b''' =  M.fromListWith (+) b''
-                        return $ reverse $ sort $ filter ((/="") . snd) $ map (\(a,b) -> (b,a)) $ M.toList b'''
+                        return $ reverse $ sort $ filter (\(e,f) -> e >= linkIconMin && f /="") $ map (\(c,d) -> (d,c)) $ M.toList b'''
                         -- return $ filter (\(n,_) -> n>= linkIconMin) $ reverse $ sort $ frequency $
                         --   filter (`notElem` blackList) $ filter (/="") $ map host $
                         --   filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
                         --              linkIcon (Link nullAttr [] (url,""))) $ M.keys b
   where blackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
         blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com", "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com", "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com", "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am", "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com", "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md", "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net", "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com", "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net", "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com", "www.nausicaa.net", "www.hindawi.com", "www.eugenewei.com", "www.buzzfeed.com", "web.mit.edu", "karpathy.github.io", "infoproc.blogspot.com", "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de", "www.wakapoetry.net"]
-        linkIconMin = 5 :: Int
+        linkIconMin = 4 :: Int
 
 -- Test suite:
 --
