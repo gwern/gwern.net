@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-01 23:34:32 gwern"
+When:  Time-stamp: "2022-03-02 10:04:45 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -924,6 +924,17 @@ goodDomainsSimple =
     , "eukaryotewritesblog.com"
     , "etienne.se"
     , "endlessvn.io"
+    , "statmodeling.stat.columbia.edu"
+    , "archive.nytimes.com"
+    , "www.michaellight.net"
+    , "www.otakustudy.com"
+    , "www.baka-tsuki.org"
+    , "story.californiasunday.com"
+    , "thispersondoesnotexist.com"
+    , "metropolitician.blogs.com"
+    , "pauillac.inria.fr"
+    , "asktog.com"
+    , "www.unf.edu"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com", ".oxfordjournals.org", ".medium.com", ".translate.goog"]
@@ -2424,6 +2435,13 @@ badDomainsSimple = ["1d4chan.org",
     , "gsejournal.biomedcentral.com"
     , "colab.research.google.com"
     , "en.wikip%20edia.org"
+    , "jukebox.openai.com"
+    , "www.abetterpage.com"
+    , "www.stuartcheshire.org"
+    , "sites.research.google"
+    , "www.cap-lore.com"
+    , "www.flashgamehistory.com"
+    , "hivemind-repo.s3-us-west-2.amazonaws.com"
    ]
 
 url :: T.Text -> Inline
@@ -3265,6 +3283,17 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://eukaryotewritesblog.com/2017/06/30/book-review-barriers/", True)
     , ("https://etienne.se/cfnse/", True)
     , ("https://endlessvn.io/", True)
+    , ("https://statmodeling.stat.columbia.edu/2010/11/03/some_thoughts_o_8/", True)
+    , ("https://archive.nytimes.com/www.nytimes.com/books/first/b/budiansky-lion.html", True)
+    , ("http://www.michaellight.net/suns-intro/", True)
+    , ("https://www.otakustudy.com/books/2020/08/skeb-artwork-commissioning-website-review/", True)
+    , ("https://www.baka-tsuki.org/project/index.php?title=Interview_with_Tanigawa_Nagaru", True)
+    , ("https://story.californiasunday.com/cosmic-crisp-apple-launch/", True)
+    , ("https://thispersondoesnotexist.com/", True)
+    , ("https://metropolitician.blogs.com/scribblings_of_the_metrop/2010/06/facebook-taking-over-korea-as-predicted.html", True)
+    , ("http://pauillac.inria.fr/~weis/info/commandline.html", True)
+    , ("https://asktog.com/atc/the-third-user/", True)
+    , ("https://www.unf.edu/mudlark/posters/hartzler.html", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
@@ -4742,4 +4771,11 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://gsejournal.biomedcentral.com/articles/10.1186/s12711-016-0280-3", False)
     , ("http://colab.research.google.com", False)
     , ("https://en.wikip%20edia.org/wiki/The_%20Prestige_(film)", False)
+    , ("https://jukebox.openai.com/", False)
+    , ("http://www.abetterpage.com/wt/euro/BraunT3.html", False)
+    , ("http://www.stuartcheshire.org/rants/latency.html", False)
+    , ("https://sites.research.google/trc/", False)
+    , ("http://www.cap-lore.com/Hardware/Wheel.html", False)
+    , ("https://www.flashgamehistory.com/", False)
+    , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.pt", False)
     ]
