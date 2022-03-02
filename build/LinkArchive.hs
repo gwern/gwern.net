@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-02-26 16:08:58 gwern"
+When:  Time-stamp: "2022-03-01 23:53:23 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -682,7 +682,6 @@ whiteList url
       , "shinyapps.io" -- interactive
       , "archivebox.io" -- archive
       , "toranoana.jp" -- click-walled
-      , "ganbreeder.app" -- interactive
       , "intrade.com/jsp" -- dead
       , "isciii.es"
       , "archive.is" -- archive

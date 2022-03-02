@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-02-26 19:18:52 gwern"
+When:  Time-stamp: "2022-03-01 17:59:40 gwern"
 License: CC-0
 -}
 
@@ -1058,9 +1058,10 @@ processArxivAbstract a = let cleaned = runPure $ do
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})"),
                                                       ("\\\\citep?\\{([[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*, ?[[:graph:]]*)\\}", "(\\texttt{\\1})")] $
-                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim"),
+                                              replaceMany [("%", "\\%"), ("\\%", "%"), ("$\\%$", "%"), ("\n  ", "\n\n"), (",\n", ", "), ("~", " \\sim")
                                                            -- if we don't escape dollar signs, it breaks abstracts with dollar amounts like "a $700 GPU"
-                                                           ("$", "\\$")] a
+                                                          -- , ("$", "\\$")
+                                                          ] a
 
                                     pandoc <- readLaTeX def{ readerExtensions = pandocExtensions } $ T.pack tex
                                       -- NOTE: an Arxiv API abstract can have any of '%', '\%', or '$\%$' in it. All of these are dangerous and potentially breaking downstream LaTeX parsers.
@@ -1689,6 +1690,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\times</span>", "×")
           , ("$\\mu$", "μ")
           , ("<span class=\"math inline\">\\(\\mu\\)</span>", "μ")
           , ("<span class=\"math inline\">\\mu</span>", "μ")
