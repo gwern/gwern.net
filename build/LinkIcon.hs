@@ -75,24 +75,24 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "scholar.google.com" = aI "google-scholar" "svg" -- Google Scholar.
  | u'' "docs.google.com" = aI "worddoc" "svg"
  | u' "google" || u'' "magenta.tensorflow.org" = aI "google" "svg" -- Google searches, other tools. Note that there are many Google subdomains, which we may wish to iconify differently, so we narrow down with just ‘www’. Google Brain doesn’t have any consistent or recognizable logo, don’t bother trying to replicate one of the dots (no one will recognize it); use ‘GB’ would not be a bad idea, but I suspect that would also confuse people. So reusing the ‘G’ is the least bad option.
- | u' "nvidia"  || u'' "nvlabs.github.io"  || u'' "nv-adlr.github.io" || u'' "nv-tlabs.github.io" = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
+ | u' "nvidia"  || aU'' ["nvlabs.github.io", "nv-adlr.github.io", "nv-tlabs.github.io"] = aI "n" "text,sans,italic" -- Nvidia: <https://en.wikipedia.org/wiki/Nvidia#cite_note-2> yeah no. Disambiguate from Nature's "n" by italicizing (Nvidia *did* italicize the lowercase 'n' for a long time, so seems reasonable)
  | u' "openai" || u'' "gptprompts.wikidot.com" = aI "openai" "svg" -- OpenAI; match articles or anchors about OA too. primary user: openai.com, Arxiv papers. Brockman's GPT-prompts wiki is semi-official IMO.
  | u' "microsoft" = aI "MS" "text,sans,italic" -- Microsoft: I don’t think <https://en.wikipedia.org/wiki/File:Microsoft_logo_(2012).svg> is all that recognizable, so make a logotype more like <https://en.wikipedia.org/wiki/File:Microsoft_logo_(1987).svg>: an italic sans "MS".
 
  -- Domains:
- | u'' "psyarxiv.com" || u'' "files.osf.io" || u'' "osf.io" = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
+ | aU'' ["psyarxiv.com", "files.osf.io", "osf.io"] = aI "ψ" "text" -- Unicode trickery icons: GREEK SMALL LETTER PSI
  | u'' "unsongbook.com" = aI "ℵ" "text" -- SSC’s book: (ℵ) ALEF SYMBOL (We use the math symbol instead of the Hebrew deliberately, to avoid triggering bizarre Hebrew bidirectional text-related layout bugs on Mac Firefox.)
  | u'' "andrewgelman.com" || u'' "statmodeling.stat.columbia.edu" = aI "▅▇▃" "text" -- Favicon is a little normal distribution/histogram (▅▇▃) LOWER FIVE EIGHTHS BLOCK, LOWER SEVEN EIGHTHS BLOCK, LOWER THREE EIGHTHS BLOCK
  | u'' "meltingasphalt.com" = aI "▲" "text" -- Kevin Simler’s Melting Asphalt blog uses 3 triangles but that's too many, so we just use one. (▲) BLACK UP-POINTING TRIANGLE
  | u' ".bloomberg.com" || u'' "www.businessweek.com" = aI "𝐁" "text" -- Bloomberg: no usable logo, just an inset-B (𝐁) MATHEMATICAL BOLD CAPITAL B
- | u'' "link.springer.com" || u'' "rd.springer.com" || u' ".biomedcentral.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
+ | aU'' ["link.springer.com", "rd.springer.com"] || u' ".biomedcentral.com" = aI "♘" "text"  -- (♘) WHITE CHESS KNIGHT
  | u'' "www.tinyletter.com" = aI "✉" "text" -- TinyLetter’s icon, without color, isn’t memorable enough; throw in the other email services (✉) ENVELOPE
- | u'' "blog.givewell.org" || u'' "www.givewell.org" || u'' "files.givewell.org" || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
+ | aU'' ["blog.givewell.org", "www.givewell.org", "files.givewell.org"] || u' "groups.yahoo.com/group/givewell/" = aI "GW" "text"
  | u'' "groups.yahoo.com" = aI "✉" "text"
  | u'' "www.mail-archive.com" = aI "✉" "text"
  | u'' "marginalrevolution.com" = aI "M𝐑" "text" -- MR: cheaper to abuse Unicode (𝐑) MATHEMATICAL BOLD CAPITAL R
  | u'' "www.frontiersin.org" = aI "FS" "text,sans" -- <https://en.wikipedia.org/wiki/Frontiers_Media> multiple-cubes logo too busy for an icon, no Unicode equivalent
- | u'' "www.gutenberg.org" || u'' "gutenberg.ca" || u'' "gutenberg.net.au" || u'' "www.fadedpage.com" = aI "PG" "text" -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.
+ | aU'' ["www.gutenberg.org", "gutenberg.ca", "gutenberg.net.au", "www.fadedpage.com"] = aI "PG" "text" -- Faded Pages isn't strictly-speaking a Project Gutenberg org, but they work with Distributed Proofreaders & their work is in PG Canada and they do similar things so meh.
  | u'' "guzey.com" = aI "A" "text,sans"
  | u'' "www.forbes.com" = aI "F" "text"
  | (u' "haskell.org" && (extension u /= ".hs")) || u' "haskellers.com" = aI "𝛌" "text" -- Haskell: simplify logo; the double-lambda is too busy when used for link icons (𝛌) MATHEMATICAL BOLD SMALL LAMBDA primary user: hackage.haskell.org; we make an exception for .hs files hosted on Haskell.org, like config files, where the source code-ness is more relevant than the organization/domain
@@ -104,66 +104,33 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "thebrowser.com" = aI "TB" "text"
  | u'' "crookedtimber.org" = aI "CT" "text"
  | u' ".latimes.com" = aI "𝔏A" "text"
-
- -- Tri/triple TLAs
- | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
- | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,tri,sans"
- | u'' "arstechnica.com" = aI "ars" "text,tri,sans" -- Ars is an orange box, not usable
- | u' ".bbc.com" || u' ".bbc.co.uk" = aI "BBC" "text,tri,sans" -- BBC: no usable logo
- | u' ".bmj.com" = aI "bmj" "text,tri,sans" -- British Medical Journal or just ‘bmj’
- | u'' "www.cdc.gov" = aI "CDC" "text,tri"
-  | u'' "boardgamegeek.com" = aI "BGG" "text,tri,sans" -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>
- | u'' "thehub7dnl5nmcz5.onion" = aI "Hub" "text,tri,sans"
-  | u'' "www.abc.net.au" = aI "ABC" "text,tri,sans" -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>
-  | u'' "www.odt.co.nz" = aI "ODT" "text,tri"
-  | u'' "knowyourmeme.com" = aI "KYM" "text,tri"
- | u'' "freakonomics.com" = aI "FRK" "text,tri,sans" -- hybrid apple-orange icon (get it, "comparing apples & oranges") doesn't work as favicon or link
-  | u'' "aiimpacts.org" = aI "AII" "text,tri"
-  | u'' "scp-wiki.wikidot.com" = aI "SCP" "text,tri,sans"
- | u'' "latitude.io" || u'' "play.aidungeon.io" || u' "old.reddit.com/r/AIDungeon" || u'' "aidungeon.medium.com" || u' "https://www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
- | u'' "www.nap.edu" = aI "NAP" "text,tri"
- | u' ".cnn.com" = aI "CNN" "text,tri,sans"
- | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
- | u'' "www.filfre.net" = aI "TDA" "text,tri,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
- | u'' "lwn.net" = aI "LWN" "text,tri,sans"
- | u' ".fast.ai" ||  u' "github.com/fastai/" = aI "F.ai" "text,tri"
- | u'' "www.sfgate.com" = aI "SFG" "text,tri,sans"
- | u' ".cbslocal.com" || u'' "www.cbsnews.com" = aI "CBS" "text,tri,sans"
- | u'' "nypost.com" = aI "NYP" "text,tri,sans,italic"
-
  | u'' "www.dailymail.co.uk" = aI "𝔐" "text" -- 𝔐 MATHEMATICAL FRAKTUR CAPITAL M
- | u'' "danbooru.donmai.us" || u'' "derpibooru.org" || u'' "safebooru.org" = aI "❐" "text" -- ❐ U+2750 UPPER RIGHT DROP-SHADOWED WHITE SQUARE
- | u'' "www.justice.gov" = aI "DoJ" "text,tri" -- US federal Department of Justice
+ | aU'' ["danbooru.donmai.us", "derpibooru.org", "safebooru.org"] = aI "❐" "text" -- ❐ U+2750 UPPER RIGHT DROP-SHADOWED WHITE SQUARE
  | u'' "www.edge.org" = aI "E" "text,italic"
  | u'' "www.economist.com" = aI "E" "text,sans" -- Economist: logo is just ‘Economist’... There is a sibling magazine <https://en.wikipedia.org/wiki/1843_(magazine)> which I don't seem to link to.
  | u'' "everything2.com" = aI "E2" "text"
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u'' "www.esquire.com" = aI "ℰ" "text"
- | u'' "wiki.evageeks.org" || u'' "forum.evageeks.org" || u'' "www.evamonkey.com" || u' "https://nitter.hu/EvaMonkey/" || u'' "www.evacommentary.org" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
- | u'' "www.fda.gov" || u'' "fis.fda.gov" || u'' "clinicaltrials.gov" = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
+ | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com","www.evacommentary.org"] || u' "https://nitter.hu/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
  | u'' "www.hpmor.com" || u' "https://www.fanfiction.net/r/5782108/" || u' "https://old.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
- | u'' "www.fanfiction.net" = aI "FFN" "text,tri,sans" -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with FireFox, so expand to "FFN".
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
- | u'' "www.lesswrong.com" || u'' "sl4.org" || u'' "wiki.lesswrong.com" || u'' "www.greaterwrong.com" = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
+ | aU'' ["www.lesswrong.com", "sl4.org", "wiki.lesswrong.com", "www.greaterwrong.com"] = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
  | u'' "www.longecity.org" = aI "⧖" "text" -- Longecity “⧖” U+29D6 WHITE HOURGLASS UNICODE
- | u'' "michaelnielsen.org" || u'' "quantum.country" || u'' "numinous.productions" || u'' "cognitivemedium.com" || u'' "neuralnetworksanddeeplearning.com" = aI "MN" "text"
- | u'' "myanimelist.net" = aI "MAL" "text,tri,sans" -- MAL: the blue of their logo doesn’t work, so just text
+ | aU'' ["michaelnielsen.org", "quantum.country", "numinous.productions", "cognitivemedium.com", "neuralnetworksanddeeplearning.com"] = aI "MN" "text"
  | u'' "www.motherjones.com" = aI "MJ" "text,sans"
  | u' ".nature.com" = aI "n" "text" -- Nature
- | anyInfix u ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = aI "NGE" "text,tri" -- Primary user: forum.evageeks.org wiki.evageeks.org
  | u'' "openreview.net" = aI "OR" "text,sans" -- doesn't seem to have any real logo or wordmark: <https://openreview.net/about>
  | u'' "www.overcomingbias.com" || u' "mason.gmu.edu/~rhanson/" = aI "OB" "text" -- OB logo too bad to use
- | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text,tri" -- Oxford Academic Journals / OUP
- | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text,tri"
  | u'' "www.theparisreview.org" = aI "PR" "text" -- The Paris Review: not even going to try to make their weird bird logo work
  | u'' "www.theverge.com" = aI "▽" "text" -- The Verge uses a sort of delta Escher triangle-esque 'V' stylization <https://en.wikipedia.org/wiki/The_Verge> which looks like a triangle pointing down, so, ▽ WHITE DOWN-POINTING TRIANGLE (Nabla operator) &#x25BD; &#9661;
  | u'' "www.quora.com" = aI "Q" "text" -- surprisingly, no one's taken 'Q' yet
- | u'' "www.edwardtufte.com" || u'' "edwardtufte.github.io" || u' "github.com/edwardtufte/" || u' "github.com/jez/tufte-pandoc-jekyll" || u' "github.com/jez/tufte" || u' "github.com/clayh53/tufte" || u' "/docs/design/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf" || u' "cran.r-project.org/web/packages/tufte/" = aI "ET" "text"
- | u'' "cran.r-project.org" || u'' "www.r-project.org" || u'' "lme4.r-forge.r-project.org" || u'' "www.metafor-project.org" || u' "github.com/paul-buerkner/brms" || u'' "rstudio.com" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
+ | aU'' ["www.edwardtufte.com", "edwardtufte.github.io"] || aU' ["github.com/edwardtufte/", "github.com/jez/tufte-pandoc-jekyll", "github.com/jez/tufte", "github.com/clayh53/tufte", "/docs/design/1990-tufte-envisioninginformation-ch5-byrneseuclid.pdf", "cran.r-project.org/web/packages/tufte/"] = aI "ET" "text"
+ | aU'' ["cran.r-project.org", "www.r-project.org", "lme4.r-forge.r-project.org", "www.metafor-project.org", "rstudio.com"] || u' "github.com/paul-buerkner/brms" = aI "R" "text" -- R: at this point R Studio has taken over a lot of control of the R ecosystem, so might as well treat them as official too... primary user: cran.r-project.org
  | u'' "www.science.org" || u'' "sciencemag.org" = aI "S" "text" -- Science is just typeset in red
  | u'' "www.sciencedaily.com" = aI "SD" "text,sans"
  | u'' "www.sciencenews.org" = aI "SN" "text,sans" -- <https://en.wikipedia.org/wiki/Science_News>
@@ -171,17 +138,13 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "slate.com" = aI "S" "text,sans"
  | u'' "www.salon.com" = aI "s" "text"
  | u'' "scholars-stage.org" = aI "Ss" "text" -- Avoid the unfortunate connotations of ‘SS’
- | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
- | u'' "plato.stanford.edu" = aI "SEP" "text,tri"
  | u'' "www.technologyreview.com" = aI "T" "text,sans" -- Technology Review (their logo has a little slash in it which you probably can’t see at low-res) but is otherwise just a ‘T’ so meh
- | u'' "texample.net" || u'' "ctan.org" || u'' "www.tug.org" || u'' "tug.org" = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
+ | aU'' ["texample.net", "ctan.org", "www.tug.org", "tug.org"] = aI "TₑX" "text" -- ₑ LATIN SUBSCRIPT SMALL LETTER E U+2091; can't use the official logo: <https://commons.wikimedia.org/wiki/File:TeX_logo.svg> is unworkable as a tiny icon, Computer Modern's thinness issues are massively exacerbated & it's unreadable
  | u'' "tvtropes.org" = aI "TV" "text" -- TV Tropes: their lampshade icon is unrecognizable & hard to see small
- | u'' "www.urth.net" || u'' "lists.urth.net" || u'' "www.wolfewiki.com" = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
+ | aU'' ["www.urth.net", "lists.urth.net", "www.wolfewiki.com"] = aI "U" "text" -- Gene Wolfe mailing list; no logo; primary user: lists.urth.net
  | u'' "www.vanityfair.com" = aI "VF" "text"
- | u'' "www.vox.com" = aI "Vox" "text,tri,italic"
  | u' "onlinelibrary.wiley.com" = aI "W" "text,sans" -- Wiley & Sons’s ‘W’ unfortunately overlaps with the WP ‘W’ but if we sans it, maybe that’ll help. primary user: onlinelibrary.wiley.com
- | u'' "blogs.wsj.com" || u'' "online.wsj.com" || u'' "www.wsj.com" = aI "WSJ" "text,tri" -- The Wall Street Journal
- | anyInfix u ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
+ | aU' ["longbets.org", "longnow.org", "rosettaproject.org", "theinterval.org"] = aI "X" "text,overline" -- Long Now Foundation projects
  | u'' "yunnansourcing.com" || u'' "yunnansourcing.us" = aI "ys" "text"
  | u'' "predictionbook.com" = aI "?" "text,sans,bold" -- PB logo is confusing. A purple question mark...?
  | u'' "silkroadvb5piz3r.onion" || u'' "silkroad5v7dywlc.onion" = aI "SR1" "text,sans"
@@ -189,21 +152,18 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "antilop.cc" = aI "෴" "text" -- SINHALA PUNCTUATION KUNDDALIYA 0x0DF4 - because it's written by "Moustache", get it
  | u'' "www.memteaimports.com" = aI "MT" "text,sans"
  | u'' "forum.effectivealtruism.org" || u'' "www.effectivealtruism.org" = aI "EA" "text"
- | u'' "boards.fireden.net" || u' "4channel.org" || u'' "archive.foolz.us"  = aI "4CH" "text,sans"
+ | u'' "boards.fireden.net" || u'' "archive.foolz.us" || u' "4channel.org"  = aI "4CH" "text,sans"
  | u'' "www.kaggle.com" = aI "k" "text,sans"
  | u'' "www.jneurosci.org" = aI "JN" "text"
  | u'' "www.discovermagazine.com" = aI "D" "text"
  | u'' "tl.net" = aI "TL" "text,sans"
  | u'' "www.businessinsider.com" = aI "BI" "text,sans"
- | u'' "gameprogrammingpatterns.com" = aI "GPP" "text,tri,sans"
  | u'' "dnstats.net" = aI "dn" "text,sans"
  | u'' "www.newsweek.com" = aI "NW" "text" -- logo is 'N' but there are too many 'N's floating around, so abbreviate 'Newsweek' as 'NW'
  | u'' "www.thecut.com" = aI "TC" "text"
  | u'' "www.scientificamerican.com" = aI "SA" "text"
- | u'' "www.metopera.org" = aI "Met" "text,tri"
  | u'' "www.mirror.co.uk" = aI "M" "text,sans"
  | u'' "www.stuff.co.nz" = aI "NZ" "text,sans" -- even their official name 'Stuff' is lazy and unmemorable. I just think of them as 'that New Zealand website reporting on crime & DNM stuff'...
- | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
  | u'' "chronopause.com" = aI "M.D." "text,sans" -- Mike Darwin, similarly TODO: experiment with initials using periods - does this work as-is? How about quad? '﹒' SMALL FULL STOP U+FE52 does not work.
  | u'' "vitalik.ca" || u' "/docs/economics/2018-buterin.pdf" = aI "V.B." "text,sans" -- Vitalik Buterin, similarly
  | u'' "unenumerated.blogspot.com" || u' "szabo.best.vwh.net" || u' "nick-szabo" = aI "N.S." "text,sans" -- Nick Szabo
@@ -211,7 +171,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.rifters.com" = aI "P.W." "text,sans" -- Peter Watts
  | u'' "www.antipope.org" = aI "C.S." "text,sans" -- Charles Stross
  | u'' "www.ribbonfarm.com" = aI "ℝ𝔽" "text,sans"
- | u'' "en.touhouwiki.net" || u'' "touhou.fandom.com" || u'' "w.atwiki.jp" || u' "old.reddit.com/r/TOUHOUMUSIC/" = aI "☯" "text" -- NOTE: override Fandom catch-all
+ | aU'' ["en.touhouwiki.net", "touhou.fandom.com", "w.atwiki.jp"] || u' "old.reddit.com/r/TOUHOUMUSIC/" = aI "☯" "text" -- NOTE: override Fandom catch-all
  | u'' "www.reuters.com" = aI "R" "text,sans" -- the official Reuters logo <https://en.wikipedia.org/wiki/File:Reuters_Logo.svg> looks like it's summoning a seraphim
  | u'' "www.deviantart.com" = aI "DA" "text,sans" -- the official logo <https://en.wikipedia.org/wiki/File:DeviantArt_Logo.svg> isn't *too* bad and is at least 8 years old, but I don't recognize it so I doubt most readers would.
  | u'' "www.smithsonianmag.com" = aI "SM" "text"
@@ -221,7 +181,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.yudkowsky.net" = aI "י" "text" -- but of course: י HEBREW LETTER YUD 0x05D9
  | u'' "www.johndcook.com" = aI "JC" "text,sans"
  | u'' "www.candyjapan.com"  = aI "🍬" "text"
- | u'' "www.cambridge.org" || u'' "journals.cambridge.org" || u'' "static.cambridge.org" = aI "⛨" "text" -- ⛨ BLACK CROSS ON SHIELD U+26E8, roughly imitating <https://en.wikipedia.org/wiki/Coat_of_arms_of_the_University_of_Cambridge>
+ | aU'' ["www.cambridge.org", "journals.cambridge.org", "static.cambridge.org"] = aI "⛨" "text" -- ⛨ BLACK CROSS ON SHIELD U+26E8, roughly imitating <https://en.wikipedia.org/wiki/Coat_of_arms_of_the_University_of_Cambridge>
  | u' "royalsocietypublishing.org" = aI "RS" "text" -- <https://en.wikipedia.org/wiki/Royal_Society>
  | u'' "nautil.us" = aI "🐚" "text" -- 🐚 SPIRAL SHELL (U+1F41A)
  | u'' "www.sequentialtart.com" = aI "ST" "text,sans"
@@ -244,7 +204,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "theconversation.com" = aI "🗨" "text"
  | u'' "patch.com" = aI "P" "text,sans"
  | u'' "www.gq.com" = aI "GQ" "text,sans"
- | u'' "bls.gov" || u'' "data.bls.gov" || u'' "www.bls.gov" = aI "BLS" "text,sans"
+ | aU'' ["bls.gov", "data.bls.gov", "www.bls.gov"] = aI "BLS" "text,sans"
  | u'' "thegradient.pub" = aI "∇" "text"
  | u'' "www.projectrho.com" = aI "ρ" "text"
  | u'' "harpers.org" = aI "H" "text"
@@ -258,11 +218,50 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.nngroup.com" = aI "NN" "text,sans"
  | u'' "replicationindex.com" = aI "RI" "text,sans"
  | u' ".yahoo.com" = aI "Y!" "text,sans"
- | u' "github.com/huggingface/" || u'' "huggingface.co" || u' "medium.com/huggingface/" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
+ | u' "github.com/huggingface/" || u' "medium.com/huggingface/" || u'' "huggingface.co" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
  | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
 
+ -- Tri/triple TLAs
+ | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
+ | u'' "www.catb.org" || u'' "esr.ibiblio.org" = aI "ESR" "text,tri,sans"
+ | u'' "arstechnica.com" = aI "ars" "text,tri,sans" -- Ars is an orange box, not usable
+ | u' ".bbc.com" || u' ".bbc.co.uk" = aI "BBC" "text,tri,sans" -- BBC: no usable logo
+ | u' ".bmj.com" = aI "bmj" "text,tri,sans" -- British Medical Journal or just ‘bmj’
+ | u'' "www.cdc.gov" = aI "CDC" "text,tri"
+ | u'' "boardgamegeek.com" = aI "BGG" "text,tri,sans" -- puzzle-piece logo would be unrecognizable as link icon <https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg>
+ | u'' "thehub7dnl5nmcz5.onion" = aI "Hub" "text,tri,sans"
+ | u'' "www.abc.net.au" = aI "ABC" "text,tri,sans" -- <https://en.wikipedia.org/wiki/Australian_Broadcasting_Corporation>
+ | u'' "www.odt.co.nz" = aI "ODT" "text,tri"
+ | u'' "knowyourmeme.com" = aI "KYM" "text,tri"
+ | u'' "freakonomics.com" = aI "FRK" "text,tri,sans" -- hybrid apple-orange icon (get it, "comparing apples & oranges") doesn't work as favicon or link
+ | u'' "aiimpacts.org" = aI "AII" "text,tri"
+ | u'' "scp-wiki.wikidot.com" = aI "SCP" "text,tri,sans"
+ | aU'' ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' "old.reddit.com/r/AIDungeon"  || u' "https://www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
+ | u'' "www.nap.edu" = aI "NAP" "text,tri"
+ | u' ".cnn.com" = aI "CNN" "text,tri,sans"
+ | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
+ | u'' "www.filfre.net" = aI "TDA" "text,tri,sans" -- Filfre.net/The Digital Antiquarian has no logo or usable substitute...
+ | u'' "lwn.net" = aI "LWN" "text,tri,sans"
+ | u' ".fast.ai" ||  u' "github.com/fastai/" = aI "F.ai" "text,tri"
+ | u'' "www.sfgate.com" = aI "SFG" "text,tri,sans"
+ | u' ".cbslocal.com" || u'' "www.cbsnews.com" = aI "CBS" "text,tri,sans"
+ | u'' "nypost.com" = aI "NYP" "text,tri,sans,italic"
+ | u'' "www.justice.gov" = aI "DoJ" "text,tri" -- US federal Department of Justice
+ | u'' "www.fanfiction.net" = aI "FFN" "text,tri,sans" -- The FF.net logo is pretty crazy (<https://en.wikipedia.org/wiki/File:Fanfictionnetlogo.jpeg> is the *normal* one!), and I don’t think anyone would recognize it in monochrome. 'FF' as an abbreviation is confusing with FireFox, so expand to "FFN".
+ | u'' "myanimelist.net" = aI "MAL" "text,tri,sans" -- MAL: the blue of their logo doesn’t work, so just text
+ | aU' ["onegeek.org", "eva-fan.com", "evaotaku.com", "khara.co.jp", "gainax.co.jp", "17th-angel.tumblr.com", "gainax.com", "johakyu.net", "kanzaki.sub.jp", "homepage3.nifty.com", "www.cjas.org", "www.dummy-system.com", "www.evalegend.com", "www.usagi.org", "animekritik.wordpress.com", "fullfrontal.moe", "wavemotioncannon.com", "www.angelfire.com/anime4/"] = aI "NGE" "text,tri" -- Primary user: forum.evageeks.org wiki.evageeks.org
+ | u'' "academic.oup.com" || u' ".nutrition.org" || u' ".oxfordjournals.org" = aI "OUP" "text,tri" -- Oxford Academic Journals / OUP
+ | u'' "poniesatdawn.bandcamp.com" = aI "P@D" "text,tri"
+ | u'' "slatestarscratchpad.tumblr.com" || u'' "astralcodexten.substack.com" || (u'' "slatestarcodex.com" && (extension u /= ".pdf")) || (isLocal u && (u' "yvain" ||  u' "slatestarcodex")) = aI "SSC" "text,tri" -- SSC logo too bad to use; NOTE: we want PDFs merely hosted on SSC to not match, and fall through to get a PDF icon instead
+ | u'' "plato.stanford.edu" = aI "SEP" "text,tri"
+ | u'' "www.vox.com" = aI "Vox" "text,tri,italic"
+ | aU'' ["blogs.wsj.com", "online.wsj.com", "www.wsj.com"] = aI "WSJ" "text,tri" -- The Wall Street Journal
+ | u'' "gameprogrammingpatterns.com" = aI "GPP" "text,tri,sans"
+ | u'' "www.metopera.org" = aI "Met" "text,tri"
+ | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
+
  -- Quad-letter-square icons.
- | u'' "jamanetwork.com" || u'' "jama.jamanetwork.com" || u'' "archinte.jamanetwork.com"  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
+ | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
  | u'' "www.cell.com" = aI "CELL" "text,quad,sans" -- Cell: their logo is unrecognizable (and dumb)
  | u'' "mlp.fandom.com" = aI "MLPW" "text,quad,sans" -- NOTE: override Fandom catch-all
  | u'' "www.fimfiction.net" = aI "FIMF" "text,quad,sans"
@@ -285,7 +284,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.poetryfoundation.org" = aI "POET" "text,quad,sans" -- <https://www.poetryfoundation.org/> <https://en.wikipedia.org/wiki/Poetry_Foundation> logo is a 2×3 grid "POETRY"; fortunately, 'POET' is a real word and works nicely as a quad
  | u'' "papers.ssrn.com" = aI "SSRN" "text,quad"
  | u'' "www.vice.com" || u'' "motherboard.vice.com" = aI "VICE" "text,quad,italic"
- | u'' "www.courtlistener.com" || u'' "archive.recapthelaw.org"  || u'' "storage.courtlistener.com" || u'' "www.courtlistener.com" || u'' "www.pacer.uscourts.gov" || u'' "www.pacer.gov" || u'' "pcl.uscourts.gov" = aI "PACR" "text,quad"
+ | aU'' ["www.courtlistener.com", "archive.recapthelaw.org", "storage.courtlistener.com", "www.courtlistener.com", "www.pacer.uscourts.gov", "www.pacer.gov", "pcl.uscourts.gov"] = aI "PACR" "text,quad"
  | u'' "www.nybooks.com" = aI "NYRB" "text,quad"
  | u'' "www.jstor.org" = aI "JTOR" "text,quad" -- quad looks better skipping the thin 'S'
  | u'' "thisanimedoesnotexist.ai" = aI "TADE" "text,quad,sans"
@@ -298,34 +297,34 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "longreads.com" = aI "Long" "text,quad"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
- | u'' "www.amazon.com" || u'' "aws.amazon.com" || u'' "amazon.com" || u'' "smile.amazon.com"|| u'' "aboutamazon.com"|| u' "amazon.co." = aI "amazon" "svg"
+ | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
  | u'' "en.bitcoin.it" || u'' "bitcointalk.org" || u' "www.blockchain.com/btc/" = aI "bitcoin" "svg"
  | u'' "www.biorxiv.org" || u'' "www.medrxiv.org" = aI "chi-dna" "svg" -- BioRxiv (custom icon: italic Chi with DNA cross-strands).
  | u'' "distill.pub" = aI "distillpub" "svg" -- Distill ML journal.
  | u'' "www.dropbox.com" || u'' "dl.dropboxusercontent.com" = aI "dropbox" "svg" -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com
  | u'' "www.erowid.org" || u'' "www.drugsdata.org" = aI "erowid" "svg"
- | u' ".tensorflow.org" || u' "github.com/tensorflow/" || u' "medium.com/tensorflow/" = aI "tensorflow" "svg" -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
- | u'' "github.com" || u'' "copilot.github.com" || u'' "archiveprogram.github.com" || u'' "gist.github.com" || u'' "github.blog" = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
+ | aU' [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = aI "tensorflow" "svg" -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
+ | aU'' ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog"] = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' "www.paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
- | anyInfix u ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
+ | aU' ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
  | u'' "intelligence.org" = aI "miri" "svg" -- MIRI/intelligence.org.
  | u' ".nytimes.com" = aI "newyorktimes" "svg" -- The New York Times: manual edit, reducing full 'NEW YORK TIMES' SVG logo to just the ‘T’ they use as an icon.
- | u'' "www.ncbi.nlm.nih.gov" || u'' "pubmed.ncbi.nlm.nih.gov" || u'' "www.clinicaltrials.gov" = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
+ | aU'' ["www.ncbi.nlm.nih.gov", "pubmed.ncbi.nlm.nih.gov", "www.clinicaltrials.gov"] = aI "nlm-ncbi" "svg" -- NCBI/Pubmed: simplification of their logo (https://upload.wikimedia.org/wikipedia/commons/0/07/US-NLM-NCBI-Logo.svg). primary user: ncbi.nlm.nih.gov
  | u'' "www.patreon.com" = aI "patreon" "svg" -- Patreon. (Used the old one (https://upload.wikimedia.org/wikipedia/commons/9/94/Patreon_logo.svg) because I don’t like the new one.)
- | anyInfix u ["plos.org", "plosone.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations... primary user: journals.plos.org
+ | aU' ["plos.org", "plosone.org", "plosmedicine.org"] = aI "plos" "svg" -- PLOS ONE in all their domain permutations... primary user: journals.plos.org
  | u' "reddit.com" = aI "reddit" "svg" -- old.reddit.com
- | anyInfix u ["overflow.net", "overflow.com", "stackexchange.com"] = aI "stackexchange" "svg" -- The *Exchange/*Overflow family of websites.
+ | aU' ["overflow.net", "overflow.com", "stackexchange.com"] = aI "stackexchange" "svg" -- The *Exchange/*Overflow family of websites.
  | u' "substack.com" = aI "substack" "svg" -- gwern.substack.com
  | u'' "www.theguardian.com" || u'' "www.guardian.co.uk" = aI "theguardian" "svg" -- El Grauniad.
  | u'' "www.newyorker.com" = aI "thenewyorker" "svg" -- The New Yorker: the Dandy SVG, simplified & rotated more vertically.
  | u' "tumblr.com" = aI "tumblr" "svg"
- | u'' "twitter.com" || u'' "blog.twitter.com" || u'' "developer.twitter.com" || u'' "nitter.hu" = aI "twitter" "svg"
+ | aU'' ["twitter.com", "blog.twitter.com", "developer.twitter.com", "nitter.hu"] = aI "twitter" "svg"
  | u'' "www.uptontea.com" = aI "uptontea" "svg"
  | u'' "soundcloud.com" = aI "audio" "svg"
  | u' ".bandcamp.com" = aI "audio" "svg"
  | u'' "www.washingtonpost.com" = aI "washingtonpost" "svg" -- The Washington Post: truncated their blackletter to ‘WP’.
- | anyInfix u ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
+ | aU' ["wikipedia.org", "wikimedia.org", "wiktionary.org", "wikisource.org", "wikimediafoundation.org", "stats.grok.se", "wikibooks.org", "wikiquote.org", "xtools.wmflabs.org"] = aI "wikipedia" "svg" -- primary user: en.wikipedia.org, meta.wikimedia.org, en.wiktionary.org, en.wikisource.org
  | u' ".fandom.com" = aI "♡" "text" -- formerly known as Wikia, renamed to 'Fandom' and adopted a heart-based logo: <https://en.wikipedia.org/wiki/Fandom_(website)#2016%E2%80%932018:_Fandom_brand>; this is an umbrella covering all the subdomains; more specific Fandom wikis go before in the list (like MLP)
  | u' "www.wired.com" || u' "www.wired.co.uk" = aI "wired" "svg" -- an inverse "W" on a black background (Wiley is just a "W")
  | u'' "www.youtube.com" || u'' "www.youtu.be" = aI "youtube" "svg"
@@ -333,14 +332,14 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.telegraph.co.uk" = aI "the-telegraph" "svg" -- edited from <https://en.wikipedia.org/wiki/File:The_Telegraph.svg>
  | u'' "www.openphilanthropy.org" = aI "open-philanthropy" "svg"
  | u'' "www.atlasobscura.com" = aI "atlas-obscura" "svg"
- | u'' "blog.eleuther.ai" || u'' "www.eleuther.ai" || u'' "pile.eleuther.ai" || u'' "6b.eleuther.ai" || u' "arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/" = aI "eleutherai" "svg"
-  | u'' "arankomatsuzaki.wordpress.com" = aI "ak" "text,sans" -- known with the other ak on Twitter; put after EAI because the GPT-J announcement is an EAI project
+ | aU'' ["blog.eleuther.ai", "www.eleuther.ai", "pile.eleuther.ai", "6b.eleuther.ai"] || u' "arankomatsuzaki.wordpress.com/2021/06/04/gpt-j/" = aI "eleutherai" "svg"
+ | u'' "arankomatsuzaki.wordpress.com" = aI "ak" "text,sans" -- known with the other ak on Twitter; put after EAI in the SVG section because the GPT-J announcement is an EAI project
  | u' ".apple.com" = aI "apple" "svg"
  | u'' "www.quantamagazine.org" = aI "quanta" "svg"
  | u'' "creativecommons.org" = aI "creative-commons" "svg" -- <https://creativecommons.org/about/downloads>
  | u'' "www.alcor.org" = aI "alcor" "svg"
- | u'' "www.econlib.org" || u'' "www.econtalk.org" || u'' "betonit.blog" = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
- | u' ".cochrane.org" || u'' "www.cochrane.org.uk" || u'' "www.cochranelibrary.com" = aI "cochrane-collaboration" "svg" -- <https://upload.wikimedia.org/wikipedia/commons/archive/a/a1/20200122144949%21Cclogo.svg> (Newer version is not actually an SVG; reported on Talk page)
+ | aU'' ["www.econlib.org", "www.econtalk.org", "betonit.blog"] = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
+ | u' ".cochrane.org" || aU'' ["www.cochrane.org.uk", "www.cochranelibrary.com"] = aI "cochrane-collaboration" "svg" -- <https://upload.wikimedia.org/wikipedia/commons/archive/a/a1/20200122144949%21Cclogo.svg> (Newer version is not actually an SVG; reported on Talk page)
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -360,7 +359,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "imgur.com" || u'' "i.imgur.com"       = aI "image" "svg"
  | "/static/" `T.isPrefixOf` u && hasExtension ".html" u  = aI "code" "svg"
  | isLocal u && hasExtension ".php" u                     = aI "code" "svg"
- | anyInfix u [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
+ | aU' [".pdf", ".PDF", "/pdf", "type=pdf", "pdfs.semanticscholar.org", "citeseerx.ist.psu.edu", "pdfs.semanticscholar.org"] = aI "pdf" "svg"
 
  -- Fallback
  | otherwise = x
@@ -373,6 +372,10 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
        aI = addIcon x
        iE :: [T.Text] -> Bool
        iE = elem (T.drop 1 $ extension u)
+       aU', aU'' :: [T.Text] -> Bool
+       aU'  = any u'
+       aU'' = any u''
+
 linkIcon x = x
 
 -- hardwire globally icons for exact-matches of specific URLs (`[(URL, (Link icon, Link icon type))]`)
@@ -400,9 +403,6 @@ addIcon x@(Link (idt,cl,ks) a (b,c)) icon iconType  =
                                   [("link-icon",icon), ("link-icon-type",iconType)] ++
                                   ks) a (b,c)
 addIcon x _ _ = x
-
-anyInfix :: T.Text -> [T.Text] -> Bool
-anyInfix string = Prelude.any (`T.isInfixOf` string)
 
 isLocal :: T.Text -> Bool
 isLocal s = T.head s == '/'
@@ -432,12 +432,29 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                                                                                     ("." `T.isInfixOf` url)) b'
                         let b''' =  M.fromListWith (+) b''
                         return $ reverse $ sort $ filter (\(e,f) -> e >= linkIconMin && f /="") $ map (\(c,d) -> (d,c)) $ M.toList b'''
-                        -- return $ filter (\(n,_) -> n>= linkIconMin) $ reverse $ sort $ frequency $
-                        --   filter (`notElem` blackList) $ filter (/="") $ map host $
-                        --   filter (\url ->(\(Link (_, _, ks) _ _) -> ("." `T.isInfixOf` url) && not (hasKeyAL "link-icon" ks)) $
-                        --              linkIcon (Link nullAttr [] (url,""))) $ M.keys b
   where blackList :: [T.Text] -- dead, icon-less, bad icon, overly-obscure, no real unifying nature worth knowing, etc:
-        blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com", "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com", "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com", "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am", "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com", "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md", "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net", "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com", "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net", "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com", "www.nausicaa.net", "www.hindawi.com", "www.eugenewei.com", "www.buzzfeed.com", "web.mit.edu", "karpathy.github.io", "infoproc.blogspot.com", "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de", "www.wakapoetry.net", "www.wunderground.com", "www.standard.co.uk", "www.rte.ie", "www.orlandosentinel.com", "www.mercurynews.com", "www.links.org", "www.math.uwaterloo.ca", "sourceforge.net", "shkspr.mobi", "ro.ecu.edu.au","repository.upenn.edu","proceedings.neurips.cc","polisen.se", "latanyasweeney.org", "highnoongmt.wordpress.com", "alumni.media.mit.edu", "www.merkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org", "agtb.wordpress.com", "aeon.co", "digitalcommons.unl.edu", "emilkirkegaard.dk", "gazette.com", "ohtori.nu", "www.austlii.edu.au", "www.animenewsservice.com", "www.animeigo.com", "www.alexa.com", "vividness.live", "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu", "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com", "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com", "palladiummag.com", "mathworld.wolfram.com"]
+        blackList = ["lilianweng.github.io", "digital.library.unt.edu", "www.smartpowders.com", "www.silverhandmeadery.com",
+                     "forums.animesuki.com", "philip.greenspun.com", "eli.thegreenplace.net", "danluu.com", "www.theregister.com",
+                     "www.thedailybeast.com", "www.teanobi.com", "www.straighttalkonevidence.org", "www.joelonsoftware.com",
+                     "www.jstage.jst.go.jp", "blog.codinghorror.com", "intrade.com", "abandonedfootnotes.blogspot.com", "arr.am",
+                     "ascii.textfiles.com", "blog.johantibell.com", "cardcaptor.moekaku.com", "humanvarieties.org", "ilovetypography.com",
+                     "new.cognitivefun.net", "findarticles.com", "dataprivacylab.org", "www.thefreelibrary.com", "www.unitedpharmacies-uk.md",
+                     "www.petforums.co.uk", "www.e-codices.unifr.ch", "www.bartleby.com", "wellcomecollection.org", "darcs.net",
+                     "annals.org", "www.smh.com.au", "www.rrauction.com", "www.replicatedtypo.com", "www.mangaupdates.com",
+                     "www.instructables.com", "www.baltimoresun.com", "www.aleph.se", "www.cs.virginia.edu", "mujoco.org", "www.incompleteideas.net",
+                     "www.artbreeder.com", "waifulabs.com", "practicaltypography.com", "danwang.co", "www.worldcat.org", "www.thestranger.com",
+                     "www.nausicaa.net", "www.hindawi.com", "www.eugenewei.com", "www.buzzfeed.com", "web.mit.edu", "karpathy.github.io",
+                     "infoproc.blogspot.com", "hal.archives-ouvertes.fr", "demos.obormot.net", "blog.acolyer.org", "arbtt.nomeata.de",
+                     "www.wakapoetry.net", "www.wunderground.com", "www.standard.co.uk", "www.rte.ie", "www.orlandosentinel.com",
+                     "www.mercurynews.com", "www.links.org", "www.math.uwaterloo.ca", "sourceforge.net", "shkspr.mobi", "ro.ecu.edu.au",
+                     "repository.upenn.edu","proceedings.neurips.cc","polisen.se", "latanyasweeney.org", "highnoongmt.wordpress.com",
+                     "alumni.media.mit.edu", "www.merkle.com", "www.mentalfloss.com", "www.lightspeedmagazine.com", "ajp.psychiatryonline.org",
+                     "agtb.wordpress.com", "aeon.co", "digitalcommons.unl.edu", "emilkirkegaard.dk", "gazette.com", "ohtori.nu",
+                     "www.austlii.edu.au", "www.animenewsservice.com", "www.animeigo.com", "www.alexa.com", "vividness.live",
+                     "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu",
+                     "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
+                     "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
+                     "palladiummag.com", "mathworld.wolfram.com"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -919,7 +936,7 @@ linkIconTestUnits =
          , ("https://www.huffpost.com/entry/bill-zeller-dead-princeto_n_805689", "HUFF", "text,quad,sans")
          , ("http://summaries.cochrane.org/CD007176/antioxidant-supplements-for-prevention-of-mortality-in-healthy-participants-and-patients-with-various-diseases", "cochrane-collaboration", "svg")
          , ("https://www.fast.ai/2018/04/30/dawnbench-fastai/", "F.ai", "text,tri")
-         , ("https://github.com/fastai/numerical-linear-algebra/blob/master/README.md","F.ai", "text,tri,mono")
+         , ("https://github.com/fastai/numerical-linear-algebra/blob/master/README.md","F.ai", "text,tri")
          , ("https://www.esquire.com/entertainment/a36439327/planet-hollywood-origin-story-history-interview/", "ℰ", "text")
          , ("https://denver.cbslocal.com/2014/11/20/man-allegedly-bought-pot-from-colorado-to-sell-in-maryland/", "CBS", "text,tri,sans")
          , ("https://www.cbsnews.com/news/california-biobank-dna-babies-who-has-access/", "CBS", "text,tri,sans")

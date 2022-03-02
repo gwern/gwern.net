@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-02 11:21:06 gwern"
+When:  Time-stamp: "2022-03-02 16:39:32 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -70,33 +70,14 @@ linkLivePrioritize = do b <- readBacklinksDB
                                                                                        ("." `T.isInfixOf` url')) b'
                         let b''' =  M.fromListWith (+) b''
                         return $ reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(e,f) -> (f,e)) $ M.toList b'''
-                        -- let urls = filter ("."`T.isInfixOf`) $ M.keys b
-                        -- return $ reverse $ sort $ Utils.frequency $ filter (/="") $ map host $ filter (isNothing . urlLive) urls
   where blackList = ["omega.albany.edu"]
         linkLiveMinimum = 3
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
-goodDomainsSub = [".allennlp.org",
-        ".archive.org",
-        ".archiveteam.org",
-        ".bandcamp.com",
-        ".eleuther.ai",
-        ".fandom.com",
-        ".github.io",
-        ".givewell.org",
-        ".greenspun.com",
-        ".humanprogress.org",
-        ".imagemagick.org",
-        ".mementoweb.org",
-        ".metafilter.com",
-        ".nomeata.de",
-        ".obormot.net",
-        ".tumblr.com",
-        ".xkcd.com",
-        ".wikipedia.org",
-        ".wordpress.com",
-        ".blogspot.com"
-                 ]
+goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
+                   ".github.io", ".givewell.org", ".greenspun.com", ".humanprogress.org", ".imagemagick.org", ".mementoweb.org",
+                   ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wikipedia.org", ".wordpress.com",
+                   ".blogspot.com"]
 goodDomainsSimple =
   ["1dollarscan.com",
     "80000hours.org",
@@ -942,7 +923,8 @@ goodDomainsSimple =
     , "www.unf.edu"
     ]
 
-badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com", ".oxfordjournals.org", ".medium.com", ".translate.goog"]
+badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
+                  ".oxfordjournals.org", ".medium.com", ".translate.goog"]
 badDomainsSimple = ["1d4chan.org",
    "abebooks.com",
    "academia.edu",
@@ -2462,7 +2444,7 @@ linkLiveTest = filter (\(u, bool) -> bool /=
 linkLiveTestUnits, goodLinks, badLinks :: [(T.Text,Bool)]
 linkLiveTestUnits = goodLinks ++ badLinks
 goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
-    , ("http://arbtt.nomeata.de/", True)
+    , ("https://arbtt.nomeata.de/", True)
     , ("http://dwarffortresswiki.org/index.php/User:BaronW#The_Almighty_Dwarven_Calculator", True)
     , ("http://feeds.feedburner.com/longbets", True)
     , ("http://libgen.rs/scimag/", True)
@@ -2473,7 +2455,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://videolectures.net/rldm2015_silver_reinforcement_learning/", True)
     , ("http://www.aleph.se/andart/archives/2012/09/flaws_in_the_perfection.html", True)
     , ("http://www.antipope.org/charlie/blog-static/2011/08/usenix-2011-keynote-network-se.html", True)
-    , ("http://www.johndcook.com/blog/2011/11/22/norris-number/", True)
+    , ("https://www.johndcook.com/blog/2011/11/22/norris-number/", True)
     , ("http://www.metafor-project.org/doku.php", True)
     , ("http://www.tarsnap.com/scrypt.html", True)
     , ("https://1dollarscan.com/", True)
@@ -2714,7 +2696,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.alignmentforum.org/posts/Haawpd5rZrzkzvYRC/an-162-foundation-models-a-paradigm-shift-within-ai", True)
     , ("https://www.wired.com/story/sleep-no-more-crusade-genetic-killer/", True)
     , ("http://www.evaotaku.com/html/kaibunsho-main.html#Sect1c", True)
-    , ("http://www.stuff.co.nz/national/crime/10232509/Doing-time-for-drugs-bought-online", True)
+    , ("https://www.stuff.co.nz/national/crime/10232509/Doing-time-for-drugs-bought-online", True)
     , ("https://texample.net/tikz/examples/hydrogen-splitting/", True)
     , ("https://www.dailymail.co.uk/health/article-2126761/Bertold-Wiesner-British-scientist-fathered-600-children-donating-sperm-fertility-clinic.html", True)
     , ("https://www.memteaimports.com/tea/bei-dou", True)
@@ -2733,7 +2715,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.dailydot.com/crime/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", True)
     , ("https://www.candyjapan.com/results-from-box-design-ab-test", True)
     , ("https://nautil.us/will-90-become-the-new-60-rp-5956/", True)
-    , ("http://emilkirkegaard.dk/en/?p=5574", True)
+    , ("https://emilkirkegaard.dk/en/?p=5574", True)
     , ("https://www.independent.co.uk/news/uk/home-news/smile-a-perfect-smile-but-don-t-laugh-we-have-officially-lost-our-dentures-1336158.html", True)
     , ("https://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0003wk#bboard_content", True)
     , ("https://www.brookings.edu/opinions/2010/0501_youth_programs_sawhill.aspx", True)
@@ -2755,7 +2737,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.thefreelibrary.com/Sleep+debt+exacts+deceptive+cost.+%28Behavior%29.-a0100110931", True)
     , ("https://www.sfgate.com/news/article/viral-video-bear-dogs-terriers-california-home-16104193.php", True)
     , ("https://www.rrauction.com/auctions/lot-detail/31909050347196/", True)
-    , ("http://www.merkle.com/cryo/techFeas.html", True)
+    , ("https://www.merkle.com/cryo/techFeas.html", True)
     , ("https://www.links.org/?p=1171#comment-415465", True)
     , ("https://www.bartleby.com/205/45.html", True)
     , ("https://wavemotioncannon.com/2017/01/03/yoh-yoshinari-interview-animestyle-032013-part-33/", True)
@@ -2775,7 +2757,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.orlandosentinel.com/news/breaking-news/os-ucf-student-marijuana-arrest-towers-20150216-story.html", True)
     , ("https://www.nbcnews.com/storyline/isis-terror/isis-head-baghdadi-wife-fell-love-line-say-sources-n260291", True)
     , ("https://www.mercurynews.com/2016/01/27/san-jose-former-postal-inspector-to-serve-3-years-for-possessing-stolen-mail-marijuana-trafficking/", True)
-    , ("http://www.math.uwaterloo.ca/tsp/pla85900/index.html", True)
+    , ("https://www.math.uwaterloo.ca/tsp/pla85900/index.html", True)
     , ("https://www.jefftk.com/p/breaking-down-cryonics-probabilities", True)
     , ("https://www.gq.com/story/fake-hitman-murder-for-hire?printable=true", True)
     , ("http://www.businessweek.com/ap/financialnews/D9KQL7CG0.htm", True)
@@ -2882,7 +2864,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://mathshistory.st-andrews.ac.uk/Extras/Keynes_Newton/", True)
     , ("https://longtermrisk.org/the-importance-of-wild-animal-suffering/", True)
     , ("https://jtauber.com/blog/2004/11/26/programmed_vocabulary_learning_as_a_travelling_salesman_problem/", True)
-    , ("http://journal.stuffwithstuff.com/2020/04/05/crafting-crafting-interpreters/", True)
+    , ("https://journal.stuffwithstuff.com/2020/04/05/crafting-crafting-interpreters/", True)
     , ("https://ideas.repec.org/a/eee/ecolet/v91y2006i3p395-401.html", True)
     , ("https://harpers.org/archive/2013/09/the-devils-bait/?single=1", True)
     , ("https://hapgood.us/2019/03/28/network-heuristics/", True)
@@ -2934,7 +2916,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://apnews.com/a6a67fb761304e3cae7497faa32dcdc9", True)
     , ("https://arima.cylab.cmu.edu/markets/cybercrime.php", True)
     , ("https://bair.berkeley.edu/blog/2020/07/11/auction/", True)
-    , ("http://behavioralscientist.org/mindware-the-high-cost-of-not-doing-experiments/", True)
+    , ("https://behavioralscientist.org/mindware-the-high-cost-of-not-doing-experiments/", True)
     , ("https://believermag.com/a-natural-mother/", True)
     , ("https://bitcoin-otc.com/", True)
     , ("https://bits.blogs.nytimes.com/2012/06/07/good-night-moon-good-night-little-bird/", True)
@@ -2969,12 +2951,12 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://google-summer-of-code-2009-haskell.googlecode.com/files/Niklas_Broberg.tar.gz", True)
     , ("http://gradientscience.org/data_rep_bias/", True)
     , ("https://gutenberg.net.au/ebooks03/0300151h.html", True)
-    , ("http://handbook-5-1.cochrane.org/chapter_8/8_assessing_risk_of_bias_in_included_studies.htm", True)
+    , ("https://handbook-5-1.cochrane.org/chapter_8/8_assessing_risk_of_bias_in_included_studies.htm", True)
     , ("https://healthland.time.com/2012/04/05/frozen-assets-why-u-s-sperm-is-a-hot-commodity/", True)
     , ("https://hub.darcs.net/simon/darcsden", True)
     , ("https://iforcedabot.com/what-can-a-fake-news-detector-do/", True)
     , ("http://inhumanexperiment.blogspot.com/2009/03/increasing-intelligence-by-playing.html", True)
-    , ("http://isomerdesign.com/PiHKAL/read.php?domain=tk&id=35", True)
+    , ("https://isomerdesign.com/PiHKAL/read.php?domain=tk&id=35", True)
     , ("https://jessegalef.com/2013/01/27/messing-with-time-why-the-flash-is-in-hell/", True)
     , ("https://justgetflux.com/", True)
     , ("https://komonews.com/news/local/Federal-drug-charges-for-Bellevue-man-involved-in-Silk-Road-226387671.html", True)
@@ -2996,7 +2978,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.cato-unbound.org/2007/09/10/robin-hanson/cut-medicine-half/", True)
     , ("https://www.alexirpan.com/2015/09/24/how-an-audio-play-about-a-time-traveling-pony-turned-me-into-a-fanboy.html", True)
     , ("http://www.alessonislearned.com/index.php?comic=14", True)
-    , ("http://www.adelaidenow.com.au/news/south-australia/man-arrested-after-220000-worth-of-wizard-drug-25inbome-intercepted/story-fni6uo1m-1227075205971", True)
+    , ("https://www.adelaidenow.com.au/news/south-australia/man-arrested-after-220000-worth-of-wizard-drug-25inbome-intercepted/story-fni6uo1m-1227075205971", True)
     , ("http://www.abcb.com/newspaper/1999-12-30_asahi_01.htm", True)
     , ("https://writings.stephenwolfram.com/2012/03/the-personal-analytics-of-my-life/", True)
     , ("https://writeswith.com/", True)
@@ -3057,7 +3039,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://www.davidbrin.com/starwarsontrial.html", True)
     , ("http://www.davidbordwell.net/blog/2012/02/13/pandoras-digital-box-pix-and-pixels/", True)
     , ("https://www.dagbladet.no/nyheter/politiet-mener-fire-norske-narkoselgere-har-omsatt-for-millioner-i-virtuell-valuta-pa-morkenettet/60700845", True)
-    , ("http://www.daemonology.net/blog/2011-06-03-insecurity-in-the-jungle.html", True)
+    , ("https://www.daemonology.net/blog/2011-06-03-insecurity-in-the-jungle.html", True)
     , ("https://www.cs.odu.edu/~fmccown/research/lazy/", True)
     , ("https://www.cs.dartmouth.edu/~sergey/wm/", True)
     , ("https://www.couriermail.com.au/remote/check_cookie.html?url=https%3a%2f%2fwww.couriermail.com.au%2fnews%2fqueensland%2fgladstone%2fnews-story%2ff5bd03cfa834aad581b828fba8c07af2", True)
@@ -3088,7 +3070,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://www.righto.com/2015/11/macbook-charger-teardown-surprising.html#ref8", True)
     , ("http://www.project-imas.com/wiki/index.php?title=Miki_Hoshii", True)
     , ("https://www.wired.co.uk/article/lsd-microdosing-drugs-silicon-valley", True)
-    , ("http://www.talyarkoni.org/blog/2011/01/10/the-psychology-of-parapsychology-or-why-good-researchers-publishing-good-articles-in-good-journals-can-still-get-it-totally-wrong/", True)
+    , ("https://www.talyarkoni.org/blog/2011/01/10/the-psychology-of-parapsychology-or-why-good-researchers-publishing-good-articles-in-good-journals-can-still-get-it-totally-wrong/", True)
     , ("https://www.statnews.com/2020/09/24/crows-possess-higher-intelligence-long-thought-primarily-human/", True)
     , ("http://www.sleep-journal.com/article/S1389-9457%2800%2900031-9/abstract", True)
     , ("http://www.slate.com/articles/health_and_science/the_mouse_trap/2011/11/lab_mice_are_they_limiting_our_understanding_of_human_disease_.html", True)
@@ -3103,9 +3085,9 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://r6.ca/blog/20090522T015739Z.html", True)
     , ("https://www.technologyreview.com/2020/02/17/844721/ai-openai-moonshot-elon-musk-sam-altman-greg-brockman-messy-secretive-reality/", True)
     , ("https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6167335/", True)
-    , ("http://retractionwatch.com/2014/07/08/sage-publications-busts-peer-review-and-citation-ring-60-papers-retracted/", True)
-    , ("http://www.dartmouth.edu/~matc/MathDrama/reading/Wigner.html", True)
-    , ("http://www.cnn.com/2009/WORLD/asiapcf/06/05/japan.herbivore.men/index.html", True)
+    , ("https://retractionwatch.com/2014/07/08/sage-publications-busts-peer-review-and-citation-ring-60-papers-retracted/", True)
+    , ("https://www.dartmouth.edu/~matc/MathDrama/reading/Wigner.html", True)
+    , ("https://www.cnn.com/2009/WORLD/asiapcf/06/05/japan.herbivore.men/index.html", True)
     , ("https://www.yf.io/p/lsun", True)
     , ("https://www.wtnh.com/2014/11/06/fbi-agents-raid-west-haven-home/", True)
     , ("https://www.writingroutines.com/routines/", True)
@@ -3302,7 +3284,7 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
-    , ("http://annals.org/article.aspx?articleid=745807", False)
+    , ("https://annals.org/article.aspx?articleid=745807", False)
     , ("http://archive.foolz.us/a/thread/77196171/#77207238", False)
     , ("http://archive.recapthelaw.org/paed/205626/", False)
     , ("http://archpsyc.ama-assn.org/cgi/content/abstract/46/1/73", False)
@@ -3315,7 +3297,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://darkdata.bc.edu/", False)
     , ("http://darwin-online.org.uk/content/frameset?pageseq=1&itemID=F1548.1&viewtype=text", False)
     , ("http://dev.kanotype.net:8003/deepdanbooru/", False)
-    , ("http://dspace.mit.edu/handle/1721.1/10589", False)
+    , ("https://dspace.mit.edu/handle/1721.1/10589", False)
     , ("http://folding.stanford.edu/English/FAQ-Diseases", False)
     , ("http://gptprompts.wikidot.com/linguistics:word-in-context", False)
     , ("http://incompleteideas.net/sutton/book/the-book.html", False)
@@ -3350,7 +3332,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.rocketpunk-manifesto.com/2009/06/space-warfare-i-gravity-well.html", False)
     , ("http://www.scholarpedia.org/article/N-body_choreographies", False)
     , ("http://www.wikiwix.com/", False)
-    , ("http://www.wunderground.com/history/airport/KNHK/2012/7/11/CustomHistory.html?dayend=22&monthend=3&yearend=2013&req_city=NA&req_state=NA&req_statename=NA&format=1", False)
+    , ("https://www.wunderground.com/history/airport/KNHK/2012/7/11/CustomHistory.html?dayend=22&monthend=3&yearend=2013&req_city=NA&req_state=NA&req_statename=NA&format=1", False)
     , ("https://ai.facebook.com/blog/harmful-content-can-evolve-quickly-our-new-ai-system-adapts-to-tackle-it", False)
     , ("https://ajcn.nutrition.org/content/69/5/842.full", False)
     , ("https://almanac.httparchive.org/en/2019/", False)
@@ -3623,7 +3605,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.jstor.org/stable/10.1086/468061", False)
     , ("https://www.instructables.com/Low-power-doorwindow-sensor/", False)
     , ("https://www.buzzfeednews.com/article/justinesharrock/whats-wrong-with-google-alerts", False)
-    , ("http://web.mit.edu/remy/", False)
+    , ("https://web.mit.edu/remy/", False)
     , ("https://variety.com/2017/digital/news/netflix-thumbs-vs-stars-1202010492/", False)
     , ("https://stats.stackexchange.com/users/2392/probabilityislogic", False)
     , ("https://schizophreniabulletin.oxfordjournals.org/content/33/6/1277.full", False)
@@ -3648,7 +3630,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://vndb.org/c582", False)
     , ("https://vividness.live/protestant-buddhism", False)
     , ("http://thepharmacyexpress.com/Products2.asp?Brand=MODALERT+%28+Provigil%2C+Modapro%2C+Modvigil%2C+Generic+Modafinil+%29&T=d", False)
-    , ("http://ro.ecu.edu.au/cgi/viewcontent.cgi?article=1025&context=spsyc_pres", False)
+    , ("https://ro.ecu.edu.au/cgi/viewcontent.cgi?article=1025&context=spsyc_pres", False)
     , ("https://repository.upenn.edu/cgi/viewcontent.cgi?article=1038&context=neuroethics_pubs", False)
     , ("https://plus.google.com/u/0/103530621949492999968/posts/AThvaCXCSp2", False)
     , ("https://pastebin.com/GrV3uYh5", False)
@@ -3983,7 +3965,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://interviews.slashdot.org/story/11/09/06/1458254/Kevin-Kelly-Answers-Your-Questions", False)
     , ("https://irs.princeton.edu/sites/irs/files/event/uploads/economics_of_scaleup_20171004.pdf", False)
     , ("https://iterative.capital/thesis/", False)
-    , ("http://sites.google.com/site/computationalstylistics/home", False)
+    , ("https://sites.google.com/site/computationalstylistics/home", False)
     , ("https://it.slashdot.org/comments.pl?sid=2679325&cid=39089165", False)
     , ("https://jacobsschool.ucsd.edu/news/release/791?id=791", False)
     , ("https://jalopnik.com/you-have-no-idea-how-insanely-complex-modern-headlights-1840509448", False)
@@ -4561,7 +4543,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.jackkinsella.ie/articles/janki-method", False)
     , ("http://www.joshdean.com/files/articles/pdf/feat_clones44.pdf", False)
     , ("http://www.kptv.com/story/15084456/battle-ground-schools-let-students-sleep-in", False)
-    , ("http://www.lightspeedmagazine.com/fiction/exhalation/", False)
+    , ("https://www.lightspeedmagazine.com/fiction/exhalation/", False)
     , ("http://www.locusmag.com/2002/Issue09/GaimanWolfe.html", False)
     , ("http://www.loudountimes.com/news/article/drug_charges_dropped_against_prominent_leesburg_businessman543", False)
     , ("http://www.mediafire.com/error.php?errno=320&origin=download", False)
@@ -4578,7 +4560,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.sld.cu/galerias/pdf/sitios/revsalud/observational_research,_randomised.pdf", False)
     , ("http://www.smarthome.com/seco-larm-sm-226l-garage-door-contacts-for-closed-circuits.html", False)
     , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.onnx", False)
-    , ("http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", False)
+    , ("https://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", False)
     , ("https://journals.lww.com/greenjournal/Abstract/2003/03000/A_Randomized_Trial_of_Docosahexaenoic_Acid.11.aspx", False)
     , ("https://lareviewofbooks.org/article/the-secret-history-of-dune/", False)
     , ("https://latitude.io/blog/introducing-ai-dungeon-translate/", False)
@@ -4600,7 +4582,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://catb.org/~esr/writings/taoup/html/ch05s01.html", False)
     , ("http://clagnut.com/blog/2395", False)
     , ("https://digitalcollections.library.cmu.edu/awweb/awarchive?type=file&item=33748", False)
-    , ("http://ehp.niehs.nih.gov/1104789/", False)
+    , ("https://ehp.niehs.nih.gov/1104789/", False)
     , ("http://evacommentary.org/episode-01/episode-01A-scene3.html", False)
     , ("http://forum.bitcoin.org/index.php?topic=29737.0", False)
     , ("http://garote.bdmonkeys.net/commandline/index.html", False)
@@ -4617,8 +4599,8 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://ssgac.org/documents/CHIC_Summary_Benyamin2014.txt.gz", False)
     , ("http://secretlaboratory.org/?p=9543", False)
     , ("http://radar.oreilly.com/2011/05/anonymize-data-limits.html", False)
-    , ("http://rachelbythebay.com/", False)
-    , ("http://psycnet.apa.org/index.cfm?fa=search.searchResults", False)
+    , ("https://rachelbythebay.com/", False)
+    , ("https://psycnet.apa.org/index.cfm?fa=search.searchResults", False)
     , ("https://project-rainbowcrack.com/buy.php", False)
     , ("http://precedings.nature.com/documents/3697/version/1", False)
     , ("http://plewis.info/", False)
@@ -4646,7 +4628,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.weidai.com/bmoney.txt", False)
     , ("https://www.webcitation.org/6Qj7v6mqd", False)
     , ("https://www.thoughtco.com/is-distance-learning-right-for-you-1098087", False)
-    , ("http://www.thessgac.org/data", False)
+    , ("https://www.thessgac.org/data", False)
     , ("http://www.silcom.com/~barnowl/chain-letter/evolution.html#3-5origin_of_testimonials", False)
     , ("http://www.sebastianmarshall.com/a-slightly-more-cautious-take-on-modafinil", False)
     , ("http://www.scifiscripts.com/scripts/2001.txt", False)
@@ -4663,7 +4645,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.southwales-eveningpost.co.uk/Gorseinon-man/story-28084851-detail/story.html", False)
     , ("http://www.sfawardswatch.com/?page_id=106", False)
     , ("http://www.seistronix.com/", False)
-    , ("http://www.wdrb.com/story/27892533/louisville-man-accused-of-obtaining-date-rape-drug-online", False)
+    , ("https://www.wdrb.com/story/27892533/louisville-man-accused-of-obtaining-date-rape-drug-online", False)
     , ("https://dl.dropboxusercontent.com/u/85192141/music/surreacheese-feta-magicalcolorbossa.ogg", False)
     , ("https://www.dropbox.com/s/m748tqn9ypwiz0z/%E6%9D%B1%E6%96%B9%E7%88%86%E9%9F%B3%E3%82%B8%E3%83%A3%E3%82%BA4-%E4%BB%A4%E7%9E%91%E3%82%B3%E3%83%89%E9%9B%B6.ogg", False)
     , ("https://www-sydsvenskan-se.translate.goog/2016-07-15/atal-for-storskalig-narkotikahandel?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en-US", False)
