@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-01 17:59:40 gwern"
+When:  Time-stamp: "2022-03-03 12:20:13 gwern"
 License: CC-0
 -}
 
@@ -1480,6 +1480,8 @@ generateID url author date
        , ("https://arxiv.org/abs/1709.00103", "zhong-et-al-2017-seq2sql")
        , ("/docs/ai/2019-brynjolfsson.pdf", "brynjolfsson-et-al-2019-nmt")
        , ("/docs/economics/2019-brynjolfsson-3.pdf", "brynjolfsson-et-al-2019-productivityparadox")
+       , ("https://arxiv.org/abs/2104.14690#facebook", "wang-et-al-2021-entailment")
+       , ("https://arxiv.org/abs/2108.13487#microsoft", "wang-et-al-2021-gpt3labeling")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1690,6 +1692,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(7.5\\sim9.5\\times\\)</span>", "7.5–9.5×")
           , ("<span class=\"math inline\">\times</span>", "×")
           , ("$\\mu$", "μ")
           , ("<span class=\"math inline\">\\(\\mu\\)</span>", "μ")
@@ -2347,6 +2350,10 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\40p=",     "\40<em>p</em> = ")
           , (" n=",     " <em>n</em> = ")
           , ("( n=", "( <em>n</em> = ")
+          , (" k &gt; ", " <em>nk</em> &gt; ")
+          , (" k > ", " <em>k</em> > ")
+          , (" N &gt; ", " <em>n</em> &gt; ")
+          , (" N > ", " <em>n</em> > ")
           , (" n-back", " <em>n</em>-back")
           , ("( <em>p</em>", "(<em>p</em>")
           , (" p&lt;", " <em>p</em> &lt; ")
@@ -2487,7 +2494,9 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(Taxidea taxus)", "(<em>Taxidea taxus</em>)")
           , ("(Peromyscus leucopus)", "(<em>Peromyscus leucopus</em>)")
           , ("(Globicephala melas)", "(<em>Globicephala melas</em>)")
+          , (" Arabidopsis thaliana", " <em>Arabidopsis thaliana</em>")
           , (" C. elegans", " <em>C. elegans</em>")
+          , ("learn-ing", "learning")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
           , ("one- or five-shot", "one-shot or five-shot")
