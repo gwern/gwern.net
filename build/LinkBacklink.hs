@@ -1,7 +1,7 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-02 11:15:30 gwern"
+When:  Time-stamp: "2022-03-02 19:56:14 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
@@ -46,7 +46,7 @@ getXLink linkType p = do
                    linkExists <- doesFileExist $ tail linkRaw
                    -- create the doubly-URL-escaped version which decodes to the singly-escaped on-disk version (eg. `/metadata/annotations/$LINKTYPE/%252Fdocs%252Frl%252Findex.html` is how it should be in the final HTML href, but on disk it's only `metadata/annotations/$LINKTYPE/%2Fdocs%2Frl%2Findex.html`)
                    let link' = if not linkExists then "" else "/metadata/annotations/"++linkType++"/" ++
-                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' then urlEncode [t] else [t]) (p++".html"))
+                         urlEncode (concatMap (\t -> if t=='/' || t==':' || t=='=' || t=='?' || t=='%' || t=='&' || t=='#' || t=='(' || t==')' || t=='+' then urlEncode [t] else [t]) (p++".html"))
                    return link'
 getBackLink, getSimilarLink :: FilePath -> IO FilePath
 getBackLink    = getXLink "backlinks"
