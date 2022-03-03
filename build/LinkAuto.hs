@@ -1289,7 +1289,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[tT]acit knowledge", "https://en.wikipedia.org/wiki/Tacit_knowledge")
         , ("\\/r\\/DecisionTheory", "https://old.reddit.com/r/DecisionTheory/")
         , ("[aA]dditive regression models", "https://en.wikipedia.org/wiki/Generalized_additive_model")
-        , ("[aA]rbtt", "http://arbtt.nomeata.de/")
+        , ("[aA]rbtt", "https://arbtt.nomeata.de/")
         , ("brms", "https://github.com/paul-buerkner/brms")
         , ("[Cc]itronellol", "https://en.wikipedia.org/wiki/Citronellol")
         , ("[Dd]el\\.icio\\.us", "https://en.wikipedia.org/wiki/Delicious_(website)")

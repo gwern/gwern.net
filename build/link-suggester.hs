@@ -356,7 +356,7 @@ whiteList = M.fromList [
     , [ "Effect of Supplementing Pregnant and Lactating Mothers With n-3 Very-Long-Chain Fatty Acids on Children's IQ and Body Mass Index at 7 Years of Age"
       ]
     )
-  , ( "http://people.csail.mit.edu/pkrafft/papers/krafft-thesis-final.pdf"
+  , ( "https://people.csail.mit.edu/pkrafft/papers/krafft-thesis-final.pdf"
     , [ "A Rational Choice Framework for Collective Behavior" ]
     )
   , ( "http://people.seas.harvard.edu/~salil/research/timelock.pdf"
@@ -378,10 +378,10 @@ whiteList = M.fromList [
       , "ImageNet Classification with Deep Convolutional Neural Networks', Krizhevsky et al 2012"
       ]
     )
-  , ( "http://www.fhi.ox.ac.uk/reports/2008-3.pdf"
+  , ( "https://www.fhi.ox.ac.uk/reports/2008-3.pdf"
     , [ "Sandberg & Bostrom 2008" , "Whole Brain Emulation Roadmap" ]
     )
-  , ( "http://www.lightspeedmagazine.com/fiction/exhalation/"
+  , ( "https://www.lightspeedmagazine.com/fiction/exhalation/"
     , [ "Exhalation" ]
     )
   , ( "http://www.psy.cmu.edu/~unsio/Sio_Ormerod_meta_analysis_incubation_PB.pdf"
