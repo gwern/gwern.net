@@ -21,11 +21,11 @@ import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
-import qualified Data.Text as T (pack, append, Text)
+import qualified Data.Text as T (append, pack, unpack, Text)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 
-import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock)
+import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Utils (writeUpdatedFile, sed)
 
@@ -107,7 +107,7 @@ generateDirectory mta dir'' = do
 
 generateYAMLHeader :: FilePath -> String -> String
 generateYAMLHeader d date = concat [ "---\n",
-                       "title: /" ++ d ++ " Directory Listing\n",
+                       "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " Directory Listing\n",
                        "author: 'N/A'\n",
                        "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>, most recent first.\n",
                        "tags: index\n",
