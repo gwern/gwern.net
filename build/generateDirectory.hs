@@ -206,7 +206,7 @@ generateDirectoryItems parent current ds =
        generateDirectoryItem d = [Para [
                                      Span ("",
                                             if directoryPrefixDown current d then ["directory-indexes-downwards"] else ["directory-indexes-sideways"],
-                                            [])
+                                            [("link-icon-type", "svg")])
                                        [Link ("",["link-tag"],[("rel","tag")]) [Emph [Str $ T.pack $ replace "/docs/" "" $ takeDirectory d]] (T.pack d, "")]
                                  ]]
        directoryPrefixDown :: FilePath -> FilePath -> Bool
