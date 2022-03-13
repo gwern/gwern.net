@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-02-28 10:49:45 gwern"
+When: Time-stamp: "2022-03-13 16:44:39 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -267,9 +267,11 @@ pandocTransform md adb archived p = -- linkAuto needs to run before convertInter
                            do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
-                              let pbt = typographyTransform . walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
+                              pbt <- fmap typographyTransform . walkM (localizeLink adb archived) $ walk (map (nominalToRealInflationAdjuster . addAmazonAffiliate)) $ pb
                               let pbth = isLocalLinkWalk $ walk headerSelflink pbt
-                              walkM (\x -> localizeLink adb archived x >>= imageSrcset >>= invertImageInline) pbth
+                              pbth' <- walkM invertImageInline pbth
+                              pbth'' <- walkM imageSrcset pbth'
+                              return pbth''
 
 -- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
