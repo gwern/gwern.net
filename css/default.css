@@ -905,10 +905,10 @@ blockquote table {
     z-index: 1;
     overflow: visible;
 }
-.epigraph,
 .epigraph blockquote {
     width: -moz-fit-content;
     width: fit-content;
+    margin: auto;
 }
 .epigraph p  {
     font-style: italic;
