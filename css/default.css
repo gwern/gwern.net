@@ -4330,10 +4330,6 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*│ Specific adjustments. │*/
 /*└───────────────────────┘*/
 
-.popin .markdownBody p {
-    text-align: justify;
-}
-
 /*  Page metadata block in local page embed popups.
     */
 .popin #page-metadata-block span:nth-of-type(3) {
