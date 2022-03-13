@@ -1888,7 +1888,14 @@ span.inflationAdjusted {
     page has a custom metadata field like "css: drop-caps-goudy" which is
     substituted into the compiled HTML like
     '<body class="pagename drop-caps-goudy">', allowing defining of multiple
-    drop-caps and customized per page. The 3 drop-caps right now are Goudy
+    drop-caps and customized per page. The body class then is read by JS
+    (currently: `rewrite.js` l841, the `dropCapBlocksSelector` variable) which
+    actually sets it on relevant paragraphs. It would be difficult to define 'first paragraph'
+    at the start of the page correctly without many special-case pure-CSS selectors.
+    (Drop-caps in arbitrary manually-specified places, like appendices or split-out articles,
+    are supported by a separate 'drop-cap' singular class.)
+
+    The 3 drop-caps right now are Goudy
     ('drop-caps-goudy'), yinit ('drop-caps-yinit'), and
     De-Zs/Deutsche Zierschrift ('drop-caps-de-zs'). Goudy is for
     literary/historical/humanities pages, yinit is for technical/scientific
