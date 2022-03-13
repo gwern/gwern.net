@@ -665,7 +665,7 @@ if (window.Extracts) {
 
     //  Used in: Extracts.isLocalCodeFileLink
     Extracts.codeFileExtensions = [
-        "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html", "opml", "xml",
+        "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html", "opml", "xml", "page",
         // Non-syntax highlighted (due to lack of known format or potential size):
         "txt", "json", "jsonl", "csv"
     ];
