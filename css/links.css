@@ -514,7 +514,8 @@ a[data-link-icon='𝕳']::after { /* NZ Herald */
 }
 
 a[data-link-icon='𝔐']::after { /* Daily Mail */
-    opacity: 0.7;
+    --link-icon-offset-y: 0.5em;
+    font-size: 0.75em;
 }
 
 a[data-link-icon='𝛌']::after { /* Haskell */
