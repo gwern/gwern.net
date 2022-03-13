@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-12 16:50:54 gwern"
+When:  Time-stamp: "2022-03-13 11:56:03 gwern"
 License: CC-0
 -}
 
@@ -978,7 +978,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
-                         let doi = if not (null doiTmp) then doi else "10.48550/arXiv." ++ sed "https://arxiv.org/[a-z]+/([0-9]+\\.[0-9]+).*" "\\1" url
+                         let doi = if not (null doiTmp) then doiTmp else "10.48550/arXiv." ++ sed "https://arxiv.org/[a-z]+/([0-9]+\\.[0-9]+).*" "\\1" url
                          abst <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
