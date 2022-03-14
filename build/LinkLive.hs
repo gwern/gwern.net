@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-02 16:39:32 gwern"
+When:  Time-stamp: "2022-03-14 15:50:01 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -21,18 +21,23 @@ learn to avoid the feature entirely and resent the visual clutter and trap of th
 We instead whitelist domains based on manual testing using the list of links in /Lorem#live-link-popups.
 Since there are so many domains, we need a testsuite to keep track of what domains have been tested & found good,
 tested & found bad, and testing is not done or ambiguous (due to practical issues like a test link having become
-a local archive or 404 or changed domain entirely). -}
+a local archive or 404 or changed domain entirely).
+
+Finally, to keep up to date with new domains, each sync we rank domains by # of uses, and above a threshold,
+automatically generate a live-link testcase appended to /Lorem for manual review.
+-}
 
 {-# LANGUAGE OverloadedStrings #-}
 module LinkLive (linkLive, linkLiveTest, urlLive, linkLivePrioritize) where
 
+import Control.Monad (when)
 import Data.List (sort)
 import Data.Maybe (isNothing)
-import qualified Data.Map.Strict as M (fromListWith, toList, map)
-import Data.Text as T (isInfixOf, isPrefixOf, isSuffixOf, Text)
+import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
+import Data.Text as T (isInfixOf, isPrefixOf, isSuffixOf, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
-import LinkBacklink (readBacklinksDB)
+import LinkBacklink (readBacklinksDB, Backlinks)
 import Utils (addClass, host)
 
 linkLive :: Inline -> Inline
@@ -69,9 +74,15 @@ linkLivePrioritize = do b <- readBacklinksDB
                                                                                        (isNothing . urlLive) url' &&
                                                                                        ("." `T.isInfixOf` url')) b'
                         let b''' =  M.fromListWith (+) b''
-                        return $ reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(e,f) -> (f,e)) $ M.toList b'''
+                        let hits = reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(e,f) -> (f,e)) $ M.toList b'''
+                        when (not $ null hits) $ mapM_ (\(_,l) -> writeLinkLiveTestcase b l) hits
+                        return hits
   where blackList = ["omega.albany.edu"]
         linkLiveMinimum = 3
+        -- Append an example of a prioritized link to /Lorem#link-testcases for manual review, to skip copy-paste hassle"
+        writeLinkLiveTestcase :: Backlinks -> T.Text -> IO ()
+        writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
+                                      appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .docMetadataNot .link-live}\n"
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
