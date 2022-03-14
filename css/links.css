@@ -423,12 +423,13 @@ a[data-link-icon='𝔐']::after {
 }
 
 a[data-link-icon='▽']::after { /* The Verge */
-    --link-icon-size: 1em;
+    --link-icon-size: 0.9em;
     opacity: 0.80;
 }
 
 a[data-link-icon='∇']::after { /* The Gradient.pub */
-    opacity: 0.75;
+    --link-icon-size: 0.85em;
+    opacity: 0.85;
 }
 
 a[data-link-icon='✉']::after {
@@ -923,7 +924,7 @@ a[data-link-icon='atlas-obscura']::after { /* Darken & shift left/up */
     --link-icon-size: 0.8em;
     --link-icon-offset-x: 0.05em;
     --link-icon-offset-y: 0.1em;
-    opacity: 0.90;
+    opacity: 0.85;
 }
 
 a[data-link-icon='eleutherai']::after { /* Darken, enlarge, & shift left/up */
@@ -956,8 +957,8 @@ a[data-link-icon='creative-commons']::after {
 }
 
 a[data-link-icon='tensorflow']::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-y: 0.1em;
+    --link-icon-size: 0.7em;
+    --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.1em;
     opacity: 0.6;
 }
@@ -970,10 +971,10 @@ a[data-link-icon='alcor']::after {
 }
 
 a[data-link-icon='cochrane-collaboration']::after {
-    --link-icon-size: 0.9em;
+    --link-icon-size: 0.85em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
-    opacity: 0.8;
+    opacity: 0.75;
 }
 
 /*=------------------=*/
