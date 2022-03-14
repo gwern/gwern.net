@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-13 11:56:03 gwern"
+When:  Time-stamp: "2022-03-14 16:05:33 gwern"
 License: CC-0
 -}
 
@@ -402,6 +402,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
           , ("ai/anime", "anime AI")
+          , ("GPT/inner-monologue", "inner monologue (AI)")
           , ("/gpt", "GPT")
           , ("ai/gpt", "GPT")
           , ("ai/scaling", "AI scaling")
@@ -954,7 +955,8 @@ biorxiv p = do (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location
                                  let date    = concat $ parseMetadataTagsoup "DC.Date" metas
                                  let doi     = processDOI $ concat $ parseMetadataTagsoup "citation_doi" metas
                                  let author  = initializeAuthors $ intercalate ", " $ filter (/="") $ parseMetadataTagsoup "DC.Contributor" metas
-                                 abstrct <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
+                                 abstrct <- fmap (replace "9s" "s") $ -- BUG: Biorxiv's abstracts have broken quote encoding. I reported this to them 2 years ago and they still have not fixed it.
+                                   fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ concat $ parseMetadataTagsoupSecond "citation_abstract" metas
                                  let ts = [] -- TODO: replace with ML call to infer tags
                                  if abstrct == "" then return (Left Temporary) else
                                                    return $ Right (p, (title, author, date, doi, ts, abstrct))
@@ -1483,6 +1485,10 @@ generateID url author date
        , ("/docs/economics/2019-brynjolfsson-3.pdf", "brynjolfsson-et-al-2019-productivityparadox")
        , ("https://arxiv.org/abs/2104.14690#facebook", "wang-et-al-2021-entailment")
        , ("https://arxiv.org/abs/2108.13487#microsoft", "wang-et-al-2021-gpt3labeling")
+       , ("https://arxiv.org/abs/2112.07522", "zhao-et-al-2021-lmturk")
+       , ("https://arxiv.org/abs/1907.11692#facebook", "liu-et-al-2019-roberta")
+       , ("https://arxiv.org/abs/2109.04699", "wang-et-al-2021-efficientclip")
+       , ("https://arxiv.org/abs/2201.02605#facebook", "zhou-et-al-2022-detic")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -1693,6 +1699,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<i>", "<em>")
           , ("</i>", "</em>")
           -- math substitutions:
+          , ("<span class=\"math inline\">\\(\\pi_1\\)</span>", "π<sub>1</sub>")
           , ("<span class=\"math inline\">\\(7.5\\sim9.5\\times\\)</span>", "7.5–9.5×")
           , ("<span class=\"math inline\">\times</span>", "×")
           , ("$\\mu$", "μ")
