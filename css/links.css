@@ -970,10 +970,10 @@ a[data-link-icon='alcor']::after {
 }
 
 a[data-link-icon='cochrane-collaboration']::after {
-    --link-icon-size: 0.9em;
+    --link-icon-size: 0.85em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
-    opacity: 0.8;
+    opacity: 0.75;
 }
 
 /*=------------------=*/
