@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-14 15:50:01 gwern"
+When:  Time-stamp: "2022-03-14 21:45:34 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2440,6 +2440,7 @@ badDomainsSimple = ["1d4chan.org",
     , "www.cap-lore.com"
     , "www.flashgamehistory.com"
     , "hivemind-repo.s3-us-west-2.amazonaws.com"
+    , "aka.ms"
    ]
 
 url :: T.Text -> Inline
@@ -4776,4 +4777,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://www.cap-lore.com/Hardware/Wheel.html", False)
     , ("https://www.flashgamehistory.com/", False)
     , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.pt", False)
+    , ("https://aka.ms/beit", False) -- is actually Github underneath
     ]
