@@ -1,11 +1,41 @@
-GW.readerMode = {
+/*	Return value of this function is an anonymous function which removes the 
+	listeners that this function adds.
+ */
+function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventName = null) {
+	if (delay == 0) {
+		target.addEventListener(triggerEventName, func);
+		return (() => {
+			target.removeEventListener(triggerEventName, func);
+		});
+	} else {
+		let timer = null;
+		let events = { };
+		target.addEventListener(triggerEventName, events.triggerEvent = (event) => {
+			timer = setTimeout(func, delay, event);
+		});
+		if (cancelEventName != null) {
+			target.addEventListener(cancelEventName, events.cancelEvent = (event) => {
+				clearTimeout(timer);
+			});
+		}
+		return (() => {
+			target.removeEventListener(triggerEventName, events.triggerEvent);
+			if (cancelEventName != null)
+				target.removeEventListener(cancelEventName, events.cancelEvent);
+		});
+	}
+}
+
+ReaderMode = {
 	/*****************/
 	/*	Configuration.
 	 */
 	maskedLinksSelector: "p a, li a",
 	maskedLinksParentBlockSelector: "p, li",
 
-	unmaskLinksTriggerElementSelector: "#see-also",
+	unmaskLinksTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer",
+
+	showMaskedLinksDelay: 250,
 
 	adjustedPopupTriggerDelay: 2400,
 
@@ -14,129 +44,291 @@ GW.readerMode = {
 	 */
 	markdownBody: document.querySelector("#markdownBody"),
 
-	savedPopupTriggerDelay: null,
+	maskedLinksStyleBlock: null,
 
-	previousPageScrollOffset: null,
+	maskedLinksKeyToggleInfoAlert: null,
+
+	state: {
+		hoveringOverLink: false,
+		altKeyPressed: false
+	},
 
 	/*************/
 	/*	Functions.
 	 */
+
+	/*	Enables reader mode.
+	 */
 	setup: () => {
-		GW.readerMode.maskLinks();
+		ReaderMode.maskLinks();
+		ReaderMode.updateVisibility({ maskedLinksVisible: false, maskedLinksKeyToggleInfoAlertVisible: false });
 	},
 
+	/*	Masks links, as appropriate. This will hide linkicons and pop-frame 
+		indicators, and will thus cause reflow.
+	 */
 	maskLinks: () => {
-		GW.readerMode.maskedLinks = GW.readerMode.markdownBody.querySelectorAll(GW.readerMode.maskedLinksSelector);
+		/*	Get a list of all the links that are to be masked.
+		 */
+		ReaderMode.maskedLinks = ReaderMode.markdownBody.querySelectorAll(ReaderMode.maskedLinksSelector);
 
-		GW.readerMode.maskedLinks.forEach(link => {
+		/*	Mask links.
+		 */
+		ReaderMode.maskedLinks.forEach(link => {
+			/*	Annotate each link with a class.
+			 */
 			link.classList.add("masked-link");
 
-			let parentGraf = link.closest(GW.readerMode.maskedLinksParentBlockSelector);
-			if (parentGraf.hideMaskedLinks == null)
-				parentGraf.addEventListener("mouseleave", parentGraf.hideMaskedLinks = (event) => {
-					GW.readerMode.hideMaskedLinks();
-				});
+			/*	Insert hooks for linkicon and pop-frame indicator.
+			 */
+			link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'><span></span></span>`);
+			link.insertAdjacentHTML("beforeend", `<span class='icon-hook'><span></span></span>`);
 
-			link.addEventListener("mouseover", link.showMaskedLinks = (event) => {
-				let previousViewportRect = parentGraf.getBoundingClientRect();
+			/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked 
+				links on hover.
+			 */
+			link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, "mouseleave");
+			link.removeMouseLeaveEvent = onEventAfterDelayDo(link, "mouseleave", 0, ReaderMode.updateState);
 
-				GW.readerMode.showMaskedLinks();
+			/*	Add custom popup trigger delay.
+			 */
+			link.specialPopupTriggerDelay = () => {
+				return (ReaderMode.maskedLinksVisible() == false 
+						? ReaderMode.adjustedPopupTriggerDelay 
+						: Popups.popupTriggerDelay);
+			};
 
-				requestAnimationFrame(() => {
-					let newViewportRect = parentGraf.getBoundingClientRect();
-					let deltaY = Math.round(newViewportRect.y) - Math.round(previousViewportRect.y);
-					document.documentElement.scrollTop += deltaY;
-				});
-			});
+			/*	Add custom link click behavior.
+			 */
+			link.onclick = (event) => { return (ReaderMode.maskedLinksVisible() == true); };
 		});
 
+		/*	Inject style block.
+		 */
 		document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='masked-links-styles'>
-			.markdownBody.masked-links-hidden a.masked-link,
-			.markdownBody.masked-links-hidden a.masked-link:visited,
-			.markdownBody.masked-links-hidden a.masked-link:hover {
-				color: inherit;
-				background: none !important;
-			}
-			.markdownBody.masked-links-hidden .masked-link {
+			.markdownBody .masked-link {
 				padding-left: 0;
 			}
-			.markdownBody.masked-links-hidden .masked-link::before,
-			.markdownBody.masked-links-hidden .masked-link::after {
+			.markdownBody .masked-link::before,
+			.markdownBody .masked-link::after {
 				display: none;
+			}
+			.markdownBody.masked-links-hidden a.masked-link:not(.popup-open),
+			.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):visited,
+			.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):hover {
+				color: inherit;
+				background: none;
+				cursor: text;
+			}
+			#masked-links-key-toggle-info-alert {
+				position: absolute;
+				background-color: rgba(0, 0, 0, 0.6);
+				color: #fff;
+				text-shadow: 
+					0 0 1px #000,
+					0 0 3px #000,
+					0 0 5px #000;
+				padding: 0.5em 1em;
+				left: 2px;
+				bottom: 1em;
+				font-family: var(--GW-sans-serif-font-stack);
+				font-weight: 700;
+				pointer-events: none;
+			}
+			#masked-links-key-toggle-info-alert.hidden {
+				visibility: hidden;
+				opacity: 0;
+				transition:
+					visibility 0.15s ease,
+					opacity 0.15s ease;
+			}
+			#masked-links-key-toggle-info-alert .key {
+				border: 1px solid #bbb;
+				padding: 0.05em 0.375em 0.125em 0.375em;
+				display: inline-block;
+				border-radius: 4px;
+				margin: 0 0.1875em 0 0.125em;
+				background-color: #444;
+				box-shadow: 
+					1px 1px 3px 0 #000;
+				font-feature-settings: 'smcp';
 			}
 		</style>`);
 
+		/*	Add info alert.
+		 */
+		ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id='masked-links-key-toggle-info-alert'><p>Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p></div>`);
+
+		/*	Add key down/up listeners, to show/hide masked links with Alt key.
+		 */
+		document.addEventListener("keydown", ReaderMode.altKeyDownOrUp = (event) => {
+			if (event.key != "Alt")
+				return;
+
+			ReaderMode.updateState(event);
+		});
+		document.addEventListener("keyup", ReaderMode.altKeyDownOrUp);
+
+		/*	Create intersection observer to automatically unmask links when 
+			page is scrolled down to a specified location (element).
+		 */
 		let observer = new IntersectionObserver((entries, observer) => {
 			entries.forEach(entry => {
 				if (entry.isIntersecting == false)
 					return;
 
-				GW.readerMode.unmaskLinks();
+				ReaderMode.unmaskLinks();
 				observer.disconnect();
 			});
 		}, { threshold: 1.0 });
-		observer.observe(document.querySelector(GW.readerMode.unmaskLinksTriggerElementSelector));
+		observer.observe(document.querySelector(ReaderMode.unmaskLinksTriggerElementSelector));
 	},
 
+	/*	Unmasks links. This will un-hide linkicons and pop-frame indicators, and
+		will thus cause reflow.
+	 */
 	unmaskLinks: () => {
-		GW.readerMode.showMaskedLinks();
+		ReaderMode.showMaskedLinks();
 
-		document.querySelectorAll("#masked-links-styles").forEach(styles => styles.remove());
+		/*	Remove style block (if present).
+		 */
+		document.querySelectorAll("#masked-links-styles").forEach(styles => { styles.remove() });
 
-		GW.readerMode.maskedLinks.forEach(link => {
-			link.removeEventListener("mouseover", link.showMaskedLinks);
-			link.showMaskedLinks = null;
+		/*	Remove info alert.
+		 */
+		document.querySelectorAll("#masked-links-key-toggle-info-alert").forEach(alert => { alert.remove() });
 
-			let parentGraf = link.closest(GW.readerMode.maskedLinksParentBlockSelector);
-			parentGraf.removeEventListener("mouseleave", parentGraf.hideMaskedLinks);
-			parentGraf.hideMaskedLinks = null;
+		/*	Unmask every masked link. (Note that ReaderMode.maskedLinks is a 
+			NodeList, returned by a querySelectorAll call in 
+			ReaderMode.maskLinks. If that function has never been called, then 
+			ReaderMode.maskedLinks will be null).
+		 */
+		ReaderMode.maskedLinks.forEach(link => {
+			link.classList.remove("masked-link");
+
+			/*	Extract hooks.
+			 */
+			link.querySelectorAll(".indicator-hook, .icon-hook").forEach(hook => { hook.remove() });
+
+			/*	Remove `mouseenter` / `mouseleave` listeners from the link.
+			 */
+			link.removeMouseEnterEvent();
+			link.removeMouseLeaveEvent();
+
+			/*	Remove custom popup trigger delay.
+			 */
+			link.specialPopupTriggerDelay = null;
+
+			/*	Re-enable normal link click behavior.
+			 */
+			link.onclick = null;
 		});
 
-		GW.readerMode.previousPageScrollOffset = null;
+		/*	Remove key down/up listeners (for the Alt key toggle).
+		 */
+		document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
+		document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
+		ReaderMode.altKeyDownOrUp = null;
 	},
 
+	/*	Returns true if masked links (if any) are currently visible, false 
+		otherwise.
+	 */
 	maskedLinksVisible: () => {
-		return (GW.readerMode.markdownBody.classList.contains("masked-links-hidden") == false);
+		return (ReaderMode.markdownBody.classList.contains("masked-links-hidden") == false);
 	},
 
+	/*	Hides masked links (if any).
+	 */
 	hideMaskedLinks: () => {
-		if (GW.readerMode.maskedLinksVisible() == false)
-			return;
-
-		GW.readerMode.markdownBody.classList.add("masked-links-hidden");
-
-		if (GW.readerMode.previousPageScrollOffset != null) {
-			document.documentElement.scrollTop = GW.readerMode.previousPageScrollOffset;
-			GW.readerMode.previousPageScrollOffset = null;
-		}
-
-		if (   window.Extracts 
-			&& window.Popups 
-			&& Extracts.popFrameProvider == Popups) {
-			GW.readerMode.savedPopupTriggerDelay = Popups.popupTriggerDelay;
-			Popups.popupTriggerDelay = GW.readerMode.adjustedPopupTriggerDelay;
-		}
+		/*	Hide masked links. (Because linkicons and pop-frame indicators are
+			already hidden, this causes no reflow).
+		 */
+		ReaderMode.markdownBody.classList.add("masked-links-hidden");
 	},
 
+	/*	Unhides masked links (if any).
+	 */
 	showMaskedLinks: () => {
-		if (GW.readerMode.maskedLinksVisible() == true)
-			return;
+		/*	Unhide masked links. (This does not reveal linkicons or pop-frame
+			indicators, and thus causes no reflow).
+		 */
+		ReaderMode.markdownBody.classList.remove("masked-links-hidden");
+	},
 
-		GW.readerMode.markdownBody.classList.remove("masked-links-hidden");
+	/*	Hide key toggle info alert.
+	 */
+	hideKeyToggleInfoAlert: () => {
+		ReaderMode.maskedLinksKeyToggleInfoAlert.classList.add("hidden");
+	},
 
-		GW.readerMode.previousPageScrollOffset = document.documentElement.scrollTop;
+	/*	Show key toggle info alert.
+	 */
+	showKeyToggleInfoAlert: () => {
+		ReaderMode.maskedLinksKeyToggleInfoAlert.classList.remove("hidden");
+	},
 
-		if (   window.Extracts 
-			&& window.Popups 
-			&& Extracts.popFrameProvider == Popups
-			&& GW.readerMode.savedPopupTriggerDelay != null) {
-			requestAnimationFrame(() => {
-				Popups.popupTriggerDelay = GW.readerMode.savedPopupTriggerDelay;
-				GW.readerMode.savedPopupTriggerDelay = null;
-			});
+	/*	Update state after an event that might cause a visibility change.
+	 */
+	updateState: (event) => {
+		/*	Update tracked state.
+		 */
+		switch (event.type) {
+			case 'mouseenter':
+				ReaderMode.state.hoveringOverLink = true;
+				break;
+			case 'mouseleave':
+				ReaderMode.state.hoveringOverLink = false;
+				break;
+			case 'keydown':
+				ReaderMode.state.altKeyPressed = true;
+				break;
+			case 'keyup':
+				ReaderMode.state.altKeyPressed = false;
+				break;
+			default:
+				break;
+		}
+
+		/*	Determine whether we should show or hide masked links and other 
+			elements.
+		 */
+		let shouldShowMaskedLinks = (ReaderMode.state.hoveringOverLink || ReaderMode.state.altKeyPressed);
+		let shouldShowMaskedLinksKeyToggleInfoAlert = (ReaderMode.state.hoveringOverLink && !ReaderMode.state.altKeyPressed);
+
+		/*	Request the desired visibility update.
+		 */
+		ReaderMode.updateVisibility({
+			maskedLinksVisible: shouldShowMaskedLinks,
+			maskedLinksKeyToggleInfoAlertVisible: shouldShowMaskedLinksKeyToggleInfoAlert
+		});
+	},
+
+	/*	Update visibility, based on desired visibility (the `update` argument)
+		and the current visibility. (Applies to: masked links, masked links key
+		toggle info alert panel.)
+	 */
+	updateVisibility: (update) => {
+		/*	Show or hide masked links, depending on what visibility update has
+			been requested, and whether it is necessary (i.e., whether or not
+			things already are as they should be).
+		 */
+		if (   update.maskedLinksVisible == true
+			&& ReaderMode.maskedLinksVisible() == false) {
+			ReaderMode.showMaskedLinks();
+		} else if (   update.maskedLinksVisible == false
+				   && ReaderMode.maskedLinksVisible() == true) {
+			ReaderMode.hideMaskedLinks();
+		}
+
+		/*	Likewise, show or hide the key toggle info alert panel, as needed.
+		 */
+		if (update.maskedLinksKeyToggleInfoAlertVisible) {
+			ReaderMode.showKeyToggleInfoAlert();
+		} else {
+			ReaderMode.hideKeyToggleInfoAlert();
 		}
 	},
 };
 
-GW.readerMode.setup();
-GW.readerMode.hideMaskedLinks();
+ReaderMode.setup();
