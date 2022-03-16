@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-03-01 23:53:23 gwern"
+When:  Time-stamp: "2022-03-16 12:40:02 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -915,9 +915,10 @@ whiteList url
       , "www.cna.org" -- landing/homepage, not useful to archive
       , "www.caniuse.com" -- updated service
       , "archiveofourown.org" -- blocks archiving
-      , "nitter.net/search" -- example/updated
-      , "nitter.hu/search" -- example/updated
-      , "nitter.hu" -- service/mirror, low quality (videos don't save)
+      -- Nitter mirrors seem to be setting X headers to block live popups, but linkrot & uptime remains a problem, so time to start mirroring them:
+      -- , "nitter.net/search" -- example/updated
+      -- , "nitter.hu/search" -- example/updated
+      -- , "nitter.hu" -- service/mirror, low quality (videos don't save)
       , "flashgamehistory.com" -- low quality
       , "thebrowser.com" -- paywall
       , "git.sr.ht" -- service/updated

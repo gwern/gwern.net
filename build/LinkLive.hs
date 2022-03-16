@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-14 21:45:34 gwern"
+When:  Time-stamp: "2022-03-16 09:40:38 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -90,235 +90,234 @@ goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcam
                    ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wikipedia.org", ".wordpress.com",
                    ".blogspot.com"]
 goodDomainsSimple =
-  ["1dollarscan.com",
-    "80000hours.org",
-    "abandonedfootnotes.blogspot.com",
-    "academic.oup.com",
-    "academic.oup.com",
-    "academictorrents.com",
-    "ageing.oxfordjournals.org",
-    "ai.googleblog.com",
-    "aje.oxfordjournals.org",
-    "apenwarr.ca",
-    "archive.org",
-    "archive.ph",
-    "archivebox.io",
-    "bam-dataset.org",
-    "bam.kalzumeus.com",
-    "beepb00p.xyz",
-    "bellard.org",
-    "blog.beeminder.com",
-    "blog.google.com",
-    "blog.otoro.net",
-    "blog.pinboard.in",
-    "blogs.nvidia.com",
-    "bmk.sh",
-    "boingboing.net",
-    "camelcamelcamel.com",
-    "cat-unbound.org",
-    "causal-effects.com",
-    "citeseerx.ist.psu.edu",
-    "clinicaltrials.gov",
-    "conifer.rhizome.org",
-    "cran.r-project.org",
-    "ctan.org",
-    "danluu.com",
-    "danwang.co",
-    "distill.pub",
-    "docs.google.com",
-    "duckduckgo.com",
-    "dwarffortresswiki.org",
-    "en.bitcoin.it",
-    "en.touhouwiki.net",
-    "en.wikibooks.org",
-    "en.wikichip.org",
-    "en.wikifur.com",
-    "en.wikiquote.org",
-    "en.wikisource.org",
-    "en.wiktionary.org",
-    "equilibriabook.com",
-    "eurekamaga.com",
-    "everything2.com",
-    "explorabl.es",
-    "feeds.feedburner.com",
-    "files.eric.ed.gov",
-    "forum.effectivealtruism.org",
-    "forum.evageeks.org",
-    "foundation.wikimedia.org",
-    "fullfrontal.moe",
-    "greaterwrong.com",
-    "guzey.com",
-    "idlewords.com",
-    "iqcomparisonsite.com",
-    "jamanetwork.com",
-    "jasoncrawford.org",
-    "jtoomim.org",
-    "kalzumeus.com",
-    "keras.io",
-    "kill-the-newsletter.com",
-    "kk.org",
-    "knightcolumbia.org",
-    "ledge-cli.org",
-    "lesswrong.com",
-    "libgen.rs",
-    "library.bz",
-    "marginalrevolution.com",
-    "mattlakeman.org",
-    "mc-stan.org",
-    "meta.wikimedia.org",
-    "michaelnielsen.org",
-    "ncase.me",
-    "nintil.com",
-    "nitter.hu",
-    "norvig.com",
-    "notes.pinboard.in",
-    "numinous.productions",
-    "nymag.com",
-    "openai.com",
-    "ourworldindata.org",
-    "pandoc.org",
-    "papers.ssrn.com",
-    "parametric.press",
-    "patrickcollison.com",
-    "pdfs.semanticscholar.org",
-    "personalitytest.net",
-    "philpapers.org",
-    "pinboard.in",
-    "plato.stanford.edu",
-    "playground.tensorflow.org",
-    "popcon.ubuntu.com",
-    "press.etc.cmu.edu",
-    "progressstudies.school",
-    "psychcentral.com",
-    "publicdomainreview.org",
-    "publishing.cdlib.org",
-    "qntm.org",
-    "quantum.country",
-    "qwantz.com",
-    "racket-lang.org",
-    "rationality.org",
-    "rdiff-backup.net",
-    "ricon.dev",
-    "rootsofprogress.org",
-    "row1.ca",
-    "safebooru.org",
-    "scholars-stage.org",
-    "sciencebasedmedicine.org",
-    "sevensecularsermons.org",
-    "shiny.app",
-    "sifter.org",
-    "slatestarcodex.com",
-    "spreadsheets.google.com",
-    "statmodeling.stat.columbia.edu",
-    "stats.grok.se",
-    "text.npr.org",
-    "thefirstaibook.com",
-    "thisanimedoesnotexist.ai",
-    "thiscatdoesnotexist.com",
-    "thisrentaldoesnotexist.com",
-    "training.kalzumeus.com",
-    "unsongbook.com",
-    "upload.wikimedia.org",
-    "vast.ai",
-    "videolectures.net",
-    "wayback.archive-it.org",
-    "web.archive.org",
-    "wiki.evageeks.org",
-    "wiki.haskell.org",
-    "www.aleph.se",
-    "www.antipope.org",
-    "www.archive-it.org",
-    "www.barnesandnoble.com",
-    "www.buzzricksons.jp",
-    "www.cdc.gov",
-    "www.cogmed.com",
-    "www.cogtest.com",
-    "www.cram.com",
-    "www.cryonicscalculator.com",
-    "www.cylab.cmu.edu",
-    "www.dafont.com",
-    "www.davidsongifted.org",
-    "www.deeplearningbook.org",
-    "www.discoverbooks.com",
-    "www.doc88.com",
-    "www.drmaciver.com",
-    "www.e-codices.unifr.ch",
-    "www.ecologyandsociety.org",
-    "www.econlib.org",
-    "www.economist.com",
-    "www.econtalk.org",
-    "www.equator-network.org",
-    "www.equestriadaily.com",
-    "www.evamonkey.com",
-    "www.filfre.net",
-    "www.find-more-books.com",
-    "www.frontiersin.org",
-    "www.genetics.org",
-    "www.gizmodo.com.au",
-    "www.gnxp.com",
-    "www.google-melange.com",
-    "www.greaterwrong.com",
-    "www.gutenberg.org",
-    "www.haskell.org",
-    "www.hpmor.com",
-    "www.html-tidy.org",
-    "www.iarpa.gov",
-    "www.iqtest.com",
-    "www.joelonsoftware.com",
-    "www.johndcook.com",
-    "www.kalzumeus.com",
-    "www.lesswrong.com",
-    "www.librarything.com",
-    "www.mail-archive.com",
-    "www.mediawiki.org",
-    "www.metafor-project.org",
-    "www.motherjones.com",
-    "www.ncbi.nlm.nih.gov",
-    "www.npr.org",
-    "www.ohyouprettythings.com",
-    "www.overcomingbias.com",
-    "www.poetryfoundation.org",
-    "www.proquest.com",
-    "www.psychiatryinvestigation.org",
-    "www.r-bloggers.com",
-    "www.rdocumentation.org",
-    "www.ribbonfarm.com",
-    "www.rifters.com",
-    "www.sapa-project.org",
-    "www.schneier.com",
-    "www.sciencedirect.com",
-    "www.sciencenews.org",
-    "www.sciencenewsline.com",
-    "www.shawwn.com",
-    "www.simplify.so",
-    "www.snpedia.com",
-    "www.stat.columbia.edu",
-    "www.stat.columbia.edu",
-    "www.straighttalkonevidence.org",
-    "www.tarsnap.com",
-    "www.theatlantic.com",
-    "www.theindiaforum.in",
-    "www.theparisreview.org",
-    "www.thisfursonadoesnotexist.com",
-    "www.thispersondoesnotexist.com",
-    "www.thiswaifudoesnotexist.net",
-    "www.thisworddoesnotexist.com",
-    "www.thriftbooks.com",
-    "www.urbandictionary.com",
-    "www.vanityfair.com",
-    "www.vocativ.com",
-    "www.w3.org",
-    "www.washingtonpost.com",
-    "www.whichfaceisreal.com",
-    "www.winehq.org",
-    "www.wolfewiki.com",
-    "www.wsj.com",
-    "www.yalelawjournal.org",
-    "www.youtube.com",
-    "xkcd.com",
-    "xtools.wmflabs.org",
-    "mail.haskell.org",
-    "hackage.haskell.org"
+  ["1dollarscan.com"
+    , "80000hours.org"
+    , "abandonedfootnotes.blogspot.com"
+    , "academic.oup.com"
+    , "academic.oup.com"
+    , "academictorrents.com"
+    , "ageing.oxfordjournals.org"
+    , "ai.googleblog.com"
+    , "aje.oxfordjournals.org"
+    , "apenwarr.ca"
+    , "archive.org"
+    , "archive.ph"
+    , "archivebox.io"
+    , "bam-dataset.org"
+    , "bam.kalzumeus.com"
+    , "beepb00p.xyz"
+    , "bellard.org"
+    , "blog.beeminder.com"
+    , "blog.google.com"
+    , "blog.otoro.net"
+    , "blog.pinboard.in"
+    , "blogs.nvidia.com"
+    , "bmk.sh"
+    , "boingboing.net"
+    , "camelcamelcamel.com"
+    , "cat-unbound.org"
+    , "causal-effects.com"
+    , "citeseerx.ist.psu.edu"
+    , "clinicaltrials.gov"
+    , "conifer.rhizome.org"
+    , "cran.r-project.org"
+    , "ctan.org"
+    , "danluu.com"
+    , "danwang.co"
+    , "distill.pub"
+    , "docs.google.com"
+    , "duckduckgo.com"
+    , "dwarffortresswiki.org"
+    , "en.bitcoin.it"
+    , "en.touhouwiki.net"
+    , "en.wikibooks.org"
+    , "en.wikichip.org"
+    , "en.wikifur.com"
+    , "en.wikiquote.org"
+    , "en.wikisource.org"
+    , "en.wiktionary.org"
+    , "equilibriabook.com"
+    , "eurekamaga.com"
+    , "everything2.com"
+    , "explorabl.es"
+    , "feeds.feedburner.com"
+    , "files.eric.ed.gov"
+    , "forum.effectivealtruism.org"
+    , "forum.evageeks.org"
+    , "foundation.wikimedia.org"
+    , "fullfrontal.moe"
+    , "greaterwrong.com"
+    , "guzey.com"
+    , "idlewords.com"
+    , "iqcomparisonsite.com"
+    , "jamanetwork.com"
+    , "jasoncrawford.org"
+    , "jtoomim.org"
+    , "kalzumeus.com"
+    , "keras.io"
+    , "kill-the-newsletter.com"
+    , "kk.org"
+    , "knightcolumbia.org"
+    , "ledge-cli.org"
+    , "lesswrong.com"
+    , "libgen.rs"
+    , "library.bz"
+    , "marginalrevolution.com"
+    , "mattlakeman.org"
+    , "mc-stan.org"
+    , "meta.wikimedia.org"
+    , "michaelnielsen.org"
+    , "ncase.me"
+    , "nintil.com"
+    , "norvig.com"
+    , "notes.pinboard.in"
+    , "numinous.productions"
+    , "nymag.com"
+    , "openai.com"
+    , "ourworldindata.org"
+    , "pandoc.org"
+    , "papers.ssrn.com"
+    , "parametric.press"
+    , "patrickcollison.com"
+    , "pdfs.semanticscholar.org"
+    , "personalitytest.net"
+    , "philpapers.org"
+    , "pinboard.in"
+    , "plato.stanford.edu"
+    , "playground.tensorflow.org"
+    , "popcon.ubuntu.com"
+    , "press.etc.cmu.edu"
+    , "progressstudies.school"
+    , "psychcentral.com"
+    , "publicdomainreview.org"
+    , "publishing.cdlib.org"
+    , "qntm.org"
+    , "quantum.country"
+    , "qwantz.com"
+    , "racket-lang.org"
+    , "rationality.org"
+    , "rdiff-backup.net"
+    , "ricon.dev"
+    , "rootsofprogress.org"
+    , "row1.ca"
+    , "safebooru.org"
+    , "scholars-stage.org"
+    , "sciencebasedmedicine.org"
+    , "sevensecularsermons.org"
+    , "shiny.app"
+    , "sifter.org"
+    , "slatestarcodex.com"
+    , "spreadsheets.google.com"
+    , "statmodeling.stat.columbia.edu"
+    , "stats.grok.se"
+    , "text.npr.org"
+    , "thefirstaibook.com"
+    , "thisanimedoesnotexist.ai"
+    , "thiscatdoesnotexist.com"
+    , "thisrentaldoesnotexist.com"
+    , "training.kalzumeus.com"
+    , "unsongbook.com"
+    , "upload.wikimedia.org"
+    , "vast.ai"
+    , "videolectures.net"
+    , "wayback.archive-it.org"
+    , "web.archive.org"
+    , "wiki.evageeks.org"
+    , "wiki.haskell.org"
+    , "www.aleph.se"
+    , "www.antipope.org"
+    , "www.archive-it.org"
+    , "www.barnesandnoble.com"
+    , "www.buzzricksons.jp"
+    , "www.cdc.gov"
+    , "www.cogmed.com"
+    , "www.cogtest.com"
+    , "www.cram.com"
+    , "www.cryonicscalculator.com"
+    , "www.cylab.cmu.edu"
+    , "www.dafont.com"
+    , "www.davidsongifted.org"
+    , "www.deeplearningbook.org"
+    , "www.discoverbooks.com"
+    , "www.doc88.com"
+    , "www.drmaciver.com"
+    , "www.e-codices.unifr.ch"
+    , "www.ecologyandsociety.org"
+    , "www.econlib.org"
+    , "www.economist.com"
+    , "www.econtalk.org"
+    , "www.equator-network.org"
+    , "www.equestriadaily.com"
+    , "www.evamonkey.com"
+    , "www.filfre.net"
+    , "www.find-more-books.com"
+    , "www.frontiersin.org"
+    , "www.genetics.org"
+    , "www.gizmodo.com.au"
+    , "www.gnxp.com"
+    , "www.google-melange.com"
+    , "www.greaterwrong.com"
+    , "www.gutenberg.org"
+    , "www.haskell.org"
+    , "www.hpmor.com"
+    , "www.html-tidy.org"
+    , "www.iarpa.gov"
+    , "www.iqtest.com"
+    , "www.joelonsoftware.com"
+    , "www.johndcook.com"
+    , "www.kalzumeus.com"
+    , "www.lesswrong.com"
+    , "www.librarything.com"
+    , "www.mail-archive.com"
+    , "www.mediawiki.org"
+    , "www.metafor-project.org"
+    , "www.motherjones.com"
+    , "www.ncbi.nlm.nih.gov"
+    , "www.npr.org"
+    , "www.ohyouprettythings.com"
+    , "www.overcomingbias.com"
+    , "www.poetryfoundation.org"
+    , "www.proquest.com"
+    , "www.psychiatryinvestigation.org"
+    , "www.r-bloggers.com"
+    , "www.rdocumentation.org"
+    , "www.ribbonfarm.com"
+    , "www.rifters.com"
+    , "www.sapa-project.org"
+    , "www.schneier.com"
+    , "www.sciencedirect.com"
+    , "www.sciencenews.org"
+    , "www.sciencenewsline.com"
+    , "www.shawwn.com"
+    , "www.simplify.so"
+    , "www.snpedia.com"
+    , "www.stat.columbia.edu"
+    , "www.stat.columbia.edu"
+    , "www.straighttalkonevidence.org"
+    , "www.tarsnap.com"
+    , "www.theatlantic.com"
+    , "www.theindiaforum.in"
+    , "www.theparisreview.org"
+    , "www.thisfursonadoesnotexist.com"
+    , "www.thispersondoesnotexist.com"
+    , "www.thiswaifudoesnotexist.net"
+    , "www.thisworddoesnotexist.com"
+    , "www.thriftbooks.com"
+    , "www.urbandictionary.com"
+    , "www.vanityfair.com"
+    , "www.vocativ.com"
+    , "www.w3.org"
+    , "www.washingtonpost.com"
+    , "www.whichfaceisreal.com"
+    , "www.winehq.org"
+    , "www.wolfewiki.com"
+    , "www.wsj.com"
+    , "www.yalelawjournal.org"
+    , "www.youtube.com"
+    , "xkcd.com"
+    , "xtools.wmflabs.org"
+    , "mail.haskell.org"
+    , "hackage.haskell.org"
     , "online.wsj.com"
     , "www.microsoft.com"
     , "intelligence.org"
@@ -2441,6 +2440,7 @@ badDomainsSimple = ["1d4chan.org",
     , "www.flashgamehistory.com"
     , "hivemind-repo.s3-us-west-2.amazonaws.com"
     , "aka.ms"
+    , "nitter.hu"
    ]
 
 url :: T.Text -> Inline
@@ -2539,8 +2539,6 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://mlp.fandom.com/wiki/The_Perfect_Pear", True)
     , ("https://ncase.me/", True)
     , ("https://nintil.com/science-ending-frontier", True)
-    , ("https://nitter.hu/advadnoun/status/1458894698974638111", True)
-    , ("https://nitter.hu/search?f=tweets&q=http%3A%2F%2Fwww.thiswaifudoesnotexist.net&src=typd", True)
     , ("https://notes.pinboard.in/u:vitorio/05dec9f04909d9b6edff", True)
     , ("https://numinous.productions/ttft/", True)
     , ("https://nymag.com/news/features/70830/#print", True)
@@ -4778,4 +4776,6 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.flashgamehistory.com/", False)
     , ("https://hivemind-repo.s3-us-west-2.amazonaws.com/twdne3/twdne3.pt", False)
     , ("https://aka.ms/beit", False) -- is actually Github underneath
+    , ("https://nitter.hu/advadnoun/status/1458894698974638111", False)
+    , ("https://nitter.hu/search?f=tweets&q=http%3A%2F%2Fwww.thiswaifudoesnotexist.net&src=typd", False)
     ]
