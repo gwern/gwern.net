@@ -457,12 +457,14 @@ svg {
     }
     #sidebar a {
         border: 1px dotted var(--GW-sidebar-mobile-link-border-color);
-        padding: 4px 10px 3px 10px;
+        padding: 0.25em 0.5em;
         text-align: center;
         margin: 1px;
     }
     #sidebar a#logo {
-        padding: 8px 5px 3px 5px;
+        padding: 0.5em 0.375em;
+      	line-height: 1;
+		display: flex;
     }
     #sidebar,
     #sidebar-links {
@@ -473,13 +475,8 @@ svg {
         flex: 1 1 100%;
         margin: 0.5em 0 0 0;
     }
-    #sidebar a.site,
-    #sidebar a.links {
+    #sidebar a:not(#logo) {
         flex: 1 1 40%;
-    }
-    #sidebar a.new,
-    #sidebar a.mail {
-        flex: 1 1 auto;
     }
     #sidebar a.patreon {
         display: none;
