@@ -126,11 +126,11 @@
         $body$
 
         <div id="navigation">
-          <a id="navigation-previous" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"
+          <a id="navigation-previous" class="link-local-not" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"
             ><svg><use href="/static/img/icons/sequential-nav-icons-arabesque.svg#direction" /></svg></a
-          ><a id="navigation-center" title="Return to top of current page" href="#top"
+          ><a id="navigation-center" class="link-local-not" title="Return to top of current page" href="#top"
             ><svg><use href="/static/img/icons/sequential-nav-icons-arabesque.svg#center" /></svg></a
-          ><a id="navigation-next" rel="next" href="$next$" title="Link to next page by topic, ‘$next$’"
+          ><a id="navigation-next" class="link-local-not" rel="next" href="$next$" title="Link to next page by topic, ‘$next$’"
             ><svg><use href="/static/img/icons/sequential-nav-icons-arabesque.svg#direction" /></svg></a
           >
         </div>
@@ -144,7 +144,7 @@
 
     $partial("static/includes/inlined-foot.html")$
 
-	$partial("static/includes/inlined-graphical-linkicon-styles.html")$
+    $partial("static/includes/inlined-graphical-linkicon-styles.html")$
 
     <script defer id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
     <script>
