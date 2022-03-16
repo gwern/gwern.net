@@ -39,22 +39,29 @@ main = do dirs <- getArgs
 
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do
+
+  tagged <- listTagged mta  (init dir'')
+
+  -- actual subdirectories:
   let parentDirectory = takeDirectory $ takeDirectory dir''
   let parentDirectory' = if parentDirectory == "." then "/index" else "/" ++ parentDirectory ++ "/index"
   direntries <- fmap (filter (/="index.page")) $ -- filter out self
                 listDirectory dir''
-  let direntries' = map (\entry -> "/"++dir''++entry) direntries
+  let direntries' = sort $ map (\entry -> "/"++dir''++entry) direntries
 
-  tagged <- listTagged mta  (init dir'')
-  -- we allow tag-directories to be cross-listed, not just children. So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'. This allows cross-references without requiring deep nesting - 'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
-  let taggedDirs = map (\(f,_,_,_) -> f) $ filter (\(f,_,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f) tagged
-  let direntries'' = sort direntries' ++ sort taggedDirs -- the actual sub-directories first, then the 'see alsos'
+  -- The 'see also' cross-referenced tag-directories.
+  -- We allow tag-directories to be cross-listed, not just children.
+  -- So '/docs/exercise/index' can be tagged with 'longevity', and it'll show up in the Directory section (not the Files/Links section!) of '/docs/longevity/index'.
+  -- This allows cross-references without requiring deep nesting—'longevity/exercise' might seem OK enough (although it runs roughshod over a lot of the links in there...), but what about if there was a third? Or fourth?
+  let taggedDirs = sort $ map (\(f,_,_,_) -> f) $ filter (\(f,_,_,_) -> "/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f && f `notElem` direntries') tagged
+
   -- we suppress what would be duplicate entries in the File/Links section
   let tagged' = filter (\(f,_,_,_) -> not ("/docs/"`isPrefixOf`f && "/index"`isSuffixOf`f)) tagged
 
-  dirs   <- listDirectories direntries''
+  dirsChildren   <- listDirectories direntries'
+  dirsSeeAlsos   <- listDirectories taggedDirs
 
-  triplets  <- listFiles  mta  direntries''
+  triplets  <- listFiles  mta  direntries'
 
   let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
 
@@ -72,7 +79,8 @@ generateDirectory mta dir'' = do
   let untitledLinksSection  = generateListItems untitledLinks
 
   let header = generateYAMLHeader dir'' (getNewestDate links)
-  let directorySection = generateDirectoryItems parentDirectory' dir'' dirs
+  let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
+  let directorySectionSeeAlsos = if null dirsSeeAlsos then [] else generateDirectoryItems Nothing dir'' dirsSeeAlsos
 
   -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at '/docs/foo/index'
   let abstract = case M.lookup ("/"++dir''++"index") mta of
@@ -81,7 +89,10 @@ generateDirectory mta dir'' = do
 
   let body =   abstract ++
 
-               directorySection ++
+               directorySectionChildren ++
+
+               (if null dirsSeeAlsos then [] else ([Header 1 ("", ["displayPopNot"], []) [Str "See Also"]] ++
+                                                  directorySectionSeeAlsos)) ++
 
                (if null titledLinks then [] else
                    -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'displayPopNot', and the CSS (in default.css's popups section) will suppress that in popups/popins.
@@ -121,6 +132,7 @@ generateYAMLHeader d date = concat [ "---\n",
                        "...\n",
                        "\n"]
 
+-- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg dropping 'docs/' is common).
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
                        directories <- filterM (doesDirectoryExist . tail) $ map (sed "/index$" "/" . replace "/index.page" "/")  direntries'
@@ -186,21 +198,19 @@ lookupFallback m u = case M.lookup u m of
                                                     if snd possibleFallback == ("", "", "", "", [], "") then (u, ("", "", "", "", [], "")) else
                                                       (u',snd possibleFallback))
 
-generateDirectoryItems :: FilePath -> FilePath -> [FilePath] -> [Block]
+generateDirectoryItems :: Maybe FilePath -> FilePath -> [FilePath] -> [Block]
 generateDirectoryItems parent current ds =
   -- all directories have a parent directory with an index (eg. /docs/index has the parent /index), so we always link it.
   -- (We pass in the parent path to write an absolute link instead of the easier '../' relative link, because relative links break inside popups.)
       -- for directories like ./docs/statistics/ where there are 9+ subdirectories, we'd like to multi-column the directory section to make it more compact (we can't for annotated files/links because there are so many annotations & they are too long to work all that nicely):
-     [RawBlock (Format "html") "<div id=\"directory-indexes\" class=\"columns\">\n"] ++
-     [BulletList $ [[Para [
-                        Span ("",["directory-indexes-upwards"],[]) [
-                            Link ("",["link-tag"],[("rel","tag")]) [Str "Parent"] (T.pack parent, "Link to parent directory '" `T.append` parent' `T.append` "' (ascending)")]
-                        ]
-                    ]] ++
-       (filter (not . null) $ map generateDirectoryItem ds)] ++
+     [RawBlock (Format "html") "<div class=\"directory-indexes columns\">\n"] ++
+     [BulletList $ parent'' ++ (filter (not . null) $ map generateDirectoryItem ds)] ++
      [RawBlock (Format "html") "</div>"]
- where parent' :: T.Text
-       parent' = T.pack $ takeDirectory parent
+ where
+       parent'' = case parent of
+                     Nothing -> []
+                     Just p -> [[Para [Span ("",["directory-indexes-upwards"],[]) [Link ("",["link-tag"],[("rel","tag")]) [Str "Parent"] (T.pack p, "Link to parent directory '" `T.append`  (T.pack $ takeDirectory p) `T.append` "' (ascending)")]]]]
+
        generateDirectoryItem :: FilePath -> [Block]
        -- arrow symbolism: subdirectories are 'down' (prefix because it's 'inside'), while the parent directory is 'up' (handled above); cross-linked directories (due to tags) are then 'out and to the right' (suffix because it's 'across')
        generateDirectoryItem d = [Para [
