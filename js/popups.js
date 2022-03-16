@@ -1355,12 +1355,17 @@ Popups = {
 	setPopupSpawnTimer: (target, event) => {
 		GWLog("Popups.setPopupSpawnTimer", "popups.js", 2);
 
+		let popupTriggerDelay = target.specialPopupTriggerDelay != null
+								? (typeof target.specialPopupTriggerDelay == "function"
+								   ? target.specialPopupTriggerDelay()
+								   : target.specialPopupTriggerDelay)
+								: Popups.popupTriggerDelay;
 		target.popupSpawnTimer = setTimeout(() => {
 			GWLog("Popups.popupSpawnTimer fired", "popups.js", 2);
 
 			// Spawn the popup.
 			Popups.spawnPopup(target, { x: event.clientX, y: event.clientY });
-		}, Popups.popupTriggerDelay);
+		}, popupTriggerDelay);
 	},
 
 	//	Called by: Popups.popupMouseLeave (event handler)
