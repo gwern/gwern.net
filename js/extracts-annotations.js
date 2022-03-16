@@ -87,7 +87,11 @@ if (window.Extracts) {
         }
 
         //  Extract title/link.
-        let titleLinkClass = (originalLinkHTML > "" ? `title-link local-archive-link` : `title-link`);
+        let titleLinkClass = (originalLinkHTML > "" 
+        					  ? `title-link local-archive-link` 
+        					  : (Annotations.isWikipediaLink(annotationIdentifier)
+        					  	 ? `title-link link-live`
+        					  	 : `title-link`));
         let titleLinkHTML = `<a
                                 class="${titleLinkClass}"
                                 title="Open ${target.href} in a new window"
@@ -110,6 +114,7 @@ if (window.Extracts) {
         let abstractSpecialClass = ``;
         if (Annotations.isWikipediaLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
+
         return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
             + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}`
             + tagBacklinks
