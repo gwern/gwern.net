@@ -2157,6 +2157,47 @@ function removeScrollListener(name) {
     }
 }
 
+/*	When the given event is triggered on the given target, after the given delay
+	call the given handler function. (Optionally, if the given cancel event
+	occurs in the interim - i.e. after the trigger event happens but before the
+	delay elapses - cancel calling the handler.)
+
+	Return value of this function is an anonymous function which removes the 
+	listeners that this function adds.
+
+	NOTE: If `delay` is 0 or less, then `cancelEventName` is ignored, and `func`
+	is added as an event handler for `triggerEventName` directly.
+
+	If `delay` is positive, then `func` will be called by a timer after `delay` 
+	ms, prior to which time it might be cancelled if `cancelEventName` (if any)
+	occurs. (If `cancelEventName` is null, then `func` will be called after
+	`delay` unconditionally.)
+ */
+function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventName = null) {
+	if (delay <= 0) {
+		target.addEventListener(triggerEventName, func);
+		return (() => {
+			target.removeEventListener(triggerEventName, func);
+		});
+	} else {
+		let timer = null;
+		let events = { };
+		target.addEventListener(triggerEventName, events.triggerEvent = (event) => {
+			timer = setTimeout(func, delay, event);
+		});
+		if (cancelEventName != null) {
+			target.addEventListener(cancelEventName, events.cancelEvent = (event) => {
+				clearTimeout(timer);
+			});
+		}
+		return (() => {
+			target.removeEventListener(triggerEventName, events.triggerEvent);
+			if (cancelEventName != null)
+				target.removeEventListener(cancelEventName, events.cancelEvent);
+		});
+	}
+}
+
 /*  Returns val, or def if val == defval. (By default, defval is -1.)
     (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
  */
