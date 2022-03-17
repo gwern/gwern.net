@@ -3912,11 +3912,10 @@ To hack around this issue (which surely has a better answer), and since in some 
     top: calc(0.55em + 3px);
     right: 12em;
     z-index: 1;
-    opacity: 1.0;
+    opacity: 0.3;
     visibility: visible;
     transition:
-        opacity 2s ease,
-        visibility 2s ease;
+        opacity 2s ease;
 }
 @media only screen and (max-width: 1535px) {
     #popups-disabled-show-popup-options-dialog-button {
@@ -3926,7 +3925,10 @@ To hack around this issue (which surely has a better answer), and since in some 
 }
 #popups-disabled-show-popup-options-dialog-button.hidden {
     opacity: 0;
-    visibility: hidden;
+}
+#popups-disabled-show-popup-options-dialog-button:hover {
+    opacity: 1.0;
+    transition: none;
 }
 #popups-disabled-show-popup-options-dialog-button button {
     -moz-appearance: none;
@@ -3941,7 +3943,6 @@ To hack around this issue (which surely has a better answer), and since in some 
     line-height: 1;
     display: block;
     width: 1.125em;
-    opacity: 0.3;
 }
 #popups-disabled-show-popup-options-dialog-button button:hover {
     cursor: pointer;
