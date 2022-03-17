@@ -1,8 +1,21 @@
-/*	Return value of this function is an anonymous function which removes the 
+/*	When the given event is triggered on the given target, after the given delay
+	call the given handler function. (Optionally, if the given cancel event
+	occurs in the interim - i.e. after the trigger event happens but before the
+	delay elapses - cancel calling the handler.)
+
+	Return value of this function is an anonymous function which removes the 
 	listeners that this function adds.
+
+	NOTE: If `delay` is 0 or less, then `cancelEventName` is ignored, and `func`
+	is added as an event handler for `triggerEventName` directly.
+
+	If `delay` is positive, then `func` will be called by a timer after `delay` 
+	ms, prior to which time it might be cancelled if `cancelEventName` (if any)
+	occurs. (If `cancelEventName` is null, then `func` will be called after
+	`delay` unconditionally.)
  */
 function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventName = null) {
-	if (delay == 0) {
+	if (delay <= 0) {
 		target.addEventListener(triggerEventName, func);
 		return (() => {
 			target.removeEventListener(triggerEventName, func);
@@ -79,9 +92,8 @@ ReaderMode = {
 			 */
 			link.classList.add("masked-link");
 
-			/*	Insert hooks for linkicon and pop-frame indicator.
+			/*	Insert hooks for linkicons.
 			 */
-			link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'><span></span></span>`);
 			link.insertAdjacentHTML("beforeend", `<span class='icon-hook'><span></span></span>`);
 
 			/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked 
@@ -106,10 +118,17 @@ ReaderMode = {
 		/*	Inject style block.
 		 */
 		document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='masked-links-styles'>
-			.markdownBody .masked-link {
+			.markdownBody .masked-link .indicator-hook {
 				padding-left: 0;
 			}
-			.markdownBody .masked-link::before,
+			.markdownBody .masked-link .indicator-hook::before {
+				left: -0.3em;
+				box-shadow: 
+					-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
+					-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
+					-0.17em 0 0 0 var(--GW-link-underline-background-color);
+			}
+			.markdownBody .masked-link.masked-links-hidden .indicator-hook,
 			.markdownBody .masked-link::after {
 				display: none;
 			}
@@ -208,12 +227,14 @@ ReaderMode = {
 
 			/*	Extract hooks.
 			 */
-			link.querySelectorAll(".indicator-hook, .icon-hook").forEach(hook => { hook.remove() });
+			link.querySelectorAll(".icon-hook").forEach(hook => { hook.remove() });
 
 			/*	Remove `mouseenter` / `mouseleave` listeners from the link.
 			 */
 			link.removeMouseEnterEvent();
 			link.removeMouseLeaveEvent();
+			link.removeMouseEnterEvent = null;
+			link.removeMouseLeaveEvent = null;
 
 			/*	Remove custom popup trigger delay.
 			 */
