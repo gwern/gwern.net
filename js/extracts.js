@@ -158,6 +158,11 @@ Extracts = {
     cleanup: () => {
         GWLog("Extracts.cleanup", "extracts.js", 1);
 
+		//	Remove pop-frame indicator hooks.
+		document.querySelectorAll(".has-annotation, .has-content").forEach(link => {
+			link.querySelector(".indicator-hook").remove();
+		});
+
         //  Unbind event listeners, restore targets, and remove popups.
         document.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
             Extracts.removeTargetsWithin(container);
@@ -228,12 +233,6 @@ Extracts = {
 
             Extracts.processTargetsInDocument(info.document);
 
-			/*	Add pop-frame indicator hooks. (See links.css for how these are used.)
-			 */
-			info.document.querySelectorAll(".has-annotation, .has-content").forEach(link => {
-				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
-			});
-
 			//	Fire targets-processed event.
 			GW.notificationCenter.fireEvent("Extracts.targetsProcessedInLoadedContent", {
 				source: "Extracts.processTargetsOnContentLoad",
@@ -260,6 +259,12 @@ Extracts = {
                 Extracts.setUpAnnotationLoadEventWithin(container);
             });
         }
+
+		/*	Add pop-frame indicator hooks. (See links.css for how these are used.)
+		 */
+		doc.querySelectorAll(".has-annotation, .has-content").forEach(link => {
+			link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
+		});
     },
 
     /***********/
