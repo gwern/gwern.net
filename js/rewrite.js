@@ -38,7 +38,7 @@
 	handlers”, a.k.a. “rewrite functions”. (Additional content load handlers are
 	defined elsewhere in the code, as appropriate; e.g. the handler that
 	attaches event listeners to annotated links to load annotations when the
-	user mouses over such links, which is found in annotations.js.)
+	user mouses over such links, which is found in extracts-annotations.js.)
 
 	The GW.contentDidLoad event has the following named handler phases (see
 	gw-inline.js for details on what this means):
@@ -150,7 +150,7 @@ GW.rewriteFunctions = { };
 
 /****************************************************************/
 /*  Wrap each table in a div.table-wrapper (for layout purposes).
-    */
+ */
 function wrapTables(loadEventInfo) {
     GWLog("wrapTables", "rewrite.js", 1);
 
@@ -167,7 +167,7 @@ function wrapTables(loadEventInfo) {
 /*  Wrap each full-width table in a div.full-width-table-wrapper, and also move
     the .collapse class (if any) from the outer wrapper to the table (for
     consistency).
-    */
+ */
 function wrapFullWidthTables(loadEventInfo) {
     GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
@@ -185,7 +185,7 @@ function wrapFullWidthTables(loadEventInfo) {
 
 /**********************************************/
 /*  Add content load handler to process tables.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processTables = (info) => {
     GWLog("GW.rewriteFunctions.processTables", "rewrite.js", 2);
 
@@ -204,7 +204,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /********************************/
 /*  Inject wrappers into figures.
-    */
+ */
 function wrapFigures(loadEventInfo) {
     GWLog("wrapFigures", "rewrite.js", 1);
 
@@ -243,7 +243,7 @@ function wrapFigures(loadEventInfo) {
 
 /********************************************************************/
 /*  Designate full-width figures as such (with a ‘full-width’ class).
-    */
+ */
 function markFullWidthFigures(loadEventInfo) {
     GWLog("markFullWidthFigures", "rewrite.js", 1);
 
@@ -257,7 +257,7 @@ function markFullWidthFigures(loadEventInfo) {
     /*  Add ‘load’ listener for lazy-loaded media (as it might cause re-layout
         of eg. sidenotes). Do this only after page loads, to avoid spurious
         re-layout at initial page load.
-        */
+     */
     doWhenPageLoaded(() => {
         allFullWidthMedia.forEach(fullWidthMedia => {
             fullWidthMedia.addEventListener("load", (event) => {
@@ -269,7 +269,7 @@ function markFullWidthFigures(loadEventInfo) {
 
 /***********************************************/
 /*  Add content load handler to process figures.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFigures = (info) => {
     GWLog("GW.rewriteFunctions.processFigures", "rewrite.js", 2);
 
@@ -289,7 +289,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /***********************************************************/
 /*  Wrap each pre.full-width in a div.full-width and a
     div.full-width-code-block-wrapper (for layout purposes).
-    */
+ */
 function wrapFullWidthPreBlocks(loadEventInfo) {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
@@ -312,7 +312,7 @@ function wrapFullWidthPreBlocks(loadEventInfo) {
 
 /***************************************************/
 /*  Add content load handler to process code blocks.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCodeBlocks = (info) => {
     GWLog("GW.rewriteFunctions.processCodeBlocks", "rewrite.js", 2);
 
@@ -330,7 +330,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /*****************************************/
 /*  Returns the current selection as HTML.
-    */
+ */
 //	NOTE: This function appears to currently be unused. —SA, 2022-01-31
 // function getSelectionHTML() {
 //     let container = document.createElement("div");
@@ -347,12 +347,12 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /*  Expands all tables (& other blocks) whose wrapper block is marked with class
     ‘full-width’, and all figures marked with class ‘full-width’, to span the
     viewport (minus a specified margin on both sides).
-    */
+ */
 function createFullWidthBlockLayoutStyles() {
     GWLog("createFullWidthBlockLayoutStyles", "rewrite.js", 1);
 
     /*  Configuration and dynamic value storage.
-        */
+     */
     GW.fullWidthBlockLayout = {
         sideMargin: 25,
         pageWidth: 0,
@@ -360,17 +360,17 @@ function createFullWidthBlockLayoutStyles() {
     };
 
     /*  Pre-query key elements, to save performance on resize.
-        */
+     */
     let rootElement = document.querySelector("html");
     let markdownBody = document.querySelector("#markdownBody");
 
     /*  Inject styles block to hold dynamically updated layout variables.
-        */
+     */
     document.querySelector("head").insertAdjacentHTML("beforeend", `<style id="full-width-block-layout-styles"></style>`);
     let fullWidthBlockLayoutStyles = document.querySelector("#full-width-block-layout-styles");
 
     /*  Function to update layout variables (called immediately and on resize).
-        */
+     */
     let updateFullWidthBlockLayoutStyles = () => {
         GWLog("updateFullWidthBlockLayoutStyles", "rewrite.js", 2);
 
@@ -395,7 +395,7 @@ doWhenPageLoaded(createFullWidthBlockLayoutStyles);
 
 /************************************/
 /*  Set margins of full-width blocks.
-    */
+ */
 function setMarginsOnFullWidthBlocks(loadEventInfo) {
     GWLog("setMarginsOnFullWidthBlocks", "rewrite.js", 1);
 
@@ -435,7 +435,7 @@ function setMarginsOnFullWidthBlocks(loadEventInfo) {
 
 /*********************************************************/
 /*  Add content load handler to process full-width blocks.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFullWidthBlocks = (info) => {
     GWLog("GW.rewriteFunctions.processFullWidthBlocks", "rewrite.js", 2);
 
@@ -452,7 +452,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     certain problematic characters, etc.).
 
     Requires typography.js to be loaded prior to this file.
-    */
+ */
 function rectifyTypographyInAnnotation(loadEventInfo) {
     GWLog("rectifyTypographyInAnnotation", "rewrite.js", 1);
 
@@ -471,7 +471,7 @@ function rectifyTypographyInAnnotation(loadEventInfo) {
 /*****************************************************************************/
 /*  Sets, in CSS, the image dimensions that are specified in HTML.
     (This is to ensure no reflow when annotation popups are spawned.)
-    */
+ */
 function setImageDimensionsInAnnotation(loadEventInfo) {
     GWLog("setImageDimensionsInAnnotation", "rewrite.js", 1);
 
@@ -482,7 +482,7 @@ function setImageDimensionsInAnnotation(loadEventInfo) {
 
 /**************************************************************************/
 /*  Add content load handler for processing a loaded annotation (fragment).
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotation = (info) => {
     GWLog("GW.rewriteFunctions.processAnnotation", "rewrite.js", 2);
 
@@ -498,7 +498,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /******************************************************************************/
 /*  Bind mouse hover events to, when hovering over an annotated link, highlight
 	that annotation (as viewed in a tags directory, for instance).
-    */
+ */
 function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
     GWLog("bindSectionHighlightEventsToAnnotatedLinks", "rewrite.js", 1);
 
@@ -534,7 +534,7 @@ function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
 
 /***********************************************************/
 /*  Add content load handler for processing annotated links.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processAnnotatedLinks = (info) => {
     GWLog("GW.rewriteFunctions.processAnnotatedLinks", "rewrite.js", 2);
 
@@ -548,7 +548,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /************************************************************************/
 /*  The footnotes section has no ID because Pandoc is weird. Give it one.
-    */
+ */
 function identifyFootnotesSection(loadEventInfo) {
     GWLog("identifyFootnotesSection", "rewrite.js", 1);
 
@@ -559,7 +559,7 @@ function identifyFootnotesSection(loadEventInfo) {
 
 /******************************/
 /*  Inject footnote self-links.
-    */
+ */
 function injectFootnoteSelfLinks(loadEventInfo) {
     GWLog("injectFootnoteSelfLinks", "rewrite.js", 1);
 
@@ -585,7 +585,7 @@ function injectFootnoteSelfLinks(loadEventInfo) {
 
 /*****************************************************/
 /*  Inject self-link for the footnotes section itself.
-    */
+ */
 function injectFootnoteSectionSelfLink(loadEventInfo) {
     GWLog("injectFootnoteSectionSelfLink", "rewrite.js", 1);
 
@@ -611,7 +611,7 @@ function injectFootnoteSectionSelfLink(loadEventInfo) {
 
 /**************************************************************************/
 /*  Return all {side|foot}note elements associated with the given citation.
-    */
+ */
 function allNotesForCitation(citation) {
     if (!citation.classList.contains("footnote-ref"))
         return null;
@@ -620,14 +620,14 @@ function allNotesForCitation(citation) {
     /*  We must check to ensure that the note in question is from the same
         page as the citation (to distinguish between main document and any
         full-page embeds that may be spawned).
-        */
+     */
     return Array.from(document.querySelectorAll(`#fn${citationNumber}, #sn${citationNumber}`)).filter(note => note.querySelector(".footnote-back").pathname == citation.pathname);
 }
 
 /***************************************************************************/
 /*  Bind mouse hover events to, when hovering over a citation, highlight all
     {side|foot}notes associated with that citation.
-    */
+ */
 function bindNoteHighlightEventsToCitations(loadEventInfo) {
     GWLog("bindNoteHighlightEventsToCitations", "rewrite.js", 1);
 
@@ -655,7 +655,7 @@ function bindNoteHighlightEventsToCitations(loadEventInfo) {
 
 /*******************************************/
 /*  Add a TOC link to the footnotes section.
-    */
+ */
 function injectFootnotesTOCLink(loadEventInfo) {
     GWLog("injectFootnotesTOCLink", "rewrite.js", 1);
 
@@ -667,7 +667,7 @@ function injectFootnotesTOCLink(loadEventInfo) {
 
 /**************************************************************/
 /*  Add content load handlers for processing footnotes section.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFootnotes = (info) => {
     GWLog("GW.rewriteFunctions.processFootnotes", "rewrite.js", 2);
 
@@ -697,7 +697,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /********************************************************************/
 /*  Designate self-links (a.k.a. anchorlinks) and local links (a.k.a.
     within-site links) as such.
-    */
+ */
 function addSpecialLinkClasses(loadEventInfo) {
     GWLog("addSpecialLinkClasses", "rewrite.js", 1);
 
@@ -724,7 +724,7 @@ function addSpecialLinkClasses(loadEventInfo) {
     before or after, and if it is before/previously, annotate the self-link
     with ‘↑’ and if after/later, ‘↓’. This helps the reader know if it’s a
     backwards link to a identifier already read, or an unread identifier.
-    */
+ */
 function directionalizeAnchorLinks(loadEventInfo) {
     GWLog("directionalizeAnchorLinks", "rewrite.js", 1);
 
@@ -757,9 +757,20 @@ function directionalizeAnchorLinks(loadEventInfo) {
 //     Links.decorateLinksWithin(loadEventInfo.document);
 // }
 
+/*************************************************************************/
+/*	Add pop-frame indicator hooks. (See links.css for how these are used.)
+ */
+function addPopFrameIndicatorHooksToLinks(loadEventInfo) {
+	GWLog("addPopFrameIndicatorHooksToLinks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".has-annotation, .has-content").forEach(link => {
+		link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
+	});
+}
+
 /************************************************/
 /*  Add content load handler for link processing.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processLinks = (info) => {
     GWLog("GW.rewriteFunctions.processLinks", "rewrite.js", 2);
 
@@ -768,6 +779,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     if (info.needsRewrite) {
         directionalizeAnchorLinks(info);
 //         addLinkDecorationData(info);
+		addPopFrameIndicatorHooksToLinks(info);
     }
 }, { phase: "rewrite" });
 
@@ -777,7 +789,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /********************************************************************/
 /*  Add ‘markdownBody’ class to #page-metadata, for styling purposes.
-    */
+ */
 function fixPageMetadataClass(loadEventInfo) {
     GWLog("fixPageMetadataClass", "rewrite.js", 1);
 
@@ -788,7 +800,7 @@ function fixPageMetadataClass(loadEventInfo) {
 
 /*****************************************************************/
 /*  Add content load handler for processing page metadata section.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processPageMetadata = (info) => {
     GWLog("GW.rewriteFunctions.processPageMetadata", "rewrite.js", 2);
 
@@ -806,7 +818,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /***************************************************************************/
 /*  Clean up image alt-text. (Shouldn’t matter, because all image URLs work,
     right? Yeah, right...)
-    */
+ */
 function cleanUpImageAltText(loadEventInfo) {
     GWLog("cleanUpImageAltText", "rewrite.js", 1);
 
@@ -817,7 +829,7 @@ function cleanUpImageAltText(loadEventInfo) {
 
 /**************************************************************/
 /*  Add content load handler for doing miscellaneous rewriting.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMiscellaneousRewrites = (info) => {
     GWLog("GW.rewriteFunctions.processMiscellaneousRewrites", "rewrite.js", 2);
 
@@ -834,7 +846,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /*******************************************************/
 /*  Apply classes to blocks that should have a drop cap.
-    */
+ */
 function applyDropCapsClasses(loadEventInfo) {
     GWLog("applyDropCapsClasses", "rewrite.js", 1);
 
@@ -846,7 +858,7 @@ function applyDropCapsClasses(loadEventInfo) {
         loadEventInfo.document.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
             /*  Only add page-global drop cap class to blocks that don’t
                 already have a drop cap class of their own.
-                */
+             */
             if (Array.from(dropCapBlock.classList).findIndex(cssClass => cssClass.startsWith("drop-cap-")) == -1)
                 dropCapBlock.classList.add(dropCapClass);
         });
@@ -855,7 +867,7 @@ function applyDropCapsClasses(loadEventInfo) {
 
 /******************************************/
 /*  Add content load handler for drop caps.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processDropCaps = (info) => {
     GWLog("GW.rewriteFunctions.processDropCaps", "rewrite.js", 2);
 
@@ -872,7 +884,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /***********************************************************************/
 /*  Injects the “back to top” link. (Called only for the main document.)
-    */
+ */
 function injectBackToTopLink(loadEventInfo) {
     GWLog("injectBackToTopLink", "rewrite.js", 1);
 
@@ -889,7 +901,7 @@ function injectBackToTopLink(loadEventInfo) {
 
 /***********************************************************/
 /*  Add content load handler to inject the back-to-top link.
-    */
+ */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectBackToTopLink = (info) => {
     GWLog("GW.rewriteFunctions.injectBackToTopLink", "rewrite.js", 2);
 
@@ -903,13 +915,13 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /*  Show/hide the back-to-top link in response to scrolling.
 
     Called by the ‘updateBackToTopLinkVisibilityScrollListener’ scroll listener.
-    */
+ */
 function updateBackToTopLinkVisibility(event) {
     GWLog("updateBackToTopLinkVisibility", "rewrite.js", 3);
 
     /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
         down from the top.
-        */
+     */
     if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
         GW.backToTop.classList.toggle("hidden", false);
 
@@ -940,12 +952,12 @@ doWhenPageLoaded(() => {
 	with the offending page+anchor ID, for correction (either fixing an outdated
 	link somewhere on gwern.net, or adding a span/div manually to the page to
 	make old inbound links go where they ought to).
-	*/
+ */
 /*	Such broken anchors can reflect out of date cross-page references, or reflect
 	incoming URLs from elsewhere on the Internet which are broken/outdated.
 	(Within-page anchor links are checked statically at compile-time, and those
 	errors should never exist.)
-	*/
+ */
 
 function reportBrokenAnchorLink(link) {
 	GWLog("reportBrokenAnchorLink", "rewrite.js", 1);
@@ -975,7 +987,7 @@ function brokenAnchorCheck() {
 	/*	Loop over internal page self-links and check that their targets exist;
 		if they do not, report it via 404 like the broken anchors.
 		DEPRECATED DUE TO anchor-checker.php SCRIPT.
-		*/
+	 */
 // 	document.querySelectorAll(".markdownBody a[href^='#']").forEach(anchor => {
 // 		if (document.querySelector(anchor.hash) == null)
 // 			reportBrokenAnchorLink(anchor);
@@ -991,7 +1003,7 @@ doWhenDOMContentLoaded(brokenAnchorCheck);
 /*  This is necessary to defeat a bug where if the page is loaded with the URL
     hash targeting some element, the element does not match the :target CSS
     pseudo-class.
-    */
+ */
 function realignHash() {
     GWLog("realignHash", "rewrite.js", 1);
 
