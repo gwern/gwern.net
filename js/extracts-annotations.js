@@ -239,29 +239,17 @@ if (window.Extracts) {
         if (Extracts.popFrameProvider == Popups) {
             //  Add hover event listeners to all the annotated targets.
             allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-                annotatedTarget.addEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter = (event) => {
-                    //  Get the unique identifier of the annotation for the target.
-                    let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
+				annotatedTarget.removeAnnotationLoadEvents = onEventAfterDelayDo(annotatedTarget, "mouseenter", Extracts.annotationLoadHoverDelay, (event) => {
+					//  Get the unique identifier of the annotation for the target.
+					let annotationIdentifier = Extracts.targetIdentifier(annotatedTarget);
 
-                    //  Do nothing if the annotation is already loaded.
-                    if (Annotations.cachedAnnotationExists(annotationIdentifier))
-                        return;
+					//  Do nothing if the annotation is already loaded.
+					if (Annotations.cachedAnnotationExists(annotationIdentifier))
+						return;
 
-                    /*  On hover, start a timer, duration of one-half the
-                        popup trigger delay...
-                        */
-                    annotatedTarget.annotationLoadTimer = setTimeout(() => {
-                        /*  ... to load the annotation.
-                            */
-                        Annotations.loadAnnotation(annotationIdentifier);
-                    }, (Extracts.annotationLoadHoverDelay));
-                });
-                annotatedTarget.addEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave = (event) => {
-                    /*  Cancel timer on mouseout (no need to commence a load
-                        on a merely transient hover).
-                        */
-                    clearTimeout(annotatedTarget.annotationLoadTimer);
-                });
+					//	Otherwise, load the annotation.
+					Annotations.loadAnnotation(annotationIdentifier);
+				}, "mouseleave");
             });
 
             /*  Set up handler to remove hover event listeners from all
@@ -269,8 +257,8 @@ if (window.Extracts) {
                 */
             GW.notificationCenter.addHandlerForEvent("Extracts.cleanupDidComplete", () => {
                 allAnnotatedTargetsInContainer.forEach(annotatedTarget => {
-                    annotatedTarget.removeEventListener("mouseenter", annotatedTarget.annotationLoad_mouseEnter);
-                    annotatedTarget.removeEventListener("mouseleave", annotatedTarget.annotationLoad_mouseLeave);
+                    annotatedTarget.removeAnnotationLoadEvents();
+                    annotatedTarget.removeAnnotationLoadEvents = null;
                 });
             }, { once: true });
         } else { // if (Extracts.popFrameProvider == Popins)
