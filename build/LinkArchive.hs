@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-03-16 12:40:02 gwern"
+When:  Time-stamp: "2022-03-16 19:30:40 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1129,5 +1129,6 @@ whiteList url
       , "ar5iv.labs.arxiv.org" -- HTML mirror of Arxiv PDFs, regularly updated to improve compilation quality, and allows live popups so no need to mirror locally
       , "digital.library.unt.edu/explore/partners/" -- search
       , "worldcat.org" -- updated
+      , "tinyurl.com" -- redirects
       ] = True
     | otherwise = False

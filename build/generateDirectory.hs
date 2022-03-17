@@ -21,7 +21,7 @@ import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
                     Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
-import qualified Data.Text as T (append, pack, unpack, Text)
+import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 

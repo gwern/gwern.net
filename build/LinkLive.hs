@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-16 09:40:38 gwern"
+When:  Time-stamp: "2022-03-16 19:30:19 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2441,6 +2441,7 @@ badDomainsSimple = ["1d4chan.org",
     , "hivemind-repo.s3-us-west-2.amazonaws.com"
     , "aka.ms"
     , "nitter.hu"
+    , "tinyurl.com"
    ]
 
 url :: T.Text -> Inline
@@ -4778,4 +4779,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://aka.ms/beit", False) -- is actually Github underneath
     , ("https://nitter.hu/advadnoun/status/1458894698974638111", False)
     , ("https://nitter.hu/search?f=tweets&q=http%3A%2F%2Fwww.thiswaifudoesnotexist.net&src=typd", False)
+    , ("https://tinyurl.com/hquv34", False)
     ]
