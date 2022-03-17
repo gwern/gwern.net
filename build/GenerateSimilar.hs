@@ -3,7 +3,7 @@
 
 module GenerateSimilar where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline), Format(..), runPure, Pandoc(..))
+import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str), Format(..), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
 import Data.List.Utils (replace)
@@ -217,12 +217,33 @@ generateMatches md p abst matches =
          let alreadyLinked = extractLinks False $ T.pack abst
              matchesPruned = filter (\(p2,_) -> T.pack p2 `notElem` alreadyLinked) matches
 
-             similar = BulletList $ filter (not . null) $ map (generateItem md) matchesPruned
+             similarItems = filter (not . null) $ map (generateItem md) matchesPruned
+             googleScholar = case M.lookup p md of
+               Nothing -> []
+               Just ("",_,_,"",_,_) -> []
+               Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
+                                               titleQuery = "%22" ++ title ++ "%22"
+                                               query = if null title then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
+                                           in
+                                             [[Para [Link ("",["backlinksNot", "idNot"],[])
+                                                     [Str "Google Scholar"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
+                                                                              T.pack ("Reverse citations of this paper (‘" ++ title ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),
+                                                     Str " ;",
+                                                     Link ("",["backlinksNot", "idNot"],[])
+                                                      [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),
+                                                                       T.pack ("Google search engine hits for ‘" ++ title ++ "’.")),
+                                                     Str " ;",
+                                                     Link ("",["backlinksNot", "idNot"],[])
+                                                      [Str "Search Gwern.net"] (T.pack ("https://www.google.com/search?q=site:gwern.net+" ++ title),
+                                                                                T.pack ("Gwern.net site search hits for ‘" ++ title ++ "’."))
+                                                    ]]]
 
-             pandoc = Pandoc nullMeta [similar]
+             linkList = BulletList $ similarItems ++ googleScholar
+
+             pandoc = Pandoc nullMeta [linkList]
              html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                     in case htmlEither of
-                                Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similar
+                                Left e -> error $ show e ++ ":" ++ show p ++ ":" ++ show matches ++ ":" ++ show similarItems
                                 Right output -> output
              similarLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
          in similarLinksHtmlFragment
