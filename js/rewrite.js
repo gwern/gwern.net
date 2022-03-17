@@ -757,17 +757,6 @@ function directionalizeAnchorLinks(loadEventInfo) {
 //     Links.decorateLinksWithin(loadEventInfo.document);
 // }
 
-/*************************************************************************/
-/*	Add pop-frame indicator hooks. (See links.css for how these are used.)
- */
-function addPopFrameIndicatorHooksToLinks(loadEventInfo) {
-	GWLog("addPopFrameIndicatorHooksToLinks", "rewrite.js", 1);
-
-	loadEventInfo.document.querySelectorAll(".has-annotation, .has-content").forEach(link => {
-		link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
-	});
-}
-
 /************************************************/
 /*  Add content load handler for link processing.
  */
@@ -778,8 +767,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
     if (info.needsRewrite) {
         directionalizeAnchorLinks(info);
-//         addLinkDecorationData(info);
-		addPopFrameIndicatorHooksToLinks(info);
+//		addLinkDecorationData(info);
     }
 }, { phase: "rewrite" });
 

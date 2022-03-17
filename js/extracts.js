@@ -25,6 +25,21 @@
     Extracts.cleanupDidComplete
         Fired just before the ‘cleanup’ function returns.
 
+	Extracts.targetsProcessedInLoadedContent {
+			source: "Extracts.processTargetsOnContentLoad"
+			document:
+				The `document` property of the GW.contentDidLoad event that 
+				triggered the Extracts.processTargetsOnContentLoad handler.
+            location:
+                The `location` property of the GW.contentDidLoad event that 
+				triggered the Extracts.processTargetsOnContentLoad handler.
+			flags:
+				The `flags` property of the GW.contentDidLoad event that 
+				triggered the Extracts.processTargetsOnContentLoad handler.
+		}
+		Fired after targets in a document have been processed (classes applied,
+		event listeners attached, etc.).
+
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
             document:
@@ -212,6 +227,20 @@ Extracts = {
             GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
 
             Extracts.processTargetsInDocument(info.document);
+
+			/*	Add pop-frame indicator hooks. (See links.css for how these are used.)
+			 */
+			info.document.querySelectorAll(".has-annotation, .has-content").forEach(link => {
+				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
+			});
+
+			//	Fire targets-processed event.
+			GW.notificationCenter.fireEvent("Extracts.targetsProcessedInLoadedContent", {
+				source: "Extracts.processTargetsOnContentLoad",
+				location: info.location,
+				document: info.document,
+				flags: info.flags
+			});
         }, { phase: "eventListeners" });
 
         //  Fire setup-complete event.
