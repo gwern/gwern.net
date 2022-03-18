@@ -15,11 +15,14 @@
 .has-annotation,
 .has-content {
     margin: 0 0.08em;
+    position: relative;
+    z-index: 1;
 }
 .has-annotation .indicator-hook,
 .has-content .indicator-hook {
     padding-left: 0.3em;
     position: relative;
+    z-index: -1;
 }
 .has-annotation .indicator-hook::before,
 .has-content .indicator-hook::before {
