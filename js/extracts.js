@@ -231,7 +231,7 @@ Extracts = {
         GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Extracts.processTargetsOnContentLoad = (info) => {
             GWLog("Extracts.processTargetsOnContentLoad", "extracts.js", 2);
 
-            Extracts.processTargetsInDocument(info.document);
+            Extracts.processTargetsInDocument(info.document, info.needsRewrite);
 
 			//	Fire targets-processed event.
 			GW.notificationCenter.fireEvent("Extracts.targetsProcessedInLoadedContent", {
@@ -247,7 +247,7 @@ Extracts = {
     },
 
     //  Called by: Extracts.setup
-    processTargetsInDocument: (doc = Extracts.rootDocument) => {
+    processTargetsInDocument: (doc = Extracts.rootDocument, addHooks = true) => {
         GWLog("Extracts.processTargetsInDocument", "extracts.js", 2);
 
         if (doc.closest(Extracts.contentContainersSelector)) {
@@ -260,11 +260,14 @@ Extracts = {
             });
         }
 
-		/*	Add pop-frame indicator hooks. (See links.css for how these are used.)
+		/*	Add pop-frame indicator hooks, if need be.
+			(See links.css for how these are used.)
 		 */
-		doc.querySelectorAll(".has-annotation, .has-content").forEach(link => {
-			link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
-		});
+		if (addHooks) {
+			doc.querySelectorAll(".has-annotation, .has-content").forEach(link => {
+				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
+			});
+		}
     },
 
     /***********/
