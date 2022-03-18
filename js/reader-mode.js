@@ -5,25 +5,132 @@ ReaderMode = {
 	maskedLinksSelector: "p a, li a",
 	maskedLinksParentBlockSelector: "p, li",
 
-	unmaskLinksTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer",
+	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer",
 
 	showMaskedLinksDelay: 250,
 
 	adjustedPopupTriggerDelay: 2400,
 
+	styles: `
+		body.reader-mode-active #page-metadata,
+		body.reader-mode-active #sidebar-links {
+			display: none;
+		}
+		.markdownBody .masked-link {
+			margin: 0;
+		}
+		.markdownBody .masked-link .indicator-hook {
+			padding-left: 0;
+		}
+		.markdownBody .masked-link .indicator-hook::before {
+			left: -0.3em;
+			box-shadow: 
+				-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
+				-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
+				-0.17em 0 0 0 var(--GW-link-underline-background-color);
+		}
+		.markdownBody.masked-links-hidden .masked-link .indicator-hook,
+		.markdownBody .masked-link::after {
+			display: none;
+		}
+		.markdownBody.masked-links-hidden a.masked-link:not(.popup-open),
+		.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):visited,
+		.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):hover {
+			color: inherit;
+			background: none;
+			cursor: text;
+		}
+		#masked-links-key-toggle-info-alert {
+			position: absolute;
+			background-color: rgba(0, 0, 0, 0.6);
+			color: #fff;
+			text-shadow: 
+				0 0 1px #000,
+				0 0 3px #000,
+				0 0 5px #000;
+			padding: 0.5em 1em;
+			left: 2px;
+			bottom: 1.5em;
+			font-family: var(--GW-sans-serif-font-stack);
+			font-weight: 700;
+			pointer-events: none;
+		}
+		#masked-links-key-toggle-info-alert.hidden {
+			visibility: hidden;
+			opacity: 0;
+			transition:
+				visibility 0.15s ease,
+				opacity 0.15s ease;
+		}
+		#masked-links-key-toggle-info-alert .key {
+			border: 1px solid #bbb;
+			padding: 0.05em 0.375em 0.125em 0.375em;
+			display: inline-block;
+			border-radius: 4px;
+			margin: 0 0.1875em 0 0.125em;
+			background-color: #444;
+			box-shadow: 
+				1px 1px 3px 0 #000;
+			font-feature-settings: 'smcp';
+		}
+		#reader-mode-toggle-button {
+			position: fixed;
+			top: calc(0.5em + 3px);
+			right: 12em;
+			z-index: 1;
+			opacity: 0.25;
+			visibility: visible;
+			transition:
+				opacity 2s ease;
+		}
+		@media only screen and (max-width: 1760px) {
+			#reader-mode-toggle-button {
+				top: 7em;
+				right: 0.6em;
+			}
+		}
+		#reader-mode-toggle-button.hidden {
+			opacity: 0;
+		}
+		#reader-mode-toggle-button:hover {
+			opacity: 1.0;
+			transition: none;
+		}
+		#reader-mode-toggle-button button {
+			-moz-appearance: none;
+			appearance: none;
+			border: none;
+			font-family: inherit;
+			font-size: inherit;
+			background: inherit;
+			color: var(--GW-popups-show-popup-options-dialog-button-color);
+			fill: currentColor;
+			opacity: 0.47;
+			padding: 0;
+			line-height: 1;
+			display: block;
+			width: 1.125em;
+		}
+		#reader-mode-toggle-button button:hover {
+			cursor: pointer;
+			opacity: 1.0;
+		}
+		#reader-mode-toggle-button button:active {
+			transform: scale(0.95);
+		}
+	`,
+
 	/******************/
 	/*	Infrastructure.
 	 */
-	markdownBody: document.querySelector("#markdownBody"),
-
-	maskedLinksStyleBlock: null,
+	markdownBody: document.querySelector("#markdownBody"),	
 
 	maskedLinksKeyToggleInfoAlert: null,
 
-	linkMaskingActive: false,
+	active: false,
 
-	readerModeToggleButton: null,
-	readerModeToggleButtonInteractable: true,
+	toggleButton: null,
+	toggleButtonInteractable: true,
 
 	state: {
 		hoveringOverLink: false,
@@ -34,217 +141,135 @@ ReaderMode = {
 	/*	Functions.
 	 */
 
-	/*	Enables reader mode.
+	/*	Prepare to activate reader mode.
 	 */
 	setup: () => {
 		GWLog("ReaderMode.setup", "reader-mode.js", 1);
 
-		ReaderMode.injectReaderModeToggleButton();
+		//	Inject toggle button.
+		ReaderMode.injectToggleButton();
 
 		//	Inject style block.
-		document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='masked-links-styles'>
-			.markdownBody .masked-link .indicator-hook {
-				padding-left: 0;
-			}
-			.markdownBody .masked-link .indicator-hook::before {
-				left: -0.3em;
-				box-shadow: 
-					-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
-					-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
-					-0.17em 0 0 0 var(--GW-link-underline-background-color);
-			}
-			.markdownBody.masked-links-hidden .masked-link .indicator-hook,
-			.markdownBody .masked-link::after {
-				display: none;
-			}
-			.markdownBody.masked-links-hidden a.masked-link:not(.popup-open),
-			.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):visited,
-			.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):hover {
-				color: inherit;
-				background: none;
-				cursor: text;
-			}
-			#masked-links-key-toggle-info-alert {
-				position: absolute;
-				background-color: rgba(0, 0, 0, 0.6);
-				color: #fff;
-				text-shadow: 
-					0 0 1px #000,
-					0 0 3px #000,
-					0 0 5px #000;
-				padding: 0.5em 1em;
-				left: 2px;
-				bottom: 1em;
-				font-family: var(--GW-sans-serif-font-stack);
-				font-weight: 700;
-				pointer-events: none;
-			}
-			#masked-links-key-toggle-info-alert.hidden {
-				visibility: hidden;
-				opacity: 0;
-				transition:
-					visibility 0.15s ease,
-					opacity 0.15s ease;
-			}
-			#masked-links-key-toggle-info-alert .key {
-				border: 1px solid #bbb;
-				padding: 0.05em 0.375em 0.125em 0.375em;
-				display: inline-block;
-				border-radius: 4px;
-				margin: 0 0.1875em 0 0.125em;
-				background-color: #444;
-				box-shadow: 
-					1px 1px 3px 0 #000;
-				font-feature-settings: 'smcp';
-			}
-			#reader-mode-toggle-button {
-				position: fixed;
-				top: calc(0.5em + 3px);
-				right: 12em;
-				z-index: 1;
-				opacity: 0.25;
-				visibility: visible;
-				transition:
-					opacity 2s ease;
-			}
-			@media only screen and (max-width: 1760px) {
-				#reader-mode-toggle-button {
-					top: 7em;
-					right: 0.45em;
-				}
-			}
-			#reader-mode-toggle-button.hidden {
-				opacity: 0;
-			}
-			#reader-mode-toggle-button:hover {
-				opacity: 1.0;
-				transition: none;
-			}
-			#reader-mode-toggle-button button {
-				-moz-appearance: none;
-				appearance: none;
-				border: none;
-				font-family: inherit;
-				font-size: inherit;
-				background: inherit;
-				color: var(--GW-popups-show-popup-options-dialog-button-color);
-				fill: currentColor;
-				opacity: 0.47;
-				padding: 0;
-				line-height: 1;
-				display: block;
-				width: 1.125em;
-			}
-			#reader-mode-toggle-button button:hover {
-				cursor: pointer;
-				opacity: 1.0;
-			}
-			#reader-mode-toggle-button button:active {
-				transform: scale(0.95);
-			}
-		</style>`);
+		document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='reader-mode-styles'>${ReaderMode.styles}</style>`);
 
-		if (ReaderMode.linkMaskingEnabled()) {
-			ReaderMode.maskLinks();
-		}
+		//	Activate immediately, if need be.
+		if (ReaderMode.enabled())
+			ReaderMode.activate();
 	},
 
-	/*	Returns true if link masking is set to be enabled for the current page, 
+	/*	Returns true if reader mode is set to be enabled for the current page, 
 		false otherwise.
 	 */
-    linkMaskingEnabled: () => {
-        return true;
+    enabled: () => {
+        return (   localStorage.getItem("reader-mode-enabled") == "true"
+        		|| (   document.body.classList.contains("reader-mode")
+        			&& localStorage.getItem("reader-mode-enabled") != "false"))
     },
 
 	//	Called by: ReaderMode.setup
-	injectReaderModeToggleButton: () => {
-		GWLog("ReaderMode.injectReaderModeSelector", "reader-mode.js", 1);
+	injectToggleButton: () => {
+		GWLog("ReaderMode.injectToggleButton", "reader-mode.js", 1);
 
 		//  Create and inject the button.
-		ReaderMode.readerModeToggleButton = addUIElement(`<div id="reader-mode-toggle-button">` 
+		ReaderMode.toggleButton = addUIElement(`<div id="reader-mode-toggle-button">` 
 			+ `<button type="button"><img></button>` 
 			+ `</div>`);
 
 		//  Add event listeners and update state.
 		requestAnimationFrame(() => {
-			ReaderMode.updateReaderModeToggleButtonState();
-			ReaderMode.readerModeToggleButton.querySelector("button").addActivateEvent(ReaderMode.readerModeToggleButtonClicked = (event) => {
-				GWLog("ReaderMode.readerModeToggleButtonClicked", "reader-mode.js", 2);
+			//	Set initial toggle button state properly.
+			ReaderMode.updateToggleButtonState();
+
+			//	Button’s click handler.
+			ReaderMode.toggleButton.querySelector("button").addActivateEvent(ReaderMode.toggleButtonClicked = (event) => {
+				GWLog("ReaderMode.toggleButtonClicked", "reader-mode.js", 2);
 
 				event.stopPropagation();
 
-				if (ReaderMode.readerModeToggleButtonInteractable == false)
+				/*	We don’t want clicks to go through if the transition between
+					modes has not completed yet.
+				 */
+				if (ReaderMode.toggleButtonInteractable == false)
 					return;
 
-				ReaderMode.readerModeToggleButtonInteractable = false;
+				/*	Disable the button temporarily while we’re transitioning
+					between modes.
+				 */
+				ReaderMode.toggleButtonInteractable = false;
 
-				if (ReaderMode.linkMaskingActive) {
-					ReaderMode.unmaskLinks();
+				//	Switch modes; activate if inactive, deactivate otherwise.
+				if (ReaderMode.active) {
+					ReaderMode.deactivate();
 				} else {
-					ReaderMode.maskLinks();
+					ReaderMode.activate();
 				}
-			
+
+				//	Re-enable button after the mode switch is complete.
 				requestAnimationFrame(() => {
-					ReaderMode.updateReaderModeToggleButtonState();
-					ReaderMode.readerModeToggleButtonInteractable = true;
+					ReaderMode.toggleButtonInteractable = true;
 				});
 			});
-			ReaderMode.readerModeToggleButton.addEventListener("mouseenter", () => { ReaderMode.showReaderModeToggleButton(); });
+
+			//	Show the button on hover (if it’s hid via scroll-down).
+			ReaderMode.toggleButton.addEventListener("mouseenter", () => { ReaderMode.showToggleButton(); });
 		});
 
 		//	Show/hide the button on scroll up/down.
-		addScrollListener(ReaderMode.updateReaderModeToggleButtonVisibility, 
-			"ReaderMode.updateReaderModeToggleButtonVisibilityScrollListener");
+		addScrollListener(ReaderMode.updateToggleButtonVisibility, 
+			"ReaderMode.updateToggleButtonVisibilityScrollListener");
 	},
 
-	//	Called by: ReaderMode.injectReaderModeToggleButton
-	//	Called by: ReaderMode.readerModeToggleButtonClicked
-	updateReaderModeToggleButtonState: () => {
-		let button = ReaderMode.readerModeToggleButton.querySelector("button");
-		button.title = ReaderMode.linkMaskingActive
+	//	Called by: ReaderMode.injectToggleButton
+	//	Called by: ReaderMode.toggleButtonClicked
+	updateToggleButtonState: () => {
+		let button = ReaderMode.toggleButton.querySelector("button");
+		button.title = ReaderMode.active
 					   ? "Disable reader mode"
 					   : "Enable reader mode";
 
 		let buttonImage = button.firstElementChild;
-		buttonImage.src = ReaderMode.linkMaskingActive
+		buttonImage.src = ReaderMode.active
 						  ? "/static/img/icons/book-open-solid.svg"
 						  : "/static/img/icons/book-open.svg";
 	},
 
-	//	Called by: ReaderMode.updateReaderModeToggleButtonVisibilityScrollListener
-	updateReaderModeToggleButtonVisibility: () => {
-		GWLog("ReaderMode.updateReaderModeToggleButtonVisibility", "reader-mode.js", 3);
+	//	Called by: ReaderMode.updateToggleButtonVisibilityScrollListener
+	updateToggleButtonVisibility: () => {
+		GWLog("ReaderMode.updateToggleButtonVisibility", "reader-mode.js", 3);
 
-		if (ReaderMode.readerModeToggleButton == null)
+		if (ReaderMode.toggleButton == null)
 			return;
 
 		// Hide button when scrolling a full page down.
 		if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
-			ReaderMode.hideReaderModeToggleButton();
+			ReaderMode.hideToggleButton();
 
 		// Show back-to-top link on ANY scroll up.
 		if (GW.scrollState.unbrokenUpScrollDistance > window.innerHeight || GW.scrollState.lastScrollTop <= 0)
-			ReaderMode.showReaderModeToggleButton();
+			ReaderMode.showToggleButton();
 	},
 
-	//	Called by: ReaderMode.updateReaderModeToggleButtonVisibility
+	//	Called by: ReaderMode.updateToggleButtonVisibility
 	//	Called by: reader mode toggle button ‘mouseenter’ event handler
-	showReaderModeToggleButton: () => {
-		ReaderMode.readerModeToggleButton.classList.remove("hidden");
+	showToggleButton: () => {
+		ReaderMode.toggleButton.classList.remove("hidden");
 	},
 
-	//	Called by: ReaderMode.updateReaderModeToggleButtonVisibility
-	hideReaderModeToggleButton: () => {
-		ReaderMode.readerModeToggleButton.classList.add("hidden");
+	//	Called by: ReaderMode.updateToggleButtonVisibility
+	hideToggleButton: () => {
+		ReaderMode.toggleButton.classList.add("hidden");
 	},
 
-	/*	Masks links, as appropriate. This will hide linkicons and pop-frame 
-		indicators, and will thus cause reflow.
+	/*	Masks links and hide other elements, as appropriate. This will hide 
+		linkicons and pop-frame  indicators, and will thus cause reflow.
 	 */
-	maskLinks: () => {
-		GWLog("ReaderMode.maskLinks", "reader-mode.js", 1);
+	activate: () => {
+		GWLog("ReaderMode.activate", "reader-mode.js", 1);
 
-		ReaderMode.linkMaskingActive = true;
+		ReaderMode.active = true;
+
+		//	Add body class.
+		document.body.classList.add("reader-mode-active");
 
 		//	Get a list of all the links that are to be masked.
 		ReaderMode.maskedLinks = ReaderMode.markdownBody.querySelectorAll(ReaderMode.maskedLinksSelector);
@@ -294,23 +319,29 @@ ReaderMode = {
 				if (entry.isIntersecting == false)
 					return;
 
-				ReaderMode.unmaskLinks();
+				ReaderMode.deactivate();
 				observer.disconnect();
 			});
 		}, { threshold: 1.0 });
-		observer.observe(document.querySelector(ReaderMode.unmaskLinksTriggerElementSelector));
+		observer.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
 
 		//	Update visual state.
 		ReaderMode.updateVisibility({ maskedLinksVisible: false, maskedLinksKeyToggleInfoAlertVisible: false });
+
+		//	Update toggle button state.
+		ReaderMode.updateToggleButtonState();
 	},
 
-	/*	Unmasks links. This will un-hide linkicons and pop-frame indicators, and
-		will thus cause reflow.
+	/*	Unmasks links and reveal other elements, as appropriate. This will 
+		un-hide linkicons and pop-frame indicators, and will thus cause reflow.
 	 */
-	unmaskLinks: () => {
-		GWLog("ReaderMode.unmaskLinks", "reader-mode.js", 1);
+	deactivate: () => {
+		GWLog("ReaderMode.deactivate", "reader-mode.js", 1);
 
-		ReaderMode.linkMaskingActive = false;
+		ReaderMode.active = false;
+
+		//	Remove body class.
+		document.body.classList.remove("reader-mode-active");
 
 		//	Show masked links.
 		ReaderMode.showMaskedLinks();
@@ -346,6 +377,9 @@ ReaderMode = {
 		document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
 		document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
 		ReaderMode.altKeyDownOrUp = null;
+
+		//	Update toggle button state.
+		ReaderMode.updateToggleButtonState();
 	},
 
 	/*	Returns true if masked links (if any) are currently visible, false 
