@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-18 12:48:47 gwern"
+When:  Time-stamp: "2022-03-18 17:35:50 gwern"
 License: CC-0
 -}
 
@@ -279,22 +279,29 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
           hasAnnotationInline _ _ y = y
 
           addHasAnnotation :: Bool -> Bool -> Inline -> MetadataItem -> Inline
-          addHasAnnotation idBool forcep (Link (a,b,c) e (f,g)) (_,aut,dt,_,_,abstrct) =
+          addHasAnnotation idBool forcep (Link (a,b,c) e (f,g)) (title,aut,dt,_,_,abstrct) =
            let a'
                  | not idBool = ""
                  | a == ""    = generateID (T.unpack f) aut dt
                  | otherwise  = a
                f' = linkCanonicalize $ T.unpack f
+               -- we would like to set the tooltip title too if omitted, for the non-JS users and non-human users who may not read the data-* attributes:
+               g'
+                 | g/="" = g
+                 |       title=="" && aut=="" = g
+                 |       title/="" && aut=="" = T.pack title
+                 |       title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
+                 |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
            in -- erase link ID?
-              if (length abstrct < 180) && not forcep then (Link (a',b,c) e (f,g)) -- always add the ID if possible
+              if (length abstrct < 180) && not forcep then (Link (a',b,c) e (f,g')) -- always add the ID if possible
               else
                 -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
                 -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
                 -- so we check for directory-tags and force them to not popup.
                 if "/docs/"`isPrefixOf`f' && "/index"`isSuffixOf` f' then
-                  Link (a', nubOrd (b++["docMetadataNot"]), c) e (f,g)
+                  Link (a', nubOrd (b++["docMetadataNot"]), c) e (f,g')
                 else
-                  Link (a', nubOrd (b++["docMetadata"]), c) e (f,g)
+                  Link (a', nubOrd (b++["docMetadata"]), c) e (f,g')
           addHasAnnotation _ _ z _ = z
 
 parseRawBlock :: Attr -> Block -> Block
