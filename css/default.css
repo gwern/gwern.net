@@ -3917,9 +3917,9 @@ To hack around this issue (which surely has a better answer), and since in some 
     transition:
         opacity 2s ease;
 }
-@media only screen and (max-width: 1535px) {
+@media only screen and (max-width: 1760px) {
     #popups-disabled-show-popup-options-dialog-button {
-        top: 8em;
+        top: 10em;
         right: 0.45em;
     }
 }
