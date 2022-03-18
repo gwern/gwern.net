@@ -13,8 +13,12 @@ ReaderMode = {
 
 	styles: `
 		body.reader-mode-active #page-metadata,
-		body.reader-mode-active #sidebar-links {
+		body.reader-mode-active #sidebar-links,
+		body.reader-mode-active #TOC ul li::before {
 			display: none;
+		}
+		body.reader-mode-active #TOC ul li {
+			padding-left: 0.125em;
 		}
 		.markdownBody .masked-link {
 			margin: 0;
