@@ -206,12 +206,12 @@ if (window.Extracts) {
 
 		//	Show/hide the button on scroll up/down.
 		addScrollListener(Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility, 
-			"updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener");
+			"Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener");
 	};
 
-	//	Called by: Extracts.injectPopupsDisabledShowPopupOptionsDialogButton
+	//	Called by: Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener
 	Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility = (event) => {
-		GWLog("updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "rewrite.js", 3);
+		GWLog("Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "rewrite.js", 3);
 
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
 			return;

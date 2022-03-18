@@ -231,18 +231,19 @@ function injectModeSelector() {
 
 	/*	Add listeners to update mode selector visibility on scroll and on hover.
 	 */
-    addScrollListener(updateModeSelectorVisibility, "updateModeSelectorVisibilityScrollListener");
+    addScrollListener(updateModeSelectorVisibility, "GW.darkMode.updateModeSelectorVisibilityScrollListener");
     GW.darkMode.modeSelector.addEventListener("mouseenter", () => { showModeSelector(); });
 
 	/*	Add active media query to update mode selector state when system dark
 		mode setting changes. (This is relevant only for the ‘auto’ setting.)
 	 */
-    doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "updateModeSelectorStateForSystemDarkMode", () => { updateModeSelectorState(); });
+    doWhenMatchMedia(GW.mediaQueries.systemDarkModeActive, "GW.darkMode.updateModeSelectorStateForSystemDarkMode", () => { updateModeSelectorState(); });
 }
 
 /*  Show/hide the mode selector in response to scrolling.
 
-    Called by the ‘updateModeSelectorVisibilityScrollListener’ scroll listener.
+    Called by the ‘GW.darkMode.updateModeSelectorVisibilityScrollListener’ 
+    scroll listener.
     */
 function updateModeSelectorVisibility(event) {
     GWLog("updateModeSelectorVisibility", "darkmode.js", 3);
