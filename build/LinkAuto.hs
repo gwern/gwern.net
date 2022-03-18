@@ -348,7 +348,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Pretty Good Privacy|PGP)", "https://en.wikipedia.org/wiki/Pretty_Good_Privacy")
         , ("(PubMed|PMC)", "https://en.wikipedia.org/wiki/PubMed")
         , ("(RNN|[Rr]ecurrent [Nn]eural [Nn]etwork|[Rr]ecurrent network)", "https://en.wikipedia.org/wiki/Recurrent_neural_network")
-        , ("(ResNet-(18|34|50|101|152)|[Rr]es[Nn]et|[Rr]esidual[ -][Nn]etwork)s?", "https://arxiv.org/abs/1512.03385")
+        , ("(ResNet-(18|34|50|101|152)|[Rr]es[Nn]et|[Rr]esidual[ -][Nn]etwork)s?", "https://arxiv.org/abs/1512.03385#microsoft")
         , ("(Richard Hamming|Hamming)", "https://en.wikipedia.org/wiki/Richard_Hamming")
         , ("(SAD|Seasonal [Aa]ffective [Dd]isorder)", "https://en.wikipedia.org/wiki/Seasonal_affective_disorder")
         , ("(SCZ|[Ss]chizophreni[ac]s?)", "https://en.wikipedia.org/wiki/Schizophrenia")

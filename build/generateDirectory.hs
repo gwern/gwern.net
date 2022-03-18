@@ -132,7 +132,7 @@ generateYAMLHeader d date = concat [ "---\n",
                        "...\n",
                        "\n"]
 
--- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg dropping 'docs/' is common).
+-- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
 listDirectories :: [FilePath] -> IO [FilePath]
 listDirectories direntries' = do
                        directories <- filterM (doesDirectoryExist . tail) $ map (sed "/index$" "/" . replace "/index.page" "/")  direntries'
