@@ -200,10 +200,6 @@ ReaderMode = {
 			#reader-mode-selector button + button {
 				margin-top: 0.25em;
 			}
-			#reader-mode-selector button.select-mode-auto::after {
-				left: 24%;
-				top: 0.2em;
-			}
 		}
 		@media only screen and (max-width: 1279px) {
 			#reader-mode-selector {
@@ -233,6 +229,10 @@ ReaderMode = {
 			#reader-mode-selector button:hover,
 			#reader-mode-selector button.selected {
 				opacity: 1.0;
+			}
+			#reader-mode-selector button.select-mode-auto::after {
+				left: 24%;
+				top: 0.2em;
 			}
 		}
 		@media only screen and (max-width: 649px) {
