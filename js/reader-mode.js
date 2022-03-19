@@ -22,7 +22,7 @@ ReaderMode = {
 		body.reader-mode-active #sidebar-links,
 		body.reader-mode-active #TOC ul li::before,
         body.reader-mode-active #footer,
-        body.reader-mode-active #navigation { {
+        body.reader-mode-active #navigation {
 			display: none;
 		}
 		body.reader-mode-active #TOC ul li {
