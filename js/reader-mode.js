@@ -11,6 +11,12 @@ ReaderMode = {
 
 	adjustedPopupTriggerDelay: 2400,
 
+	modeOptions: [
+		[ 'auto', 'Auto', 'Reader mode enabled automatically on certain pages; otherwise, disabled' ],
+		[ 'on', 'On', 'Reader mode enabled on all pages' ],
+		[ 'off', 'Off', 'Reader mode disabled on all pages' ]
+	],
+
 	styles: `
 		body.reader-mode-active #page-metadata,
 		body.reader-mode-active #sidebar-links,
@@ -68,6 +74,15 @@ ReaderMode = {
 				visibility 0.15s ease,
 				opacity 0.15s ease;
 		}
+		#masked-links-key-toggle-info-alert img {
+			display: inline-block;
+			width: 1.25em;
+			filter: invert(1) drop-shadow(0 0 3px var(--GW-body-text-color));
+			vertical-align: text-bottom;
+			margin: 0 0.625em 0 0;
+			top: -0.05em;
+			position: relative;
+		}
 		#masked-links-key-toggle-info-alert .key {
 			border: 1px solid #bbb;
 			padding: 0.05em 0.375em 0.125em 0.375em;
@@ -79,50 +94,147 @@ ReaderMode = {
 				1px 1px 3px 0 #000;
 			font-feature-settings: 'smcp';
 		}
-		#reader-mode-toggle-button {
-			position: fixed;
-			top: calc(0.5em + 3px);
-			right: 12em;
-			z-index: 1;
-			opacity: 0.25;
-			visibility: visible;
+		#reader-mode-selector {
+			position: absolute;
+			right: 11em;
+			display: flex;
+			background-color: var(--GW-mode-selector-background-color);
+			padding: 0.1em 0.25em 0.3em 0.25em;
+			border: 3px solid transparent;
+			opacity: 0.3;
 			transition:
 				opacity 2s ease;
 		}
-		@media only screen and (max-width: 1760px) {
-			#reader-mode-toggle-button {
-				top: 7em;
-				right: 0.6em;
-			}
-		}
-		#reader-mode-toggle-button.hidden {
+		#reader-mode-selector.hidden {
 			opacity: 0;
 		}
-		#reader-mode-toggle-button:hover {
-			opacity: 1.0;
+		#reader-mode-selector:hover {
 			transition: none;
+			opacity: 1.0;
+			border: 3px double var(--GW-mode-selector-border-hover-color);
 		}
-		#reader-mode-toggle-button button {
+		#reader-mode-selector button {
 			-moz-appearance: none;
 			appearance: none;
 			border: none;
-			font-family: inherit;
-			font-size: inherit;
-			background: inherit;
-			color: var(--GW-popups-show-popup-options-dialog-button-color);
-			fill: currentColor;
-			opacity: 0.47;
-			padding: 0;
+			background-color: transparent;
+			padding: 0.5em;
+			margin: 0 0 0 1.875em;
 			line-height: 1;
-			display: block;
-			width: 1.125em;
+			font-family: var(--GW-sans-serif-font-stack);
+			font-size: 0.75rem;
+			text-align: center;
+			color: var(--GW-mode-selector-button-text-color);
+			position: relative;
+			display: flex;
 		}
-		#reader-mode-toggle-button button:hover {
-			cursor: pointer;
+		#reader-mode-selector button::before {
+			width: calc(7/5 * 1em);
+			height: calc(7/5 * 1em);
+			position: absolute;
+			left: calc(1px + -4/3 * 1em);
+			opacity: 0.4;
+		}
+		#reader-mode-selector button.select-mode-auto::before {
+			content: url('/static/img/icons/book-open.svg');
+		}
+		#reader-mode-selector button.select-mode-auto::after {
+			content: url('/static/img/icons/gear-solid.svg');
+			width: 1em;
+			height: 1em;
+			position: absolute;
+			opacity: 0.5;
+			left: calc(2px + -7/6 * 1em);
+			top: 0.4em;
+			background-color: var(--GW-body-background-color);
+		}
+		#reader-mode-selector button.select-mode-on::before {
+			content: url('/static/img/icons/book-open-solid.svg');
+		}
+		#reader-mode-selector button.select-mode-off::before {
+			content: url('/static/img/icons/book-open.svg');
+		}
+		#reader-mode-selector button:not(.selected):hover::before {
 			opacity: 1.0;
 		}
-		#reader-mode-toggle-button button:active {
-			transform: scale(0.95);
+		#reader-mode-selector button:hover,
+		#reader-mode-selector button.selected {
+			box-shadow:
+				0 2px 0 6px var(--GW-mode-selector-background-color) inset,
+				0 1px 0 6px currentColor inset;
+		}
+		#reader-mode-selector button:not(:disabled):hover {
+			color: var(--GW-mode-selector-button-hover-text-color);
+			cursor: pointer;
+		}
+		#reader-mode-selector button:not(:disabled):active {
+			transform: translateY(2px);
+			box-shadow:
+				0 0px 0 6px var(--GW-mode-selector-background-color) inset,
+				0 -1px 0 6px currentColor inset;
+		}
+		#reader-mode-selector button.active:not(:hover)::after {
+			content: "";
+			position: absolute;
+			bottom: 0.25em;
+			left: 0;
+			right: 0;
+			border-bottom: 1px dotted currentColor;
+			width: calc(100% - 12px);
+			margin: auto;
+		}
+		@media only screen and (max-width: 1800px) {
+			#reader-mode-selector {
+				right: 0;
+				top: 2em;
+			}
+		}
+		@media only screen and (max-width: 1535px) {
+			#reader-mode-selector {
+				flex-flow: column;
+				padding: 0.1em 0.1em 0.2em 0.15em;
+				align-items: flex-start;
+				top: 7em;
+			}
+			#reader-mode-selector button + button {
+				margin-top: 0.25em;
+			}
+		}
+		@media only screen and (max-width: 1279px) {
+			#reader-mode-selector {
+				padding: 0.1em 0.1em 0.25em 0.15em;
+			}
+			#reader-mode-selector button[class^='select-mode-'] {
+				color: transparent;
+				margin: 0;
+				padding: 0;
+				width: 2em;
+				height: 2em;
+				align-items: center;
+				box-shadow: none;
+				opacity: 0.55;
+			}
+			#reader-mode-selector  button[class^='select-mode-'] + button {
+				margin-top: 0.5em;
+			}
+			#reader-mode-selector button[class^='select-mode-']::before {
+				left: 12.5%;
+				width: 75%;
+				height: 75%;
+			}
+			#reader-mode-selector button:not(:disabled):hover {
+				color: transparent;
+			}
+			#reader-mode-selector button:hover,
+			#reader-mode-selector button.selected {
+				opacity: 1.0;
+			}
+		}
+		@media only screen and (max-width: 649px) {
+			#reader-mode-selector button[class^='select-mode-'] {
+				width: 2.25em;
+				height: 2.25em;
+			}
 		}
 	`,
 
@@ -135,8 +247,10 @@ ReaderMode = {
 
 	active: false,
 
-	toggleButton: null,
-	toggleButtonInteractable: true,
+	modeSelector: null,
+	modeSelectorInteractable: true,
+
+	deactivateOnScrollDownObserver: null,
 
 	state: {
 		hoveringOverLink: false,
@@ -152,123 +266,209 @@ ReaderMode = {
 	setup: () => {
 		GWLog("ReaderMode.setup", "reader-mode.js", 1);
 
-		//	Inject toggle button.
-		ReaderMode.injectToggleButton();
-
 		//	Inject style block.
 		document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='reader-mode-styles'>${ReaderMode.styles}</style>`);
 
-		//	Activate immediately, if need be.
-		if (ReaderMode.enabled())
+		//	Inject mode selector.
+		ReaderMode.injectModeSelector();
+
+		//	Get saved mode setting (or default).
+		let currentMode = ReaderMode.currentMode();
+
+		//	Activate saved mode.
+		ReaderMode.setMode(currentMode);
+	},
+
+	/******************/
+	/*	Mode selection.
+	 */
+
+	/*	Activate or deactivate reader mode, as determined by the current setting
+		and the selected mode.
+	 */
+	//	Called by: ReaderMode.setup
+	//	Called by: ReaderMode.modeSelectButtonClicked
+	setMode: (selectedMode) => {
+		GWLog("ReaderMode.setMode", "reader-mode.js", 1);
+
+		//	Activate or deactivate, as (and if) needed.
+		if (   ReaderMode.active == true
+			&& ReaderMode.enabled() == false) {
+			ReaderMode.deactivate();
+		} else if (   ReaderMode.active == false
+				   && ReaderMode.enabled() == true) {
 			ReaderMode.activate();
+		}
+
+		//	Kill the intersection observer, if switching away from "auto" mode.
+		if (   selectedMode != "auto"
+			&& ReaderMode.deactivateOnScrollDownObserver != null) {
+			ReaderMode.deactivateOnScrollDownObserver.disconnect();
+			ReaderMode.deactivateOnScrollDownObserver = null;
+		}
+
+		//	Update mode selector state.
+		ReaderMode.updateModeSelectorState();
 	},
 
 	/*	Returns true if reader mode is set to be enabled for the current page,
 		false otherwise.
 	 */
     enabled: () => {
-        return (   localStorage.getItem("reader-mode-enabled") == "true"
-        		|| (   document.body.classList.contains("reader-mode")
-        			&& localStorage.getItem("reader-mode-enabled") != "false"))
+		let currentMode = ReaderMode.currentMode();
+        return (   currentMode == "on"
+        		|| (   currentMode == "auto"
+        			&& document.body.classList.contains("reader-mode")))
     },
 
-	//	Called by: ReaderMode.setup
-	injectToggleButton: () => {
-		GWLog("ReaderMode.injectToggleButton", "reader-mode.js", 1);
+	/*	Returns current (saved) mode (on, off, or auto).
+	 */
+	currentMode: () => {
+		return (localStorage.getItem("reader-mode-setting") || 'auto');
+	},
 
-		//  Create and inject the button.
-		ReaderMode.toggleButton = addUIElement(`<div id="reader-mode-toggle-button">`
-			+ `<button type="button"><img></button>`
-			+ `</div>`);
+	//	Called by: ReaderMode.setup
+	injectModeSelector: () => {
+		GWLog("ReaderMode.injectModeSelector", "reader-mode.js", 1);
+
+		//	Get saved mode setting (or default).
+		let currentMode = ReaderMode.currentMode();
+
+		//	Inject the mode selector widget.
+		ReaderMode.modeSelector = addUIElement(
+			"<div id='reader-mode-selector'>" +
+			String.prototype.concat.apply("", ReaderMode.modeOptions.map(modeOption => {
+				let [ name, label, desc ] = modeOption;
+				let selected = (name == currentMode ? ' selected' : '');
+				let disabled = (name == currentMode ? ' disabled' : '');
+				return `<button type='button' class='select-mode-${name}${selected}'${disabled} tabindex='-1' data-name='${name}' title='${desc}'>${label}</button>`})) +
+			"</div>");
 
 		//  Add event listeners and update state.
 		requestAnimationFrame(() => {
-			//	Set initial toggle button state properly.
-			ReaderMode.updateToggleButtonState();
+			//	Activate mode selector widget buttons.
+			ReaderMode.modeSelector.querySelectorAll("button").forEach(button => {
+				button.addActivateEvent(ReaderMode.modeSelectButtonClicked = (event) => {
+					GWLog("ReaderMode.modeSelectButtonClicked", "reader-mode.js", 2);
 
-			//	Button’s click handler.
-			ReaderMode.toggleButton.querySelector("button").addActivateEvent(ReaderMode.toggleButtonClicked = (event) => {
-				GWLog("ReaderMode.toggleButtonClicked", "reader-mode.js", 2);
+					/*	We don’t want clicks to go through if the transition between
+						modes has not completed yet.
+					 */
+					if (ReaderMode.modeSelectorInteractable == false)
+						return;
 
-				event.stopPropagation();
+					/*	Disable the button temporarily while we’re transitioning
+						between modes.
+					 */
+					ReaderMode.modeSelectorInteractable = false;
 
-				/*	We don’t want clicks to go through if the transition between
-					modes has not completed yet.
-				 */
-				if (ReaderMode.toggleButtonInteractable == false)
-					return;
+					// Determine which setting was chosen (ie. which button was clicked).
+					let selectedMode = event.target.dataset.name;
 
-				/*	Disable the button temporarily while we’re transitioning
-					between modes.
-				 */
-				ReaderMode.toggleButtonInteractable = false;
+					// Save the new setting.
+					if (selectedMode == "auto")
+						localStorage.removeItem("reader-mode-setting");
+					else
+						localStorage.setItem("reader-mode-setting", selectedMode);
 
-				//	Switch modes; activate if inactive, deactivate otherwise.
-				if (ReaderMode.active) {
-					ReaderMode.deactivate();
-				} else {
-					ReaderMode.activate();
-				}
+					// Actually change the mode.
+					ReaderMode.setMode(selectedMode);
 
-				//	Re-enable button after the mode switch is complete.
-				requestAnimationFrame(() => {
-					ReaderMode.toggleButtonInteractable = true;
+					//	Re-enable button after the mode switch is complete.
+					requestAnimationFrame(() => {
+						ReaderMode.modeSelectorInteractable = true;
+					});
 				});
 			});
 
 			//	Show the button on hover (if it’s hid via scroll-down).
-			ReaderMode.toggleButton.addEventListener("mouseenter", () => { ReaderMode.showToggleButton(); });
+			ReaderMode.modeSelector.addEventListener("mouseenter", () => { ReaderMode.showModeSelector(); });
 		});
 
 		//	Show/hide the button on scroll up/down.
-		addScrollListener(ReaderMode.updateToggleButtonVisibility,
-			"ReaderMode.updateToggleButtonVisibilityScrollListener");
+		addScrollListener(ReaderMode.updateModeSelectorVisibility,
+			"ReaderMode.updateModeSelectorVisibilityScrollListener");
 	},
 
-	//	Called by: ReaderMode.injectToggleButton
-	//	Called by: ReaderMode.toggleButtonClicked
-	updateToggleButtonState: () => {
-		let button = ReaderMode.toggleButton.querySelector("button");
-		button.title = ReaderMode.active
-					   ? "Disable reader mode"
-					   : "Enable reader mode";
+	//	Called by: ReaderMode.setMode
+	//	Called by: ReaderMode.deactivateOnScrollDownObserver callback
+	updateModeSelectorState: () => {
+		GWLog("ReaderMode.updateModeSelectorState", "reader-mode.js", 2);
 
-		let buttonImage = button.firstElementChild;
-		buttonImage.src = ReaderMode.active
-						  ? "/static/img/icons/book-open-solid.svg"
-						  : "/static/img/icons/book-open.svg";
-	},
-
-	//	Called by: ReaderMode.updateToggleButtonVisibilityScrollListener
-	updateToggleButtonVisibility: () => {
-		GWLog("ReaderMode.updateToggleButtonVisibility", "reader-mode.js", 3);
-
-		if (ReaderMode.toggleButton == null)
+		/*	If the mode selector has not yet been injected, then do nothing.
+		 */
+		if (ReaderMode.modeSelector == null)
 			return;
 
-		// Hide button when scrolling a full page down.
+		//	Get saved mode setting (or default).
+		let currentMode = ReaderMode.currentMode();
+
+		//	Clear current buttons state.
+		ReaderMode.modeSelector.querySelectorAll("button").forEach(button => {
+			button.classList.remove("active", "selected");
+			button.disabled = false;
+		});
+
+		//	Set the correct button to be selected.
+		ReaderMode.modeSelector.querySelectorAll(`.select-mode-${currentMode}`).forEach(button => {
+			button.classList.add("selected");
+			button.disabled = true;
+		});
+
+		/*	Ensure the right button (on or off) has the “currently active”
+			indicator, if the current mode is ‘auto’.
+		 */
+		if (currentMode == "auto")
+			ReaderMode.modeSelector.querySelector(`.select-mode-${(ReaderMode.active ? "on" : "off")}`).classList.add("active");
+	},
+
+	//	Called by: ReaderMode.updateModeSelectorVisibilityScrollListener
+	updateModeSelectorVisibility: () => {
+		GWLog("ReaderMode.updateModeSelectorVisibility", "reader-mode.js", 3);
+
+		if (ReaderMode.modeSelector == null)
+			return;
+
+	    //	Hide mode selector when scrolling a full page down.
 		if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
-			ReaderMode.hideToggleButton();
+			ReaderMode.hideModeSelector();
 
-		// Show back-to-top link on ANY scroll up.
-		if (GW.scrollState.unbrokenUpScrollDistance > window.innerHeight || GW.scrollState.lastScrollTop <= 0)
-			ReaderMode.showToggleButton();
+		/*	On desktop, show mode selector when scrolling to top of page, or a
+			full page up.
+			On mobile, show mode selector on ANY scroll up.
+		 */
+		if (GW.isMobile()) {
+			if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)
+				ReaderMode.showModeSelector();
+		} else if (   GW.scrollState.unbrokenUpScrollDistance > window.innerHeight
+				   || GW.scrollState.lastScrollTop == 0) {
+			ReaderMode.showModeSelector();
+		}
 	},
 
-	//	Called by: ReaderMode.updateToggleButtonVisibility
-	//	Called by: reader mode toggle button ‘mouseenter’ event handler
-	showToggleButton: () => {
-		ReaderMode.toggleButton.classList.remove("hidden");
+	//	Called by: ReaderMode.updateModeSelectorVisibility
+	//	Called by: reader mode selector ‘mouseenter’ event handler
+	showModeSelector: () => {
+		GWLog("ReaderMode.showModeSelector", "reader-mode.js", 3);
+
+		ReaderMode.modeSelector.classList.remove("hidden");
 	},
 
-	//	Called by: ReaderMode.updateToggleButtonVisibility
-	hideToggleButton: () => {
-		ReaderMode.toggleButton.classList.add("hidden");
+	//	Called by: ReaderMode.updateModeSelectorVisibility
+	hideModeSelector: () => {
+		GWLog("ReaderMode.showModeSelector", "reader-mode.js", 3);
+
+		ReaderMode.modeSelector.classList.add("hidden");
 	},
+
+	/***************************************************/
+	/*	Activation / deactivation. (Core functionality.)
+	 */
 
 	/*	Masks links and hide other elements, as appropriate. This will hide
 		linkicons and pop-frame  indicators, and will thus cause reflow.
 	 */
+	//	Called by: ReaderMode.setMode
 	activate: () => {
 		GWLog("ReaderMode.activate", "reader-mode.js", 1);
 
@@ -305,8 +505,12 @@ ReaderMode = {
 			link.onclick = (event) => { return (ReaderMode.maskedLinksVisible() == true); };
 		});
 
-		//	Add info alert.
-		ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id='masked-links-key-toggle-info-alert'><p>Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p></div>`);
+		//	Inject info alert.
+		ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id='masked-links-key-toggle-info-alert'>`
+			+ `<p>`
+			+ `<img src='/static/img/icons/book-open-solid.svg'>`
+			+ `Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p>`
+			+ `</div>`);
 
 		//	Add key down/up listeners, to show/hide masked links with Alt key.
 		document.addEventListener("keydown", ReaderMode.altKeyDownOrUp = (event) => {
@@ -320,27 +524,30 @@ ReaderMode = {
 		/*	Create intersection observer to automatically unmask links when
 			page is scrolled down to a specified location (element).
 		 */
-		let observer = new IntersectionObserver((entries, observer) => {
-			entries.forEach(entry => {
-				if (entry.isIntersecting == false)
-					return;
+		if (ReaderMode.currentMode() == "auto") {
+			ReaderMode.deactivateOnScrollDownObserver = new IntersectionObserver((entries, observer) => {
+				entries.forEach(entry => {
+					if (entry.isIntersecting == false)
+						return;
 
-				ReaderMode.deactivate();
-				observer.disconnect();
-			});
-		}, { threshold: 1.0 });
-		observer.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
+					ReaderMode.deactivate();
+					ReaderMode.updateModeSelectorState();
+					ReaderMode.deactivateOnScrollDownObserver.disconnect();
+					ReaderMode.deactivateOnScrollDownObserver = null;
+				});
+			}, { threshold: 1.0 });
+			ReaderMode.deactivateOnScrollDownObserver.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
+		}
 
 		//	Update visual state.
 		ReaderMode.updateVisibility({ maskedLinksVisible: false, maskedLinksKeyToggleInfoAlertVisible: false });
-
-		//	Update toggle button state.
-		ReaderMode.updateToggleButtonState();
 	},
 
 	/*	Unmasks links and reveal other elements, as appropriate. This will
 		un-hide linkicons and pop-frame indicators, and will thus cause reflow.
 	 */
+	//	Called by: ReaderMode.setMode
+	//	Called by: ReaderMode.deactivateOnScrollDownObserver callback
 	deactivate: () => {
 		GWLog("ReaderMode.deactivate", "reader-mode.js", 1);
 
@@ -383,10 +590,11 @@ ReaderMode = {
 		document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
 		document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
 		ReaderMode.altKeyDownOrUp = null;
-
-		//	Update toggle button state.
-		ReaderMode.updateToggleButtonState();
 	},
+
+	/****************/
+	/*	Link masking.
+	 */
 
 	/*	Returns true if masked links (if any) are currently visible, false
 		otherwise.
@@ -417,6 +625,10 @@ ReaderMode = {
 		ReaderMode.markdownBody.classList.remove("masked-links-hidden");
 	},
 
+	/*******************************/
+	/*	Key toggle info alert panel.
+	 */
+
 	/*	Hide key toggle info alert.
 	 */
 	hideKeyToggleInfoAlert: () => {
@@ -433,8 +645,14 @@ ReaderMode = {
 		ReaderMode.maskedLinksKeyToggleInfoAlert.classList.remove("hidden");
 	},
 
+	/***********************************************/
+	/*	Interaction-based state/visibility updating.
+	 */
+
 	/*	Update state after an event that might cause a visibility change.
 	 */
+	//	Called by: masked link `mouseenter`/`mouseleave` event handlers
+	//	Called by: document `keydown`/`keyup` event handlers (for Alt key)
 	updateState: (event) => {
 		GWLog("ReaderMode.updateState", "reader-mode.js", 3);
 
@@ -473,6 +691,8 @@ ReaderMode = {
 		and the current visibility. (Applies to: masked links, masked links key
 		toggle info alert panel.)
 	 */
+	//	Called by: ReaderMode.activate
+	//	Called by: ReaderMode.updateState
 	updateVisibility: (update) => {
 		GWLog("ReaderMode.updateVisibility", "reader-mode.js", 3);
 

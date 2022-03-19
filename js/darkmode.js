@@ -53,6 +53,9 @@ GW.darkMode.modeOptions = [
 function injectModeSelector() {
     GWLog("injectModeSelector", "darkmode.js", 1);
 
+    //	Get saved mode setting (or default).
+    let currentMode = localStorage.getItem("selected-mode") || 'auto';
+
     //	Inject the mode selector widget.
     GW.darkMode.modeSelector = addUIElement(
         "<div id='mode-selector'>" +
