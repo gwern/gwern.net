@@ -12,9 +12,9 @@ ReaderMode = {
 	adjustedPopupTriggerDelay: 2400,
 
 	modeOptions: [
-		[ 'auto', 'Auto', 'Reader mode enabled automatically on certain pages; otherwise, disabled' ],
-		[ 'on', 'On', 'Reader mode enabled on all pages' ],
-		[ 'off', 'Off', 'Reader mode disabled on all pages' ]
+		[ 'auto', 'Auto', 'Reader mode enabled automatically on certain pages; otherwise, disabled. (When enabled, hold Alt key to show links in text.)' ],
+		[ 'on', 'On', 'Reader mode enabled on all pages. (Hold Alt key to show links in text.)' ],
+		[ 'off', 'Off', 'Reader mode disabled on all pages.' ]
 	],
 
 	styles: `
