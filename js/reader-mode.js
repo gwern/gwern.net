@@ -135,19 +135,11 @@ ReaderMode = {
 			position: absolute;
 			left: calc(1px + -4/3 * 1em);
 			opacity: 0.4;
+			top: 0.5em;
 		}
 		#reader-mode-selector button.select-mode-auto::before {
-			content: url('/static/img/icons/book-open.svg');
-		}
-		#reader-mode-selector button.select-mode-auto::after {
-			content: url('/static/img/icons/gear-solid.svg');
-			width: 1em;
-			height: 1em;
-			position: absolute;
-			opacity: 0.5;
-			left: calc(2px + -7/6 * 1em);
+			content: url('/static/img/icons/book-with-gear.svg');
 			top: 0.4em;
-			background-color: var(--GW-body-background-color);
 		}
 		#reader-mode-selector button.select-mode-on::before {
 			content: url('/static/img/icons/book-open-solid.svg');
@@ -229,10 +221,6 @@ ReaderMode = {
 			#reader-mode-selector button:hover,
 			#reader-mode-selector button.selected {
 				opacity: 1.0;
-			}
-			#reader-mode-selector button.select-mode-auto::after {
-				left: 24%;
-				top: 0.2em;
 			}
 		}
 		@media only screen and (max-width: 649px) {
