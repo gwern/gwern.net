@@ -14,7 +14,9 @@ ReaderMode = {
 	styles: `
 		body.reader-mode-active #page-metadata,
 		body.reader-mode-active #sidebar-links,
-		body.reader-mode-active #TOC ul li::before {
+		body.reader-mode-active #TOC ul li::before,
+        body.reader-mode-active #footer,
+        body.reader-mode-active #navigation { {
 			display: none;
 		}
 		body.reader-mode-active #TOC ul li {
@@ -28,7 +30,7 @@ ReaderMode = {
 		}
 		.markdownBody .masked-link .indicator-hook::before {
 			left: -0.3em;
-			box-shadow: 
+			box-shadow:
 				-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
 				-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
 				-0.17em 0 0 0 var(--GW-link-underline-background-color);
@@ -48,7 +50,7 @@ ReaderMode = {
 			position: absolute;
 			background-color: rgba(0, 0, 0, 0.6);
 			color: #fff;
-			text-shadow: 
+			text-shadow:
 				0 0 1px #000,
 				0 0 3px #000,
 				0 0 5px #000;
@@ -73,7 +75,7 @@ ReaderMode = {
 			border-radius: 4px;
 			margin: 0 0.1875em 0 0.125em;
 			background-color: #444;
-			box-shadow: 
+			box-shadow:
 				1px 1px 3px 0 #000;
 			font-feature-settings: 'smcp';
 		}
@@ -127,7 +129,7 @@ ReaderMode = {
 	/******************/
 	/*	Infrastructure.
 	 */
-	markdownBody: document.querySelector("#markdownBody"),	
+	markdownBody: document.querySelector("#markdownBody"),
 
 	maskedLinksKeyToggleInfoAlert: null,
 
@@ -161,7 +163,7 @@ ReaderMode = {
 			ReaderMode.activate();
 	},
 
-	/*	Returns true if reader mode is set to be enabled for the current page, 
+	/*	Returns true if reader mode is set to be enabled for the current page,
 		false otherwise.
 	 */
     enabled: () => {
@@ -175,8 +177,8 @@ ReaderMode = {
 		GWLog("ReaderMode.injectToggleButton", "reader-mode.js", 1);
 
 		//  Create and inject the button.
-		ReaderMode.toggleButton = addUIElement(`<div id="reader-mode-toggle-button">` 
-			+ `<button type="button"><img></button>` 
+		ReaderMode.toggleButton = addUIElement(`<div id="reader-mode-toggle-button">`
+			+ `<button type="button"><img></button>`
 			+ `</div>`);
 
 		//  Add event listeners and update state.
@@ -219,7 +221,7 @@ ReaderMode = {
 		});
 
 		//	Show/hide the button on scroll up/down.
-		addScrollListener(ReaderMode.updateToggleButtonVisibility, 
+		addScrollListener(ReaderMode.updateToggleButtonVisibility,
 			"ReaderMode.updateToggleButtonVisibilityScrollListener");
 	},
 
@@ -264,7 +266,7 @@ ReaderMode = {
 		ReaderMode.toggleButton.classList.add("hidden");
 	},
 
-	/*	Masks links and hide other elements, as appropriate. This will hide 
+	/*	Masks links and hide other elements, as appropriate. This will hide
 		linkicons and pop-frame  indicators, and will thus cause reflow.
 	 */
 	activate: () => {
@@ -286,7 +288,7 @@ ReaderMode = {
 			//	Insert hooks for linkicons.
 			link.insertAdjacentHTML("beforeend", `<span class='icon-hook'><span></span></span>`);
 
-			/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked 
+			/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
 				links on hover.
 			 */
 			link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, "mouseleave");
@@ -294,8 +296,8 @@ ReaderMode = {
 
 			//	Add custom popup trigger delay.
 			link.specialPopupTriggerDelay = () => {
-				return (ReaderMode.maskedLinksVisible() == false 
-						? ReaderMode.adjustedPopupTriggerDelay 
+				return (ReaderMode.maskedLinksVisible() == false
+						? ReaderMode.adjustedPopupTriggerDelay
 						: Popups.popupTriggerDelay);
 			};
 
@@ -315,7 +317,7 @@ ReaderMode = {
 		});
 		document.addEventListener("keyup", ReaderMode.altKeyDownOrUp);
 
-		/*	Create intersection observer to automatically unmask links when 
+		/*	Create intersection observer to automatically unmask links when
 			page is scrolled down to a specified location (element).
 		 */
 		let observer = new IntersectionObserver((entries, observer) => {
@@ -336,7 +338,7 @@ ReaderMode = {
 		ReaderMode.updateToggleButtonState();
 	},
 
-	/*	Unmasks links and reveal other elements, as appropriate. This will 
+	/*	Unmasks links and reveal other elements, as appropriate. This will
 		un-hide linkicons and pop-frame indicators, and will thus cause reflow.
 	 */
 	deactivate: () => {
@@ -353,9 +355,9 @@ ReaderMode = {
 		//	Remove info alert.
 		document.querySelectorAll("#masked-links-key-toggle-info-alert").forEach(alert => { alert.remove() });
 
-		/*	Unmask every masked link. (Note that ReaderMode.maskedLinks is a 
-			NodeList, returned by a querySelectorAll call in 
-			ReaderMode.maskLinks. If that function has never been called, then 
+		/*	Unmask every masked link. (Note that ReaderMode.maskedLinks is a
+			NodeList, returned by a querySelectorAll call in
+			ReaderMode.maskLinks. If that function has never been called, then
 			ReaderMode.maskedLinks will be null).
 		 */
 		ReaderMode.maskedLinks.forEach(link => {
@@ -386,7 +388,7 @@ ReaderMode = {
 		ReaderMode.updateToggleButtonState();
 	},
 
-	/*	Returns true if masked links (if any) are currently visible, false 
+	/*	Returns true if masked links (if any) are currently visible, false
 		otherwise.
 	 */
 	maskedLinksVisible: () => {
@@ -454,7 +456,7 @@ ReaderMode = {
 				break;
 		}
 
-		/*	Determine whether we should show or hide masked links and other 
+		/*	Determine whether we should show or hide masked links and other
 			elements.
 		 */
 		let shouldShowMaskedLinks = (ReaderMode.state.hoveringOverLink || ReaderMode.state.altKeyPressed);
