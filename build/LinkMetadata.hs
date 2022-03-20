@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-19 22:20:00 gwern"
+When:  Time-stamp: "2022-03-20 18:28:05 gwern"
 License: CC-0
 -}
 
@@ -404,7 +404,7 @@ condenseTags ts = map (\t -> let previousList = map prefixfy $ takeWhile (/=t) t
 
 -- Abbreviate displayed tag names to make tag lists more readable. For some tags, like 'reinforcement-learning/*' or 'genetics/*', they might be used very heavily and densely, leading to cluttered unreadable tag lists, and discouraging use of meaningful directory names: 'reinforcement-learning/exploration, reinforcement-learning/alphago, reinforcement-learning/meta-learning, reinforcement-learning/...' would be quite difficult to read. But we also would rather not abbreviate the directory-tag itself down to just 'rl/', as that is not machine-readable or explicit. So we can abbreviate them just for display, while rendering the tags to Inline elements.
 abbreviateTag :: T.Text -> T.Text
-abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFixed . T.unpack
+abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFixed . replace "/docs/" "" . T.unpack
   where tagRewritesFixed :: [(String,String)]
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
