@@ -2126,6 +2126,25 @@ function doWhenDOMContentLoaded(f) {
         window.addEventListener("DOMContentLoaded", () => { f(); });
 }
 
+/*	Run the given function immediately if the <body> element has already been
+	created, or add a mutation observer to run it as soon as the <body> element
+	is created.
+ */
+function doWhenBodyExists(f) {
+	if (document.body) {
+		f();
+	} else {
+		let observer = new MutationObserver((mutationsList, observer) => {
+			if (document.body) {
+				observer.disconnect();
+				f();
+			}
+		});
+
+		observer.observe(document.documentElement, { childList: true });
+	}
+}
+
 /*  Given an HTML string, creates an element from that HTML, adds it to
     #ui-elements-container (creating the latter if it does not exist), and
     returns the created element.
