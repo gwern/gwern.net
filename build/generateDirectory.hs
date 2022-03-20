@@ -87,16 +87,18 @@ generateDirectory mta dir'' = do
                    Nothing -> []
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
+  -- When tag links elsewhere link to this page, they will target `#top-tag`. Should that point at # See Also (if it exists) or # Links?
+  let (idSeealso, idLinks) = if null dirsSeeAlsos then ("","top-tag") else ("top-tag","")
   let body =   abstract ++
 
                directorySectionChildren ++
 
-               (if null dirsSeeAlsos then [] else ([Header 1 ("", ["displayPopNot"], []) [Str "See Also"]] ++
+               (if null dirsSeeAlsos then [] else ([Header 1 (idSeealso, ["displayPopNot"], []) [Str "See Also"]] ++
                                                   directorySectionSeeAlsos)) ++
 
                (if null titledLinks then [] else
                    -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'displayPopNot', and the CSS (in default.css's popups section) will suppress that in popups/popins.
-                   [Header 1 ("", ["displayPopNot"], []) [Str "Links"]] ++
+                   [Header 1 (idLinks, ["displayPopNot"], []) [Str "Links"]] ++
                    titledLinksSections) ++
 
                (if null untitledLinks then [] else
