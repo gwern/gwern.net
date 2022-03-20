@@ -4635,8 +4635,10 @@ section.highlight-fading::before {
 @media only screen and (max-width: 1279px) {
 	#reader-mode-selector {
 		padding: 0.1em 0.1em 0.25em 0.15em;
+		background-color: var(--GW-mode-selector-mobile-background-color);
+        opacity: 1.0;
 	}
-	#reader-mode-selector button[class^='select-mode-'] {
+	#reader-mode-selector button {
 		color: transparent;
 		margin: 0;
 		padding: 0;
@@ -4644,12 +4646,15 @@ section.highlight-fading::before {
 		height: 2em;
 		align-items: center;
 		box-shadow: none;
-		opacity: 0.55;
+		opacity: 0.25;
 	}
-	#reader-mode-selector  button[class^='select-mode-'] + button {
+    #reader-mode-selector button.select-mode-off {
+        opacity: 0.3;
+    }
+	#reader-mode-selector  button + button {
 		margin-top: 0.5em;
 	}
-	#reader-mode-selector button[class^='select-mode-']::before {
+	#reader-mode-selector button::before {
 		left: 12.5%;
 		width: 75%;
 		height: 75%;
@@ -4659,7 +4664,15 @@ section.highlight-fading::before {
 	}
 	#reader-mode-selector button:hover,
 	#reader-mode-selector button.selected {
-		opacity: 1.0;
+		opacity: 0.75;
+	}
+	#reader-mode-selector button.select-mode-on:hover,
+	#reader-mode-selector button.select-mode-on.selected {
+		opacity: 0.55;
+	}
+	#reader-mode-selector button.select-mode-off:hover,
+	#reader-mode-selector button.select-mode-off.selected {
+		opacity: 0.85;
 	}
 }
 @media only screen and (max-width: 649px) {

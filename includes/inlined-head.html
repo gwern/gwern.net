@@ -285,6 +285,7 @@
     /*  Mode selector (light/dark mode).
      */
     --GW-mode-selector-background-color: var(--GW-body-background-color);
+    --GW-mode-selector-mobile-background-color: rgba(255,255,255,0.3);
     --GW-mode-selector-border-hover-color: #aaa;
     --GW-mode-selector-button-text-color: #777;
     --GW-mode-selector-button-hover-text-color: #000;
@@ -1661,6 +1662,7 @@ span.smallcaps-auto {
     /*  Mode selector (light/dark mode).
      */
     --GW-mode-selector-background-color: var(--GW-body-background-color);
+    --GW-mode-selector-mobile-background-color: rgba(0, 0, 0, 0.3);
     --GW-mode-selector-border-hover-color: #7c7c7c;
     --GW-mode-selector-button-text-color: #a6a6a6;
     --GW-mode-selector-button-hover-text-color: #fff;
@@ -1861,15 +1863,36 @@ div#mode-selector button.select-mode-light::before {
 
 /*  Reader mode selector, same as above.
  */
-div#reader-mode-selector {
-    opacity: 0.6;
-}
 div#reader-mode-selector button::before {
     filter: invert(1);
-    opacity: 0.45;
 }
-div#reader-mode-selector button.select-mode-light::before {
-    opacity: 0.55;
+@media only screen and (min-width: 1280px) {
+	div#reader-mode-selector {
+    	opacity: 0.6;
+	}
+	div#reader-mode-selector button::before {
+	    opacity: 0.45;
+	}
+}
+@media only screen and (max-width: 1279px) {
+    div#reader-mode-selector button {
+        opacity: 0.3;
+    }
+    div#reader-mode-selector button.select-mode-off {
+        opacity: 0.35;
+    }
+	div#reader-mode-selector button:hover,
+	div#reader-mode-selector button.selected {
+		opacity: 0.9;
+	}
+	div#reader-mode-selector button.select-mode-on:hover,
+	div#reader-mode-selector button.select-mode-on.selected {
+		opacity: 0.75;
+	}
+	div#reader-mode-selector button.select-mode-off:hover,
+	div#reader-mode-selector button.select-mode-off.selected {
+		opacity: 1.0;
+	}
 }
 
 /*	Masked links key toggle info alert panel.
