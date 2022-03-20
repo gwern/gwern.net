@@ -323,7 +323,8 @@ ReaderMode = { ...ReaderMode, ...{
 		document.body.classList.remove("reader-mode-active", "masked-links-hidden");
 
 		//	Remove info alert.
-		ReaderMode.maskedLinksKeyToggleInfoAlert.remove();
+		if (ReaderMode.maskedLinksKeyToggleInfoAlert != null)
+			ReaderMode.maskedLinksKeyToggleInfoAlert.remove();
 
 		/*	Unmask every masked link. (Note that ReaderMode.maskedLinks is a
 			NodeList, returned by a querySelectorAll call in
@@ -349,10 +350,12 @@ ReaderMode = { ...ReaderMode, ...{
 			link.onclick = null;
 		});
 
-		//	Remove key down/up listeners (for the Alt key toggle).
-		document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
-		document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
-		ReaderMode.altKeyDownOrUp = null;
+		if (GW.mobile() == false) {
+			//	Remove key down/up listeners (for the Alt key toggle).
+			document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
+			document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
+			ReaderMode.altKeyDownOrUp = null;
+		}
 	},
 
 	/****************/
