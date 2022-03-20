@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-18 17:35:50 gwern"
+When:  Time-stamp: "2022-03-19 20:41:48 gwern"
 License: CC-0
 -}
 
@@ -460,7 +460,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("genetics/cloning", "cloning")
           , ("genetics/heritable/adoption", "adoption")
           , ("genetics/selection/index-selection", "index selection")
-          , ("reinforcement-learning/meta-learning", "meta learning")
+          , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("reinforcement-learning/preference-learning", "preference learning")
           , ("psychology/illusion-of-depth", "the illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
@@ -1498,6 +1498,7 @@ generateID url author date
        , ("https://arxiv.org/abs/1907.11692#facebook", "liu-et-al-2019-roberta")
        , ("https://arxiv.org/abs/2109.04699", "wang-et-al-2021-efficientclip")
        , ("https://arxiv.org/abs/2201.02605#facebook", "zhou-et-al-2022-detic")
+       , ("https://openreview.net/forum?id=TXqemS7XEH", "lin-et-al-2021-m610t")
       ]
 
 authorsToCite :: String -> String -> String -> String
@@ -2367,6 +2368,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\40p=",     "\40<em>p</em> = ")
           , (" n=",     " <em>n</em> = ")
           , ("( n=", "( <em>n</em> = ")
+          , (" n-gram", " <em>n</em>-gram")
           , (" k &gt; ", " <em>nk</em> &gt; ")
           , (" k > ", " <em>k</em> > ")
           , (" N &gt; ", " <em>n</em> &gt; ")
@@ -2540,6 +2542,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\n            <jats:italic>in vitro</jats:italic>\n", " <em>in vitro</em>")
           , ("\n            <jats:italic>R</jats:italic>\n", "<em>R</em>")
           , ("\8201", " ")
+          , ("Fr’echet", "Fréchet")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
             ]
