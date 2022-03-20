@@ -265,7 +265,10 @@ ReaderMode = { ...ReaderMode, ...{
 				};
 			}
 
-			//	Add custom link click behavior.
+			/*	Add custom link click behavior 
+				(Save the existing handler, if any. Required for popin support.)
+			 */
+			link.savedOnClick = link.onclick;
 			link.onclick = (event) => { return (ReaderMode.maskedLinksVisible() == true); };
 		});
 
@@ -347,10 +350,11 @@ ReaderMode = { ...ReaderMode, ...{
 			}
 
 			//	Re-enable normal link click behavior.
-			link.onclick = null;
+			link.onclick = link.savedOnClick;
+			link.savedOnClick = null;
 		});
 
-		if (GW.mobile() == false) {
+		if (GW.isMmobile() == false) {
 			//	Remove key down/up listeners (for the Alt key toggle).
 			document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
 			document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
