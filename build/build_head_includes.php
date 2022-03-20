@@ -26,6 +26,7 @@ $includes = [
 	[ 'dark-mode-GENERATED.css', 'id="inlined-dark-mode-styles" media="all and (prefers-color-scheme: dark)"' ],
 	[ 'gw-inline.js' ],
 	[ 'darkmode-inline.js' ],
+	[ 'reader-mode-inline.js' ],
 ];
 
 $outfile = "";

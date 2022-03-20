@@ -24,6 +24,7 @@ $head_includes = [
 	"{$static_dir}/css/include/initial.css",
 	"{$static_dir}/js/darkmode-inline.js",
 	"{$static_dir}/js/gw-inline.js"
+	"{$static_dir}/js/reader-mode-inline.js",
 ];
 $head_includes = implode(" ", $head_includes);
 if ($force || (`git diff-index --cached HEAD -- {$head_includes}`)) {
