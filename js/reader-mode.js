@@ -198,18 +198,20 @@ ReaderMode = { ...ReaderMode, ...{
 		if (ReaderMode.modeSelector == null)
 			return;
 
-	    //	Hide mode selector when scrolling a full page down.
-		if (GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
+	    /*	Hide mode selector when scrolling a full page down (or one PgDn’s
+	    	worth of scroll distance, anyhow).
+	     */
+		if (GW.scrollState.unbrokenDownScrollDistance > (0.8 * window.innerHeight))
 			ReaderMode.hideModeSelector();
 
 		/*	On desktop, show mode selector when scrolling to top of page, or a
-			full page up.
+			full page up (or one PgUp’s worth of scroll distance).
 			On mobile, show mode selector on ANY scroll up.
 		 */
 		if (GW.isMobile()) {
 			if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)
 				ReaderMode.showModeSelector();
-		} else if (   GW.scrollState.unbrokenUpScrollDistance > window.innerHeight
+		} else if (   GW.scrollState.unbrokenUpScrollDistance > (0.8 * window.innerHeight)
 				   || GW.scrollState.lastScrollTop == 0) {
 			ReaderMode.showModeSelector();
 		}
@@ -307,6 +309,7 @@ ReaderMode = { ...ReaderMode, ...{
 	//	Called by: ReaderMode.activate
 	//	Called by: ReaderMode.setMode
 	spawnObserver: () => {
+		//	Create the observer.
 		ReaderMode.deactivateOnScrollDownObserver = new IntersectionObserver((entries, observer) => {
 			entries.forEach(entry => {
 				if (entry.isIntersecting == false)
@@ -314,10 +317,11 @@ ReaderMode = { ...ReaderMode, ...{
 
 				ReaderMode.deactivate();
 				ReaderMode.updateModeSelectorState();
-				ReaderMode.deactivateOnScrollDownObserver.disconnect();
-				ReaderMode.deactivateOnScrollDownObserver = null;
+				ReaderMode.despawnObserver();
 			});
 		}, { threshold: 1.0 });
+
+		//	Commence observation.
 		ReaderMode.deactivateOnScrollDownObserver.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
 	},
 
