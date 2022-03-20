@@ -11,19 +11,25 @@ ReaderMode = {
 			"#sidenote-column-left",
 			"#sidenote-column-right",
 			".inflationAdjusted .supsub"
-		]).join(",\n") + `{
+		]).join(",\n") + ` {
 			display: none;
 		}` + `
+		body.reader-mode-active #logo {
+			border-color: transparent;
+		}
 		body.reader-mode-active #TOC ul li {
 			padding-left: 0.125em;
 		}
-		body.reader-mode-active .spawns-popup {
+		body.reader-mode-active .spawns-popup,
+		body.reader-mode-active .spawns-popin {
 			margin: 0;
 		}
-		body.reader-mode-active .spawns-popup .indicator-hook {
+		body.reader-mode-active .spawns-popup .indicator-hook,
+		body.reader-mode-active .spawns-popin .indicator-hook {
 			padding-left: 0;
 		}
-		body.reader-mode-active .spawns-popup .indicator-hook::before {
+		body.reader-mode-active .spawns-popup .indicator-hook::before,
+		body.reader-mode-active .spawns-popin .indicator-hook::before {
 			left: -0.3em;
 			box-shadow:
 				-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
@@ -31,6 +37,7 @@ ReaderMode = {
 				-0.17em 0 0 0 var(--GW-link-underline-background-color);
 		}
 		body.reader-mode-active.masked-links-hidden .spawns-popup .indicator-hook,
+		body.reader-mode-active.masked-links-hidden .spawns-popin .indicator-hook,
 		body.reader-mode-active #markdownBody p a::after,
 		body.reader-mode-active #markdownBody li a::after {
 			display: none;
@@ -38,7 +45,7 @@ ReaderMode = {
 		` + [ "body.reader-mode-active.masked-links-hidden #markdownBody" ].π(" ").π(
 			[ "p", "li" ]).π(" ").π(
 			[ "a:not(.popup-open)" ]).π(
-			[ "", ":visited", ":hover" ]).join(",\n") + `{
+			[ "", ":visited", ":hover" ]).join(",\n") + ` {
 			color: inherit;
 			background: none;
 			cursor: text;

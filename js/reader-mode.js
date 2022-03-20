@@ -243,38 +243,42 @@ ReaderMode = { ...ReaderMode, ...{
 			//	Insert hooks for linkicons.
 // 			link.insertAdjacentHTML("beforeend", `<span class='icon-hook'><span></span></span>`);
 
-			/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
-				links on hover.
-			 */
-			link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, "mouseleave");
-			link.removeMouseLeaveEvent = onEventAfterDelayDo(link, "mouseleave", 0, ReaderMode.updateState);
+			if (GW.isMobile() == false) {
+				/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
+					links on hover.
+				 */
+				link.removeMouseEnterEvent = onEventAfterDelayDo(link, "mouseenter", ReaderMode.showMaskedLinksDelay, ReaderMode.updateState, "mouseleave");
+				link.removeMouseLeaveEvent = onEventAfterDelayDo(link, "mouseleave", 0, ReaderMode.updateState);
 
-			//	Add custom popup trigger delay.
-			link.specialPopupTriggerDelay = () => {
-				return (ReaderMode.maskedLinksVisible() == false
-						? ReaderMode.adjustedPopupTriggerDelay
-						: Popups.popupTriggerDelay);
-			};
+				//	Add custom popup trigger delay.
+				link.specialPopupTriggerDelay = () => {
+					return (ReaderMode.maskedLinksVisible() == false
+							? ReaderMode.adjustedPopupTriggerDelay
+							: Popups.popupTriggerDelay);
+				};
+			}
 
 			//	Add custom link click behavior.
 			link.onclick = (event) => { return (ReaderMode.maskedLinksVisible() == true); };
 		});
 
-		//	Inject info alert.
-		ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id='masked-links-key-toggle-info-alert'>`
-			+ `<p>`
-			+ `<img src='/static/img/icons/book-open-solid.svg'>`
-			+ `Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p>`
-			+ `</div>`);
+		if (GW.isMobile() == false) {
+			//	Inject info alert.
+			ReaderMode.maskedLinksKeyToggleInfoAlert = addUIElement(`<div id='masked-links-key-toggle-info-alert'>`
+				+ `<p>`
+				+ `<img src='/static/img/icons/book-open-solid.svg'>`
+				+ `Hold <span class="key">alt</span> / <span class="key">option</span> key to show links</p>`
+				+ `</div>`);
 
-		//	Add key down/up listeners, to show/hide masked links with Alt key.
-		document.addEventListener("keydown", ReaderMode.altKeyDownOrUp = (event) => {
-			if (event.key != "Alt")
-				return;
+			//	Add key down/up listeners, to show/hide masked links with Alt key.
+			document.addEventListener("keydown", ReaderMode.altKeyDownOrUp = (event) => {
+				if (event.key != "Alt")
+					return;
 
-			ReaderMode.updateState(event);
-		});
-		document.addEventListener("keyup", ReaderMode.altKeyDownOrUp);
+				ReaderMode.updateState(event);
+			});
+			document.addEventListener("keyup", ReaderMode.altKeyDownOrUp);
+		}
 
 		/*	Create intersection observer to automatically unmask links when
 			page is scrolled down to a specified location (element).
@@ -323,14 +327,16 @@ ReaderMode = { ...ReaderMode, ...{
 			//	Extract hooks.
 // 			link.querySelectorAll(".icon-hook").forEach(hook => { hook.remove() });
 
-			//	Remove `mouseenter` / `mouseleave` listeners from the link.
-			link.removeMouseEnterEvent();
-			link.removeMouseLeaveEvent();
-			link.removeMouseEnterEvent = null;
-			link.removeMouseLeaveEvent = null;
+			if (GW.isMobile() == false) {
+				//	Remove `mouseenter` / `mouseleave` listeners from the link.
+				link.removeMouseEnterEvent();
+				link.removeMouseLeaveEvent();
+				link.removeMouseEnterEvent = null;
+				link.removeMouseLeaveEvent = null;
 
-			//	Remove custom popup trigger delay.
-			link.specialPopupTriggerDelay = null;
+				//	Remove custom popup trigger delay.
+				link.specialPopupTriggerDelay = null;
+			}
 
 			//	Re-enable normal link click behavior.
 			link.onclick = null;
@@ -418,13 +424,15 @@ ReaderMode = { ...ReaderMode, ...{
 			document.body.classList.add("masked-links-hidden");
 		}
 
-		//	Likewise, show or hide the key toggle info alert panel, as needed.
-		if (update.maskedLinksKeyToggleInfoAlertVisible) {
-			//	Show.
-			ReaderMode.maskedLinksKeyToggleInfoAlert.classList.remove("hidden");
-		} else {
-			//	Hide.
-			ReaderMode.maskedLinksKeyToggleInfoAlert.classList.add("hidden");
+		if (ReaderMode.maskedLinksKeyToggleInfoAlert != null) {
+			//	Likewise, show or hide the key toggle info alert panel, as needed.
+			if (update.maskedLinksKeyToggleInfoAlertVisible) {
+				//	Show.
+				ReaderMode.maskedLinksKeyToggleInfoAlert.classList.remove("hidden");
+			} else {
+				//	Hide.
+				ReaderMode.maskedLinksKeyToggleInfoAlert.classList.add("hidden");
+			}
 		}
 	},
 }};
