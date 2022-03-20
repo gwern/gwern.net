@@ -354,7 +354,7 @@ ReaderMode = { ...ReaderMode, ...{
 			link.savedOnClick = null;
 		});
 
-		if (GW.isMmobile() == false) {
+		if (GW.isMobile() == false) {
 			//	Remove key down/up listeners (for the Alt key toggle).
 			document.removeEventListener("keydown", ReaderMode.altKeyDownOrUp);
 			document.removeEventListener("keyup", ReaderMode.altKeyDownOrUp);
