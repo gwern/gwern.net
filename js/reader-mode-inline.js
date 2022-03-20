@@ -55,7 +55,7 @@ ReaderMode = {
 	/*	Activate or deactivate reader mode, as determined by the current setting
 		and the selected mode.
 	 */
-	//	Called by: this file (immediately on load)
+	//	Called by: this file (doWhenBodyExists)
 	//	Called by: ReaderMode.modeSelectButtonClicked
 	setMode: (selectedMode = ReaderMode.currentMode()) => {
 		GWLog("ReaderMode.setMode", "reader-mode.js", 1);
@@ -78,7 +78,7 @@ ReaderMode = {
 	/*	Returns current (saved) mode (on, off, or auto).
 	 */
 	currentMode: () => {
-		return (localStorage.getItem("reader-mode-setting") || 'auto');
+		return (localStorage.getItem("reader-mode-setting") || "auto");
 	},
 
 	/*	Masks links and hide other elements, as appropriate. This will hide
