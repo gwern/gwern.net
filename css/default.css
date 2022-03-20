@@ -4478,3 +4478,193 @@ section.highlight-fading::before {
         padding: 0.125em 0.25em;
     }
 }
+
+/***************/
+/* READER MODE */
+/***************/
+
+/*┌───────────────────────────────────────────┐*/
+/*│ Masked links key toggle info alert panel. │*/
+/*└───────────────────────────────────────────┘*/
+
+#masked-links-key-toggle-info-alert {
+	position: absolute;
+	background-color: rgba(0, 0, 0, 0.6);
+	color: #fff;
+	text-shadow:
+		0 0 1px #000,
+		0 0 3px #000,
+		0 0 5px #000;
+	padding: 0.5em 1em;
+	left: 2px;
+	bottom: 1.5em;
+	font-family: var(--GW-sans-serif-font-stack);
+	font-weight: 700;
+	pointer-events: none;
+}
+#masked-links-key-toggle-info-alert.hidden {
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		visibility 0.15s ease,
+		opacity 0.15s ease;
+}
+#masked-links-key-toggle-info-alert img {
+	display: inline-block;
+	width: 1.25em;
+	filter: invert(1) drop-shadow(0 0 3px var(--GW-body-text-color));
+	vertical-align: text-bottom;
+	margin: 0 0.625em 0 0;
+	top: -0.05em;
+	position: relative;
+}
+#masked-links-key-toggle-info-alert .key {
+	border: 1px solid #bbb;
+	padding: 0.05em 0.375em 0.125em 0.375em;
+	display: inline-block;
+	border-radius: 4px;
+	margin: 0 0.1875em 0 0.125em;
+	background-color: #444;
+	box-shadow:
+		1px 1px 3px 0 #000;
+	font-feature-settings: 'smcp';
+}
+
+/*┌───────────────────────┐*/
+/*│ Reader mode selector. │*/
+/*└───────────────────────┘*/
+
+#reader-mode-selector {
+	position: absolute;
+	right: 11em;
+	display: flex;
+	background-color: var(--GW-mode-selector-background-color);
+	padding: 0.1em 0.25em 0.3em 0.25em;
+	border: 3px solid transparent;
+	opacity: 0.3;
+	transition:
+		opacity 2s ease;
+}
+#reader-mode-selector.hidden {
+	opacity: 0;
+}
+#reader-mode-selector:hover {
+	transition: none;
+	opacity: 1.0;
+	border: 3px double var(--GW-mode-selector-border-hover-color);
+}
+#reader-mode-selector button {
+	-moz-appearance: none;
+	appearance: none;
+	border: none;
+	background-color: transparent;
+	padding: 0.5em;
+	margin: 0 0 0 1.875em;
+	line-height: 1;
+	font-family: var(--GW-sans-serif-font-stack);
+	font-size: 0.75rem;
+	text-align: center;
+	color: var(--GW-mode-selector-button-text-color);
+	position: relative;
+	display: flex;
+}
+#reader-mode-selector button::before {
+	width: calc(7/5 * 1em);
+	height: calc(7/5 * 1em);
+	position: absolute;
+	left: calc(1px + -4/3 * 1em);
+	opacity: 0.4;
+	top: 0.5em;
+}
+#reader-mode-selector button.select-mode-auto::before {
+	content: url('/static/img/icons/book-with-gear.svg');
+	top: 0.4em;
+}
+#reader-mode-selector button.select-mode-on::before {
+	content: url('/static/img/icons/book-open-solid.svg');
+}
+#reader-mode-selector button.select-mode-off::before {
+	content: url('/static/img/icons/book-open.svg');
+}
+#reader-mode-selector button:not(.selected):hover::before {
+	opacity: 1.0;
+}
+#reader-mode-selector button:hover,
+#reader-mode-selector button.selected {
+	box-shadow:
+		0 2px 0 6px var(--GW-mode-selector-background-color) inset,
+		0 1px 0 6px currentColor inset;
+}
+#reader-mode-selector button:not(:disabled):hover {
+	color: var(--GW-mode-selector-button-hover-text-color);
+	cursor: pointer;
+}
+#reader-mode-selector button:not(:disabled):active {
+	transform: translateY(2px);
+	box-shadow:
+		0 0px 0 6px var(--GW-mode-selector-background-color) inset,
+		0 -1px 0 6px currentColor inset;
+}
+#reader-mode-selector button.active:not(:hover)::after {
+	content: "";
+	position: absolute;
+	bottom: 0.25em;
+	left: 0;
+	right: 0;
+	border-bottom: 1px dotted currentColor;
+	width: calc(100% - 12px);
+	margin: auto;
+}
+@media only screen and (max-width: 1800px) {
+	#reader-mode-selector {
+		right: 0;
+		top: 2em;
+	}
+}
+@media only screen and (max-width: 1535px) {
+	#reader-mode-selector {
+		flex-flow: column;
+		padding: 0.1em 0.1em 0.2em 0.15em;
+		align-items: flex-start;
+		top: 7em;
+	}
+	#reader-mode-selector button + button {
+		margin-top: 0.25em;
+	}
+}
+@media only screen and (max-width: 1279px) {
+	#reader-mode-selector {
+		padding: 0.1em 0.1em 0.25em 0.15em;
+	}
+	#reader-mode-selector button[class^='select-mode-'] {
+		color: transparent;
+		margin: 0;
+		padding: 0;
+		width: 2em;
+		height: 2em;
+		align-items: center;
+		box-shadow: none;
+		opacity: 0.55;
+	}
+	#reader-mode-selector  button[class^='select-mode-'] + button {
+		margin-top: 0.5em;
+	}
+	#reader-mode-selector button[class^='select-mode-']::before {
+		left: 12.5%;
+		width: 75%;
+		height: 75%;
+	}
+	#reader-mode-selector button:not(:disabled):hover {
+		color: transparent;
+	}
+	#reader-mode-selector button:hover,
+	#reader-mode-selector button.selected {
+		opacity: 1.0;
+	}
+}
+@media only screen and (max-width: 649px) {
+	#reader-mode-selector button[class^='select-mode-'] {
+		width: 2.25em;
+		height: 2.25em;
+	}
+}

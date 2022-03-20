@@ -1,25 +1,9 @@
 ReaderMode = {
-	/*****************/
-	/*	Configuration.
-	 */
-	maskedLinksSelector: "p a, li a",
-	maskedLinksParentBlockSelector: "p, li",
-
-	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer",
-
-	showMaskedLinksDelay: 250,
-
-	adjustedPopupTriggerDelay: 2400,
-
-	modeOptions: [
-		[ 'auto', 'Auto', 'Reader mode enabled automatically on certain pages; otherwise, disabled. (When enabled, hold Alt key to show links in text.)' ],
-		[ 'on', 'On', 'Reader mode enabled on all pages. (Hold Alt key to show links in text.)' ],
-		[ 'off', 'Off', 'Reader mode disabled on all pages.' ]
-	],
+	active: false,
 
 	styles: `
-		body.reader-mode-active #page-metadata,
 		body.reader-mode-active #sidebar-links,
+		body.reader-mode-active #page-metadata,
 		body.reader-mode-active #TOC ul li::before,
         body.reader-mode-active #footer,
         body.reader-mode-active #navigation,
@@ -29,207 +13,110 @@ ReaderMode = {
 		body.reader-mode-active #TOC ul li {
 			padding-left: 0.125em;
 		}
-		.markdownBody .masked-link {
+		body.reader-mode-active .spawns-popup {
 			margin: 0;
 		}
-		.markdownBody .masked-link .indicator-hook {
+		body.reader-mode-active .spawns-popup .indicator-hook {
 			padding-left: 0;
 		}
-		.markdownBody .masked-link .indicator-hook::before {
+		body.reader-mode-active .spawns-popup .indicator-hook::before {
 			left: -0.3em;
 			box-shadow:
 				-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
 				-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
 				-0.17em 0 0 0 var(--GW-link-underline-background-color);
 		}
-		.markdownBody.masked-links-hidden .masked-link .indicator-hook,
-		.markdownBody .masked-link::after {
+		body.reader-mode-active.masked-links-hidden .spawns-popup .indicator-hook,
+		body.reader-mode-active [data-link-icon]::after {
 			display: none;
 		}
-		.markdownBody.masked-links-hidden a.masked-link:not(.popup-open),
-		.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):visited,
-		.markdownBody.masked-links-hidden a.masked-link:not(.popup-open):hover {
+		body.reader-mode-active.masked-links-hidden #markdownBody p a:not(.popup-open),
+		body.reader-mode-active.masked-links-hidden #markdownBody p a:not(.popup-open):visited,
+		body.reader-mode-active.masked-links-hidden #markdownBody p a:not(.popup-open):hover,
+		body.reader-mode-active.masked-links-hidden #markdownBody li a:not(.popup-open),
+		body.reader-mode-active.masked-links-hidden #markdownBody li a:not(.popup-open):visited,
+		body.reader-mode-active.masked-links-hidden #markdownBody li a:not(.popup-open):hover {
 			color: inherit;
 			background: none;
 			cursor: text;
 		}
-		#masked-links-key-toggle-info-alert {
-			position: absolute;
-			background-color: rgba(0, 0, 0, 0.6);
-			color: #fff;
-			text-shadow:
-				0 0 1px #000,
-				0 0 3px #000,
-				0 0 5px #000;
-			padding: 0.5em 1em;
-			left: 2px;
-			bottom: 1.5em;
-			font-family: var(--GW-sans-serif-font-stack);
-			font-weight: 700;
-			pointer-events: none;
-		}
-		#masked-links-key-toggle-info-alert.hidden {
-			visibility: hidden;
-			opacity: 0;
-			transition:
-				visibility 0.15s ease,
-				opacity 0.15s ease;
-		}
-		#masked-links-key-toggle-info-alert img {
-			display: inline-block;
-			width: 1.25em;
-			filter: invert(1) drop-shadow(0 0 3px var(--GW-body-text-color));
-			vertical-align: text-bottom;
-			margin: 0 0.625em 0 0;
-			top: -0.05em;
-			position: relative;
-		}
-		#masked-links-key-toggle-info-alert .key {
-			border: 1px solid #bbb;
-			padding: 0.05em 0.375em 0.125em 0.375em;
-			display: inline-block;
-			border-radius: 4px;
-			margin: 0 0.1875em 0 0.125em;
-			background-color: #444;
-			box-shadow:
-				1px 1px 3px 0 #000;
-			font-feature-settings: 'smcp';
-		}
-		#reader-mode-selector {
-			position: absolute;
-			right: 11em;
-			display: flex;
-			background-color: var(--GW-mode-selector-background-color);
-			padding: 0.1em 0.25em 0.3em 0.25em;
-			border: 3px solid transparent;
-			opacity: 0.3;
-			transition:
-				opacity 2s ease;
-		}
-		#reader-mode-selector.hidden {
-			opacity: 0;
-		}
-		#reader-mode-selector:hover {
-			transition: none;
-			opacity: 1.0;
-			border: 3px double var(--GW-mode-selector-border-hover-color);
-		}
-		#reader-mode-selector button {
-			-moz-appearance: none;
-			appearance: none;
-			border: none;
-			background-color: transparent;
-			padding: 0.5em;
-			margin: 0 0 0 1.875em;
-			line-height: 1;
-			font-family: var(--GW-sans-serif-font-stack);
-			font-size: 0.75rem;
-			text-align: center;
-			color: var(--GW-mode-selector-button-text-color);
-			position: relative;
-			display: flex;
-		}
-		#reader-mode-selector button::before {
-			width: calc(7/5 * 1em);
-			height: calc(7/5 * 1em);
-			position: absolute;
-			left: calc(1px + -4/3 * 1em);
-			opacity: 0.4;
-			top: 0.5em;
-		}
-		#reader-mode-selector button.select-mode-auto::before {
-			content: url('/static/img/icons/book-with-gear.svg');
-			top: 0.4em;
-		}
-		#reader-mode-selector button.select-mode-on::before {
-			content: url('/static/img/icons/book-open-solid.svg');
-		}
-		#reader-mode-selector button.select-mode-off::before {
-			content: url('/static/img/icons/book-open.svg');
-		}
-		#reader-mode-selector button:not(.selected):hover::before {
-			opacity: 1.0;
-		}
-		#reader-mode-selector button:hover,
-		#reader-mode-selector button.selected {
-			box-shadow:
-				0 2px 0 6px var(--GW-mode-selector-background-color) inset,
-				0 1px 0 6px currentColor inset;
-		}
-		#reader-mode-selector button:not(:disabled):hover {
-			color: var(--GW-mode-selector-button-hover-text-color);
-			cursor: pointer;
-		}
-		#reader-mode-selector button:not(:disabled):active {
-			transform: translateY(2px);
-			box-shadow:
-				0 0px 0 6px var(--GW-mode-selector-background-color) inset,
-				0 -1px 0 6px currentColor inset;
-		}
-		#reader-mode-selector button.active:not(:hover)::after {
-			content: "";
-			position: absolute;
-			bottom: 0.25em;
-			left: 0;
-			right: 0;
-			border-bottom: 1px dotted currentColor;
-			width: calc(100% - 12px);
-			margin: auto;
-		}
-		@media only screen and (max-width: 1800px) {
-			#reader-mode-selector {
-				right: 0;
-				top: 2em;
-			}
-		}
-		@media only screen and (max-width: 1535px) {
-			#reader-mode-selector {
-				flex-flow: column;
-				padding: 0.1em 0.1em 0.2em 0.15em;
-				align-items: flex-start;
-				top: 7em;
-			}
-			#reader-mode-selector button + button {
-				margin-top: 0.25em;
-			}
-		}
-		@media only screen and (max-width: 1279px) {
-			#reader-mode-selector {
-				padding: 0.1em 0.1em 0.25em 0.15em;
-			}
-			#reader-mode-selector button[class^='select-mode-'] {
-				color: transparent;
-				margin: 0;
-				padding: 0;
-				width: 2em;
-				height: 2em;
-				align-items: center;
-				box-shadow: none;
-				opacity: 0.55;
-			}
-			#reader-mode-selector  button[class^='select-mode-'] + button {
-				margin-top: 0.5em;
-			}
-			#reader-mode-selector button[class^='select-mode-']::before {
-				left: 12.5%;
-				width: 75%;
-				height: 75%;
-			}
-			#reader-mode-selector button:not(:disabled):hover {
-				color: transparent;
-			}
-			#reader-mode-selector button:hover,
-			#reader-mode-selector button.selected {
-				opacity: 1.0;
-			}
-		}
-		@media only screen and (max-width: 649px) {
-			#reader-mode-selector button[class^='select-mode-'] {
-				width: 2.25em;
-				height: 2.25em;
-			}
-		}
 	`,
+
+	/*	Inject a style block with the given content and element ID.
+	 */
+	//	Called by: this file (immediately on load)
+	injectStyleBlock: (styleBlockContent, styleBlockID) => {
+		document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='${styleBlockID}'>${styleBlockContent}</style>`);
+	},
+
+	/*	Activate or deactivate reader mode, as determined by the current setting
+		and the selected mode.
+	 */
+	//	Called by: this file (immediately on load)
+	//	Called by: ReaderMode.modeSelectButtonClicked
+	setMode: (selectedMode = ReaderMode.currentMode()) => {
+		GWLog("ReaderMode.setMode", "reader-mode.js", 1);
+
+		//	Activate (if needed).
+		if (ReaderMode.enabled() == true)
+			ReaderMode.activate();
+	},
+
+	/*	Returns true if reader mode is set to be enabled for the current page,
+		false otherwise.
+	 */
+    enabled: () => {
+		let currentMode = ReaderMode.currentMode();
+        return (   currentMode == "on"
+        		|| (   currentMode == "auto"
+        			&& document.body.classList.contains("reader-mode")))
+    },
+
+	/*	Returns current (saved) mode (on, off, or auto).
+	 */
+	currentMode: () => {
+		return (localStorage.getItem("reader-mode-setting") || 'auto');
+	},
+
+	/*	Masks links and hide other elements, as appropriate. This will hide
+		linkicons and pop-frame indicators, and will thus cause reflow.
+	 */
+	//	Called by: ReaderMode.setMode
+	activate: () => {
+		GWLog("ReaderMode.activate", "reader-mode.js", 1);
+
+		ReaderMode.active = true;
+
+		//	Add body classes.
+		document.body.classList.add("reader-mode-active", "masked-links-hidden");
+	},
+};
+
+//	Inject initial style block.
+ReaderMode.injectStyleBlock(ReaderMode.styles, "reader-mode-styles");
+
+//	Activate saved mode.
+ReaderMode.setMode();
+
+
+
+ReaderMode = { ...ReaderMode, ...{
+	/*****************/
+	/*	Configuration.
+	 */
+	maskedLinksSelector: "p a, li a",
+
+	deactivateTriggerElementSelector: "#reader-mode-disable-when-here, #see-also, #external-links, #appendix, #appendices, #navigation, #footer",
+
+	showMaskedLinksDelay: 250,
+
+	adjustedPopupTriggerDelay: 2400,
+
+	modeOptions: [
+		[ 'auto', 'Auto', 'Reader mode enabled automatically on certain pages. (When enabled, hold Alt key to show links in text.)' ],
+		[ 'on', 'On', 'Enable reader mode on all pages. (Hold Alt key to show links in text.)' ],
+		[ 'off', 'Off', 'Disable reader mode on all pages.' ]
+	],
 
 	/******************/
 	/*	Infrastructure.
@@ -237,8 +124,6 @@ ReaderMode = {
 	markdownBody: document.querySelector("#markdownBody"),
 
 	maskedLinksKeyToggleInfoAlert: null,
-
-	active: false,
 
 	modeSelector: null,
 	modeSelectorInteractable: true,
@@ -259,17 +144,14 @@ ReaderMode = {
 	setup: () => {
 		GWLog("ReaderMode.setup", "reader-mode.js", 1);
 
-		//	Inject style block.
-		document.querySelector("head").insertAdjacentHTML("beforeend", `<style id='reader-mode-styles'>${ReaderMode.styles}</style>`);
-
 		//	Inject mode selector.
 		ReaderMode.injectModeSelector();
 
-		//	Get saved mode setting (or default).
-		let currentMode = ReaderMode.currentMode();
-
-		//	Activate saved mode.
-		ReaderMode.setMode(currentMode);
+		//	Fully activate.
+		if (ReaderMode.active) {
+			ReaderMode.activate();
+			ReaderMode.updateModeSelectorState();
+		}
 	},
 
 	/******************/
@@ -279,9 +161,8 @@ ReaderMode = {
 	/*	Activate or deactivate reader mode, as determined by the current setting
 		and the selected mode.
 	 */
-	//	Called by: ReaderMode.setup
 	//	Called by: ReaderMode.modeSelectButtonClicked
-	setMode: (selectedMode) => {
+	setMode: (selectedMode = ReaderMode.currentMode()) => {
 		GWLog("ReaderMode.setMode", "reader-mode.js", 1);
 
 		//	Activate or deactivate, as (and if) needed.
@@ -300,24 +181,9 @@ ReaderMode = {
 			ReaderMode.deactivateOnScrollDownObserver = null;
 		}
 
-		//	Update mode selector state.
-		ReaderMode.updateModeSelectorState();
-	},
-
-	/*	Returns true if reader mode is set to be enabled for the current page,
-		false otherwise.
-	 */
-    enabled: () => {
-		let currentMode = ReaderMode.currentMode();
-        return (   currentMode == "on"
-        		|| (   currentMode == "auto"
-        			&& document.body.classList.contains("reader-mode")))
-    },
-
-	/*	Returns current (saved) mode (on, off, or auto).
-	 */
-	currentMode: () => {
-		return (localStorage.getItem("reader-mode-setting") || 'auto');
+		//	Update mode selector state, if available.
+		if (ReaderMode.updateModeSelectorState)
+			ReaderMode.updateModeSelectorState();
 	},
 
 	//	Called by: ReaderMode.setup
@@ -459,7 +325,7 @@ ReaderMode = {
 	 */
 
 	/*	Masks links and hide other elements, as appropriate. This will hide
-		linkicons and pop-frame  indicators, and will thus cause reflow.
+		linkicons and pop-frame indicators, and will thus cause reflow.
 	 */
 	//	Called by: ReaderMode.setMode
 	activate: () => {
@@ -467,19 +333,16 @@ ReaderMode = {
 
 		ReaderMode.active = true;
 
-		//	Add body class.
-		document.body.classList.add("reader-mode-active");
+		//	Add body classes.
+		document.body.classList.add("reader-mode-active", "masked-links-hidden");
 
 		//	Get a list of all the links that are to be masked.
 		ReaderMode.maskedLinks = ReaderMode.markdownBody.querySelectorAll(ReaderMode.maskedLinksSelector);
 
 		//	Mask links.
 		ReaderMode.maskedLinks.forEach(link => {
-			//	Annotate each link with a class.
-			link.classList.add("masked-link");
-
 			//	Insert hooks for linkicons.
-			link.insertAdjacentHTML("beforeend", `<span class='icon-hook'><span></span></span>`);
+// 			link.insertAdjacentHTML("beforeend", `<span class='icon-hook'><span></span></span>`);
 
 			/*	Add `mouseenter` / `mouseleave` listeners to show/hide masked
 				links on hover.
@@ -546,25 +409,20 @@ ReaderMode = {
 
 		ReaderMode.active = false;
 
-		//	Remove body class.
-		document.body.classList.remove("reader-mode-active");
-
-		//	Show masked links.
-		ReaderMode.showMaskedLinks();
+		//	Remove body classes.
+		document.body.classList.remove("reader-mode-active", "masked-links-hidden");
 
 		//	Remove info alert.
-		document.querySelectorAll("#masked-links-key-toggle-info-alert").forEach(alert => { alert.remove() });
+		ReaderMode.maskedLinksKeyToggleInfoAlert.remove();
 
 		/*	Unmask every masked link. (Note that ReaderMode.maskedLinks is a
 			NodeList, returned by a querySelectorAll call in
-			ReaderMode.maskLinks. If that function has never been called, then
+			ReaderMode.activate. If that function has never been called, then
 			ReaderMode.maskedLinks will be null).
 		 */
 		ReaderMode.maskedLinks.forEach(link => {
-			link.classList.remove("masked-link");
-
 			//	Extract hooks.
-			link.querySelectorAll(".icon-hook").forEach(hook => { hook.remove() });
+// 			link.querySelectorAll(".icon-hook").forEach(hook => { hook.remove() });
 
 			//	Remove `mouseenter` / `mouseleave` listeners from the link.
 			link.removeMouseEnterEvent();
@@ -593,49 +451,7 @@ ReaderMode = {
 		otherwise.
 	 */
 	maskedLinksVisible: () => {
-		return (ReaderMode.markdownBody.classList.contains("masked-links-hidden") == false);
-	},
-
-	/*	Hides masked links (if any).
-	 */
-	hideMaskedLinks: () => {
-		GWLog("ReaderMode.hideMaskedLinks", "reader-mode.js", 2);
-
-		/*	Hide masked links. (Because linkicons and pop-frame indicators are
-			already hidden, this causes no reflow).
-		 */
-		ReaderMode.markdownBody.classList.add("masked-links-hidden");
-	},
-
-	/*	Unhides masked links (if any).
-	 */
-	showMaskedLinks: () => {
-		GWLog("ReaderMode.showMaskedLinks", "reader-mode.js", 2);
-
-		/*	Unhide masked links. (This does not reveal linkicons or pop-frame
-			indicators, and thus causes no reflow).
-		 */
-		ReaderMode.markdownBody.classList.remove("masked-links-hidden");
-	},
-
-	/*******************************/
-	/*	Key toggle info alert panel.
-	 */
-
-	/*	Hide key toggle info alert.
-	 */
-	hideKeyToggleInfoAlert: () => {
-		GWLog("ReaderMode.hideKeyToggleInfoAlert", "reader-mode.js", 2);
-
-		ReaderMode.maskedLinksKeyToggleInfoAlert.classList.add("hidden");
-	},
-
-	/*	Show key toggle info alert.
-	 */
-	showKeyToggleInfoAlert: () => {
-		GWLog("ReaderMode.showKeyToggleInfoAlert", "reader-mode.js", 2);
-
-		ReaderMode.maskedLinksKeyToggleInfoAlert.classList.remove("hidden");
+		return (document.body.classList.contains("masked-links-hidden") == false);
 	},
 
 	/***********************************************/
@@ -695,19 +511,23 @@ ReaderMode = {
 		 */
 		if (   update.maskedLinksVisible == true
 			&& ReaderMode.maskedLinksVisible() == false) {
-			ReaderMode.showMaskedLinks();
+			//	Show.
+			document.body.classList.remove("masked-links-hidden");
 		} else if (   update.maskedLinksVisible == false
 				   && ReaderMode.maskedLinksVisible() == true) {
-			ReaderMode.hideMaskedLinks();
+			//	Hide.
+			document.body.classList.add("masked-links-hidden");
 		}
 
 		//	Likewise, show or hide the key toggle info alert panel, as needed.
 		if (update.maskedLinksKeyToggleInfoAlertVisible) {
-			ReaderMode.showKeyToggleInfoAlert();
+			//	Show.
+			ReaderMode.maskedLinksKeyToggleInfoAlert.classList.remove("hidden");
 		} else {
-			ReaderMode.hideKeyToggleInfoAlert();
+			//	Hide.
+			ReaderMode.maskedLinksKeyToggleInfoAlert.classList.add("hidden");
 		}
 	},
-};
+}};
 
 ReaderMode.setup();
