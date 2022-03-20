@@ -1680,21 +1680,26 @@ span.smallcaps-auto {
 }
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
-        */
+    */
     --GW-body-background-color: #111111;
 
-    /* Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?) */
+    /*	Dial back from pure white to keep contrast from being *too* high & 'stark' (#fff bg / #000 text seems to work in light mode, but not in dark mode, perhaps because of differences in lighting environment?)
+     */
     --GW-body-text-color: #f1f1f1;
 
     /*  Adjust this one color in the syntax highlighting color scheme to make it
         less saturated. (The automatic inversion algorithm doesn’t quite handle
         it in the way we want.)
-        */
+     */
     --GW-syntax-highlight-color-control-flow: #cce1c8;
 
-    /* Variable for SVGs to use (like for the —𝔊— footers on the index page) */
+    /*	Variable for SVGs to use (like for the —𝔊— footers on the index page)
+     */
     --GW-body-background-color-inverted: #ededed;
 
+	/*	Reader mode.
+	 */
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.85);
 }
 
 /*  The ‘fill’ attribute of the SVGs is modified in dark mode.
@@ -1842,7 +1847,7 @@ img:not(.invertible):not(.invertible-auto):hover {
 
 /*  The mode selector is adjusted to be better visible in dark mode, and its
     button icons inverted.
-    */
+ */
 div#mode-selector {
     opacity: 0.6;
 }
@@ -1855,7 +1860,7 @@ div#mode-selector button.select-mode-light::before {
 }
 
 /*  Reader mode selector, same as above.
-    */
+ */
 div#reader-mode-selector {
     opacity: 0.6;
 }
@@ -1867,16 +1872,22 @@ div#reader-mode-selector button.select-mode-light::before {
     opacity: 0.55;
 }
 
+/*	Masked links key toggle info alert panel.
+ */
+div#masked-links-key-toggle-info-alert img {
+    filter: drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
+}
+
 /*  The dotted underline for Wikipedia links is created by a
     pixel-grid-checkerboard background-image. We use an alternate version of
     this image in dark mode.
-    */
+ */
 .markdownBody a[data-link-icon='wikipedia'].has-annotation:hover {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
 /*  All SVG linkicons have to be inverted.
-    */
+ */
 a.link-self.identifier-link-up::after,
 a.link-self.identifier-link-down::after,
 a[data-link-icon-type*='svg']::after {
