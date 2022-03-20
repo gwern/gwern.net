@@ -23,7 +23,7 @@ $head_includes = [
 	"{$static_dir}/css/include/dark-mode-GENERATED.css",
 	"{$static_dir}/css/include/initial.css",
 	"{$static_dir}/js/darkmode-inline.js",
-	"{$static_dir}/js/gw-inline.js"
+	"{$static_dir}/js/gw-inline.js",
 	"{$static_dir}/js/reader-mode-inline.js",
 ];
 $head_includes = implode(" ", $head_includes);
@@ -67,6 +67,7 @@ $versioned_files = [
 	"{$static_dir}/js/image-focus.js",
 	"{$static_dir}/js/popins.js",
 	"{$static_dir}/js/popups.js",
+	"{$static_dir}/js/reader-mode.js",
 	"{$static_dir}/js/rewrite.js",
 // 	"{$static_dir}/js/sidenotes.js",
 	"{$static_dir}/js/tablesorter.js",

@@ -4489,12 +4489,12 @@ section.highlight-fading::before {
 
 #masked-links-key-toggle-info-alert {
 	position: absolute;
-	background-color: rgba(0, 0, 0, 0.6);
-	color: #fff;
+	background-color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color);
+	color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color);
 	text-shadow:
-		0 0 1px #000,
-		0 0 3px #000,
-		0 0 5px #000;
+		0 0 1px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color),
+		0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color),
+		0 0 5px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color);
 	padding: 0.5em 1em;
 	left: 2px;
 	bottom: 1.5em;
@@ -4512,21 +4512,21 @@ section.highlight-fading::before {
 #masked-links-key-toggle-info-alert img {
 	display: inline-block;
 	width: 1.25em;
-	filter: invert(1) drop-shadow(0 0 3px var(--GW-body-text-color));
+	filter: invert(1) drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
 	vertical-align: text-bottom;
 	margin: 0 0.625em 0 0;
 	top: -0.05em;
 	position: relative;
 }
 #masked-links-key-toggle-info-alert .key {
-	border: 1px solid #bbb;
+	border: 1px solid var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color);
 	padding: 0.05em 0.375em 0.125em 0.375em;
 	display: inline-block;
 	border-radius: 4px;
 	margin: 0 0.1875em 0 0.125em;
-	background-color: #444;
+	background-color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color);
 	box-shadow:
-		1px 1px 3px 0 #000;
+		1px 1px 3px 0 var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color);
 	font-feature-settings: 'smcp';
 }
 
