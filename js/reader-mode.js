@@ -16,6 +16,8 @@ ReaderMode = { ...ReaderMode, ...{
 		[ 'off', 'Off', 'Disable reader mode on all pages.' ]
 	],
 
+	selectedModeOptionNote: " [This option is currently selected.]",
+
 	/******************/
 	/*	Infrastructure.
 	 */
@@ -98,6 +100,8 @@ ReaderMode = { ...ReaderMode, ...{
 				let [ name, label, desc ] = modeOption;
 				let selected = (name == currentMode ? ' selected' : '');
 				let disabled = (name == currentMode ? ' disabled' : '');
+				if (name == currentMode)
+					desc += ReaderMode.selectedModeOptionNote;
 				return `<button type='button' class='select-mode-${name}${selected}'${disabled} tabindex='-1' data-name='${name}' title='${desc}'>${label}</button>`})) +
 			"</div>");
 
@@ -165,12 +169,15 @@ ReaderMode = { ...ReaderMode, ...{
 		ReaderMode.modeSelector.querySelectorAll("button").forEach(button => {
 			button.classList.remove("active", "selected");
 			button.disabled = false;
+			if (button.title.endsWith(ReaderMode.selectedModeOptionNote))
+				button.title = button.title.slice(0, (-1 * ReaderMode.selectedModeOptionNote.length));
 		});
 
 		//	Set the correct button to be selected.
 		ReaderMode.modeSelector.querySelectorAll(`.select-mode-${currentMode}`).forEach(button => {
 			button.classList.add("selected");
 			button.disabled = true;
+			button.title += ReaderMode.selectedModeOptionNote;
 		});
 
 		/*	Ensure the right button (on or off) has the “currently active”
