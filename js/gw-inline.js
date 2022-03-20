@@ -266,6 +266,20 @@ Array.prototype.π = function (strings) {
 	return product;
 };
 
+/*	As Array.π, but applies sequentially to each argument. (First argument may
+	be a string, which is impossible with the Array member version.)
+ */
+function _π(...args) {
+	if (args.length == 0)
+		return [ ];
+
+	let product = [ "" ];
+	for (arg of args)
+		product = product.π(arg);
+
+	return product;
+}
+
 /*  Run the given function immediately if the page is already loaded, or add
     a listener to run it as soon as the page loads.
  */

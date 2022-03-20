@@ -2,50 +2,45 @@ ReaderMode = {
 	active: false,
 
 	styles: 
-		[ "body.reader-mode-active" ].π(" ").π([ 
-			"#sidebar-links",
-			"#page-metadata",
-			"#TOC ul li::before",
-			"#footer",
-			"#navigation",
-			"#sidenote-column-left",
-			"#sidenote-column-right",
-			".inflationAdjusted .supsub"
+		_π("body.reader-mode-active ", [ 
+		   "#sidebar-links",
+		   "#page-metadata",
+		   "#TOC ul li::before",
+		   "#footer",
+		   "#navigation",
+		   "#sidenote-column-left",
+		   "#sidenote-column-right",
+		   ".inflationAdjusted .supsub"
 		]).join(",\n") + ` {
 			display: none;
 		}` + `
 		body.reader-mode-active #logo {
 			border-color: transparent;
 		}
+		body.reader-mode-active #TOC {
+			margin-top: 1em;
+		}
 		body.reader-mode-active #TOC ul li {
 			padding-left: 0.125em;
 		}
-		body.reader-mode-active .spawns-popup,
-		body.reader-mode-active .spawns-popin {
+		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ]).join(",\n") + ` {
 			margin: 0;
 		}
-		body.reader-mode-active .spawns-popup .indicator-hook,
-		body.reader-mode-active .spawns-popin .indicator-hook {
+		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ` {
 			padding-left: 0;
 		}
-		body.reader-mode-active .spawns-popup .indicator-hook::before,
-		body.reader-mode-active .spawns-popin .indicator-hook::before {
+		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook::before").join(",\n") + ` {
 			left: -0.3em;
 			box-shadow:
 				-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
 				-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
 				-0.17em 0 0 0 var(--GW-link-underline-background-color);
 		}
-		body.reader-mode-active.masked-links-hidden .spawns-popup .indicator-hook,
-		body.reader-mode-active.masked-links-hidden .spawns-popin .indicator-hook,
-		body.reader-mode-active #markdownBody p a::after,
-		body.reader-mode-active #markdownBody li a::after {
+		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" + 
+			_π("body.reader-mode-active #markdownBody ", [ "p", "li" ], " a::after").join(",\n") + ` {
 			display: none;
 		}
-		` + [ "body.reader-mode-active.masked-links-hidden #markdownBody" ].π(" ").π(
-			[ "p", "li" ]).π(" ").π(
-			[ "a:not(.popup-open)" ]).π(
-			[ "", ":visited", ":hover" ]).join(",\n") + ` {
+		` + _π("body.reader-mode-active.masked-links-hidden #markdownBody ", [ "p", "li" ], " a:not(.popup-open)", [ "", ":visited", ":hover" ]).join(",\n") + ` {
 			color: inherit;
 			background: none;
 			cursor: text;
