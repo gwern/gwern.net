@@ -32,9 +32,9 @@ ReaderMode = {
 		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook::before").join(",\n") + ` {
 			left: -0.3em;
 			box-shadow:
-				-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
-				-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
-				-0.17em 0 0 0 var(--GW-link-underline-background-color);
+				-0.17em 0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
+				-0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
+				-0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
 		}
 		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" + 
 			_π("body.reader-mode-active #markdownBody ", [ "p", "li" ], " a::after").join(",\n") + ` {

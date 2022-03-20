@@ -292,7 +292,8 @@
 
 	/*	Reader mode.
 	 */
-	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0, 0, 0, 0.6);
+	--GW-reader-mode-masked-link-bracket-background-color: rgba(255,255,255,0.5);
+	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(0,0,0,0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #fff;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color: #bbb;
@@ -1669,6 +1670,7 @@ span.smallcaps-auto {
 
 	/*	Reader mode.
 	 */
+	--GW-reader-mode-masked-link-bracket-background-color: rgba(0, 0, 0, 0.5);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color: rgba(255, 255, 255, 0.6);
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color: #000;
 	--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color: #fff;
@@ -3085,9 +3087,9 @@ ReaderMode = {
 		` + _π("body.reader-mode-active .spawns-", [ "popup", "popin" ], " .indicator-hook::before").join(",\n") + ` {
 			left: -0.3em;
 			box-shadow:
-				-0.17em 0.05em 0 0 var(--GW-link-underline-background-color),
-				-0.17em -0.05em 0 0 var(--GW-link-underline-background-color),
-				-0.17em 0 0 0 var(--GW-link-underline-background-color);
+				-0.17em 0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
+				-0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
+				-0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
 		}
 		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" + 
 			_π("body.reader-mode-active #markdownBody ", [ "p", "li" ], " a::after").join(",\n") + ` {
