@@ -74,11 +74,15 @@ ReaderMode = { ...ReaderMode, ...{
 			ReaderMode.activate();
 		}
 
-		//	Kill the intersection observer, if switching away from "auto" mode.
+		/*	Kill the intersection observer, if switching away from "auto" mode.
+			Or, spawn the intersection observer, if switching to "auto" mode.
+		 */
 		if (   selectedMode != "auto"
 			&& ReaderMode.deactivateOnScrollDownObserver != null) {
-			ReaderMode.deactivateOnScrollDownObserver.disconnect();
-			ReaderMode.deactivateOnScrollDownObserver = null;
+			ReaderMode.despawnObserver();
+		} else if (   selectedMode == "auto"
+				   && ReaderMode.deactivateOnScrollDownObserver == null) {
+			ReaderMode.spawnObserver();
 		}
 
 		//	Update mode selector state, if available.
@@ -293,23 +297,34 @@ ReaderMode = { ...ReaderMode, ...{
 		/*	Create intersection observer to automatically unmask links when
 			page is scrolled down to a specified location (element).
 		 */
-		if (ReaderMode.currentMode() == "auto") {
-			ReaderMode.deactivateOnScrollDownObserver = new IntersectionObserver((entries, observer) => {
-				entries.forEach(entry => {
-					if (entry.isIntersecting == false)
-						return;
-
-					ReaderMode.deactivate();
-					ReaderMode.updateModeSelectorState();
-					ReaderMode.deactivateOnScrollDownObserver.disconnect();
-					ReaderMode.deactivateOnScrollDownObserver = null;
-				});
-			}, { threshold: 1.0 });
-			ReaderMode.deactivateOnScrollDownObserver.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
-		}
+		if (ReaderMode.currentMode() == "auto")
+			ReaderMode.spawnObserver();
 
 		//	Update visual state.
 		ReaderMode.updateVisibility({ maskedLinksVisible: false, maskedLinksKeyToggleInfoAlertVisible: false });
+	},
+
+	//	Called by: ReaderMode.activate
+	//	Called by: ReaderMode.setMode
+	spawnObserver: () => {
+		ReaderMode.deactivateOnScrollDownObserver = new IntersectionObserver((entries, observer) => {
+			entries.forEach(entry => {
+				if (entry.isIntersecting == false)
+					return;
+
+				ReaderMode.deactivate();
+				ReaderMode.updateModeSelectorState();
+				ReaderMode.deactivateOnScrollDownObserver.disconnect();
+				ReaderMode.deactivateOnScrollDownObserver = null;
+			});
+		}, { threshold: 1.0 });
+		ReaderMode.deactivateOnScrollDownObserver.observe(document.querySelector(ReaderMode.deactivateTriggerElementSelector));
+	},
+
+	//	Called by: ReaderMode.setMode
+	despawnObserver: () => {
+		ReaderMode.deactivateOnScrollDownObserver.disconnect();
+		ReaderMode.deactivateOnScrollDownObserver = null;
 	},
 
 	/*	Unmasks links and reveal other elements, as appropriate. This will
