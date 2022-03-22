@@ -224,7 +224,7 @@ generateMatches md p abst matches =
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
                                                titleQuery = "%22" ++ title ++ "%22"
                                                query = if null title then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
-                                           in
+                                           in -- TODO: maybe Connected Papers, if they get their act together? URL pattern would be <https://www.connectedpapers.com/api/redirect/doi/10.1111/j.1467-985X.2008.00548.x> (but currently broken)
                                              [[Para [Link ("",["backlinksNot", "idNot"],[])
                                                      [Str "Google Scholar"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
                                                                               T.pack ("Reverse citations of this paper (‘" ++ title ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),

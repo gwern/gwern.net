@@ -351,7 +351,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | iE ["doc", "docx"] = aI "worddoc" "svg"
  | iE ["xls", "xlsx", "ods"] = aI "spreadsheet" "svg"
  | iE ["csv"] = aI "csv" "svg"
- | iE ["gif", "bmp", "ico", "jpg", "jpeg", "png", "svg", "xcf"] = aI "image" "svg"
+ | iE ["gif", "bmp", "ico", "jpg", "jpeg", "png", "svg", "xcf", "psd"] = aI "image" "svg"
  | iE ["mp3", "wav", "flac", "ogg", "rm"] = aI "audio" "svg"
  | iE ["swf", "mp4", "mkv", "webm"] = aI "file-video" "svg"
  | iE ["ebt", "mdb", "mht", "ttf"] = aI "misc" "svg"
@@ -454,7 +454,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu",
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
-                     "palladiummag.com", "mathworld.wolfram.com"]
+                     "palladiummag.com", "mathworld.wolfram.com", "soranews24.com"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -944,4 +944,5 @@ linkIconTestUnits =
          , ("https://longreads.com/2015/01/28/friendship-is-complicated/", "Long", "text,quad")
          , ("https://crookedtimber.org/2012/05/30/in-soviet-union-optimization-problem-solves-you/", "CT", "text")
          , ("http://articles.latimes.com/1986-07-30/business/fi-18840_1_laser-defense", "𝔏A", "text")
+         , ("/images/fiction/batman.psd",  "image","svg") -- TODO
         ]
