@@ -224,16 +224,18 @@ generateMatches md p abst matches =
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
                                                titleQuery = "%22" ++ title ++ "%22"
                                                query = if null title then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
+                                               linkMetadataG  = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
+                                               linkMetadataGS = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                            in -- TODO: maybe Connected Papers, if they get their act together? URL pattern would be <https://www.connectedpapers.com/api/redirect/doi/10.1111/j.1467-985X.2008.00548.x> (but currently broken)
-                                             [[Para [Link ("",["backlinksNot", "idNot"],[])
-                                                     [Str "Google Scholar"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
+                                             [[Para [Link linkMetadataGS
+                                                     [Str "Scholar"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
                                                                               T.pack ("Reverse citations of this paper (‘" ++ title ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),
-                                                     Str " ;",
-                                                     Link ("",["backlinksNot", "idNot"],[])
+                                                     Str "; ",
+                                                     Link linkMetadataG
                                                       [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),
                                                                        T.pack ("Google search engine hits for ‘" ++ title ++ "’.")),
-                                                     Str " ;",
-                                                     Link ("",["backlinksNot", "idNot"],[])
+                                                     Str "; ",
+                                                     Link linkMetadataG
                                                       [Str "Search Gwern.net"] (T.pack ("https://www.google.com/search?q=site:gwern.net+" ++ title),
                                                                                 T.pack ("Gwern.net site search hits for ‘" ++ title ++ "’."))
                                                     ]]]
