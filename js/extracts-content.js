@@ -67,7 +67,7 @@
                 URL of the aux-links source file.
             flags: GW.contentDidLoadEventFlags.needsRewrite
         }
-        Fired at the last stage of preparing a aux-links pop-frame for spawning
+        Fired at the last stage of preparing an aux-links pop-frame for spawning
         (after the pop-frame’s content has been freshly loaded via a network
         request).
 
@@ -156,7 +156,7 @@ if (window.Extracts) {
         }
     };
 
-    /*  Refresh (respawn or reload) a pop-frame for a aux-link link after the
+    /*  Refresh (respawn or reload) a pop-frame for an aux-link link after the
         aux-links source loads.
      */
     //  Called by: Extracts.auxLinksForTarget
