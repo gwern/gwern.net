@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-20 18:28:05 gwern"
+When:  Time-stamp: "2022-03-22 17:54:07 gwern"
 License: CC-0
 -}
 
@@ -426,8 +426,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("ai/diffusion", "diffusion model")
           , ("ai/gan", "GAN")
           , ("/gan", "GAN")
-          , ("/stylegan", "StyleGAN")
-          , ("ai/stylegan", "StyleGAN")
+          , ("/stylegan", "Style GAN")
+          , ("ai/stylegan", "Style GAN")
           , ("ai/gpt/dall-e", "DALL·E")
           , ("ai/highleyman", "Highleyman")
           , ("existential-risk", "x-risk")
@@ -1093,7 +1093,7 @@ paragraphized a = paragraphsMarkdown a || blockElements a || length (paragraphsH
    paragraphsMarkdown b = "\n\n" `isInfixOf` b
    blockElements :: String -> Bool
    -- full-blown lists or blockquotes also imply it's fully-formatted
-   blockElements b = "<ul>" `isInfixOf` b || "<ol>" `isInfixOf` b || "<blockquote>" `isInfixOf` b || "<figure>" `isInfixOf` b
+   blockElements b = "<ul>" `isInfixOf` b || "<ol>" `isInfixOf` b || "<ul type=" `isInfixOf` b || "<ol type=" `isInfixOf` b || "<blockquote>" `isInfixOf` b || "<figure>" `isInfixOf` b
    -- annotations are wrapped in a '<p>...</p>' pair, unless they start with another block element; if there are two or more '<p>', then, there are at least two paragraphs (because it must be '<p>...</p> ... <p>...</p>') and it counts as being paragraphized.
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
@@ -1678,6 +1678,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("<span class=\"math inline\">\\\\\\(([0-9.]+) ?\\\\times\\\\\\)</span>", "\\1×"), -- '<span class="math inline">\(1.5\times\)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9.]+) ?\\\\times ([0-9.]+)\\\\\\)</span>", "\\1×\\2"), -- '<span class="math inline">\(224\times\ 224)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9.]+)\\\\\\%\\\\\\)</span>", "\\1%"), -- '<span class=\"math inline\">\\(83.6\\%\\)</span>'
+        ("<span class=\"math inline\">\\\\\\(\\\\texttt\\{([A-Za-z]+)\\}\\\\\\)</span>", "<code>\\1</code>"), -- 'we present the <span class=\"math inline\">\\(\\texttt{GamePhysics}\\)</span> dataset'
         ("<span class=\"math inline\">\\\\\\(\\\\times\\\\\\)</span>", "×"), -- '<span class="math inline">\(\times\)</span>'
         ("<span class=\"math inline\">\\\\\\(([0-9]*)\\^([0-9{}]*)\\\\\\)</span>", "\\1<sup>\\2</sup>"), -- '<span class="math inline">\(10^4\)</span>'
         ("([A-z][a-z]+) ?et ?al ?\\(([0-9][0-9][0-9][0-9])\\)", "\\1 et al \\2"), -- 'Dette et al (2013)'
@@ -2290,6 +2291,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(rg", "(<em>r</em><sub><em>g</em></sub>")
           , ("|rg|=", "|<em>r</em><sub><em>g</em></sub>| = ")
           , ("-&gt;", "→")
+          , (" r = ", " <em>r</em> = ")
           , (" r=", "<em>r</em> = ")
           , (" r>", "<em>r</em> > ")
           , (" r<", " <em>r</em> < ")
@@ -2374,6 +2376,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" N &gt; ", " <em>n</em> &gt; ")
           , (" N > ", " <em>n</em> > ")
           , (" n-back", " <em>n</em>-back")
+          , ("<em>p</em> &lt; .05", "<em>p</em> &lt; 0.05")
           , ("( <em>p</em>", "(<em>p</em>")
           , (" p&lt;", " <em>p</em> &lt; ")
           , ("p = 0",   "<em>p</em> = 0")

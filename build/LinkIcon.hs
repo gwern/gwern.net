@@ -454,7 +454,7 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu",
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
-                     "palladiummag.com", "mathworld.wolfram.com", "soranews24.com"]
+                     "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
