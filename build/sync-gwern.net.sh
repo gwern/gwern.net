@@ -252,6 +252,9 @@ else
     λ(){ egrep --color=always -e '<div class="admonition .*">[^$]' -e '<div class="epigrah">' **/*.page; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown"
 
+    λ(){ egrep --color=always -e ' a [aeio]' **/*.page | egrep ' a [aeio]' | fgrep -v -e 'static/build/' -e '/GPT-3' -e '/GPT-2-preference-learning' -e 'sicp/'; }
+    wrap λ "Grammar: 'a' → 'an'?"
+
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | fgrep -v '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
     wrap λ "Empty files somewhere"
 
@@ -276,7 +279,7 @@ else
          egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
                -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
-               -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -- ./metadata/*.yaml;
+               -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aeio]' -- ./metadata/*.yaml;
          fgrep --color=always -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
                -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '>>' \
                -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
@@ -305,9 +308,6 @@ else
        }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
-    λ(){ fgrep '{#' $(find _site/ -type f -name "index"); }
-    wrap λ "Broken anchors in directory indexes."
-
     λ(){ fgrep -e '""' -- ./metadata/*.yaml | fgrep -v -e 'alt=""' -e 'controls=""'; }
     wrap λ "Doubled double-quotes in YAML, usually an error."
 
@@ -320,9 +320,6 @@ else
     λ(){ egrep --color=always -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
     wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
 
-    λ(){ fgrep --color=always -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
-    wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
-
     λ(){ egrep --color=always -e '[0-9]*[02456789]th' -e '[0-9]*[3]rd' -e '[0-9]*[2]nd' -e '[0-9]*[1]st'  -- ./metadata/*.yaml | \
              fgrep -v -e '%' -e figure -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
     wrap λ "Missing superscripts in YAML metadata database"
@@ -332,6 +329,12 @@ else
 
     λ(){ fgrep --color=always -e ' significant'  ./metadata/custom.yaml; }
     wrap λ "Misleading language in custom.yaml"
+
+    λ(){ fgrep --color=always -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
+    wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
+
+    λ(){ fgrep '{#' $(find _site/ -type f -name "index"); }
+    wrap λ "Broken anchors in directory indexes."
 
     λ(){
         set +e;

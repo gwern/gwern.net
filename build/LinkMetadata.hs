@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-22 17:54:07 gwern"
+When:  Time-stamp: "2022-03-23 13:16:58 gwern"
 License: CC-0
 -}
 
@@ -1630,6 +1630,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
         ("\\(1\\) (.*) 2\\)", " (1) \\1 (2)"),
         (" 1\\) (.*) 2\\)", " (1) \\1 (2)"),
 
+        -- common spelling error, 'a' → 'an':
+        (" a ([aeio][a-z]+)", " an \\1"),
         -- - comma-separate at thousands for consistency:
         -- skip thousands, since clobbers citations like 'Herring 2009' (which turns into 'Herring 2,009')
         (" ([0-9]+)([0-9][0-9][0-9])([0-9][0-9][0-9])",                                   " \\1,\\2,\\3"),         -- millions
