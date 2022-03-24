@@ -17,8 +17,10 @@ ReaderMode = {
 		body.reader-mode-active #logo {
 			border-color: transparent;
 		}
-		body.reader-mode-active #TOC {
-			margin-top: 1em;
+		@media only screen and (max-width: 649px) {
+			body.reader-mode-active #TOC {
+				margin-top: 1em;
+			}
 		}
 		body.reader-mode-active #TOC ul li {
 			padding-left: 0.125em;
