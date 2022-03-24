@@ -178,7 +178,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "scienceblogs.com" = aI "Sᵇ" "text,sans,italic"
  | u'' "www.theage.com.au" = aI "A" "text"
  | u'' "www.dailydot.com" = aI "D." "text,sans"
- | u'' "www.yudkowsky.net" = aI "י" "text" -- but of course: י HEBREW LETTER YUD 0x05D9
+ | u'' "www.yudkowsky.net" = aI "yud" "svg" -- but of course: י HEBREW LETTER YUD 0x05D9; we use an SVG icon here for the same reason we use a math alef elsewhere instead of the Hebrew one (the RTL of Hebrew script will screw up some browsers, like Mac Firefox)
  | u'' "www.johndcook.com" = aI "JC" "text,sans"
  | u'' "www.candyjapan.com"  = aI "🍬" "text"
  | aU'' ["www.cambridge.org", "journals.cambridge.org", "static.cambridge.org"] = aI "⛨" "text" -- ⛨ BLACK CROSS ON SHIELD U+26E8, roughly imitating <https://en.wikipedia.org/wiki/Coat_of_arms_of_the_University_of_Cambridge>
@@ -809,7 +809,7 @@ linkIconTestUnits =
          , ("https://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=602492", "IEEE", "text,mono,quad")
          , ("https://spectrum.ieee.org/classical-chinese", "IEEE", "text,mono,quad")
          , ("https://www.dailydot.com/crime/dark-web-black-market-reloaded-adam-bunger-gun-sales-arrest/", "D.", "text,sans")
-         , ("https://www.yudkowsky.net/rational/technical", "י", "text")
+         , ("https://www.yudkowsky.net/rational/technical", "yud", "svg")
          , ("https://www.johndcook.com/blog/2010/09/13/applied-topology-and-dante-an-interview-with-robert-ghrist/", "JC", "text,sans")
          , ("https://www.candyjapan.com/2013-year-in-review", "🍬", "text")
          , ("http://journals.cambridge.org/production/action/cjoGetFulltext?fulltextid=1463440", "⛨", "text")
