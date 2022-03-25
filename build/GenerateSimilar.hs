@@ -27,7 +27,7 @@ import Data.Conduit.List (sourceList)
 
 import LinkMetadata (readLinkMetadata, authorsTruncate, Metadata, MetadataItem, safeHtmlWriterOptions)
 import Query (extractURLsAndAnchorTooltips, extractLinks)
-import Utils (simplifiedDoc, writeUpdatedFile)
+import Utils (simplifiedDoc, simplifiedString, writeUpdatedFile)
 
 -- Make it easy to generate a HTML list of recommendations for an arbitrary piece of text. This is useful for eg. getting the list of recommendations while writing an annotation, to whitelist links or incorporate into the annotation directly (freeing up slots in the 'similar' tab for additional links). Used in `preprocess-markdown.hs`.
 singleShotRecommendations :: String -> IO T.Text
@@ -222,22 +222,23 @@ generateMatches md p abst matches =
                Nothing -> []
                Just ("",_,_,"",_,_) -> []
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
-                                               titleQuery = "%22" ++ title ++ "%22"
-                                               query = if null title then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
+                                               title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
+                                               titleQuery = "%22" ++ title' ++ "%22"
+                                               query = if null title' then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
                                                linkMetadataG  = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                            in -- TODO: maybe Connected Papers, if they get their act together? URL pattern would be <https://www.connectedpapers.com/api/redirect/doi/10.1111/j.1467-985X.2008.00548.x> (but currently broken)
                                              [[Para [Link linkMetadataGS
                                                      [Str "Scholar"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
-                                                                              T.pack ("Reverse citations of this paper (‘" ++ title ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),
+                                                                              T.pack ("Reverse citations of this paper (‘" ++ title' ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),
                                                      Str "; ",
                                                      Link linkMetadataG
                                                       [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),
-                                                                       T.pack ("Google search engine hits for ‘" ++ title ++ "’.")),
+                                                                       T.pack ("Google search engine hits for ‘" ++ title' ++ "’.")),
                                                      Str "; ",
                                                      Link linkMetadataG
-                                                      [Str "Search Gwern.net"] (T.pack ("https://www.google.com/search?q=site:gwern.net+" ++ title),
-                                                                                T.pack ("Gwern.net site search hits for ‘" ++ title ++ "’."))
+                                                      [Str "search Gwern.net"] (T.pack ("https://www.google.com/search?q=site:gwern.net+" ++ title'),
+                                                                                T.pack ("Gwern.net site search hits for ‘" ++ title' ++ "’."))
                                                     ]]]
 
              linkList = BulletList $ similarItems ++ googleScholar

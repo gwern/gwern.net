@@ -9,7 +9,7 @@ import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Pandoc (def, nullMeta, runPure,
-                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
+                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
 import System.IO (stderr, hPutStrLn)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)
@@ -37,6 +37,9 @@ writeUpdatedFile template target contentsNew =
                when (contentsNew /= contentsOld) $ do tempPath <- emptySystemTempFile ("hakyll-"++template)
                                                       TIO.writeFile tempPath contentsNew
                                                       renameFile tempPath target
+
+simplifiedString :: String -> String
+simplifiedString s = T.unpack $ simplified $ Para [Str $ T.pack s]
 
 simplified :: Block -> T.Text
 simplified i = simplifiedDoc (Pandoc nullMeta [i])
