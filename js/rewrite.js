@@ -557,6 +557,22 @@ function identifyFootnotesSection(loadEventInfo) {
         footnotesSection.id = "footnotes";
 }
 
+/*****************************************/
+/*	Add footnote class to footnote blocks.
+ */
+function addFootnoteClassToFootnotes(loadEventInfo) {
+    GWLog("identifyFootnotesSection", "rewrite.js", 1);
+    let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
+    if (!footnotesSection)
+        return;
+
+    let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
+
+	footnotes.forEach(footnote => {
+		footnote.classList.add("footnote");
+	});
+}
+
 /******************************/
 /*  Inject footnote self-links.
  */
@@ -668,13 +684,19 @@ function injectFootnotesTOCLink(loadEventInfo) {
 /**************************************************************/
 /*  Add content load handlers for processing footnotes section.
  */
+
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFootnotes = (info) => {
     GWLog("GW.rewriteFunctions.processFootnotes", "rewrite.js", 2);
 
     identifyFootnotesSection(info);
+    addFootnoteClassToFootnotes(info);
     injectFootnoteSectionSelfLink(info);
     injectFootnoteSelfLinks(info);
-}, { phase: "rewrite", condition: (info) => (info.needsRewrite && info.isFullPage) });
+}, {
+	phase: "rewrite", 
+	condition: (info) => (info.needsRewrite && info.isFullPage) 
+});
+
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectFootnotesTOCLink = (info) => {
     GWLog("GW.rewriteFunctions.injectFootnotesTOCLink", "rewrite.js", 2);
 
@@ -683,6 +705,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 	phase: "rewrite",
 	condition: (info) => info.isMainDocument
 });
+
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
     GWLog("GW.rewriteFunctions.processCitations", "rewrite.js", 2);
 
