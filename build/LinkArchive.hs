@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-03-19 17:49:01 gwern"
+When:  Time-stamp: "2022-03-25 16:26:52 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -213,9 +213,10 @@ archiveURL l = do (exit,stderr',stdout) <- runShellCommand "./" Nothing "linkArc
 -- PDF link too. We don't need a third version, just to provide the two, so this is easier than the Ar5iv rewrite.
 -- (Hypothetically, we could do Twitter→Nitter, Reddit.com→Old.Reddit.com, or LW→GW rewrites this way too.)
 transformURLsForArchiving :: String -> String
-transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . replace "https://openreview.net/forum" "https://openreview.net/pdf"
+transformURLsForArchiving = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://arxiv.org/pdf/\\1.pdf\\2" . sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://arxiv.org/pdf/\\1/\\2.pdf\\3" . replace "https://openreview.net/forum" "https://openreview.net/pdf"
 transformURLsForLinking   :: String -> String
-transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2"
+transformURLsForLinking   = sed "https://arxiv.org/abs/([0-9]+\\.[0-9]+)(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1?fallback=original\\2" .
+  sed "https://arxiv.org/abs/([a-z-]+)/([0-9]+).*(#.*)?" "https://ar5iv.labs.arxiv.org/html/\\1/\\2?fallback=original\\3" -- handle oddities like hep-ph
 
 {- re URL transforms: Why?
 
