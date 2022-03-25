@@ -368,7 +368,7 @@ Extracts = {
     //  Called by: Extracts.localTranscludeForTarget
     //  Called by: Extracts.titleForPopFrame_LOCAL_PAGE
     nearestBlockElement: (element) => {
-        return element.closest("address, aside, blockquote, dd, div, dt, figure, footer, h1, h2, h3, h4, h5, h6, header, li, p, pre, section, table, tfoot, ol, ul");
+        return element.closest("section, .footnote, .sidenote, #markdownBody > *");
     },
 
     /*  This function fills a pop-frame for a given target with content. It
@@ -582,17 +582,10 @@ Extracts = {
 
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
     //  Called by: extracts-content.js
-    localTranscludeForTarget: (target, unwrapFunction) => {
+    localTranscludeForTarget: (target, unwrapFunction = ((blockElement) => {
+			return (blockElement.tagName == "SECTION" ? blockElement.innerHTML : blockElement.outerHTML);
+		})) => {
         GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
-
-        if (unwrapFunction == null)
-            unwrapFunction = (blockElement) => {
-                if (blockElement.tagName == "SECTION") {
-                    return blockElement.innerHTML;
-                } else {
-                    return blockElement.outerHTML;
-                }
-            };
 
         /*  Check to see if the target location matches an already-displayed
             page (which can be the root page of the window).
