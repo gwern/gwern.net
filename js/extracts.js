@@ -714,7 +714,8 @@ Extracts = {
         });
 
         //  Scroll to the target.
-        if (target.hash > "" && popFrame.classList.contains("external-page-embed"))
+        if (   target.hash > "" 
+        	&& popFrame.classList.contains("local-transclude"))
             requestAnimationFrame(() => {
                 if (popFrame)
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(popFrame.querySelector(decodeURIComponent(target.hash)));
