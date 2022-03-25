@@ -100,13 +100,20 @@ function doAjax(options) {
     let req = new XMLHttpRequest();
     req.addEventListener("load", (event) => {
         if (event.target.status < 400) {
-            if (options["onSuccess"]) options.onSuccess(event);
+            if (options["onSuccess"])
+            	options.onSuccess(event);
         } else {
-            if (options["onFailure"]) options.onFailure(event);
+            if (options["onFailure"])
+            	options.onFailure(event);
         }
     });
+    req.addEventListener("error", (event) => {
+		if (options["onFailure"])
+			options.onFailure(event);
+    });
     let method = (options["method"] || "GET");
-    let location = (options.location || document.location) + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
+    let location = (options.location || document.location) 
+    			   + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
     req.open(method, location);
     if (options["method"] == "POST") {
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
