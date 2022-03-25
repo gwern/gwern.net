@@ -134,7 +134,8 @@ Typography = {
 			var prevNodeIsWBR = false;
 			for (let i = 0; i < element.childNodes.length; i++) {
 				let node = element.childNodes[i];
-				if (node.nodeType === Node.ELEMENT_NODE && node.tagName == "WBR") {
+				if (   node.nodeType === Node.ELEMENT_NODE 
+					&& node.tagName == "WBR") {
 					if (prevNodeIsWBR) {
 						node.remove();
 						i--;

@@ -94,12 +94,14 @@ Extracts = {
             let targetTypeInfo = Extracts.targetTypeInfo(target);
             if (targetTypeInfo) {
                 let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
-                if (specialTestFunction && specialTestFunction(target) == false)
+                if (   specialTestFunction 
+                	&& specialTestFunction(target) == false)
                     return false;
 
                 //  Do not allow pop-frames to spawn themselves.
                 let containingPopFrame = target.closest(".popframe");
-                if (containingPopFrame && Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
+                if (   containingPopFrame 
+                	&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
                     return false;
 
                 //  Added specified classes to the target.
@@ -383,7 +385,8 @@ Extracts = {
         let didFill = false;
         let target = popFrame.spawningTarget;
         let targetTypeInfo = Extracts.targetTypeInfo(target);
-        if (targetTypeInfo && targetTypeInfo.popFrameFillFunctionName) {
+        if (   targetTypeInfo 
+        	&& targetTypeInfo.popFrameFillFunctionName) {
             didFill = Extracts.popFrameProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
             if (targetTypeInfo.popFrameClasses)
                 popFrame.classList.add(...(targetTypeInfo.popFrameClasses.split(" ")));
@@ -591,7 +594,8 @@ Extracts = {
             page (which can be the root page of the window).
          */
         let fullTargetDocument = Extracts.targetDocument(target);
-        if (fullTargetDocument && target.hash > "") {
+        if (   fullTargetDocument 
+        	&& target.hash > "") {
             /*  If there already is a pop-frame that displays the entire linked
                 page, and if the link points to an anchor, display the linked
                 section or element.

@@ -445,7 +445,8 @@ Annotations = {
 
         //  Separate out the thumbnail and float it.
         let thumbnail = annotation.querySelector("img");
-        if (thumbnail && thumbnail.closest("table")) {
+        if (   thumbnail 
+        	&& thumbnail.closest("table")) {
             //  Save reference to the thumbnail’s containing element.
             let thumbnailContainer = thumbnail.parentElement;
 
@@ -456,7 +457,8 @@ Annotations = {
 
             //  Create the caption, if need be.
             let caption = annotation.querySelector(".mw-default-size + div");
-            if (caption && caption.textContent > "") {
+            if (   caption 
+            	&& caption.textContent > "") {
                 let figcaption = document.createElement("figcaption");
                 figcaption.innerHTML = caption.innerHTML;
                 figure.appendChild(figcaption);
@@ -470,7 +472,8 @@ Annotations = {
 
             //  Remove the whole row where the thumbnail was.
             thumbnailContainer.closest("tr").remove();
-        } else if (thumbnail && thumbnail.closest("figure")) {
+        } else if (   thumbnail 
+        		   && thumbnail.closest("figure")) {
             let figure = thumbnail.closest("figure");
 
             //  Insert the figure as the first child of the annotation.

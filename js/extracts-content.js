@@ -382,7 +382,8 @@ if (window.Extracts) {
     // Called by: Extracts.videoForTarget
     Extracts.youtubeId = (href) => {
         let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        if (match && match[2].length == 11) {
+        if (   match 
+        	&& match[2].length == 11) {
             return match[2];
         } else {
             return null;
@@ -458,25 +459,6 @@ if (window.Extracts) {
     Extracts.localVideoForTarget = (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-//      let width = target.dataset.imageWidth || 0;
-//      let height = target.dataset.imageHeight || 0;
-//
-//      if (width > Extracts.imageMaxWidth) {
-//          height *= Extracts.imageMaxWidth / width;
-//          width = Extracts.imageMaxWidth;
-//      }
-//      if (height > Extracts.imageMaxHeight) {
-//          width *= Extracts.imageMaxHeight / height;
-//          height = Extracts.imageMaxHeight;
-//      }
-//
-//      let styles = ``;
-//      if (width > 0 && height > 0) {
-//          styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
-//      }
-
-        //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-//         return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
         return `<video controls="controls" preload="none">` +
             `<source src="${target.href}">` +
             `</video>`;
@@ -546,7 +528,8 @@ if (window.Extracts) {
         }
 
         let styles = ``;
-        if (width > 0 && height > 0)
+        if (   width > 0 
+        	&& height > 0)
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.

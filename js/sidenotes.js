@@ -142,12 +142,13 @@ Sidenotes = {
 	getNextVisibleSidenote: (sidenote) => {
 		var nextSidenoteNumber;
 		for (nextSidenoteNumber = sidenote.id.substr(2) + 2;
-			 (nextSidenoteNumber <= Sidenotes.citations.length && Sidenotes.sidenoteDivs[nextSidenoteNumber - 1].classList.contains("hidden"));
+			 (   nextSidenoteNumber <= Sidenotes.citations.length 
+			  && Sidenotes.sidenoteDivs[nextSidenoteNumber - 1].classList.contains("hidden"));
 			 nextSidenoteNumber += 2)
 			 ;
-		return nextSidenoteNumber <= Sidenotes.citations.length
-			   ? Sidenotes.sidenoteDivs[nextSidenoteNumber - 1]
-			   : null;
+		return (nextSidenoteNumber <= Sidenotes.citations.length
+			    ? Sidenotes.sidenoteDivs[nextSidenoteNumber - 1]
+			    : null);
 	},
 
 	/*  This function actually calculates and sets the positions of all sidenotes.
@@ -206,11 +207,13 @@ Sidenotes = {
 		document.querySelectorAll(Sidenotes.potentiallyOverlappingElementsSelector).forEach(potentiallyOverlappingElement => {
 			let elementBoundingRect = potentiallyOverlappingElement.getBoundingClientRect();
 
-			if (!(elementBoundingRect.left > leftColumnBoundingRect.right || elementBoundingRect.right < leftColumnBoundingRect.left))
+			if (!(   elementBoundingRect.left > leftColumnBoundingRect.right 
+				  || elementBoundingRect.right < leftColumnBoundingRect.left))
 				proscribedVerticalRangesLeft.push({ top: elementBoundingRect.top - leftColumnBoundingRect.top,
 													bottom: elementBoundingRect.bottom - leftColumnBoundingRect.top });
 
-			if (!(elementBoundingRect.left > rightColumnBoundingRect.right || elementBoundingRect.right < rightColumnBoundingRect.left))
+			if (!(   elementBoundingRect.left > rightColumnBoundingRect.right 
+				  || elementBoundingRect.right < rightColumnBoundingRect.left))
 				proscribedVerticalRangesRight.push({ top: elementBoundingRect.top - rightColumnBoundingRect.top,
 													 bottom: elementBoundingRect.bottom - rightColumnBoundingRect.top });
 		});

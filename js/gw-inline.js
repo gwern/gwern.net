@@ -123,7 +123,8 @@ function doAjax(options) {
  */
 Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
     let ael = this.activateEventListener = (event) => {
-        if (event.button === 0 || event.key === ' ')
+        if (   event.button === 0 
+        	|| event.key    === ' ')
             fn(event);
     };
     this.addEventListener("click", ael);
@@ -454,8 +455,10 @@ function doWhenMatchMedia(mediaQuery, name, ifMatchesOrAlwaysDo, otherwiseDo = n
 
             GWLog(`Media query “${name}” triggered (matches: ${matches ? "YES" : "NO"})`, "media queries", 1);
 
-            if (otherwiseDo == null || matches) ifMatchesOrAlwaysDo(mediaQuery);
-            else otherwiseDo(mediaQuery);
+            if ((otherwiseDo == null) || matches)
+            	ifMatchesOrAlwaysDo(mediaQuery);
+            else
+            	otherwiseDo(mediaQuery);
         }
     };
     mediaQueryResponder();
@@ -704,7 +707,8 @@ GW.notificationCenter = {
 			event, AND (b) the handler we’re registering is being assigned to a 
 			specific phase, do we have anything to do here...
 		 */
-        if (options.phase && phaseOrder) {
+        if (   options.phase 
+        	&& phaseOrder) {
         	/*	Get the target phase name, which may be the full value of the 
         		‘phase’ key of the options dictionary, OR it may be that value
         		minus the first character (if the value of the ‘phase’ key 
@@ -941,7 +945,8 @@ GW.notificationCenter = {
             /*	If a condition function is provided, call it to determine 
             	whether the handler function should be called.
              */
-            if (handler.options.condition && !handler.options.condition(eventInfo))
+            if (   handler.options.condition 
+            	&& handler.options.condition(eventInfo) == false)
                 continue;
 
             /*	If the condition function evaluated true, or if no condition
@@ -994,7 +999,7 @@ GW.notificationCenter.prefireProcessors["GW.contentDidLoad"] = (eventInfo) => {
 /****************/
 
 GW.scrollState = {
-    lastScrollTop:              window.pageYOffset || document.documentElement.scrollTop,
+    lastScrollTop:              (window.pageYOffset || document.documentElement.scrollTop),
     unbrokenDownScrollDistance: 0,
     unbrokenUpScrollDistance:   0
 };
@@ -1002,7 +1007,7 @@ GW.scrollState = {
 function updateScrollState(event) {
     GWLog("updateScrollState", "gw.js", 3);
 
-    let newScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    let newScrollTop = (window.pageYOffset || document.documentElement.scrollTop);
     GW.scrollState.unbrokenDownScrollDistance = (newScrollTop > GW.scrollState.lastScrollTop)
         ? (GW.scrollState.unbrokenDownScrollDistance + newScrollTop - GW.scrollState.lastScrollTop)
         : 0;
@@ -1037,11 +1042,13 @@ function togglePageScrolling(enable) {
 		scroll state, e.g. modifying the appearance of scroll bars). No specific
 		CSS properties are needed in order for this function to work properly.
 	 */
-    if (enable && !isPageScrollingEnabled()) {
+    if (   enable 
+    	&& isPageScrollingEnabled() == false) {
         document.documentElement.classList.toggle("no-scroll", false);
         removeScrollListener("preventScroll");
         addScrollListener(updateScrollState, "updateScrollStateScrollListener");
-    } else if (!enable && isPageScrollingEnabled()) {
+    } else if (  !enable 
+    		   && isPageScrollingEnabled() == true) {
         document.documentElement.classList.toggle("no-scroll", true);
         addScrollListener(preventScroll, "preventScroll");
         removeScrollListener("updateScrollStateScrollListener");

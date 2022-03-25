@@ -677,7 +677,8 @@ function injectFootnotesTOCLink(loadEventInfo) {
 
     let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
     let TOCList = loadEventInfo.document.querySelector("#TOC > ul");
-    if (TOCList && footnotesSection)
+    if (   TOCList 
+    	&& footnotesSection)
         TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
 }
 
@@ -933,7 +934,8 @@ function updateBackToTopLinkVisibility(event) {
     /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
         down from the top.
      */
-    if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
+    if (   GW.scrollState.unbrokenUpScrollDistance > 0 
+    	|| GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
         GW.backToTop.classList.toggle("hidden", false);
 
     //  Hide back-to-top link when scrolling to top.
@@ -1021,13 +1023,13 @@ function realignHash() {
     //  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
     if (GW.isFirefox()) {
         if (location.hash.startsWith("#:~:")) {
-            GW.hashRealignValue = GW.hashRealignValue || "#";
+            GW.hashRealignValue = (GW.hashRealignValue || "#");
         } else if (location.hash.includes(":~:")) {
-            GW.hashRealignValue = GW.hashRealignValue || location.hash.replace(/:~:.*$/, "");
+            GW.hashRealignValue = (GW.hashRealignValue || location.hash.replace(/:~:.*$/, ""));
         }
     }
 
-    let hash = GW.hashRealignValue || location.hash;
+    let hash = (GW.hashRealignValue || location.hash);
     if (hash > "") {
         //  Strip hash.
         history.replaceState(null, null, "#");
