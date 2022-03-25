@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-23 13:16:58 gwern"
+When:  Time-stamp: "2022-03-23 16:01:10 gwern"
 License: CC-0
 -}
 
@@ -2038,14 +2038,18 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("statistically significant", "statistically-significant")
           , ("clinical significance", "clinical-significance")
           , ("clinically significant", "clinically-significant")
+          , (". <strong>Conclusion</strong>: ", ".</p> <p><strong>Conclusion</strong>: ")
+          , (". <strong>Conclusions</strong>: ", ".</p> <p><strong>Conclusions</strong>: ")
           , ("<strong>Conclusions</strong>\n<p>", "<p><strong>Conclusions</strong>: ")
           , ("<p>Conclusions: ", "<p><strong>Conclusions</strong>: ")
           , ("\n <strong>Conclusion</strong>\n<p>", "<p><strong>Conclusion</strong>: ")
+          , (". <strong>Results</strong>: ", ".</p> <p><strong>Results</strong>: ")
           , ("\n <strong>Results</strong>\n<p>", "<p><strong>Results</strong>: ")
           , ("<p>Results: ", "<p><strong>Results</strong>: ")
           , ("<p>Aims: ", "<p><strong>Aims</strong>: ")
           , ("<strong>Background</strong>\n<p>", "<p><strong>Background</strong>: ")
           , ("<p>Background: ", "<p><strong>Background</strong>: ")
+          , (". <strong>Methods</strong>: ", ".</p> <p><strong>Methods</strong>: ")
           , (" \n <strong>Methods</strong>\n<p>", "<p><strong>Methods</strong>: ")
           , ("<p>Methods: ", "<p><strong>Methods</strong>: ")
           , ("<p>Outcomes: ", "<p><strong>Outcomes</strong>: ")
