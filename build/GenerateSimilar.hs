@@ -3,7 +3,7 @@
 
 module GenerateSimilar where
 
-import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str), Format(..), runPure, Pandoc(..))
+import Text.Pandoc (def, nullMeta, pandocExtensions, readerExtensions, readHtml, writeHtml5String, Block(BulletList, Para), Inline(Link, RawInline, Str, Strong), Format(..), runPure, Pandoc(..))
 import qualified Data.Text as T  (append, intercalate, length, pack, replace, strip, take, unlines, unpack, Text)
 import Data.List ((\\), intercalate,  nub)
 import Data.List.Utils (replace)
@@ -228,7 +228,8 @@ generateMatches md p abst matches =
                                                linkMetadataG  = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                            in -- TODO: maybe Connected Papers, if they get their act together? URL pattern would be <https://www.connectedpapers.com/api/redirect/doi/10.1111/j.1467-985X.2008.00548.x> (but currently broken)
-                                             [[Para [Link linkMetadataGS
+                                             [[Para [Strong [Str "Search"], Str ":",
+                                                     Link linkMetadataGS
                                                      [Str "Scholar"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
                                                                               T.pack ("Reverse citations of this paper (‘" ++ title' ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),
                                                      Str "; ",
@@ -237,7 +238,7 @@ generateMatches md p abst matches =
                                                                        T.pack ("Google search engine hits for ‘" ++ title' ++ "’.")),
                                                      Str "; ",
                                                      Link linkMetadataG
-                                                      [Str "search Gwern.net"] (T.pack ("https://www.google.com/search?q=site:gwern.net+" ++ title'),
+                                                      [Str "site-wide"] (T.pack ("https://www.google.com/search?q=site:gwern.net+" ++ title'),
                                                                                 T.pack ("Gwern.net site search hits for ‘" ++ title' ++ "’."))
                                                     ]]]
 
