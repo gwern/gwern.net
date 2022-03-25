@@ -407,7 +407,9 @@ Popups = {
 			return popup.popupStack.slice(0, indexOfPopup + 1);
 		} else {
 			let parentPopup = popup.spawningTarget.closest(".popup");
-			return (parentPopup && parentPopup.popupStack) ? Popups.getPopupAncestorStack(parentPopup) : [ ];
+			return ((parentPopup && parentPopup.popupStack) 
+				    ? Popups.getPopupAncestorStack(parentPopup) 
+				    : [ ]);
 		}
 	},
 
@@ -1324,7 +1326,8 @@ Popups = {
 		popup.style.left = `${rect.x}px`;
 		popup.style.top = `${rect.y}px`;
 
-		if (rect.width > 0 && rect.height > 0) {
+		if (   rect.width > 0 
+			&& rect.height > 0) {
 			popup.style.maxWidth = "unset";
 			popup.style.maxHeight = "unset";
 

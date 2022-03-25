@@ -382,7 +382,8 @@ if (window.Extracts) {
     // Called by: Extracts.videoForTarget
     Extracts.youtubeId = (href) => {
         let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        if (match && match[2].length == 11) {
+        if (   match 
+        	&& match[2].length == 11) {
             return match[2];
         } else {
             return null;
@@ -546,7 +547,8 @@ if (window.Extracts) {
         }
 
         let styles = ``;
-        if (width > 0 && height > 0)
+        if (   width > 0 
+        	&& height > 0)
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.

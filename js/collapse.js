@@ -183,12 +183,14 @@ function prepareCollapseBlocks(loadEventInfo) {
 			/*	If a collapse block was collapsed from the bottom, it might now
 				be up off the screen. Scroll it into view.
 			 */
-			if (!disclosureButton.checked && !isOnScreen(collapseBlock))
+			if (   !disclosureButton.checked 
+				&& !isOnScreen(collapseBlock))
 				scrollElementIntoView(collapseBlock);
 			/*	If a collapse block was expanded from the bottom, the top of the
 				collapse block might be up off the screen. Scroll it into view.
 			 */
-			else if (disclosureButton.checked && collapseBlock.getBoundingClientRect().top < 0)
+			else if (   disclosureButton.checked 
+					 && collapseBlock.getBoundingClientRect().top < 0)
 				scrollElementIntoView(collapseBlock);
 
 	    	GW.notificationCenter.fireEvent("Collapse.collapseStateDidChange", { source: "Collapse.collapseBlockDisclosureButtonStateChanged" });
@@ -336,6 +338,7 @@ document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
 	GWLog("GW.selectionChanged", "rewrite.js", 3);
 
 	let newSelection = document.getSelection();
-	if (newSelection && newSelection.getRangeAt(0).toString().length > 0)
+	if (   newSelection 
+		&& newSelection.getRangeAt(0).toString().length > 0)
 		expandCollapseBlocksToReveal(newSelection.anchorNode);
 });

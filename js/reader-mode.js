@@ -209,7 +209,8 @@ ReaderMode = { ...ReaderMode, ...{
 			On mobile, show mode selector on ANY scroll up.
 		 */
 		if (GW.isMobile()) {
-			if (GW.scrollState.unbrokenUpScrollDistance > 0 || GW.scrollState.lastScrollTop <= 0)
+			if (   GW.scrollState.unbrokenUpScrollDistance > 0 
+				|| GW.scrollState.lastScrollTop <= 0)
 				ReaderMode.showModeSelector();
 		} else if (   GW.scrollState.unbrokenUpScrollDistance > (0.8 * window.innerHeight)
 				   || GW.scrollState.lastScrollTop == 0) {

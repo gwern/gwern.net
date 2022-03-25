@@ -221,7 +221,8 @@ if (window.Extracts) {
 			Extracts.hidePopupsDisabledShowPopupOptionsDialogButton();
 
 		// Show back-to-top link on ANY scroll up.
-		if (GW.scrollState.unbrokenUpScrollDistance > window.innerHeight || GW.scrollState.lastScrollTop <= 0)
+		if (   GW.scrollState.unbrokenUpScrollDistance > window.innerHeight 
+			|| GW.scrollState.lastScrollTop <= 0)
 			Extracts.showPopupsDisabledShowPopupOptionsDialogButton();
 	};
 

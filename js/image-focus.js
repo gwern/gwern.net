@@ -167,7 +167,7 @@ function focusImage(imageToFocus) {
 		let imageBoundingBox = image.getBoundingClientRect();
 
 		//  Calculate resize factor.
-		var factor = (image.height > 10 && image.width > 10) || event.deltaY < 0
+		var factor = ((image.height > 10 && image.width > 10) || event.deltaY < 0)
 					 ? 1 + Math.sqrt(Math.abs(event.deltaY))/100.0
 					 : 1;
 
@@ -183,12 +183,13 @@ function focusImage(imageToFocus) {
 
 		//  Zoom from cursor if we’re zoomed in to where image exceeds screen, AND
 		//  the cursor is over the image.
-		let imageSizeExceedsWindowBounds = (image.getBoundingClientRect().width > window.innerWidth || image.getBoundingClientRect().height > window.innerHeight);
-		let zoomingFromCursor = imageSizeExceedsWindowBounds &&
-								(imageBoundingBox.left <= event.clientX &&
-								 event.clientX <= imageBoundingBox.right &&
-								 imageBoundingBox.top <= event.clientY &&
-								 event.clientY <= imageBoundingBox.bottom);
+		let imageSizeExceedsWindowBounds = (   image.getBoundingClientRect().width > window.innerWidth 
+											|| image.getBoundingClientRect().height > window.innerHeight);
+		let zoomingFromCursor =    imageSizeExceedsWindowBounds 
+								&& (   imageBoundingBox.left <= event.clientX 
+									&& event.clientX <= imageBoundingBox.right 
+									&& imageBoundingBox.top <= event.clientY 
+									&& event.clientY <= imageBoundingBox.bottom);
 
 		//  Otherwise, if we’re zooming OUT, zoom from window center; if we’re
 		//  zooming IN, zoom from image center.
@@ -260,8 +261,10 @@ function focusImage(imageToFocus) {
 			return;
 
 		let focusedImage = GW.currentlyFocusedImage;
-		if ((event.target == focusedImage || event.target.tagName == "HTML") &&
-			(focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth)) {
+		if (   (   event.target == focusedImage 
+				|| event.target.tagName == "HTML") 
+			&& (   focusedImage.height >= window.innerHeight 
+				|| focusedImage.width >= window.innerWidth)) {
 			//  If the mouseup event was the end of a pan of an oversized image,
 			//  put the filter back; do not unfocus.
 			focusedImage.style.filter = focusedImage.savedFilter;
@@ -280,7 +283,8 @@ function focusImage(imageToFocus) {
 		event.preventDefault();
 
 		let focusedImage = GW.currentlyFocusedImage;
-		if (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth) {
+		if (   focusedImage.height >= window.innerHeight 
+			|| focusedImage.width >= window.innerWidth) {
 			let mouseCoordX = event.clientX;
 			let mouseCoordY = event.clientY;
 
@@ -382,7 +386,8 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.mouseMoved", "image-focus.js", 3);
 
 		let currentDateTime = new Date();
-		if (!(event.target == GW.imageFocus.currentlyFocusedImage || event.target == GW.imageFocus.overlay)) {
+		if (!(   event.target == GW.imageFocus.currentlyFocusedImage 
+			  || event.target == GW.imageFocus.overlay)) {
 			cancelImageFocusHideUITimer();
 		} else {
 			if (!GW.imageFocus.hideUITimer) {
@@ -425,8 +430,10 @@ function setFocusedImageCursor() {
 	let focusedImage = GW.currentlyFocusedImage;
 	if (!focusedImage)
 		return;
-	focusedImage.style.cursor = (focusedImage.height >= window.innerHeight || focusedImage.width >= window.innerWidth)
-								? "move" : "";
+	focusedImage.style.cursor = (   focusedImage.height >= window.innerHeight 
+								 || focusedImage.width >= window.innerWidth)
+								? "move" 
+								: "";
 }
 
 function unfocusImageOverlay() {
@@ -463,7 +470,7 @@ function unfocusImageOverlay() {
 
 	//  Reset the hash, if needed.
 	if (location.hash.startsWith("#if_slide_")) {
-		history.replaceState(null, null, GW.imageFocus.savedHash || "#");
+		history.replaceState(null, null, (GW.imageFocus.savedHash || "#"));
 		GW.imageFocus.savedHash = null;
 	}
 }
@@ -571,7 +578,8 @@ function focusImageSpecifiedByURL() {
 		doWhenPageLoaded(() => {
 			let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
 			let imageToFocus = (/#if_slide_([0-9]+)/.exec(location.hash)||{})[1];
-			if (imageToFocus > 0 && imageToFocus <= images.length) {
+			if (   imageToFocus > 0 
+				&& imageToFocus <= images.length) {
 				focusImage(images[imageToFocus - 1]);
 
 				if (!GW.isMobile()) {
