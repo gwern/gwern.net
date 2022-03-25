@@ -357,7 +357,8 @@ a[data-link-icon='𝛘']::after { /* Arxiv */
 --link-icon-size: 0.7em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.6em;
-        opacity: 0.7;
+
+    opacity: 0.7;
 }
 
 a[data-link-icon='❐']::after { /* Booru */
@@ -370,13 +371,15 @@ a[data-link-icon='⧖']::after { /* Longecity */
     --link-icon-size: 0.9em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
+
     opacity: 0.70;
 }
 
 a[data-link-icon='♡']::after { /* Fandom/Wikia */
     --link-icon-offset-x: 0.05em;
+ 
     opacity: 1.0;
-    text-shadow: 0 0 0 currentColor;
+    text-shadow: 0 0 0 currentcolor;
 }
 
 a[data-link-icon='MS']::after {
@@ -444,6 +447,7 @@ a[data-link-icon='▽']::after { /* The Verge */
 
 a[data-link-icon='∇']::after { /* The Gradient.pub */
     --link-icon-size: 0.85em;
+
     opacity: 0.85;
 }
 
@@ -493,24 +497,16 @@ a[data-link-icon='🤖']::after { /* ROBOT FACE U+1F916 beepb00p.xyz */
 }
 
 a[data-link-icon='GPP']::after { /* Game Programming Patterns: shrink & elevate */
-    font-size: 0.6em;
+    --link-icon-size: 0.6em;
     --link-icon-offset-y: 0.6em;
 }
 
-a[data-link-icon='י']::after { /* Yudkowsky.net: darken, enlarge, left/up */
-    --link-icon-offset-y: 0.1em;
-    --link-icon-offset-x: 0.05em;
-
-    opacity: 0.8;
-    font-size: 1.30em;
-}
-
 a[data-link-icon='🐚']::after { /* Nautilus */
+    --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.3em;
     --link-icon-offset-x: 0.1em;
 
     opacity: 1;
-    font-size: 0.8em;
 }
 
 a[data-link-icon='⛨']::after { /* Cambridge */
@@ -529,22 +525,23 @@ a[data-link-icon='𝕳']::after { /* NZ Herald */
 }
 
 a[data-link-icon='𝔐']::after { /* Daily Mail */
+    --link-icon-size: 0.75em;
     --link-icon-offset-y: 0.5em;
-    font-size: 0.75em;
 }
 
 a[data-link-icon='𝛌']::after { /* Haskell */
-    font-size: 0.8em;
+    --link-icon-size: 0.8em;
 }
 
 a[data-link-icon='𝓝']::after { /* Nintil */
-    font-size: 0.8em;
+    --link-icon-size: 0.8em;
 }
 
 a[data-link-icon='ρ']::after { /* Project Rho */
-    font-size: 0.8em;
+    --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.5em;
     --link-icon-offset-x: 0.10em;
+
     opacity: 0.75;
 }
 
@@ -552,9 +549,9 @@ a[data-link-icon='ρ']::after { /* Project Rho */
 /* Triple-letter 'tri' initials: too few for quad, but too big for
    regular font size/offset. Common with TLA orgs. */
 a[data-link-icon-type*='tri']::after {
+    --link-icon-size: 0.6em;
     --link-icon-offset-y: 0.6em;
 
-    font-size: 0.6em;
     opacity: 0.90;
 }
 
@@ -923,15 +920,21 @@ a[data-link-icon='youtube']:hover::after {
     opacity: 0.2;
 }
 
+a[data-link-icon='yud']::after {
+    --link-icon-offset-y: 0.15em;
+}
+
 a[data-link-icon='the-telegraph']::after { /* Darken & shift left */
-    opacity: 0.77;
     --link-icon-offset-x: 0.1em;
+
+    opacity: 0.77;
 }
 
 a[data-link-icon='open-philanthropy']::after { /* Darken & shift left/up */
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.1em;
     --link-icon-offset-y: 0.1em;
+
     opacity: 0.95;
 }
 
@@ -946,6 +949,7 @@ a[data-link-icon='eleutherai']::after { /* Darken, enlarge, & shift left/up */
     --link-icon-size: 0.98em;
     --link-icon-offset-x: 0.05em;
     --link-icon-offset-y: 0.0em;
+
     opacity: 0.95;
 }
 
@@ -961,6 +965,7 @@ a[data-link-icon='quanta']::after { /* Darken, enlarge, & shift left/up */
     --link-icon-size: 1em;
     --link-icon-offset-y: 0em;
     --link-icon-offset-x: 0.1em;
+
     opacity: 1;
 }
 
@@ -968,6 +973,7 @@ a[data-link-icon='creative-commons']::after {
     --link-icon-size: 0.8em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.15em;
+
     opacity: 0.8;
 }
 
@@ -975,6 +981,7 @@ a[data-link-icon='tensorflow']::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.1em;
+
     opacity: 0.6;
 }
 
@@ -982,6 +989,7 @@ a[data-link-icon='alcor']::after {
     --link-icon-size: 0.7em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
+
     opacity: 0.65;
 }
 
@@ -989,6 +997,7 @@ a[data-link-icon='cochrane-collaboration']::after {
     --link-icon-size: 0.85em;
     --link-icon-offset-y: 0.1em;
     --link-icon-offset-x: 0.1em;
+
     opacity: 0.75;
 }
 
