@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-23 16:01:10 gwern"
+When:  Time-stamp: "2022-03-25 10:59:01 gwern"
 License: CC-0
 -}
 
@@ -129,7 +129,7 @@ readLinkMetadataAndCheck = do
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) custom in
                Par.mapM_ (\a -> when (not (null a)) $ when (isJust (matchRegex dateRegex a)) (error $ "Mixed up author & date?: " ++ a) ) authors
 
-             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi) custom in
+             let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi || "http" `isInfixOf` doi) custom in
                  when (not (null badDoisDash)) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
              let badDoisSlash = filter (\(_,(_,_,_,doi,_,_)) -> if (doi == "") then False else not ('/' `elem` doi)) custom in
@@ -988,7 +988,10 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
-                         let doi = if not (null doiTmp) then doiTmp else "10.48550/arXiv." ++ sed "https://arxiv.org/[a-z]+/([0-9]+\\.[0-9]+).*" "\\1" url
+                         -- Arxiv has some weird URLs and edge-cases like <https://arxiv.org/abs/hep-ph/0204295> (note double-subdirectory & lack of period-separation).
+                         let doi = if not (null doiTmp) then doiTmp else "10.48550/arXiv." ++
+                               sed "https://arxiv.org/[a-z-]+/([0-9]+\\.[0-9]+).*" "\\1" -- regular current Arxiv URL pattern
+                               (sed "https://arxiv.org/abs/[a-z-]+/([0-9]+).*" "\\1" url) -- old-style like 'hep-ph'
                          abst <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
