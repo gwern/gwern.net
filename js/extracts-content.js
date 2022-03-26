@@ -758,6 +758,52 @@ if (window.Extracts) {
 
         let url = new URL(target.href);
 
+		//	WARNING: EXPERIMENTAL FEATURE!
+		if (localStorage.getItem("enable-embed-proxy") == "true") {
+			let proxyURL = new URL("https://api.obormot.net/embed.php");
+
+			doAjax({
+				location: proxyURL.href,
+				params: { url: url.href },
+				onSuccess: (event) => {
+					if (!target.popFrame)
+						return;
+
+					let doc = document.createElement("div");
+					doc.innerHTML = event.target.responseText;
+					doc.querySelectorAll("[href], [src]").forEach(element => {
+						if (element.href) {
+							let elementURL = new URL(element.href);
+							if (   elementURL.host == location.host
+								&& !element.getAttribute("href").startsWith("#")) {
+								elementURL.host = url.host;
+								element.href = elementURL.href;
+							}
+						} else if (element.src) {
+							let elementURL = new URL(element.src);
+							if (elementURL.host == location.host) {
+								elementURL.host = url.host;
+								element.src = elementURL.href;
+							}
+						}
+					});
+
+					target.popFrame.querySelector("iframe").srcdoc = doc.innerHTML;
+
+                    target.popFrame.classList.toggle("loading", false);
+				},
+				onFailure: (event) => {
+					if (!target.popFrame)
+						return;
+
+					target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+				}
+			});
+
+			return `<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`;
+		}
+		//	END EXPERIMENTAL SECTION
+
         if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
             url.protocol = "https:";
             url.hostname = "www.greaterwrong.com";
