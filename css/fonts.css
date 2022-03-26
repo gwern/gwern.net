@@ -1063,3 +1063,15 @@
     unicode-range: U+005A;
     font-display: swap;
 }
+
+/***********/
+/* QUIVIRA */
+/***********/
+/* specific symbols (linkicons, etc.) */
+
+@font-face {
+    font-family: "Quivira";
+    font-weight: normal;
+    font-style: normal;
+    src: url("/static/font/quivira/Quivira-SUBSETTED.otf") format("opentype");
+}

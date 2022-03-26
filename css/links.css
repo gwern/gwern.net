@@ -310,11 +310,15 @@ a[data-link-icon-type*='text']::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.125em;
     --link-icon-offset-y: 0.25em;
+    --link-icon-font-serif: Quivira, var(--GW-serif-font-stack);
+    --link-icon-font-sans: Quivira, var(--GW-sans-serif-font-stack);
+    --link-icon-font-mono: Quivira, var(--GW-monospaced-font-stack);
 
     content: attr(data-link-icon);
     font-size: var(--link-icon-size);
     font-weight: 600;
     font-style: normal;
+    font-family: var(--link-icon-font-serif);
     margin: 0 0 0 var(--link-icon-offset-x);
     vertical-align: baseline;
     position: relative;
@@ -327,10 +331,10 @@ a[data-link-icon-type*='text']::after {
     overflow-wrap: normal;
 }
 a[data-link-icon-type*='sans']::after {
-    font-family: var(--GW-sans-serif-font-stack);
+    font-family: var(--link-icon-font-sans);
 }
 a[data-link-icon-type*='mono']::after {
-    font-family: var(--GW-monospaced-font-stack);
+    font-family: var(--link-icon-font-mono);
     opacity: 0.7;
 }
 a[data-link-icon-type*='bold']::after {
@@ -510,7 +514,11 @@ a[data-link-icon='🐚']::after { /* Nautilus */
 }
 
 a[data-link-icon='⛨']::after { /* Cambridge */
+    --link-icon-size: 0.9em;
     --link-icon-offset-x: 0.10em; /* NOTE: this may be too much for Chrome, but the FF needs it */
+    --link-icon-offset-y: 0.10em;
+
+    font-weight: normal;
 }
 
 
