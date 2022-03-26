@@ -13,9 +13,9 @@
 /*************/
 
 :root {
-    --GW-serif-font-stack: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif;
-    --GW-sans-serif-font-stack: "Lucida Sans Unicode", "Source Sans Pro", Helvetica, "Trebuchet MS", sans-serif;
-    --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", Consolas, Courier, monospace;
+    --GW-serif-font-stack: "Source Serif Pro",  "Apple Garamond", "Baskerville", "Libre Baskerville", "Droid Serif", "Times New Roman", "Times", serif, "Quivira";
+    --GW-sans-serif-font-stack: "Lucida Sans Unicode", "Source Sans Pro", "Helvetica", "Trebuchet MS", sans-serif, "Quivira";
+    --GW-monospaced-font-stack: "IBM Plex Mono", "Liberation Mono", "Consolas", "Courier", monospace, "Quivira";
 
     --GW-body-text-font-size: 1rem;
 }
