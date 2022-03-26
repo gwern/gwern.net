@@ -805,10 +805,29 @@ if (window.Extracts) {
 		//	END EXPERIMENTAL SECTION
 
         if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
+        	//	Less Wrong
             url.protocol = "https:";
             url.hostname = "www.greaterwrong.com";
             url.search = "format=preview&theme=classic";
+        } else if (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
+        		   || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
+        		   	   && url.searchParams.get("view") == "alignment-forum")) {
+        	//	Alignment Forum
+            url.protocol = "https:";
+            url.hostname = "www.greaterwrong.com";
+            url.search = "view=alignment-forum&format=preview&theme=classic";
+        } else if ([ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname)) {
+        	//	EA Forum
+            url.protocol = "https:";
+            url.hostname = "ea.greaterwrong.com";
+            url.search = "format=preview&theme=classic";
+        } else if ([ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname)) {
+        	//	Arbital
+            url.protocol = "https:";
+            url.hostname = "arbital.greaterwrong.com";
+            url.search = "format=preview&theme=classic";
         } else if (/(.+?)\.wikipedia\.org/.test(url.hostname) == true) {
+        	//	Wikipedia
             url.protocol = "https:";
             url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
             if (!url.hash)
