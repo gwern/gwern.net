@@ -19,33 +19,33 @@
          GW.contentDidLoad event.)
  */
 
-if (window.Extracts) {
-    /*=-------------=*/
-    /*= ANNOTATIONS =*/
-    /*=-------------=*/
+/*=-------------=*/
+/*= ANNOTATIONS =*/
+/*=-------------=*/
 
-    Extracts.targetTypeDefinitions.insertBefore([
-        "ANNOTATION",               // Type name
-        "isAnnotatedLink",          // Type predicate function
-        "has-annotation",           // Target classes to add
-        "annotationForTarget",      // Pop-frame fill function
-        "annotation"                // Pop-frame classes
-    ], (def => def[0] == "LOCAL_PAGE"));
+Extracts.targetTypeDefinitions.insertBefore([
+	"ANNOTATION",               // Type name
+	"isAnnotatedLink",          // Type predicate function
+	"has-annotation",           // Target classes to add
+	"annotationForTarget",      // Pop-frame fill function
+	"annotation"                // Pop-frame classes
+], (def => def[0] == "LOCAL_PAGE"));
 
+Extracts = { ...Extracts, ...{
     //  Used in: Extracts.setUpAnnotationLoadEventWithin
-    Extracts.annotatedTargetSelectors = [ "a.docMetadata" ];
+    annotatedTargetSelectors: [ "a.docMetadata" ],
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     //  Called by: extracts.js
     //  Called by: extracts-content.js
-    Extracts.isAnnotatedLink = (target) => {
+    isAnnotatedLink: (target) => {
         return target.classList.contains("docMetadata");
-    };
+    },
 
     /*  An annotation for a link.
         */
     //  Called by: extracts.js (as `popFrameFillFunctionName`)
-    Extracts.annotationForTarget = (target) => {
+    annotationForTarget: (target) => {
         GWLog("Extracts.annotationForTarget", "extracts-annotations.js", 2);
 
         let annotationIdentifier = Extracts.targetIdentifier(target);
@@ -119,10 +119,10 @@ if (window.Extracts) {
             + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}`
             + tagBacklinks
             + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
-    };
+    },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
-    Extracts.titleForPopFrame_ANNOTATION = (popFrame) => {
+    titleForPopFrame_ANNOTATION: (popFrame) => {
         let target = popFrame.spawningTarget;
 
         let popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
@@ -169,10 +169,10 @@ if (window.Extracts) {
         } else {
             return Extracts.standardPopFrameTitleElementForTarget(target, popFrameTitleText);
         }
-    };
+    },
 
 	//	Called by: extracts.js (as `preparePopup_${targetTypeName}`)
-	Extracts.preparePopup_ANNOTATION = (popup) => {
+	preparePopup_ANNOTATION: (popup) => {
         let target = popup.spawningTarget;
 
         /*  Do not spawn annotation popup if the annotation is already visible
@@ -190,10 +190,10 @@ if (window.Extracts) {
         }
 
 		return popup;
-	};
+	},
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
-    Extracts.rewritePopFrameContent_ANNOTATION = (popFrame) => {
+    rewritePopFrameContent_ANNOTATION: (popFrame) => {
         let target = popFrame.spawningTarget;
 
         //  Mark Wikipedia entries.
@@ -220,17 +220,17 @@ if (window.Extracts) {
             location: Extracts.locationForTarget(target),
             flags: GW.contentDidLoadEventFlags.needsRewrite
         });
-    };
+    },
 
     /*=----------------------=*/
     /*= ANNOTATIONS: HELPERS =*/
     /*=----------------------=*/
 
-    Extracts.annotationLoadHoverDelay = 25;
+    annotationLoadHoverDelay: 25,
 
     //  Called by: extracts.js
     //  Called by: extracts-options.js
-    Extracts.setUpAnnotationLoadEventWithin = (container) => {
+    setUpAnnotationLoadEventWithin: (container) => {
         GWLog("Extracts.setUpAnnotationLoadEventWithin", "extracts-annotations.js", 1);
 
         //  Get all the annotated targets in the container.
@@ -283,13 +283,13 @@ if (window.Extracts) {
                 });
             }, { once: true });
         }
-    };
+    },
 
     /*  Refresh (respawn or reload) a pop-frame for an annotated target after
         its annotation (fragment) loads.
         */
     //  Called by: Extracts.annotationForTarget
-    Extracts.refreshPopFrameAfterAnnotationLoads = (target) => {
+    refreshPopFrameAfterAnnotationLoads: (target) => {
         GWLog("Extracts.refreshPopFrameAfterAnnotationLoads", "extracts-annotations.js", 2);
 
         target.popFrame.classList.toggle("loading", true);
@@ -330,5 +330,5 @@ if (window.Extracts) {
 
             target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
         }, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
-    };
-}
+    }
+}};

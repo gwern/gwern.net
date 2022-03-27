@@ -1,12 +1,12 @@
-if (window.Extracts) {
+Extracts = { ...Extracts, ...{
 	/**********/
 	/*	Popins.
 	 */
 
-// 	Extracts.popinOptionsEnabled = true;
+// 	popinOptionsEnabled = true,
 
 	//	Called by: extracts.js
-	Extracts.showPopinOptionsDialogPopinTitleBarButton = () => {
+	showPopinOptionsDialogPopinTitleBarButton: () => {
 		let button = Popins.titleBarComponents.optionsButton();
 
 		button.addActivateEvent((event) => {
@@ -19,20 +19,20 @@ if (window.Extracts) {
 		button.classList.add("show-popin-options-dialog");
 
 		return button;
-	};
+	},
 
 	/**********/
 	/*	Popups.
 	 */
 
 	//	Used in: extracts.js
-	Extracts.popupOptionsEnabled = true;
+	popupOptionsEnabled: true,
 
-	Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
-	Extracts.popupOptionsDialog = null;
+	popupsDisabledShowPopupOptionsDialogButton: null,
+	popupOptionsDialog: null,
 
 	//	Called by: extracts.js
-	Extracts.showPopupOptionsDialogPopupTitleBarButton = () => {
+	showPopupOptionsDialogPopupTitleBarButton: () => {
 		let button = Popups.titleBarComponents.optionsButton();
 
 		button.addActivateEvent((event) => {
@@ -44,19 +44,19 @@ if (window.Extracts) {
 		button.classList.add("show-popup-options-dialog");
 
 		return button;
-	};
+	},
 
 	//	Called by: Extracts.savePopupOptions
-	Extracts.disableExtractPopups = () => {
+	disableExtractPopups: () => {
 		GWLog("Extracts.disableExtractPopups", "extracts.js", 1);
 
 		localStorage.setItem("extract-popups-disabled", "true");
 		Extracts.cleanup();
 		Extracts.injectPopupsDisabledShowPopupOptionsDialogButton();
-	};
+	},
 
 	//	Called by: Extracts.savePopupOptions
-	Extracts.enableExtractPopups = () => {
+	enableExtractPopups: () => {
 		GWLog("Extracts.enableExtractPopups", "extracts.js", 1);
 
 		localStorage.removeItem("extract-popups-disabled");
@@ -71,10 +71,10 @@ if (window.Extracts) {
 
 		//  Remove the icon/button.
 		Extracts.removePopupsDisabledShowPopupOptionsDialogButton();
-	};
+	},
 
 	//	Called by: Extracts.injectPopupsDisabledShowPopupOptionsDialogButton
-	Extracts.showPopupOptionsDialog = () => {
+	showPopupOptionsDialog: () => {
 		GWLog("Extracts.showPopupOptionsDialog", "extracts.js", 1);
 
 		Popups.hidePopupContainer();
@@ -147,18 +147,18 @@ if (window.Extracts) {
 
 		//  Un-hide the options dialog.
 		Extracts.popupOptionsDialog.style.display = "";
-	};
+	},
 
 	//	Called by: Extracts.showPopupOptionsDialog
-	Extracts.fadePopupOptionsDialog = () => {
+	fadePopupOptionsDialog: () => {
 		GWLog("Extracts.fadePopupOptionsDialog", "extracts.js", 1);
 
 		Extracts.popupOptionsDialog.classList.toggle("fading", true);
 		setTimeout(Extracts.hidePopupOptionsDialog, 150);
-	};
+	},
 
 	//	Called by: Extracts.fadePopupOptionsDialog
-	Extracts.hidePopupOptionsDialog = () => {
+	hidePopupOptionsDialog: () => {
 		GWLog("Extracts.hidePopupOptionsDialog", "extracts.js", 1);
 
 		Popups.unhidePopupContainer();
@@ -167,22 +167,22 @@ if (window.Extracts) {
 			Extracts.popupOptionsDialog.style.display = "none";
 			Extracts.popupOptionsDialog.classList.toggle("fading", false);
 		}
-	};
+	},
 
 	//	Called by: Extracts.showPopupOptionsDialog
-	Extracts.savePopupOptions = () => {
+	savePopupOptions: () => {
 		GWLog("Extracts.savePopupOptions", "extracts.js", 1);
 
 		if (Extracts.popupOptionsDialog.querySelector("input.popups-enable").checked)
 			Extracts.enableExtractPopups();
 		else
 			Extracts.disableExtractPopups();
-	};
+	},
 
 	//	Called by: Extracts.disableExtractPopups
 	//	Called by: extracts-options.js (at end of file)
 	//	Called by: extracts.js
-	Extracts.injectPopupsDisabledShowPopupOptionsDialogButton = () => {
+	injectPopupsDisabledShowPopupOptionsDialogButton: () => {
 		GWLog("Extracts.injectPopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
 
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton != null)
@@ -207,10 +207,10 @@ if (window.Extracts) {
 		//	Show/hide the button on scroll up/down.
 		addScrollListener(Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility, 
 			"Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener");
-	};
+	},
 
 	//	Called by: Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibilityScrollListener
-	Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility = (event) => {
+	updatePopupsDisabledShowPopupOptionsDialogButtonVisibility: (event) => {
 		GWLog("Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility", "rewrite.js", 3);
 
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
@@ -224,22 +224,22 @@ if (window.Extracts) {
 		if (   GW.scrollState.unbrokenUpScrollDistance > window.innerHeight 
 			|| GW.scrollState.lastScrollTop <= 0)
 			Extracts.showPopupsDisabledShowPopupOptionsDialogButton();
-	};
+	},
 
 	//	Called by: popups-disabled ‘show popup options dialog button’ ‘mouseenter’ event handler
 	//	Called by: Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility
-	Extracts.showPopupsDisabledShowPopupOptionsDialogButton = () => {
+	showPopupsDisabledShowPopupOptionsDialogButton: () => {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.classList.toggle("hidden", false);
-	};
+	},
 
 	//	Called by: Extracts.updatePopupsDisabledShowPopupOptionsDialogButtonVisibility
-	Extracts.hidePopupsDisabledShowPopupOptionsDialogButton = () => {
+	hidePopupsDisabledShowPopupOptionsDialogButton: () => {
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.classList.toggle("hidden", true);
-	};
+	},
 
 	//	Called by: Extracts.enableExtractPopups
 	//	Called by: extracts.js
-	Extracts.removePopupsDisabledShowPopupOptionsDialogButton = () => {
+	removePopupsDisabledShowPopupOptionsDialogButton: () => {
 		GWLog("Extracts.removePopupsDisabledShowPopupOptionsDialogButton", "extracts.js", 1);
 
 		if (Extracts.popupsDisabledShowPopupOptionsDialogButton == null)
@@ -247,8 +247,8 @@ if (window.Extracts) {
 
 		Extracts.popupsDisabledShowPopupOptionsDialogButton.remove();
 		Extracts.popupsDisabledShowPopupOptionsDialogButton = null;
-	};
-}
+	}
+}};
 
 //  Inject “popups disabled” icon/button, if need be.
 if (!Extracts.popupsEnabled())

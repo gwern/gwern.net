@@ -480,7 +480,7 @@ let setupSetup = () => {
         ReaderMode.setup();
     }, { once: true });
 }
-if (window["Extracts"]) {
+if (window.Extracts) {
     setupSetup();
 } else {
     GW.notificationCenter.addHandlerForEvent("Extracts.didLoad", () => {
