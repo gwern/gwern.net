@@ -413,6 +413,10 @@ Popups = {
 		}
 	},
 
+	isSpawned: (popup) => {
+		return (popup && !popup.classList.contains("fading"));
+	},
+
 	/********************/
 	/*  Popup collapsing.
 		*/

@@ -168,7 +168,7 @@ Extracts = { ...Extracts, ...{
         doAjax({
             location: target.href,
             onSuccess: (event) => {
-                if (!target.popFrame)
+                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                     return;
 
                 //  Inject the aux-links source into the pop-frame.
@@ -201,7 +201,7 @@ Extracts = { ...Extracts, ...{
                 }
             },
             onFailure: (event) => {
-                if (!target.popFrame)
+                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                     return;
 
                 target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);

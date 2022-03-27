@@ -792,7 +792,7 @@ Extracts = {
         doAjax({
             location: target.href,
             onSuccess: (event) => {
-                if (!target.popFrame)
+                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                     return;
 
                 //  Inject the whole page into the pop-frame at first.
@@ -832,7 +832,7 @@ Extracts = {
                 }
             },
             onFailure: (event) => {
-                if (!target.popFrame)
+                if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                     return;
 
                 target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
