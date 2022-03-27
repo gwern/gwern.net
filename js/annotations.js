@@ -92,7 +92,7 @@ Annotations = {
         GW.notificationCenter.fireEvent("Annotations.cleanupDidComplete");
     },
 
-	//	Called in: Annotations.js (doWhenPageLoaded)
+	//	Called in: this file (doWhenPageLoaded)
     setup: () => {
         GWLog("Annotations.setup", "annotations.js", 1);
 
@@ -144,7 +144,7 @@ Annotations = {
     /*  Returns true iff a processed and cached annotation exists for the given
         identifier string.
         */
-    //	Called in: extracts-annotations.js
+    //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
     cachedAnnotationExists: (annotationIdentifier) => {
         let cachedAnnotation = Annotations.cachedAnnotations[annotationIdentifier];
         return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
@@ -154,7 +154,7 @@ Annotations = {
         either “LOADING_FAILED” (if loading the annotation was attempted but
         failed) or null (if the annotation has not been loaded).
         */
-    //	Called in: extracts-annotations.js
+    //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
     annotationForIdentifier: (annotationIdentifier) => {
         return Annotations.cachedAnnotations[annotationIdentifier];
     },
@@ -193,7 +193,7 @@ Annotations = {
 
     /*  Load, stage, and process the annotation for the given identifier string.
         */
-    //	Called in: extracts-annotations.js
+    //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
     loadAnnotation: (annotationIdentifier) => {
         GWLog("Annotations.loadAnnotation", "annotations.js", 2);
 
@@ -256,7 +256,7 @@ Annotations = {
 
     /*  Used to generate extracts.
         */
-    //	Called in: extracts-annotations.js
+    //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
     referenceDataForAnnotationIdentifier: (annotationIdentifier) => {
         let referenceEntry = Annotations.cachedAnnotations[annotationIdentifier];
 
@@ -322,7 +322,8 @@ Annotations = {
         */
     //	Called by: Annotations.loadAnnotation
     //	Called by: Annotations.referenceDataForAnnotationIdentifier
-    //	Called in: extracts-annotations.js
+    //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
+    //	Called by: Extracts.titleForPopFrame_ANNOTATION (extracts-annotations.js)
     isWikipediaLink: (annotationIdentifier) => {
         if (/^[\?\/]/.test(annotationIdentifier))
             return false;
