@@ -303,7 +303,7 @@ Extracts = { ...Extracts, ...{
             GWLog("refreshPopFrameWhenFragmentLoaded", "extracts.js", 2);
 
             //  If the pop-frame has despawned, don’t respawn it.
-            if (!target.popFrame)
+            if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                 return;
 
             if (Extracts.popFrameProvider == Popups) {
@@ -325,7 +325,7 @@ Extracts = { ...Extracts, ...{
             GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
 
             //  If the pop-frame has despawned, don’t respawn it.
-            if (!target.popFrame)
+            if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                 return;
 
             target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);

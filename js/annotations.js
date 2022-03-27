@@ -209,31 +209,36 @@ Annotations = {
                 let annotation;
                 if (Annotations.isWikipediaLink(annotationIdentifier)) {
                 	annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(event.target.responseText, annotationURL);
-                	if (!annotation) {
-						GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-							source: "Annotations.loadAnnotation",
-							document: Annotations.annotationsWorkspace,
-							identifier: annotationIdentifier,
-							location: annotationURL
-						});
+                	if (annotation) {
+						Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
+                	} else {
+						//	Send request to record failure in server logs.
+						doAjax({ location: `${location.origin}/error/` + fixedEncodeURIComponent(annotationURL) });
                 	}
-
-                    Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
                 } else {
                     annotation = Annotations.stageAnnotation(event.target.responseText);
                 }
 
-				/*	Fire GW.contentDidLoad event to trigger a rewrite pass and
-					then cause the annotation to be cached (and trigger the
-					Annotations.annotationDidLoad event to fire as well).
-				 */
-                GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-                    source: "Annotations.loadAnnotation",
-                    document: annotation,
-                    location: annotationURL,
-                    identifier: annotationIdentifier,
-                    flags: GW.contentDidLoadEventFlags.needsRewrite
-                });
+				if (annotation) {
+					/*	Fire GW.contentDidLoad event to trigger a rewrite pass and
+						then cause the annotation to be cached (and trigger the
+						Annotations.annotationDidLoad event to fire as well).
+					 */
+					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+						source: "Annotations.loadAnnotation",
+						document: annotation,
+						location: annotationURL,
+						identifier: annotationIdentifier,
+						flags: GW.contentDidLoadEventFlags.needsRewrite
+					});
+				} else {
+					GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
+						source: "Annotations.loadAnnotation",
+						document: Annotations.annotationsWorkspace,
+						identifier: annotationIdentifier,
+						location: annotationURL
+					});
+				}
             },
             onFailure: (event) => {
                 GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
@@ -242,6 +247,9 @@ Annotations = {
                     location: annotationURL,
                     identifier: annotationIdentifier
                 });
+
+				//	Send request to record failure in server logs.
+				doAjax({ location: `${location.origin}/error/` + fixedEncodeURIComponent(annotationURL) });
             }
         });
     },

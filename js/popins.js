@@ -359,6 +359,10 @@ Popins = {
 		popin.spawningTarget.classList.remove("popin-open", "highlighted");
 	},
 
+	isSpawned: (popin) => {
+		return (popin != null);
+	},
+
 	/*******************/
 	/*	Event listeners.
 		*/
