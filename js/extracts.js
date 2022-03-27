@@ -721,8 +721,10 @@ Extracts = {
         if (   target.hash > "" 
         	&& popFrame.classList.contains("local-transclude"))
             requestAnimationFrame(() => {
-                if (popFrame)
-                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(popFrame.querySelector(decodeURIComponent(target.hash)));
+            	let element = null;
+                if (   popFrame
+                	&& (element = popFrame.querySelector(decodeURIComponent(target.hash))))
+                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
     },
 
