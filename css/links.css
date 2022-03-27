@@ -706,9 +706,9 @@ a[data-link-icon='github']::after {
 }
 
 a[data-link-icon='google']::after {
-    --link-icon-size: 0.6em;
-    --link-icon-offset-x: 0.09em;
-    --link-icon-offset-y: 0.2em;
+    --link-icon-size: 0.65em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.3em;
 
     opacity: 0.5;
 }
