@@ -752,6 +752,14 @@ a[data-link-icon='miri']::after {
     opacity: 0.65;
 }
 
+a[data-link-icon='nautilus']::after {
+	--link-icon-size: 0.7em;
+	--link-icon-offset-y: 0.25em;
+	--link-icon-offset-x: 0.15em;
+	
+	opacity: 0.6;
+}
+
 a[data-link-icon='newyorktimes']::after {
     --link-icon-size: 0.75em;
     --link-icon-offset-x: 0.05em;
