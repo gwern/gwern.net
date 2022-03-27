@@ -216,7 +216,10 @@ Annotations = {
 							identifier: annotationIdentifier,
 							location: annotationURL
 						});
-                	}
+ 
+						//	Send request to record failure in server logs.
+						doAjax({ location: `${location.origin}/error/` + fixedEncodeURIComponent(annotationURL) });
+					}
 
                     Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
                 } else {
@@ -242,6 +245,9 @@ Annotations = {
                     location: annotationURL,
                     identifier: annotationIdentifier
                 });
+
+				//	Send request to record failure in server logs.
+				doAjax({ location: `${location.origin}/error/` + fixedEncodeURIComponent(annotationURL) });
             }
         });
     },
