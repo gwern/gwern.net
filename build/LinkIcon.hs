@@ -183,7 +183,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.candyjapan.com"  = aI "🍬" "text"
  | aU'' ["www.cambridge.org", "journals.cambridge.org", "static.cambridge.org"] = aI "⛨" "text" -- ⛨ BLACK CROSS ON SHIELD U+26E8, roughly imitating <https://en.wikipedia.org/wiki/Coat_of_arms_of_the_University_of_Cambridge>
  | u' "royalsocietypublishing.org" = aI "RS" "text" -- <https://en.wikipedia.org/wiki/Royal_Society>
- | u'' "nautil.us" = aI "🐚" "text" -- 🐚 SPIRAL SHELL (U+1F41A)
+ | u'' "nautil.us" = aI "nautilus" "svg" -- modeled after 🐚 SPIRAL SHELL (U+1F41A), but turned into monochrome SVG (this icon is usually rendered in color & differently across platforms, so we ship another SVG)
  | u'' "www.sequentialtart.com" = aI "ST" "text,sans"
  | u'' "www.psychologytoday.com" = aI "PT" "text,sans"
  | u'' "www.independent.co.uk" = aI "TI" "text" -- <https://en.wikipedia.org/wiki/File:The_Independent_news_logo.svg> swooping-hawk icon would be illegible as link icon
@@ -821,7 +821,7 @@ linkIconTestUnits =
          , ("http://rsta.royalsocietypublishing.org/content/361/1813/2681.full.pdf", "RS", "text")
          , ("http://rstb.royalsocietypublishing.org/content/365/1537/73.full", "RS", "text")
          , ("https://royalsocietypublishing.org/doi/10.1098/rsos.181393", "RS", "text")
-         , ("https://nautil.us/mapping-the-human-exposome-10595/", "🐚", "text")
+         , ("https://nautil.us/mapping-the-human-exposome-10595/", "nautilus", "svg")
          , ("http://www.sequentialtart.com/archive/july00/grant.shtml", "ST", "text,sans")
          , ("https://www.psychologytoday.com/us/blog/life-bilingual/201906/the-bilingual-advantage-three-years-later", "PT", "text,sans")
          , ("https://www.odt.co.nz/news/dunedin/student-drug-dealer-jailed", "ODT", "text,tri")
