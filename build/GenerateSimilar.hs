@@ -227,11 +227,16 @@ generateMatches md p abst matches =
                                                query = if null title' then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
                                                linkMetadataG  = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
-                                           in -- TODO: maybe Connected Papers, if they get their act together? URL pattern would be <https://www.connectedpapers.com/api/redirect/doi/10.1111/j.1467-985X.2008.00548.x> (but currently broken)
+                                               linkMetadataCP = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
+                                           in
                                              [[Para [Strong [Str "Search"], Str ":",
                                                      Link linkMetadataGS
-                                                     [Str "Scholar"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
+                                                     [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
                                                                               T.pack ("Reverse citations of this paper (‘" ++ title' ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),
+                                                     Str "; ",
+                                                     Link linkMetadataCP
+                                                      [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doi),
+                                                                                T.pack ("Connected Papers lookup for DOI ‘" ++ doi ++ "’.")),
                                                      Str "; ",
                                                      Link linkMetadataG
                                                       [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),

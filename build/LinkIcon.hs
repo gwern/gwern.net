@@ -295,7 +295,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "vndb.org" = aI "VNDB" "text,quad,sans"
  | u'' "www.huffpost.com" = aI "HUFF" "text,quad,sans"
  | u'' "longreads.com" = aI "Long" "text,quad"
- | u'' "warontherocks.com" = aI "WOTR", "text,quad,sans"
+ | u'' "warontherocks.com" = aI "WOTR" "text,quad,sans"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -341,6 +341,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.alcor.org" = aI "alcor" "svg"
  | aU'' ["www.econlib.org", "www.econtalk.org", "betonit.blog"] = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
  | u' ".cochrane.org" || aU'' ["www.cochrane.org.uk", "www.cochranelibrary.com"] = aI "cochrane-collaboration" "svg" -- <https://upload.wikimedia.org/wikipedia/commons/archive/a/a1/20200122144949%21Cclogo.svg> (Newer version is not actually an SVG; reported on Talk page)
+ | u'' "www.connectedpapers.com" = aI "connected-papers" "svg"
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
