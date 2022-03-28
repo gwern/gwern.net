@@ -131,22 +131,33 @@ Extracts = { ...Extracts, ...{
                                    ? target.href
                                    : target.pathname + target.hash);
 
-        //  For sections of local pages, and Wikipedia, mark with ‘§’ symbol.
+		//	Sections.
         if (   target.hash > ""
-            && (   (    target.hostname == location.hostname
-					/*	Annotations for local archive links with an org notation
-						for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
-						should not get a section mark.
-					 */
-					&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance",
-						  "deepmind", "eleutherai", "elementai", "facebook", "flickr",
-						  "google", "googledeepmind", "huawei", "intel", "laion",
-						  "lighton", "microsoft", "microsoftnvidia", "miri",
-						  "nvidia", "openai", "pdf", "salesforce", "sensetime",
-						  "snapchat", "tencent", "tensorfork", "uber", "yandex"
-						  ].includes(target.hash.substr(1))))
-                || Annotations.isWikipediaLink(Extracts.targetIdentifier(target))))
+	        //  For sections of local pages, mark with ‘§’ symbol.
+            && (    target.hostname == location.hostname
+				/*	Annotations for local archive links with an org notation
+					for link icons (eg. 'https://arxiv.org/abs/2006.07159#google')
+					should not get a section mark.
+				 */
+				&& !(["adobe", "alibaba", "allen", "amazon", "baidu", "bytedance",
+					  "deepmind", "eleutherai", "elementai", "facebook", "flickr",
+					  "google", "googledeepmind", "huawei", "intel", "laion",
+					  "lighton", "microsoft", "microsoftnvidia", "miri",
+					  "nvidia", "openai", "pdf", "salesforce", "sensetime",
+					  "snapchat", "tencent", "tensorfork", "uber", "yandex"
+					  ].includes(target.hash.substr(1))))) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
+        } else if (   target.hash > ""
+        		   && Annotations.isWikipediaLink(Extracts.targetIdentifier(target))
+        		   && Extracts.popFrameHasLoaded(popFrame)) {
+        	/*	For Wikipedia, show the page title and the section title,
+        		separated by the ‘§’ symbol.
+        	 */
+        	popFrameTitleText =   popFrameTitleText 
+        						+ " &#x00a7; "
+        						+ popFrame.querySelector(target.hash).textContent;
+        }
+
 
         if (target.dataset.urlOriginal) {
             //  Open link in same window on mobile, new window on desktop.
@@ -220,6 +231,16 @@ Extracts = { ...Extracts, ...{
             location: Extracts.locationForTarget(target),
             flags: GW.contentDidLoadEventFlags.needsRewrite
         });
+
+        //  Scroll to the target.
+        if (target.hash > "") {
+            requestAnimationFrame(() => {
+            	let element = null;
+                if (   popFrame
+                	&& (element = popFrame.querySelector(decodeURIComponent(target.hash))))
+                    Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
+            });
+        }
     },
 
     /*=----------------------=*/
