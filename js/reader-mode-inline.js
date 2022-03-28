@@ -1,8 +1,8 @@
 ReaderMode = {
 	active: false,
 
-	styles: 
-		_π("body.reader-mode-active ", [ 
+	styles:
+		_π("body.reader-mode-active ", [
 		   "#sidebar-links",
 		   "#page-metadata",
 		   "#TOC ul li::before",
@@ -10,7 +10,8 @@ ReaderMode = {
 		   "#navigation",
 		   "#sidenote-column-left",
 		   "#sidenote-column-right",
-		   ".inflationAdjusted .supsub"
+		    ".inflationAdjusted .supsub",
+            ".footnote-ref"
 		]).join(",\n") + ` {
 			display: none;
 		}` + `
@@ -38,7 +39,7 @@ ReaderMode = {
 				-0.17em -0.05em 0 0 var(--GW-reader-mode-masked-link-bracket-background-color),
 				-0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
 		}
-		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" + 
+		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" +
 			_π("body.reader-mode-active #markdownBody ", [ "p", "li" ], " a::after").join(",\n") + ` {
 			display: none;
 		}
