@@ -392,7 +392,9 @@ Annotations = {
         ".portal",
         ".penicon",
         ".reference",
-        ".Template-Fact"
+        ".Template-Fact",
+        ".error",
+        ".mwe-math-mathml-inline"
     ],
 
     /*  Post-process an already-staged annotation created from a Wikipedia
@@ -433,7 +435,7 @@ Annotations = {
         });
 
         //  Strip inline styles.
-        annotation.querySelectorAll("*").forEach(element => {
+        annotation.querySelectorAll("[style]").forEach(element => {
             element.removeAttribute("style");
         });
 

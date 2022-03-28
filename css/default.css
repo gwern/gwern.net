@@ -2968,22 +2968,6 @@ body.directory-index #disqus_thread {
     width: 100%;
 }
 
-/*  Special case for inline math in Wikipedia pop-frames.
-    */
-.popframe.annotation .mwe-math-element {
-    display: inline-block;
-    height: 1.25em;
-    line-height: 1;
-    margin: 0;
-    vertical-align: bottom;
-    padding: 0;
-    text-indent: 0;
-}
-.popframe.annotation .mwe-math-element img {
-    display: inline-block;
-    height: 100%;
-}
-
 /*  Wikipedia entries.
  */
 /* Suppress the author block in WP popups; we have nothing more useful to say than 'Wikipedia' (even if we grabbed the last-revision-time from WP, that's usually just a trivial bot edit and isn't a 'real' author date), and the fact that it's WP is already denoted by the dotted underline, 'W' icon on the title link, lack of the standard metadata block which non-WP annotations have (author/date/tag/backlinks/similar-links), and the encyclopedic topic & tone. Putting 'Wikipedia' on an entire line by itself is just a waste of precious popup vertical space. */
@@ -3033,6 +3017,31 @@ body.directory-index #disqus_thread {
 .wikipedia-entry .hatnote {
     margin: 0 0 0.75em 0;
     font-style: italic;
+}
+
+/*  Special case for inline math in Wikipedia pop-frames.
+    */
+.wikipedia-entry .mwe-math-element {
+    display: inline-block;
+    height: 1.25em;
+    line-height: 1;
+    margin: 0;
+    vertical-align: bottom;
+    padding: 0;
+    text-indent: 0;
+}
+.wikipedia-entry .mwe-math-element img {
+    display: inline-block;
+    height: 100%;
+}
+/*	Ditto, but block math.
+ */
+.wikipedia-entry dl .mwe-math-element {
+	display: block;
+	height: unset;
+}
+.wikipedia-entry dl .mwe-math-element img {
+	display: block;
 }
 
 /* HACK: In WP popups, the thumbnails typically do not *quite* align with the caption, unlike regular images or in regular popups: the images ('img') get set to 250px (WP API's default for mobile?), but the figure caption ('figcaption') get set to 265.185px, producing a nagging inconsistency. This seems to be due to a loop in extracts.js ('// Ensure no reflow due to figures'), which tries to avoid the popup reflowing by setting the width dynamically, but it does so only on the *img* element. Thus, they wind up inconsistent.
