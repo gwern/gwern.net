@@ -434,7 +434,7 @@ Annotations = {
         });
 
         //  Strip inline styles.
-        annotation.querySelectorAll("*").forEach(element => {
+        annotation.querySelectorAll("[style]").forEach(element => {
             element.removeAttribute("style");
         });
 
