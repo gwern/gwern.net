@@ -295,6 +295,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "vndb.org" = aI "VNDB" "text,quad,sans"
  | u'' "www.huffpost.com" = aI "HUFF" "text,quad,sans"
  | u'' "longreads.com" = aI "Long" "text,quad"
+ | u'' "warontherocks.com" = aI "WOTR", "text,quad,sans"
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -766,7 +767,7 @@ linkIconTestUnits =
          , ("https://antilop.cc/sr/#assassination_plot", "෴", "text")
          , ("https://www.memteaimports.com/tea/fern-stream-amber-oolong", "MT", "text,sans")
          , ("https://forum.effectivealtruism.org/posts/nSot23sAjoZRgaEwa/2016-ai-risk-literature-review-and-charity-comparison", "EA", "text")
-         , ("https://www.effectivealtruism.org/articles/prospecting-for-gold-owen-cotton-barratt/#heavy-tailed-distributions", "EA", "text")
+         , ("https://www.effectivealtruism.org/articles/prospecting-for-gold-owen-cotton-barratt#heavy-tailed-distributions", "EA", "text")
          , ("https://boards.fireden.net/a/thread/185257999/", "4CH", "text,sans")
          , ("https://boards.4channel.org/jp/", "4CH", "text,sans")
          , ("http://archive.foolz.us/a/thread/77196171/#77207238", "4CH", "text,sans")
@@ -945,4 +946,5 @@ linkIconTestUnits =
          , ("https://crookedtimber.org/2012/05/30/in-soviet-union-optimization-problem-solves-you/", "CT", "text")
          , ("http://articles.latimes.com/1986-07-30/business/fi-18840_1_laser-defense", "𝔏A", "text")
          , ("/images/fiction/batman.psd",  "image","svg") -- TODO
+         , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
         ]
