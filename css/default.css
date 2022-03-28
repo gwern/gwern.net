@@ -1450,7 +1450,13 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 .marginnote.sidenote {
     display: initial;
-    width: calc(50vw - (50% + 104px));
+    /*	965px because that’s the width of #markdownBody at the widths where we
+    	get margin notes. Someday, find a way to auto-compute this (but note 
+    	that `50%` doesn’t work in place of `(965px / 2)`; it breaks when the
+    	margin note is within a narrower block, like a <p> within an <ol>).
+    	—SA 2022-03-28
+     */
+    width: calc(50vw - ((965px / 2)+ 104px));
     max-width: var(--GW-sidenotes-max-width);
     left: calc(100% + 60px);
 
