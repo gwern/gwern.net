@@ -392,7 +392,8 @@ Annotations = {
         ".portal",
         ".penicon",
         ".reference",
-        ".Template-Fact"
+        ".Template-Fact",
+        ".error"
     ],
 
     /*  Post-process an already-staged annotation created from a Wikipedia
