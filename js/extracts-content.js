@@ -804,6 +804,9 @@ Extracts = { ...Extracts, ...{
 						}
 					});
 
+					if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
+						doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
+
 					target.popFrame.querySelector("iframe").srcdoc = doc.innerHTML;
 
                     target.popFrame.classList.toggle("loading", false);
