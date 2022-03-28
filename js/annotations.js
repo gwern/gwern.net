@@ -393,7 +393,8 @@ Annotations = {
         ".penicon",
         ".reference",
         ".Template-Fact",
-        ".error"
+        ".error",
+        ".mwe-math-mathml-inline"
     ],
 
     /*  Post-process an already-staged annotation created from a Wikipedia
