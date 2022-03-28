@@ -368,14 +368,13 @@ Annotations = {
 				return null;
 		}
 
-		let responseHTML = targetSection
-						   ? targetSection["text"]
-						   : response["lead"]["sections"][0]["text"];
+		let responseHTML =   response["lead"]["sections"][0]["text"]
+						   + response["remaining"]["sections"].map(section =>
+						     	`<h2 id='${section["anchor"]}'>${section["line"]}</h2>\n${section["text"]}`
+						     ).join("");
 
 		annotation = Annotations.stageAnnotation(responseHTML);
-		annotation.dataset["titleHTML"] = annotationURL.hash > ""
-										  ? targetSection["line"]
-										  : response["lead"]["displaytitle"];
+		annotation.dataset["titleHTML"] = response["lead"]["displaytitle"];
 
 		return annotation;
 	},
@@ -426,8 +425,13 @@ Annotations = {
                 link.hostname = annotationURL.hostname;
 
             //  Mark other Wikipedia links as also being annotated.
-            if (/(.+?)\.wikipedia\.org/.test(link.hostname))
+            if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
                 link.classList.add("docMetadata");
+
+				//	Link icon metadata also affects link underline style.
+                link.dataset.linkIcon = "wikipedia";
+                link.dataset.linkIconType = "svg";
+            }
 
             //  Mark self-links.
             if (link.pathname == annotationURL.originalPathname)
