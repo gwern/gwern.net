@@ -153,7 +153,7 @@ else
     tidyUpWhole () {    tidy -indent -wrap 180 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
     export -f tidyUpFragment tidyUpWhole
     find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | fgrep -v -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
+    find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | fgrep -v -e '#' -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
 
     ## use https://github.com/pkra/mathjax-node-page/ to statically compile the MathJax rendering of the MathML to display math instantly on page load
     ## background: https://joashc.github.io/posts/2015-09-14-prerender-mathjax.html ; installation: `npm install --prefix ~/src/ mathjax-node-page`
@@ -175,7 +175,7 @@ else
     export -f staticCompileMathJax
     (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotations/ -name '*.html') | shuf | \
-        parallel --jobs 32 --max-args=1 staticCompileMathJax
+        parallel --jobs 31 --max-args=1 staticCompileMathJax
 
     # 1. turn "As per Foo et al 2020, we can see." → "<p>As per Foo et al 2020, we can see.</p>" (&nbsp;); likewise for 'Foo 2020' or 'Foo & Bar 2020'
     # 2. add non-breaking character to punctuation after links to avoid issues with links like '[Foo](/bar);' where ';' gets broken onto the next line (this doesn't happen in regular text, but only after links, so I guess browsers have that builtin but only for regular text handling?), (U+2060 WORD JOINER (HTML &#8288; · &NoBreak; · WJ))
@@ -382,19 +382,20 @@ else
           }
     wrap λ "Anchors linked but not defined inside page?"
 
+    λ(){ find . -xtype l -printf 'Broken symbolic link: %p\n'; }
+    wrap λ "Broken symbolic links"
+
     ## Is the Internet up?
     ping -q -c 5 google.com  &>/dev/null
+
+    # Testing complete.
 
     # Sync:
     ## make sure nginx user can list all directories (x) and read all files (r)
     chmod a+x $(find ~/wiki/ -type d)
     chmod --recursive a+r ~/wiki/*
 
-    λ(){ find . -xtype l -printf 'Broken symbolic link: %p\n'; }
-    wrap λ "Broken symbolic links"
-
     set -e
-    ping -q -c5 google.com
     ## sync to Hetzner server: (`--size-only` because Hakyll rebuilds mean that timestamps will always be different, forcing a slower rsync)
     ## If any links are symbolic links (such as to make the build smaller/faster), we make rsync follow the symbolic link (as if it were a hard link) and copy the file using `--copy-links`.
     ## NOTE: we skip time/size syncs because sometimes the infrastructure changes values but not file size, and it's confusing when JS/CSS doesn't get updated; since the infrastructure is so small (compared to eg. docs/*), just force a hash-based sync every time:

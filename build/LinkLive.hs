@@ -3569,7 +3569,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("http://ascii.textfiles.com/archives/1717", False)
     , ("https://www.rte.ie/archives/2018/0322/949314-donegal-victorian-romantics/", False)
     , ("https://www.jstatsoft.org/index.php/jss/article/download/v048i09/601", False)
-    , ("https://www.indiana.edu/~pcl/rgoldsto/interrelated/interrelated.html", False)
+    , ("https://pcl.sitehost.iu.edu/rgoldsto/interrelated/interrelated.html", False)
     , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", False)
     , ("http://www.ex.org/2.4/09-jpopconference_1.html", False)
     , ("https://news.ycombinator.com/item?id=17048329", False)
