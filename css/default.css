@@ -1456,7 +1456,7 @@ section.footnotes > hr:first-child.highlighted::before {
     	margin note is within a narrower block, like a <p> within an <ol>).
     	—SA 2022-03-28
      */
-    width: calc(50vw - ((965px / 2)+ 104px));
+    width: calc(50vw - ((965px / 2) + 104px));
     max-width: var(--GW-sidenotes-max-width);
     left: calc(100% + 60px);
 
