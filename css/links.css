@@ -1006,6 +1006,14 @@ a[data-link-icon='cochrane-collaboration']::after {
     opacity: 0.75;
 }
 
+a[data-link-icon='connected-papers']::after {
+	--link-icon-size: 0.85em;
+	--link-icon-offset-y: 0.1em;
+	--link-icon-offset-x: 0.05em;
+
+	opacity: 0.65;
+}
+
 /*=------------------=*/
 /*= Wikipedia links. =*/
 /*=------------------=*/
