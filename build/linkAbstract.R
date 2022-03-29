@@ -3,7 +3,7 @@
 # LinkAbstracter
 # Author: gwern
 # Date: 2019-08-29
-# When:  Time-stamp: "2022-02-23 16:44:06 gwern"
+# When:  Time-stamp: "2022-03-29 12:35:52 gwern"
 # License: CC-0
 #
 # Read a PLOS or PMCID URL, and return the parsed fulltext as newline-delimited
@@ -79,7 +79,7 @@ if (grepl("plos",args)) {
 
 } else {
   # assume PMC
-    pmcid <- sub("/", "", sub("/pdf/.*", "", sub("https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC", "", args[1])))
+    pmcid <- sub("#.*", "", sub("/", "", sub("/pdf/.*", "", sub("https?://www.ncbi.nlm.nih.gov/pmc/articles/PMC", "", args[1]))))
 
     library(fulltext)
     library(rentrez)
