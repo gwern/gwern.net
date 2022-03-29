@@ -78,7 +78,7 @@ generateDirectory mta dir'' = do
   let titledLinksSections   = generateSections titledLinks
   let untitledLinksSection  = generateListItems untitledLinks
 
-  let header = generateYAMLHeader dir'' (getNewestDate links)
+  let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let directorySectionSeeAlsos = if null dirsSeeAlsos then [] else generateDirectoryItems Nothing dir'' dirsSeeAlsos
 
@@ -118,21 +118,23 @@ generateDirectory mta dir'' = do
     Right p' -> do let contentsNew = (T.pack header) `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
 
-generateYAMLHeader :: FilePath -> String -> String
-generateYAMLHeader d date = concat [ "---\n",
-                       "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " Directory Listing\n",
-                       "author: 'N/A'\n",
-                       "description: Annotated bibliography of files in the directory <code>/" ++ d ++ "</code>, most recent first.\n",
-                       "tags: index\n",
-                       "created: 2009-01-01\n",
-                       if date=="" then "" else "modified: " ++ date ++ "\n",
-                       "status: in progress\n",
-                       "confidence: log\n",
-                       "importance: 0\n",
-                       "cssExtension: drop-caps-de-zs\n",
-                       "index: true\n",
-                       "...\n",
-                       "\n"]
+generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String
+generateYAMLHeader d date (directoryN,annotationN,linkN)
+  = concat [ "---\n",
+             "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " Directory Listing\n",
+             "author: 'N/A'\n",
+             "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first." ++
+              " " ++ show directoryN ++ " related tags, " ++ show annotationN ++ " annotations, & " ++ show linkN ++ " links.'\n",
+             "tags: index\n",
+             "created: 2009-01-01\n",
+             if date=="" then "" else "modified: " ++ date ++ "\n",
+             "status: in progress\n",
+             "confidence: log\n",
+             "importance: 0\n",
+             "cssExtension: drop-caps-de-zs\n",
+             "index: true\n",
+             "...\n",
+             "\n"]
 
 -- given a list of ["docs/foo/index.page"] directories, convert them to what will be the final absolute path ("/docs/foo/index"), while checking they exist (typos are easy, eg. dropping 'docs/' is common).
 listDirectories :: [FilePath] -> IO [FilePath]
