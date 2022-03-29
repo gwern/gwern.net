@@ -762,6 +762,13 @@ Extracts = {
 
         let target = popup.spawningTarget;
 
+		//	Insert page thumbnail into page abstract.
+		if (Extracts.cachedPageThumbnailImageTags[target.pathname]) {
+			let pageAbstract = popup.querySelector("#page-metadata + .abstract blockquote");
+			if (pageAbstract)
+				pageAbstract.insertAdjacentHTML("afterbegin", `<figure>${Extracts.cachedPageThumbnailImageTags[target.pathname]}</figure>`);
+		}
+
         //  Make anchorlinks scroll popup instead of opening normally.
         popup.querySelectorAll("a").forEach(link => {
             if (   link.hostname == target.hostname
@@ -784,6 +791,7 @@ Extracts = {
     //  Other site pages.
     cachedPages: { },
     cachedPageTitles: { },
+    cachedPageThumbnailImageTags: { },
 
     //  Called by: Extracts.externalPageEmbedForTarget
     refreshPopFrameAfterLocalPageLoads: (target) => {
@@ -808,6 +816,23 @@ Extracts = {
 
                 //  Get the page title.
                 Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
+
+				//	Get the page thumbnail URL.
+				// /static/img/logo/logo-whitebg-large-border.png
+				let pageThumbnailMetaTag = target.popFrame.querySelector("meta[property='og:image']");
+				if (pageThumbnailMetaTag) {
+					let pageThumbnailURL = new URL(pageThumbnailMetaTag.getAttribute("content"));
+
+					//	Alt text, if provided.
+					let pageThumbnailAltMetaTag = target.popFrame.querySelector("meta[property='og:image:alt']");
+					let pageThumbnailAltText = pageThumbnailAltMetaTag 
+											   ? pageThumbnailAltMetaTag.getAttribute("content") 
+											   : `Thumbnail image for “${Extracts.cachedPageTitles[target.pathname]}”`;
+
+					//	Construct and save the <img> tag.
+					if (pageThumbnailURL.pathname != "/static/img/logo/logo-whitebg-large-border.png")
+						Extracts.cachedPageThumbnailImageTags[target.pathname] = `<img src='${pageThumbnailURL.href}' alt='${pageThumbnailAltText}'>`;
+				}
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                  */

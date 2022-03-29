@@ -3766,6 +3766,14 @@ To hack around this issue (which surely has a better answer), and since in some 
     display: none;
 }
 
+/*	Page thumbnails in local page transclude popups.
+ */
+.popup .abstract figure {
+	float: right;
+	max-width: calc(50% - 1em);
+	margin: 0.5em 0 1em 1em;
+}
+
 /*=-----------------------=*/
 /*= POPUPS OPTIONS DIALOG =*/
 /*=-----------------------=*/
