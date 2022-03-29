@@ -112,9 +112,9 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "examine.com" = aI "Eχ" "text,sans"
  | u'' "www.sciencedirect.com" = aI "E" "text" -- Elsevier/Sciencedirect.com: also an ‘E’
  | u'' "www.esquire.com" = aI "ℰ" "text"
- | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com","www.evacommentary.org"] || u' "https://nitter.hu/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
+ | aU'' ["wiki.evageeks.org","forum.evageeks.org","www.evamonkey.com","www.evacommentary.org"] || u' "nitter.hu/EvaMonkey/" = aI "EG" "text" -- Evangelion: we’ll split this into EGF-related and other NGE sites
  | aU'' ["www.fda.gov","fis.fda.gov","clinicaltrials.gov"] = aI "FDA" "text,tri,sans" -- U.S. Food & Drug Administration
- | u'' "www.hpmor.com" || u' "https://www.fanfiction.net/r/5782108/" || u' "https://old.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
+ | u'' "www.hpmor.com" || u' "www.fanfiction.net/r/5782108/" || u' "old.reddit.com/r/HPMOR/" = aI "MoR" "text,tri,italic"
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
@@ -236,7 +236,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "freakonomics.com" = aI "FRK" "text,tri,sans" -- hybrid apple-orange icon (get it, "comparing apples & oranges") doesn't work as favicon or link
  | u'' "aiimpacts.org" = aI "AII" "text,tri"
  | u'' "scp-wiki.wikidot.com" = aI "SCP" "text,tri,sans"
- | aU'' ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' "old.reddit.com/r/AIDungeon"  || u' "https://www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
+ | aU'' ["latitude.io", "play.aidungeon.io", "aidungeon.medium.com"] || u' "old.reddit.com/r/AIDungeon"  || u' "www.patreon.com/AIDungeon" = aI "AID" "text,tri,sans"
  | u'' "www.nap.edu" = aI "NAP" "text,tri"
  | u' ".cnn.com" = aI "CNN" "text,tri,sans"
  | u'' "www.npr.org" || u'' "text.npr.org" = aI "npr" "text,tri,sans" -- NPR styles it in lowercase in their |n|p|r| logo
@@ -275,8 +275,8 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.nejm.org" = aI "NEJM" "text,quad"
  | u'' "spectrum.ieee.org" || u'' "ieeexplore.ieee.org" = aI "IEEE" "text,mono,quad"
  | u'' "rjlipton.wordpress.com" = aI "P = NP" "text,quad" -- NOTE: not 4 letters because we need the spacing for a more reasonable look. 'FULL WIDTH EQUAL SIGN' turns out to be *too* big and stack up three high.
- | u' "https://mitpress.mit.edu/sites/default/files/sicp/" = aI "SI CP" "text,quad,sans"
- | u' "https://mitpress.mit.edu/books/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.x
+ | u' "mitpress.mit.edu/sites/default/files/sicp/" = aI "SI CP" "text,quad,sans"
+ | u' "mitpress.mit.edu/books/" = aI "MIT" "text,tri,mono" -- if it's not _SICP_, fall back.x
  | u'' "jaspervdj.be" = aI "JVDJ" "text,quad,mono"
  | u'' "gizmodo.com" = aI "GIZM" "text,quad,mono"
  | u'' "www.mdpi.com" = aI "MDPI" "text,quad,sans" -- <https://en.wikipedia.org/wiki/MDPI> chemical subscript+superscript probably not recognized by anyone & too bulky even as SVG NOTE: doesn't wrap right with serif, so has to be ans
@@ -366,8 +366,9 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  -- Fallback
  | otherwise = x
  where u', u'' :: T.Text -> Bool
-       -- simplest check for string anywhere
-       u' v = v `T.isInfixOf` u
+       -- simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/docs/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
+       u' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("Overly strict prefix in infix matching: " ++ show u ++ ":" ++ show v) else
+                v `T.isInfixOf` u
        -- more careful check:
        u'' v = isHostOrArchive v u
        aI :: T.Text -> T.Text -> Inline
