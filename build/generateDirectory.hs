@@ -19,7 +19,7 @@ import System.Directory (listDirectory, doesFileExist, doesDirectoryExist)
 import System.Environment (getArgs)
 import System.FilePath (takeDirectory, takeFileName)
 import Text.Pandoc (def, nullAttr, nullMeta, pandocExtensions, runPure, writeMarkdown, writerExtensions,
-                    Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
+                    Block(BulletList, Header, Para, RawBlock), Format(Format), Inline(Code, Emph, Image, Link, Space, Span, Str, RawInline),  Pandoc(Pandoc))
 import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
@@ -27,6 +27,7 @@ import Control.Monad.Parallel as Par (mapM_)
 
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag)
 import LinkBacklink (getBackLink, getSimilarLink)
+import Query (extractImages)
 import Utils (writeUpdatedFile, sed)
 
 main :: IO ()
@@ -78,13 +79,16 @@ generateDirectory mta dir'' = do
   let titledLinksSections   = generateSections titledLinks
   let untitledLinksSection  = generateListItems untitledLinks
 
-  let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks)
+  let thumbnail = let image = take 1 $ extractImages (Pandoc nullMeta titledLinksSections) in
+                    if null image then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head image)) ++ "\n"
+  let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks) thumbnail
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let directorySectionSeeAlsos = if null dirsSeeAlsos then [] else generateDirectoryItems Nothing dir'' dirsSeeAlsos
 
   -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at '/docs/foo/index'
   let abstract = case M.lookup ("/"++dir''++"index") mta of
                    Nothing -> []
+                   Just (_,_,_,_,_,"") -> []
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
 
   -- When tag links elsewhere link to this page, they will target `#top-tag`. Should that point at # See Also (if it exists) or # Links?
@@ -118,13 +122,14 @@ generateDirectory mta dir'' = do
     Right p' -> do let contentsNew = (T.pack header) `T.append` p'
                    writeUpdatedFile "directory" (dir'' ++ "index.page") contentsNew
 
-generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String
-generateYAMLHeader d date (directoryN,annotationN,linkN)
+generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String -> String
+generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
              "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " Directory Listing\n",
              "author: 'N/A'\n",
              "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first." ++
               " " ++ show directoryN ++ " related tags, " ++ show annotationN ++ " annotations, & " ++ show linkN ++ " links.'\n",
+             thumbnail,
              "tags: index\n",
              "created: 2009-01-01\n",
              if date=="" then "" else "modified: " ++ date ++ "\n",

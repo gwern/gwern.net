@@ -1,15 +1,15 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-02-23 16:55:10 gwern"
+When:  Time-stamp: "2022-03-29 18:33:14 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module Query (extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML) where
+module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML) where
 
 import qualified Data.Text as T (init, drop, head, last, Text)
-import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Link), runPure, Pandoc(..))
+import Text.Pandoc -- (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Link), runPure, Pandoc(..))
 import Text.Pandoc.Walk (walk)
 
 import Interwiki (convertInterwikiLinks, inlinesToString)
@@ -63,3 +63,20 @@ extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterw
    cleanURL :: T.Text -> T.Text
    cleanURL "" = ""
    cleanURL u = if T.head u == '>' && T.last u == '<' then T.init $ T.drop 1 u else u
+
+-- Extract 'Image' Inline elements from a Pandoc. Note, this does not extract solely <figure> images, which are Images inside their own Paragraph Block:
+-- > $ echo -e 'baz\n\n![foo](/foo.jpg)\n\nquux' | pandoc -w native
+-- > → [Para [Str "baz"]
+-- >   ,Para [Image ("",[],[]) [Str "foo"] ("/foo.jpg","fig:")]
+-- >   ,Para [Str "quux"]]
+--
+-- (That would be harder to match, and I don't use inline non-block Images much, so I can usually assume that every 'Image' is a <figure>.)
+--
+-- > extractImages (Pandoc nullMeta [Para [Str "baz"] ,Para [Image ("",[],[]) [Str "foo"] ("/foo.jpg","fig:")] ,Para [Str "quux"]])
+-- → [Image ("",[],[]) [Str "foo"] ("/foo.jpg","fig:")]
+
+extractImages :: Pandoc -> [Inline] -- [Image]
+extractImages = queryWith extractImages'
+ where extractImages' :: Inline -> [Inline]
+       extractImages' x@(Image _ _ _) = [x]
+       extractImages' _ = []

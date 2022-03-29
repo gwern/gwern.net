@@ -10,7 +10,7 @@ import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
 import System.IO.Temp (emptySystemTempFile)
 import Text.Pandoc (def, nullMeta, runPure,
-                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
+                    writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
 import System.IO (stderr, hPutStrLn)
 import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)
@@ -69,12 +69,16 @@ toMarkdown abst = let clean = runPure $ do
 -- Add or remove a class to a Link or Span; this is a null op if the class is already present or it
 -- is not a Link/Span.
 addClass :: T.Text -> Inline -> Inline
-addClass clss x@(Span (i, clsses, ks) s)           = if clss `elem` clsses then x else Span (i, clss:clsses, ks) s
-addClass clss x@(Link (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Link (i, clss:clsses, ks) s (url, tt)
+addClass clss x@(Span  (i, clsses, ks) s)           = if clss `elem` clsses then x else Span (i, clss:clsses, ks) s
+addClass clss x@(Link  (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Link (i, clss:clsses, ks) s (url, tt)
+addClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then x else Image (i, clss:clsses, ks) s (url, tt)
+addClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code (i, clss:clsses, ks) code
 addClass _    x = x
 removeClass :: T.Text -> Inline -> Inline
-removeClass clss x@(Span (i, clsses, ks) s)           = if clss `notElem` clsses then x else Span (i, filter (==clss) clsses, ks) s
-removeClass clss x@(Link (i, clsses, ks) s (url, tt)) = if clss `notElem` clsses then x else Link (i, filter (==clss) clsses, ks) s (url, tt)
+removeClass clss x@(Span (i, clsses, ks) s)            = if clss `notElem` clsses then x else Span (i, filter (==clss) clsses, ks) s
+removeClass clss x@(Link (i, clsses, ks) s (url, tt))  = if clss `notElem` clsses then x else Link (i, filter (==clss) clsses, ks) s (url, tt)
+removeClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `notElem` clsses then x else Image (i, filter (==clss) clsses, ks) s (url, tt)
+removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code (i, filter (==clss) clsses, ks) code
 removeClass _    x = x
 
 -- print normal progress messages to stderr in bold green:
