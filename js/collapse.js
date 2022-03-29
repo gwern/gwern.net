@@ -339,6 +339,7 @@ document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
 
 	let newSelection = document.getSelection();
 	if (   newSelection 
+		&& newSelection.rangeCount > 0
 		&& newSelection.getRangeAt(0).toString().length > 0)
 		expandCollapseBlocksToReveal(newSelection.anchorNode);
 });
