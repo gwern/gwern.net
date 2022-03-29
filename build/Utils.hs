@@ -2,6 +2,7 @@
 module Utils where
 
 import Control.Monad (when)
+import Data.Char (isSpace)
 import Data.Text.IO as TIO (readFile, writeFile)
 import qualified Data.Text as T (Text, pack, unpack)
 import Network.URI (parseURIReference, uriAuthority, uriRegName)
@@ -38,8 +39,13 @@ writeUpdatedFile template target contentsNew =
                                                       TIO.writeFile tempPath contentsNew
                                                       renameFile tempPath target
 
+trim :: String -> String
+trim = reverse . dropWhile badChars . reverse . dropWhile badChars -- . filter (/='\n')
+  where badChars c = isSpace c || (c=='-')
+
 simplifiedString :: String -> String
-simplifiedString s = T.unpack $ simplified $ Para [Str $ T.pack s]
+simplifiedString s = trim $ -- NOTE: 'simplified' will return a trailing newline, which is unhelpful when rendering titles.
+                     T.unpack $ simplified $ Para [Str $ T.pack s]
 
 simplified :: Block -> T.Text
 simplified i = simplifiedDoc (Pandoc nullMeta [i])
