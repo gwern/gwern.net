@@ -949,4 +949,5 @@ linkIconTestUnits =
          , ("http://articles.latimes.com/1986-07-30/business/fi-18840_1_laser-defense", "𝔏A", "text")
          , ("/images/fiction/batman.psd",  "image","svg") -- TODO
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
+         , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
         ]
