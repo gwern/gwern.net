@@ -3,6 +3,7 @@
 
 import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)
 import Data.List (intercalate, isInfixOf)
+import Data.List.Utils (replace)
 
 type Path = String
 
@@ -21,7 +22,7 @@ printSingleLine :: (Path,MetadataItem) -> IO ()
 printSingleLine (f,(b,c,d,_,tags,abst)) = putStrLn $ intercalate "; "
   [" \x1b[32m"++f++"\x1b[0m ",
     "\x1b[35m\""++b++"\"\x1b[0m",
-    authorsToCite f c d, c,
+    authorsToCite f c d ++ " (" ++ c ++ ")",
     d,
     show tags,
-    abst]
+    replace "\n" " " abst]
