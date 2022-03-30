@@ -3499,11 +3499,12 @@ To hack around this issue (which surely has a better answer), and since in some 
     --GW-popups-popup-scrollbar-thumb-hover-color: var(--GW-popups-popup-scrollbar-thumb-hover-focused-color);
 }
 
-/*┌────────────────┐*/
-/*│ Zoomed popups. │*/
-/*└────────────────┘*/
+/*┌──────────────────────────┐*/
+/*│ Zoomed / resized popups. │*/
+/*└──────────────────────────┘*/
 
-.popup.zoomed .popframe-content-view {
+.popup.zoomed .popframe-content-view,
+.popup.resized .popframe-content-view {
     max-width: 970px;
     margin: auto;
 }
@@ -3514,13 +3515,17 @@ To hack around this issue (which surely has a better answer), and since in some 
 }
 
 .popup.object.zoomed .popframe-content-view,
-.popup.local-code-file.zoomed .popframe-content-view {
+.popup.object.resized .popframe-content-view,
+.popup.local-code-file.zoomed .popframe-content-view,
+.popup.local-code-file.resized .popframe-content-view {
     max-width: unset;
     height: 100%;
 }
 
 .popup.object.zoomed iframe,
-.popup.object.zoomed object {
+.popup.object.zoomed object ,
+.popup.object.resized iframe,
+.popup.object.resized object {
     width: 100%;
     height: 100%;
 }
