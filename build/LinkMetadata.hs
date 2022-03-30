@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-29 11:08:09 gwern"
+When:  Time-stamp: "2022-03-29 20:45:36 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag) where
+module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag) where
 
 import Control.Concurrent (forkIO)
 import Control.Monad (unless, void, when, forM_)
@@ -83,6 +83,20 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
        (if takeExtension f' /= "" then False else True))
 
 -------------------------------------------------------------------------------------------------------------------------------
+
+-- run an arbitrary function on the 3 databases to update individual items.
+-- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like
+-- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
+walkAndUpdateLinkMetadata :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
+walkAndUpdateLinkMetadata f = do [custom,partial,auto] <- mapM (readYaml) ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
+                                 custom' <- mapM f custom
+                                 writeYaml "metadata/custom.yaml" custom'
+                                 partial' <- mapM f partial
+                                 writeYaml "metadata/partial.yaml" partial'
+                                 auto' <- mapM f auto
+                                 writeYaml "metadata/auto.yaml" auto'
+                                 _ <- readLinkMetadataAndCheck
+                                 return ()
 
 -- read the annotation base (no checks, >8.4× faster)
 readLinkMetadata :: IO Metadata
@@ -988,10 +1002,7 @@ arxiv url = do -- Arxiv direct PDF links are deprecated but sometimes sneak thro
                          let published = take 10 $ findTxt $ fst $ element "published" tags -- "2017-12-01T17:13:14Z" → "2017-12-01"
                          -- NOTE: Arxiv used to not provide its own DOIs; that changed in 2022: <https://blog.arxiv.org/2022/02/17/new-arxiv-articles-are-now-automatically-assigned-dois/>; so look for DOI and if not set, try to construct it automatically using their schema `10.48550/arXiv.2202.01037`
                          let doiTmp = processDOI $ findTxt $ fst $ element "arxiv:doi" tags
-                         -- Arxiv has some weird URLs and edge-cases like <https://arxiv.org/abs/hep-ph/0204295> (note double-subdirectory & lack of period-separation).
-                         let doi = if not (null doiTmp) then doiTmp else "10.48550/arXiv." ++
-                               sed "https://arxiv.org/[a-z-]+/([0-9]+\\.[0-9]+).*" "\\1" -- regular current Arxiv URL pattern
-                               (sed "https://arxiv.org/abs/[a-z-]+/([0-9]+).*" "\\1" url) -- old-style like 'hep-ph'
+                         let doi = if null doiTmp then processDOIArxiv url else doiTmp
                          abst <- fmap cleanAbstractsHTML $ processParagraphizer $ cleanAbstractsHTML $ processArxivAbstract $ findTxt $ fst $ element "summary" tags
                          let ts = [] -- TODO: replace with ML call to infer tags
                          -- the API sometimes lags the website, and a valid Arxiv URL may not yet have obtainable abstracts, so it's a temporary failure:
@@ -1045,8 +1056,12 @@ openreview p   = do let p' = replace "/pdf?id=" "/forum?id=" p
                                                    -- due to pseudo-LaTeX
                                                      abstractCombined))
 
-processDOI :: String -> String
+processDOI, processDOIArxiv :: String -> String
 processDOI = replace "–" "-" . replace "—" "-"
+ -- Arxiv has some weird URLs and edge-cases like <https://arxiv.org/abs/hep-ph/0204295> (note double-subdirectory & lack of period-separation).
+processDOIArxiv url = "10.48550/arXiv." ++
+                               sed "https://arxiv.org/[a-z-]+/([0-9]+\\.[0-9]+).*" "\\1" -- regular current Arxiv URL pattern
+                               (sed "https://arxiv.org/abs/[a-z-]+/([0-9]+).*" "\\1" url) -- old-style like 'hep-ph'
 
 processPubMedAbstract :: String -> String
 processPubMedAbstract abst = let clean = runPure $ do
