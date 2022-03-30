@@ -246,7 +246,7 @@ generateMatches md p abst matches =
                                                                   T.pack ("Google search engine hits for ‘" ++ title' ++ "’.")),
                                                  Str "; ",
                                                  Link linkMetadataG
-                                                 [Str "site-wide"] (T.pack ("https://www.google.com/search?q=site:gwern.net+-site:gwern.net/metadata/" ++ title'),
+                                                 [Str "site-wide"] (T.pack ("https://www.google.com/search?q=site:www.gwern.net+-site:www.gwern.net/metadata/+" ++ title'),
                                                                     T.pack ("Gwern.net site search hits for ‘" ++ title' ++ "’."))
                                                ]]]
 
