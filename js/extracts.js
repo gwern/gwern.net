@@ -25,7 +25,7 @@
     Extracts.cleanupDidComplete
         Fired just before the ‘cleanup’ function returns.
 
-	Extracts.targetsProcessedInLoadedContent {
+	Extracts.targetsDidProcessOnContentLoad {
 			source: "Extracts.processTargetsOnContentLoad"
 			document:
 				The `document` property of the GW.contentDidLoad event that 
@@ -236,7 +236,7 @@ Extracts = {
             Extracts.processTargetsInDocument(info.document, info.needsRewrite);
 
 			//	Fire targets-processed event.
-			GW.notificationCenter.fireEvent("Extracts.targetsProcessedInLoadedContent", {
+			GW.notificationCenter.fireEvent("Extracts.targetsDidProcessOnContentLoad", {
 				source: "Extracts.processTargetsOnContentLoad",
 				location: info.location,
 				document: info.document,
