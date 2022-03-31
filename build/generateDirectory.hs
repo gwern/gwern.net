@@ -41,7 +41,7 @@ main = do dirs <- getArgs
 generateDirectory :: Metadata -> FilePath -> IO ()
 generateDirectory mta dir'' = do
 
-  tagged <- listTagged mta  (init dir'')
+  tagged <- listTagged mta (init dir'')
 
   -- actual subdirectories:
   let parentDirectory = takeDirectory $ takeDirectory dir''
@@ -62,7 +62,7 @@ generateDirectory mta dir'' = do
   dirsChildren   <- listDirectories direntries'
   dirsSeeAlsos   <- listDirectories taggedDirs
 
-  triplets  <- listFiles  mta  direntries'
+  triplets  <- listFiles mta direntries'
 
   let links = nub $ reverse $ sortByDate $ triplets++tagged' -- newest first, to show recent additions
 
@@ -151,7 +151,7 @@ listDirectories direntries' = do
 listFiles :: Metadata -> [FilePath] -> IO [(FilePath,MetadataItem,FilePath,FilePath)]
 listFiles m direntries' = do
                    files <- filterM (doesFileExist . tail) direntries'
-                   let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter (\f -> head f == '#') . filter (not . isSuffixOf ".tar") ) files
+                   let files'          = (sort . filter (not . ("index"`isSuffixOf`)) . map (replace ".page" "") . filter (\f -> head f /= '#') . filter (not . isSuffixOf ".tar") ) files
                    let fileAnnotationsMi = map (lookupFallback m) files'
                    -- NOTE: files may be annotated only under a hash, eg. '/docs/ai/2021-norrie.pdf#google'; so we can't look for their backlinks/similar-links under '/docs/ai/2021-norrie.pdf', but we ask 'lookupFallback' for the best reference; 'lookupFallback' will tell us that '/docs/ai/2021-norrie.pdf' → `('/docs/ai/2021-norrie.pdf#google',_)`
                    backlinks    <- mapM getBackLink $ map fst fileAnnotationsMi
