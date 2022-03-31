@@ -873,7 +873,7 @@ function applyDropCapsClasses(loadEventInfo) {
                 Also, skip blocks that have a ‘no-drop-cap’ class set.
              */
             if (    Array.from(dropCapBlock.classList).findIndex(cssClass => cssClass.startsWith("drop-cap-")) == -1
-            	&& !dropCapBlock.classList.contains("no-drop-cap"))
+            	&& !dropCapBlock.classList.contains("drop-cap-no"))
                 dropCapBlock.classList.add(dropCapClass);
         });
     }
