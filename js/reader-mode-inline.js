@@ -40,10 +40,10 @@ ReaderMode = {
 				-0.17em 0 0 0 var(--GW-reader-mode-masked-link-bracket-background-color);
 		}
 		` + _π("body.reader-mode-active.masked-links-hidden .spawns-", [ "popup", "popin" ], " .indicator-hook").join(",\n") + ",\n" +
-			_π("body.reader-mode-active #markdownBody ", [ "p", "li" ], " a::after").join(",\n") + ` {
+			_π("body.reader-mode-active #markdownBody ", [ "p", "li", "figcaption" ], " a::after").join(",\n") + ` {
 			display: none;
 		}
-		` + _π("body.reader-mode-active.masked-links-hidden #markdownBody ", [ "p", "li" ], " a:not(.popup-open)", [ "", ":visited", ":hover" ]).join(",\n") + ` {
+		` + _π("body.reader-mode-active.masked-links-hidden #markdownBody ", [ "p", "li", "figcaption" ], " a:not(.popup-open)", [ "", ":visited", ":hover" ]).join(",\n") + ` {
 			color: inherit;
 			background: none;
 			cursor: text;
