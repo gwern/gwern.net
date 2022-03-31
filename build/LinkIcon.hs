@@ -296,6 +296,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.huffpost.com" = aI "HUFF" "text,quad,sans"
  | u'' "longreads.com" = aI "Long" "text,quad"
  | u'' "warontherocks.com" = aI "WOTR" "text,quad,sans"
+ | u'' "krebsonsecurity.com" = aI "Kreb" "text,quad,sans" -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krebs', so abbreviate that
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -950,4 +951,5 @@ linkIconTestUnits =
          , ("/images/fiction/batman.psd",  "image","svg") -- TODO
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
+         , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Kreb", "text,quad,sans")
         ]
