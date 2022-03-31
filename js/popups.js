@@ -1159,8 +1159,10 @@ Popups = {
 		GWLog("Popups.positionPopup", "popups.js", 2);
 
 		let target = popup.spawningTarget;
-		if (spawnPoint) target.lastMouseEnterLocation = spawnPoint;
-		else spawnPoint = target.lastMouseEnterLocation;
+		if (spawnPoint)
+			target.lastMouseEnterLocation = spawnPoint;
+		else
+			spawnPoint = target.lastMouseEnterLocation;
 
 		/*	When the target’s bounding rect is composed of multiple client rects
 			(as when the target is a link that wraps across a line break), we 
