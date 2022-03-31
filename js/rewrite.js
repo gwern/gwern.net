@@ -870,8 +870,10 @@ function applyDropCapsClasses(loadEventInfo) {
         loadEventInfo.document.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
             /*  Only add page-global drop cap class to blocks that don’t
                 already have a drop cap class of their own.
+                Also, skip blocks that have a ‘no-drop-cap’ class set.
              */
-            if (Array.from(dropCapBlock.classList).findIndex(cssClass => cssClass.startsWith("drop-cap-")) == -1)
+            if (    Array.from(dropCapBlock.classList).findIndex(cssClass => cssClass.startsWith("drop-cap-")) == -1
+            	&& !dropCapBlock.classList.contains("no-drop-cap"))
                 dropCapBlock.classList.add(dropCapClass);
         });
     }
