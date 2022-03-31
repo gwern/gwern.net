@@ -1079,9 +1079,8 @@ h1 sub, h1 sup, h2 sub, h2 sup  { font-size: 60%;  }
 .footnotes pre + a.footnote-back,
 .footnotes .sourceCode + a.footnote-back {
     position: absolute;
-    right: 0.5em;
-    top: unset;
-    bottom: -0.5em;
+    right: 0;
+    top: calc(100% - 1px);
     background-color: var(--GW-footnote-backlink-after-bordered-block-background-color);
 }
 
