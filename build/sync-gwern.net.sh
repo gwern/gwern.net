@@ -138,12 +138,12 @@ else
     }
     export -f syntaxHighlight
     set +e
-    find _site/static/ -type f,l -name "*.html" | sort | parallel syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
+    find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs 25 syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
     find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" | \
         sort |  fgrep -v \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' \
-                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' | parallel syntaxHighlight &
+                 -e 'metadata/backlinks.hs' -e 'metadata/embeddings.bin' -e 'metadata/archive.hs' -e 'docs/www/' | parallel  --jobs 25 syntaxHighlight
     set -e
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
@@ -173,7 +173,7 @@ else
         fi
     }
     export -f staticCompileMathJax
-    (find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
+    (find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/';
      find _site/metadata/annotations/ -name '*.html') | shuf | \
         parallel --jobs 31 --max-args=1 staticCompileMathJax
 
@@ -196,7 +196,7 @@ else
                               -e 's/\([a-z]\)⋱<sub>\([0-9]\)/\1⁠⋱⁠<sub>\2/g' -e 's/\([a-z]\)<sub>⋱\([0-9]\)/\1<sub>⁠⋱⁠\2/g' \
                               -e 's/  / /g' -e 's/​​/​/g' -e 's/​ ​​ ​/​ /g' -e 's/​ ​ ​ ​  / /g' -e 's/​ ​ ​ ​/ /g' -e 's/​ ​ ​ / /g' -e 's/  / /g' \
                             "$@"; }; export -f nonbreakSpace;
-    find ./ -path ./_site -prune -type f -o -name "*.page" | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
+    find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
     find ./_site/metadata/annotations/ -maxdepth 1 -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
 
     # Testing compilation results:
@@ -237,7 +237,7 @@ else
        for PAGE in $PAGES; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
     wrap λ "Smallcaps-auto regression in Markdown"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www' -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www' -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e 'hhttp://' -e 'hhttps://'; }
     wrap λ "Stray links in Markdown"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 egrep --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]\+\#[a-z]\+'; }
@@ -382,7 +382,7 @@ else
           }
     wrap λ "Anchors linked but not defined inside page?"
 
-    λ(){ find . -xtype l -printf 'Broken symbolic link: %p\n'; }
+    λ(){ find . -not -name "*#*" -xtype l -printf 'Broken symbolic link: %p\n'; }
     wrap λ "Broken symbolic links"
 
     ## Is the Internet up?
