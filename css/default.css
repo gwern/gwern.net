@@ -1457,11 +1457,11 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 .marginnote.sidenote {
     display: initial;
-    /*	965px because that’s the width of #markdownBody at the widths where we
-    	get margin notes. Someday, find a way to auto-compute this (but note 
-    	that `50%` doesn’t work in place of `(965px / 2)`; it breaks when the
-    	margin note is within a narrower block, like a <p> within an <ol>).
-    	—SA 2022-03-28
+    /*  965px because that’s the width of #markdownBody at the widths where we
+        get margin notes. Someday, find a way to auto-compute this (but note
+        that `50%` doesn’t work in place of `(965px / 2)`; it breaks when the
+        margin note is within a narrower block, like a <p> within an <ol>).
+        —SA 2022-03-28
      */
     width: calc(50vw - ((965px / 2) + 104px));
     max-width: var(--GW-sidenotes-max-width);
@@ -1722,9 +1722,9 @@ code {
     hyphens: none;
 }
 
-/*	Bare-URL links will be <a><code>http://foo.bar</code></a> */
+/*  Bare-URL links will be <a><code>http://foo.bar</code></a> */
 a code {
-	font-size: 0.9em;
+    font-size: 0.9em;
 }
 
 pre {
@@ -1907,13 +1907,14 @@ span.inflationAdjusted {
     actually sets it on relevant paragraphs. It would be difficult to define 'first paragraph'
     at the start of the page correctly without many special-case pure-CSS selectors.
     (Drop-caps in arbitrary manually-specified places, like appendices or split-out articles,
-    are supported by a separate 'drop-cap' singular class.)
+    are supported by a separate 'drop-cap' singular class which can wrap either the abstract
+    or a specific <p>.)
 
-    The 3 drop-caps right now are Goudy
-    ('drop-caps-goudy'), yinit ('drop-caps-yinit'), and
-    De-Zs/Deutsche Zierschrift ('drop-caps-de-zs'). Goudy is for
-    literary/historical/humanities pages, yinit is for technical/scientific
-    pages, and De-Zs is for everything else.
+    The 3 drop-caps right now are Cheshire, Goudy
+    ('drop-caps-goudy'), yinit ('drop-caps-yinit'), Kanzlei, and
+    De-Zs/Deutsche Zierschrift ('drop-caps-de-zs'). Cheshire is for literary pages, Goudy is for
+    historical/humanities pages, kanzlei is for light technical/scientific pages, while yinit is for technical/scientific
+    pages (if it has a lot of equations, it's yinit), and De-Zs is for everything else (such as newsletters).
     */
 @media only screen and (min-width: 650px) {
     *[class*='drop-cap-']::first-letter,
@@ -3041,14 +3042,14 @@ body.directory-index #disqus_thread {
     display: inline-block;
     height: 100%;
 }
-/*	Ditto, but block math.
+/*  Ditto, but block math.
  */
 .wikipedia-entry dl .mwe-math-element {
-	display: block;
-	height: unset;
+    display: block;
+    height: unset;
 }
 .wikipedia-entry dl .mwe-math-element img {
-	display: block;
+    display: block;
 }
 
 /* HACK: In WP popups, the thumbnails typically do not *quite* align with the caption, unlike regular images or in regular popups: the images ('img') get set to 250px (WP API's default for mobile?), but the figure caption ('figcaption') get set to 265.185px, producing a nagging inconsistency. This seems to be due to a loop in extracts.js ('// Ensure no reflow due to figures'), which tries to avoid the popup reflowing by setting the width dynamically, but it does so only on the *img* element. Thus, they wind up inconsistent.
@@ -3778,12 +3779,12 @@ To hack around this issue (which surely has a better answer), and since in some 
     display: none;
 }
 
-/*	Page thumbnails in local page transclude popups.
+/*  Page thumbnails in local page transclude popups.
  */
 .popup .abstract figure {
-	float: right;
-	max-width: calc(50% - 1em);
-	margin: 0.5em 0 1em 1em;
+    float: right;
+    max-width: calc(50% - 1em);
+    margin: 0.5em 0 1em 1em;
 }
 
 /*=-----------------------=*/
@@ -3985,7 +3986,7 @@ To hack around this issue (which surely has a better answer), and since in some 
     opacity: 1.0;
 }
 #popups-disabled-show-popup-options-dialog-button button:active {
-	transform: scale(0.95);
+    transform: scale(0.95);
 }
 
 /**********/
@@ -4392,23 +4393,23 @@ To hack around this issue (which surely has a better answer), and since in some 
 /***************/
 
 section.highlighted {
-	position: relative;
+    position: relative;
 }
 section.highlighted::before {
-	content: "";
-	display: block;
-	position: absolute;
-	top: -0.5em;
-	left: -1.25em;
-	width: calc(100% + 2em);
-	height: calc(100% + 1.25em);
-	outline: 3px double var(--GW-section-highlighted-border-color);
-	z-index: -1;
-	transition:
+    content: "";
+    display: block;
+    position: absolute;
+    top: -0.5em;
+    left: -1.25em;
+    width: calc(100% + 2em);
+    height: calc(100% + 1.25em);
+    outline: 3px double var(--GW-section-highlighted-border-color);
+    z-index: -1;
+    transition:
         outline 0.15s ease 0.05s;
 }
 section.highlight-fading::before {
-	outline: 3px double transparent;
+    outline: 3px double transparent;
 }
 
 /*********************/
@@ -4520,151 +4521,151 @@ section.highlight-fading::before {
 /*************/
 
 #mode-selector {
-	position: absolute;
-	right: 0;
-	display: flex;
-	background-color: var(--GW-mode-selector-background-color);
-	padding: 0.1em 0.25em 0.3em 0.25em;
-	border: 3px solid transparent;
-	opacity: 0.3;
-	transition:
-		opacity 2s ease;
+    position: absolute;
+    right: 0;
+    display: flex;
+    background-color: var(--GW-mode-selector-background-color);
+    padding: 0.1em 0.25em 0.3em 0.25em;
+    border: 3px solid transparent;
+    opacity: 0.3;
+    transition:
+        opacity 2s ease;
 }
 #mode-selector.hidden {
-	opacity: 0;
+    opacity: 0;
 }
 #mode-selector:hover {
-	transition: none;
-	opacity: 1.0;
-	border: 3px double var(--GW-mode-selector-border-hover-color);
+    transition: none;
+    opacity: 1.0;
+    border: 3px double var(--GW-mode-selector-border-hover-color);
 }
 #mode-selector button {
-	-moz-appearance: none;
-	appearance: none;
-	border: none;
-	background-color: transparent;
-	padding: 0.5em;
-	margin: 0 0 0 1.375em;
-	line-height: 1;
-	font-family: var(--GW-sans-serif-font-stack);
-	font-size: 0.75rem;
-	text-align: center;
-	color: var(--GW-mode-selector-button-text-color);
-	position: relative;
-	display: flex;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background-color: transparent;
+    padding: 0.5em;
+    margin: 0 0 0 1.375em;
+    line-height: 1;
+    font-family: var(--GW-sans-serif-font-stack);
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--GW-mode-selector-button-text-color);
+    position: relative;
+    display: flex;
 }
 #mode-selector button::before {
-	width: 1.2em;
-	position: absolute;
-	left: -15px;
-	opacity: 0.35;
-	padding: 1px 0 0 0;
+    width: 1.2em;
+    position: absolute;
+    left: -15px;
+    opacity: 0.35;
+    padding: 1px 0 0 0;
 }
 #mode-selector button.select-mode-auto::before {
-	content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M8 256c0 136.966 111.033 248 248 248s248-111.034 248-248S392.966 8 256 8 8 119.033 8 256zm248 184V72c101.705 0 184 82.311 184 184 0 101.705-82.311 184-184 184z"></path></svg>');
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M8 256c0 136.966 111.033 248 248 248s248-111.034 248-248S392.966 8 256 8 8 119.033 8 256zm248 184V72c101.705 0 184 82.311 184 184 0 101.705-82.311 184-184 184z"></path></svg>');
 }
 #mode-selector button.select-mode-light::before {
-	content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 160c-52.9 0-96 43.1-96 96s43.1 96 96 96 96-43.1 96-96-43.1-96-96-96zm246.4 80.5l-94.7-47.3 33.5-100.4c4.5-13.6-8.4-26.5-21.9-21.9l-100.4 33.5-47.4-94.8c-6.4-12.8-24.6-12.8-31 0l-47.3 94.7L92.7 70.8c-13.6-4.5-26.5 8.4-21.9 21.9l33.5 100.4-94.7 47.4c-12.8 6.4-12.8 24.6 0 31l94.7 47.3-33.5 100.5c-4.5 13.6 8.4 26.5 21.9 21.9l100.4-33.5 47.3 94.7c6.4 12.8 24.6 12.8 31 0l47.3-94.7 100.4 33.5c13.6 4.5 26.5-8.4 21.9-21.9l-33.5-100.4 94.7-47.3c13-6.5 13-24.7.2-31.1zm-155.9 106c-49.9 49.9-131.1 49.9-181 0-49.9-49.9-49.9-131.1 0-181 49.9-49.9 131.1-49.9 181 0 49.9 49.9 49.9 131.1 0 181z"></path></svg>');
-	opacity: 0.45;
-	width: 1.3em;
-	padding: 0;
-	left: -15px;
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 160c-52.9 0-96 43.1-96 96s43.1 96 96 96 96-43.1 96-96-43.1-96-96-96zm246.4 80.5l-94.7-47.3 33.5-100.4c4.5-13.6-8.4-26.5-21.9-21.9l-100.4 33.5-47.4-94.8c-6.4-12.8-24.6-12.8-31 0l-47.3 94.7L92.7 70.8c-13.6-4.5-26.5 8.4-21.9 21.9l33.5 100.4-94.7 47.4c-12.8 6.4-12.8 24.6 0 31l94.7 47.3-33.5 100.5c-4.5 13.6 8.4 26.5 21.9 21.9l100.4-33.5 47.3 94.7c6.4 12.8 24.6 12.8 31 0l47.3-94.7 100.4 33.5c13.6 4.5 26.5-8.4 21.9-21.9l-33.5-100.4 94.7-47.3c13-6.5 13-24.7.2-31.1zm-155.9 106c-49.9 49.9-131.1 49.9-181 0-49.9-49.9-49.9-131.1 0-181 49.9-49.9 131.1-49.9 181 0 49.9 49.9 49.9 131.1 0 181z"></path></svg>');
+    opacity: 0.45;
+    width: 1.3em;
+    padding: 0;
+    left: -15px;
 }
 #mode-selector button.select-mode-dark {
-	margin-left: 1.125em;
+    margin-left: 1.125em;
 }
 #mode-selector button.select-mode-dark::before {
-	content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M283.211 512c78.962 0 151.079-35.925 198.857-94.792 7.068-8.708-.639-21.43-11.562-19.35-124.203 23.654-238.262-71.576-238.262-196.954 0-72.222 38.662-138.635 101.498-174.394 9.686-5.512 7.25-20.197-3.756-22.23A258.156 258.156 0 0 0 283.211 0c-141.309 0-256 114.511-256 256 0 141.309 114.511 256 256 256z"></path></svg>');
-	width: 1.15em;
-	left: -12px;
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M283.211 512c78.962 0 151.079-35.925 198.857-94.792 7.068-8.708-.639-21.43-11.562-19.35-124.203 23.654-238.262-71.576-238.262-196.954 0-72.222 38.662-138.635 101.498-174.394 9.686-5.512 7.25-20.197-3.756-22.23A258.156 258.156 0 0 0 283.211 0c-141.309 0-256 114.511-256 256 0 141.309 114.511 256 256 256z"></path></svg>');
+    width: 1.15em;
+    left: -12px;
 }
 #mode-selector button:not(.selected):hover::before {
-	opacity: 1.0;
+    opacity: 1.0;
 }
 #mode-selector button:hover,
 #mode-selector button.selected {
-	box-shadow:
-		0 2px 0 6px var(--GW-mode-selector-background-color) inset,
-		0 1px 0 6px currentColor inset;
+    box-shadow:
+        0 2px 0 6px var(--GW-mode-selector-background-color) inset,
+        0 1px 0 6px currentColor inset;
 }
 #mode-selector button:not(:disabled):hover {
-	color: var(--GW-mode-selector-button-hover-text-color);
-	cursor: pointer;
+    color: var(--GW-mode-selector-button-hover-text-color);
+    cursor: pointer;
 }
 #mode-selector button:not(:disabled):active {
-	transform: translateY(2px);
-	box-shadow:
-		0 0px 0 6px var(--GW-mode-selector-background-color) inset,
-		0 -1px 0 6px currentColor inset;
+    transform: translateY(2px);
+    box-shadow:
+        0 0px 0 6px var(--GW-mode-selector-background-color) inset,
+        0 -1px 0 6px currentColor inset;
 }
 #mode-selector button.active:not(:hover)::after {
-	content: "";
-	position: absolute;
-	bottom: 0.25em;
-	left: 0;
-	right: 0;
-	border-bottom: 1px dotted currentColor;
-	width: calc(100% - 12px);
-	margin: auto;
+    content: "";
+    position: absolute;
+    bottom: 0.25em;
+    left: 0;
+    right: 0;
+    border-bottom: 1px dotted currentColor;
+    width: calc(100% - 12px);
+    margin: auto;
 }
 @media only screen and (max-width: 1535px) {
-	#mode-selector {
-		flex-flow: column;
-		padding: 0.1em 0.1em 0.2em 0.15em;
-		align-items: flex-start;
-	}
-	#mode-selector button + button {
-		margin-top: 0.25em;
-	}
-	#mode-selector button.select-mode-light::before {
-		left: -16px;
-	}
-	#mode-selector button.select-mode-dark {
-		margin-left: 1.375em;
-	}
-	#mode-selector button.select-mode-dark::before {
-		left: -15px;
-	}
+    #mode-selector {
+        flex-flow: column;
+        padding: 0.1em 0.1em 0.2em 0.15em;
+        align-items: flex-start;
+    }
+    #mode-selector button + button {
+        margin-top: 0.25em;
+    }
+    #mode-selector button.select-mode-light::before {
+        left: -16px;
+    }
+    #mode-selector button.select-mode-dark {
+        margin-left: 1.375em;
+    }
+    #mode-selector button.select-mode-dark::before {
+        left: -15px;
+    }
 }
 @media only screen and (max-width: 1279px) {
-	#mode-selector {
-		padding: 0.1em 0.1em 0.25em 0.15em;
-	}
-	#mode-selector button[class^='select-mode-'] {
-		color: transparent;
-		margin: 0;
-		padding: 0;
-		width: 2em;
-		height: 2em;
-		align-items: center;
-		box-shadow: none;
-		opacity: 0.55;
-	}
-	#mode-selector  button[class^='select-mode-'] + button {
-		margin-top: 0.5em;
-	}
-	#mode-selector button[class^='select-mode-']::before {
-		left: 12.5%;
-		width: 75%;
-		height: 75%;
-	}
-	#mode-selector button:not(:disabled):hover {
-		color: transparent;
-	}
-	#mode-selector button:hover,
-	#mode-selector button.selected {
-		opacity: 1.0;
-	}
+    #mode-selector {
+        padding: 0.1em 0.1em 0.25em 0.15em;
+    }
+    #mode-selector button[class^='select-mode-'] {
+        color: transparent;
+        margin: 0;
+        padding: 0;
+        width: 2em;
+        height: 2em;
+        align-items: center;
+        box-shadow: none;
+        opacity: 0.55;
+    }
+    #mode-selector  button[class^='select-mode-'] + button {
+        margin-top: 0.5em;
+    }
+    #mode-selector button[class^='select-mode-']::before {
+        left: 12.5%;
+        width: 75%;
+        height: 75%;
+    }
+    #mode-selector button:not(:disabled):hover {
+        color: transparent;
+    }
+    #mode-selector button:hover,
+    #mode-selector button.selected {
+        opacity: 1.0;
+    }
 }
 @media only screen and (max-width: 649px) {
-	#mode-selector {
-		top: unset;
-		bottom: 4em;
-	}
-	#mode-selector button[class^='select-mode-'] {
-		width: 2.25em;
-		height: 2.25em;
-	}
+    #mode-selector {
+        top: unset;
+        bottom: 4em;
+    }
+    #mode-selector button[class^='select-mode-'] {
+        width: 2.25em;
+        height: 2.25em;
+    }
 }
 
 /***************/
@@ -4676,46 +4677,46 @@ section.highlight-fading::before {
 /*└───────────────────────────────────────────┘*/
 
 #masked-links-key-toggle-info-alert {
-	position: absolute;
-	background-color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color);
-	color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color);
-	text-shadow:
-		0 0 1px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color),
-		0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color),
-		0 0 5px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color);
-	padding: 0.5em 1em;
-	left: 2px;
-	bottom: 1.5em;
-	font-family: var(--GW-sans-serif-font-stack);
-	font-weight: 700;
-	pointer-events: none;
+    position: absolute;
+    background-color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-background-color);
+    color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-color);
+    text-shadow:
+        0 0 1px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color),
+        0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color),
+        0 0 5px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color);
+    padding: 0.5em 1em;
+    left: 2px;
+    bottom: 1.5em;
+    font-family: var(--GW-sans-serif-font-stack);
+    font-weight: 700;
+    pointer-events: none;
 }
 #masked-links-key-toggle-info-alert.hidden {
-	visibility: hidden;
-	opacity: 0;
-	transition:
-		visibility 0.15s ease,
-		opacity 0.15s ease;
+    visibility: hidden;
+    opacity: 0;
+    transition:
+        visibility 0.15s ease,
+        opacity 0.15s ease;
 }
 #masked-links-key-toggle-info-alert img {
-	display: inline-block;
-	width: 1.25em;
-	filter: invert(1) drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
-	vertical-align: text-bottom;
-	margin: 0 0.625em 0 0;
-	top: -0.05em;
-	position: relative;
+    display: inline-block;
+    width: 1.25em;
+    filter: invert(1) drop-shadow(0 0 3px var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color));
+    vertical-align: text-bottom;
+    margin: 0 0.625em 0 0;
+    top: -0.05em;
+    position: relative;
 }
 #masked-links-key-toggle-info-alert .key {
-	border: 1px solid var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color);
-	padding: 0.05em 0.375em 0.125em 0.375em;
-	display: inline-block;
-	border-radius: 4px;
-	margin: 0 0.1875em 0 0.125em;
-	background-color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color);
-	box-shadow:
-		1px 1px 3px 0 var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color);
-	font-feature-settings: 'smcp';
+    border: 1px solid var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-border-color);
+    padding: 0.05em 0.375em 0.125em 0.375em;
+    display: inline-block;
+    border-radius: 4px;
+    margin: 0 0.1875em 0 0.125em;
+    background-color: var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-key-icon-background-color);
+    box-shadow:
+        1px 1px 3px 0 var(--GW-reader-mode-masked-links-key-toggle-info-alert-panel-text-shadow-color);
+    font-feature-settings: 'smcp';
 }
 
 /*┌───────────────────────┐*/
@@ -4723,153 +4724,153 @@ section.highlight-fading::before {
 /*└───────────────────────┘*/
 
 #reader-mode-selector {
-	position: absolute;
-	right: 11em;
-	display: flex;
-	background-color: var(--GW-mode-selector-background-color);
-	padding: 0.1em 0.25em 0.3em 0.25em;
-	border: 3px solid transparent;
-	opacity: 0.3;
-	transition:
-		opacity 2s ease;
+    position: absolute;
+    right: 11em;
+    display: flex;
+    background-color: var(--GW-mode-selector-background-color);
+    padding: 0.1em 0.25em 0.3em 0.25em;
+    border: 3px solid transparent;
+    opacity: 0.3;
+    transition:
+        opacity 2s ease;
 }
 #reader-mode-selector.hidden {
-	opacity: 0;
+    opacity: 0;
 }
 #reader-mode-selector:hover {
-	transition: none;
-	opacity: 1.0;
-	border: 3px double var(--GW-mode-selector-border-hover-color);
+    transition: none;
+    opacity: 1.0;
+    border: 3px double var(--GW-mode-selector-border-hover-color);
 }
 #reader-mode-selector button {
-	-moz-appearance: none;
-	appearance: none;
-	border: none;
-	background-color: transparent;
-	padding: 0.5em;
-	margin: 0 0 0 1.875em;
-	line-height: 1;
-	font-family: var(--GW-sans-serif-font-stack);
-	font-size: 0.75rem;
-	text-align: center;
-	color: var(--GW-mode-selector-button-text-color);
-	position: relative;
-	display: flex;
+    -moz-appearance: none;
+    appearance: none;
+    border: none;
+    background-color: transparent;
+    padding: 0.5em;
+    margin: 0 0 0 1.875em;
+    line-height: 1;
+    font-family: var(--GW-sans-serif-font-stack);
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--GW-mode-selector-button-text-color);
+    position: relative;
+    display: flex;
 }
 #reader-mode-selector button::before {
-	width: calc(7/5 * 1em);
-	height: calc(7/5 * 1em);
-	position: absolute;
-	left: calc(1px + -4/3 * 1em);
-	opacity: 0.4;
-	top: 0.5em;
+    width: calc(7/5 * 1em);
+    height: calc(7/5 * 1em);
+    position: absolute;
+    left: calc(1px + -4/3 * 1em);
+    opacity: 0.4;
+    top: 0.5em;
 }
 #reader-mode-selector button.select-mode-auto::before {
-	content: url('/static/img/icons/book-with-gear.svg');
-	top: 0.4em;
+    content: url('/static/img/icons/book-with-gear.svg');
+    top: 0.4em;
 }
 #reader-mode-selector button.select-mode-on::before {
-	content: url('/static/img/icons/book-open-solid.svg');
+    content: url('/static/img/icons/book-open-solid.svg');
 }
 #reader-mode-selector button.select-mode-off::before {
-	content: url('/static/img/icons/book-open.svg');
+    content: url('/static/img/icons/book-open.svg');
 }
 #reader-mode-selector button:not(.selected):hover::before {
-	opacity: 1.0;
+    opacity: 1.0;
 }
 #reader-mode-selector button:hover,
 #reader-mode-selector button.selected {
-	box-shadow:
-		0 2px 0 6px var(--GW-mode-selector-background-color) inset,
-		0 1px 0 6px currentColor inset;
+    box-shadow:
+        0 2px 0 6px var(--GW-mode-selector-background-color) inset,
+        0 1px 0 6px currentColor inset;
 }
 #reader-mode-selector button:not(:disabled):hover {
-	color: var(--GW-mode-selector-button-hover-text-color);
-	cursor: pointer;
+    color: var(--GW-mode-selector-button-hover-text-color);
+    cursor: pointer;
 }
 #reader-mode-selector button:not(:disabled):active {
-	transform: translateY(2px);
-	box-shadow:
-		0 0px 0 6px var(--GW-mode-selector-background-color) inset,
-		0 -1px 0 6px currentColor inset;
+    transform: translateY(2px);
+    box-shadow:
+        0 0px 0 6px var(--GW-mode-selector-background-color) inset,
+        0 -1px 0 6px currentColor inset;
 }
 #reader-mode-selector button.active:not(:hover)::after {
-	content: "";
-	position: absolute;
-	bottom: 0.25em;
-	left: 0;
-	right: 0;
-	border-bottom: 1px dotted currentColor;
-	width: calc(100% - 12px);
-	margin: auto;
+    content: "";
+    position: absolute;
+    bottom: 0.25em;
+    left: 0;
+    right: 0;
+    border-bottom: 1px dotted currentColor;
+    width: calc(100% - 12px);
+    margin: auto;
 }
 @media only screen and (max-width: 1800px) {
-	#reader-mode-selector {
-		right: 0;
-		top: 2em;
-	}
+    #reader-mode-selector {
+        right: 0;
+        top: 2em;
+    }
 }
 @media only screen and (max-width: 1535px) {
-	#reader-mode-selector {
-		flex-flow: column;
-		padding: 0.1em 0.1em 0.2em 0.15em;
-		align-items: flex-start;
-		top: 7em;
-	}
-	#reader-mode-selector button + button {
-		margin-top: 0.25em;
-	}
+    #reader-mode-selector {
+        flex-flow: column;
+        padding: 0.1em 0.1em 0.2em 0.15em;
+        align-items: flex-start;
+        top: 7em;
+    }
+    #reader-mode-selector button + button {
+        margin-top: 0.25em;
+    }
 }
 @media only screen and (max-width: 1279px) {
-	#reader-mode-selector {
-		padding: 0.1em 0.1em 0.25em 0.15em;
-		background-color: var(--GW-mode-selector-mobile-background-color);
+    #reader-mode-selector {
+        padding: 0.1em 0.1em 0.25em 0.15em;
+        background-color: var(--GW-mode-selector-mobile-background-color);
         opacity: 1.0;
-	}
-	#reader-mode-selector button {
-		color: transparent;
-		margin: 0;
-		padding: 0;
-		width: 2em;
-		height: 2em;
-		align-items: center;
-		box-shadow: none;
-		opacity: 0.25;
-	}
+    }
+    #reader-mode-selector button {
+        color: transparent;
+        margin: 0;
+        padding: 0;
+        width: 2em;
+        height: 2em;
+        align-items: center;
+        box-shadow: none;
+        opacity: 0.25;
+    }
     #reader-mode-selector button.select-mode-off {
         opacity: 0.3;
     }
-	#reader-mode-selector  button + button {
-		margin-top: 0.5em;
-	}
-	#reader-mode-selector button::before {
-		left: 12.5%;
-		width: 75%;
-		height: 75%;
-	}
-	#reader-mode-selector button:not(:disabled):hover {
-		color: transparent;
-	}
-	#reader-mode-selector button:hover,
-	#reader-mode-selector button.selected {
-		opacity: 0.75;
-	}
-	#reader-mode-selector button.select-mode-on:hover,
-	#reader-mode-selector button.select-mode-on.selected {
-		opacity: 0.55;
-	}
-	#reader-mode-selector button.select-mode-off:hover,
-	#reader-mode-selector button.select-mode-off.selected {
-		opacity: 0.85;
-	}
+    #reader-mode-selector  button + button {
+        margin-top: 0.5em;
+    }
+    #reader-mode-selector button::before {
+        left: 12.5%;
+        width: 75%;
+        height: 75%;
+    }
+    #reader-mode-selector button:not(:disabled):hover {
+        color: transparent;
+    }
+    #reader-mode-selector button:hover,
+    #reader-mode-selector button.selected {
+        opacity: 0.75;
+    }
+    #reader-mode-selector button.select-mode-on:hover,
+    #reader-mode-selector button.select-mode-on.selected {
+        opacity: 0.55;
+    }
+    #reader-mode-selector button.select-mode-off:hover,
+    #reader-mode-selector button.select-mode-off.selected {
+        opacity: 0.85;
+    }
 }
 @media only screen and (max-width: 649px) {
-	#reader-mode-selector {
-		top: unset;
-		bottom: 11em;
-	}
-	#reader-mode-selector button[class^='select-mode-'] {
-		width: 2.25em;
-		height: 2.25em;
-	}
+    #reader-mode-selector {
+        top: unset;
+        bottom: 11em;
+    }
+    #reader-mode-selector button[class^='select-mode-'] {
+        width: 2.25em;
+        height: 2.25em;
+    }
 }

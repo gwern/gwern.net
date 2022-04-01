@@ -205,7 +205,7 @@ filterAnchors d t = T.length t > anchorLengthMaximum ||
                        "matrix multiplication", "Silk Road 2", "Silk Road 2.0", "online", "Online", "side effects",
                        "status", "transcription/translation", "ADHD", "more difficult", "Johnson", "June 2016", "decline with age",
                        "criminal records", "the appendix", "API", "another page", "at least once", "must be", "expected from their",
-                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined"]
+                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]
@@ -437,7 +437,7 @@ whiteList = M.fromList [
   , ( "https://deepmind.com/blog/article/learning-through-human-feedback"
     , ["Learning through human feedback" ]
     )
-  , ( "https://deepmind.com/blog/learning-through-human-feedback/"
+  , ( "https://www.deepmind.com/blog/learning-through-human-feedback"
     , [ "Learning through human feedback" ]
     )
   , ( "https://deepmind.com/blog/prefrontal-cortex-meta-reinforcement-learning-system/"

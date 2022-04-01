@@ -55,11 +55,17 @@ rebuildSVGIconCSS = do unless (null linkIconTest) $ error ("Error! Link icons fa
 -- → Link ("",[],[("link-icon","pdf"),("link-icon-type","svg")]) [Str "foo"] ("/docs/foo.pdf","Foo & Bar 2022")
 -- → <a href="/docs/foo.pdf" data-link-icon="pdf" data-link-icon-type="svg" title="Foo &amp; Bar 2022">foo</a>
 --
+-- In cases of local archive links, matches on the `/docs/www/$DOMAIN/$ARCHIVE.html` aren't necessarily *exactly*
+-- as powerful; local archives deliberately throw away directory structure for simpler addresses, so 2 matches for
+-- 'foo.com/bar/*' and 'foo.com/quux/*' would collide when trying to match just '/docs/www/foo.com/$ARCHIVE.html'.
+-- For this case, we detect & exploit the `data-original-URL` attribute which is around for just such problems,
+-- and we run matches on the original URL, and everything should work as expected then.
+--
 -- TODO: the PDF checks are incomplete (and only look for ".pdf" essentially) but since I'm trying
 -- to remove all weird non-standard PDFs and host locally all PDFs with clean names & extensions,
 -- maybe that's a vestigial concern?
 linkIcon :: Inline -> Inline
-linkIcon x@(Link (_,cl,_) _ (u, _))
+linkIcon x@(Link (_,cl,attributes) _ (u, _))
  -- Short-circuits for manual control (one can either disable icons with a `[Foo](URL){.no-icon}`
  -- class, or specify a preferred icon on a link, like `[Foo](URL){.link-icon="deepmind"
  -- .link-icon-type="svg"}` by specifying the attributes directly), or define a global URL/(link
@@ -296,6 +302,7 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  | u'' "www.huffpost.com" = aI "HUFF" "text,quad,sans"
  | u'' "longreads.com" = aI "Long" "text,quad"
  | u'' "warontherocks.com" = aI "WOTR" "text,quad,sans"
+ | u'' "krebsonsecurity.com" = aI "Kreb" "text,quad,sans" -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krebs', so abbreviate that
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -368,9 +375,13 @@ linkIcon x@(Link (_,cl,_) _ (u, _))
  where u', u'' :: T.Text -> Bool
        -- simplest check for string anywhere; note that if it is a full domain name like `https://foo.com` (intended to match `https://foo.com/xyz.html`), then it will *not* match when the local-archive code fires and the URL gets rewritten to "/docs/foo.com/$HASH.html". So we error out if the user tries this, having forgotten that u' ≠ u'' in that respect.
        u' v = if "http://" `T.isPrefixOf` v || "https://" `T.isPrefixOf` v then error ("Overly strict prefix in infix matching: " ++ show u ++ ":" ++ show v) else
-                v `T.isInfixOf` u
+         if originalURL=="" then v `T.isInfixOf` u else v `T.isInfixOf` originalURL
        -- more careful check:
-       u'' v = isHostOrArchive v u
+       u'' v = if originalURL=="" then isHostOrArchive v u else isHostOrArchive v originalURL
+       originalURL :: T.Text
+       originalURL = case lookup "data-url-original" attributes of
+                       Nothing -> ""
+                       Just url -> url
        aI :: T.Text -> T.Text -> Inline
        aI = addIcon x
        iE :: [T.Text] -> Bool
@@ -950,4 +961,5 @@ linkIconTestUnits =
          , ("/images/fiction/batman.psd",  "image","svg") -- TODO
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
+         , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Kreb", "text,quad,sans")
         ]

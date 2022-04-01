@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-29 20:45:36 gwern"
+When:  Time-stamp: "2022-03-30 09:55:55 gwern"
 License: CC-0
 -}
 
@@ -136,13 +136,6 @@ readLinkMetadataAndCheck = do
 
              let titles = map (\(_,(t,_,_,_,_,_)) -> filter (\c -> not (isPunctuation c || isSpace c)) $ map toLower t) custom in when (length (uniq (sort titles)) /= length titles) $ error $ "Duplicate titles in 'custom.yaml': " ++ unlines (titles \\ nubOrd titles)
 
-             let dateRegex = mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
-             let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) custom in
-               Par.mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex dateRegex d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
-
-             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) custom in
-               Par.mapM_ (\a -> when (not (null a)) $ when (isJust (matchRegex dateRegex a)) (error $ "Mixed up author & date?: " ++ a) ) authors
-
              let badDoisDash = filter (\(_,(_,_,_,doi,_,_)) -> '–' `elem` doi || '—' `elem` doi || ' ' `elem` doi || ',' `elem` doi || "http" `isInfixOf` doi) custom in
                  when (not (null badDoisDash)) $ error $ "Bad DOIs (bad punctuation): " ++ show badDoisDash
              -- about the only requirement for DOIs, aside from being made of graphical Unicode characters (which includes spaces <https://www.compart.com/en/unicode/category/Zs>!), is that they contain one '/': https://www.doi.org/doi_handbook/2_Numbering.html#2.2.3 "The DOI syntax shall be made up of a DOI prefix and a DOI suffix separated by a forward slash. There is no defined limit on the length of the DOI name, or of the DOI prefix or DOI suffix. The DOI name is case-insensitive and can incorporate any printable characters from the legal graphic characters of Unicode." https://www.doi.org/doi_handbook/2_Numbering.html#2.2.1
@@ -178,6 +171,12 @@ readLinkMetadataAndCheck = do
              auto <- readYaml "metadata/auto.yaml"
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
+
+             let dateRegex = mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
+             let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final) in
+               Par.mapM_ (\a -> when (not (null a)) $ when (isJust (matchRegex dateRegex a)) (error $ "Mixed up author & date?: " ++ a) ) authors
+             let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
+               Par.mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex dateRegex d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
