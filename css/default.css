@@ -1052,13 +1052,15 @@ h1 sub, h1 sup, h2 sub, h2 sup  { font-size: 60%;  }
 .footnotes .footnote-back {
     margin: 0 0 0 0.5em;
     position: relative;
-    line-height: 0.5;
-    border: 1px dotted var(--GW-footnote-backlink-border-color);
     display: inline-block;
+    font-size: 1rem;
+    line-height: 0.5;
     text-indent: 0;
-    z-index: 1;
+    border: 1px dotted var(--GW-footnote-backlink-border-color);
     top: 0.15em;
-    padding: 0.4em 0.2em 0.25em 0.2em;
+    padding: 0.1em 0.25em 0.15em 0.25em;
+    width: 1em;
+    z-index: 1;
 }
 .markdownBody .footnotes a.footnote-back {
     background-image: none;
@@ -1430,6 +1432,13 @@ section.footnotes > hr:first-child.highlighted::before {
 
 .sidenote .footnote-self-link {
     display: none;
+}
+
+.footnotes .sidenote blockquote + a.footnote-back,
+.footnotes .sidenote pre + a.footnote-back,
+.footnotes .sidenote .sourceCode + a.footnote-back {
+    top: unset;
+    bottom: 0;
 }
 
 /*=--------------=*/
