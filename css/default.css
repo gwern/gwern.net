@@ -1052,14 +1052,13 @@ h1 sub, h1 sup, h2 sub, h2 sup  { font-size: 60%;  }
 .footnotes .footnote-back {
     margin: 0 0 0 0.5em;
     position: relative;
-    font-weight: bold;
     line-height: 0.5;
     border: 1px dotted var(--GW-footnote-backlink-border-color);
     display: inline-block;
     text-indent: 0;
     z-index: 1;
     top: 0.15em;
-    padding: 0.45em 0.2em 0.2em 0.2em;
+    padding: 0.4em 0.2em 0.25em 0.2em;
 }
 .markdownBody .footnotes a.footnote-back {
     background-image: none;
