@@ -75,10 +75,10 @@ addClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `elem` clsses then
 addClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code (i, clss:clsses, ks) code
 addClass _    x = x
 removeClass :: T.Text -> Inline -> Inline
-removeClass clss x@(Span (i, clsses, ks) s)            = if clss `notElem` clsses then x else Span (i, filter (==clss) clsses, ks) s
-removeClass clss x@(Link (i, clsses, ks) s (url, tt))  = if clss `notElem` clsses then x else Link (i, filter (==clss) clsses, ks) s (url, tt)
-removeClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `notElem` clsses then x else Image (i, filter (==clss) clsses, ks) s (url, tt)
-removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `elem` clsses then x else Code (i, filter (==clss) clsses, ks) code
+removeClass clss x@(Span (i, clsses, ks) s)            = if clss `notElem` clsses then x else Span (i, filter (/=clss) clsses, ks) s
+removeClass clss x@(Link (i, clsses, ks) s (url, tt))  = if clss `notElem` clsses then x else Link (i, filter (/=clss) clsses, ks) s (url, tt)
+removeClass clss x@(Image (i, clsses, ks) s (url, tt)) = if clss `notElem` clsses then x else Image (i, filter (/=clss) clsses, ks) s (url, tt)
+removeClass clss x@(Code  (i, clsses, ks) code)        = if clss `notElem` clsses then x else Code (i, filter (/=clss) clsses, ks) code
 removeClass _    x = x
 
 -- print normal progress messages to stderr in bold green:
