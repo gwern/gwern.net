@@ -879,21 +879,34 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function applyDropCapsClasses(loadEventInfo) {
     GWLog("applyDropCapsClasses", "rewrite.js", 1);
 
+	let loadedDocBody = loadEventInfo.document.querySelector("body");
+
     //  Add ‘drop-cap-’ class to requisite blocks.
-    let dropCapBlocksSelector = ".markdownBody > p:first-child, .markdownBody > .epigraph:first-child + p, .markdownBody .abstract + p";
-    let dropCapClass = Array.from(loadEventInfo.document.querySelector("body").classList).find(cssClass => cssClass.startsWith("drop-caps-"));
-    if (dropCapClass) {
+    let dropCapBlocksSelector = [
+    	".markdownBody > p:first-child", 
+    	".markdownBody > .epigraph:first-child + p", 
+    	".markdownBody .abstract + p"
+    ].join(", ");
+    let dropCapClass = Array.from(loadedDocBody.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
+    if (dropCapClass)
         dropCapClass = dropCapClass.replace("-caps-", "-cap-");
-        loadEventInfo.document.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
-            /*  Only add page-global drop cap class to blocks that don’t
-                already have a drop cap class of their own.
-                Also, skip blocks that have a ‘no-drop-cap’ class set.
-             */
-            if (    Array.from(dropCapBlock.classList).findIndex(cssClass => cssClass.startsWith("drop-cap-")) == -1
-            	&& !dropCapBlock.classList.contains("drop-cap-no"))
-                dropCapBlock.classList.add(dropCapClass);
-        });
-    }
+
+	loadEventInfo.document.querySelectorAll(dropCapBlocksSelector).forEach(dropCapBlock => {
+		/*  Drop cap class could be set globally, or overridden by a .abstract;
+			the latter could be `drop-cap-no` (which nullifies any page-global
+			drop-cap class for the given block).
+		 */
+		let precedingAbstract = (   dropCapBlock.previousElementSibling 
+								 && dropCapBlock.previousElementSibling.classList.contains("abstract"))
+								? dropCapBlock.previousElementSibling
+								: null;
+		dropCapClass = (precedingAbstract 
+						? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-")) 
+						: null) || dropCapClass;
+		if (   dropCapClass
+			&& dropCapClass != "drop-cap-no")
+			dropCapBlock.classList.add(dropCapClass);
+	});
 }
 
 /******************************************/
