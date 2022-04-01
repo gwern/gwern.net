@@ -739,6 +739,7 @@ figcaption {
     padding: 0.25em 0.5em calc(0.25em + 1px) 0.5em;
     width: -moz-fit-content;
     width: fit-content;
+    text-align: center;
 }
 figcaption strong {
     font-weight: inherit;
@@ -1895,10 +1896,22 @@ span.inflationAdjusted {
 /*************/
 /*  "drop caps"/"initials" (https://en.wikipedia.org/wiki/Initial
     https://wiki.obormot.net/Reference/DropCapsDemo) are large fancy
-    block letters used to start a page/section. We skip them on mobile because
+    block letters used to start a page/section.
+
+    The 5 drop-caps right now are Cheshire ('drop-caps-cheshire') (https://www.dafont.com/cheshire-initials.font), Goudy Initialen (https://www.1001fonts.com/goudy-initialen-font.html)
+    ('drop-caps-goudy'), yinit (https://www.tug.org/TUGboat/tb12-1/tb31hara.pdf#page=8) ('drop-caps-yinit'), Kanzlei Initialen ('drop-caps-kanzlei') (https://wiki.obormot.net/Main/BonusFontsDemo?demo_font_one=Kanzlei+Initialen), and
+    De-Zs/Deutsche Zierschrift (https://www.typografie.info/3/Schriften/fonts.html/deutsche-zierschrift-r250/) ('drop-caps-de-zs').
+
+    Drop-caps are used to subtly 'theme' pages: Cheshire is for literary pages, Goudy is for
+    historical/humanities pages, Kanzlei is for light technical/scientific pages, while yinit is for hardcore technical/scientific
+    pages (if it has a lot of equations, it's yinit), and De-Zs is for everything else (such as newsletters).
+
+    We use them on desktop & skip them on mobile because
     they use up 8-12KB each (even after @font-face subset optimization to load
     only 1 letter at a time), and take up a lot of screen space.
-    (Mobile users can't have nice things.) To implement them, each Markdown
+    (Mobile users can't have nice things.)
+
+    To implement them, each Markdown
     page has a custom metadata field like "css: drop-caps-goudy" which is
     substituted into the compiled HTML like
     '<body class="pagename drop-caps-goudy">', allowing defining of multiple
@@ -1909,12 +1922,6 @@ span.inflationAdjusted {
     (Drop-caps in arbitrary manually-specified places, like appendices or split-out articles,
     are supported by a separate 'drop-cap' singular class which can wrap either the abstract
     or a specific <p>.)
-
-    The 3 drop-caps right now are Cheshire, Goudy
-    ('drop-caps-goudy'), yinit ('drop-caps-yinit'), Kanzlei, and
-    De-Zs/Deutsche Zierschrift ('drop-caps-de-zs'). Cheshire is for literary pages, Goudy is for
-    historical/humanities pages, kanzlei is for light technical/scientific pages, while yinit is for technical/scientific
-    pages (if it has a lot of equations, it's yinit), and De-Zs is for everything else (such as newsletters).
     */
 @media only screen and (min-width: 650px) {
     *[class*='drop-cap-']::first-letter,
