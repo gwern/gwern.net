@@ -75,7 +75,7 @@ ReaderMode = {
 				z-index: -1;
 			}
 			body.reader-mode-active header h1 {
-				margin: 0.625em 0 0.2em 0;
+				margin: 0.625em 0 0.375em 0;
 			}
 		}
 	`,
