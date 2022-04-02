@@ -3126,6 +3126,10 @@ ReaderMode = {
 			background: none;
 			cursor: text;
 		}
+		body.reader-mode-active.masked-links-hidden a:link,
+		body.reader-mode-active.masked-links-hidden a:link * {
+			text-shadow: none;
+		}
 		@media only screen and (max-width: 649px) {
 			body.reader-mode-active #sidebar {
 				position: relative;

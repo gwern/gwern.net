@@ -332,10 +332,10 @@ window.addEventListener("hashchange", GW.hashUpdated = () => {
 	specially handle searches and pop open collapse sections with matches. We do 
 	this by watching for selection changes. (We don’t bother checking for window
 	focus/blur because that is unreliable and in any case doesn’t work for 
-	“Search Again” key command.
+	“Search Again” key command.)
  */
 document.addEventListener("selectionchange", GW.selectionChanged = (event) => {
-	GWLog("GW.selectionChanged", "rewrite.js", 3);
+	GWLog("GW.selectionChangedCheckForCollapsedContainer", "rewrite.js", 3);
 
 	let newSelection = document.getSelection();
 	if (   newSelection 
