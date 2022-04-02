@@ -264,8 +264,11 @@ else
     λ(){ egrep --color=always -e '^"~/' -e '\$";$' ./static/redirects/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
-    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs  -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
+    λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs."
+
+    λ(){ runhaskell -istatic/build/ ./static/build/link-prioritize.hs | head -20; }
+    wrap λ "Links needing annotations by priority:"
 
     λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
@@ -607,7 +610,7 @@ else
     λ(){ find ./ -type f -name "*.png" | parallel --max-args=100 file | fgrep --invert-match 'PNG image data'; }
     wrap λ "Corrupted PNGs"
 
-    λ(){  find ./ -name "*.png" | fgrep -v '/static/img/' | sort | xargs identify -format '%F %[opaque]\n' | fgrep ' false'; }
+    λ(){  find ./ -name "*.png" | fgrep -v -e '/static/img/' -e '/docs/www/misc/' | sort | xargs identify -format '%F %[opaque]\n' | fgrep ' false'; }
     wrap λ "Partially transparent PNGs (may break in dark mode, convert with 'mogrify -background white -alpha remove -alpha off')"
 
     ## 'file' throws a lot of false negatives on HTML pages, often detecting XML and/or ASCII instead, so we whitelist some:

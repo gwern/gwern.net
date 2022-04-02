@@ -4,9 +4,9 @@
                       creation of manual link annotations.
 Author: Gwern Branwen
 Date: 2019-11-22
-When:  Time-stamp: "2022-02-26 18:41:24 gwern"
+When:  Time-stamp: "2022-04-02 14:43:24 gwern"
 License: CC-0
-Dependencies: none
+Dependencies: gwern.net Hakyll libraries
 
 For writing manual link annotations, a simple way to go is count un-annotated links by frequency.
 Links can be extracted from Markdown documents with `link-extractor.hs` but counting is harder: not
@@ -54,20 +54,22 @@ $ find ~/wiki/ -name "*.page" -type f -print0 | parallel --null ~/wiki/haskell/l
 module Main where
 
 import Control.Monad (when)
-import qualified Data.Map.Strict as M (lookup, size)
+import qualified Data.Map.Strict as M (lookup, map, size, toList)
 import Data.List.Utils (replace)
 import Data.List (sort)
+import qualified Data.Text as T (isInfixOf, unpack)
 
+import LinkBacklink (readBacklinksDB)
 import LinkMetadata (readLinkMetadata, Metadata)
-import Utils (frequency)
 
 main :: IO ()
 main = do db <- readLinkMetadata
           when (M.size db < 1000) $ error $ "Database too small? " ++ show db
-          urls <- fmap lines getContents
-          let urls' = filter (not . isAnnotated db) urls
-          let uses = reverse $ sort $ frequency urls'
-          mapM_ (\(n,url) -> putStrLn (show n ++ " " ++ url)) uses
+          bdb <- readBacklinksDB
+          let urls = M.toList $ M.map length bdb
+          let urls' = filter (\(url,_) -> not (isAnnotated db (T.unpack url)) && "." `T.isInfixOf` url) urls
+          let uses = reverse $ sort $ map (\(a,b) -> (b,a)) urls'
+          putStrLn $ unlines $ map (\(n,url) -> show n ++ " " ++ T.unpack url) uses
 
 isAnnotated :: Metadata -> String -> Bool
 isAnnotated md target =
