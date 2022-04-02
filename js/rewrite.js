@@ -812,6 +812,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     }
 }, { phase: "rewrite" });
 
+
 /*****************/
 /* PAGE METADATA */
 /*****************/
@@ -919,6 +920,35 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 }, {
 	phase: "rewrite",
 	condition: (info) => info.isMainDocument
+});
+
+
+/********/
+/* MATH */
+/********/
+
+function addCopyListenersToMathBlocks(loadEventInfo) {
+    GWLog("addCopyListenersToMathBlocks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".mjx-chtml").forEach(mathBlock => { 
+		mathBlock.addEventListener("copy", (event) => {
+			event.preventDefault();
+			let latexSource = event.target.closest(".mjx-math").getAttribute("aria-label");
+			event.clipboardData.setData("text/plain", latexSource);
+			event.clipboardData.setData("text/html", latexSource);
+		});
+	});
+}
+
+/**********************************************/
+/*  Add content load handler for math elements.
+ */
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMathElements = (info) => {
+    GWLog("GW.rewriteFunctions.processMathElements", "rewrite.js", 2);
+
+    addCopyListenersToMathBlocks(info);
+}, {
+	phase: "eventListeners"
 });
 
 
