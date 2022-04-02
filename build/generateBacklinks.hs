@@ -10,9 +10,9 @@ import Text.Pandoc.Walk (walk)
 import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
 import Data.List (isPrefixOf, isInfixOf, isSuffixOf)
-import qualified Data.Map.Strict as M (lookup, keys, elems, traverseWithKey, fromListWith, union)
+import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
-import Network.HTTP (urlDecode, urlEncode)
+import Network.HTTP (urlEncode)
 import Data.List.Utils (replace)
 import Data.Containers.ListUtils (nubOrd)
 import Control.Monad (forM_, unless)
@@ -20,7 +20,7 @@ import Control.Monad (forM_, unless)
 import Control.Monad.Parallel as Par (mapM)
 
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, safeHtmlWriterOptions)
+import LinkMetadata -- (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, safeHtmlWriterOptions)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
 import Utils (writeUpdatedFile, sed)
@@ -51,7 +51,9 @@ main = do
   let html     = filter (".html" `isSuffixOf` ) fs
   links2 <- Par.mapM (parseFileForLinks False) html
 
-  let linksdb = M.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2
+  let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey parseAnnotationForLinks mdb
+
+  let linksdb = M.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2++links3
   let bldb' = linksdb `M.union` bldb
   writeBacklinksDB bldb'
 
@@ -94,16 +96,26 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let backLinksHtmlFragment = "<div class=\"columns\">\n" `T.append` html `T.append` "\n</div>"
                                        writeUpdatedFile "backlink" f backLinksHtmlFragment
 
+parseAnnotationForLinks :: String -> MetadataItem -> [(T.Text,T.Text)]
+parseAnnotationForLinks p (_,_,_,_,_,abstract) =
+                            let links = map truncateAnchors $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
+                                         extractLinksWith backLinksNot False (T.pack abstract)
+
+                                caller = T.pack p
+                                in if not (blackList caller) then [] else
+                                     let called =  filter (/= caller) links
+                                     in zip called (repeat caller)
+
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
 parseFileForLinks md m = do text <- TIO.readFile m
 
                             let links = map truncateAnchors $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                          extractLinksWith backLinksNot md text
 
-                            let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "metadata/annotations/" "" $ replace "https://www.gwern.net/" "/" $ replace ".page" "" $ sed "^metadata/annotations/(.*)\\.html$" "\\1" $ urlDecode m
+                            let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "https://www.gwern.net/" "/" $ replace ".page" "" m
                             if not (blackList caller) then return [] else
                              do
-                                let called = filter (/= caller) (map (T.pack . replace "/metadata/annotations/" "" . replace "https://www.gwern.net/" "/"  . (\l -> if "/metadata/annotations"`isPrefixOf`l then urlDecode $ replace "/metadata/annotations" "" l else l) . T.unpack) links)
+                                let called = filter (/= caller) (map (T.pack . replace "https://www.gwern.net/" "/"  . T.unpack) links)
                                 return $ zip called (repeat caller)
 
 -- filter out links with the 'backlinksNot' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.

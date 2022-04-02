@@ -1,15 +1,17 @@
 {- LinkBacklink.hs: utility functions for working with the backlinks database.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-02 19:56:14 gwern"
+When:  Time-stamp: "2022-04-02 12:02:15 gwern"
 License: CC-0
 
 This is the inverse to Query: Query extracts hyperlinks within a Pandoc document which point 'out' or 'forward',
 which is the usual simple unidirectional form of a hyperlink. Backlinks are the reverse: all documents which
 link *to* the current one. As a global property over all documents, they cannot be computed locally or easily.
 We generate them inside the `generateBacklinks.hs` executable and store them in a database.
+(Most of the complexity is inside `generateBacklinks.hs` in dealing with what files to parse, what to filter out,
+how to write out the HTML snippets used to provide 'backlinks' links as gwern.net popups, etc.)
 
-This module provides functions for reading & writing the backlinks database.
+This module provides helper functions for reading & writing the backlinks database.
 Because every used link necessarily has a backlink (the document in which it is used), the backlinks database
 is also a convenient way to get a list of all URLs. -}
 
