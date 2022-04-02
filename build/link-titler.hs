@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2022-04-01 22:32:35 gwern"
+-- When:  Time-stamp: "2022-04-02 10:51:32 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -17,7 +17,8 @@
 -- because you'll only see them in the live website's compiled HTML.)
 --
 --
--- WARNING: this can break 'simple' tables which are space-separated.
+-- WARNING: This does not handle raw HTML links (`<a>`) or some of the Pandoc link variations <https://pandoc.org/MANUAL.html#links-1> ('automatic links', 'reference links', or 'shortcut reference links').
+-- This can break 'simple' tables which are space-separated (rare because it is difficult to write links inside space-separated tables except as 'reference links' which will be skipped by this script).
 --
 -- The reason for the editing-raw-text-file is because Pandoc does not preserve the original Markdown formatting/syntax (only semantics)
 -- and its converted version I find uglier. The linebreaks make it harder to search. And full conversion would severely clutter the VCS history.
