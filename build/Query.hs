@@ -1,7 +1,7 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-03-29 18:33:14 gwern"
+When:  Time-stamp: "2022-04-02 10:44:54 gwern"
 License: CC-0
 -}
 
@@ -9,7 +9,7 @@ License: CC-0
 module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML) where
 
 import qualified Data.Text as T (init, drop, head, last, Text)
-import Text.Pandoc -- (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Link), runPure, Pandoc(..))
+import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..))
 import Text.Pandoc.Walk (walk)
 
 import Interwiki (convertInterwikiLinks, inlinesToString)
@@ -65,6 +65,7 @@ extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterw
    cleanURL u = if T.head u == '>' && T.last u == '<' then T.init $ T.drop 1 u else u
 
 -- Extract 'Image' Inline elements from a Pandoc. Note, this does not extract solely <figure> images, which are Images inside their own Paragraph Block:
+--
 -- > $ echo -e 'baz\n\n![foo](/foo.jpg)\n\nquux' | pandoc -w native
 -- > → [Para [Str "baz"]
 -- >   ,Para [Image ("",[],[]) [Str "foo"] ("/foo.jpg","fig:")]
@@ -74,9 +75,8 @@ extractURLsAndAnchorTooltips = queryWith extractURLSquashed . walk convertInterw
 --
 -- > extractImages (Pandoc nullMeta [Para [Str "baz"] ,Para [Image ("",[],[]) [Str "foo"] ("/foo.jpg","fig:")] ,Para [Str "quux"]])
 -- → [Image ("",[],[]) [Str "foo"] ("/foo.jpg","fig:")]
-
 extractImages :: Pandoc -> [Inline] -- [Image]
 extractImages = queryWith extractImages'
  where extractImages' :: Inline -> [Inline]
-       extractImages' x@(Image _ _ _) = [x]
+       extractImages' x@Image{} = [x]
        extractImages' _ = []
