@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2022-04-02 10:51:32 gwern"
+-- When:  Time-stamp: "2022-04-02 14:14:07 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -17,7 +17,8 @@
 -- because you'll only see them in the live website's compiled HTML.)
 --
 --
--- WARNING: This does not handle raw HTML links (`<a>`) or some of the Pandoc link variations <https://pandoc.org/MANUAL.html#links-1> ('automatic links', 'reference links', or 'shortcut reference links').
+-- WARNING: This tends to add too many titles, because deciding equality/similarity of anchor text & the candidate title text is hard. So any additional markup or text difference can lead to a redundant insertion.
+-- This does not handle raw HTML links (`<a>`) or some of the Pandoc link variations <https://pandoc.org/MANUAL.html#links-1> ('automatic links', 'reference links', or 'shortcut reference links').
 -- This can break 'simple' tables which are space-separated (rare because it is difficult to write links inside space-separated tables except as 'reference links' which will be skipped by this script).
 --
 -- The reason for the editing-raw-text-file is because Pandoc does not preserve the original Markdown formatting/syntax (only semantics)
@@ -25,7 +26,7 @@
 
 import Control.Monad.Parallel as Par (mapM_)
 
-import Data.Char (isPunctuation)
+import Data.Char (isPunctuation, isSpace, toLower)
 import qualified Data.Map.Strict as M (lookup)
 import System.Environment (getArgs)
 import qualified Data.Text.IO as TIO (readFile)
@@ -57,7 +58,7 @@ addTitlesToFile md filepath = do
                                Just (_,_,"",_,_,_) -> ("","")
                                Just (t,aut,dt,_,_,_) -> if T.pack t == t' ||
                                                            T.replace "<em>" "_" (T.replace "</em>" "_" $ T.pack t) == t' ||
-                                                           filter (not . isPunctuation) t == filter (not . isPunctuation) (T.unpack t')
+                                                           map toLower (filter (\c -> not (isPunctuation c || isSpace c)) t) == map toLower (filter (\c -> not (isPunctuation c || isSpace c)) (T.unpack t'))
                                                         then ("","") else
                                                           (u, T.pack $ "'" ++ t ++ "', " ++ authorsToCite (T.unpack u) aut dt)
                                ) untitled :: [(T.Text, T.Text)]
