@@ -1787,6 +1787,13 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
     padding: 0.5em 0.5em 0.375em 0.5em;
     box-shadow:
         0 0 0 1px var(--GW-math-block-scrollbar-border-color) inset;
+    transition:
+        background-color 0.15s ease-out;
+}
+.mjpage__block.flash {
+    background-color: var(--GW-math-block-background-color-flash);
+    transition:
+        background-color 0.1s ease-out;
 }
 .mjpage__block .MJXc-display {
     margin: 0;
@@ -1821,6 +1828,74 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 }
 .mjpage__block:hover {
     scrollbar-color: var(--GW-math-block-scrollbar-thumb-hover-color) var(--GW-math-block-scrollbar-track-color);
+}
+
+/*	Block buttons.
+ */
+.mjpage__block {
+	position: relative;
+}
+.mjpage__block .block-button-bar {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border-color: var(--GW-math-block-scrollbar-border-color);
+	border-style: solid;
+	border-width: 1px;
+	text-indent: 0;
+}
+@media only screen and (min-width: 650px) {
+	.mjpage__block .block-button-bar {
+		opacity: 0;
+		visibility: hidden;
+		transition:
+			opacity 0.15s ease,
+			visibility 0.15s ease;
+	}
+	.mjpage__block:hover .block-button-bar {
+		opacity: 1.0;
+		visibility: visible;
+		transition: 
+			opacity 0s ease 0.05s,
+			visibility 0s ease 0.05s;
+	}
+}
+.mjpage__block .block-button-bar button {
+	-moz-appearance: none;
+	appearance: none;
+	display: block;
+	font-size: inherit;
+	border: none;
+	padding: 0.25em;
+	width: 1.25em;
+	background-color: var(--GW-body-background-color);
+	cursor: pointer;
+}
+.mjpage__block .block-button-bar button img {
+	display: block;
+	opacity: 0.65;
+}
+@media only screen and (min-width: 650px) {
+	.mjpage__block .block-button-bar button img {
+		opacity: 0.45;
+	}
+	.mjpage__block .block-button-bar button:hover img {
+		opacity: 0.65;
+	}
+}
+.mjpage__block .block-button-bar button:active img {
+	transform: scale(0.95);
+}
+
+/*	Scratchpad for copy operations.
+ */
+.mjpage__block .block-button-bar .scratchpad {
+	position: absolute;
+	width: 0;
+	height: 0;
+	opacity: 0;
+	z-index: -1;
+	pointer-events: none;
 }
 
 /********/

@@ -172,6 +172,7 @@
     /*  Math.
      */
     --GW-math-block-background-color: #f6f6f6;
+    --GW-math-block-background-color-flash: #fff;
     --GW-math-block-scrollbar-border-color: #ccc;
     --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
     --GW-math-block-scrollbar-thumb-color: #ccc;
@@ -1554,6 +1555,7 @@ span.smallcaps-auto {
     /*  Math.
      */
     --GW-math-block-background-color: #252525;
+    --GW-math-block-background-color-flash: #000;
     --GW-math-block-scrollbar-border-color: #5c5c5c;
     --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
     --GW-math-block-scrollbar-thumb-color: #5c5c5c;
@@ -1926,6 +1928,13 @@ a.link-self.identifier-link-up::after,
 a.link-self.identifier-link-down::after,
 a[data-link-icon-type*='svg']::after {
     filter: invert(1);
+}
+
+/*	Block buttons must be inverted.
+ */
+.mjpage__block .block-button-bar button img,
+.mjpage__block .block-button-bar button img:hover {
+	filter: invert(1);
 }
 </style>
 <script>
@@ -2342,6 +2351,16 @@ function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventN
 				target.removeEventListener(cancelEventName, events.cancelEvent);
 		});
 	}
+}
+
+/*	Causes an element’s contents to become selected.
+ */
+function selectElementContents(element) {
+	var range = document.createRange();
+	range.selectNodeContents(element);
+	var selection = window.getSelection();
+	selection.removeAllRanges();
+	selection.addRange(range);
 }
 
 /*  Returns val, or def if val == defval. (By default, defval is -1.)
