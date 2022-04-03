@@ -28,7 +28,7 @@ import Utils (writeUpdatedFile, sed)
 main :: IO ()
 main = do
   bldb <- readBacklinksDB
-  mdb <- readLinkMetadata
+  md <- readLinkMetadata
   createDirectoryIfMissing False "metadata/annotations/backlinks/"
 
   -- check that all backlink targets/callers are valid:
@@ -41,7 +41,7 @@ main = do
                              unless exist $ error ("Backlinks: files annotation error: file does not exist? " ++ f))
 
   -- if all are valid, write out:
-  _ <- M.traverseWithKey (writeOutCallers mdb) bldb
+  _ <- M.traverseWithKey (writeOutCallers md) bldb
 
   fs <- fmap (filter (\f -> not $ ("/backlinks/"`isPrefixOf`f || "/docs/link-bibliography/"`isPrefixOf`f || "#"`isPrefixOf`f || ".#"`isPrefixOf`f)) .  map (sed "^\\.\\/" "")) $
          fmap lines getContents
@@ -51,7 +51,7 @@ main = do
   let html     = filter (".html" `isSuffixOf` ) fs
   links2 <- Par.mapM (parseFileForLinks False) html
 
-  let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey parseAnnotationForLinks mdb
+  let links3 = M.elems $ M.filter (not . null) $ M.mapWithKey parseAnnotationForLinks md
 
   let linksdb = M.fromListWith (++) $ map (\(a,b) -> (a,[b])) $ nubOrd $ concat $ links1++links2++links3
   let bldb' = linksdb `M.union` bldb
@@ -98,23 +98,24 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
 
 parseAnnotationForLinks :: String -> MetadataItem -> [(T.Text,T.Text)]
 parseAnnotationForLinks p (_,_,_,_,_,abstract) =
-                            let links = map truncateAnchors $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
+                            let links = map truncateAnchorsForPages $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
                                          extractLinksWith backLinksNot False (T.pack abstract)
 
                                 caller = T.pack p
                                 in if not (blackList caller) then [] else
-                                     let called =  filter (/= caller) links
+                                     let called =  filter (\u -> truncateAnchors u /= truncateAnchors caller) -- avoid self-links
+                                           links
                                      in zip called (repeat caller)
 
 parseFileForLinks :: Bool -> FilePath -> IO [(T.Text,T.Text)]
-parseFileForLinks md m = do text <- TIO.readFile m
+parseFileForLinks mdp m = do text <- TIO.readFile m
 
-                            let links = map truncateAnchors $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
-                                         extractLinksWith backLinksNot md text
+                             let links = map truncateAnchorsForPages $ filter blackList $ filter (\l -> let l' = T.head l in l' == '/' || l' == 'h') $ -- filter out non-URLs
+                                          extractLinksWith backLinksNot mdp text
 
-                            let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "https://www.gwern.net/" "/" $ replace ".page" "" m
-                            if not (blackList caller) then return [] else
-                             do
+                             let caller = T.pack $ (\u -> if head u /= '/' && take 4 u /= "http" then "/"++u else u) $ replace "https://www.gwern.net/" "/" $ replace ".page" "" m
+                             if not (blackList caller) then return [] else
+                              do
                                 let called = filter (/= caller) (map (T.pack . replace "https://www.gwern.net/" "/"  . T.unpack) links)
                                 return $ zip called (repeat caller)
 
@@ -124,8 +125,9 @@ backLinksNot (Link (_, classes, _) _ _) = "backlinksNot" `notElem` classes
 backLinksNot _ = True
 
 -- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'
-truncateAnchors :: T.Text -> T.Text
-truncateAnchors str = if "." `T.isInfixOf` str then str else T.takeWhile (/='#') str
+truncateAnchors, truncateAnchorsForPages :: T.Text -> T.Text
+truncateAnchorsForPages str = if "." `T.isInfixOf` str then str else T.takeWhile (/='#') str
+truncateAnchors = T.takeWhile (/='#')
 
 blackList :: T.Text -> Bool
 blackList f
