@@ -336,6 +336,9 @@ else
     λ(){ fgrep --color=always -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
+    λ(){ egrep --color=always -e '#[[:alnum:]]+#' -- ./metadata/*.hs ./metadata/*.yaml; }
+    wrap λ "Bad paths in metadata databases: redundant anchors"
+
     λ(){ fgrep '{#' $(find _site/ -type f -name "index"); }
     wrap λ "Broken anchors in directory indexes."
 
