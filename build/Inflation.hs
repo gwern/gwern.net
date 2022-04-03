@@ -4,7 +4,7 @@ module Inflation (nominalToRealInflationAdjuster) where
 -- InflationAdjuster
 -- Author: gwern
 -- Date: 2019-04-27
--- When:  Time-stamp: "2022-02-23 16:48:50 gwern"
+-- When:  Time-stamp: "2022-04-02 21:43:19 gwern"
 -- License: CC-0
 --
 -- Experimental Pandoc module for fighting <https://en.wikipedia.org/wiki/Money_illusion> by
@@ -105,7 +105,7 @@ dollarAdjuster l@(Link _ text (oldYears, _)) =
           -- control potentially spurious precision:
           -- round to 2 digits when converting to String if a decimal was present and the inflation factor is <10x, otherwise, round to whole numbers.
           -- So, '$1.05' becomes '$20.55', but '$1' becomes '$20' instead of '$20.2359002', and '$0.05' can still become '$0.97'
-          precision = if ('.' `elem` oldDollarString) && ((adjustedDollar < 10*oldDollar) || (adjustedDollar < 1)) then "2" else "0"
+          precision = if ('.' `elem` oldDollarString) && ((adjustedDollar < 10*oldDollar) || (adjustedDollar < 1)) then "2" else "1"
           oldDollarString' = formatDecimal oldDollar precision
           adjustedDollar = dollarAdjust oldDollar (T.unpack oldYear)
           adjustedDollarString = formatDecimal adjustedDollar precision
@@ -176,7 +176,7 @@ bitcoinAdjuster l@(Link _ text (oldDates, _)) =
                        Just ob -> ob
                        Nothing -> error (show l)
         oldYear = take 4 $ T.unpack oldDate -- it takes up too much space to display full dates like '2017-01-01'; readers only really need the year; the exact date is provided in the tooltip
-        precision = if ('.' `elem` oldBitcoinString) && ((adjustedBitcoin < 10*oldBitcoin) || (adjustedBitcoin < 1)) then "2" else "0"
+        precision = if ('.' `elem` oldBitcoinString) && ((adjustedBitcoin < 10*oldBitcoin) || (adjustedBitcoin < 1)) then "2" else "1"
         adjustedBitcoin = bitcoinAdjust oldBitcoin (T.unpack oldDate)
         adjustedBitcoinString = formatDecimal adjustedBitcoin precision
 bitcoinAdjuster x = x
