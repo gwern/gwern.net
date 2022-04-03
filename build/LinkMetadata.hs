@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-03-30 09:55:55 gwern"
+When:  Time-stamp: "2022-04-03 13:00:29 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag) where
+module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString) where
 
 import Control.Concurrent (forkIO)
 import Control.Monad (unless, void, when, forM_)
@@ -59,7 +59,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink
 import Query (extractURLs)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -323,6 +323,9 @@ parseRawBlock attr x@(RawBlock (Format "html") h) = let markdown = runPure $ rea
                                             Left e -> error (show x ++ ": " ++ show e)
                                             Right (Pandoc _ markdown') -> Div attr markdown'
 parseRawBlock _ x = x
+
+simplifiedHTMLString :: String -> String
+simplifiedHTMLString arg = trim $ T.unpack $ simplified $ parseRawBlock nullAttr (RawBlock (Text.Pandoc.Format "html") (T.pack arg))
 
 generateAnnotationBlock :: Bool -> Bool -> Bool -> (FilePath, Maybe LinkMetadata.MetadataItem) -> FilePath -> FilePath -> [Block]
 generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = case ann of
