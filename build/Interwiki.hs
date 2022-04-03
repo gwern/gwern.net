@@ -52,7 +52,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else if "https://en.wikipedia.org/wiki/" `T.isPrefixOf` interwiki && enWikipediaArticleNamespace (T.unpack interwiki) then
-            Link (ident, "docMetadata":classes, kvs) ref (interwiki, article)
+            Link (ident, "docMetadata":"backlinksNot":classes, kvs) ref (interwiki, article)
        else x
             where
                   interwikiurl :: T.Text -> T.Text -> T.Text
