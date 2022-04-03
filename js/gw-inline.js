@@ -413,6 +413,16 @@ function onEventAfterDelayDo(target, triggerEventName, delay, func, cancelEventN
 	}
 }
 
+/*	Causes an element’s contents to become selected.
+ */
+function selectElementContents(element) {
+	var range = document.createRange();
+	range.selectNodeContents(element);
+	var selection = window.getSelection();
+	selection.removeAllRanges();
+	selection.addRange(range);
+}
+
 /*  Returns val, or def if val == defval. (By default, defval is -1.)
     (In other words, `defval(X,Y,Z)` is “return X if Y is Z [else, just Y]”.)
  */

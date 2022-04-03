@@ -171,6 +171,7 @@
     /*  Math.
      */
     --GW-math-block-background-color: #252525;
+    --GW-math-block-background-color-flash: #000;
     --GW-math-block-scrollbar-border-color: #5c5c5c;
     --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
     --GW-math-block-scrollbar-thumb-color: #5c5c5c;

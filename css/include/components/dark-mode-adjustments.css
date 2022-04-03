@@ -234,3 +234,10 @@ a.link-self.identifier-link-down::after,
 a[data-link-icon-type*='svg']::after {
     filter: invert(1);
 }
+
+/*	Block buttons must be inverted.
+ */
+.mjpage__block .block-button-bar button img,
+.mjpage__block .block-button-bar button img:hover {
+	filter: invert(1);
+}

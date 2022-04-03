@@ -171,6 +171,7 @@
     /*  Math.
      */
     --GW-math-block-background-color: #252525;
+    --GW-math-block-background-color-flash: #000;
     --GW-math-block-scrollbar-border-color: #5c5c5c;
     --GW-math-block-scrollbar-track-color: var(--GW-body-background-color);
     --GW-math-block-scrollbar-thumb-color: #5c5c5c;
@@ -543,4 +544,11 @@ a.link-self.identifier-link-up::after,
 a.link-self.identifier-link-down::after,
 a[data-link-icon-type*='svg']::after {
     filter: invert(1);
+}
+
+/*	Block buttons must be inverted.
+ */
+.mjpage__block .block-button-bar button img,
+.mjpage__block .block-button-bar button img:hover {
+	filter: invert(1);
 }

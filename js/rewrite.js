@@ -958,14 +958,52 @@ function addDoubleClickListenersToMathBlocks(loadEventInfo) {
 
 	loadEventInfo.document.querySelectorAll(".mjpage").forEach(mathBlock => { 
 		mathBlock.addEventListener("dblclick", (event) => {
-			document.getSelection().selectAllChildren(mathBlock);
+			document.getSelection().selectAllChildren(mathBlock.querySelector(".mjx-chtml"));
 		});
 		mathBlock.title = "Double-click to select equation; copy to get LaTeX source";
 	});
 }
 
-/**********************************************/
-/*  Add content load handler for math elements.
+/****************************************************************/
+/*	Add block buttons (copy) to block (not inline) math elements.
+ */
+function addBlockButtonsToMathBlocks(loadEventInfo) {
+    GWLog("addBlockButtonsToMathBlocks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".mjpage__block").forEach(mathBlock => { 
+		//	Inject button bar.
+		mathBlock.insertAdjacentHTML("beforeend", 
+			  `<span class="block-button-bar">`
+			+ `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
+			+ `<img src="/static/img/icons/copy.svg">`
+			+ `</button>`
+			+ `<span class="scratchpad"></span>`
+			+ `</span>`);
+
+		//	Activate buttons.
+		requestAnimationFrame(() => {
+			//	Copy button (copies LaTeX source);
+			let latexSource = mathBlock.querySelector(".mjx-math").getAttribute("aria-label");
+			let scratchpad = mathBlock.querySelector(".scratchpad");
+			mathBlock.querySelector("button.copy").addActivateEvent((event) => {
+				GWLog("mathBlockCopyButtonClicked", "rewrite.js", 3);
+
+				//	Perform copy operation.
+				scratchpad.innerText = latexSource;
+				selectElementContents(scratchpad);
+				document.execCommand("copy");
+				scratchpad.innerText = "";
+
+				//	Flash math block, for visual feedback of copy operation.
+				mathBlock.classList.add("flash");
+				setTimeout(() => { mathBlock.classList.remove("flash"); }, 150);
+			});
+		});
+	});
+}
+
+/***********************************************/
+/*  Add content load handlers for math elements.
  */
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processMathElements = (info) => {
     GWLog("GW.rewriteFunctions.processMathElements", "rewrite.js", 2);
@@ -974,6 +1012,15 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     addDoubleClickListenersToMathBlocks(info);
 }, {
 	phase: "eventListeners"
+});
+
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.rewriteMathElements = (info) => {
+    GWLog("GW.rewriteFunctions.processMathElements", "rewrite.js", 2);
+
+    addBlockButtonsToMathBlocks(info);
+}, {
+	phase: "rewrite",
+	condition: (info) => info.needsRewrite
 });
 
 
