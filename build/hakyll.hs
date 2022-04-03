@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-03-14 15:50:37 gwern"
+When: Time-stamp: "2022-04-03 13:03:00 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -46,7 +46,7 @@ import System.Directory (doesFileExist)
 import System.FilePath (takeExtension)
 import Data.FileStore.Utils (runShellCommand)
 import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
-               symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, lookupString,
+               symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
                defaultHakyllWriterOptions, fromCapture, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
                loadAll, loadAndApplyTemplate, loadBody, makeItem, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
@@ -68,7 +68,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToString)
-import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation)
+import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
@@ -217,6 +217,7 @@ imgUrls item = do
 postCtx :: Tags -> Context String
 postCtx tags =
     tagsField "tagsHTML" tags <>
+    titlePlainField "titlePlain" <>
     descField "title" <>
     descField "description" <> -- constField "description" "N/A" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.)
@@ -247,6 +248,16 @@ backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (does
 
 escapedTitleField :: String -> Context a
 escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
+
+-- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
+-- So we render a simplified ASCII version of every 'title' field, '$titlePlain$', and use that in default.html when we need a non-display
+-- title.
+titlePlainField :: String -> Context a
+titlePlainField d = field d $ \item -> do
+                  metadataMaybe <- getMetadataField (itemIdentifier item) "title"
+                  case metadataMaybe of
+                    Nothing -> noResult "no title field"
+                    Just t -> return (simplifiedHTMLString t)
 
 descField :: String -> Context a
 descField d = field d $ \item -> do
