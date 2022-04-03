@@ -124,6 +124,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "mozilla.org" = aI "FF" "text,sans" -- none of the available Firefox SVG logos worked well as a link icon; typically, too much detail, the swirly-spikes too indistinct & under-emphasized, and confusable with DeepMind.
  | u'' "www.goodreads.com" = aI "GR" "text" -- GoodReads: logo doesn’t make sense as a grayscale
  | u'' "www.harney.com" = aI "H" "text" -- The Harney & Sons logo is too fancy to scale down reasonably
+ | u'' "www.hustwit.com" = aI "H" "text,sans" -- design documentarian
  | u'' "kk.org" = aI "KK" "text,sans" -- Kevin Kelly
  | aU'' ["www.lesswrong.com", "sl4.org", "wiki.lesswrong.com", "www.greaterwrong.com"] = aI "LW" "text" -- LW logo is just a colored ‘LW’, so no point in converting. Other user: wiki.lesswrong.com
  | u'' "www.longecity.org" = aI "⧖" "text" -- Longecity “⧖” U+29D6 WHITE HOURGLASS UNICODE
@@ -226,6 +227,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' ".yahoo.com" = aI "Y!" "text,sans"
  | u' "github.com/huggingface/" || u' "medium.com/huggingface/" || u'' "huggingface.co" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
  | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
+ | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -265,6 +267,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "gameprogrammingpatterns.com" = aI "GPP" "text,tri,sans"
  | u'' "www.metopera.org" = aI "Met" "text,tri"
  | u'' "www.schneier.com" = aI "SOS" "text,tri,sans" -- "Bruce Schneier", who writes "Schneier On Security" or "SOS" (Easter egg: the Schneier.com favicon encodes Morse code into its edges, which says... "SOS")
+ | u'' "hbr.org" = aI "HBR" "text,tri,sans" -- Harvard Business Review
 
  -- Quad-letter-square icons.
  | aU'' ["jamanetwork.com", "jama.jamanetwork.com", "archinte.jamanetwork.com"]  = aI "JAMA" "text,sans,quad" -- The Journal of the American Medical Association (JAMA)
@@ -303,6 +306,9 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "longreads.com" = aI "Long" "text,quad"
  | u'' "warontherocks.com" = aI "WOTR" "text,quad,sans"
  | u'' "krebsonsecurity.com" = aI "Kreb" "text,quad,sans" -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krebs', so abbreviate that
+ | u'' "www.nextplatform.com" = aI "NEXT" "text,quad,sans" -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable
+ | u'' "www.vetta.org" = aI "Legg" "text,quad,sans" -- Shane Legg (DeepMind)
+ | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation isntead
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -468,7 +474,8 @@ linkIconPrioritize = do b <- LinkBacklink.readBacklinksDB
                      "thepharmacyexpress.com", "thegrandnarrative.com", "srconstantin.wordpress.com", "penelope.uchicago.edu",
                      "bmk.sh","www.jstatsoft.org","www.japantimes.co.jp","www.impactcybertrust.org", "www.ex.org", "www.eetimes.com",
                      "www.chronicle.com", "www.aging-us.com", "philpapers.org", "paulfchristiano.com", "parahumans.wordpress.com",
-                     "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com"]
+                     "palladiummag.com", "mathworld.wolfram.com", "soranews24.com", "caniuse.com", "www.silcom.com", "esolangs.org",
+                     "www.aiweirdness.com"]
         linkIconMin = 4 :: Int
 
 -- Test suite:
@@ -962,4 +969,10 @@ linkIconTestUnits =
          , ("https://warontherocks.com/2021/08/foreign-fighters-and-cheese-bells/", "WOTR", "text,quad,sans")
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
          , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Kreb", "text,quad,sans")
+         , ("https://www.hustwit.com/urbanized", "H", "text,sans")
+         , ("https://www.nextplatform.com/2017/07/17/google-wants-rewire-internet/", "NEXT", "text,quad,sans")
+         , ("http://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "Legg", "text,quad,sans")
+         , ("https://www.spiegel.de/panorama/justiz/amokschuetze-von-muenchen-tatwaffe-aus-dem-darknet-a-1104461.html", "SPGL", "text,quad")
+         , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
+         , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans")
         ]
