@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-03-14 15:50:37 gwern"
+When: Time-stamp: "2022-04-03 10:44:26 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -74,7 +74,7 @@ import Typography (typographyTransform, invertImageInline, imageMagickDimensions
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
-import Utils (printGreen, printRed)
+import Utils (printGreen, printRed, simplifiedString)
 
 main :: IO ()
 main = hakyll $ do
@@ -217,6 +217,7 @@ imgUrls item = do
 postCtx :: Tags -> Context String
 postCtx tags =
     tagsField "tagsHTML" tags <>
+    titlePlainField "title" <>
     descField "title" <>
     descField "description" <> -- constField "description" "N/A" <>
     -- NOTE: as a hack to implement conditional loading of JS/metadata in /index, in default.html, we switch on an 'index' variable; this variable *must* be left empty (and not set using `constField "index" ""`)! (It is defined in the YAML front-matter of /index.page as `index: true` to set it to a non-null value.)
@@ -247,6 +248,17 @@ backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (does
 
 escapedTitleField :: String -> Context a
 escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
+
+-- for 'title' metadata, they can have formatting like <em></em> italics; this would break when substituted into <title> or <meta> tags.
+-- So we render a simplified ASCII version of every 'title' field, '$titlePlain$', and use that in default.html when we need a non-display
+-- title.
+titlePlainField :: String -> Context a
+titlePlainField d = field d $ \item -> do
+                  metadata <- getMetadata (itemIdentifier item)
+                  let descMaybe = lookupString d metadata
+                  case descMaybe of
+                    Nothing -> noResult "no description field"
+                    Just desc -> return $ simplifiedString desc
 
 descField :: String -> Context a
 descField d = field d $ \item -> do
