@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2022-04-02 14:14:07 gwern"
+-- When:  Time-stamp: "2022-04-02 21:24:21 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -34,7 +34,7 @@ import qualified Data.Text as T (append, replace, pack, unpack, Text)
 
 import LinkMetadata (authorsToCite, readLinkMetadata, Metadata)
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
-import Utils (writeUpdatedFile)
+import Utils (replaceMany, writeUpdatedFile)
 
 main :: IO ()
 main = do args <- getArgs
@@ -57,8 +57,7 @@ addTitlesToFile md filepath = do
                                Just (_,"",_,_,_,_) -> ("","")
                                Just (_,_,"",_,_,_) -> ("","")
                                Just (t,aut,dt,_,_,_) -> if T.pack t == t' ||
-                                                           T.replace "<em>" "_" (T.replace "</em>" "_" $ T.pack t) == t' ||
-                                                           map toLower (filter (\c -> not (isPunctuation c || isSpace c)) t) == map toLower (filter (\c -> not (isPunctuation c || isSpace c)) (T.unpack t'))
+                                                           textSimplifier (T.pack t) == textSimplifier t'
                                                         then ("","") else
                                                           (u, T.pack $ "'" ++ t ++ "', " ++ authorsToCite (T.unpack u) aut dt)
                                ) untitled :: [(T.Text, T.Text)]
@@ -70,3 +69,11 @@ addTitlesToFile md filepath = do
 
           writeUpdatedFile "link-titler" filepath updatedFile
           return ()
+
+-- simplify a title as much as possible to find similar title/anchor pairs to skip rewriting:
+textSimplifier :: T.Text -> T.Text
+textSimplifier = T.pack .
+                 map toLower .
+                 filter (\c -> not (isPunctuation c || isSpace c))  .
+                 replaceMany [("<em>",""), ("</em>",""), ("<sub>",""), ("</sub>",""), ("<strong>",""), ("</strong>","")] .
+                 T.unpack
