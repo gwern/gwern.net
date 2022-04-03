@@ -927,6 +927,11 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /* MATH */
 /********/
 
+/*****************************************************************************/
+/*	Makes it so that copying a rendered equation or other math element copies
+	the LaTeX source, instead of the useless gibberish that is the contents of
+	the text nodes of the HTML representation of the equation.
+ */
 function addCopyListenersToMathBlocks(loadEventInfo) {
     GWLog("addCopyListenersToMathBlocks", "rewrite.js", 1);
 
@@ -940,6 +945,25 @@ function addCopyListenersToMathBlocks(loadEventInfo) {
 	});
 }
 
+/******************************************************************************/
+/*	Makes double-clicking on a math element select the entire math element.
+	(This actually makes no difference to the behavior of the copy listener
+	 [see `addCopyListenersToMathBlocks`], which copies the entire LaTeX source
+	 of the full equation no matter how much of said equation is selected when
+	 the copy command is sent; however, it ensures that the UI communicates the
+	 actual behavior in a more accurate and understandable way.)
+ */
+function addDoubleClickListenersToMathBlocks(loadEventInfo) {
+    GWLog("addDoubleClickListenersToMathBlocks", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".mjpage").forEach(mathBlock => { 
+		mathBlock.addEventListener("dblclick", (event) => {
+			document.getSelection().selectAllChildren(mathBlock);
+		});
+		mathBlock.title = "Double-click to select equation; copy to get LaTeX source";
+	});
+}
+
 /**********************************************/
 /*  Add content load handler for math elements.
  */
@@ -947,6 +971,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.processMathElements", "rewrite.js", 2);
 
     addCopyListenersToMathBlocks(info);
+    addDoubleClickListenersToMathBlocks(info);
 }, {
 	phase: "eventListeners"
 });
