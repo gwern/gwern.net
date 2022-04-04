@@ -960,7 +960,9 @@ function addDoubleClickListenersToMathBlocks(loadEventInfo) {
 		mathBlock.addEventListener("dblclick", (event) => {
 			document.getSelection().selectAllChildren(mathBlock.querySelector(".mjx-chtml"));
 		});
-		mathBlock.title = "Double-click to select equation; copy to get LaTeX source";
+		mathBlock.title = mathBlock.classList.contains("mjpage__block")
+						  ? "Double-click to select equation, then copy, to get LaTeX source (or, just click the Copy button in the top-right of the equation area)"
+						  : "Double-click to select equation; copy to get LaTeX source";
 	});
 }
 
