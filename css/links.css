@@ -32,16 +32,18 @@
     height: 0.75em;
     color: transparent;
     text-shadow: none;
-    top: 0.05em;
 
     background-image:
         linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color)),
         linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
     background-size: 1px 1px;
     background-repeat: repeat-x, repeat-y;
-    background-position: 100% 0, 0 100%;
     left: 0;
     overflow: hidden;
+}
+.has-annotation .indicator-hook::before {
+    background-position: 100% 0, 0 100%;
+    top: 0.05em;
 }
 .has-content .indicator-hook::before {
     background-position: 100% 100%, 0 100%;
