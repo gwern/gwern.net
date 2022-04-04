@@ -161,7 +161,7 @@ Extracts = {
         GWLog("Extracts.cleanup", "extracts.js", 1);
 
 		//	Remove pop-frame indicator hooks.
-		document.querySelectorAll(".has-annotation, .has-content").forEach(link => {
+		document.querySelectorAll(".has-content").forEach(link => {
 			link.querySelector(".indicator-hook").remove();
 		});
 
@@ -266,7 +266,7 @@ Extracts = {
 			(See links.css for how these are used.)
 		 */
 		if (addHooks) {
-			doc.querySelectorAll(".has-annotation, .has-content").forEach(link => {
+			doc.querySelectorAll(".has-content").forEach(link => {
 				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
 			});
 		}

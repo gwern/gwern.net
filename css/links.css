@@ -12,19 +12,16 @@
 /* so users don't get frustrated hovering over links which have no useful annotation (which is an unfortunate number). */
 /* At some point, if enough links get annotated & annotation is the default, we might flip this to be a warning for non-annotated links. */
 /* We exclude it on the homepage because every linked page has a description/abstract, and the triangles everywhere add a lot of visual clutter. */
-.has-annotation,
 .has-content {
     margin: 0 0.08em;
     position: relative;
     z-index: 1;
 }
-.has-annotation .indicator-hook,
 .has-content .indicator-hook {
     padding-left: 0.3em;
     position: relative;
     z-index: -1;
 }
-.has-annotation .indicator-hook::before,
 .has-content .indicator-hook::before {
     content: " ";
     position: absolute;
@@ -38,19 +35,12 @@
         linear-gradient(var(--GW-link-underline-gradient-line-color), var(--GW-link-underline-gradient-line-color));
     background-size: 1px 1px;
     background-repeat: repeat-x, repeat-y;
-    left: 0;
-    overflow: hidden;
-}
-.has-annotation .indicator-hook::before {
-    background-position: 100% 0, 0 100%;
-    top: 0.05em;
-}
-.has-content .indicator-hook::before {
     background-position: 100% 100%, 0 100%;
+    left: 0;
     top: unset;
     bottom: 0.1em;
+    overflow: hidden;
 }
-.has-annotation:hover .indicator-hook::before,
 .has-content:hover .indicator-hook::before {
     background-image:
         linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
@@ -58,27 +48,27 @@
 }
 #TOC .has-content,
 #sidebar .has-content,
-body.index .has-annotation,
 body.index .has-content {
     margin: 0;
 }
 #TOC .has-content .indicator-hook,
 #sidebar .has-content .indicator-hook,
-body.index .has-annotation .indicator-hook,
 body.index .has-content .indicator-hook {
     padding-left: 0;
     position: static;
 }
 #TOC .has-content .indicator-hook::before,
 #sidebar .has-content .indicator-hook::before,
-body.index .has-annotation .indicator-hook::before,
 body.index .has-content .indicator-hook::before {
     content: none;
 }
 
-/* Italics slant right, leading to overlaps in a case like 'of [inversive geometry](!W)' on /notes/Lions, where the _f_ slants to nearly overlap the upper-left bracket for the WP link. So we add margin to the left (not padding-left, as that simply pushes the bracket outward, not improving the overlap). */
-em .has-annotation {
-    margin-left: 0.22em;
+.markdownBody a.has-annotation {
+    background-image: var(--GW-dotted-underline-background-image);
+    background-size: 2px 1px;
+}
+.markdownBody a.has-annotation:hover {
+    background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
 /**************/
@@ -636,11 +626,11 @@ a[data-link-icon='chi-dna']:hover::after {
 }
 
 a[data-link-icon='deepmind']::after {
-    --link-icon-size: 0.9em;
-    --link-icon-offset-x: 0.2em;
-    --link-icon-offset-y: 0.1em;
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.15em;
+    --link-icon-offset-y: 0.2em;
 
-    opacity: 0.75;
+    opacity: 0.7;
 }
 a[data-link-icon='deepmind']:hover::after {
     opacity: 0.5;
@@ -785,9 +775,9 @@ a[data-link-icon='nlm-ncbi']:hover::after {
 }
 
 a[data-link-icon='openai']::after {
-    --link-icon-size: 0.75em;
-    --link-icon-offset-x: 0.06em;
-    --link-icon-offset-y: 0.14em;
+    --link-icon-size: 0.8em;
+    --link-icon-offset-x: 0.1em;
+    --link-icon-offset-y: 0.2em;
 
     opacity: 0.70;
 }
@@ -1034,23 +1024,10 @@ a[data-link-icon='wikipedia']:hover::after {
     opacity: 0.5;
 }
 
-/*  Suppress the WP link icon suffix, and suppress the hook annotation for WP
-    articles (knowledge of WP ‘articles’ vs Talk pages/History/etc is baked into
+/*  Suppress the WP link icon suffix (knowledge of WP ‘articles’ vs Talk pages/History/etc is baked into
     the links by the docMetadata+has-annotation classes, see LinkMetadata.hs’s
     `wikipediaArticleNamespace` function); the dotted-underlining is enough.
  */
-a[data-link-icon='wikipedia'].has-annotation::after,
-a[data-link-icon='wikipedia'].has-annotation .indicator-hook::before {
+a[data-link-icon='wikipedia'].has-annotation::after {
     content: none;
-}
-a[data-link-icon='wikipedia'].has-annotation .indicator-hook {
-    padding-left: 0;
-}
-.markdownBody a[data-link-icon='wikipedia'].has-annotation {
-    background-image: var(--GW-dotted-underline-background-image);
-    background-size: 2px 1px;
-    padding-left: 0em;
-}
-.markdownBody a[data-link-icon='wikipedia'].has-annotation:hover {
-    background-image: var(--GW-dotted-underline-hover-background-image);
 }

@@ -223,7 +223,7 @@ div#masked-links-key-toggle-info-alert img {
     pixel-grid-checkerboard background-image. We use an alternate version of
     this image in dark mode.
  */
-.markdownBody a[data-link-icon='wikipedia'].has-annotation:hover {
+.markdownBody a.has-annotation:hover {
     background-image: var(--GW-dotted-underline-hover-dark-background-image);
 }
 
