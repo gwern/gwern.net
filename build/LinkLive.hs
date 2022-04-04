@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-03-16 19:30:19 gwern"
+When:  Time-stamp: "2022-04-03 19:04:05 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -82,7 +82,7 @@ linkLivePrioritize = do b <- readBacklinksDB
         -- Append an example of a prioritized link to /Lorem#link-testcases for manual review, to skip copy-paste hassle"
         writeLinkLiveTestcase :: Backlinks -> T.Text -> IO ()
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
-                                      appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .docMetadataNot .link-live}\n"
+                                      appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .docMetadataNot .link-live}"
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
@@ -931,6 +931,8 @@ goodDomainsSimple =
     , "pauillac.inria.fr"
     , "asktog.com"
     , "www.unf.edu"
+    , "palmerlab.org"
+    , "jetpress.org"
     ]
 
 badDomainsSub = [".plos.org", ".royalsocietypublishing.org",  ".substack.com", ".stackexchange.com",
@@ -3292,6 +3294,8 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("http://pauillac.inria.fr/~weis/info/commandline.html", True)
     , ("https://asktog.com/atc/the-third-user/", True)
     , ("https://www.unf.edu/mudlark/posters/hartzler.html", True)
+    , ("https://palmerlab.org/neuroticism-and-depression-gwas-consortium-paper-accepted-for-publication-in-jama-psychiatry-abraham-palmer-harriet-de-wit-and-amy-hart-are-co-authors/", True)
+    , ("https://jetpress.org/volume1/moravec.htm", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)

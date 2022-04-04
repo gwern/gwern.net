@@ -136,7 +136,7 @@ blackList f
   | any (`T.isInfixOf` f) ["/similars/"] = False
   | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                             -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
-                            "https://wwwyoutube.com/", "https://en.wikipedia.org/wiki/",
+                            "https://www.youtube.com/", "https://en.wikipedia.org/wiki/",
                             "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
   | any (`T.isSuffixOf` f) ["/index"] = False
   | otherwise = True
