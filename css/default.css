@@ -2952,14 +2952,14 @@ body.directory-index #disqus_thread {
     max-width: unset;
 }
 
-.popframe .popframe-content-view > blockquote:first-child,
-.popframe .popframe-content-view > .table-wrapper:first-child,
-.popframe .popframe-content-view > div.sourceCode:first-child pre {
+.popframe.local-transclude .popframe-content-view > blockquote:first-child,
+.popframe.local-transclude .popframe-content-view > .table-wrapper:first-child,
+.popframe.local-transclude .popframe-content-view > div.sourceCode:first-child pre {
     margin-top: calc(3em/9);
 }
-.popframe .popframe-content-view > blockquote:last-child,
-.popframe .popframe-content-view > .table-wrapper:last-child,
-.popframe .popframe-content-view > div.sourceCode:last-child pre {
+.popframe.local-transclude .popframe-content-view > blockquote:last-child,
+.popframe.local-transclude .popframe-content-view > .table-wrapper:last-child,
+.popframe.local-transclude .popframe-content-view > div.sourceCode:last-child pre {
     margin-bottom: calc(1em/9);
 }
 
@@ -3171,6 +3171,9 @@ To hack around this issue (which surely has a better answer), and since in some 
 
 .popframe.local-code-file .popframe-content-view {
     padding: 0;
+}
+.popframe.local-code-file .popframe-content-view div.sourceCode {
+	height: 100%;
 }
 .popframe.local-code-file pre {
     height: 100%;
