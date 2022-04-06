@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-03 13:03:00 gwern"
+When: Time-stamp: "2022-04-04 11:30:22 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -341,8 +341,9 @@ headerSelflink x = x
 -- FASTER HTML RENDERING BY STATICLY SPECIFYING ALL IMAGE DIMENSIONS
 -- read HTML string with TagSoup, process `<img>` tags to read the file's dimensions, and hardwire them;
 -- this optimizes HTML rendering since browsers know before downloading the image how to layout the page.
--- Further, specify 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (https://bugzilla.mozilla.org/show_bug.cgi?id=1542784), standardized as https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes with >63% global availability + backwards compatibility (https://caniuse.com/#feat=loading-lazy-attr https://github.com/whatwg/html/pull/3752  https://web.dev/native-lazy-loading/).
--- Pandoc feature request to push the lazy loading upstream: https://github.com/jgm/pandoc/issues/6197
+-- Further, specify 'async' decoding & 'lazy-loading' for all images: the lazy attribute was introduced by Chrome 76 ~August 2019, and adopted by Firefox 75 ~February 2020 (<https://bugzilla.mozilla.org/show_bug.cgi?id=1542784>), standardized as <https://html.spec.whatwg.org/multipage/urls-and-fetching.html#lazy-loading-attributes> with >63% global availability + backwards compatibility (<https://caniuse.com/#feat=loading-lazy-attr> <https://github.com/whatwg/html/pull/3752> <https://web.dev/native-lazy-loading/>).
+-- Async decoding: when an image *does* load, can it be decoded to pixels in parallel with the text? For us, yes. Docs: <https://html.spec.whatwg.org/multipage/images.html#decoding-images> <https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/decoding>.
+-- Pandoc feature request to push the lazy loading upstream: <https://github.com/jgm/pandoc/issues/6197>
 addImgDimensions :: String -> IO String
 addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg . parseTags
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"

@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-03 18:09:39 gwern"
+When:  Time-stamp: "2022-04-05 18:35:47 gwern"
 License: CC-0
 -}
 
@@ -2066,8 +2066,12 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\n <strong>Results</strong>\n<p>", "<p><strong>Results</strong>: ")
           , ("<p>Results: ", "<p><strong>Results</strong>: ")
           , ("<p>Aims: ", "<p><strong>Aims</strong>: ")
+          , ("<p>Background. ", "<p><strong>Background</strong>: ")
           , ("<strong>Background</strong>\n<p>", "<p><strong>Background</strong>: ")
           , ("<p>Background: ", "<p><strong>Background</strong>: ")
+          , (" Interpretation. ", "</p> <p><strong>Interpretation</strong>: ")
+          , (" Findings. ", "</p> <p><strong>Findings</strong>: ")
+          , (" Methods. ", "</p> <p><strong>Methods</strong>: ")
           , (". <strong>Methods</strong>: ", ".</p> <p><strong>Methods</strong>: ")
           , (" \n <strong>Methods</strong>\n<p>", "<p><strong>Methods</strong>: ")
           , ("<p>Methods: ", "<p><strong>Methods</strong>: ")

@@ -970,7 +970,7 @@ linkIconTestUnits =
          , ("https://www.connectedpapers.com/main/1ffe143b40a9f8c01940c7397280de4cf666d635/Lessons-from-AlphaZero-for-Optimal%2C-Model-Predictive%2C-and-Adaptive-Control/graph", "connected-papers","svg")
          , ("https://krebsonsecurity.com/2013/07/mail-from-the-velvet-cybercrime-underground/", "Kreb", "text,quad,sans")
          , ("https://www.hustwit.com/urbanized", "H", "text,sans")
-         , ("https://www.nextplatform.com/2017/07/17/google-wants-rewire-internet/", "NEXT", "text,quad,sans")
+         , ("https://www.nextplatform.com/2019/08/20/big-blue-open-sources-power-chip-instruction-set/", "NEXT", "text,quad,sans")
          , ("http://www.vetta.org/2009/12/tick-tock-tick-tock-bing/", "Legg", "text,quad,sans")
          , ("https://www.spiegel.de/panorama/justiz/amokschuetze-von-muenchen-tatwaffe-aus-dem-darknet-a-1104461.html", "SPGL", "text,quad")
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
