@@ -429,6 +429,37 @@ svg {
     fill: currentColor;
 }
 
+/*****************/
+/* Accessibility */
+/*****************/
+/* Provide a link which skips straight to the content bypassing the sidebar &
+   metadata block; this link is positioned off-screen until <Tab>-navigated to,
+   which focuses it, highlighting it in a big red block in the upper-left corner.
+   Implementation & rationale from https://webaim.org/techniques/skipnav/
+   Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html */
+#skiptocontent a {
+    padding:6px;
+    position: absolute;
+    top:-40px;
+    left:0px;
+    color:white;
+    border-right:1px solid white;
+    border-bottom:1px solid white;
+    border-bottom-right-radius:8px;
+    background:#BF1722;
+    -webkit-transition: top 1s ease-out;
+    transition: top 1s ease-out;
+    z-index: 100;
+}
+#skiptocontent a:focus {
+    position:absolute;
+    left:0px;
+    top:0px;
+    outline-color:transparent;
+    -webkit-transition: top .1s ease-in;
+    transition: top .1s ease-in;
+}
+
 /***********/
 /* SIDEBAR */
 /***********/
@@ -479,8 +510,8 @@ svg {
     }
     #sidebar a#logo {
         padding: 0.5em 0.375em;
-      	line-height: 1;
-		display: flex;
+        line-height: 1;
+        display: flex;
     }
     #sidebar,
     #sidebar-links {
@@ -1002,31 +1033,31 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     }
 }
 
-/*  On wide screens (desktop), use fully-justified text (words get 
-	broken/hyphenated as necessary to avoid a ‘ragged margin’), overriding 
-	browser default of ‘flush left, ragged right’ (see
+/*  On wide screens (desktop), use fully-justified text (words get
+    broken/hyphenated as necessary to avoid a ‘ragged margin’), overriding
+    browser default of ‘flush left, ragged right’ (see
     https://en.wikipedia.org/wiki/Typographic_alignment#Flush_left )
 
-    On mobile/narrow screens, that doesn’t work as well: because browsers do 
+    On mobile/narrow screens, that doesn’t work as well: because browsers do
     greedy layout, justification forces ‘s t r e t c h e d out’ words
-    and large spaces, leading to blatant 
-    https://en.wikipedia.org/wiki/River_(typography) , getting worse the 
-    narrower the screen (eg. in lists). On wide screens, it isn’t too bad, and 
-    justification is still better than not, but on mobile it is extremely 
-    noticeable. Switching to flush left ragged right doesn’t look as nicely 
-    ‘even’, but it avoids that pathological behavior. (More advanced typesetting 
-    algorithms like Knuth-Plass 
-    https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap#Minimum_raggedness 
-    can handle mobile widths nicely, but no contemporary browser implements them 
+    and large spaces, leading to blatant
+    https://en.wikipedia.org/wiki/River_(typography) , getting worse the
+    narrower the screen (eg. in lists). On wide screens, it isn’t too bad, and
+    justification is still better than not, but on mobile it is extremely
+    noticeable. Switching to flush left ragged right doesn’t look as nicely
+    ‘even’, but it avoids that pathological behavior. (More advanced typesetting
+    algorithms like Knuth-Plass
+    https://en.wikipedia.org/wiki/Line_wrap_and_word_wrap#Minimum_raggedness
+    can handle mobile widths nicely, but no contemporary browser implements them
     natively, and all JS implementations I’ve looked at are buggy.)
 
-	However, do hyphenate at all widths.
+    However, do hyphenate at all widths.
  */
 .markdownBody p,
 .markdownBody li {
-	-webkit-hyphens: auto;
-	-ms-hyphens: auto;
-	hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
 }
 @media only screen and (min-width: 900px) {
     .markdownBody p,
@@ -1035,8 +1066,8 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     }
 }
 
-/*  Cute ‘old-style’ numerals, look a little nicer inline in text, and available 
-	natively in the SS fonts:
+/*  Cute ‘old-style’ numerals, look a little nicer inline in text, and available
+    natively in the SS fonts:
     https://practicaltypography.com/alternate-figures.html#oldstyle-figures
  */
 html {
@@ -1051,7 +1082,7 @@ html {
     clear: none;
 }
 
-/* auto-smallcaps the first line of the introduction (= the first `<p>` after an 
+/* auto-smallcaps the first line of the introduction (= the first `<p>` after an
 'abstract' div); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
 .abstract + p::first-line,
 #markdownBody > p:first-child::first-line,
