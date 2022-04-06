@@ -56,7 +56,7 @@ function imageFocusSetup() {
 	//  Add the listener to all content images.
 	document.querySelectorAll(GW.imageFocus.contentImagesSelector).forEach(image => {
 		//	NOTE: temporary hack!
-		if (image.closest("button"))
+		if (image.closest("a, button"))
 			return;
 
 		image.addEventListener("click", GW.imageClickedToFocus);
