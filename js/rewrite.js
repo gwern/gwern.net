@@ -611,7 +611,7 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 
     let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
 	footnotes.forEach(footnote => {
-		footnote.querySelector(".footnote-back").innerHTML = `<img src="/static/img/icons/arrow-hook-left.svg">`;
+		footnote.querySelector(".footnote-back").innerHTML = `<img alt="↩ Right arrow curving left [footnote return link] arrow" src="/static/img/icons/arrow-hook-left.svg">`;
 	});
 }
 
@@ -693,7 +693,7 @@ function injectFootnotesTOCLink(loadEventInfo) {
 
     let footnotesSection = loadEventInfo.document.querySelector("#footnotes");
     let TOCList = loadEventInfo.document.querySelector("#TOC > ul");
-    if (   TOCList 
+    if (   TOCList
     	&& footnotesSection)
         TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
 }
@@ -711,8 +711,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     injectFootnoteSelfLinks(info);
     rewriteFootnoteBackLinks(info);
 }, {
-	phase: "rewrite", 
-	condition: (info) => (info.needsRewrite && info.isFullPage) 
+	phase: "rewrite",
+	condition: (info) => (info.needsRewrite && info.isFullPage)
 });
 
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.injectFootnotesTOCLink = (info) => {
@@ -794,7 +794,7 @@ function directionalizeAnchorLinks(loadEventInfo) {
  */
 // function addLinkDecorationData(loadEventInfo) {
 //     GWLog("addLinkDecorationData", "rewrite.js", 1);
-// 
+//
 //     Links.decorateLinksWithin(loadEventInfo.document);
 // }
 
@@ -884,8 +884,8 @@ function applyDropCapsClasses(loadEventInfo) {
 
     //  Add ‘drop-cap-’ class to requisite blocks.
     let dropCapBlocksSelector = [
-    	".markdownBody > p:first-child", 
-    	".markdownBody > .epigraph:first-child + p", 
+    	".markdownBody > p:first-child",
+    	".markdownBody > .epigraph:first-child + p",
     	".markdownBody .abstract + p"
     ].join(", ");
     let dropCapClass = Array.from(loadedDocBody.classList).find(cssClass => cssClass.startsWith("drop-caps-"));
@@ -897,12 +897,12 @@ function applyDropCapsClasses(loadEventInfo) {
 			the latter could be `drop-cap-no` (which nullifies any page-global
 			drop-cap class for the given block).
 		 */
-		let precedingAbstract = (   dropCapBlock.previousElementSibling 
+		let precedingAbstract = (   dropCapBlock.previousElementSibling
 								 && dropCapBlock.previousElementSibling.classList.contains("abstract"))
 								? dropCapBlock.previousElementSibling
 								: null;
-		dropCapClass = (precedingAbstract 
-						? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-")) 
+		dropCapClass = (precedingAbstract
+						? Array.from(precedingAbstract.classList).find(cssClass => cssClass.startsWith("drop-cap-"))
 						: null) || dropCapClass;
 		if (   dropCapClass
 			&& dropCapClass != "drop-cap-no")
@@ -935,7 +935,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function addCopyListenersToMathBlocks(loadEventInfo) {
     GWLog("addCopyListenersToMathBlocks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".mjx-chtml").forEach(mathBlock => { 
+	loadEventInfo.document.querySelectorAll(".mjx-chtml").forEach(mathBlock => {
 		mathBlock.addEventListener("copy", (event) => {
 			event.preventDefault();
 			let latexSource = event.target.closest(".mjx-math").getAttribute("aria-label");
@@ -956,7 +956,7 @@ function addCopyListenersToMathBlocks(loadEventInfo) {
 function addDoubleClickListenersToMathBlocks(loadEventInfo) {
     GWLog("addDoubleClickListenersToMathBlocks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".mjpage").forEach(mathBlock => { 
+	loadEventInfo.document.querySelectorAll(".mjpage").forEach(mathBlock => {
 		mathBlock.addEventListener("dblclick", (event) => {
 			document.getSelection().selectAllChildren(mathBlock.querySelector(".mjx-chtml"));
 		});
@@ -972,9 +972,9 @@ function addDoubleClickListenersToMathBlocks(loadEventInfo) {
 function addBlockButtonsToMathBlocks(loadEventInfo) {
     GWLog("addBlockButtonsToMathBlocks", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".mjpage__block").forEach(mathBlock => { 
+	loadEventInfo.document.querySelectorAll(".mjpage__block").forEach(mathBlock => {
 		//	Inject button bar.
-		mathBlock.insertAdjacentHTML("beforeend", 
+		mathBlock.insertAdjacentHTML("beforeend",
 			  `<span class="block-button-bar">`
 			+ `<button type="button" class="copy" tabindex="-1" title="Copy LaTeX source of this equation to clipboard">`
 			+ `<img src="/static/img/icons/copy.svg">`
@@ -1070,7 +1070,7 @@ function updateBackToTopLinkVisibility(event) {
     /*  Show back-to-top link on ANY scroll up, or when scrolling a full page
         down from the top.
      */
-    if (   GW.scrollState.unbrokenUpScrollDistance > 0 
+    if (   GW.scrollState.unbrokenUpScrollDistance > 0
     	|| GW.scrollState.unbrokenDownScrollDistance > window.innerHeight)
         GW.backToTop.classList.toggle("hidden", false);
 
