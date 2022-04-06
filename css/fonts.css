@@ -1074,4 +1074,5 @@
     font-weight: normal;
     font-style: normal;
     src: url("/static/font/quivira/Quivira-SUBSETTED.ttf") format("truetype");
+    font-display: swap;
 }
