@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-03-22 10:51:50 gwern"
+When:  Time-stamp: "2022-04-06 22:52:51 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -1008,7 +1008,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("Zeo", "/Zeo")
         , ("[Aa]daptive (clinical )?trial", "https://en.wikipedia.org/wiki/Adaptive_clinical_trial")
         , ("[Aa]krasia", "https://en.wikipedia.org/wiki/Akrasia")
-        , ("[Aa]nchor(ing|ed)?", "https://en.wikipedia.org/wiki/Anchoring")
         , ("[Aa]pproximate [Bb]ayesian [Cc]omputation", "https://en.wikipedia.org/wiki/Approximate_Bayesian_computation")
         , ("[Aa]rgument from silence", "https://en.wikipedia.org/wiki/Argument_from_silence")
         , ("[Aa]ssassination market", "https://en.wikipedia.org/wiki/Assassination_market")
@@ -1025,10 +1024,9 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Bb]inary tree", "https://en.wikipedia.org/wiki/Binary_tree")
         , ("[Bb]iobank(ed|s|ing)?", "https://en.wikipedia.org/wiki/Biobank")
         , ("[Bb]irthday paradoxe?s?", "https://en.wikipedia.org/wiki/Birthday_problem")
-        , ("Bitcoin.?", "/docs/bitcoin/2009-nakamoto.pdf")
+        , ("Bitcoin.?", "https://en.wikipedia.org/wiki/Bitcoin")
         , ("[Bb]itter [Ll]essons?", "http://www.incompleteideas.net/IncIdeas/BitterLesson.html")
         , ("[Bb]lessings [Oo]f [Ss]cale", "/Scaling-hypothesis#blessings-of-scale")
-        , ("[Bb]locking", "https://en.wikipedia.org/wiki/Blocking_%28statistics%29")
         , ("[Bb]ody double", "https://en.wikipedia.org/wiki/Political_decoy")
         , ("[Bb]ootstrap(ping|ped)?", "https://en.wikipedia.org/wiki/Bootstrapping_%28statistics%29")
         , ("[Bb]ottlenose dolphins?", "https://en.wikipedia.org/wiki/Bottlenose_dolphin")

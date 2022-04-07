@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-05 18:35:47 gwern"
+When:  Time-stamp: "2022-04-05 22:49:20 gwern"
 License: CC-0
 -}
 
@@ -2575,6 +2575,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\n            <jats:italic>R</jats:italic>\n", "<em>R</em>")
           , ("\8201", " ")
           , ("Fr’echet", "Fréchet")
+          , ("Frechet", "Fréchet")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
             ]
