@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-07 00:12:55 gwern"
+When: Time-stamp: "2022-04-07 08:51:59 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,7 @@ import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToString)
 import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
-import Typography (typographyTransform, invertImageInline, imageMagickDimensions)
+import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
 import LinkIcon (rebuildSVGIconCSS)
 import LinkLive (linkLiveTest, linkLivePrioritize)
@@ -268,7 +268,7 @@ descField d = field d $ \item -> do
                     Just desc ->
                      let cleanedDesc = runPure $ do
                               pandocDesc <- readMarkdown def{readerExtensions=pandocExtensions} (T.pack desc)
-                              let pandocDesc' = pandocDesc -- walk typographyTransform pandocDesc
+                              let pandocDesc' = linebreakingTransform pandocDesc
                               htmlDesc <- writeHtml5String def pandocDesc' -- NOTE: we can skip 'safeHtmlWriterOptions' use here because descriptions are always very simple & will never have anything complex like tables
                               return $ T.unpack htmlDesc
                       in case cleanedDesc of

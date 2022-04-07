@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (invertImageInline, typographyTransform, imageMagickDimensions, titlecase') where
+module Typography (invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase') where
 
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
@@ -40,9 +40,12 @@ import Utils (addClass)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = walk (linkLive . linkIcon) .
-                      walk (breakSlashes . breakEquals) .
+                      linebreakingTransform .
                       walk smallcapsfyInlineCleanup . walk smallcapsfy .
                       rulersCycle 3
+
+linebreakingTransform :: Pandoc -> Pandoc
+linebreakingTransform = walk (breakSlashes . breakEquals)
 
 -- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more
 -- capital letters because with full capitals, they look too big and dominate the page (eg.
