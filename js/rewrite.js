@@ -611,7 +611,7 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 
     let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
 	footnotes.forEach(footnote => {
-		footnote.querySelector(".footnote-back").innerHTML = `<img alt="↩ Right arrow curving left [footnote return link] arrow" src="/static/img/icons/arrow-hook-left.svg">`;
+		footnote.querySelector(".footnote-back").innerHTML = `<img width="20" height="20" alt="↩ Right arrow curving left [footnote return link] arrow" src="/static/img/icons/arrow-hook-left.svg">`;
 	});
 }
 
