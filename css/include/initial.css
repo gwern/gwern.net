@@ -116,34 +116,34 @@ svg {
 }
 
 /*****************/
-/* Accessibility */
+/* ACCESSIBILITY */
 /*****************/
 /* Provide a link which skips straight to the content bypassing the sidebar &
    metadata block; this link is positioned off-screen until <Tab>-navigated to,
    which focuses it, highlighting it in a big red block in the upper-left corner.
    Implementation & rationale from https://webaim.org/techniques/skipnav/
-   Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html */
-#skiptocontent a {
-    padding:6px;
+   Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html 
+ */
+#skip-to-content-link  {
+    padding: 0.3em 0.75em 0.4em 0.65em;
     position: absolute;
-    top:-40px;
-    left:0px;
-    color:white;
-    border-right:1px solid white;
-    border-bottom:1px solid white;
-    border-bottom-right-radius:8px;
-    background:#BF1722;
-    -webkit-transition: top 1s ease-out;
-    transition: top 1s ease-out;
-    z-index: 100;
+    top: -2.25em;
+    left: 0;
+	font-family: var(--GW-sans-serif-font-stack);
+    color: var(--GW-skip-to-content-text-color);
+    background-color: var(--GW-skip-to-content-background-color);
+    border-color: var(--GW-skip-to-content-border-color);
+    border-style: double;
+    border-width: 0 3px 3px 0;
+    outline: none;
+    z-index: 10001;
+    transition:
+    	top 1s ease-out;
 }
-#skiptocontent a:focus {
-    position:absolute;
-    left:0px;
-    top:0px;
-    outline-color:transparent;
-    -webkit-transition: top .1s ease-in;
-    transition: top .1s ease-in;
+#skip-to-content-link:focus {
+    top: 0;
+    transition:
+    	top 0.1s ease-in;
 }
 
 /***********/

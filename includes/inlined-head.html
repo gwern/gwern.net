@@ -444,25 +444,24 @@ svg {
    Implementation & rationale from https://webaim.org/techniques/skipnav/
    Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html 
  */
-#skiptocontent  {
+#skip-to-content-link  {
     padding: 0.3em 0.75em 0.4em 0.65em;
     position: absolute;
     top: -2.25em;
     left: 0;
 	font-family: var(--GW-sans-serif-font-stack);
     color: var(--GW-skip-to-content-text-color);
-    border-right: 1px solid var(--GW-skip-to-content-border-color);
-    border-bottom: 1px solid var(--GW-skip-to-content-border-color);
     background-color: var(--GW-skip-to-content-background-color);
+    border-color: var(--GW-skip-to-content-border-color);
+    border-style: double;
+    border-width: 0 3px 3px 0;
     outline: none;
     z-index: 10001;
     transition:
     	top 1s ease-out;
 }
-#skiptocontent:focus {
+#skip-to-content-link:focus {
     top: 0;
-    border-width: 0 3px 3px 0;
-    border-style: double;
     transition:
     	top 0.1s ease-in;
 }

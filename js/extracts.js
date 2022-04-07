@@ -818,7 +818,6 @@ Extracts = {
                 Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
 
 				//	Get the page thumbnail URL.
-				// /static/img/logo/logo-whitebg-large-border.png
 				let pageThumbnailMetaTag = target.popFrame.querySelector("meta[property='og:image']");
 				if (pageThumbnailMetaTag) {
 					let pageThumbnailURL = new URL(pageThumbnailMetaTag.getAttribute("content"));
