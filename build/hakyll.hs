@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-07 08:51:59 gwern"
+When: Time-stamp: "2022-04-07 17:18:46 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -236,6 +236,8 @@ postCtx tags =
     constField "confidence" "log" <>
     constField "importance" "0" <>
     constField "cssExtension" "drop-caps-de-zs" <>
+    imageDimensionWidth "thumbnailHeight" <>
+    imageDimensionWidth "thumbnailWidth" <>
     constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
@@ -245,6 +247,14 @@ postCtx tags =
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, `postList`, `tagPage`, and `main`?
 backlinkCheck :: Item a -> Bool
 backlinkCheck i = let p = toFilePath (itemIdentifier i) in unsafePerformIO (doesFileExist (("metadata/annotations/backlinks/%2F" ++ replace ".page" "" p) ++ ".html")) && not ("newsletter/" `isInfixOf` p || "index" `isSuffixOf` p)
+
+imageDimensionWidth :: String -> Context a
+imageDimensionWidth d = field d $ \item -> do
+                  metadataMaybe <- getMetadataField (itemIdentifier item) "thumbnail"
+                  let (h,w) = case metadataMaybe of
+                        Nothing -> ("1400","1238") -- /static/img/logo/logo-whitebg-large-border.png dimensions
+                        Just thumbnailPath -> unsafePerformIO $ imageMagickDimensions $ tail thumbnailPath
+                  if d == "thumbnailWidth" then return w else return h
 
 escapedTitleField :: String -> Context a
 escapedTitleField t = (mapContext (map toLower . replace "/" "-" . replace ".page" "") . pathField) t
