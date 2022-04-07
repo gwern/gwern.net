@@ -130,7 +130,8 @@ else
     ### (We include plain text files in this in order to get truncated versions of them.)
     bold "Generating syntax-highlighted versions of source code files…"
     syntaxHighlight () {
-        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown" ["txt"]="" )
+        #### NOTE: for each new extension, add a `find` name, and an entry in `extracts-content.js`
+        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["bash"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown" ["txt"]="" ["yaml"]="YAML" ["jsonl"]="JSON" ["json"]="JSON" ["csv"]="CSV" )
         for FILE in "$@"; do
             FILEORIGINAL=$(echo "$FILE" | sed -e 's/_site//')
             FILENAME=$(basename -- "$FILE")
@@ -147,7 +148,7 @@ else
     export -f syntaxHighlight
     set +e
     find _site/static/ -type f,l -name "*.html" | sort | parallel --jobs 25 syntaxHighlight # NOTE: run .html first to avoid duplicate files like 'foo.js.html.html'
-    find _site/ -type f,l -name "*.R" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.sh" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" | \
+    find _site/ -type f,l -name "*.R" -or -name "*.c" -or -name "*.css" -or -name "*.hs" -or -name "*.js" -or -name "*.patch" -or -name "*.diff" -or -name "*.py" -or -name "*.sh" -or -name "*.bash" -or -name "*.php" -or -name "*.conf" -or -name "*.opml" -or -name "*.page" -or -name "*.txt" -or -name "*.json" -or -name "*.jsonl" -or -name "*.yaml" -or -name "*.xml" -or -name "*.csv"  | \
         sort |  fgrep -v \
                  `# Pandoc fails on embedded Unicode/regexps in JQuery` \
                  -e 'mountimprobable.com/assets/app.js' -e 'jquery.min.js' -e 'static/js/tablesorter.js' \

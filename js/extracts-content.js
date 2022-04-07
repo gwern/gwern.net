@@ -80,11 +80,11 @@
 /*=-----------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"AUX_LINKS_LINK",       // Type name
-	"isAuxLinksLink",       // Type predicate function
-	"has-content",          // Target classes to add
-	"auxLinksForTarget",    // Pop-frame fill function
-	"aux-links"             // Pop-frame classes
+    "AUX_LINKS_LINK",       // Type name
+    "isAuxLinksLink",       // Type predicate function
+    "has-content",          // Target classes to add
+    "auxLinksForTarget",    // Pop-frame fill function
+    "aux-links"             // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
@@ -215,11 +215,11 @@ Extracts = { ...Extracts, ...{
 /*=-----------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"CITATION",             // Type name
-	"isCitation",           // Type predicate function
-	null,                   // Target classes to add
-	"citationForTarget",    // Pop-frame fill function
-	"footnote"              // Pop-frame classes
+    "CITATION",             // Type name
+    "isCitation",           // Type predicate function
+    null,                   // Target classes to add
+    "citationForTarget",    // Pop-frame fill function
+    "footnote"              // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
@@ -296,11 +296,11 @@ Extracts = { ...Extracts, ...{
 /*=---------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"CITATION_BACK_LINK",               // Type name
-	"isCitationBackLink",               // Type predicate function
-	null,                               // Target classes to add
-	"citationBackLinkForTarget",        // Pop-frame fill function
-	"citation-context"                  // Pop-frame classes
+    "CITATION_BACK_LINK",               // Type name
+    "isCitationBackLink",               // Type predicate function
+    null,                               // Target classes to add
+    "citationBackLinkForTarget",        // Pop-frame fill function
+    "citation-context"                  // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
@@ -376,11 +376,11 @@ Extracts = { ...Extracts, ...{
 /*=---------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"VIDEO",                // Type name
-	"isVideoLink",          // Type predicate function
-	"has-content",          // Target classes to add
-	"videoForTarget",       // Pop-frame fill function
-	"video object"          // Pop-frame classes
+    "VIDEO",                // Type name
+    "isVideoLink",          // Type predicate function
+    "has-content",          // Target classes to add
+    "videoForTarget",       // Pop-frame fill function
+    "video object"          // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
@@ -389,7 +389,7 @@ Extracts = { ...Extracts, ...{
     youtubeId: (href) => {
         let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
         if (   match
-        	&& match[2].length == 11) {
+            && match[2].length == 11) {
             return match[2];
         } else {
             return null;
@@ -434,11 +434,11 @@ Extracts = { ...Extracts, ...{
 /*=-----------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"LOCAL_VIDEO",              // Type name
-	"isLocalVideoLink",         // Type predicate function
-	"has-content",              // Target classes to add
-	"localVideoForTarget",      // Pop-frame fill function
-	"video object"              // Pop-frame class
+    "LOCAL_VIDEO",              // Type name
+    "isLocalVideoLink",         // Type predicate function
+    "has-content",              // Target classes to add
+    "localVideoForTarget",      // Pop-frame fill function
+    "video object"              // Pop-frame class
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
@@ -492,11 +492,11 @@ Extracts = { ...Extracts, ...{
 /*=-----------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"LOCAL_IMAGE",              // Type name
-	"isLocalImageLink",         // Type predicate function
-	"has-content",              // Target classes to add
-	"localImageForTarget",      // Pop-frame fill function
-	"image object"              // Pop-frame classes
+    "LOCAL_IMAGE",              // Type name
+    "isLocalImageLink",         // Type predicate function
+    "has-content",              // Target classes to add
+    "localImageForTarget",      // Pop-frame fill function
+    "image object"              // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
@@ -539,7 +539,7 @@ Extracts = { ...Extracts, ...{
 
         let styles = ``;
         if (   width > 0
-        	&& height > 0)
+            && height > 0)
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
@@ -590,11 +590,11 @@ Extracts = { ...Extracts, ...{
 /*=--------------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"LOCAL_DOCUMENT",               // Type name
-	"isLocalDocumentLink",          // Type predicate function
-	"has-content",                  // Target classes to add
-	"localDocumentForTarget",       // Pop-frame fill function
-	"local-document object"         // Pop-frame classes
+    "LOCAL_DOCUMENT",               // Type name
+    "isLocalDocumentLink",          // Type predicate function
+    "has-content",                  // Target classes to add
+    "localDocumentForTarget",       // Pop-frame fill function
+    "local-document object"         // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
@@ -652,19 +652,21 @@ Extracts = { ...Extracts, ...{
 /*=---------------------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"LOCAL_CODE_FILE",              // Type name
-	"isLocalCodeFileLink",          // Type predicate function
-	"has-content",                  // Target classes to add
-	"localCodeFileForTarget",       // Pop-frame fill function
-	"local-code-file"               // Pop-frame classes
+    "LOCAL_CODE_FILE",              // Type name
+    "isLocalCodeFileLink",          // Type predicate function
+    "has-content",                  // Target classes to add
+    "localCodeFileForTarget",       // Pop-frame fill function
+    "local-code-file"               // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
     //  Used in: Extracts.isLocalCodeFileLink
     codeFileExtensions: [
-        "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html", "opml", "xml", "page",
-        // Non-syntax highlighted (due to lack of known format or potential size, but truncated at 1000 lines):
-        "txt", "json", "jsonl", "csv"
+        // truncated at 1000 lines for preview
+        "bash", "c", "conf", "css", "csv", "diff", "hs", "html", "js", "json", "jsonl", "opml",
+        "page", "patch", "php", "py", "R", "sh", "xml", "yaml",
+        // Non-syntax highlighted (due to lack of known format), but truncated:
+        "txt"
     ],
 
     //  Called by: extracts.js (as `predicateFunctionName`)
@@ -751,15 +753,15 @@ Extracts = { ...Extracts, ...{
 /*=----------------=*/
 
 Extracts.targetTypeDefinitions.insertBefore([
-	"FOREIGN_SITE",             // Type name
-	"isForeignSiteLink",        // Type predicate function
-	"has-content",              // Target classes to add
-	"foreignSiteForTarget",     // Pop-frame fill function
-	"foreign-site object"       // Pop-frame classes
+    "FOREIGN_SITE",             // Type name
+    "isForeignSiteLink",        // Type predicate function
+    "has-content",              // Target classes to add
+    "foreignSiteForTarget",     // Pop-frame fill function
+    "foreign-site object"       // Pop-frame classes
 ], (def => def[0] == "LOCAL_PAGE"));
 
 Extracts = { ...Extracts, ...{
-	//	Called by: extracts.js (as `predicateFunctionName`)
+    //  Called by: extracts.js (as `predicateFunctionName`)
     isForeignSiteLink: (target) => {
         if (   target.hostname == location.hostname
             || Extracts.isAnnotatedLink(target))
@@ -774,79 +776,79 @@ Extracts = { ...Extracts, ...{
 
         let url = new URL(target.href);
 
-		//	WARNING: EXPERIMENTAL FEATURE!
-		if (localStorage.getItem("enable-embed-proxy") == "true") {
-			let proxyURL = new URL("https://api.obormot.net/embed.php");
+        //  WARNING: EXPERIMENTAL FEATURE!
+        if (localStorage.getItem("enable-embed-proxy") == "true") {
+            let proxyURL = new URL("https://api.obormot.net/embed.php");
 
-			doAjax({
-				location: proxyURL.href,
-				params: { url: url.href },
-				onSuccess: (event) => {
-					if (!target.popFrame)
-						return;
+            doAjax({
+                location: proxyURL.href,
+                params: { url: url.href },
+                onSuccess: (event) => {
+                    if (!target.popFrame)
+                        return;
 
-					let doc = document.createElement("div");
-					doc.innerHTML = event.target.responseText;
-					doc.querySelectorAll("[href], [src]").forEach(element => {
-						if (element.href) {
-							let elementURL = new URL(element.href);
-							if (   elementURL.host == location.host
-								&& !element.getAttribute("href").startsWith("#")) {
-								elementURL.host = url.host;
-								element.href = elementURL.href;
-							}
-						} else if (element.src) {
-							let elementURL = new URL(element.src);
-							if (elementURL.host == location.host) {
-								elementURL.host = url.host;
-								element.src = elementURL.href;
-							}
-						}
-					});
+                    let doc = document.createElement("div");
+                    doc.innerHTML = event.target.responseText;
+                    doc.querySelectorAll("[href], [src]").forEach(element => {
+                        if (element.href) {
+                            let elementURL = new URL(element.href);
+                            if (   elementURL.host == location.host
+                                && !element.getAttribute("href").startsWith("#")) {
+                                elementURL.host = url.host;
+                                element.href = elementURL.href;
+                            }
+                        } else if (element.src) {
+                            let elementURL = new URL(element.src);
+                            if (elementURL.host == location.host) {
+                                elementURL.host = url.host;
+                                element.src = elementURL.href;
+                            }
+                        }
+                    });
 
-					if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
-						doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
+                    if (event.target.getResponseHeader("content-type").startsWith("text/plain"))
+                        doc.innerHTML = `<pre>${doc.innerHTML}</pre>`;
 
-					target.popFrame.querySelector("iframe").srcdoc = doc.innerHTML;
+                    target.popFrame.querySelector("iframe").srcdoc = doc.innerHTML;
 
                     target.popFrame.classList.toggle("loading", false);
-				},
-				onFailure: (event) => {
-					if (!target.popFrame)
-						return;
+                },
+                onFailure: (event) => {
+                    if (!target.popFrame)
+                        return;
 
-					target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
-				}
-			});
+                    target.popFrame.swapClasses([ "loading", "loading-failed" ], 1);
+                }
+            });
 
-			return `<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`;
-		}
-		//	END EXPERIMENTAL SECTION
+            return `<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`;
+        }
+        //  END EXPERIMENTAL SECTION
 
         if ([ "www.lesswrong.com", "lesswrong.com", "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)) {
-        	//	Less Wrong
+            //  Less Wrong
             url.protocol = "https:";
             url.hostname = "www.greaterwrong.com";
             url.search = "format=preview&theme=classic";
         } else if (   [ "www.alignmentforum.org", "alignmentforum.org" ].includes(url.hostname)
-        		   || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
-        		   	   && url.searchParams.get("view") == "alignment-forum")) {
-        	//	Alignment Forum
+                   || (   [ "www.greaterwrong.com", "greaterwrong.com" ].includes(url.hostname)
+                       && url.searchParams.get("view") == "alignment-forum")) {
+            //  Alignment Forum
             url.protocol = "https:";
             url.hostname = "www.greaterwrong.com";
             url.search = "view=alignment-forum&format=preview&theme=classic";
         } else if ([ "forum.effectivealtruism.org", "ea.greaterwrong.com" ].includes(url.hostname)) {
-        	//	EA Forum
+            //  EA Forum
             url.protocol = "https:";
             url.hostname = "ea.greaterwrong.com";
             url.search = "format=preview&theme=classic";
         } else if ([ "arbital.com", "arbital.greaterwrong.com" ].includes(url.hostname)) {
-        	//	Arbital
+            //  Arbital
             url.protocol = "https:";
             url.hostname = "arbital.greaterwrong.com";
             url.search = "format=preview&theme=classic";
         } else if (/(.+?)\.wikipedia\.org/.test(url.hostname) == true) {
-        	//	Wikipedia
+            //  Wikipedia
             url.protocol = "https:";
             url.hostname = url.hostname.replace(/(.+?)(?:\.m)?\.wikipedia\.org/, "$1.m.wikipedia.org");
             if (!url.hash)
