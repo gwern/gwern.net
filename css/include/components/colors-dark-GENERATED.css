@@ -147,8 +147,8 @@
     --GW-syntax-highlight-color-variable: #b4b4b4;
     --GW-syntax-highlight-color-other: inherit;
     --GW-syntax-highlight-color-preprocessor: inherit;
-    --GW-syntax-highlight-color-extension: #b4b4b4;
-    --GW-syntax-highlight-color-comment: #b4b4b4;
+    --GW-syntax-highlight-color-extension: #a6a6a6;
+    --GW-syntax-highlight-color-comment: #a6a6a6;
     --GW-syntax-highlight-color-control-flow: #b6edaa;
     --GW-syntax-highlight-color-keyword: #d8deff;
     --GW-syntax-highlight-color-operator: #d8deff;
