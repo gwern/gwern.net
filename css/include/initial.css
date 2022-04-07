@@ -123,7 +123,7 @@ svg {
    which focuses it, highlighting it in a big red block in the upper-left corner.
    Implementation & rationale from https://webaim.org/techniques/skipnav/
    Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html */
-#skiptocontent a {
+a#skiptocontent {
     padding:6px;
     position: absolute;
     top:-40px;
@@ -137,7 +137,7 @@ svg {
     transition: top 1s ease-out;
     z-index: 100;
 }
-#skiptocontent a:focus {
+a:focus#skiptocontent {
     position:absolute;
     left:0px;
     top:0px;

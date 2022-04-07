@@ -74,7 +74,7 @@
   <!-- Skip fancy css like drop-caps on index pages -->
   $if(index)$<body class="$safeURL$">$else$<body class="$safeURL$ $cssExtension$">$endif$
 
-    <a id="skiptocontent" href="#markdownbody">Skip to main content</a>
+    <a id="skiptocontent" href="#markdownBody">Skip to main content</a>
 
     <main>
       <nav id="sidebar">
@@ -120,7 +120,7 @@
 
         $body$
 
-        <nav id="navigation" aria-labelledby="sibling-pages">
+        <nav id="navigation">
           <a id="navigation-previous" class="link-local-not" rel="prev" href="$previous$" title="Link to previous page by topic, ‘$previous$’"
             ><svg><use href="/static/img/icons/sequential-nav-icons-arabesque.svg#direction" /></svg></a>
           <a id="navigation-center" class="link-local-not" title="Return to top of current page" href="#top"
