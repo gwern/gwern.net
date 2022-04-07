@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-07 17:18:46 gwern"
+When: Time-stamp: "2022-04-07 19:07:26 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -238,6 +238,7 @@ postCtx tags =
     constField "cssExtension" "drop-caps-de-zs" <>
     imageDimensionWidth "thumbnailHeight" <>
     imageDimensionWidth "thumbnailWidth" <>
+    constField "thumbnailText" "Default thumbnail text: the Gwern.net site logo, a logotype of a large blackletter fraktur capital letter 'G' on a white background." <>
     constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
