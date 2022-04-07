@@ -308,6 +308,12 @@
 	 */
 	--GW-back-to-top-link-color: #5c5c5c;
 	--GW-back-to-top-link-hover-color: #8b8b8b;
+
+	/*	“Skip to content” accessibility link.
+	 */
+	--GW-skip-to-content-text-color: #000;
+	--GW-skip-to-content-border-color: #000;
+	--GW-skip-to-content-background-color: #ff8272;
 }
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
@@ -459,7 +465,7 @@ img:not(.invertible):not(.invertible-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
-/* For images which have been manually marked up with '{.invertible-not}', we avoid any filtering at all. If they are manually marked up (artwork, diagrams with multiple subtly-different colors matched to a legend/caption), the color is important and shouldn't be faded out by default. */
+/* For images which have been manually marked up with '.invertible-not', we avoid any filtering at all. If they are manually marked up (artwork, diagrams with multiple subtly-different colors matched to a legend/caption), the color is important and shouldn't be faded out by default. */
 #markdownBody img.invertible-not { filter: none; }
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted

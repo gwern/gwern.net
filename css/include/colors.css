@@ -308,4 +308,10 @@
 	 */
 	--GW-back-to-top-link-color: #ccc;
 	--GW-back-to-top-link-hover-color: #999;
+
+	/*	“Skip to content” accessibility link.
+	 */
+	--GW-skip-to-content-text-color: #fff;
+	--GW-skip-to-content-border-color: #fff;
+	--GW-skip-to-content-background-color: #bf1722;
 }

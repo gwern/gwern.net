@@ -288,6 +288,9 @@ Popups = {
 		//  Mark target as having an active popup associated with it.
 		target.classList.add("popup-open");
 
+		//	Disable rendering progress indicator (spinner).
+		target.popup.classList.toggle("rendering", false);
+
 		//  Fire notification event.
 		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
 	},
@@ -304,6 +307,9 @@ Popups = {
 			popup.popupStack.remove(popup);
 		}
 		popup.popupStack.push(popup);
+
+		//	Set rendering progress indicator (spinner).
+		popup.classList.toggle("rendering", true);
 
 		//  Inject popup into page.
 		Popups.popupContainer.appendChild(popup);

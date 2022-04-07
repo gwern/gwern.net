@@ -309,6 +309,12 @@
 	 */
 	--GW-back-to-top-link-color: #ccc;
 	--GW-back-to-top-link-hover-color: #999;
+
+	/*	“Skip to content” accessibility link.
+	 */
+	--GW-skip-to-content-text-color: #fff;
+	--GW-skip-to-content-border-color: #fff;
+	--GW-skip-to-content-background-color: #bf1722;
 }
 </style>
 <style id="inlined-styles">
@@ -430,34 +436,34 @@ svg {
 }
 
 /*****************/
-/* Accessibility */
+/* ACCESSIBILITY */
 /*****************/
 /* Provide a link which skips straight to the content bypassing the sidebar &
    metadata block; this link is positioned off-screen until <Tab>-navigated to,
    which focuses it, highlighting it in a big red block in the upper-left corner.
    Implementation & rationale from https://webaim.org/techniques/skipnav/
-   Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html */
-a#skiptocontent {
-    padding:6px;
+   Further background: https://www.w3.org/TR/WCAG20-TECHS/G1.html
+ */
+#skip-to-content-link  {
+    padding: 0.3em 0.75em 0.4em 0.65em;
     position: absolute;
-    top:-40px;
-    left:0px;
-    color:white;
-    border-right:1px solid white;
-    border-bottom:1px solid white;
-    border-bottom-right-radius:8px;
-    background:#BF1722;
-    -webkit-transition: top 1s ease-out;
-    transition: top 1s ease-out;
-    z-index: 100;
+    top: -2.25em;
+    left: 0;
+	font-family: var(--GW-sans-serif-font-stack);
+    color: var(--GW-skip-to-content-text-color);
+    background-color: var(--GW-skip-to-content-background-color);
+    border-color: var(--GW-skip-to-content-border-color);
+    border-style: double;
+    border-width: 0 3px 3px 0;
+    outline: none;
+    z-index: 10001;
+    transition:
+    	top 1s ease-out;
 }
-a:focus#skiptocontent {
-    position:absolute;
-    left:0px;
-    top:0px;
-    outline-color:transparent;
-    -webkit-transition: top .1s ease-in;
-    transition: top .1s ease-in;
+#skip-to-content-link:focus {
+    top: 0;
+    transition:
+    	top 0.1s ease-in;
 }
 
 /***********/
@@ -1723,6 +1729,12 @@ span.smallcaps-auto {
 	 */
 	--GW-back-to-top-link-color: #5c5c5c;
 	--GW-back-to-top-link-hover-color: #8b8b8b;
+
+	/*	“Skip to content” accessibility link.
+	 */
+	--GW-skip-to-content-text-color: #000;
+	--GW-skip-to-content-border-color: #000;
+	--GW-skip-to-content-background-color: #ff8272;
 }
 :root {
     /*  Adjust background color to prevent pixels from turning off (contrary to popular belief, pixels turning off saves trivial energy, like <1% in measurements, and causes nasty scrolling/update jank due to delay in pixels turning back on), and improve contrast with the white.
@@ -1874,7 +1886,7 @@ img:not(.invertible):not(.invertible-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
-/* For images which have been manually marked up with '{.invertible-not}', we avoid any filtering at all. If they are manually marked up (artwork, diagrams with multiple subtly-different colors matched to a legend/caption), the color is important and shouldn't be faded out by default. */
+/* For images which have been manually marked up with '.invertible-not', we avoid any filtering at all. If they are manually marked up (artwork, diagrams with multiple subtly-different colors matched to a legend/caption), the color is important and shouldn't be faded out by default. */
 #markdownBody img.invertible-not { filter: none; }
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
