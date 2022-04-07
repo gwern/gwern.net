@@ -125,15 +125,23 @@ else
      echo "</urlset>") >> ./_site/sitemap.xml
 
     ## generate a syntax-highlighted HTML fragment (not whole standalone page) version of source code files for popup usage:
-    ### We skip .json/.jsonl/.csv because they are too large & Pandoc will choke;
+    ### We skip .json/.jsonl/.csv because they are too large & Pandoc will choke; and we truncate at 1000 lines because such
+    ### long source files are not readable as popups and their complexity makes browsers choke while rendering them.
+    ### (We include plain text files in this in order to get truncated versions of them.)
     bold "Generating syntax-highlighted versions of source code files…"
     syntaxHighlight () {
-        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown" )
+        declare -A extensionToLanguage=( ["R"]="R" ["c"]="C" ["py"]="Python" ["css"]="CSS" ["hs"]="Haskell" ["js"]="Javascript" ["patch"]="Diff" ["diff"]="Diff" ["sh"]="Bash" ["html"]="HTML" ["conf"]="Bash" ["php"]="PHP" ["opml"]="Xml" ["xml"]="Xml" ["page"]="Markdown" ["txt"]="" )
         for FILE in "$@"; do
+            FILEORIGINAL=$(echo "$FILE" | sed -e 's/_site//')
             FILENAME=$(basename -- "$FILE")
             EXTENSION="${FILENAME##*.}"
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
-            (echo -e "~~~{.$LANGUAGE}"; cat $FILE; echo -e "\n~~~") | pandoc --mathjax --write=html5 --from=markdown+smart >> $FILE.html
+            FILELENGTH=$(cat "$FILE" | wc --lines)
+            (echo -e "~~~{.$LANGUAGE}";
+             if (( $FILELENGTH > 1000  )); then cat "$FILE" | head -1000; else cat "$FILE"; fi
+             echo -e "\n~~~"
+             if (( $FILELENGTH > 1000  )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-local\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
+            ) | pandoc --mathjax --write=html5 --from=markdown+smart >> $FILE.html
         done
     }
     export -f syntaxHighlight

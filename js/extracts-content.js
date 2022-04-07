@@ -388,7 +388,7 @@ Extracts = { ...Extracts, ...{
     // Called by: Extracts.videoForTarget
     youtubeId: (href) => {
         let match = href.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        if (   match 
+        if (   match
         	&& match[2].length == 11) {
             return match[2];
         } else {
@@ -538,7 +538,7 @@ Extracts = { ...Extracts, ...{
         }
 
         let styles = ``;
-        if (   width > 0 
+        if (   width > 0
         	&& height > 0)
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
@@ -663,7 +663,7 @@ Extracts = { ...Extracts, ...{
     //  Used in: Extracts.isLocalCodeFileLink
     codeFileExtensions: [
         "R", "css", "hs", "js", "patch", "sh", "php", "conf", "html", "opml", "xml", "page",
-        // Non-syntax highlighted (due to lack of known format or potential size):
+        // Non-syntax highlighted (due to lack of known format or potential size, but truncated at 1000 lines):
         "txt", "json", "jsonl", "csv"
     ],
 
