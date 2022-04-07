@@ -4294,34 +4294,49 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*│ Transitional UI elements. │*/
 /*└───────────────────────────┘*/
 
-/*  Loading spinner (for object popins).
-    */
-.popin.loading::before {
-    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
+/*	Spinners.
+ */
+.popin.loading::before,
+.popin.rendering::before {
     position: absolute;
     width: 3em;
-    height: 6em;
+    height: 3em;
+    max-height: 6em;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
     margin: auto;
-    display: flex;
+    display: block;
     justify-content: center;
     align-items: center;
     overflow: hidden;
     opacity: 0.2;
-    animation: fa-spin 2s infinite linear;
+    z-index: 1;
 }
 @keyframes fa-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
+/*  Loading spinner (for object popins).
+    */
+.popin.loading::before {
+    content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M288 24.103v8.169a11.995 11.995 0 0 0 9.698 11.768C396.638 63.425 472 150.461 472 256c0 118.663-96.055 216-216 216-118.663 0-216-96.055-216-216 0-104.534 74.546-192.509 174.297-211.978A11.993 11.993 0 0 0 224 32.253v-8.147c0-7.523-6.845-13.193-14.237-11.798C94.472 34.048 7.364 135.575 8.004 257.332c.72 137.052 111.477 246.956 248.531 246.667C393.255 503.711 504 392.789 504 256c0-121.187-86.924-222.067-201.824-243.704C294.807 10.908 288 16.604 288 24.103z"/></svg>');
+    animation: fa-spin 2s infinite linear;
+}
+
 .popin.image.loading img,
 .popin.image.loading-failed img,
 .popin.object.loading-failed iframe {
     visibility: hidden;
+}
+
+/*	Rendering spinner.
+ */
+.popin.rendering::before {
+	content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M460.115 373.846l-6.941-4.008c-5.546-3.202-7.564-10.177-4.661-15.886 32.971-64.838 31.167-142.731-5.415-205.954-36.504-63.356-103.118-103.876-175.8-107.701C260.952 39.963 256 34.676 256 28.321v-8.012c0-6.904 5.808-12.337 12.703-11.982 83.552 4.306 160.157 50.861 202.106 123.67 42.069 72.703 44.083 162.322 6.034 236.838-3.14 6.149-10.75 8.462-16.728 5.011z"/></svg>');
+    animation: fa-spin 3s infinite linear;
 }
 
 /*  “Loading failed” messages (for object popups).
