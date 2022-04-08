@@ -1253,18 +1253,14 @@ a code {
 p {
     margin: 0;
 }
-p + p {
-    text-indent: 2.5em;
-}
+p + p,
 p + figure[class^='float-'] + p {
     text-indent: 2.5em;
 }
 @media only screen and (max-width: 649px) {
-    p + p {
-        text-indent: 1em;
-    }
-    p + figure[class^='float-'] + p {
-        text-indent: 1em;
+    p + p,
+	p + figure[class^='float-'] + p {
+        text-indent: 1.75em;
     }
 }
 
