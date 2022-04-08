@@ -553,12 +553,13 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 #TOC ul ul {
     list-style-type: none;
     padding-left: 0.7em;
+    padding-top: 5px;
     margin-top: 2px;
 }
 
 #TOC li {
     font-weight: bold;
-    margin: 5px 0 10px 0;
+    margin: 0 0 10px 0;
     padding-left: 1.125em;
     position: relative;
     overflow-wrap: break-word;
