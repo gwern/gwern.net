@@ -11,6 +11,7 @@
 --    like with blockquotes/lists).
 module Typography (invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase') where
 
+import Control.Concurrent (forkIO)
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
@@ -315,7 +316,7 @@ invertImagePreview f = do utcFile <- getModificationTime f
                           when (age < nominalDay) $ do
                             let f' = f++"-inverted.png"
                             void $ runShellCommand "./" Nothing "convert" ["-negate", f, f']
-                            void $ runShellCommand "./" Nothing "firefox" [f']
+                            void $ forkIO $ void $ runShellCommand "./" Nothing "firefox" [f']
                             threadDelay 5000000
                             removeFile f'
 
