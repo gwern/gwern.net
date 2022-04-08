@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-05 22:49:20 gwern"
+When:  Time-stamp: "2022-04-07 21:17:02 gwern"
 License: CC-0
 -}
 
@@ -23,7 +23,7 @@ import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (elems, filter, fromList, toList, lookup, map, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, toList, lookup, map, traverseWithKey, union, Map)
 import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
@@ -181,6 +181,11 @@ readLinkMetadataAndCheck = do
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
              when (not $ null titlesEmpty) $ error ("Link Annotation Error: missing title despite abstract!" ++ show titlesEmpty)
+
+             let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,tags,_) -> if not ("/docs/" `isPrefixOf` f) then False else
+                                                        let fileTag = replace "/docs/" "" $ takeDirectory f
+                                                         in any ((fileTag++"/") `isPrefixOf`) tags) final
+             unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
              -- check tags (not just custom but all of them, including partials)
              let tagsSet = nubOrd $ concat $ M.elems $ M.map (\(_,_,_,_,tags,_) -> tags) final
@@ -2418,6 +2423,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , (" P<",     " <em>p</em> < ")
           , ("P ≤ ", "<em>p</em> ≤ ")
           , ("\40P<",     "\40<em>p</em> < ")
+          , ("(<em>P</em> &lt;", "(<em>p</em> &lt;")
           , ("(P≤", "(<em>p</em> ≤ ")
           , ("(P&lt;", "(<em>p</em> &lt; ")
           , ("(P&gt;", "(<em>p</em> &gt; ")
