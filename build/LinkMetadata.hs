@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-07 22:31:42 gwern"
+When:  Time-stamp: "2022-04-08 18:32:47 gwern"
 License: CC-0
 -}
 
@@ -265,7 +265,7 @@ annotateLink md target
        do let target''' = (\f -> if not ('.' `elem` f) then f ++ ".page" else f) $ takeWhile (/='#') $ tail target''
           unless (takeFileName target''' == "index" || takeFileName target''' == "index.page" || "/tags/" `isInfixOf` target''') $
             do exist <- doesFileExist target'''
-               unless exist $ error ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")")
+               unless exist $ printRed ("Link error in 'annotateLink': file does not exist? " ++ target''' ++ " (" ++target++")")
 
      let annotated = M.lookup target'' md
      case annotated of
