@@ -19,7 +19,7 @@ import Data.Char (toUpper)
 import Data.List (isPrefixOf)
 import Data.List.Utils (replace)
 import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
-import System.Directory (getModificationTime, removeFile)
+import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
 import qualified Data.Text as T (any, isInfixOf, isSuffixOf, pack, unpack, replace, Text)
@@ -337,11 +337,13 @@ imageMagickDimensions f =
         | "https://www.gwern.net/" `isPrefixOf` f = drop 22 f
         | otherwise = f
   in
-    do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
-       case status of
-         ExitFailure _ -> error f
-         _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
-                             return (height, width)
+    do exists <- doesFileExist f'
+       if not exists then return ("","") else
+        do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
+           case status of
+             ExitFailure exit -> error $ f ++ ":" ++ f' ++ ":" ++ show exit ++ ":" ++ (B8.unpack bs)
+             _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
+                                 return (height, width)
 
 -------------------------------------------
 
