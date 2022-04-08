@@ -1162,6 +1162,20 @@ function brokenAnchorCheck() {
 doWhenDOMContentLoaded(brokenAnchorCheck);
 
 
+/**********/
+/* DISQUS */
+/**********/
+
+/*	Linking to specific Disqus comments doesn’t work, due to lazy-loading.
+	Rewrite the hash to scroll to the comment section as a whole.
+ */
+function rectifyDisqusCommentAnchor() {
+	if (/^#comment-[0-9]/.test(location.hash))
+		GW.hashRealignValue = "#comments";
+}
+doWhenDOMContentLoaded(rectifyDisqusCommentAnchor);
+
+
 /********************/
 /* HASH REALIGNMENT */
 /********************/
