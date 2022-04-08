@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-07 21:17:02 gwern"
+When:  Time-stamp: "2022-04-07 22:31:42 gwern"
 License: CC-0
 -}
 
@@ -433,6 +433,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("GPT/inner-monologue", "inner monologue (AI)")
           , ("/gpt", "GPT")
           , ("ai/gpt", "GPT")
+          , ("ai/rnn", "AI/RNN")
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "AI/MoE")
           , ("iq/ses", "IQ/SES")

@@ -224,10 +224,10 @@ whiteList = M.fromList [
   , ( "/Turing-complete#security-implications"
     , [ "weird machines" ]
     )
-    , ( "/docs/ai/2013-yudkowsky.pdf#miri"
+    , ( "/docs/ai/scaling/2013-yudkowsky.pdf#miri"
     , [ "Intelligence Explosion Microeconomics" , "Yudkowsky 2013" ]
     )
-  , ( "/docs/ai/2018-sharma.pdf#google" , [ "Conceptual Captions" ] )
+  , ( "/docs/ai/diffusion/2018-sharma.pdf#google" , [ "Conceptual Captions" ] )
   , ( "/docs/dual-n-back/2010-zhang.pdf"
     , [ "Chinese journal finds 31% of submissions plagiarized', Zhang 2010"])
       , ( "/docs/eva/2002-takeda-notenkimemoirs#opening-the-general-products-store"
@@ -1092,7 +1092,7 @@ whiteList = M.fromList [
     ), ( "https://www.lesswrong.com/tag/inside-outside-view"
     , [ "Outside View" , "outside view" ]
     ), ( "https://www.nature.com/articles/mp2014188/"
-    , [ "Genetic contributions to variation in general cognitive function: a meta-analysis of genome-wide association studies in the CHARGE consortium (n = 53949"
+    , [ "Genetic contributions to variation in general cognitive function: a meta-analysis of genome-wide association studies in the CHARGE consortium (<em>n</em> = 53949"
       ]
     ), ( "https://www.nature.com/articles/mp2016107"
     , [ "Predicting educational achievement from DNA" ]
