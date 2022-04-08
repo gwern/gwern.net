@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-08 18:32:47 gwern"
+When:  Time-stamp: "2022-04-08 18:49:14 gwern"
 License: CC-0
 -}
 
@@ -29,7 +29,7 @@ import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
 import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
-import Data.List (intercalate, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
+import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.Utils (replace, split, uniq)
 import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
@@ -165,6 +165,9 @@ readLinkMetadataAndCheck = do
              -- intermediate link annotations: not finished, like 'custom.yaml' entries, but also not fully auto-generated.
              -- This is currently intended for storing entries for links which I give tags (probably as part of creating a new tag & rounding up all hits), but which are not fully-annotated; I don't want to delete the tag metadata, because it can't be rebuilt, but such partial annotations can't be put into 'custom.yaml' without destroying all of the checks' validity.
              partial <- readYaml "metadata/partial.yaml"
+             let (customPaths,partialPaths) = (map fst custom, map fst partial)
+             let redundantPartials = intersect customPaths partialPaths
+             unless (null redundantPartials) $ printRed $ "Redundant entries in partial.yaml & custom.yaml: " ++ show redundantPartials
 
              -- auto-generated cached definitions; can be deleted if gone stale
              rewriteLinkMetadata "metadata/auto.yaml" -- do auto-cleanup  first
