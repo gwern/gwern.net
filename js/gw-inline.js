@@ -52,20 +52,26 @@ GW.isFirefox = () => {
 /* DEBUGGING OUTPUT */
 /********************/
 
+GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
+
+function GWTimestamp() {
+    let time = Date.now();
+    let ms = `${(time % 1000)}`.padStart(3,'0');
+    let timestamp = `${GW.dateTimeFormat.format(time)}.${ms}`;
+
+	return timestamp;
+}
+
 GW.logLevel = localStorage.getItem("gw-log-level") || 0;
 GW.logSourcePadLength = 28;
-GW.dateTimeFormat = new Intl.DateTimeFormat([], { hour12: false, hour: "numeric", minute: "numeric", second: "numeric" });
 
 function GWLog (string, source = "", level = 1) {
     if (GW.logLevel < level)
     	return;
 
-    let time = Date.now();
-    let ms = `${(time % 1000)}`.padStart(3,'0');
-    let timestamp = `[${GW.dateTimeFormat.format(time)}.${ms}]  `;
     let sourcestamp = (source > "" ? `[${source}]` : `[ ]`).padEnd(GW.logSourcePadLength, ' ');
 
-    console.log(timestamp + sourcestamp + string);
+    console.log(`[${GWTimestamp()}]  ` + sourcestamp + string);
 }
 GW.setLogLevel = (level, permanently = false) => {
     if (permanently)
@@ -73,6 +79,13 @@ GW.setLogLevel = (level, permanently = false) => {
 
     GW.logLevel = level;
 };
+
+function GWStopWatch(f, ...args) {
+	let fname = (f.name || f.toString().slice(0, f.toString().indexOf('{')));
+    console.log(`${GWTimestamp()}  ${fname} BEGIN`);
+	f(...args);
+    console.log(`${GWTimestamp()}  ${fname} END`);
+}
 
 /***********/
 /* HELPERS */
