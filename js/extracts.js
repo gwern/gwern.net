@@ -808,16 +808,7 @@ Extracts = {
                 //  Inject the whole page into the pop-frame at first.
                 Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
 
-                //  The content is the page body plus the metadata block.
-                Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
-                let pageMetadata = target.popFrame.querySelector("#page-metadata");
-                if (pageMetadata)
-                    Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
-
-                //  Get the page title.
-                Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
-
-				//	Get the page thumbnail URL.
+				//	Get the page thumbnail URL and metadata.
 				let pageThumbnailMetaTag = target.popFrame.querySelector("meta[property='og:image']");
 				if (pageThumbnailMetaTag) {
 					let pageThumbnailURL = new URL(pageThumbnailMetaTag.getAttribute("content"));
@@ -828,10 +819,32 @@ Extracts = {
 											   ? pageThumbnailAltMetaTag.getAttribute("content") 
 											   : `Thumbnail image for “${Extracts.cachedPageTitles[target.pathname]}”`;
 
+					//	Image dimensions.
+					let pageThumbnailWidth = target.popFrame.querySelector("meta[property='og:image:width']").getAttribute("content");
+					let pageThumbnailHeight = target.popFrame.querySelector("meta[property='og:image:height']").getAttribute("content");
+
 					//	Construct and save the <img> tag.
 					if (pageThumbnailURL.pathname != "/static/img/logo/logo-whitebg-large-border.png")
-						Extracts.cachedPageThumbnailImageTags[target.pathname] = `<img src='${pageThumbnailURL.href}' alt='${pageThumbnailAltText}'>`;
+						Extracts.cachedPageThumbnailImageTags[target.pathname] = `<img 
+							src='${pageThumbnailURL.href}' 
+							alt='${pageThumbnailAltText}'
+							width='${pageThumbnailWidth}' 
+							height='${pageThumbnailHeight}' 
+							style='width: ${pageThumbnailWidth}px; height: auto;'
+								>`;
+
+					//	Request the image, to cache it.
+					doAjax({ location: pageThumbnailURL.href });
 				}
+
+                //  Get the page title.
+                Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
+
+                //  The content is the page body plus the metadata block.
+                Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
+                let pageMetadata = target.popFrame.querySelector("#page-metadata");
+                if (pageMetadata)
+                    Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                  */
