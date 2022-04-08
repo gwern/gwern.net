@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-08 18:49:14 gwern"
+When:  Time-stamp: "2022-04-08 18:59:54 gwern"
 License: CC-0
 -}
 
@@ -170,7 +170,7 @@ readLinkMetadataAndCheck = do
              unless (null redundantPartials) $ printRed $ "Redundant entries in partial.yaml & custom.yaml: " ++ show redundantPartials
 
              -- auto-generated cached definitions; can be deleted if gone stale
-             rewriteLinkMetadata "metadata/auto.yaml" -- do auto-cleanup  first
+             rewriteLinkMetadata partial custom "metadata/auto.yaml" -- do auto-cleanup  first
              auto <- readYaml "metadata/auto.yaml"
              -- merge the hand-written & auto-generated link annotations, and return:
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
@@ -866,12 +866,17 @@ pageTagDB = M.fromList [
   ]
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
-rewriteLinkMetadata :: Path -> IO ()
-rewriteLinkMetadata yaml = do old <- readYaml yaml
-                              let new = M.fromList old :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
-                              let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
-                                    M.toList new
-                              writeUpdatedFile "yaml" yaml newYaml
+rewriteLinkMetadata :: MetadataList -> MetadataList -> Path -> IO ()
+rewriteLinkMetadata partial custom yaml
+  = do old <- readYaml yaml
+       -- de-duplicate by removing anything in auto.yaml which has been promoted to custom/partial:
+       let (partialURLs,customURLs) = (map fst partial, map fst custom)
+       let betterURLs = nubOrd (partialURLs ++ customURLs) -- these *should* not have any duplicates, but...
+       let old' = filter (\(p,_) -> p `notElem` betterURLs) old
+       let new = M.fromList old' :: Metadata -- NOTE: constructing a Map data structure automatically sorts/dedupes
+       let newYaml = decodeUtf8 $ Y.encode $ map (\(a,(b,c,d,e,ts,f)) -> let defTag = tag2Default a in (a,b,c,d,e, intercalate ", " (filter (/=defTag) ts),f)) $ -- flatten [(Path, (String, String, String, String, String))]
+                     M.toList new
+       writeUpdatedFile "yaml" yaml newYaml
 
 -- append (rather than rewrite entirely) a new automatic annotation if its Path is not already in the auto-annotation database:
 appendLinkMetadata :: Path -> MetadataItem -> IO ()

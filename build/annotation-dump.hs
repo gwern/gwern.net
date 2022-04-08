@@ -4,6 +4,7 @@
 import LinkMetadata (authorsToCite, sortItemPathDate, readYamlFast, MetadataItem)
 import Data.List (intercalate, isInfixOf)
 import Data.List.Utils (replace)
+import Data.Map as M (union, toList, fromList)
 
 type Path = String
 
@@ -11,7 +12,7 @@ main :: IO ()
 main = do custom  <- readYamlFast "/home/gwern/wiki/metadata/custom.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
           partial <- readYamlFast "/home/gwern/wiki/metadata/partial.yaml" -- tagged but not handwritten/cleaned-up
           auto    <- readYamlFast "/home/gwern/wiki/metadata/auto.yaml"    -- auto-generated cached definitions; can be deleted if gone stale
-          let final = sortItemPathDate $ blacklist custom ++ blacklist partial ++ blacklist auto -- auto is already sorted
+          let final = sortItemPathDate $ M.toList $ M.union (M.fromList $ blacklist custom) $ M.union (M.fromList $ blacklist partial) (M.fromList $ blacklist auto)
 
           mapM_ printSingleLine final
 
