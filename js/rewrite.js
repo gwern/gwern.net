@@ -610,9 +610,25 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
         return;
 
     let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
-	let size = parseInt(getComputedStyle(footnotesSection).fontSize);
+
+	/*	Base font size (1rem) is 20px at this time, making a good default.
+		That value might change later, but this’ll still be a fine default;
+		the width/height get adjusted below, anyway, so no big deal if the 
+		default is not the final value. We mostly care about having _a_ value
+		for the width/height for page load performance reasons.
+	 */
+	let defaultSize = 20;
 	footnotes.forEach(footnote => {
-		footnote.querySelector(".footnote-back").innerHTML = `<img width="${size}" height="${size}" alt="↩ Right arrow curving left [footnote return link] arrow" src="/static/img/icons/arrow-hook-left.svg">`;
+		footnote.querySelector(".footnote-back").innerHTML = `<img width="${defaultSize}" height="${defaultSize}" alt="↩ Right arrow curving left [footnote return link] arrow" src="/static/img/icons/arrow-hook-left.svg">`;
+	});
+
+	requestIdleCallback(() => {
+		let size = parseInt(getComputedStyle(footnotesSection).fontSize);
+		footnotes.forEach(footnote => {
+			let arrow = footnote.querySelector(".footnote-back img");
+			arrow.width = size;
+			arrow.height = size;
+		});
 	});
 }
 
