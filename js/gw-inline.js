@@ -82,9 +82,9 @@ GW.setLogLevel = (level, permanently = false) => {
 
 function GWStopWatch(f, ...args) {
 	let fname = (f.name || f.toString().slice(0, f.toString().indexOf('{')));
-    console.log(`${GWTimestamp()}  ${fname} BEGIN`);
+    console.log(`[${GWTimestamp()}]  ${fname} [BEGIN]`);
 	f(...args);
-    console.log(`${GWTimestamp()}  ${fname} END`);
+    console.log(`[${GWTimestamp()}]  ${fname} [END]`);
 }
 
 /***********/
