@@ -4557,7 +4557,7 @@ section.highlight-fading::before {
     }
     #navigation #navigation-center {
         margin: 0 0.5em;
-        width: 13%;
+        width: 12.5%;
     }
     #navigation #navigation-next {
         transform: scale(-1, 1);
