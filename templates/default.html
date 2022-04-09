@@ -154,44 +154,6 @@
     <!-- Lazy load Disqus comments: define a function, check for IntersectionObserver support, & load once user hits sections at bottom of pages; lazy load the tablesorter, as tables are on only a very small subset of pages -->
     <div id="comments">
       <div id="disqus_thread"></div>
-      <script>
-        function dynamicallyLoadScript(url) {
-            var script = document.createElement("script");
-            script.src = url;
-            document.head.appendChild(script);
-        }
-
-       var lazyLoadObserver = function(f, selectors) {
-           if (('IntersectionObserver' in window) &&
-               ('IntersectionObserverEntry' in window) &&
-               ('intersectionRatio' in window.IntersectionObserverEntry.prototype)) {
-                var intersectionObserver = new IntersectionObserver(function(entries) {
-                     if (entries[0].intersectionRatio <= 0) return;
-
-                     f();
-               }, { rootMargin: '140%' } );
-
-               var target = document.querySelector(selectors);
-               if (!(target === null)) { intersectionObserver.observe(target); }
-           }
-           else { f(); }
-       }
-
-        var disqus_shortname = ''; // declare variable globally as a way to make sure insertDisqus runs once and only once
-        var insertDisqus = function() {
-        if (disqus_shortname == '') {
-           disqus_shortname = 'gwern';
-           (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-           })();
-        }
-       }
-      // 1. Load Disqus comments
-      lazyLoadObserver(insertDisqus, '#disqus_thread');
-      </script>
-
       <noscript><p>[Enable JavaScript for Disqus comments.]</p></noscript>
     </div>
     $endif$

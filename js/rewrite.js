@@ -1110,6 +1110,74 @@ doWhenPageLoaded(() => {
 }, { once: true });
 
 
+/**********/
+/* DISQUS */
+/**********/
+
+/*	Inject the Disqus script, which will immediately inject and load Disqus.
+ */
+function insertDisqus() {
+	GWLog("insertDisqus", "rewrite.js", 1);
+
+	let disqus_shortname = "gwern";
+
+	let script = document.createElement("script");
+	script.src = `https://${disqus_shortname}.disqus.com/embed.js`;
+	script.type = "text/javascript";
+	script.async = true;
+	document.head.appendChild(script);
+}
+
+/*	Call the given function when the element specified by the given selector
+	intersects the viewport.
+ */
+function lazyLoadObserver(f, selector) {
+	let observer = new IntersectionObserver((entries) => {
+		if (entries[0].intersectionRatio <= 0)
+			return;
+		f();
+		observer.disconnect();
+	});
+
+	let target = document.querySelector(selector);
+	if (target)
+		observer.observe(target);
+}
+
+/*	Enable lazy-loading of Disqus.
+ */
+lazyLoadObserver(insertDisqus, "#comments");
+
+/*	Enable direct links to Disqus comments.
+ */
+function rectifyDisqusCommentAnchor() {
+	GWLog("rectifyDisqusCommentAnchor", "rewrite.js", 1);
+
+	if (/^#comment-[0-9]/.test(location.hash)) {
+		GW.disqusCommentHash = location.hash;
+		GW.hashRealignValue = "#comments";
+
+		let disqusBlock = document.querySelector("#comments");
+		let observer = new MutationObserver((mutationsList, observer) => {
+			let disqusFrame = disqusBlock.querySelector("#disqus_thread iframe");
+			if (disqusFrame) {
+				observer.disconnect();
+				disqusFrame.addEventListener("load", (event) => {
+					history.replaceState(null, null, GW.disqusCommentHash);
+					let disqusComment = document.querySelector(GW.disqusCommentHash);
+					if (disqusComment)
+						scrollElementIntoView(disqusComment);
+					else
+						reportBrokenAnchorLink(location);
+				});
+			}
+		});
+		observer.observe(disqusBlock, { childList: true, subtree: true });
+	}
+}
+doWhenDOMContentLoaded(rectifyDisqusCommentAnchor);
+
+
 /**************************/
 /* BROKEN ANCHOR CHECKING */
 /**************************/
@@ -1159,21 +1227,7 @@ function brokenAnchorCheck() {
 // 			reportBrokenAnchorLink(anchor);
 // 	});
 }
-doWhenDOMContentLoaded(brokenAnchorCheck);
-
-
-/**********/
-/* DISQUS */
-/**********/
-
-/*	Linking to specific Disqus comments doesn’t work, due to lazy-loading.
-	Rewrite the hash to scroll to the comment section as a whole.
- */
-function rectifyDisqusCommentAnchor() {
-	if (/^#comment-[0-9]/.test(location.hash))
-		GW.hashRealignValue = "#comments";
-}
-doWhenDOMContentLoaded(rectifyDisqusCommentAnchor);
+doWhenPageLoaded(brokenAnchorCheck);
 
 
 /********************/
