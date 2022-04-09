@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-08 18:59:54 gwern"
+When:  Time-stamp: "2022-04-09 11:28:01 gwern"
 License: CC-0
 -}
 
@@ -556,8 +556,8 @@ type Path = String
 sortItemDate :: [MetadataItem] -> [MetadataItem]
 sortItemDate = sortBy (flip compare `on` third)
 
-sortItemPathDate :: [(Path,MetadataItem)] -> [(Path,MetadataItem)]
-sortItemPathDate = sortBy (flip compare `on` (third . snd))
+sortItemPathDate :: [(Path,(MetadataItem,String))] -> [(Path,(MetadataItem,String))]
+sortItemPathDate = sortBy (flip compare `on` (third . fst . snd))
 
 third :: MetadataItem -> String
 third (_,_,date,_,_,_) = date
