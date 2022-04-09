@@ -566,7 +566,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 }
 
 #TOC li li {
-    margin-bottom: 0;
+    margin-bottom: 5px;
     font-weight: normal;
     font-size: 0.9em;
 }

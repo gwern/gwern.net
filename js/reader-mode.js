@@ -471,6 +471,8 @@ ReaderMode = { ...ReaderMode, ...{
 	},
 }};
 
+GW.notificationCenter.fireEvent("ReaderMode.didLoad");
+
 /*	Ensure that we run setup only after Extracts and Popups/Popins have 
 	completed their setups. (This is so that the onclick handlers and so on are
 	already in place.)

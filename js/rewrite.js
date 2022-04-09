@@ -1154,21 +1154,33 @@ function rectifyDisqusCommentAnchor() {
 	GWLog("rectifyDisqusCommentAnchor", "rewrite.js", 1);
 
 	if (/^#comment-[0-9]/.test(location.hash)) {
+		/*	If the URL hash points to a Disqus comment, we first have to scroll
+			down to the Disqus comment section itself, to force the lazy-load
+			mechanism to trigger injection of the Disqus iframe (and thus the
+			loading of comments).
+		 */
 		GW.disqusCommentHash = location.hash;
 		GW.hashRealignValue = "#comments";
 
 		let disqusBlock = document.querySelector("#comments");
 		let observer = new MutationObserver((mutationsList, observer) => {
+			//	When the Disqus comment iframe is injected...
 			let disqusFrame = disqusBlock.querySelector("#disqus_thread iframe");
 			if (disqusFrame) {
 				observer.disconnect();
+				//	... wait for the iframe’s content to load...
 				disqusFrame.addEventListener("load", (event) => {
+					//	... and then scroll to the right comment.
 					history.replaceState(null, null, GW.disqusCommentHash);
 					let disqusComment = document.querySelector(GW.disqusCommentHash);
-					if (disqusComment)
-						scrollElementIntoView(disqusComment);
-					else
+					if (disqusComment) {
+						requestAnimationFrame(() => {
+							scrollElementIntoView(disqusComment);
+						});
+					} else {
+						//	If the comment doesn’t exist, report a broken link.
 						reportBrokenAnchorLink(location);
+					}
 				});
 			}
 		});
@@ -1186,11 +1198,11 @@ doWhenDOMContentLoaded(rectifyDisqusCommentAnchor);
 	with the offending page+anchor ID, for correction (either fixing an outdated
 	link somewhere on gwern.net, or adding a span/div manually to the page to
 	make old inbound links go where they ought to).
- */
-/*	Such broken anchors can reflect out of date cross-page references, or reflect
+
+    Such broken anchors can reflect out of date cross-page references, or reflect
 	incoming URLs from elsewhere on the Internet which are broken/outdated.
 	(Within-page anchor links are checked statically at compile-time, and those
-	errors should never exist.)
+	 errors should never exist.)
  */
 
 function reportBrokenAnchorLink(link) {
@@ -1199,7 +1211,7 @@ function reportBrokenAnchorLink(link) {
 	if (link.hash == "")
 		return;
 
-	let brokenHashLogRequestURL = new URL("https://"
+	let brokenHashLogRequestURL = new URL(  "https://"
 										  + location.hostname
 										  + "/static/404.html"
 										  + "-error-"
@@ -1215,7 +1227,8 @@ function reportBrokenAnchorLink(link) {
 function brokenAnchorCheck() {
 	GWLog("brokenAnchorCheck", "rewrite.js", 1);
 
-	if (location.hash > "" && document.querySelector(location.hash) == null)
+	if (   location.hash > "" 
+		&& document.querySelector(location.hash) == null)
 		reportBrokenAnchorLink(location);
 
 	/*	Loop over internal page self-links and check that their targets exist;
@@ -1266,6 +1279,7 @@ doWhenDOMContentLoaded(realignHash);
 doWhenPageLoaded(() => {
     requestAnimationFrame(realignHash);
 });
+
 
 /*****************************************************************************************/
 /*! instant.page v5.1.0 - (C) 2019-2020 Alexandre Dieulot - https://instant.page/license */
