@@ -1440,6 +1440,10 @@ section.footnotes > hr:first-child.highlighted::before {
     display: none;
 }
 
+.footnotes .sidenote .footnote-back {
+    vertical-align: text-top;
+}
+
 .footnotes .sidenote blockquote + a.footnote-back,
 .footnotes .sidenote pre + a.footnote-back,
 .footnotes .sidenote .sourceCode + a.footnote-back {
