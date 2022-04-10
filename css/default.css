@@ -3925,14 +3925,19 @@ To hack around this issue (which surely has a better answer), and since in some 
     user-select: none;
 }
 
-#popup-options-dialog h1 {
+#popup-options-dialog .popup-options-dialog-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5em;
     border-bottom: 1px solid var(--GW-popups-popup-options-dialog-horizontal-rule-color);
-    margin: 0;
+}
+
+#popup-options-dialog h1 {
+    margin: 0 0 0 0.75em;
     text-align: center;
-    padding: 0.25em 0 0.375em 0;
     font-feature-settings: unset;
     font-size: 1.5em;
-    height: 1.25em;
 }
 
 #popup-options-dialog button {
@@ -3948,11 +3953,9 @@ To hack around this issue (which surely has a better answer), and since in some 
     background-color: var(--GW-popups-popup-options-dialog-button-background-color);
     padding: 0 0.75em;
     height: 2em;
+    line-height: 1;
     font-weight: 600;
     color: var(--GW-popups-popup-options-dialog-button-text-color);
-    position: absolute;
-    right: 0.4em;
-    top: 0.4em;
     border: 1px solid var(--GW-popups-popup-options-dialog-button-border-color);
 }
 #popup-options-dialog button.save-button:hover {
@@ -3968,21 +3971,20 @@ To hack around this issue (which surely has a better answer), and since in some 
 }
 
 #popup-options-dialog button.close-button {
+    position: relative;
     width: 2em;
-    position: absolute;
-    left: 0.4em;
-    top: 0.15em;
+    height: 2em;
     color: var(--GW-popups-popup-options-dialog-button-text-color);
-    margin: 1px;
 }
 #popup-options-dialog button.close-button:hover {
     cursor: pointer;
     box-shadow: 1px 1px 0 0 currentColor;
 }
 #popup-options-dialog button.close-button:active {
-    left: calc(0.4em + 1px);
-    top: calc(0.4em + 1px);
-    box-shadow: -1px -1px 0 0 currentColor;
+    left: 1px;
+    top: 1px;
+    box-shadow:
+        -1px -1px 0 0 currentColor;
 }
 #popup-options-dialog button.close-button svg {
     height: 100%;
@@ -4061,7 +4063,7 @@ To hack around this issue (which surely has a better answer), and since in some 
 }
 @media only screen and (max-width: 1760px) {
     #popups-disabled-show-popup-options-dialog-button {
-        top: 10em;
+        top: 15em;
         right: 0.6em;
     }
 }
