@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-09 11:28:01 gwern"
+When:  Time-stamp: "2022-04-09 19:26:47 gwern"
 License: CC-0
 -}
 
@@ -1882,6 +1882,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(\\it and\\)</span>", "<span class=\"math inline\">\\(\\it also\\)</span> <em>and also</em>")
           , ("<span class=\"math inline\">\\(\\sim 6\\)</span>", "~6")
           , ("<span class=\"math inline\">\\(\\sim\\)</span>", "~")
+          , ("<span class=\"math inline\">\\({\\sim}\\)</span>", "~")
           , ("<span class=\"math inline\">\\(\\sim 10^3\\)</span>", "~10<sup>3</sup>")
           , ("<span class=\"math inline\">\\(5\\%-35\\%\\)</span>", "5%–35%")
           , ("<span class=\"math inline\">\\(124/144\\)</span>", "124⁄144")

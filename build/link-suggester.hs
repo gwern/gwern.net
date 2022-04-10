@@ -177,7 +177,7 @@ filterAnchors d t = T.length t > anchorLengthMaximum ||
                       "captainjojo", "expel elves", "for aspirin", "for example", "for novelty", "homeostasis", "in an essay",
                       "in my table", "is improved", "latest work", "legal highs", "less secure", "like murder", "looks like",
                       "makes sense", "many things", "media op-ed", "mostly when", "mouse study", "my own page", "my surprise",
-                      "neuroticism", "not too bad", "of empathy", "off of SR2", "on scaling", "one article", "online demo",
+                      "neuroticism", "Neuroticism", "not too bad", "of empathy", "off of SR2", "on scaling", "one article", "online demo",
                       "psychopathy", "push-button", "scaling up", "self-esteem", "simple SVG", "small study", "snowy halcy",
                       "source code", "speeding up", "steady fall", "still walk", "such files", "summer jobs", "than before",
                       "that config", "that could", "the Quakers", "the morning", "the seasons", "their graph", "there too!",
@@ -205,7 +205,7 @@ filterAnchors d t = T.length t > anchorLengthMaximum ||
                        "matrix multiplication", "Silk Road 2", "Silk Road 2.0", "online", "Online", "side effects",
                        "status", "transcription/translation", "ADHD", "more difficult", "Johnson", "June 2016", "decline with age",
                        "criminal records", "the appendix", "API", "another page", "at least once", "must be", "expected from their",
-                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that"]
+                       "animal welfare", "psychiatry", "the initial screening", "average-case", "go", "been removed", "mystical experience", "research in general", "been examined", "November 2021", "court records", "in a", "The Guardian", "suggests that", "learn faster", "project page", "psychiatry"]
 
 -- a whitelist of (URL, [possible anchors]) pairs which would be filtered out normally by the heuristic checks, but are valid anyway. Instances can be found looking at the generated `linkSuggests-deleted.hs` database, or written by hand when I notice useful links not being suggested in the formatting phase of writing annotations.
 whiteList :: M.Map T.Text [T.Text]

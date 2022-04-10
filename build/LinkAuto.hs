@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-04-06 22:52:51 gwern"
+When:  Time-stamp: "2022-04-09 19:59:46 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -1269,7 +1269,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Tt]rolley problem", "https://en.wikipedia.org/wiki/Trolley_problem")
         , ("[Tt]rophic level", "https://en.wikipedia.org/wiki/Trophic_level")
         , ("[Tt]runcation selection", "https://en.wikipedia.org/wiki/Truncation_selection")
-        , ("[Uu]nlikelihood training", "https://arxiv.org/abs/1908.04319")
         , ("[Vv]alue [Ii]teration [Nn]etworks?", "https://arxiv.org/abs/1602.02867#deepmind")
         , ("[Vv]alue-[Ee]quivalence", "https://arxiv.org/abs/2011.03506#deepmind")
         , ("[Vv]ariance", "https://en.wikipedia.org/wiki/Variance")
@@ -1277,7 +1276,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Vv]itri(fied|fy|fying|fication)", "https://en.wikipedia.org/wiki/Vitrification")
         , ("[Ww]abi[ -]sabi", "https://en.wikipedia.org/wiki/Wabi-sabi")
         , ("[Ww]ake therapy", "https://en.wikipedia.org/wiki/Wake_therapy")
-        , ("[Ww]ater chlorination", "https://en.wikipedia.org/wiki/Water_chlorination")
         , ("[Ww]get", "https://en.wikipedia.org/wiki/Wget")
         , ("[Ww]inner's curse", "https://en.wikipedia.org/wiki/Winner%27s_curse")
         , ("[Ww]orse[ -][Ii]s[ -][Bb]etter", "https://en.wikipedia.org/wiki/Worse_is_better")
@@ -1303,7 +1301,6 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("mT5", "https://arxiv.org/abs/2010.11934#google")
         , ("mathjax-node-page", "https://github.com/pkra/mathjax-node-page/")
         , ("[Oo]crmypdf", "https://github.com/ocrmypdf/OCRmyPDF")
-        , ("popups\\.js", "/static/js/popups.js")
         , ("[Ss]hort[- ]?s(ale|elling)", "https://en.wikipedia.org/wiki/Short_(finance)")
         , ("[Ss]ocial[- ]engineering", "https://en.wikipedia.org/wiki/Social_engineering_(security)")
         , ("[Ss]tyle[- ]transfers?", "https://arxiv.org/abs/1508.06576") -- style transfer, Gatys et al 2015
@@ -1359,4 +1356,5 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("[Ee]nsemble?s( learning| methods?)", "https://en.wikipedia.org/wiki/Ensemble_learning")
         , ("fMRIs?( machine| study| experiment| data| task| responses)", "https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging")
         , ("MuJoCo", "https://mujoco.org/")
+        , ("VQGAN", "https://compvis.github.io/taming-transformers/")
         ]
