@@ -276,7 +276,7 @@ else
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
     wrap λ "Annotations that need to be rewritten into paragraphs."
 
-    λ(){ runhaskell -istatic/build/ ./static/build/link-prioritize.hs | head -20; }
+    λ(){ runhaskell -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:"
 
     λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
