@@ -9,7 +9,7 @@
 --    for immediate sub-children, it can't count elements *globally*, and since Pandoc nests horizontal
 --    rulers and other block elements within each section, it is not possible to do the usual trick
 --    like with blockquotes/lists).
-module Typography (invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase') where
+module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase') where
 
 import Control.Concurrent (forkIO)
 import Control.Monad.State.Lazy (evalState, get, put, State)
