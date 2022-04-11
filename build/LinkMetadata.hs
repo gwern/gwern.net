@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-11 12:52:25 gwern"
+When:  Time-stamp: "2022-04-11 17:00:45 gwern"
 License: CC-0
 -}
 
@@ -14,7 +14,7 @@ License: CC-0
 -- like `ft_abstract(x = c("10.1038/s41588-018-0183-z"))`
 
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
-module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString) where
+module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString) where
 
 import Control.Concurrent (forkIO)
 import Control.Monad (unless, void, when, forM_)
@@ -84,19 +84,10 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 
 -------------------------------------------------------------------------------------------------------------------------------
 
--- run an arbitrary function on the 3 databases to update individual items.
--- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like
--- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
+-- Run an arbitrary function on the 3 databases to update individual items.
+-- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like:
 --
--- Or to rescrape the metadata for Gwern.net pages like '/Design', skipping anchor links where the abstract is not necessarily appropriate; preserve the tags, because the annotation tags and the page tags are currently different systems, and we can't extract the annotation tags from the page tags (yet):
--- updateGwernEntries :: IO ()
--- updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
---   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
---         updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x
---             else do newEntry <- gwern path
---                     case newEntry of
---                       Left _ -> return x
---                       Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
+-- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
 walkAndUpdateLinkMetadata :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata f = do [custom,partial,auto] <- mapM (readYaml) ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
                                  custom' <- mapM f custom
@@ -107,6 +98,16 @@ walkAndUpdateLinkMetadata f = do [custom,partial,auto] <- mapM (readYaml) ["meta
                                  writeYaml "metadata/auto.yaml" auto'
                                  _ <- readLinkMetadataAndCheck
                                  return ()
+-- Or to rescrape the metadata for Gwern.net pages like '/Design'; preserve the tags, because the annotation tags and the page tags are currently different systems, and we can't extract the annotation tags from the page tags (yet).
+-- This can be run every few months to update abstracts (they generally don't change much).
+updateGwernEntries :: IO ()
+updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
+  where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
+        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x
+            else do newEntry <- gwern path
+                    case newEntry of
+                      Left _ -> return x
+                      Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -1591,7 +1592,7 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 gwern p | ".pdf" `isInfixOf` p = pdf p
         -- | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "tags/" `isPrefixOf` p || "/index" `isInfixOf` p || p == "index" = return (Left Permanent) -- likewise: the tags/tag-directory index pages are useful only as cross-page popups, to browse
+        | "tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "/index" `isInfixOf` p || p == "index" = return (Left Permanent) -- likewise: the newsletters + tags/tag-directory index pages are useful only as cross-page popups, to browse
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
             do printRed p'
@@ -1607,7 +1608,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                                        in if dateTmp=="N/A" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
-                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</p>"
+                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p><span id=\"page-tags\" title=\"List of tags for this page.\">[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</span></p>"
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
@@ -1648,15 +1649,15 @@ gwernAbstract p' description keywords toc f =
         -- Examples of this are appendices like /Timing#reverse-salients, which have not been split out to a standalone page, but also have their own abstract which is more relevant than the top-level abstract of /Timing.
                 else let anchor = sed ".*#" "" p'
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
-                         title = (\(TagText t) -> t) $ head $ dropWhile dropToText $ dropWhile dropToLink beginning
+                         title = (\(TagText tl) -> tl) $ head $ dropWhile dropToText $ dropWhile dropToLink beginning
                          restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd beginning
                          in (title,trim $ renderTags $ filter filterAbstract restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
-      abstrct'' = (if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ toc
+      abstrct'' = (if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++p'++"#") abstrct'' -- turn relative anchor paths into absolute paths
   in if null abstrct then ("","") else (t,abstrct''')
-dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd :: Tag String -> Bool
+dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
                                              Nothing -> True
@@ -1682,15 +1683,6 @@ dropToLink (TagOpen "a" _) = False
 dropToLink _ = True
 dropToText (TagText _) = False
 dropToText _ = True
-
-updateGwernEntries :: IO ()
-updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
-  where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path) && ("#" `isInfixOf` path)) then return x
-            else do newEntry <- gwern path
-                    case newEntry of
-                      Left _ -> return x
-                      Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
