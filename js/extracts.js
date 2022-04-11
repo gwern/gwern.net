@@ -842,6 +842,13 @@ Extracts = {
 
                 //  The content is the page body plus the metadata block.
                 Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
+
+				//	If there’s only one solitary section, unwrap it.
+                let onlySection = target.popFrame.querySelector("#markdownBody > section:only-child");
+                if (onlySection)
+                	Extracts.cachedPages[target.pathname] = onlySection;
+
+				//	Add the page metadata block.
                 let pageMetadata = target.popFrame.querySelector("#page-metadata");
                 if (pageMetadata)
                     Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
