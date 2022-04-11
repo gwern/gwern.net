@@ -641,9 +641,21 @@ Extracts = {
                       || Extracts.isSidebarLink(target))));
     },
 
+    //  Called by: Extracts.preparePopFrame (as `preparePopFrame_${targetTypeName}`)
+    //	Called by: Extracts.preparePopup_LOCAL_PAGE
+	preparePopFrame_LOCAL_PAGE: (popFrame) => {
+		//	Add to a full-page pop-frame the body classes of the page.
+		if (popFrame.classList.contains("external-page-embed"))
+			popFrame.classList.add(...Extracts.cachedPageBodyClasses[target.pathname]);
+
+		return popFrame;
+	},
+
     //  Called by: Extracts.preparePopup (as `preparePopup_${targetTypeName}`)
     preparePopup_LOCAL_PAGE: (popup) => {
         let target = popup.spawningTarget;
+
+		popup = Extracts.preparePopFrame_LOCAL_PAGE(popup);
 
         /*  Designate popups spawned from section links in the the TOC (for
             special styling).
@@ -791,6 +803,7 @@ Extracts = {
     //  Other site pages.
     cachedPages: { },
     cachedPageTitles: { },
+    cachedPageBodyClasses: { },
     cachedPageThumbnailImageTags: { },
 
     //  Called by: Extracts.externalPageEmbedForTarget
@@ -836,6 +849,9 @@ Extracts = {
 					//	Request the image, to cache it.
 					doAjax({ location: pageThumbnailURL.href });
 				}
+
+				//	Get the body classes.
+				Extracts.cachedPageBodyClasses[target.pathname] = target.popFrame.querySelector("body").classList;
 
                 //  Get the page title.
                 Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
