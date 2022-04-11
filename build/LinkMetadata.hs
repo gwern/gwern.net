@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-10 21:11:24 gwern"
+When:  Time-stamp: "2022-04-11 12:52:25 gwern"
 License: CC-0
 -}
 
@@ -87,6 +87,16 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 -- run an arbitrary function on the 3 databases to update individual items.
 -- For example, to use `processDOIArxiv` to add inferred-DOIs to all Arxiv annotations prior to Arxiv adding official DOIs, one could run a command like
 -- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
+--
+-- Or to rescrape the metadata for Gwern.net pages like '/Design', skipping anchor links where the abstract is not necessarily appropriate; preserve the tags, because the annotation tags and the page tags are currently different systems, and we can't extract the annotation tags from the page tags (yet):
+-- updateGwernEntries :: IO ()
+-- updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
+--   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
+--         updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x
+--             else do newEntry <- gwern path
+--                     case newEntry of
+--                       Left _ -> return x
+--                       Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
 walkAndUpdateLinkMetadata :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
 walkAndUpdateLinkMetadata f = do [custom,partial,auto] <- mapM (readYaml) ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
                                  custom' <- mapM f custom
@@ -98,7 +108,7 @@ walkAndUpdateLinkMetadata f = do [custom,partial,auto] <- mapM (readYaml) ["meta
                                  _ <- readLinkMetadataAndCheck
                                  return ()
 
--- read the annotation base (no checks, >8.4× faster)
+-- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
 readLinkMetadata = do
              custom  <- readYaml "metadata/custom.yaml"  -- for hand created definitions, to be saved; since it's handwritten and we need line errors, we use YAML:
@@ -810,7 +820,6 @@ pageTagDB = M.fromList [
   , ("/otaku", ["eva"])
   , ("/otaku-predictions", ["eva"])
   , ("/plastination", ["cryonics"])
-  , ("/Prediction-markets", ["prediction"])
   , ("/presocratic-path-to-atomism", ["philosophy"])
   , ("/Red", ["design"])
   , ("/Replication", ["statistics/bias"])
@@ -860,7 +869,6 @@ pageTagDB = M.fromList [
   , ("/Wooden-pillows", ["history"])
   , ("/zeo/Caffeine", ["zeo"])
   , ("/zeo/CO2", ["zeo"])
-  , ("/Zeo", ["zeo"])
   , ("/zeo/Potassium", ["zeo"])
   , ("/zeo/Redshift", ["zeo"])
   , ("/zeo/Vitamin-D", ["zeo"])
@@ -1581,10 +1589,9 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
-        | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
+        -- | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "notes/" `isPrefixOf` p || "tags/" `isPrefixOf` p = return (Left Permanent) -- notes/tags are supposed to popup as cross-page section popups, we want to forbid any auto-annotation.
-        | "/index" `isSuffixOf` p || p == "index" = return (Left Permanent) -- likewise: the directory index pages are useful only as cross-page popups, to browse
+        | "tags/" `isPrefixOf` p || "/index" `isInfixOf` p || p == "index" = return (Left Permanent) -- likewise: the tags/tag-directory index pages are useful only as cross-page popups, to browse
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
             do printRed p'
@@ -1598,6 +1605,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
                                        in if dateTmp=="N/A" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
+                        let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
                         let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</p>"
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
@@ -1618,26 +1626,12 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                               renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC")])) f) ++
                                                                  [TagClose "div"])
-                        let abstrct      = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f
-                        let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
-                        -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
-                        let abstrct'     = if length description > length abstrct then description else abstrct
-                        let abstrct'' = (if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " "++keywords' ++ toc
-                        let abstrct''' = replace "href=\"#" ("href=\"/"++p'++"#") abstrct'' -- turn relative anchor paths into absolute paths
-                        if abstrct''' == "404 Not Found Error: no page by this name!" then return (Left Temporary) else
-                          return $ Right (p, (title, author, date, doi, [], thumbnailFigure++abstrct'''))
+                        let (sectTitle,gabstract) = gwernAbstract p' description keywords' toc f
+                        let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
+
+                        if gabstract `elem` ["", "<p></p>", "<p></p> ", "404 Not Found Error: no page by this name!"] then return (Left Temporary) else
+                          return $ Right (p, (title', author, date, doi, [], thumbnailFigure++gabstract))
         where
-          dropToBody (TagOpen "body" _) = False
-          dropToBody _ = True
-          dropToAbstract (TagOpen "div" [("class", "abstract")]) = False
-          dropToAbstract _                                    = True
-          takeToAbstract (TagClose "div") = False
-          takeToAbstract _                = True
-          filterAbstract (TagOpen  "div" _)        = False
-          filterAbstract (TagClose "div")          = False
-          filterAbstract (TagOpen  "blockquote" _) = False
-          filterAbstract (TagClose "blockquote")   = False
-          filterAbstract _                         = True
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
@@ -1647,13 +1641,56 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
           keywordsToLinks :: String -> String
           keywordsToLinks = intercalate ", " . map (\k -> "<a title=\"All pages tagged '"++k++"'\"" ++ " href=\"/tags/"++k++"\">"++k++"</a>") . words . replace "," ""
 
--- rescrape the metadata for Gwern.net pages like '/Design', skipping anchor links where the abstract is not necessarily appropriate; preserve the tags, because the annotation tags and the page tags are currently different systems, and we can't extract the annotation tags from the page tags (yet).
-updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x
-    else do newEntry <- gwern path
-            case newEntry of
-              Left _ -> return x
-              Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
+gwernAbstract :: String -> String -> String -> String -> [Tag String] -> (String,String)
+gwernAbstract p' description keywords toc f =
+  let (t,abstrct) = if not ("#" `isInfixOf` p') then ("", trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
+        -- if there is an anchor, then there may be an abstract after it which is a better annotation than the first abstract on the page.
+        -- Examples of this are appendices like /Timing#reverse-salients, which have not been split out to a standalone page, but also have their own abstract which is more relevant than the top-level abstract of /Timing.
+                else let anchor = sed ".*#" "" p'
+                         beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
+                         title = (\(TagText t) -> t) $ head $ dropWhile dropToText $ dropWhile dropToLink beginning
+                         restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd beginning
+                         in (title,trim $ renderTags $ filter filterAbstract restofpageAbstract)
+      -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
+      abstrct'  = if length description > length abstrct then description else abstrct
+      abstrct'' = (if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ toc
+      abstrct''' = trim $ replace "href=\"#" ("href=\"/"++p'++"#") abstrct'' -- turn relative anchor paths into absolute paths
+  in if null abstrct then ("","") else (t,abstrct''')
+dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd :: Tag String -> Bool
+dropToClass, dropToID :: String -> Tag String -> Bool
+dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
+                                             Nothing -> True
+                                             Just classes -> not (i `isInfixOf` classes)
+dropToClass _ _                               = True
+dropToAbstract = dropToClass "abstract"
+dropToID    i (TagOpen _ attrs) = case lookup "id" attrs of
+                                             Nothing -> True
+                                             Just id' -> i /= id'
+dropToID _ _                               = True
+takeToAbstract (TagClose "div") = False
+takeToAbstract _                = True
+filterAbstract (TagOpen  "div" _)        = False
+filterAbstract (TagClose "div")          = False
+filterAbstract (TagOpen  "blockquote" _) = False
+filterAbstract (TagClose "blockquote")   = False
+filterAbstract _                         = True
+dropToBody (TagOpen "body" _) = False
+dropToBody _ = True
+dropToSectionEnd (TagClose "section") = False
+dropToSectionEnd _ = True
+dropToLink (TagOpen "a" _) = False
+dropToLink _ = True
+dropToText (TagText _) = False
+dropToText _ = True
+
+updateGwernEntries :: IO ()
+updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
+  where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
+        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path) && ("#" `isInfixOf` path)) then return x
+            else do newEntry <- gwern path
+                    case newEntry of
+                      Left _ -> return x
+                      Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
 initializeAuthors :: String -> String
