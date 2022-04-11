@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-11 17:00:45 gwern"
+When:  Time-stamp: "2022-04-11 19:12:19 gwern"
 License: CC-0
 -}
 
@@ -1644,10 +1644,12 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
 gwernAbstract :: String -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract p' description keywords toc f =
-  let (t,abstrct) = if not ("#" `isInfixOf` p') then ("", trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
+  let anchor  = sed ".*#" "" p'
+      baseURL = sed "#.*" "" p'
+      (t,abstrct) = if not ("#" `isInfixOf` p') then ("", trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
         -- if there is an anchor, then there may be an abstract after it which is a better annotation than the first abstract on the page.
         -- Examples of this are appendices like /Timing#reverse-salients, which have not been split out to a standalone page, but also have their own abstract which is more relevant than the top-level abstract of /Timing.
-                else let anchor = sed ".*#" "" p'
+                else let
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
                          title = (\(TagText tl) -> tl) $ head $ dropWhile dropToText $ dropWhile dropToLink beginning
                          restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd beginning
@@ -1655,7 +1657,7 @@ gwernAbstract p' description keywords toc f =
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
       abstrct'' = (if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
-      abstrct''' = trim $ replace "href=\"#" ("href=\"/"++p'++"#") abstrct'' -- turn relative anchor paths into absolute paths
+      abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
   in if null abstrct then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
