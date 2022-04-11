@@ -318,7 +318,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "www.dropbox.com" || u'' "dl.dropboxusercontent.com" = aI "dropbox" "svg" -- Dropbox: old file-host, deprecated since they’ve started killing inactive accounts & their UI become awful. primary user: dl.dropboxusercontent.com
  | u'' "www.erowid.org" || u'' "www.drugsdata.org" = aI "erowid" "svg"
  | aU' [".tensorflow.org", "github.com/tensorflow/", "medium.com/tensorflow/"] = aI "tensorflow" "svg" -- <https://simpleicons.org/?q=tensorflow>; NOTE: hosted on Github, so override Github
- | aU'' ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog"] = aI "github" "svg" -- Github; I exclude github.io & raw.githubusercontent.com because that’s blogs/papers.
+ | aU'' ["github.com", "copilot.github.com", "archiveprogram.github.com", "gist.github.com", "github.blog", "compvis.github.io"] = aI "github" "svg" -- Github; I exclude *.github.io & raw.githubusercontent.com because that’s blogs/papers.
  | u'' "www.paulgraham.com" || u' "ycombinator.com" = aI "hn" "svg" -- PG/HN/YC (shared logo). primary user: news.ycombinator.com
  | aU' ["webcitation.org", "mementoweb.org", "archive.org", "archive-it.org", "wiki.archiveteam.org", "waybackmachine.org", "archive.is", "archive.md", "archive.ph", "archive.today"] || ("local-archive-link" `elem` cl && extension u /= ".pdf") = aI "internetarchive" "svg"
  | u'' "mega.nz" = aI "mega" "svg" -- MegaUpload/Mega: filesharing (used for big files).
@@ -536,6 +536,7 @@ linkIconTestUnits =
          , ("http://clinicaltrials.gov/show/NCT03429075",  "FDA","text,tri,sans")
          , ("https://www.filfre.net/2016/08/ibms-new-flavor/",  "TDA","text,tri,sans")
          , ("https://archiveprogram.github.com/",  "github","svg")
+         , ("https://compvis.github.io/taming-transformers/",  "github","svg")
          , ("https://www.goodreads.com/api",  "GR","text")
          , ("https://about.google/",  "google","svg")
          , ("https://arxiv.org/abs/1706.04972#google",  "google","svg")

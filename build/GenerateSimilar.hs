@@ -98,7 +98,7 @@ formatDoc (path,mi@(t,aut,dt,_,tags,abst)) =
       gptPlainText
   where
     maxLength :: Int
-    maxLength = 8100 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
+    maxLength = 7900 -- how long is too long? OA guesstimates 1 BPE = 4 characters on average (https://beta.openai.com/tokenizer), so 2047 BPEs ~ 8192 characters. If a call fails, the shell script will truncate the input and retry until it works so we don't need to set the upper limit too low.
 
 embed :: (String,MetadataItem) -> IO Embedding
 embed i@(p,_) = do
