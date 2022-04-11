@@ -251,11 +251,17 @@ a.link-local::after {
     content: none;
 }
 
-body.index a.link-local::after {
+/*	Index page, and embeds thereof, do not need the G icon.
+ */
+body.index a.link-local::after,
+.popframe.index a.link-local::after {
     content: none;
 }
 
-body.tags a.link-local::after {
+/*	Tags pages, and embeds thereof, do not need the G icon.
+ */
+body.tags a.link-local::after,
+.popframe.tags a.link-local::after {
     content: none;
 }
 
