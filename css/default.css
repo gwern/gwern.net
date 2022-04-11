@@ -1440,6 +1440,10 @@ section.footnotes > hr:first-child.highlighted::before {
     display: none;
 }
 
+.footnotes .sidenote .footnote-back {
+    vertical-align: text-top;
+}
+
 .footnotes .sidenote blockquote + a.footnote-back,
 .footnotes .sidenote pre + a.footnote-back,
 .footnotes .sidenote .sourceCode + a.footnote-back {
@@ -4544,26 +4548,29 @@ section.highlight-fading::before {
 }
 @media only screen and (min-width: 650px) {
     #navigation {
-        text-align: center;
         margin: 2em 0 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
     }
     #navigation a {
-        display: inline-block;
+        line-height: 1;
+        display: flex;
     }
     #navigation a svg {
+        margin: 0;
         width: 100%;
-        height: 32px;
+        height: 1.6em;
     }
+    #navigation #navigation-next,
     #navigation #navigation-previous {
-        width: 42%;
+        flex-grow: 1;
     }
     #navigation #navigation-center {
-        margin: 0 0.5em;
-        width: 12.5%;
+        width: 17%;
     }
     #navigation #navigation-next {
         transform: scale(-1, 1);
-        width: 42%;
     }
     /* override underlining: */
     #navigation #navigation-previous,
