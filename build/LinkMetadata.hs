@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-12 14:41:17 gwern"
+When:  Time-stamp: "2022-04-12 14:49:14 gwern"
 License: CC-0
 -}
 
@@ -1186,12 +1186,12 @@ generateID :: String -> String -> String -> T.Text
 generateID url author date
   -- hardwire tricky cases where unique IDs can't easily be derived from the URL/metadata:
   | any (\(u,_) -> u == url) linkIDOverrides = fromJust $ lookup url linkIDOverrides
+  | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) || ("/tags/"`isPrefixOf`url)  = ""
   -- eg. '/Faces' = '#gwern-faces'
   | ("Gwern Branwen" == author) ||
     (("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && not ('.'`elem`url) && not ("/index"`isInfixOf`url))
   = T.pack (trim $ replaceMany [(".", "-"), ("--", "-"), ("/", "-"), ("#", "-"), ("'", ""), ("https://", ""), ("https://www.gwern.net/", "")] $ map toLower $ "gwern-"++url)
   -- skip tag links:
-  | ("https://www.gwern.net" `isPrefixOf` url || "/" `isPrefixOf` url) && ("/index" `isSuffixOf` url) = ""
   -- skip the ubiquitous WP links: I don't repeat WP refs, and the identical author/dates impedes easy cites/links anyway.
   | "https://en.wikipedia.org/wiki/" `isPrefixOf` url = ""
   -- shikata ga nai:
