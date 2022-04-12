@@ -645,7 +645,8 @@ Extracts = {
     //	Called by: Extracts.preparePopup_LOCAL_PAGE
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
 		//	Add to a full-page pop-frame the body classes of the page.
-		if (popFrame.classList.contains("external-page-embed"))
+		if (   popFrame.classList.contains("external-page-embed")
+			&& Extracts.cachedPageBodyClasses[target.pathname] > null)
 			popFrame.classList.add(...Extracts.cachedPageBodyClasses[target.pathname]);
 
 		return popFrame;
@@ -851,7 +852,8 @@ Extracts = {
 				}
 
 				//	Get the body classes.
-				Extracts.cachedPageBodyClasses[target.pathname] = target.popFrame.querySelector("body").classList;
+				//	TODO: Find a better way to do this!
+				Extracts.cachedPageBodyClasses[target.pathname] = /<body class="(.+?)">/.exec(event.target.responseText)[1].split(" ");
 
                 //  Get the page title.
                 Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
