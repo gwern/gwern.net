@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-12 10:59:58 gwern"
+When:  Time-stamp: "2022-04-12 14:41:17 gwern"
 License: CC-0
 -}
 
@@ -1608,7 +1608,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                                        in if dateTmp=="N/A" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
-                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p><span class=\"link-tags\" title=\"List of tags for this page.\">[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</span></p>" -- NOTE: we avoid the <span id="page-tags"> because not unique when substituted into tag-directories/link-bibliographies
+                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: <span class=\"link-tags\" title=\"List of tags for this page.\">" ++ keywordsToLinks keywords ++ "</span>]</p>" -- NOTE: we avoid the <span id="page-tags"> because not unique when substituted into tag-directories/link-bibliographies
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
@@ -1622,7 +1622,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
                         let doi = ""
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
-                        let toc = (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC.
+                        let toc = (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
                               replace "<div class=\"columns\"><div id=\"TOC\">" "<div class=\"columns\" id=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
                               renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC")])) f) ++
@@ -1653,7 +1653,7 @@ gwernAbstract p' description keywords toc f =
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ dropWhile dropToLink beginning
-                         restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ tail beginning
+                         restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          in (title,trim $ renderTags $ filter filterAbstract restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
