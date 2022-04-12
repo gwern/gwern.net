@@ -1864,7 +1864,7 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
 	.mjpage__block:hover .block-button-bar {
 		opacity: 1.0;
 		visibility: visible;
-		transition: 
+		transition:
 			opacity 0s ease 0.05s,
 			visibility 0s ease 0.05s;
 	}
@@ -3146,6 +3146,9 @@ body.directory-index #disqus_thread {
 /* HACK: In WP popups, the thumbnails typically do not *quite* align with the caption, unlike regular images or in regular popups: the images ('img') get set to 250px (WP API's default for mobile?), but the figure caption ('figcaption') get set to 265.185px, producing a nagging inconsistency. This seems to be due to a loop in extracts.js ('// Ensure no reflow due to figures'), which tries to avoid the popup reflowing by setting the width dynamically, but it does so only on the *img* element. Thus, they wind up inconsistent.
 To hack around this issue (which surely has a better answer), and since in some cursory testing I didn't observe any widths >250px even for cases where WP could be sending a far bigger thumbnail/image, we can hardwire ahead of time a max-width of 250px in just WP popups' floated figures' captions.  */
 .wikipedia-entry figure[class^='float-'] .caption-wrapper { max-width: 250px; }
+
+/* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
+.wikipedia-entry cite, .wikipedia-entry dfn { font-style: inherit; }
 
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
