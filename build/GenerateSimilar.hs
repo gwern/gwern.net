@@ -233,10 +233,10 @@ generateMatches md p abst matches =
                                               [Strong [Str "Search"], Str ": ",
                                                 Link linkMetadataGS
                                                 [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
-                                                             T.pack ("Reverse citations of this paper (‘" ++ title' ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar")),
-                                                Str "; "]
+                                                             T.pack ("Reverse citations of this paper (‘" ++ title' ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar"))]
                                                ++
-                                               if null doi then [] else [Link linkMetadataCP
+                                               if null doi then [] else [Str "; ",
+                                                                          Link linkMetadataCP
                                                                           [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doi),
                                                                                       T.pack ("Connected Papers lookup for DOI ‘" ++ doi ++ "’.")),
                                                                          Str "; "]
