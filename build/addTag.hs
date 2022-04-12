@@ -24,7 +24,7 @@ import System.Directory (doesDirectoryExist, doesFileExist)
 import LinkMetadata (annotateLink, readLinkMetadata, readYaml, writeYaml, MetadataList, MetadataItem)
 
 main :: IO ()
-main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") $ getArgs
+main = do args <- fmap (map $ (\a -> if "docs/"`isPrefixOf`a then "/"++a else a) . replace ".page" "" . replace "/home/gwern/wiki/" "/" . replace "https://www.gwern.net/" "/") $ getArgs
 
           let links = filter (\arg -> head arg == '/' || "http" `isPrefixOf` arg) $ args
           when (null links) $ error "Forgot links?"
