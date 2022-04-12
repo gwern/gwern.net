@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-11 19:12:19 gwern"
+When:  Time-stamp: "2022-04-12 10:59:58 gwern"
 License: CC-0
 -}
 
@@ -1608,7 +1608,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                                        in if dateTmp=="N/A" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
-                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p><span id=\"page-tags\" title=\"List of tags for this page.\">[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</span></p>"
+                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p><span class=\"link-tags\" title=\"List of tags for this page.\">[<strong>Keywords</strong>: " ++ keywordsToLinks keywords ++ "]</span></p>" -- NOTE: we avoid the <span id="page-tags"> because not unique when substituted into tag-directories/link-bibliographies
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
@@ -1651,15 +1651,16 @@ gwernAbstract p' description keywords toc f =
         -- Examples of this are appendices like /Timing#reverse-salients, which have not been split out to a standalone page, but also have their own abstract which is more relevant than the top-level abstract of /Timing.
                 else let
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
-                         title = (\(TagText tl) -> tl) $ head $ dropWhile dropToText $ dropWhile dropToLink beginning
-                         restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd beginning
+                         -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
+                         title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ dropWhile dropToLink beginning
+                         restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ tail beginning
                          in (title,trim $ renderTags $ filter filterAbstract restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
-      abstrct'' = (if take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
+      abstrct'' = (if take 3 abstrct' == "<p>" || take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
   in if null abstrct then ("","") else (t,abstrct''')
-dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToText :: Tag String -> Bool
+dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
                                              Nothing -> True
@@ -1680,9 +1681,12 @@ filterAbstract _                         = True
 dropToBody (TagOpen "body" _) = False
 dropToBody _ = True
 dropToSectionEnd (TagClose "section") = False
+dropToSectionEnd (TagOpen "section" _) = False -- sections are recursively nested, and we want just the *current* section, not all the nested subsections as well!
 dropToSectionEnd _ = True
 dropToLink (TagOpen "a" _) = False
 dropToLink _ = True
+dropToLinkEnd (TagClose "a") = False
+dropToLinkEnd _ = True
 dropToText (TagText _) = False
 dropToText _ = True
 
