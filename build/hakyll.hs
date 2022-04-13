@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-07 19:07:26 gwern"
+When: Time-stamp: "2022-04-13 09:42:57 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -238,8 +238,6 @@ postCtx tags =
     constField "cssExtension" "drop-caps-de-zs" <>
     imageDimensionWidth "thumbnailHeight" <>
     imageDimensionWidth "thumbnailWidth" <>
-    constField "thumbnailText" "Default thumbnail text: the Gwern.net site logo, a logotype of a large blackletter fraktur capital letter 'G' on a white background." <>
-    constField "thumbnail" "/static/img/logo/logo-whitebg-large-border.png" <>
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
     (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
