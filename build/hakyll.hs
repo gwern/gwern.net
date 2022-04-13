@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-13 09:42:57 gwern"
+When: Time-stamp: "2022-04-13 15:27:38 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -190,7 +190,7 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
     tocTemplate =
         either error id $ either (error . show) id $
         runPure $ runWithDefaultPartials $
-        compileTemplate "" "<div id=\"TOC\">$toc$</div>\n<div id=\"markdownBody\" class=\"markdownBody\">$body$</div>"
+        compileTemplate "" "<div id=\"TOC\" class=\"TOC\">$toc$</div>\n<div id=\"markdownBody\" class=\"markdownBody\">$body$</div>"
 
 postList :: String -> Tags -> Pattern -> ([Item String] -> Compiler [Item String]) -> Compiler String
 postList title tags pattern preprocess' = do

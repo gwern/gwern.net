@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-13 10:14:04 gwern"
+When:  Time-stamp: "2022-04-13 15:28:33 gwern"
 License: CC-0
 -}
 
@@ -209,8 +209,9 @@ readLinkMetadataAndCheck = do
                tagsSet
              return final
 
-dateRegex :: Regex
+dateRegex, footnoteRegex :: Regex
 dateRegex = mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
+footnoteRegex = mkRegex "^/?[[:alnum:]-]+#fn[1-9][0-9]*$" -- '/Foo#fn3', 'Foo#fn1', 'Foo-Bar-2020#fn999' etc
 
 -- read a YAML database and look for annotations that need to be paragraphized.
 warnParagraphizeYAML :: FilePath -> IO ()
@@ -1596,6 +1597,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
         -- | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
         | "tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "/index" `isInfixOf` p || p == "index" = return (Left Permanent) -- likewise: the newsletters + tags/tag-directory index pages are useful only as cross-page popups, to browse
+        | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
             do printRed p'
@@ -1627,7 +1629,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
                         let toc = (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
                               replace "<div class=\"columns\"><div id=\"TOC\">" "<div class=\"columns\" id=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
-                              (if '#'`elem`p' then \t -> "<div class=\"columns\" id=\"TOC\">" ++ truncateTOC p' t ++ "</div>" else id) $
+                              (if '#'`elem`p' then \t -> "<div class=\"columns\" class=\"TOC\">" ++ truncateTOC p' t ++ "</div>" else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
                               renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC")])) f) ++
                                                                  [TagClose "div"])
