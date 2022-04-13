@@ -73,7 +73,8 @@ body.index .has-content .indicator-hook::before {
 
 /*	TOCs in pop-frames.
  */
-.popframe #TOC a:link {
+.popframe #TOC a:link,
+.popframe #TOC a:link * {
 	background: none;
 	text-shadow: none;
 }
