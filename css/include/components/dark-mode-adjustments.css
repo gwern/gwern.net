@@ -127,8 +127,10 @@ table th.tablesorter-headerDesc {
 /*  Images that are marked as invertible by the server are inverted,
     hue-rotated, and desaturated. Other (non-invertible) images are merely
     desaturated. Hovering over an image restores it to its original state.
-    Hierarchy: ".invertible-not": no inversion or grayscale; ".invertible"/".invertible-auto": inverted (uninverted upon mouse hover); none: grayscaled (ungrayscaled on hover).
-    */
+    Hierarchy: ‘.invertible-not’: no inversion or grayscale; 
+    ‘.invertible’/‘.invertible-auto’: inverted (uninverted upon mouse hover); 
+    none: grayscaled (ungrayscaled on hover).
+ */
 img.invertible,
 img.invertible-auto {
     filter: grayscale(50%) invert(100%) brightness(95%) hue-rotate(180deg);
@@ -148,7 +150,11 @@ img:not(.invertible):not(.invertible-auto):hover {
     filter: none;
     transition: filter 0s ease 0.25s;
 }
-/* For images which have been manually marked up with '.invertible-not', we avoid any filtering at all. If they are manually marked up (artwork, diagrams with multiple subtly-different colors matched to a legend/caption), the color is important and shouldn't be faded out by default. */
+/*	For images which have been manually marked up with ‘.invertible-not’, we 
+	avoid any filtering at all. If they are manually marked up (artwork,
+	diagrams with multiple subtly-different colors matched to a legend/caption),
+	the color is important and shouldn’t be faded out by default.
+ */
 #markdownBody img.invertible-not { filter: none; }
 
 /*  The loading spinner for object popups (image, iframe, object) is inverted
@@ -239,5 +245,12 @@ a[data-link-icon-type*='svg']::after {
  */
 .mjpage__block .block-button-bar button img,
 .mjpage__block .block-button-bar button img:hover {
+	filter: invert(1);
+}
+
+/*	Footnote back-to-citation link icons.
+ */
+.footnotes .footnote-back img,
+.footnotes .footnote-back img:hover {
 	filter: invert(1);
 }
