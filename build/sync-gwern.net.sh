@@ -239,12 +239,11 @@ else
     λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines); [ "$BACKLINKS_N" -le 57000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
 
+    λ(){ egrep '#[[:alnum:]-]+#'  metadata/*.yaml metadata/*.hs; }
+    wrap λ "Broken double-hash anchors in links somewhere?"
+
     λ(){ fgrep --color=always '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
-
-    λ(){ PAGES=$(find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/')
-       for PAGE in $PAGES; do fgrep --color=always -e '<span class="smallcaps-auto"><span class="smallcaps-auto">' "$PAGE"; done; }
-    wrap λ "Smallcaps-auto regression in Markdown"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www' -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e 'hhttp://' -e 'hhttps://' -e '{.invertible-not}' -e ' _n_s'; }
     wrap λ "Stray links in Markdown/HTML"
@@ -292,7 +291,7 @@ else
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
                -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
                -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aeio]' -- ./metadata/*.yaml;
-         fgrep --color=always -e ']{.smallcaps-auto}' -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
+         fgrep --color=always -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
                -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '>>' \
                -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
                -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
@@ -332,7 +331,7 @@ else
     λ(){ egrep --color=always -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
     wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
 
-    λ(){ egrep --color=always -e '[0-9]*[02456789]th' -e '[0-9]*[3]rd' -e '[0-9]*[2]nd' -e '[0-9]*[1]st'  -- ./metadata/*.yaml | \
+    λ(){ egrep --color=always -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st'  -- ./metadata/*.yaml | \
              fgrep -v -e '%' -e figure -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
     wrap λ "Missing superscripts in YAML metadata database"
 

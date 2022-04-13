@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 -- Module for typographic enhancements of text:
--- 1. adding smallcaps to capitalized phrases
+-- 1. add link-live (cross-domain iframe popups) & link icon classes to links
 -- 2. adding line-break tags (`<wbr>` as Unicode ZERO WIDTH SPACE) to slashes so web browsers break at slashes in text
 -- 3. Adding classes to horizontal rulers (nth ruler modulo 3, allowing CSS to decorate it in a
 --    cycling pattern, like `<div class="horizontalRule-nth-0"><hr></div>`/`class="horizontalRule-nth-1"`/`class="horizontalRule-nth-2"`/`class="horizontalRule-nth-0"`..., (the div wrapper is necessary because Pandoc's 'HorizontalRule' Block element supports no attributes)
@@ -42,154 +42,10 @@ import Utils (addClass)
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = walk (linkLive . linkIcon) .
                       linebreakingTransform .
-                      walk smallcapsfyInlineCleanup . walk smallcapsfy .
                       rulersCycle 3
 
 linebreakingTransform :: Pandoc -> Pandoc
 linebreakingTransform = walk (breakSlashes . breakEquals)
-
--- Bringhurst & other typographers recommend using smallcaps for acronyms/initials of 3 or more
--- capital letters because with full capitals, they look too big and dominate the page (eg.
--- Bringhurst 2004, _Elements_ pg47; cf. https://en.wikipedia.org/wiki/Small_caps#Uses
--- http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 )
---
--- This can be done by hand in Pandoc by using the span syntax like `[ABC]{.smallcaps}`, but quickly
--- grows tedious. It can also be done reasonably easily with a query-replace regexp eg. in Emacs
--- `(query-replace-regexp "\\([[:upper:]][[:upper:]][[:upper:]]+\\)" "[\\1]{.smallcaps}\\2" nil
--- begin end)`, but still must be done manually because while almost all uses in regular text can be
--- smallcaps-ed, a blind regexp will wreck a ton of things like URLs & tooltips, code blocks, etc.
---
--- However, if we walk a Pandoc AST and check for only acronyms/initials inside a `Str`, where they
--- *can't* be part of a Link or CodeBlock, then looking over Gwern.net ASTs, they seem to always be
--- safe to substitute in SmallCaps elements. Unfortunately, we can't use the regular `Inline ->
--- Inline` replacement pattern because SmallCaps takes a `[Inline]` argument, and so we are doing
--- `Str String -> SmallCaps [Inline]` in theory and changing the size/type.
---
--- So we instead walk the Pandoc AST, use a regexp to split on 3 capital letters, and inline the
--- HTML span, skipping `Span` and `SmallCaps` entirely as the former causes serious problems in
--- infinite loops & duplication when tree-walking, and the latter works incorrectly for capitalized
--- phrases.
---
--- Why? For HTML output, simply using the regular `smallcaps` HTML class (which is how the default
--- Pandoc HTML output does it) is not enough, because using smallcaps on a capital letter is a
--- null-op. We *could* just rewrite the capitals to lowercase with `map toLower` etc, but then that
--- breaks copy-paste: the underlying text for a 'Big[GAN]{.smallcaps}' is now '[Biggan]{.smallcaps}'
--- etc. So instead of using native SmallCaps AST elements, we create a new HTML span class for
--- *just* all-caps separate from the pre-existing standard Pandoc 'smallcaps' CSS class,
--- 'smallcaps-auto'; we annotate capitals with that new class in a Span rather than SmallCaps, and
--- then in CSS, we do `span.smallcaps-auto { font-feature-settings: 'smcp'; text-transform:
--- lowercase; }` - smallcaps is enabled for this class, but we also lowercase everything, thereby
--- forcing the intended smallcaps appearance while ensuring that copy-paste produces 'BigGAN' (as
--- written) instead of 'Biggan'. That will work for most fonts but may have a few bugs (does your
--- font support italic smallcaps? if it doesn't, then automatically lowercasing & applying smallcaps
--- in an italicized phrase will just produce a lowercase phrase). The SSfP font used on Gwern.net
--- supports an additional font feature: 'c2sc', which is intended for exactly the purpose of
--- converting an all-caps phrase to smallcaps, so for use with SSfP, it can be simplified to
--- `font-feature-settings: 'smcp', 'c2sc'`.
---
--- Regexp examples:
---
--- "BigGAN" =~ "[A-Z][A-Z][A-Z]+" :: (String,String,String)
--- → ("Big","GAN","")
---  "BigGANNN BigGAN" =~ "[A-Z][A-Z][A-Z]+" :: (String,String,String)
--- → ("Big","GANNN"," BigGAN")
---  "NSFW BigGAN" =~ "[A-Z][A-Z][A-Z]+" :: (String,String,String)
--- → ("","NSFW"," BigGAN")
---  "BigGANNN BigGAN" =~ "[A-Z][A-Z][A-Z]" :: (String,String,String)
--- → ("Big","GAN","NN BigGAN")
---
--- This regexp can be extended to handle mixed alphanumeric examples like "GPT-2-117M" where not
--- smallcapsing the 'M' would make it larger than 'GPT' and look odd, by alternation and handling
--- the 3 possible cases of a number at the beginning/middle/end.
---
--- Function examples:
---
--- walk smallcapsfyInline [Str "BigGAN"]
--- → [RawInline (Format "html") "Big<span class=\"smallcaps-auto\">GAN</span>"]
--- walk smallcapsfyInline [Str "BigGANNN means big"]
--- → [RawInline (Format "html") "Big<span class=\"smallcaps-auto\">GANNN</span> means big"]
--- walk smallcapsfyInline [Str "biggan means big"]
--- → [Str "biggan means big"]
--- walk smallcapsfyInline [Str "GPT-2-117M is a neural language model with ~117,000,000 parameters (fitting in 150MB) but smaller than GPT-2-1.5b and easily trained on a P100 using FP16; it is difficult to reach GPT-like levels"]
--- → RawInline (Format "html") "<span class=\"smallcaps-auto\">GPT-2-117M</span> is a neural language model with ~117,000,000 parameters (fitting in 150MB) but smaller than <span class=\"smallcaps-auto\">GPT-2-1</span>.5b and easily trained on a P100 using FP16; it is difficult to reach <span class=\"smallcaps-auto\">GPT</span>-like levels"
--- walk smallcapsfyInline [Str "MS COCO"]
--- → [Span ("",[],[]) [Span ("",["smallcaps-auto"],[]) [Str "MS COCO"]]]
---
--- Whole-document examples:
---
---  walk smallcapsfyInline [Str "bigGAN means", Emph [Str "BIG"]]
--- → [RawInline (Format "html") "big<span class=\"smallcaps-auto\">GAN</span> means",Emph [RawInline (Format "html") "<span class=\"smallcaps-auto\">BIG</span>"]]
---
--- We exclude headers because on Gwern.net, headers are uppercase already, which makes
--- auto-smallcaps look odd. So we skip header Block elements before doing the replacement on all
--- other Block elements
-smallcapsfy :: Block -> Block
-smallcapsfy h@Header{} = h
-smallcapsfy x          = walk smallcapsfyInline x
-smallcapsfyInline, smallcapsfyInlineCleanup :: Inline -> Inline
-smallcapsfyInline x@(Str s) = let rewrite = go s in if [Str s] == rewrite then x else Span nullAttr rewrite
-  where
-    go :: T.Text -> [Inline]
-    go "" = []
-    go a = let (before,matched,after) = R.match smallcapsfyRegex (T.unpack a) :: (String,String,String)
-                                 in if matched==""
-                                    then [Str a] -- no acronym anywhere in it
-                                    else (if before==""then[] else [Str (T.pack before)]) ++
-                                         [Span ("", ["smallcaps-auto"], []) [Str $ T.pack matched]] ++
-                                         (if after==""then[] else go (T.pack after))
-smallcapsfyInline x = x
--- HACK: collapse redundant span substitutions (this happens when we apply `typographyTransform`
--- repeatedly eg. if we scrape a Gwern.net abstract (which will already be smallcaps) as an
--- annotation, and then go to inline it elsewhere like a link to that page on a different page):
-smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) [y@(RawInline _ t)]) = if "<span class=\"smallcaps-auto\">" `T.isInfixOf` t then y else x
-smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"],_) (y@(Span (_,["smallcaps-auto"],_) _):_)) = y
-smallcapsfyInlineCleanup (Span (_,["smallcaps-auto"], _) [Span ("",[],[]) y]) = Span ("",["smallcaps-auto"], []) y
-smallcapsfyInlineCleanup (Span ("",[], []) [Span (_,["smallcaps-auto"],_) y]) = Span ("",["smallcaps-auto"], []) y
-smallcapsfyInlineCleanup x@(Span (_,["smallcaps-auto"],_) _) = x
-smallcapsfyInlineCleanup x = x
-
--- define at top level to memoize / avoid recomputation for efficiency since it runs everywhere
-smallcapsfyRegex :: R.Regex
-smallcapsfyRegex = R.makeRegex
-  -- match standard acronyms like ABC or ABCDEF:
-  ("[A-Z&][A-Z&][A-Z&]+|" ++
-    -- match hyphen-separated acronyms like 'GPT-2-117M' but not small mixed like '150MB'/'P100'/'FP16'
-    -- or hyphenated expressions with lowercase letters like 'BigGAN-level':
-   "[A-Z&][A-Z&][A-Z&]+(-[[:digit:]]+|[A-Z&]+)+|" ++
-   -- "StyleGAN2-ADA" but not "E-Prime" or TODO: "AutoML-Zero"
-   "[A-Z0-9][A-Z0-9]+-[A-Z0-9]+([[:space:][:punct:]$])|" ++
-   "[A-Z0-9]+-[A-Z0-9][A-Z0-9]+|" ++
-   -- smallcaps entirety of "TPUv3", oldstyle numbers look odd when juxtaposed against smallcaps+lowercase
-   "[A-Z&][A-Z&][A-Z&]+([[:digit:]]+|[a-zA-Z&]+)+|" ++
-   -- but we do want to continue across hyphens of all-uppercase strings like "YYYY-MM-DD" or "X-UNITER" or "DALL·E":
-   "[A-Z&][A-Z&][A-Z&]+(-[A-Z&]+)+|" ++ "[A-Z&]+-[A-Z&][A-Z&][A-Z&]+|" ++ "[A-Z&]+\183[A-Z&]+|" ++
-   -- or slashed acronyms like "TCP/IP": eg
-   -- walk smallcapsfyInline [Str "Connecting using TCP/IP"]
-   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP/IP</span>"]
-   -- walk smallcapsfyInline [Str "Connecting using TCP"]
-   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP</span>"]
-   -- walk smallcapsfyInline [Str "Connecting using IP"]
-   -- → [Str "Connecting using IP"]
-   "[A-Z&][A-Z&][A-Z&]+(/[A-Z&]+)+|" ++ "[A-Z&]+/[A-Z&][A-Z&][A-Z&]+|" ++
-   -- It looks odd when you have 'AB XYZ' or 'XYZ AB' with partial smallcaps, so we treat them as a
-   -- single range (although in practice this may not work due to the Space splitting):
-   -- walk smallcapsfyInline [Str "Connecting using TCP IP"]
-   -- → [RawInline (Format "html") "Connecting using <span class=\"smallcaps-auto\">TCP IP</span>"]
-   "[A-Z&][A-Z&][A-Z&] [A-Z&][A-Z&]|" ++
-   -- walk smallcapsfyInline [Str "WP RSS bot"]
-   -- → [RawInline (Format "html") "<span class=\"smallcaps-auto\">WP RSS</span> bot"]
-   "[A-Z&][A-Z&] ?[A-Z&][A-Z&][A-Z&]+|" ++
-   -- "MLP:FiM"
-   "[A-Z]+:[A-Z]+[a-zA-Z]+|" ++
-   -- special-case AM/PM like "9:30AM" or "1PM" or "5:55 PM" (WARNING: Pandoc will typically parse spaces into 'Space' AST nodes, making it hard to match on things like "5 PM")
-   "[[:digit:]]+ ?[AP]M|" ++
-   "\\??[AP]M|" ++ -- special-case handling for all the "?AM--?PM" in /Morning-writing:
-   -- according to https://en.wikipedia.org/wiki/Small_caps#Uses
-   -- http://theworldsgreatestbook.com/book-design-part-5/ http://webtypography.net/3.2.2 ,
-   -- smallcaps is also often specially applied to a few two-letter initialisms/acronyms
-   -- special-case AD/BC as well, "1AD", "10 BC", "1955 AD":
-   "^AD.?$|"  ++ "^BC.?$|"  ++
-   "[[:digit:]]+ ?ADE?|" ++ "[[:digit:]]+ ?BCE?"::String)
 
 -------------------------------------------
 
@@ -206,7 +62,6 @@ breakSlashes x@Header{}    = x
 breakSlashes x@Table{}     = x
 breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
-breakSlashesInline x@(SmallCaps _) = x
 breakSlashesInline x@Code{}        = x
 breakSlashesInline (Link a@_ [Str ss] (t,"")) = if ss == t then
                                                 -- if an autolink like '<https://example.com>' which

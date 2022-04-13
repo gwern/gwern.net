@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-13 15:28:33 gwern"
+When:  Time-stamp: "2022-04-13 17:12:28 gwern"
 License: CC-0
 -}
 
@@ -1666,7 +1666,7 @@ gwernAbstract p' description keywords toc f =
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ dropWhile dropToLink beginning
-                         titleClean = trim $ replaceMany [("<span>", ""), ("</span>",""), ("\n", " "), ("<span class=\"smallcaps-auto\">",""), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
+                         titleClean = trim $ replaceMany [("<span>", ""), ("</span>",""), ("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
                          restofpageAbstract = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          in (titleClean, restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:

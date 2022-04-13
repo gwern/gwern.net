@@ -915,8 +915,7 @@ a code {
     the 'o' in 'micro' will be partially erased and look like a 'c' without
     some sort of extra spacing
     */
-.markdownBody a:link .smallcaps,
-.markdownBody a:link .smallcaps-auto {
+.markdownBody a:link .smallcaps {
     margin-left: 0.8px;
 }
 
@@ -1085,11 +1084,6 @@ span.smallcaps {
     font-feature-settings: 'smcp';
 }
 
-/* Enable SSfP smallcaps for auto-annotated abbreviations/acronyms */
-span.smallcaps-auto {
-    font-feature-settings: 'smcp', 'c2sc';
-    font-variant-numeric: tabular-nums;
-}
 /*************/
 /* DARK MODE */
 /*************/
