@@ -71,6 +71,16 @@ body.index .has-content .indicator-hook::before {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
+/*	TOCs in pop-frames.
+ */
+.popframe #TOC a:link {
+	background: none;
+	text-shadow: none;
+}
+.popframe #TOC a::after {
+	display: none;
+}
+
 /**************/
 /* LINK ICONS */
 /**************/

@@ -2924,6 +2924,17 @@ body.directory-index #disqus_thread {
 /*  Adjustments for styles in pop-frames.
     */
 
+.popframe #TOC {
+	margin: 1.25em 0 0 0;
+	max-width: unset;
+	float: none;
+	padding: 10px 10px 10px 14px;
+}
+
+.popframe #TOC > ul {
+	column-width: 12em;
+}
+
 .popframe ul,
 .popframe ol {
     overflow: unset;

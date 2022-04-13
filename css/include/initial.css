@@ -496,7 +496,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     }
 }
 
-@media only screen and (min-width: 900px) {
+@media only screen and (min-width: 901px) {
     #TOC {
         float: left;
         max-width: 285px;
