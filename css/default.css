@@ -2935,6 +2935,10 @@ body.directory-index #disqus_thread {
 	column-width: 12em;
 }
 
+.popframe #TOC .smallcaps-auto {
+	font-feature-settings: unset;
+}
+
 .popframe ul,
 .popframe ol {
     overflow: unset;
