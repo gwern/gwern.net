@@ -258,6 +258,9 @@ Popups = {
 		if (Popups.popupContainer == null)
 			return;
 
+		//	Set wait cursor.
+		Popups.setWaitCursorForTarget(target);
+
 		//  Despawn existing popup, if any.
 		if (target.popup)
 			Popups.despawnPopup(target.popup);
@@ -288,11 +291,16 @@ Popups = {
 		//  Mark target as having an active popup associated with it.
 		target.classList.add("popup-open");
 
-		//	Disable rendering progress indicator (spinner).
-		target.popup.classList.toggle("rendering", false);
-
 		//  Fire notification event.
 		GW.notificationCenter.fireEvent("Popups.popupDidSpawn", { popup: target.popup });
+
+		requestAnimationFrame(() => {
+			//	Disable rendering progress indicator (spinner).
+			target.popup.classList.toggle("rendering", false);
+
+			//	Reset cursor to normal.
+			Popups.clearWaitCursorForTarget(target);
+		});
 	},
 
 	//	Called by: Popups.spawnPopup
@@ -399,6 +407,11 @@ Popups = {
 
 		//  Enable/disable main document scrolling.
 		Popups.updatePageScrollState();
+
+		//	Reset cursor to normal.
+		requestAnimationFrame(() => {
+			Popups.clearWaitCursorForTarget(popup.spawningTarget);
+		});
 
         document.activeElement.blur();
     },
@@ -1378,7 +1391,7 @@ Popups = {
 		target.popupSpawnTimer = setTimeout(() => {
 			GWLog("Popups.popupSpawnTimer fired", "popups.js", 2);
 
-			// Spawn the popup.
+			//	Spawn the popup.
 			Popups.spawnPopup(target, { x: event.clientX, y: event.clientY });
 		}, popupTriggerDelay);
 	},
@@ -1407,6 +1420,31 @@ Popups = {
 			Popups.despawnPopup(target.popup);
 		}, Popups.popupFadeoutDuration);
     },
+
+	/********************************/
+	/*	Popup progress UI indicators.
+	 */
+
+	//	Called by: Popups.setPopupSpawnTimer
+	setWaitCursorForTarget: (target) => {
+		GWLog("Popups.setWaitCursorForTarget", "popups.js", 1);
+
+		document.documentElement.style.cursor = "progress";
+		target.style.cursor = "progress";
+		if (target.popup)
+			target.popup.style.cursor = "progress";
+	},
+
+	//	Called by: Popups.spawnPopup
+	//	Called by: Popups.despawnPopup
+	clearWaitCursorForTarget: (target) => {
+		GWLog("Popups.clearWaitCursorForTarget", "popups.js", 1);
+
+		document.documentElement.style.cursor = "";
+		target.style.cursor = "";
+		if (target.popup)
+			target.popup.style.cursor = "";
+	},
 
 	/*******************/
 	/*  Event listeners.
@@ -1615,7 +1653,8 @@ Popups = {
 		GWLog("Popups.popupMouseOut", "popups.js", 3);
 
 		//  Reset cursor.
-		if (window.popupBeingDragged == null)
+		if (   window.popupBeingDragged == null
+			&& event.target.style.cursor == "")
 			document.documentElement.style.cursor = "";
 	},
 
