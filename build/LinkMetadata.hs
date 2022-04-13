@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-12 21:34:41 gwern"
+When:  Time-stamp: "2022-04-12 22:46:38 gwern"
 License: CC-0
 -}
 
@@ -1631,8 +1631,9 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let (sectTitle,gabstract) = gwernAbstract p' description keywords' toc f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
 
-                        if gabstract `elem` ["", "<p></p>", "<p></p> ", "404 Not Found Error: no page by this name!"] then return (Left Temporary) else
-                          return $ Right (p, (title', author, date, doi, [], thumbnailFigure++gabstract))
+                        if gabstract == "404 Not Found Error: no page by this name!" then return (Left Temporary)
+                          else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
+                                 return $ Right (p, (title', author, date, doi, [], thumbnailFigure++gabstract))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
