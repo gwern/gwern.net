@@ -1,16 +1,16 @@
 {- Query.hs: utility module for extracting links from Pandoc documents.
 Author: Gwern Branwen
 Date: 2021-12-14
-When:  Time-stamp: "2022-04-02 10:44:54 gwern"
+When:  Time-stamp: "2022-04-12 20:59:05 gwern"
 License: CC-0
 -}
 
 {-# LANGUAGE OverloadedStrings #-}
-module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML) where
+module Query (extractImages, extractLinks, extractLinksWith, extractURLs, extractURLsWith, extractURL, extractURLWith, extractURLsAndAnchorTooltips, parseMarkdownOrHTML, truncateTOCHTML) where
 
-import qualified Data.Text as T (init, drop, head, last, Text)
-import Text.Pandoc (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..))
-import Text.Pandoc.Walk (walk)
+import qualified Data.Text as T (append, init, drop, head, last, Text)
+import Text.Pandoc -- (def, pandocExtensions, queryWith, readerExtensions, readHtml, readMarkdown, Inline(Image, Link), runPure, Pandoc(..), Block(BulletList, Para))
+import Text.Pandoc.Walk -- (walk)
 
 import Interwiki (convertInterwikiLinks, inlinesToString)
 
@@ -80,3 +80,19 @@ extractImages = queryWith extractImages'
  where extractImages' :: Inline -> [Inline]
        extractImages' x@Image{} = [x]
        extractImages' _ = []
+
+-- testList :: [Block]
+-- testList = [BulletList [[Para [Link ("",[],[]) [Str "Foo"] ("#foo","title")]],[Para [Link ("",[],[]) [Str "Bar"] ("#bar","title")],BulletList[[Plain [Link ("",[],[]) [Str "Quux"] ("#quux","title")]]]],[Para [Link ("",[],[]) [Str "Baz"] ("#baz","title")]]]]
+filterListBlocksContainingAnchor :: T.Text -> [Block] -> [Block]
+filterListBlocksContainingAnchor i blocks = concat $ query (listContainsAnchor i) blocks
+listContainsAnchor :: T.Text -> Block -> [[Block]]
+listContainsAnchor i (BulletList lists) = map (containsAnchor i) lists
+listContainsAnchor i (OrderedList _ lists) = map (containsAnchor i) lists
+listContainsAnchor _ _ = []
+containsAnchor :: T.Text -> [Block] -> [Block]
+containsAnchor i list = let urls = extractURLs (Pandoc nullMeta list) in if ("#"`T.append`i) `elem` urls then list
+                                                                         else []
+-- truncateTOCHTML "appendix" "<div class=\"columns\" id=\"TOC\"> <ul> <li> <a href=\"#far-from-the-madding-crowd\"><span>Far From the Madding Crowd</span></a> </li> <li> <a href=\"#egypt\"><span>Egypt</span></a> </li> <li> <a href=\"#more\"><span>More</span></a> </li> <li> <a href=\"#are-cats-domesticated\"><span>Are Cats Domesticated?</span></a> <ul> <li> <a href=\"#dysgenics\"><span>Dysgenics</span></a> <ul> <li> <a href=\"#what-is-to-be-done\"><span>What is to be done?</span></a> </li> </ul> </li> </ul> </li> <li> <a href=\"#bibliography\"><span>Bibliography</span></a> </li> <li> <a href=\"#external-links\"><span>External Links</span></a> </li> <li> <a href=\"#appendix\"><span>Appendix</span></a> <ul> <li> <a href=\"#fuzz-testing\"><span>Fuzz Testing</span></a> </li> <li> <a href=\"#toys\"><span>Toys</span></a> </li> </ul> </li> <li><a href=\"#footnotes\"><span>Footnotes</span></a></li></ul></div>"
+-- [Plain [Link ("",[],[]) [Span ("",[],[]) [Str "Appendix"]] ("#appendix","")],BulletList [[Plain [Link ("",[],[]) [Span ("",[],[]) [Str "Fuzz",Space,Str "Testing"]] ("#fuzz-testing","")]],[Plain [Link ("",[],[]) [Span ("",[],[]) [Str "Toys"]] ("#toys","")]]]]
+truncateTOCHTML :: T.Text -> T.Text -> [Block]
+truncateTOCHTML i toc = let (Pandoc _ blocks) = parseMarkdownOrHTML False toc in filterListBlocksContainingAnchor i blocks

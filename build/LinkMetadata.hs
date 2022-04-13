@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-12 14:49:14 gwern"
+When:  Time-stamp: "2022-04-12 21:34:41 gwern"
 License: CC-0
 -}
 
@@ -58,7 +58,7 @@ import Typography (typographyTransform, titlecase', invertImage)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink
-import Query (extractURLs)
+import Query (extractURLs, truncateTOCHTML)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified)
 
 ----
@@ -1624,6 +1624,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
                         let toc = (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
                               replace "<div class=\"columns\"><div id=\"TOC\">" "<div class=\"columns\" id=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
+                              (if '#'`elem`p' then \t -> "<div class=\"columns\" id=\"TOC\">" ++ truncateTOC p' t ++ "</div>" else id) $
                               renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC")])) f) ++
                                                                  [TagClose "div"])
@@ -1641,6 +1642,12 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
           -- ["statistics","NN","anime","shell","dataset"] ~> "<a href=\"/tags/statistics\">statistics</a>, <a href=\"/tags/NN\">NN</a>, <a href=\"/tags/anime\">anime</a>, <a href=\"/tags/shell\">shell</a>, <a href=\"/tags/dataset\">dataset</a>"
           keywordsToLinks :: String -> String
           keywordsToLinks = intercalate ", " . map (\k -> "<a title=\"All pages tagged '"++k++"'\"" ++ " href=\"/tags/"++k++"\">"++k++"</a>") . words . replace "," ""
+
+truncateTOC :: String -> String -> String
+truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pack toc) in
+                       case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta pndc)) of
+                         Left e -> error ("Failed to compile truncated ToC: " ++ show p' ++ show toc ++ show e)
+                         Right text -> T.unpack text
 
 gwernAbstract :: String -> String -> String -> String -> [Tag String] -> (String,String)
 gwernAbstract p' description keywords toc f =
