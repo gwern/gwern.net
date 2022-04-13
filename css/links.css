@@ -118,23 +118,6 @@ body.index .has-content .indicator-hook::before {
     content: none;
 }
 
-/*  Suppress link icons for backlinks popups: because the backlinks HTML file
-    for each URL is stored at an escaped version of that URL
-    ('/metadata/annotations/backlinks/escape($URL)'), the backlinks link will
-    match many of the link icons. That's not really sensible: after all, the
-    backlinks contains only links *to* it, and that won't be the same
-    domain/author/filetype/whatever as the target link. (If I link to a
-    sciencedirect.com page, the backlinks would look like
-    '/metadata/annotations/backlinks/http*sciencedirect.com*foo', but it would
-    contain only links like '/Sunk-costs', none of which are a Science Direct
-    page, only linking *to* it.) If it got any icon, it would be a 'G', but that
-    would just be clutter and is not worth adding, so we merely suppress them
-    entirely.
- */
-.markdownBody .backlinks a::after {
-    display: none;
-}
-
 /*==============================================*/
 /*= ICONS FOR CERTAIN LINK TYPES: BY FILE TYPE =*/
 /*==============================================*/
@@ -265,12 +248,41 @@ body.tags a.link-local::after,
     content: none;
 }
 
-/* remove G icon from the tags inside popups (which go to directory indexes, which aren't really top-level/essay content, and the G is clutter) */
-.similars a.similars::after, a.link-tag::after { content: none; }
-/* italicize link tags in popups/indexes similar to the page metadata block's tags for consistency */
-.link-tags { font-style: italic; }
+/*  Suppress link icons for backlinks popups: because the backlinks HTML file
+    for each URL is stored at an escaped version of that URL
+    ('/metadata/annotations/backlinks/escape($URL)'), the backlinks link will
+    match many of the link icons. That's not really sensible: after all, the
+    backlinks contains only links *to* it, and that won't be the same
+    domain/author/filetype/whatever as the target link. (If I link to a
+    sciencedirect.com page, the backlinks would look like
+    '/metadata/annotations/backlinks/http*sciencedirect.com*foo', but it would
+    contain only links like '/Sunk-costs', none of which are a Science Direct
+    page, only linking *to* it.) If it got any icon, it would be a 'G', but that
+    would just be clutter and is not worth adding, so we merely suppress them
+    entirely.
 
-/* remove the 'W' document icon from the anonymous feedback link icon; it is true, but not useful (a 'document' doesn't look like 'a thing I can interact with & type in text to), and it looks bad/cluttered given that icons are removed from the rest of the 'surrounding' UI (*especially* in /index).  */
+	Also remove G icon from the tags inside popups (which go to directory 
+	indexes, which aren’t really top-level/essay content, and the G is clutter).
+
+	Ditto link tags.
+ */
+.markdownBody .backlinks a::after,
+.markdownBody .similars a::after,
+.markdownBody .link-tags a::after {
+	content: none;
+}
+/*	Italicize link tags in popups/indexes similar to the page metadata block”s
+	tags for consistency
+ */
+.link-tags { 
+	font-style: italic; 
+}
+
+/*	Remove the ‘W’ document icon from the anonymous feedback link icon; it is 
+	true, but not useful (a ‘document’ doesn’t look like ‘a thing I can interact
+	with & type in text to), and it looks bad/cluttered given that icons are 
+	removed from the rest of the ‘surrounding’ UI (*especially* in /index).
+ */
 #footer a[href*='docs.google.com'i]::after {
     content: none;
 }
