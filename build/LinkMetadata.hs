@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-12 22:46:38 gwern"
+When:  Time-stamp: "2022-04-13 10:14:04 gwern"
 License: CC-0
 -}
 
@@ -218,10 +218,13 @@ warnParagraphizeYAML path = do yaml <- readYaml path
                                let unparagraphized = filter (\(_,(_,_,_,_,_,abst)) -> not (paragraphized abst)) yaml
                                unless (null unparagraphized) $ putStrLn $ ppShow (map fst unparagraphized)
 
+minimumAnnotationLength :: Int
+minimumAnnotationLength = 200
+
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Bool -> IO ()
 writeAnnotationFragments am md archived = void $! M.traverseWithKey (\p mi -> void $! forkIO $! writeAnnotationFragment am md archived p mi) md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Bool -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > 180) $!
+writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $!
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
@@ -327,7 +330,7 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                  |       title=="" && aut/="" = T.pack $ authorsToCite (T.unpack f) aut dt
                  |                  otherwise = T.pack $ "'" ++ title ++ "', " ++ authorsToCite (T.unpack f) aut dt
            in -- erase link ID?
-              if (length abstrct < 180) && not forcep then (Link (a',b,c) e (f,g')) -- always add the ID if possible
+              if (length abstrct < minimumAnnotationLength) && not forcep then (Link (a',b,c) e (f,g')) -- always add the ID if possible
               else
                 -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
                 -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
@@ -1610,15 +1613,15 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
                         let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: <span class=\"link-tags\" title=\"List of tags for this page.\">" ++ keywordsToLinks keywords ++ "</span>]</p>" -- NOTE: we avoid the <span id="page-tags"> because not unique when substituted into tag-directories/link-bibliographies
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
-                        let thumbnail = if not (any filterThumbnail metas) then
-                                          (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas else ""
+                        let thumbnail = if not (any filterThumbnail metas) then "" else
+                                          (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
-                        let thumbnailText = if not (any filterThumbnailText metas) then
-                                          (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas else "Default gwern.net thumbnail logo (Gothic G icon)."
+                        let thumbnailText = if not (any filterThumbnailText metas) then "Default gwern.net thumbnail logo (Gothic G icon)." else
+                                          (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
                               let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ replace "%F" "/" (urlEncode thumbnail') ++ "\" alt=\"" ++ thumbnailText ++ "'\" /></figure> ")
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" alt=\"" ++ thumbnailText ++ "\" /></figure> ")
 
                         let doi = ""
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
@@ -1661,13 +1664,14 @@ gwernAbstract p' description keywords toc f =
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ dropWhile dropToLink beginning
-                         restofpageAbstract = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
-                         in (title,trim $ renderTags $ filter filterAbstract restofpageAbstract)
+                         titleClean = trim $ replaceMany [("<span>", ""), ("</span>",""), ("\n", " "), ("<span class=\"smallcaps-auto\">",""), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
+                         restofpageAbstract = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
+                         in (titleClean, restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
       abstrct'' = (if take 3 abstrct' == "<p>" || take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-  in if null abstrct then ("","") else (t,abstrct''')
+  in if null abstrct || length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
@@ -2712,6 +2716,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\8201", " ")
           , ("Fr’echet", "Fréchet")
           , ("Frechet", "Fréchet")
+          , ("h20ttps://", "https://")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
             ]
