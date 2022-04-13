@@ -228,7 +228,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u' "github.com/huggingface/" || u' "medium.com/huggingface/" || u'' "huggingface.co" = aI "\129303" "text" -- "🤗" HUGGING FACE U+1F917
  | u'' "quantifiedself.com" || u'' "forum.quantifiedself.com" || u' "old.reddit.com/r/QuantifiedSelf/" = aI "QS" "text,sans"
  | u'' "www.pragmatic.ml" = aI "𝕄" "text" -- Madison May, machine learning blog
- | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "🏴‍☠️" "text,sans" -- BLACK FLAG + SKULL AND BONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/>  And if that doesn't work try adding U+FE0F to the end
+ | aU'' ["thepiratebay.org", "rss.thepiratebay.se", "thepiratebay.se",  "thepiratebay.sx"] = aI "⚑☠\8205" "text,sans" -- BLACK FLAG + SKULL AND CROSSBONES + ZWJ = PIRATE FLAG <https://emojipedia.org/pirate-flag/>  And if that doesn't work try adding U+FE0F to the end
 
  -- Tri/triple TLAs
  | u' "animenewsnetwork.com" = aI "ANN" "text,tri"
@@ -977,5 +977,5 @@ linkIconTestUnits =
          , ("https://www.spiegel.de/panorama/justiz/amokschuetze-von-muenchen-tatwaffe-aus-dem-darknet-a-1104461.html", "SPGL", "text,quad")
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans")
-         , ("https://thepiratebay.org/description.php?id=14045031", "🏴‍☠️", "text,sans")
+         , ("https://thepiratebay.org/description.php?id=14045031", "⚑☠\8205", "text,sans")
         ]
