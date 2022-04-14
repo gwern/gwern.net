@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-13 22:52:10 gwern"
+When:  Time-stamp: "2022-04-14 11:37:25 gwern"
 License: CC-0
 -}
 
@@ -104,7 +104,8 @@ updateGwernEntries :: IO ()
 updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
         updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x
-            else do newEntry <- gwern path
+            else do printGreen path
+                    newEntry <- gwern path
                     case newEntry of
                       Left _ -> return x
                       Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
@@ -1594,9 +1595,8 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
-        -- | "#" `isInfixOf` p = return (Left Permanent) -- section links require custom annotations; we can't scrape any abstract/summary for them easily
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "/index" `isInfixOf` p || p == "index" || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p = return (Left Permanent) -- likewise: the newsletters + tags/tag-directory index pages are useful only as cross-page popups, to browse
+        | "tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "index.html" `isInfixOf` p  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
         | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
@@ -1610,10 +1610,10 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let metas = filter (isTagOpenName "meta") f
                         let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
-                                       in if dateTmp=="N/A" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
+                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
-                        let keywords' = if "tags/" `isPrefixOf` p' then "" else "<p>[<strong>Keywords</strong>: <span class=\"link-tags\" title=\"List of tags for this page.\">" ++ keywordsToLinks keywords ++ "</span>]</p>" -- NOTE: we avoid the <span id="page-tags"> because not unique when substituted into tag-directories/link-bibliographies
+                        let keywords' = if "tags/" `isPrefixOf` p' || "/index" `isSuffixOf` p' then "" else "<p>[<strong>Keywords</strong>: <span class=\"link-tags\" title=\"List of tags for this page.\">" ++ keywordsToLinks keywords ++ "</span>]</p>" -- NOTE: we avoid the <span id="page-tags"> because not unique when substituted into tag-directories/link-bibliographies
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
@@ -1627,18 +1627,14 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
                         let doi = ""
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
-                        let toc = (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
-                              replace "<div class=\"columns\"><div id=\"TOC\">" "<div class=\"columns\" id=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
-                              replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
-                              (if '#'`elem`p' then \t -> "<div class=\"columns\" class=\"TOC\">" ++ truncateTOC p' t ++ "</div>" else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
-                              renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
-                                                                 (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC")])) f) ++
-                                                                 [TagClose "div"])
-                        let (sectTitle,gabstract) = gwernAbstract p' description keywords' toc f
+
+                        let toc = gwernTOC footnotesP p' f
+
+                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isInfixOf` p') p' description keywords' toc f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
 
                         if gabstract == "404 Not Found Error: no page by this name!" then return (Left Temporary)
-                          else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
+                          else -- if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
                                  return $ Right (p, (title', author, date, doi, [], thumbnailFigure++gabstract))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
@@ -1656,8 +1652,19 @@ truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pa
                          Left e -> error ("Failed to compile truncated ToC: " ++ show p' ++ show toc ++ show e)
                          Right text -> T.unpack text
 
-gwernAbstract :: String -> String -> String -> String -> [Tag String] -> (String,String)
-gwernAbstract p' description keywords toc f =
+gwernTOC :: Bool -> String -> [Tag String] -> String
+gwernTOC footnotesP p' f =
+                       (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
+                              replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
+                              replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
+                              (if '#'`elem`p' then \t -> "<div class=\"columns\" class=\"TOC\">" ++ truncateTOC p' t ++ "</div>" else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
+                              replace " id=\"TOC\"" "" $
+                               renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
+                                                                 (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
+                                                                 [TagClose "div"])
+
+gwernAbstract :: Bool -> String -> String -> String -> String -> [Tag String] -> (String,String)
+gwernAbstract shortAllowed p' description keywords toc f =
   let anchor  = sed ".*#" "" p'
       baseURL = sed "#.*" "" p'
       (t,abstrct) = if not ("#" `isInfixOf` p') then ("", trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
@@ -1674,7 +1681,7 @@ gwernAbstract p' description keywords toc f =
       abstrct'  = if length description > length abstrct then description else abstrct
       abstrct'' = (if take 3 abstrct' == "<p>" || take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-  in if null abstrct || length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
+  in if shortAllowed then (t,abstrct''') else if null abstrct || length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of

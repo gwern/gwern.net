@@ -131,7 +131,7 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
               " " ++ show directoryN ++ " related tags, " ++ show annotationN ++ " annotations, " ++ show linkN ++ " links.'\n",
              thumbnail,
              "tags: index\n",
-             "created: 2009-01-01\n",
+             "created: 'N/A'\n",
              if date=="" then "" else "modified: " ++ date ++ "\n",
              "status: in progress\n",
              "confidence: log\n",
