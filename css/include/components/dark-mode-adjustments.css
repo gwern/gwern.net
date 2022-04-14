@@ -90,7 +90,7 @@ ul > li::before {
 
 /*  Exclusion for TOC entries.
     */
-#TOC ul > li::before {
+.TOC ul > li::before {
     filter: none;
 }
 

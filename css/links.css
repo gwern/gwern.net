@@ -46,18 +46,18 @@
         linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover)),
         linear-gradient(var(--GW-link-underline-gradient-line-color-hover), var(--GW-link-underline-gradient-line-color-hover));
 }
-#TOC .has-content,
+.TOC .has-content,
 #sidebar .has-content,
 body.index .has-content {
     margin: 0;
 }
-#TOC .has-content .indicator-hook,
+.TOC .has-content .indicator-hook,
 #sidebar .has-content .indicator-hook,
 body.index .has-content .indicator-hook {
     padding-left: 0;
     position: static;
 }
-#TOC .has-content .indicator-hook::before,
+.TOC .has-content .indicator-hook::before,
 #sidebar .has-content .indicator-hook::before,
 body.index .has-content .indicator-hook::before {
     content: none;
@@ -73,12 +73,12 @@ body.index .has-content .indicator-hook::before {
 
 /*	TOCs in pop-frames.
  */
-.popframe #TOC a:link,
-.popframe #TOC a:link * {
+.popframe .TOC a:link,
+.popframe .TOC a:link * {
 	background: none;
 	text-shadow: none;
 }
-.popframe #TOC a::after {
+.popframe .TOC a::after {
 	display: none;
 }
 

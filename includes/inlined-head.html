@@ -768,17 +768,19 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*********************/
 
 #TOC {
-    border: 1px solid var(--GW-TOC-border-color);
-    background-color: var(--GW-TOC-background-color);
-    font-family: var(--GW-sans-serif-font-stack);
     margin: 0 2rem 1.5rem 0;
-    line-height: 1.25;
     padding: 10px 10px 2px 14px;
     position: relative;
     z-index: 11;
 }
+.TOC {
+    border: 1px solid var(--GW-TOC-border-color);
+    background-color: var(--GW-TOC-background-color);
+    font-family: var(--GW-sans-serif-font-stack);
+    line-height: 1.25;
+}
 
-#TOC:empty {
+.TOC:empty {
     display: none;
 }
 
@@ -859,7 +861,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= TOC list layout =*/
 /*=-----------------=*/
 
-#TOC ul {
+.TOC ul {
     list-style-type: none;
     padding-left: 0em;
     margin-bottom: 0;
@@ -870,14 +872,14 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     overflow: unset;
 }
 
-#TOC ul ul {
+.TOC ul ul {
     list-style-type: none;
     padding-left: 0.7em;
     padding-top: 5px;
     margin-top: 2px;
 }
 
-#TOC li {
+.TOC li {
     font-weight: bold;
     margin: 0 0 10px 0;
     padding-left: 1.125em;
@@ -885,13 +887,13 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     overflow-wrap: break-word;
 }
 
-#TOC li li {
+.TOC li li {
     margin-bottom: 5px;
     font-weight: normal;
     font-size: 0.9em;
 }
 
-#TOC p {
+.TOC p {
     margin-top: 9px;
     margin-bottom: 3px;
 }
@@ -900,18 +902,18 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= TOC link styling =*/
 /*=------------------=*/
 
-#TOC a {
+.TOC a {
     border: 0;
     display: block;
     position: relative;
     padding: 0 0.25rem 0 0;
 }
 
-#TOC a:hover {
+.TOC a:hover {
     background-color: var(--GW-TOC-link-hover-background-color);
     color: var(--GW-TOC-link-hover-color);
 }
-#TOC a:hover::after {
+.TOC a:hover::after {
     content: "";
     display: inline-block;
     position: absolute;
@@ -926,7 +928,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= Inline code in TOC links =*/
 /*=--------------------------=*/
 
-#TOC code {
+.TOC code {
     font-family: inherit;
     font-size: inherit;
     border: none;
@@ -938,49 +940,49 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 /*= Wikipedia-style TOC numbering =*/
 /*=-------------------------------=*/
 
-#TOC > ul {
+.TOC > ul {
     counter-reset: htoc_1;
 }
-#TOC > ul > li::before {
+.TOC > ul > li::before {
     counter-increment: htoc_1;
     content: counter(htoc_1) "\2006  ";
 }
-#TOC > ul ul {
+.TOC > ul ul {
     counter-reset: htoc_2;
 }
-#TOC > ul ul li::before {
+.TOC > ul ul li::before {
     counter-increment: htoc_2;
     content: counter(htoc_1) "." counter(htoc_2) "\2006  ";
 }
-#TOC > ul ul ul {
+.TOC > ul ul ul {
     counter-reset: htoc_3;
 }
-#TOC > ul ul ul li::before {
+.TOC > ul ul ul li::before {
     counter-increment: htoc_3;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "\2006  ";
 }
-#TOC > ul ul ul ul {
+.TOC > ul ul ul ul {
     counter-reset: htoc_4;
 }
-#TOC > ul ul ul ul li::before {
+.TOC > ul ul ul ul li::before {
     counter-increment: htoc_4;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "\2006  ";
 }
-#TOC > ul ul ul ul ul {
+.TOC > ul ul ul ul ul {
     counter-reset: htoc_5;
 }
-#TOC > ul ul ul ul ul li::before {
+.TOC > ul ul ul ul ul li::before {
     counter-increment: htoc_5;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "\2006  ";
 }
-#TOC > ul ul ul ul ul ul {
+.TOC > ul ul ul ul ul ul {
     counter-reset: htoc_6;
 }
-#TOC > ul ul ul ul ul ul li::before {
+.TOC > ul ul ul ul ul ul li::before {
     counter-increment: htoc_6;
     content: counter(htoc_1) "." counter(htoc_2) "." counter(htoc_3) "." counter(htoc_4) "." counter(htoc_5) "." counter(htoc_6) "\2006  ";
 }
-#TOC ul li::before {
+.TOC ul li::before {
     position: absolute;
     right: calc(100% - 1em);
     left: unset;
@@ -990,12 +992,12 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     pointer-events: none;
     color: var(--GW-TOC-number-color);
 }
-#TOC ul li:hover::before {
+.TOC ul li:hover::before {
     color: var(--GW-TOC-number-hover-color);
 }
 
 /* The table of contents is a *table*, so align */
-#TOC {
+.TOC {
     font-variant-numeric: tabular-nums;
 }
 
@@ -1819,7 +1821,7 @@ ul > li::before {
 
 /*  Exclusion for TOC entries.
     */
-#TOC ul > li::before {
+.TOC ul > li::before {
     filter: none;
 }
 
