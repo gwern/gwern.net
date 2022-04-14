@@ -449,7 +449,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 #TOC {
     margin: 0 2rem 1.5rem 0;
-    padding: 10px 10px 2px 14px;
+    padding: 0.5em 0.5em 0.75em 0.75em;
     position: relative;
     z-index: 11;
 }
@@ -545,7 +545,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     list-style-type: none;
     padding-left: 0em;
     margin-bottom: 0;
-    margin-top: 4px;
+    margin-top: 0.2em;
     padding-left: 1.4em;
     text-indent: 0;
     padding: 0;
@@ -555,27 +555,27 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 .TOC ul ul {
     list-style-type: none;
     padding-left: 0.7em;
-    padding-top: 5px;
-    margin-top: 2px;
+    padding-top: 0.25em;
+    margin-top: 0.1em;
 }
 
 .TOC li {
     font-weight: bold;
-    margin: 0 0 10px 0;
+    margin: 0 0 0.5em 0;
     padding-left: 1.125em;
     position: relative;
     overflow-wrap: break-word;
 }
 
 .TOC li li {
-    margin-bottom: 5px;
+    margin-bottom: 0.25em;
     font-weight: normal;
     font-size: 0.9em;
 }
 
 .TOC p {
-    margin-top: 9px;
-    margin-bottom: 3px;
+    margin-top: 0.5em;
+    margin-bottom: 0.1em;
 }
 
 /*=------------------=*/
