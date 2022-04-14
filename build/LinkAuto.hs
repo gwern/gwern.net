@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-04-09 19:59:46 gwern"
+When:  Time-stamp: "2022-04-13 20:54:59 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -60,6 +60,7 @@ import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa s
 
 import Utils (addClass, simplifiedDoc)
 import Query (extractURLs)
+import Interwiki (inlinesToString)
 
 -- test,test2 :: [Inline]
 -- -- test3 = [Link ("",[],[]) [Quoted DoubleQuote [Str "Self-improving",Space,Str "reactive",Space,Str "agents",Space,Str "based",Space,Str "on",Space,Str "reinforcement",Space,Str "learning,",Space,Str "planning",Space,Str "and",Space,Str "teaching"]] ("https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.75.7884&rep=rep1&type=pdf",""),Str ",",Space,Str "Lin",Space,Str "1992"]
@@ -107,7 +108,7 @@ cleanupNestedLinks = topDown go
         go x = x
         -- we must be inside a Link's [Inline], so strip any Links we find for their [Inline] anchor text
         goDeeper :: Inline -> Inline
-        goDeeper (Link _ is _) = Span nullAttr is
+        goDeeper (Link _ is _) = Str $ inlinesToString is -- Span nullAttr is
         goDeeper x = x
 
 -----------

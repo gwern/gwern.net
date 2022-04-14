@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-03-25 16:26:52 gwern"
+When:  Time-stamp: "2022-04-13 10:56:16 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1133,5 +1133,6 @@ whiteList url
       , "tinyurl.com" -- redirects
       , "www.character.ai" -- homepage
       , "ageofem.com" -- low quality (video embeds)
+      , "https://mujoco.org/" -- homepage
       ] = True
     | otherwise = False

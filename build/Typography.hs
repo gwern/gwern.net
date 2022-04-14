@@ -11,7 +11,7 @@
 --    like with blockquotes/lists).
 module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase') where
 
-import Control.Concurrent (forkIO)
+import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
@@ -22,11 +22,10 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime, nominalDay)
 import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
-import qualified Data.Text as T (any, isInfixOf, isSuffixOf, pack, unpack, replace, Text)
+import qualified Data.Text as T (any, isSuffixOf, pack, unpack, replace, Text)
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
-import Control.Concurrent (threadDelay)
 import Data.Text.Titlecase (titlecase)
 
 import Data.FileStore.Utils (runShellCommand)
@@ -63,7 +62,7 @@ breakSlashes x@Table{}     = x
 breakSlashes x = topDown breakSlashesInline x
 breakSlashesInline, breakSlashesPlusHairSpaces :: Inline -> Inline
 breakSlashesInline x@Code{}        = x
-breakSlashesInline (Link a@_ [Str ss] (t,"")) = if ss == t then
+breakSlashesInline (Link a [Str ss] (t,"")) = if ss == t then
                                                 -- if an autolink like '<https://example.com>' which
                                                 -- converts to 'Link () [Str "https://example.com"]
                                                 -- ("https://example.com","")' or '[Para [Link
@@ -196,7 +195,7 @@ imageMagickDimensions f =
        if not exists then return ("","") else
         do (status,_,bs) <- runShellCommand "./" Nothing "identify" ["-format", "%h %w\n", f']
            case status of
-             ExitFailure exit -> error $ f ++ ":" ++ f' ++ ":" ++ show exit ++ ":" ++ (B8.unpack bs)
+             ExitFailure exit -> error $ f ++ ":" ++ f' ++ ":" ++ show exit ++ ":" ++ B8.unpack bs
              _             -> do let [height, width] = words $ head $ lines $ B8.unpack bs
                                  return (height, width)
 

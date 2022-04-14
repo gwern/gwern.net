@@ -4,7 +4,7 @@
 -- link-titler.hs: add titles to bare links in a Markdown file using a database of link metadata
 -- Author: Gwern Branwen
 -- Date: 2022-04-01
--- When:  Time-stamp: "2022-04-08 05:53:37 gwern"
+-- When:  Time-stamp: "2022-04-13 10:01:16 gwern"
 -- License: CC-0
 --
 -- Read a Markdown page, parse links out, look up their titles, generate a standard gwern.net-style citation ('"Title", Author1 et al Year[a-z]'),
@@ -60,16 +60,17 @@ addTitlesToFile md filepath = do
 
           let titled = filter (\(u',t'') -> not (u' == "" || t'' == "")) $
                                  map (\(u,t') -> case M.lookup (T.unpack u) md of
-                               Nothing -> ("","")
-                               Just ("",_,_,_,_,_) -> ("","")
-                               Just (_,"",_,_,_,_) -> ("","")
-                               Just (_,_,"",_,_,_) -> ("","")
-                               Just (t,aut,dt,_,_,_) -> if T.pack t == t' ||
-                                                           textSimplifier (T.pack t) == textSimplifier t'
-                                                        then ("","") else
-                                                          let authorCite = authorsToCite (T.unpack u) aut dt in
-                                                          (u, T.pack $
-                                                              if textSimplifier t' == textSimplifier (T.pack authorCite) then t else "'" ++ t ++ "', " ++ authorCite)
+                                                   Nothing -> ("","")
+                                                   Just ("",_,_,_,_,_) -> ("","")
+                                                   Just (_,"",_,_,_,_) -> ("","")
+                                                   Just (_,_,"",_,_,_) -> ("","")
+                                                   Just (t,aut,dt,_,_,_) -> if T.pack t == t' ||
+                                                                               textSimplifier (T.pack t) == textSimplifier t'
+                                                                            then ("","") else
+                                                                              let authorCite = authorsToCite (T.unpack u) aut dt in
+                                                                              (u, T.pack $
+                                                                                  if textSimplifier t' == textSimplifier (T.pack authorCite) then t
+                                                                                  else "'" ++ t ++ "', " ++ authorCite)
                                ) untitled :: [(T.Text, T.Text)]
 
           let updatedFile = foldr (\(url,titleNew) text -> T.replace (url `T.append` ")")
