@@ -268,6 +268,17 @@ Extracts = {
 		if (addHooks) {
 			doc.querySelectorAll(".has-content").forEach(link => {
 				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
+
+				/*	Inject U+2060 WORD JOINER at start of first text node of the
+					link. (It _must_ be injected as a Unicode character into the
+					existing text node; injecting it within the .indicator-hook
+					span, or as an HTML escape code into the text node, or in
+					any other fashion, creates a separate text node, which 
+					causes all sorts of problems - text shadow artifacts, etc.)
+				 */
+				let linkFirstTextNode = link.firstTextNode;
+				if (linkFirstTextNode)
+					linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
 			});
 		}
     },
@@ -646,8 +657,8 @@ Extracts = {
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
 		//	Add to a full-page pop-frame the body classes of the page.
 		if (   popFrame.classList.contains("external-page-embed")
-			&& Extracts.cachedPageBodyClasses[target.pathname] > null)
-			popFrame.classList.add(...Extracts.cachedPageBodyClasses[target.pathname]);
+			&& Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname] > null)
+			popFrame.classList.add(...Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname]);
 
 		return popFrame;
 	},
