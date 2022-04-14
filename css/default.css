@@ -2924,15 +2924,20 @@ body.directory-index #disqus_thread {
 /*  Adjustments for styles in pop-frames.
     */
 
-.popframe #TOC {
+.popframe .TOC {
 	margin: 1.25em 0 0 0;
-	max-width: unset;
-	float: none;
-	padding: 10px 10px 10px 14px;
+	padding: 0.5em 0.5em 0.5em 0.75em;
 }
 
-.popframe #TOC > ul {
+.popframe .TOC > ul {
 	column-width: 12em;
+}
+
+.popframe .TOC a:hover::after {
+    margin: 0;
+    bottom: unset;
+    font-size: inherit;
+    opacity: unset;
 }
 
 .popframe ul,
