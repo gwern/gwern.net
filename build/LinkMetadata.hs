@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-13 17:12:28 gwern"
+When:  Time-stamp: "2022-04-13 21:53:04 gwern"
 License: CC-0
 -}
 
@@ -1603,7 +1603,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
             do printRed p'
                (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"]
                case status of
-                 ExitFailure _ -> printRed ("Gwern.net download failed: " ++ p) >> return (Left Temporary)
+                 ExitFailure _ -> printRed ("Gwern.net download failed: " ++ p) >> return (Left Permanent)
                  _ -> do
                         let b = U.toString bs
                         let f = parseTags b
@@ -1629,6 +1629,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
                         let toc = (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
                               replace "<div class=\"columns\"><div id=\"TOC\">" "<div class=\"columns\" id=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
+                              replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
                               (if '#'`elem`p' then \t -> "<div class=\"columns\" class=\"TOC\">" ++ truncateTOC p' t ++ "</div>" else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
                               renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC")])) f) ++
