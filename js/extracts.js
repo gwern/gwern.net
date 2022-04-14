@@ -268,6 +268,17 @@ Extracts = {
 		if (addHooks) {
 			doc.querySelectorAll(".has-content").forEach(link => {
 				link.insertAdjacentHTML("afterbegin", `<span class='indicator-hook'></span>`);
+
+				/*	Inject U+2060 WORD JOINER at start of first text node of the
+					link. (It _must_ be injected as a Unicode character into the
+					existing text node; injecting it within the .indicator-hook
+					span, or as an HTML escape code into the text node, or in
+					any other fashion, creates a separate text node, which 
+					causes all sorts of problems - text shadow artifacts, etc.)
+				 */
+				let linkFirstTextNode = link.firstTextNode;
+				if (linkFirstTextNode)
+					linkFirstTextNode.textContent = "\u{2060}" + linkFirstTextNode.textContent;
 			});
 		}
     },

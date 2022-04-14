@@ -163,6 +163,27 @@ Element.prototype.swapClasses = function (classes, whichToAdd) {
     this.classList.remove(classes[1 - whichToAdd]);
 };
 
+/*	The first text node of a node or element (or null if an element contains no
+	text nodes).
+ */
+Object.defineProperty(Node.prototype, "firstTextNode", {
+    get() {
+		if (this.nodeType == Node.TEXT_NODE)
+			return this;
+
+		if (this.childNodes.length == 0)
+			return null;
+
+		for (node of this.childNodes) {
+			let firstTextNodeWithinChildNode = node.firstTextNode;
+			if (firstTextNodeWithinChildNode)
+				return firstTextNodeWithinChildNode;
+		}
+
+		return null;
+    }
+});
+
 /*	Returns true if the point is within the given rect, false otherwise.
  */
 function pointWithinRect(point, rect) {
