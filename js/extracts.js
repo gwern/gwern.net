@@ -657,8 +657,8 @@ Extracts = {
 	preparePopFrame_LOCAL_PAGE: (popFrame) => {
 		//	Add to a full-page pop-frame the body classes of the page.
 		if (   popFrame.classList.contains("external-page-embed")
-			&& Extracts.cachedPageBodyClasses[target.pathname] > null)
-			popFrame.classList.add(...Extracts.cachedPageBodyClasses[target.pathname]);
+			&& Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname] > null)
+			popFrame.classList.add(...Extracts.cachedPageBodyClasses[popFrame.spawningTarget.pathname]);
 
 		return popFrame;
 	},
