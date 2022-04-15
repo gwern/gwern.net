@@ -11,7 +11,6 @@
 --    like with blockquotes/lists).
 module Typography (invertImage, invertImageInline, linebreakingTransform, typographyTransform, imageMagickDimensions, titlecase') where
 
-import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad.State.Lazy (evalState, get, put, State)
 import Control.Monad (void, when)
 import Data.ByteString.Lazy.Char8 as B8 (unpack)
@@ -26,6 +25,8 @@ import qualified Data.Text as T (any, isSuffixOf, pack, unpack, replace, Text)
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
+import System.IO.Temp (emptySystemTempFile)
+
 import Data.Text.Titlecase (titlecase)
 
 import Data.FileStore.Utils (runShellCommand)
@@ -168,11 +169,9 @@ invertImagePreview f = do utcFile <- getModificationTime f
                           utcNow  <- getCurrentTime
                           let age  = utcNow `diffUTCTime` utcFile
                           when (age < nominalDay) $ do
-                            let f' = f++"-inverted.png"
+                            f' <- emptySystemTempFile "inverted"
                             void $ runShellCommand "./" Nothing "convert" ["-negate", f, f']
-                            void $ forkIO $ void $ runShellCommand "./" Nothing "firefox" [f']
-                            threadDelay 5000000
-                            removeFile f'
+                            void $ runShellCommand "./" Nothing "firefox" [f']
 
 imageMagickColor :: FilePath -> FilePath -> IO Float
 imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
