@@ -2231,7 +2231,6 @@ span.inflationAdjusted {
 .admonition.warning::before {
     content: url('/static/img/icons/exclamation-triangle-white.svg');
     padding-top: 0.75em;
-    padding: 0.5em;
 }
 .admonition.error::before {
     content: url('/static/img/icons/skull-crossbones-white.svg');
