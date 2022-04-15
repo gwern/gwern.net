@@ -2168,49 +2168,42 @@ span.inflationAdjusted {
 /* - <div class="admonition warning"><div class="admonition-title">Warning title (*)</div> text</div> */
 /* - <div class="admonition error"><div class="admonition-title">Error title (*)</div> text</div> */
 .admonition {
+	--admonition-background-color: var(--GW-admonition-default-background-color);
+    --admonition-left-border-color: var(--GW-admonition-default-left-border-color);
+    --admonition-text-color: currentColor;
+
+    --GW-link-underline-background-color: var(--admonition-background-color);
+
     font-family: var(--GW-sans-serif-font-stack);
     font-size: 0.875em;
+    color: var(--admonition-text-color);
     position: relative;
     margin: 2em 0 1.5em 0;
     padding: 0.75em 1.25em 0.875em 1.125em;
-    border-left: 2.875em solid var(--GW-admonition-default-left-border-color);
-    background-color: var(--GW-admonition-default-background-color);
-    --GW-link-underline-background-color: var(--GW-admonition-default-background-color);
+    border-left: 2.875em solid var(--admonition-left-border-color);
+    background-color: var(--admonition-background-color);
 }
 .admonition-title {
     font-weight: bold;
 }
+
 .admonition.tip {
-    border-left-color: var(--GW-admonition-tip-left-border-color);
-    background-color: var(--GW-admonition-tip-background-color);
-    --GW-link-underline-background-color: var(--GW-admonition-tip-background-color);
+    --admonition-background-color: var(--GW-admonition-tip-background-color);
+    --admonition-left-border-color: var(--GW-admonition-tip-left-border-color);
 }
 .admonition.warn,
 .admonition.warning {
-    border-left-color: var(--GW-admonition-warning-left-border-color);
-    background-color: var(--GW-admonition-warning-background-color);
-    --GW-link-underline-background-color: var(--GW-admonition-warning-background-color);
-    color: var(--GW-admonition-warning-text-color);
-}
-.admonition.warn > .admonition-title::after,
-.admonition.warning > .admonition-title::after {
-    background-color: var(--GW-admonition-warning-title-background-color);
+    --admonition-background-color: var(--GW-admonition-warning-background-color);
+    --admonition-left-border-color: var(--GW-admonition-warning-left-border-color);
+    --admonition-text-color: var(--GW-admonition-warning-text-color);
 }
 .admonition.error {
-    border-left-color: var(--GW-admonition-error-left-border-color);
-    background-color: var(--GW-admonition-error-background-color);
-    --GW-link-underline-background-color: var(--GW-admonition-error-background-color);
-    color: var(--GW-admonition-error-text-color);
-}
-.admonition.error > .admonition-title::after {
-    background-color: var(--GW-admonition-error-title-background-color);
+    --admonition-background-color: var(--GW-admonition-error-background-color);
+    --admonition-left-border-color: var(--GW-admonition-error-left-border-color);
+    --admonition-text-color: var(--GW-admonition-error-text-color);
 }
 
-.admonition.note::before,
-.admonition.tip::before,
-.admonition.warn::before,
-.admonition.warning::before,
-.admonition.error::before {
+.admonition::before {
     width: 2.875em;
     height: 100%;
     position: absolute;
@@ -2242,7 +2235,8 @@ span.inflationAdjusted {
 }
 
 .admonition code {
-    background-color: transparent;
+    --GW-code-element-background-color: transparent;
+
     border: none;
     padding-left: 0;
     font-size: unset;
@@ -2275,6 +2269,18 @@ span.inflationAdjusted {
 .admonition.warning a:hover,
 .admonition.error a:hover {
     color: var(--GW-admonition-reversed-link-color-hover);
+}
+
+/*	Admonitions in/as page abstracts (e.g. /Archiving-GitHub).
+ */
+.abstract .admonition {
+    border-left-width: 0;
+    padding-left: 4em;
+    box-shadow: 2.875em 0 0 0 var(--admonition-left-border-color) inset;
+}
+.abstract .admonition::before {
+    right: unset;
+    left: 0;
 }
 
 /*******************************/
