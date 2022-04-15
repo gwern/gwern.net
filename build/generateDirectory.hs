@@ -102,6 +102,7 @@ generateDirectory mta dir'' = do
 
                (if null titledLinks then [] else
                    -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'displayPopNot', and the CSS (in default.css's popups section) will suppress that in popups/popins.
+                   [Para []] ++
                    [Header 1 (idLinks, ["displayPopNot"], []) [Str "Links"]] ++
                    titledLinksSections) ++
 

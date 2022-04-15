@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-14 22:51:40 gwern"
+When:  Time-stamp: "2022-04-15 11:30:04 gwern"
 License: CC-0
 -}
 
@@ -88,21 +88,23 @@ isLocalPath f = let f' = replace "https://www.gwern.net" "" $ T.unpack f in
 --
 -- > walkAndUpdateLinkMetadata (\x@(path,(title,author,date,doi,tags,abstrct)) -> if not ("https://arxiv.org" `isPrefixOf` path) || (doi /= "") then return x else return (path,(title,author,date,processDOIArxiv path,tags,abstrct)))
 walkAndUpdateLinkMetadata :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> IO ()
-walkAndUpdateLinkMetadata f = do [custom,partial,auto] <- mapM (readYaml) ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
-                                 custom' <- mapM f custom
-                                 writeYaml "metadata/custom.yaml" custom'
-                                 partial' <- mapM f partial
-                                 writeYaml "metadata/partial.yaml" partial'
-                                 auto' <- mapM f auto
-                                 writeYaml "metadata/auto.yaml" auto'
-                                 _ <- readLinkMetadataAndCheck
+walkAndUpdateLinkMetadata f = do walkAndUpdateLinkMetadataYaml f "metadata/custom.yaml"
+                                 walkAndUpdateLinkMetadataYaml f "metadata/partial.yaml"
+                                 walkAndUpdateLinkMetadataYaml f "metadata/auto.yaml"
+                                 void readLinkMetadataAndCheck
+                                 printGreen "Validated all YAML post-update; exiting…"
                                  return ()
+walkAndUpdateLinkMetadataYaml :: ((Path, MetadataItem) -> IO (Path, MetadataItem)) -> Path -> IO ()
+walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file
+                                          db' <- mapM f db
+                                          writeYaml file db'
+                                          printGreen $ "Updated " ++ file
 -- Or to rescrape the metadata for Gwern.net pages like '/Design'; preserve the tags, because the annotation tags and the page tags are currently different systems, and we can't extract the annotation tags from the page tags (yet).
 -- This can be run every few months to update abstracts (they generally don't change much).
 updateGwernEntries :: IO ()
 updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) || not ("index"`isInfixOf` path) then return x
+        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x --  || not ("index"`isInfixOf` path)
             else do printGreen path
                     newEntry <- gwern path
                     case newEntry of
@@ -366,7 +368,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     date = if dt=="" then [] else [Span ("", ["date"], [("title",T.pack dt)]) [Str (T.pack $ dateTruncate dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
-                                    tags = if ts==[] then [] else [Str ";", Space] ++ [tagsToLinksSpan ts]
+                                    tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan ts]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
                                     -- on directory indexes/link bibliography pages, we don't want to set 'docMetadata' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
@@ -424,7 +426,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-local", "link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadata"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
@@ -1595,7 +1597,7 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
+        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p || ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
         | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
