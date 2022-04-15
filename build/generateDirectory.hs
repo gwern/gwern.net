@@ -85,8 +85,8 @@ generateDirectory mta dir'' = do
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let directorySectionSeeAlsos = if null dirsSeeAlsos then [] else generateDirectoryItems Nothing dir'' dirsSeeAlsos
 
-  -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at '/docs/foo/index'
-  let abstract = case M.lookup ("/"++dir''++"index") mta of
+  -- A directory-tag index may have an optional header explaining or commenting on it. If it does, it is defined as a link annotation at the ID '/docs/foo/index#manual-annotation'
+  let abstract = case M.lookup ("/"++dir''++"index#manual-annotation") mta of
                    Nothing -> []
                    Just (_,_,_,_,_,"") -> []
                    Just (_,_,_,_,_,dirAbstract) -> [parseRawBlock ("",["abstract"],[]) $ RawBlock (Format "html") (T.pack $ "<blockquote>"++dirAbstract++"</blockquote>")]
@@ -125,7 +125,7 @@ generateDirectory mta dir'' = do
 generateYAMLHeader :: FilePath -> String -> (Int,Int,Int) -> String -> String
 generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
-             "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " Directory Listing\n",
+             "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " directory\n",
              "author: 'N/A'\n",
              "description: 'Annotated bibliography for the tag-directory /" ++ d ++ ", most recent first." ++
               " " ++ show directoryN ++ " related tags, " ++ show annotationN ++ " annotations, " ++ show linkN ++ " links.'\n",

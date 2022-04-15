@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-14 11:37:25 gwern"
+When:  Time-stamp: "2022-04-14 22:51:40 gwern"
 License: CC-0
 -}
 
@@ -16,14 +16,13 @@ License: CC-0
 {-# LANGUAGE OverloadedStrings, DeriveGeneric #-}
 module LinkMetadata (isLocalLinkWalk, isLocalPath, readLinkMetadata, readLinkMetadataAndCheck, walkAndUpdateLinkMetadata, updateGwernEntries, writeAnnotationFragments, Metadata, MetadataItem, MetadataList, readYaml, readYamlFast, writeYaml, annotateLink, createAnnotations, hasAnnotation, parseRawBlock,  generateID, generateAnnotationBlock, getSimilarLink, authorsToCite, authorsTruncate, safeHtmlWriterOptions, cleanAbstractsHTML, tagsToLinksSpan, sortItemDate, sortItemPathDate, warnParagraphizeYAML, abbreviateTag, simplifiedHTMLString) where
 
-import Control.Concurrent (forkIO)
 import Control.Monad (unless, void, when, forM_)
 import Data.Aeson (eitherDecode, FromJSON)
 import Data.Char (isAlpha, isAlphaNum, isPunctuation, isSpace, toLower)
 import qualified Data.ByteString as B (appendFile, readFile, intercalate, split, ByteString)
 import qualified Data.ByteString.Lazy as BL (length)
 import qualified Data.ByteString.Lazy.UTF8 as U (toString) -- TODO: why doesn't using U.toString fix the Unicode problems?
-import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, toList, lookup, map, traverseWithKey, union, Map)
+import qualified Data.Map.Strict as M (elems, filter, filterWithKey, fromList, toList, lookup, map, union, Map) -- traverseWithKey, union, Map
 import qualified Data.Text as T (append, breakOnAll, pack, unpack, Text)
 import Data.Containers.ListUtils (nubOrd)
 import Data.IORef (IORef)
@@ -41,7 +40,7 @@ import System.Directory (doesFileExist, doesDirectoryExist)
 import System.Exit (ExitCode(ExitFailure))
 import System.FilePath (takeDirectory, takeExtension, takeFileName)
 import System.GlobalLock (lock)
-import Text.HTML.TagSoup -- (isTagCloseName, isTagOpenName, parseTags, Tag(TagOpen, TagText))
+import Text.HTML.TagSoup (isTagCloseName, isTagOpenName, parseTags, renderOptions, renderTags, renderTagsOptions, Tag(TagClose, TagOpen, TagText))
 import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inline(Link, Span), HTMLMathMethod(MathJax),
                     defaultMathJaxURL, def, readLaTeX, readMarkdown, writeHtml5String, WrapOption(WrapNone), runPure, pandocExtensions,
                     readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
@@ -57,7 +56,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase', invertImage)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
-import LinkBacklink
+import LinkBacklink (getSimilarLink, getBackLink, readBacklinksDB, Backlinks)
 import Query (extractURLs, truncateTOCHTML)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified)
 
@@ -103,7 +102,7 @@ walkAndUpdateLinkMetadata f = do [custom,partial,auto] <- mapM (readYaml) ["meta
 updateGwernEntries :: IO ()
 updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x
+        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) || not ("index"`isInfixOf` path) then return x
             else do printGreen path
                     newEntry <- gwern path
                     case newEntry of
@@ -224,7 +223,7 @@ minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Bool -> IO ()
-writeAnnotationFragments am md archived = void $! M.traverseWithKey (\p mi -> void $! forkIO $! writeAnnotationFragment am md archived p mi) md
+writeAnnotationFragments am md archived = Par.mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Bool -> Path -> MetadataItem -> IO ()
 writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $!
                                           do let u' = linkCanonicalize u
@@ -301,7 +300,7 @@ annotateLink md target
                        Right y@(f,m@(_,_,_,_,_,e)) -> do
                                        when (e=="") $ printGreen (f ++ ": " ++ show target ++ ": " ++ show y)
                                        -- return true because we *did* change the database & need to rebuild:
-                                       forkIO (appendLinkMetadata target'' m) >> return True
+                                       appendLinkMetadata target'' m >> return True
 
 -- walk the page, and modify each URL to specify if it has an annotation available or not:
 hasAnnotation :: Metadata -> Bool -> Block -> Block
@@ -323,7 +322,7 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                  | not idBool = ""
                  | a == ""    = generateID (T.unpack f) aut dt
                  | otherwise  = a
-               f' = linkCanonicalize $ T.unpack f
+               -- f' = linkCanonicalize $ T.unpack f
                -- we would like to set the tooltip title too if omitted, for the non-JS users and non-human users who may not read the data-* attributes:
                g'
                  | g/="" = g
@@ -334,12 +333,12 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
            in -- erase link ID?
               if (length abstrct < minimumAnnotationLength) && not forcep then (Link (a',b,c) e (f,g')) -- always add the ID if possible
               else
-                -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
-                -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
-                -- so we check for directory-tags and force them to not popup.
-                if "/docs/"`isPrefixOf`f' && "/index"`isSuffixOf` f' then
-                  Link (a', nubOrd (b++["docMetadataNot"]), c) e (f,g')
-                else
+                -- -- for directory-tags, we can write a header like '/docs/bitcoin/nashx/index' as an annotation,
+                -- -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
+                -- -- so we check for directory-tags and force them to not popup.
+                -- if "/docs/"`isPrefixOf`f' && "/index"`isSuffixOf` f' then
+                --   Link (a', nubOrd (b++["docMetadataNot"]), c) e (f,g')
+                -- else
                   Link (a', nubOrd (b++["docMetadata"]), c) e (f,g')
           addHasAnnotation _ _ z _ = z
 
@@ -425,7 +424,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-local", "link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index#top-tag", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadataNot"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
@@ -1596,7 +1595,7 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "index.html" `isInfixOf` p  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
+        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
         | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
@@ -1657,7 +1656,7 @@ gwernTOC footnotesP p' f =
                        (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
                               replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
                               replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
-                              (if '#'`elem`p' then \t -> "<div class=\"columns\" class=\"TOC\">" ++ truncateTOC p' t ++ "</div>" else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
+                              (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies
                               replace " id=\"TOC\"" "" $
                                renderTagsOptions renderOptions  ([TagOpen "div" [("class","columns")]] ++
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
