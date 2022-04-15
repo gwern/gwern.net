@@ -1438,7 +1438,7 @@ Popups = {
 	//	Called by: Popups.spawnPopup
 	//	Called by: Popups.despawnPopup
 	clearWaitCursorForTarget: (target) => {
-		GWLog("Popups.clearWaitCursorForTarget", "popups.js", 1);
+		GWLog("Popups.clearWaitCursorForTarget", "popups.js", 3);
 
 		document.documentElement.style.cursor = "";
 		target.style.cursor = "";
