@@ -219,8 +219,10 @@ generateMatches md p abst matches =
 
              similarItems = filter (not . null) $ map (generateItem md) matchesPruned
              googleScholar = case M.lookup p md of
-               Nothing -> []
-               Just ("",_,_,"",_,_) -> []
+               Nothing             -> []
+               -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
+               Just ("",_,_,_,_,_) -> []
+               Just (_,_,_,_,_,"") -> []
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = "%22" ++ title' ++ "%22"
