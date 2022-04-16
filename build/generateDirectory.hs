@@ -25,6 +25,7 @@ import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
 
+import Interwiki (inlinesToString)
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractImages)
@@ -79,9 +80,12 @@ generateDirectory mta dir'' = do
   let titledLinksSections   = generateSections titledLinks
   let untitledLinksSection  = generateListItems untitledLinks
 
-  let thumbnail = let image = take 1 $ extractImages (Pandoc nullMeta titledLinksSections) in
-                    if null image then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head image)) ++ "\n"
-  let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks) thumbnail
+  -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
+  let imageFirst = take 1 $ extractImages (Pandoc nullMeta titledLinksSections)
+  let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
+  let thumbnailText = if null imageFirst then "" else "thumbnailText: '" ++ T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToString caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst)) ++ "'\n"
+
+  let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren
   let directorySectionSeeAlsos = if null dirsSeeAlsos then [] else generateDirectoryItems Nothing dir'' dirsSeeAlsos
 
