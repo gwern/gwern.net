@@ -62,7 +62,7 @@ else
 
     bold "Compiling…"
     cd ./static/build
-    compile () { TMPDIR="$(mktemp --directory)/"; ghc -O2 -fforce-recomp -tmpdir "$TMPDIR" -Wall -rtsopts -threaded --make "$@"; rm -rf "$TMPDIR"; }
+    compile () { ghc -O2  -Wall -rtsopts -threaded --make "$@"; }
     compile hakyll.hs
     compile generateLinkBibliography.hs
     compile generateDirectory.hs
