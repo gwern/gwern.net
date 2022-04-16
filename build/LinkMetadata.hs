@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-15 11:30:04 gwern"
+When:  Time-stamp: "2022-04-15 23:00:29 gwern"
 License: CC-0
 -}
 
@@ -225,7 +225,7 @@ minimumAnnotationLength :: Int
 minimumAnnotationLength = 200
 
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Bool -> IO ()
-writeAnnotationFragments am md archived = Par.mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
+writeAnnotationFragments am md archived = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Bool -> Path -> MetadataItem -> IO ()
 writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $!
                                           do let u' = linkCanonicalize u
@@ -273,7 +273,7 @@ createAnnotations md (Pandoc _ markdown) = mapM_ (annotateLink md . T.unpack) $ 
 
 annotateLink :: Metadata -> String -> IO Bool
 annotateLink md target
-  | "/metadata/" `isPrefixOf` target = return False
+  | "/metadata/" `isPrefixOf` target || "#" `isPrefixOf` target || "$" `isPrefixOf` target || "!" `isPrefixOf` target || "\8383" `isPrefixOf` target = return False
   | otherwise =
   do when (null target) $ error (show target)
      when ((reverse $ take 3 $ reverse target) == "%20" || last target == ' ') $ error $ "URL ends in space? " ++ target
@@ -1619,7 +1619,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
-                        let thumbnailText = if not (any filterThumbnailText metas) then "Default gwern.net thumbnail logo (Gothic G icon)." else
+                        let thumbnailText = if not (any filterThumbnailText metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
@@ -1631,11 +1631,11 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
                         let toc = gwernTOC footnotesP p' f
 
-                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isInfixOf` p') p' description keywords' toc f
+                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description keywords' toc f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
 
                         if gabstract == "404 Not Found Error: no page by this name!" then return (Left Temporary)
-                          else -- if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
+                          else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
                                  return $ Right (p, (title', author, date, doi, [], thumbnailFigure++gabstract))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
@@ -1682,7 +1682,7 @@ gwernAbstract shortAllowed p' description keywords toc f =
       abstrct'  = if length description > length abstrct then description else abstrct
       abstrct'' = (if take 3 abstrct' == "<p>" || take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-  in if shortAllowed then (t,abstrct''') else if null abstrct || length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
+  in if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
