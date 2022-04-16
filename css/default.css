@@ -723,6 +723,11 @@ figure video,
 figure audio {
     outline: 1px solid var(--GW-figure-outline-color);
 }
+figure.no-outline img,
+figure.no-outline video,
+figure.no-outline audio {
+	outline: none;
+}
 /* WARNING: work around Chrome layout bug */
 figure audio {
     display: block;
