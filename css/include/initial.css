@@ -936,12 +936,14 @@ p {
     margin: 0;
 }
 p + p,
-p + figure[class^='float-'] + p {
+p + figure[class^='float-'] + p,
+div[class^='drop-cap-'] + p {
     text-indent: 2.5em;
 }
 @media only screen and (max-width: 649px) {
     p + p,
-	p + figure[class^='float-'] + p {
+	p + figure[class^='float-'] + p,
+	div[class^='drop-cap-'] + p {
         text-indent: 1.75em;
     }
 }
