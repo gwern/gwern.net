@@ -2073,6 +2073,18 @@ function GWStopWatch(f, ...args) {
     return rval;
 }
 
+/*******************/
+/* ERROR REPORTING */
+/*******************/
+
+/*	Reports an error by sending an XMLHTTPRequest to the 404 page, suffixed
+	with some error string (which gets automatically URL-encoded).
+ */
+function GWServerLogError(errorString, errorType) {
+	doAjax({ location: `$${location.origin}/static/404.html-error-` + fixedEncodeURIComponent(errorString) });
+	GWLog(`Reporting $${(errorType || "error")}:  errorString`, "error reporting", 1);
+}
+
 /***********/
 /* HELPERS */
 /***********/

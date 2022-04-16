@@ -1239,17 +1239,7 @@ function reportBrokenAnchorLink(link) {
 	if (link.hash == "")
 		return;
 
-	let brokenHashLogRequestURL = new URL(  "https://"
-										  + location.hostname
-										  + "/static/404.html"
-										  + "-error-"
-										  + fixedEncodeURIComponent(link.pathname)
-										  + "--"
-										  + fixedEncodeURIComponent(link.hash.substr(1)));
-
-	GWLog("Reporting broken hash-anchor: " + brokenHashLogRequestURL, "rewrite.js", 1);
-
-	doAjax({ location: brokenHashLogRequestURL });
+	GWServerLogError(fixedEncodeURIComponent(link.pathname) + "--" + fixedEncodeURIComponent(link.hash.substr(1)), "broken hash-anchor");
 }
 
 function brokenAnchorCheck() {
