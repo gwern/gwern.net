@@ -59,6 +59,10 @@ function imageFocusSetup() {
 		if (image.closest("a, button"))
 			return;
 
+		//	NOTE: unlike the above, this one is probably not a temporary hack
+		if (image.closest("figure.no-image-focus"))
+			return;
+
 		image.addEventListener("click", GW.imageClickedToFocus);
 	});
 
