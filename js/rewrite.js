@@ -542,6 +542,34 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 }, { phase: "eventListeners" });
 
 
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+/***************************************************************************/
+/*	Strip spurious <span> tags (unavoidably added by Pandoc) from TOC links.
+ */
+function stripTOCLinkSpans(loadEventInfo) {
+    GWLog("stripTOCLinkSpans", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".TOC li a span:not([class])").forEach(spuriousSpan => {
+		spuriousSpan.outerHTML = spuriousSpan.innerHTML;
+	});
+}
+
+/*************************************************************/
+/*  Add content load handler for processing table of contents.
+ */
+GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processTOC = (info) => {
+    GWLog("GW.rewriteFunctions.processTOC", "rewrite.js", 2);
+
+    stripTOCLinkSpans(info);
+}, {
+	phase: "rewrite",
+	condition: (info) => (info.needsRewrite)
+});
+
+
 /*************/
 /* FOOTNOTES */
 /*************/
@@ -712,7 +740,7 @@ function injectFootnotesTOCLink(loadEventInfo) {
     let TOCList = loadEventInfo.document.querySelector("#TOC > ul");
     if (   TOCList
     	&& footnotesSection)
-        TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes"><span>Footnotes</span></a></li>\n`);
+        TOCList.insertAdjacentHTML("beforeend", `<li><a href="#footnotes">Footnotes</a></li>\n`);
 }
 
 /**************************************************************/
