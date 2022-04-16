@@ -213,7 +213,7 @@ Annotations = {
 						Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
                 	} else {
 						//	Send request to record failure in server logs.
-						doAjax({ location: `${location.origin}/error/` + fixedEncodeURIComponent(annotationURL) });
+						doAjax({ location: `${location.origin}/static/404.html-error-` + fixedEncodeURIComponent(annotationURL) + `--could-not-process` });
                 	}
                 } else {
                     annotation = Annotations.stageAnnotation(event.target.responseText);
@@ -249,7 +249,7 @@ Annotations = {
                 });
 
 				//	Send request to record failure in server logs.
-				doAjax({ location: `${location.origin}/error/` + fixedEncodeURIComponent(annotationURL) });
+				doAjax({ location: `${location.origin}/static/404.html-error-` + fixedEncodeURIComponent(annotationURL) });
             }
         });
     },
