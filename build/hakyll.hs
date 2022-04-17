@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-16 22:19:40 gwern"
+When: Time-stamp: "2022-04-16 23:38:02 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -304,22 +304,24 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
   if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) then return x else
   do let ext = takeExtension $ T.unpack target
      let target' = replace "%2F" "/" $ T.unpack target
-     (_,w) <- imageMagickDimensions $ tail target'
-     if (read w :: Int) <= 768 then return x else do
-         let smallerPath = (tail target')++"-768px"++ext
-         notExist <- fmap not $ doesFileExist smallerPath
-         when notExist $ do
-           (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
-           case status of
-             ExitFailure _ -> error $ show status ++ show bs
-             _ -> do if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
-                         void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
-                       else
-                         void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
-                     void $ printGreen ("Created smaller image: " ++ smallerPath)
-         let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
-         return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
-                        inlines (target, title)
+     exists <- doesFileExist target'
+     if not exists then printRed ("imageSrcset: " ++ show x ++ " does not exist?") >> return x else
+      do (_,w) <- imageMagickDimensions $ tail target'
+         if w=="" || (read w :: Int) <= 768 then return x else do
+             let smallerPath = (tail target')++"-768px"++ext
+             notExist <- fmap not $ doesFileExist smallerPath
+             when notExist $ do
+               (status,_,bs) <-  runShellCommand "./" Nothing "convert" [tail target', "-resize", "768x768", smallerPath]
+               case status of
+                 ExitFailure _ -> error $ show status ++ show bs
+                 _ -> do if ext == ".png" then -- lossily optimize using my pngnq/mozjpeg scripts:
+                             void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/png" [smallerPath]
+                           else
+                             void $ runShellCommand "./" Nothing "/home/gwern/bin/bin/compressJPG" [smallerPath]
+                         void $ printGreen ("Created smaller image: " ++ smallerPath)
+             let srcset = T.pack ("/"++smallerPath++" 768w, " ++ target'++" "++w++"w")
+             return $ Image (c, t, pairs++[("srcset", srcset), ("sizes", T.pack ("(max-width: 768px) 100vw, "++w++"px"))])
+                            inlines (target, title)
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) &&
                                                           ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
