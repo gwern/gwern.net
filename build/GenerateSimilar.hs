@@ -223,12 +223,12 @@ generateMatches md p abst matches =
              googleScholar = case M.lookup p md of
                Nothing             -> []
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
-               Just ("",_,_,_,_,_) -> []
-               Just (_,_,_,_,_,"") -> []
+               Just ("",_,_,_,_,_)  -> []
+               Just (_,_,_,_,_,"")  -> []
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = "%22" ++ title' ++ "%22"
-                                               query = if null title' then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
+                                               query = if null title' && not (null doi) then doiQuery else if null doi && not (null title) then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
                                                linkMetadataG  = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                                linkMetadataCP = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
@@ -237,7 +237,7 @@ generateMatches md p abst matches =
                                               [Strong [Str "Search"], Str ": ",
                                                 Link linkMetadataGS
                                                 [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
-                                                             T.pack ("Reverse citations of this paper (‘" ++ title' ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar"))]
+                                                             T.pack ("Reverse citations of this paper in Google Scholar"))]
                                                ++
                                                if null doi then [] else [Str "; ",
                                                                           Link linkMetadataCP
