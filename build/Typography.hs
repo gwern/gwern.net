@@ -22,6 +22,7 @@ import System.Directory (doesFileExist, getModificationTime, removeFile)
 import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
 import qualified Data.Text as T (any, isSuffixOf, pack, unpack, replace, Text)
+import Text.Read (readMaybe)
 import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
 import Text.Regex (subRegex, mkRegex)
 import System.IO (stderr, hPrint)
@@ -37,7 +38,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
-import Utils (addClass)
+import Utils (addClass, printRed)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = walk (linkLive . linkIcon) .
@@ -176,9 +177,11 @@ invertImagePreview f = do utcFile <- getModificationTime f
 imageMagickColor :: FilePath -> FilePath -> IO Float
 imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
                            case status of
-                             ExitFailure err ->  putStrLn (f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
-                             _ -> do let color = read (take 4 $ unpack bs) :: Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
-                                     return color
+                             ExitFailure err ->  printRed (f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
+                             _ -> do let color = readMaybe (take 4 $ unpack bs) :: Maybe Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
+                                     case color of
+                                       Nothing -> printRed (f ++ " : ImageMagick color read error: " ++ show (unpack bs) ++ " " ++ f') >> return 1.0
+                                       Just c -> return c
 
 -- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions
 -- Note that for animated GIFs, 'identify' returns width/height for each frame of the GIF, which in
