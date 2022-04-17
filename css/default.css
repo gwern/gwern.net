@@ -2944,7 +2944,7 @@ body.directory-index #disqus_thread {
 	 */
 	clear: both;
 	display: inline-block;
-	width: 100%;
+	width: calc(100% - 1em);	/* Subtract side padding. */
 }
 
 .popframe .TOC > ul {
