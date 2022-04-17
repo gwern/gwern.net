@@ -75,7 +75,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let callerTitles = map (\u -> case M.lookup (T.unpack u) md of
                                                                       Nothing -> if T.head u == '/' then T.tail u else u
                                                                       Just ("",_,_,_,_,_) -> if T.head u == '/' then T.tail u else u
-                                                                      Just (t,_,_,_,_,_) -> T.pack $ "“"++t++"”")
+                                                                      Just (t,_,_,_,_,_) -> T.pack t)
                                                           callers
                                        let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["docMetadata"]) callers
                                        let callers' = zip3 callers callerClasses callerTitles

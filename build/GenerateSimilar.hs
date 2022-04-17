@@ -239,11 +239,11 @@ generateMatches md p abst matches =
                                                 [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
                                                              T.pack ("Reverse citations of this paper in Google Scholar"))]
                                                ++
-                                               if null doi then [] else [Str "; ",
+                                               (if null doi then [] else [Str "; ",
                                                                           Link linkMetadataCP
                                                                           [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doi),
                                                                                       T.pack ("Connected Papers lookup for DOI ‘" ++ doi ++ "’.")),
-                                                                         Str "; "]
+                                                                         Str "; "])
                                                ++
                                                [Link linkMetadataG
                                                  [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),
@@ -273,5 +273,5 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                     [Para
                                       [Link ("", ["docMetadata", "backlinksNot", "idNot"], [("embeddingDistance", T.pack $ take 7 $ show distance)] ++
                                               if null tags then [] else [("linkTags", T.pack $ unwords tags) ]
-                                            ) [RawInline (Format "html") $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
+                                            ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
