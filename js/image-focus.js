@@ -68,6 +68,10 @@ function imageFocusSetup() {
 
 	//  Wrap all images in figures in a span.
 	document.querySelectorAll("figure img").forEach(image => {
+		//	NOTE: unlike the above, this one is probably not a temporary hack
+		if (image.closest("figure.no-image-focus"))
+			return;
+
 		let imageContainer = image.parentElement;
 
 		let wrapper = document.createElement("span");
