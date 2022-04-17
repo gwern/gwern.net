@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-15 23:00:29 gwern"
+When:  Time-stamp: "2022-04-17 09:47:24 gwern"
 License: CC-0
 -}
 
@@ -632,7 +632,7 @@ tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
 tag2Default :: String -> String
-tag2Default path = if "/docs/" `isPrefixOf` path then replace "/docs/" "" $ takeDirectory path else ""
+tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` path && "/index" `isSuffixOf` path) then replace "/docs/" "" $ takeDirectory path else ""
 
 -- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
