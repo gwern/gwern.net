@@ -154,10 +154,12 @@ invertImage f | "https://www.gwern.net/" `isPrefixOf` f = invertImageLocal $ Dat
 
 invertImageLocal :: FilePath -> IO (Bool, String, String)
 invertImageLocal "" = return (False, "0", "0")
-invertImageLocal f = do c <- imageMagickColor f f
-                        (h,w) <- imageMagickDimensions f
-                        let invertp = c < invertThreshold
-                        return (invertp, h, w)
+invertImageLocal f = do does <- doesFileExist f
+                        if not does then printRed ("invertImageLocal: " ++ f ++ " " ++ "does not exist") >> return (False, "0", "0") else
+                          do c <- imageMagickColor f f
+                             (h,w) <- imageMagickDimensions f
+                             let invertp = c < invertThreshold
+                             return (invertp, h, w)
 invertThreshold :: Float
 invertThreshold = 0.09
 
@@ -177,10 +179,10 @@ invertImagePreview f = do utcFile <- getModificationTime f
 imageMagickColor :: FilePath -> FilePath -> IO Float
 imageMagickColor f f' = do (status,_,bs) <- runShellCommand "./" Nothing "convert" [f', "-colorspace", "HSL", "-channel", "g", "-separate", "+channel", "-format", "%[fx:mean]", "info:"]
                            case status of
-                             ExitFailure err ->  printRed (f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
+                             ExitFailure err ->  printRed ("imageMagickColor: " ++ f ++ " : ImageMagick color read error: " ++ show err ++ " " ++ f') >> return 1.0
                              _ -> do let color = readMaybe (take 4 $ unpack bs) :: Maybe Float -- WARNING: for GIFs, ImageMagick returns the mean for each frame; 'take 4' should give us the first frame, more or less
                                      case color of
-                                       Nothing -> printRed (f ++ " : ImageMagick color read error: " ++ show (unpack bs) ++ " " ++ f') >> return 1.0
+                                       Nothing -> printRed ("imageMagickColor: " ++ f ++ " : ImageMagick parsing error: " ++ show (unpack bs) ++ " " ++ f') >> return 1.0
                                        Just c -> return c
 
 -- | Use FileStore utility to run imageMagick's 'identify', & extract the height/width dimensions

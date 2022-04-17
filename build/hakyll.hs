@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-15 21:58:04 gwern"
+When: Time-stamp: "2022-04-16 22:19:40 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -53,6 +53,7 @@ import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
                tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Tags, unsafeCompiler, noResult)
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
+import Text.Read (readMaybe)
 import Text.Pandoc.Shared (blocksToInlines)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
@@ -379,16 +380,22 @@ staticImg x@(TagOpen "img" xs) = do
     else
        do
          let p' = urlDecode $ if head p == '/' then tail p else p
-         (height,width) <- imageMagickDimensions p' `onException` (putStrLn p)
-         -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
-         -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
-         -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
-         -- No images should be more than a screen in height either, so we'll set a maximum of 1400
-         let width' =  show ((read width::Int) `min` 1400)
-         let height' = show ((read height::Int) `min` 1400)
-         return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load & async render all images
-                                        ("decoding", "async"),
-                                        ("height", height'), ("width", width')]++xs)))
+         exists <- doesFileExist p'
+         if not exists then printRed ("staticImg: File does not exist: " ++ p') >> return x else
+          do (height,width) <- imageMagickDimensions p' `onException` (putStrLn p)
+             -- body max-width is 1600 px, sidebar is 150px, so any image wider than ~1400px
+             -- will wind up being reflowed by the 'img { max-width: 100%; }' responsive-image CSS declaration;
+             -- let's avoid that specific case by lying about its width, although this doesn't fix all the reflowing.
+             -- No images should be more than a screen in height either, so we'll set a maximum of 1400
+             let width' =  readMaybe width  ::Maybe Int
+             let height' = readMaybe height ::Maybe Int
+             case width' of
+                Nothing       -> printRed ("staticImg: Image width can't be read: " ++ show x) >> return x
+                Just width'' -> case height' of
+                                 Nothing       -> printRed ("staticImg: Image height can't be read: " ++ show x) >> return x
+                                 Just height'' -> return (TagOpen "img" (uniq ([("loading", "lazy"), -- lazy load & async render all images
+                                                                                ("decoding", "async"),
+                                                                                ("height", show (height'' `min` 1400)), ("width", show (width'' `min` 1400))]++xs)))
       else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
