@@ -206,6 +206,8 @@ writeOutMatch :: Metadata -> (String, [(String,Double)]) -> IO ()
 writeOutMatch md (p,matches) =
   do case M.lookup p md of
        Nothing -> return ()
+       Just (_,_,_,_,_,"") -> return ()
+       Just ("",_,_,_,_,_) -> return ()
        Just (_,_,_,_,_,abst) -> do
              let similarLinksHtmlFragment = generateMatches md p abst matches
              let f = take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
