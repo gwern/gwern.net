@@ -3041,6 +3041,15 @@ body.directory-index #disqus_thread {
 /*= POP-FRAME TYPES =*/
 /*=-----------------=*/
 
+/*┌──────────────────────┐*/
+/*│ Aux-link pop-frames. │*/
+/*└──────────────────────┘*/
+
+.popframe.backlinks .columns ul {
+	margin: 0.75em 0 1em 0;
+	padding: 0 0 0 1.75em;
+}
+
 /*┌────────────────────────┐*/
 /*│ Annotation pop-frames. │*/
 /*└────────────────────────┘*/
