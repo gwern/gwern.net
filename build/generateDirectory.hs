@@ -132,7 +132,7 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
   = concat [ "---\n",
              "title: " ++ T.unpack (abbreviateTag (T.pack (replace "docs/" "" (init d)))) ++ " directory\n",
              "author: 'N/A'\n",
-             "description: 'Annotated bibliography for the tag-directory /" ++ d ++ ", most recent first." ++
+             "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first." ++
               " " ++ show directoryN ++ " related tags, " ++ show annotationN ++ " annotations, " ++ show linkN ++ " links.'\n",
              thumbnail,
              "tags: index\n",
