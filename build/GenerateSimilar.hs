@@ -200,12 +200,12 @@ findN f 20 $ head edb
 -}
 
 similaritemExistsP :: String -> IO Bool
-similaritemExistsP p =  doesFileExist $ take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
+similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
 
 writeOutMatch :: Metadata -> (String, [(String,Double)]) -> IO ()
 writeOutMatch md (p,matches) =
   do case M.lookup p md of
-       Nothing -> return ()
+       Nothing             -> return ()
        Just (_,_,_,_,_,"") -> return ()
        Just ("",_,_,_,_,_) -> return ()
        Just (_,_,_,_,_,abst) -> do
@@ -267,6 +267,8 @@ generateMatches md p abst matches =
 generateItem :: Metadata -> (String,Double) -> [Block]
 generateItem md (p2,distance) = case M.lookup p2 md of
                                   Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
+                                  Just ("",_,_,_,_,_) -> []
+                                  Just (_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,tags,_) ->
                                     [Para
                                       [Link ("", ["docMetadata", "backlinksNot", "idNot"], [("embeddingDistance", T.pack $ take 7 $ show distance)] ++
