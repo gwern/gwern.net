@@ -2937,6 +2937,14 @@ body.directory-index #disqus_thread {
 .popframe .TOC {
 	margin: 1.25em 0 0 0;
 	padding: 0.5em 0.5em 0.5em 0.75em;
+
+	/*	The following three properties are to prevent both overlap and 
+		margin-collapse of the TOC when there’s a floated thumbnail figure
+		that juts down below the abstract text.
+	 */
+	clear: both;
+	display: inline-block;
+	width: 100%;
 }
 
 .popframe .TOC > ul {
