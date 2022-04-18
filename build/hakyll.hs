@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-16 23:38:02 gwern"
+When: Time-stamp: "2022-04-17 12:18:25 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -304,7 +304,7 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
   if not (".png" `T.isSuffixOf` target || ".jpg" `T.isSuffixOf` target) then return x else
   do let ext = takeExtension $ T.unpack target
      let target' = replace "%2F" "/" $ T.unpack target
-     exists <- doesFileExist target'
+     exists <- doesFileExist $ tail $ T.unpack target
      if not exists then printRed ("imageSrcset: " ++ show x ++ " does not exist?") >> return x else
       do (_,w) <- imageMagickDimensions $ tail target'
          if w=="" || (read w :: Int) <= 768 then return x else do

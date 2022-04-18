@@ -157,7 +157,7 @@ else
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
-    tidyUpFragment () { tidy -indent -wrap 180 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes -modify "$@" || true; }
+    tidyUpFragment () { tidy -indent -wrap 9999 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes -modify "$@" || true; }
     ## tidy wants to dump whole well-formed HTML pages, not fragments to transclude, so switch.
     tidyUpWhole () {    tidy -indent -wrap 180 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
     export -f tidyUpFragment tidyUpWhole
@@ -421,7 +421,7 @@ else
     ## Randomize sync type—usually, fast, but occasionally do a regular slow hash-based rsync which deletes old files:
     bold "Syncing everything else…"
     SPEED=""; if ((RANDOM % 100 < 99)); then SPEED="--size-only"; else SPEED="--delete --checksum"; fi;
-    rsync --exclude=".*" --chmod='a+r' --recursive $SPEED --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
+    rsync --exclude=".*" --chmod='a+r' --recursive --delete --checksum --copy-links --verbose --itemize-changes --stats ./_site/  gwern@176.9.41.242:"/home/gwern/gwern.net"
     set +e
 
     bold "Expiring ≤100 updated files…"

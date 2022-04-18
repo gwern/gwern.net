@@ -200,12 +200,12 @@ findN f 20 $ head edb
 -}
 
 similaritemExistsP :: String -> IO Bool
-similaritemExistsP p =  doesFileExist $ take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
+similaritemExistsP p = doesFileExist $ take 274 $ "metadata/annotations/similars/" ++ urlEncode p ++ ".html"
 
 writeOutMatch :: Metadata -> (String, [(String,Double)]) -> IO ()
 writeOutMatch md (p,matches) =
   do case M.lookup p md of
-       Nothing -> return ()
+       Nothing             -> return ()
        Just (_,_,_,_,_,"") -> return ()
        Just ("",_,_,_,_,_) -> return ()
        Just (_,_,_,_,_,abst) -> do
@@ -223,12 +223,12 @@ generateMatches md p abst matches =
              googleScholar = case M.lookup p md of
                Nothing             -> []
                -- We require a title, to display as a link; and an abstract, to make it worth recommending (if it has no abstract, the embedding will also probably be garbage):
-               Just ("",_,_,_,_,_) -> []
-               Just (_,_,_,_,_,"") -> []
+               Just ("",_,_,_,_,_)  -> []
+               Just (_,_,_,_,_,"")  -> []
                Just (title,_,_,doi,_,_) -> let doiQuery = "doi:" ++ doi
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = "%22" ++ title' ++ "%22"
-                                               query = if null title' then doiQuery else if null doi then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
+                                               query = if null title' && not (null doi) then doiQuery else if null doi && not (null title) then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
                                                linkMetadataG  = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
                                                linkMetadataGS = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
                                                linkMetadataCP = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
@@ -237,13 +237,13 @@ generateMatches md p abst matches =
                                               [Strong [Str "Search"], Str ": ",
                                                 Link linkMetadataGS
                                                 [Str "GS"] (T.pack ("https://scholar.google.com/scholar?q=" ++ query),
-                                                             T.pack ("Reverse citations of this paper (‘" ++ title' ++ "’), with DOI ‘" ++ doi ++ "’, in Google Scholar"))]
+                                                             T.pack ("Reverse citations of this paper in Google Scholar")),
+                                              Str "; "]
                                                ++
-                                               if null doi then [] else [Str "; ",
-                                                                          Link linkMetadataCP
+                                               (if null doi then [] else [Link linkMetadataCP
                                                                           [Str "CP"] (T.pack ("https://www.connectedpapers.com/api/redirect/doi/" ++ doi),
                                                                                       T.pack ("Connected Papers lookup for DOI ‘" ++ doi ++ "’.")),
-                                                                         Str "; "]
+                                                                         Str "; "])
                                                ++
                                                [Link linkMetadataG
                                                  [Str "Google"] (T.pack ("https://www.google.com/search?q=" ++ titleQuery),
@@ -267,9 +267,11 @@ generateMatches md p abst matches =
 generateItem :: Metadata -> (String,Double) -> [Block]
 generateItem md (p2,distance) = case M.lookup p2 md of
                                   Nothing -> [] -- This shouldn't be possible. All entries in the embedding database should've had a defined annotation as a prerequisite. But file renames might cause trouble so we ignore mismatches.
+                                  Just ("",_,_,_,_,_) -> []
+                                  Just (_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,tags,_) ->
                                     [Para
                                       [Link ("", ["docMetadata", "backlinksNot", "idNot"], [("embeddingDistance", T.pack $ take 7 $ show distance)] ++
                                               if null tags then [] else [("linkTags", T.pack $ unwords tags) ]
-                                            ) [RawInline (Format "html") $ T.pack $ "“"++t++"”"] (T.pack p2,"")]
+                                            ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]
