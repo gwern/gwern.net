@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-18 14:58:29 gwern"
+When:  Time-stamp: "2022-04-18 16:05:01 gwern"
 License: CC-0
 -}
 
@@ -1668,7 +1668,7 @@ gwernAbstract :: Bool -> String -> String -> String -> String -> [Tag String] ->
 gwernAbstract shortAllowed p' description keywords toc f =
   let anchor  = sed ".*#" "" p'
       baseURL = sed "#.*" "" p'
-      (t,abstrct) = if not ("#" `isInfixOf` p') then ("", trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
+      (t,abstrctRw, abstrct) = if not ("#" `isInfixOf` p') then ("", takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f, trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
         -- if there is an anchor, then there may be an abstract after it which is a better annotation than the first abstract on the page.
         -- Examples of this are appendices like /Timing#reverse-salients, which have not been split out to a standalone page, but also have their own abstract which is more relevant than the top-level abstract of /Timing.
                 else let
@@ -1676,13 +1676,14 @@ gwernAbstract shortAllowed p' description keywords toc f =
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ dropWhile dropToLink beginning
                          titleClean = trim $ replaceMany [("<span>", ""), ("</span>",""), ("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
-                         restofpageAbstract = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
-                         in (titleClean, restofpageAbstract)
+                         abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
+                         restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
+                         in (titleClean, abstractRaw, restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
       abstrct'' = (if take 3 abstrct' == "<p>" || take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-  in if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
+  in if "abstractNot" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
