@@ -157,9 +157,10 @@ else
 
     bold "Reformatting HTML sources to look nicer using HTML Tidy…"
     # WARNING: HTML Tidy breaks the static-compiled MathJax. One of Tidy's passes breaks the mjpage-generated CSS (messes with 'center', among other things). So we do Tidy *before* the MathJax.
-    tidyUpFragment () { tidy -indent -wrap 9999 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes -modify "$@" || true; }
+    # WARNING: HTML Tidy by default will wrap & add newlines for cleaner HTML in ways which don't show up in rendered HTML - *except* for when something is an 'inline-block', then the added newlines *will* show up, as excess spaces. <https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model/Whitespace#spaces_in_between_inline_and_inline-block_elements> <https://patrickbrosset.medium.com/when-does-white-space-matter-in-html-b90e8a7cdd33> And we use inline-blocks for the #page-metadata block, so naive HTML Tidy use will lead to the links in it having a clear visible prefixed space. We disable wrapping entirely by setting `-wrap 0` to avoid that.
+    tidyUpFragment () { tidy -indent -wrap 0 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only yes -modify "$@" || true; }
     ## tidy wants to dump whole well-formed HTML pages, not fragments to transclude, so switch.
-    tidyUpWhole () {    tidy -indent -wrap 180 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
+    tidyUpWhole () {    tidy -indent -wrap 0 --clean yes --break-before-br yes --logical-emphasis yes -quiet --show-warnings no --show-body-only no  -modify "$@" || true; }
     export -f tidyUpFragment tidyUpWhole
     find ./metadata/annotations/ -maxdepth 1 -type f -name "*.html" |  parallel --max-args=250 tidyUpFragment
     find ./ -path ./_site -prune -type f -o -name "*.page" | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | fgrep -v -e '#' -e 'Death-Note-script' | parallel --max-args=250 tidyUpWhole
@@ -331,9 +332,12 @@ else
     λ(){ egrep --color=always -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
     wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
 
-    λ(){ egrep --color=always -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st'  -- ./metadata/*.yaml | \
+    λ(){ egrep --color=always -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.yaml | \
              fgrep -v -e '%' -e figure -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
-    wrap λ "Missing superscripts in YAML metadata database"
+    wrap λ "Missing superscript abbreviations in YAML metadata database"
+
+    λ(){ egrep --color=always -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
+    wrap λ "Superscript abbreviations are weirdly capitalized?"
 
     λ(){ egrep --color=always -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"

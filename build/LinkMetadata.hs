@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-17 09:47:24 gwern"
+When:  Time-stamp: "2022-04-18 16:24:20 gwern"
 License: CC-0
 -}
 
@@ -104,12 +104,12 @@ walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file
 updateGwernEntries :: IO ()
 updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x --  || not ("index"`isInfixOf` path)
+        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) || not ("index"`isInfixOf` path) then return x -- || not ("index"`isInfixOf` path)
             else do printGreen path
                     newEntry <- gwern path
                     case newEntry of
                       Left _ -> return x
-                      Right (path', (title',author',date',doi',_,abstract')) -> return (path', (title',author',date',doi',tags,abstract'))
+                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',[],abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -131,7 +131,7 @@ readLinkMetadataAndCheck = do
              -- requirements:
              -- - URLs/keys must exist, be unique, and either be a remote URL (starting with 'h') or a local filepath (starting with '/') which exists on disk (auto.yaml may have stale entries, but custom.yaml should never! This indicates a stale annotation, possibly due to a renamed or accidentally-missing file, which means the annotation can never be used and the true URL/filepath will be missing the hard-earned annotation). We strip http/https because so many websites now redirect and that's an easy way for duplicate annotations to exist.
              -- - titles must exist & be unique (overlapping annotations to pages are disambiguated by adding the section title or some other description)
-             -- - authors must exist (if only as 'Anonymous'), but are non-unique
+             -- - authors must exist (if only as 'Anonymous' or 'N/A'), but are non-unique
              -- - dates are non-unique & optional/NA for always-updated things like Wikipedia. If they exist, they should be of the format 'YYY[-MM[-DD]]'.
              -- - DOIs are optional since they usually don't exist, and non-unique (there might be annotations for separate pages/anchors for the same PDF and thus same DOI; DOIs don't have any equivalent of `#page=n` I am aware of unless the DOI creator chose to mint such DOIs, which they never (?) do). DOIs sometimes use hyphens and so are subject to the usual problems of em/en-dashes sneaking in by 'smart' systems screwing up.
              -- - tags are optional, but all tags should exist on-disk as a directory of the form "docs/$TAG/"
@@ -157,7 +157,7 @@ readLinkMetadataAndCheck = do
 
              let annotations = map (\(_,(_,_,_,_,_,s)) -> s) custom in when (length (uniq (sort annotations)) /= length annotations) $ error $ "Duplicate annotations in 'custom.yaml': " ++ unlines (annotations \\ nubOrd annotations)
              let emptyCheck = filter (\(u,(t,a,_,_,_,s)) ->  "" `elem` [u,t,a,s]) custom
-             unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! This should never happen: " ++ show emptyCheck
+             unless (null emptyCheck) $ error $ "Link Annotation Error: empty mandatory fields! [URL/title/author/abstract] This should never happen: " ++ show emptyCheck
 
              let balancedQuotes = filter (\(_,(_,_,_,_,_,abst)) -> let count = length $ filter (=='"') abst in
                                              count > 0 && (count `mod` 2 == 1) ) custom
@@ -627,7 +627,7 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
 tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
-                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then replace "/docs/" "" $ takeDirectory path else ""
+                                    defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
 
@@ -1573,7 +1573,7 @@ authorsToCite url author date =
            if authorCount >= 3 then
                            firstAuthorSurname ++ " et al " ++ year ++ suffix' else
                              if authorCount == 2 then
-                               let secondAuthorSurname = filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
+                               let secondAuthorSurname = filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
                                  firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
                              else
                                firstAuthorSurname ++ " " ++ year ++ suffix'
@@ -1597,7 +1597,7 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p || ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
+        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "#appendix" `isSuffixOf` p || "#conclusion" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p || ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
         | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
@@ -1619,12 +1619,12 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
-                        let thumbnailText = if not (any filterThumbnailText metas) then "" else
+                        let thumbnailText = if not (any filterThumbnailText metas) then "" else -- HACK:
                                           (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
                               let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" alt=\"" ++ thumbnailText ++ "\" /></figure> ")
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" /></figure> ")
 
                         let doi = ""
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
@@ -1668,7 +1668,7 @@ gwernAbstract :: Bool -> String -> String -> String -> String -> [Tag String] ->
 gwernAbstract shortAllowed p' description keywords toc f =
   let anchor  = sed ".*#" "" p'
       baseURL = sed "#.*" "" p'
-      (t,abstrct) = if not ("#" `isInfixOf` p') then ("", trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
+      (t,abstrctRw, abstrct) = if not ("#" `isInfixOf` p') then ("", takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f, trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
         -- if there is an anchor, then there may be an abstract after it which is a better annotation than the first abstract on the page.
         -- Examples of this are appendices like /Timing#reverse-salients, which have not been split out to a standalone page, but also have their own abstract which is more relevant than the top-level abstract of /Timing.
                 else let
@@ -1676,13 +1676,14 @@ gwernAbstract shortAllowed p' description keywords toc f =
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
                          title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ dropWhile dropToLink beginning
                          titleClean = trim $ replaceMany [("<span>", ""), ("</span>",""), ("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
-                         restofpageAbstract = trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
-                         in (titleClean, restofpageAbstract)
+                         abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
+                         restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
+                         in (titleClean, abstractRaw, restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
       abstrct'' = (if take 3 abstrct' == "<p>" || take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-  in if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
+  in if "abstractNot" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
@@ -2698,6 +2699,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("(Globicephala melas)", "(<em>Globicephala melas</em>)")
           , (" Arabidopsis thaliana", " <em>Arabidopsis thaliana</em>")
           , (" C. elegans", " <em>C. elegans</em>")
+          , (" T. gondii", " <em>T. gondii</em>")
           , ("learn-ing", "learning")
           , ("Per- formance", "Performance")
           , ("per- formance", "performance")
