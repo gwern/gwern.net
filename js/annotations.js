@@ -278,7 +278,8 @@ Annotations = {
         //  Author list.
         let authorElement = referenceEntry.querySelector(".author");
         //	Exclude “N/A”.
-        if (authorElement.textContent == "N/A")
+        if (   authorElement.textContent == "" 
+        	|| authorElement.textContent == "N/A")
         	authorElement = null;
         //	Generate comma-separated author list; truncate with “et al” @ > 3.
         let authorList;
