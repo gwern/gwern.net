@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-18 12:06:45 gwern"
+When: Time-stamp: "2022-04-18 14:43:03 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -158,6 +158,7 @@ main = hakyll $ do
                                      "static/**.ttf",
                                      "static/**.otf",
                                      "static/**.php",
+                                     "static/**.py",
                                      "**.yaml",
                                      "metadata/**",
                                      "static/build/.htaccess",
@@ -325,7 +326,7 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) &&
                                                           ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do exists <- doesFileExist $ tail $ T.unpack p
+                                                         do exists <- doesFileExist $ tail $ replace "https://www.gwern.net" "" $ T.unpack  p
                                                             if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
                                                               do (h,w) <- imageMagickDimensions $ T.unpack p
                                                                  return (Link (htmlid, classes,
