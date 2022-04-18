@@ -2105,6 +2105,15 @@ function fixedEncodeURIComponent(str) {
     });
 }
 
+/*	Transforming a URL hash into a CSS selector in a form that’s safe to pass to
+	querySelector and similar functions. (All characters that need to be escaped
+	according to the CSS spec are escaped.)
+ */
+GW.selectorFromHashRegeExp = new RegExp("[" + "~!@$%^&*()+=,./';:\"?><[]\{}|`#".replace(/./g, "\\$&") + "]", "g");
+function selectorFromHash(hash) {
+	return "#" + decodeURIComponent(location.hash.slice(1)).replace(GW.selectorFromHashRegeExp, "\\$&");
+}
+
 /*  Helper function for AJAX, by kronusaturn
     https://github.com/kronusaturn/lw2-viewer/blob/master/www/script.js
  */

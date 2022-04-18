@@ -280,7 +280,7 @@ function getHashTargetedElement() {
 		return null;
 
 	return (location.hash.length > 1)
-			? document.querySelector(decodeURIComponent(location.hash))
+			? document.querySelector(selectorFromHash(location.hash))
 			: null;
 }
 

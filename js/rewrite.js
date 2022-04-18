@@ -818,7 +818,7 @@ function directionalizeAnchorLinks(loadEventInfo) {
         if (!identifierLink.hash)
         	return;
 
-        target = loadEventInfo.document.querySelector(decodeURIComponent(identifierLink.hash));
+        target = loadEventInfo.document.querySelector(selectorFromHash(identifierLink.hash));
         if (!target)
         	return;
 
@@ -1246,7 +1246,7 @@ function brokenAnchorCheck() {
 	GWLog("brokenAnchorCheck", "rewrite.js", 1);
 
 	if (   location.hash > "" 
-		&& document.querySelector(location.hash) == null)
+		&& document.querySelector(selectorFromHash(location.hash)) == null)
 		reportBrokenAnchorLink(location);
 
 	/*	Loop over internal page self-links and check that their targets exist;
@@ -1254,7 +1254,7 @@ function brokenAnchorCheck() {
 		DEPRECATED DUE TO anchor-checker.php SCRIPT.
 	 */
 // 	document.querySelectorAll(".markdownBody a[href^='#']").forEach(anchor => {
-// 		if (document.querySelector(anchor.hash) == null)
+// 		if (document.querySelector(selectorFromHash(anchor.hash)) == null)
 // 			reportBrokenAnchorLink(anchor);
 // 	});
 }

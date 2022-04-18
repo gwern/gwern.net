@@ -611,7 +611,7 @@ Extracts = {
                 page, and if the link points to an anchor, display the linked
                 section or element.
              */
-            return unwrapFunction(Extracts.nearestBlockElement(fullTargetDocument.querySelector(decodeURIComponent(target.hash))));
+            return unwrapFunction(Extracts.nearestBlockElement(fullTargetDocument.querySelector(selectorFromHash(target.hash))));
         } else {
             /*  Otherwise, display the entire linked page.
 
@@ -685,7 +685,7 @@ Extracts = {
         let popFrameTitleText;
         if (target.pathname == location.pathname) {
             //  Sections of the current page.
-            let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(decodeURIComponent(target.hash)));
+            let nearestBlockElement = Extracts.nearestBlockElement(document.querySelector(selectorFromHash(target.hash)));
             popFrameTitleText = nearestBlockElement.tagName == "SECTION"
                                 ? nearestBlockElement.firstElementChild.textContent
                                 : target.hash;
@@ -696,7 +696,7 @@ Extracts = {
             } else {
                 //  Sections of other pages.
                 let targetDocument = Extracts.targetDocument(target);
-                let nearestBlockElement = Extracts.nearestBlockElement(targetDocument.querySelector(decodeURIComponent(target.hash)));
+                let nearestBlockElement = Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)));
                 let pageTitleOrPath = Extracts.cachedPageTitles[target.pathname] || target.pathname;
                 popFrameTitleText = nearestBlockElement.tagName == "SECTION"
                                     ? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
@@ -747,7 +747,7 @@ Extracts = {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                	&& (element = popFrame.querySelector(decodeURIComponent(target.hash))))
+                	&& (element = popFrame.querySelector(selectorFromHash(target.hash))))
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
     },
@@ -768,7 +768,7 @@ Extracts = {
                 && link.classList.contains("no-popin")) {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
-                    let hashTarget = popin.querySelector(decodeURIComponent(link.hash));
+                    let hashTarget = popin.querySelector(selectorFromHash(link.hash));
                     if (hashTarget) {
                         Popins.scrollElementIntoViewInPopFrame(hashTarget);
                         return false;
@@ -800,7 +800,7 @@ Extracts = {
                 && link.hash > "") {
                 link.onclick = () => { return false; };
                 link.addActivateEvent((event) => {
-                    let hashTarget = popup.querySelector(decodeURIComponent(link.hash));
+                    let hashTarget = popup.querySelector(selectorFromHash(link.hash));
                     if (hashTarget) {
                         Popups.scrollElementIntoViewInPopFrame(hashTarget);
                         return false;

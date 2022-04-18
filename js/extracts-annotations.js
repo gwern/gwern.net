@@ -155,7 +155,7 @@ Extracts = { ...Extracts, ...{
         	 */
         	popFrameTitleText =   popFrameTitleText 
         						+ " &#x00a7; "
-        						+ popFrame.querySelector(target.hash).textContent;
+        						+ popFrame.querySelector(selectorFromHash(target.hash)).textContent;
         }
 
 
@@ -237,7 +237,7 @@ Extracts = { ...Extracts, ...{
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
-                	&& (element = popFrame.querySelector(decodeURIComponent(target.hash))))
+                	&& (element = popFrame.querySelector(selectorFromHash(target.hash))))
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
         }
