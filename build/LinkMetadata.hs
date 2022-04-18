@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-18 16:05:01 gwern"
+When:  Time-stamp: "2022-04-18 16:24:20 gwern"
 License: CC-0
 -}
 
@@ -1573,7 +1573,7 @@ authorsToCite url author date =
            if authorCount >= 3 then
                            firstAuthorSurname ++ " et al " ++ year ++ suffix' else
                              if authorCount == 2 then
-                               let secondAuthorSurname = filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
+                               let secondAuthorSurname = filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse (authors !! 1) in
                                  firstAuthorSurname ++ " & " ++ secondAuthorSurname ++ " " ++ year ++ suffix'
                              else
                                firstAuthorSurname ++ " " ++ year ++ suffix'
