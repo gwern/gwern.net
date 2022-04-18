@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-17 12:18:25 gwern"
+When: Time-stamp: "2022-04-18 12:06:45 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -305,7 +305,7 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
   do let ext = takeExtension $ T.unpack target
      let target' = replace "%2F" "/" $ T.unpack target
      exists <- doesFileExist $ tail $ T.unpack target
-     if not exists then printRed ("imageSrcset: " ++ show x ++ " does not exist?") >> return x else
+     if not exists then printRed ("imageSrcset (Image): " ++ show x ++ " does not exist?") >> return x else
       do (_,w) <- imageMagickDimensions $ tail target'
          if w=="" || (read w :: Int) <= 768 then return x else do
              let smallerPath = (tail target')++"-768px"++ext
@@ -325,10 +325,12 @@ imageSrcset x@(Image (c, t, pairs) inlines (target, title)) =
 -- For Links to images rather than regular Images, which are not displayed (but left for the user to hover over or click-through), we still get their height/width but inline it as data-* attributes for popups.js to avoid having to reflow as the page loads. (A minor point, to be sure, but it's nicer when everything is laid out correctly from the start & doesn't reflow.)
 imageSrcset x@(Link (htmlid, classes, kvs) xs (p,t)) = if (".png" `T.isSuffixOf` p || ".jpg" `T.isSuffixOf` p) &&
                                                           ("https://www.gwern.net/" `T.isPrefixOf` p || "/" `T.isPrefixOf` p) then
-                                                         do (h,w) <- imageMagickDimensions $ T.unpack p
-                                                            return (Link (htmlid, classes,
-                                                                            kvs++[("image-height",(T.pack h)),("image-width",(T.pack w))])
-                                                                      xs (p,t))
+                                                         do exists <- doesFileExist $ tail $ T.unpack p
+                                                            if not exists then printRed ("imageSrcset (Link): " ++ show x ++ " does not exist?") >> return x else
+                                                              do (h,w) <- imageMagickDimensions $ T.unpack p
+                                                                 return (Link (htmlid, classes,
+                                                                               kvs++[("image-height",(T.pack h)),("image-width",(T.pack w))])
+                                                                         xs (p,t))
                                                        else return x
 imageSrcset x = return x
 
@@ -347,6 +349,7 @@ addAmazonAffiliate x@(Link attr r (l, t)) = if (("www.amazon.com/" `T.isInfixOf`
 addAmazonAffiliate x = x
 
 -- | Make headers into links to themselves, so they can be clicked on or copy-pasted easily.
+-- BUG: Pandoc uses the Span trick to remove the Link from the generated ToC, which leaves behind redundant meaningless <span></span> wrappers. <https://github.com/jgm/pandoc/issues/8020>
 headerSelflink :: Block -> Block
 headerSelflink (Header a (href,b,c) d) = Header a (href,b,c) [Link nullAttr d ("#"`T.append`href, "Link to section: § '"`T.append`inlinesToString(d)`T.append`"'")]
 headerSelflink x = x
