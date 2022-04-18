@@ -118,7 +118,7 @@ function fixedEncodeURIComponent(str) {
  */
 GW.selectorFromHashRegeExp = new RegExp("[" + "~!@$%^&*()+=,./';:\"?><[]\{}|`#".replace(/./g, "\\$&") + "]", "g");
 function selectorFromHash(hash) {
-	return "#" + decodeURIComponent(location.hash.slice(1)).replace(GW.selectorFromHashRegeExp, "\\$&");
+	return "#" + decodeURIComponent(hash.slice(1)).replace(GW.selectorFromHashRegeExp, "\\$&");
 }
 
 /*  Helper function for AJAX, by kronusaturn
