@@ -118,6 +118,10 @@ function fixedEncodeURIComponent(str) {
  */
 GW.selectorFromHashRegeExp = new RegExp("[" + "~!@$%^&*()+=,./';:\"?><[]\{}|`#".replace(/./g, "\\$&") + "]", "g");
 function selectorFromHash(hash) {
+	//  Chrome’s fancy new “scroll to text fragment”.
+	if (hash.startsWith("#:~:"))
+		return null;
+
 	return "#" + decodeURIComponent(hash.slice(1)).replace(GW.selectorFromHashRegeExp, "\\$&");
 }
 
