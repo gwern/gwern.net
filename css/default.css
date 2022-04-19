@@ -2938,7 +2938,7 @@ body.directory-index #disqus_thread {
 	margin: 1.25em 0 0 0;
 	padding: 0.5em 0.5em 0.5em 0.75em;
 
-	/*	The following three properties are to prevent both overlap and 
+	/*	The following three properties are to prevent both overlap and
 		margin-collapse of the TOC when there’s a floated thumbnail figure
 		that juts down below the abstract text.
 	 */
@@ -3919,7 +3919,7 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*│ Tag popups. │*/
 /*└─────────────┘*/
 /* on tag/directory index popups, we want to hide the initial '# Links' <h1> because it takes up way too much space and adds nothing. */
-.popup h1.displayPopNot, .popinb h1.displayPopNot { display: none; }
+.popup h1.displayPopNot, .popin h1.displayPopNot { display: none; }
 
 /* We also want to squeeze the directory list because the default unordered-list padding of 2em bottom uses up too much of a popup. */
 .popup #directory-indexes ul { margin-top: 0.5em; margin-bottom: 0.5em; }
