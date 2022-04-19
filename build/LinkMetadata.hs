@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-18 16:24:20 gwern"
+When:  Time-stamp: "2022-04-19 09:13:47 gwern"
 License: CC-0
 -}
 
@@ -104,12 +104,12 @@ walkAndUpdateLinkMetadataYaml f file = do db <- readYaml file
 updateGwernEntries :: IO ()
 updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
   where updateGwernEntry :: (Path, MetadataItem) -> IO (Path, MetadataItem)
-        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) || not ("index"`isInfixOf` path) then return x -- || not ("index"`isInfixOf` path)
+        updateGwernEntry x@(path,(_,_,_,_,tags,_)) = if not (("/" `isPrefixOf` path || "https://www.gwern.net" `isPrefixOf` path) && not ("." `isInfixOf` path)) then return x -- || not ("index"`isInfixOf` path)
             else do printGreen path
                     newEntry <- gwern path
                     case newEntry of
                       Left _ -> return x
-                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',[],abstract'))
+                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',tags++tags',abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -1597,7 +1597,7 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
         | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "#appendix" `isSuffixOf` p || "#conclusion" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p || ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
+        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "#appendix" `isSuffixOf` p || "#conclusion" `isSuffixOf` p || "#media" `isSuffixOf` p || "#writings" `isSuffixOf` p || "#filmtv" `isSuffixOf` p || "#music" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p || ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
         | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
@@ -1609,7 +1609,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
-                        let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
+                        let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
@@ -1619,12 +1619,13 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
                         let thumbnail' = if (thumbnail == "https://www.gwern.net/static/img/logo/logo-whitebg-large-border.png" ) then "" else replace "https://www.gwern.net/" "" thumbnail
-                        let thumbnailText = if not (any filterThumbnailText metas) then "" else -- HACK:
+                        let thumbnailText = if not (any filterThumbnailText metas) then "" else -- WARNING: if there is no thumbnailText, then bad things will happen downstream as the thumbnail gets rendered as solely an <img> rather than a <figure><img>. We will assume the author will always have a thumbnailText set.
                                           (\(TagOpen _ [_, ("content", thumbt)]) -> thumbt) $ head $ filter filterThumbnailText metas
+                        when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
                               let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" /></figure> ")
+                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure> ")
 
                         let doi = ""
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
@@ -1633,10 +1634,12 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
                         let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description keywords' toc f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
+                        let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
+                                                 gabstract
 
                         if gabstract == "404 Not Found Error: no page by this name!" then return (Left Temporary)
                           else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
-                                 return $ Right (p, (title', author, date, doi, [], thumbnailFigure++gabstract))
+                                 return $ Right (p, (title', author, date, doi, [], combinedAnnotation))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
@@ -1681,7 +1684,7 @@ gwernAbstract shortAllowed p' description keywords toc f =
                          in (titleClean, abstractRaw, restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
-      abstrct'' = (if take 3 abstrct' == "<p>" || take 3 abstrct' == "<p>" then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
+      abstrct'' = (if "<p>"`isPrefixOf`abstrct' || "<p>"`isPrefixOf`abstrct' || "<figure>"`isPrefixOf`abstrct' then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
   in if "abstractNot" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
@@ -2730,6 +2733,8 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("Fr’echet", "Fréchet")
           , ("Frechet", "Fréchet")
           , ("h20ttps://", "https://")
+          , ("²", "<sup>2</sup>")
+          , ("₂", "<sub>2</sub>")
           , ("\173", "") -- all web browsers now do hyphenation so strip soft-hyphens
           , ("‰", "%") -- PER MILLE SIGN https://en.wikipedia.org/wiki/Per_mille - only example I've ever seen was erroneous
             ]

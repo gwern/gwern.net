@@ -83,7 +83,7 @@ generateDirectory mta dir'' = do
   -- take the first image as the 'thumbnail', and preserve any caption/alt text and use as 'thumbnailText'
   let imageFirst = take 1 $ extractImages (Pandoc nullMeta titledLinksSections)
   let thumbnail = if null imageFirst then "" else "thumbnail: " ++ T.unpack ((\(Image _ _ (imagelink,_)) -> imagelink) (head imageFirst)) ++ "\n"
-  let thumbnailText = if null imageFirst then "" else "thumbnailText: '" ++ T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToString caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst)) ++ "'\n"
+  let thumbnailText = replace "fig:" "" $ if null imageFirst then "" else "thumbnailText: '" ++ replace "'" "''" (T.unpack ((\(Image _ caption (_,altText)) -> let captionText = inlinesToString caption in if not (captionText == "") then captionText else if not (altText == "") then altText else "") (head imageFirst))) ++ "'\n"
 
   let header = generateYAMLHeader dir'' (getNewestDate links) (length dirsChildren + length dirsSeeAlsos, length titledLinks, length untitledLinks) (thumbnail++thumbnailText)
   let directorySectionChildren = generateDirectoryItems (Just parentDirectory') dir'' dirsChildren

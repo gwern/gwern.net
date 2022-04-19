@@ -23,6 +23,8 @@ wrap () { OUTPUT=$($1 2>&1)
              red "$WARN";
              echo -e "$OUTPUT";
          fi; }
+eg () { egrep --color=always "$@"; }
+gf () { fgrep --color=always "$@"; }
 
 # key dependencies: GHC, Hakyll, s3cmd, emacs, curl, tidy (HTML5 version), urlencode
 # ('gridsite-clients' package), linkchecker, fdupes, ImageMagick, exiftool, mathjax-node-page (eg.
@@ -243,10 +245,10 @@ else
     λ(){ egrep '#[[:alnum:]-]+#'  metadata/*.yaml metadata/*.hs; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
-    λ(){ fgrep --color=always '\\' ./static/css/*.css; }
+    λ(){ gf '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www' -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e 'hhttp://' -e 'hhttps://' -e '{.invertible-not}' -e ' _n_s'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www' -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e 'hhttp://' -e 'hhttps://' -e '{.invertible-not}' -e ' _n_s' -e '{#'; }
     wrap λ "Stray links in Markdown/HTML"
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 egrep --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]\+\#[a-z]\+'; }
@@ -258,10 +260,10 @@ else
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 "fgrep --with-filename -- '<span class=\"er\">'" | fgrep -v '<span class="er">foo!'; } # NOTE: filtered out Lorem.page's deliberate CSS test-case use of it
     wrap λ "Broken code in Markdown"
 
-    λ(){ egrep --color=always -e '<div class="admonition .*">[^$]' -e '<div class="epigrah">' **/*.page; }
+    λ(){ eg -e '<div class="admonition .*">[^$]' -e '<div class="epigrah">' **/*.page; }
     wrap λ "Broken admonition paragraph or epigraph in Markdown"
 
-    λ(){ egrep --color=always -e ' a [aeio]' **/*.page | egrep ' a [aeio]' | fgrep -v -e 'static/build/' -e '/GPT-3' -e '/GPT-2-preference-learning' -e 'sicp/'; }
+    λ(){ eg -e ' a [aeio]' **/*.page | egrep ' a [aeio]' | fgrep -v -e 'static/build/' -e '/GPT-3' -e '/GPT-2-preference-learning' -e 'sicp/'; }
     wrap λ "Grammar: 'a' → 'an'?"
 
     λ(){ find -L . -type f -size 0  -printf 'Empty file: %p %s\n' | fgrep -v '.git/FETCH_HEAD' -e './.git/modules/static/logs/refs/remotes/'; }
@@ -270,7 +272,7 @@ else
     λ(){ find ./_site/ -type f -not -name "*.*" -exec grep --quiet --binary-files=without-match . {} \; -print0 | parallel --null --max-args=100 "fgrep --color=always --with-filename -- '————–'"; }
     wrap λ "Broken tables in HTML"
 
-    λ(){ egrep --color=always -e '^"~/' -e '\$";$' ./static/redirects/nginx*.conf; }
+    λ(){ eg -e '^"~/' -e '\$";$' ./static/redirects/nginx*.conf; }
     wrap λ "Warning: caret/tilde-less Nginx redirect rule (dangerous—matches anywhere in URL!)"
 
     λ(){ ghci -istatic/build/ ./static/build/LinkMetadata.hs -e 'warnParagraphizeYAML "metadata/custom.yaml"'; }
@@ -279,20 +281,20 @@ else
     λ(){ runhaskell -istatic/build/ ./static/build/link-prioritize.hs 20; }
     wrap λ "Links needing annotations by priority:"
 
-    λ(){ egrep --color=always -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
+    λ(){ eg -e '[a-zA-Z]- ' -e 'PsycInfo Database Record' -e 'https://www.gwern.net' -e '/home/gwern/' -- ./metadata/*.yaml; }
     wrap λ "Check possible typo in YAML metadata database"
 
-    λ(){ fgrep --color=always -e '**' -e 'amp#' -e ' _' -e '_ ' -e '!!' -- ./metadata/custom.yaml;
+    λ(){ gf -e '**' -e 'amp#' -e ' _' -e '_ ' -e '!!' -- ./metadata/custom.yaml;
          # look for en-dash abuse:
-         egrep --color=always '  - .*[a-z]–[a-Z]' ./metadata/custom.yaml ./metadata/partial.yaml
+         eg '  - .*[a-z]–[a-Z]' ./metadata/custom.yaml ./metadata/partial.yaml
          # look for run-together commas (but exclude chemical names where that's correct):
-         fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -- ./metadata/custom.yaml | \
-             egrep --color=always -e ',[A-Za-z]';
-         egrep --color=always -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
+         fgrep -v -e 'N,N-DMT' -e 'E,Z-nepetalactone' -e 'Z,E-nepetalactone' -e 'N,N-Dimethyltryptamine' -e 'N,N-dimethyltryptamine' -e 'h,s,v' -e ',VGG<sub>' -e 'data-link-icon-type="text,' -- ./metadata/custom.yaml | \
+             eg -e ',[A-Za-z]';
+         eg -e '^- - /doc/.*' -e '^  -  ' -e "\. '$" -e '[a-zA-Z]\.[0-9]\+ [A-Z]' \
                -e 'href="[a-ce-gi-ln-zA-Z]' -e '>\.\.[a-zA-Z]' -e '\]\([0-9]' \
                -e '[⁰ⁱ⁴⁵⁶⁷⁸⁹⁻⁼⁽⁾ⁿ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜ]' -e '<p>Table [0-9]' -e '<p>Figure [0-9]' \
                -e 'id="[0-9]' -e '</[a-z][a-z]+\?' -e 'via.*ihub' -e " '$" -e "’’" -e ' a [aeio]' -- ./metadata/*.yaml;
-         fgrep --color=always -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
+         gf -e ']{.smallcaps}' -e 'id="cb1"' -e '<dd>' -e '<dl>' \
                -e '&lgt;/a>' -e '</a&gt;' -e '&lgt;/p>' -e '</p&gt;' -e '<i><i' -e '</e>' -e '>>' \
                -e '<abstract' -e '<em<' -e '<center' -e '<p/>' -e '</o>' -e '< sub>' -e '< /i>' \
                -e '</i></i>' -e '<i><i>' -e 'font-style:italic' -e '<p><p>' -e '</p></p>' -e 'fnref' \
@@ -314,44 +316,45 @@ else
                -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' \
                -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -- ./metadata/*.yaml;
          # look for YAML linebreaking at a hyphen:
-        egrep -v '^- - http' ./metadata/*.yaml | egrep '[a-zA-Z0-9>]-$';
-        # look for punctuation inside links; unless it's a full sentence or a quote, generally prefer to put punctuation outside:
-        egrep -e '[.,:;-<!]</a>' -e '\]</a>' -- ./metadata/*.yaml | fgrep -v -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>';
+        egrep -v '^- - http' ./metadata/*.yaml | eg '[a-zA-Z0-9>]-$';
+        # look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside:
+        egrep -e '[.,:;-<!]</a>' -e '\]</a>' -- ./metadata/*.yaml | fgrep -v -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' | eg -e '[.,:;-<!]</a>' -e '\]</a>'
+;
        }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
-    λ(){ fgrep -e '""' -- ./metadata/*.yaml | fgrep -v -e 'alt=""' -e 'controls=""'; }
+    λ(){ fgrep -e '""' -- ./metadata/*.yaml | fgrep -v -e ' alt=""' -e 'controls=""'; }
     wrap λ "Doubled double-quotes in YAML, usually an error."
 
-    λ(){ egrep --color=always -v '^- - ' -- ./metadata/*.yaml | fgrep --color=always -e ' -- ' -e '---'; }
+    λ(){ eg -v '^- - ' -- ./metadata/*.yaml | gf -e ' -- ' -e '---'; }
     wrap λ "Markdown hyphen problems in YAML metadata database"
 
-    λ(){ egrep --color=always -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/custom.yaml; }
+    λ(){ eg -e '^- - https://en\.wikipedia\.org/wiki/' -- ./metadata/custom.yaml; }
     wrap λ "Wikipedia annotations in YAML metadata database, but will be ignored by popups! Override with non-WP URL?"
 
-    λ(){ egrep --color=always -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
+    λ(){ eg -e '^- - /[12][0-9][0-9]-[a-z]\.pdf$' -- ./metadata/*.yaml; }
     wrap λ "Wrong filepaths in YAML metadata database—missing prefix?"
 
-    λ(){ egrep --color=always -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.yaml | \
+    λ(){ eg -e ' [0-9]*[02456789]th' -e ' [0-9]*[3]rd' -e ' [0-9]*[2]nd' -e ' [0-9]*[1]st' -- ./metadata/*.yaml | \
              fgrep -v -e '%' -e figure -e http -e '- - /' -e "- - ! '" -e 'src=' -e "- - '#"; }
     wrap λ "Missing superscript abbreviations in YAML metadata database"
 
-    λ(){ egrep --color=always -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
+    λ(){ eg -e 'up>T[Hh]<' -e 'up>R[Dd]<' -e 'up>N[Dd]<' -e 'up>S[Tt]<' -- ./metadata/*.yaml; }
     wrap λ "Superscript abbreviations are weirdly capitalized?"
 
-    λ(){ egrep --color=always -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
+    λ(){ eg -e '<p><img ' -e '<img src="http' -e '<img src="[^h/].*"'  ./metadata/*.yaml; }
     wrap λ "Check <figure> vs <img> usage, image hotlinking, non-absolute relative image paths in YAML metadata database"
 
-    λ(){ fgrep --color=always -e ' significant'  ./metadata/custom.yaml; }
+    λ(){ gf -e ' significant'  ./metadata/custom.yaml; }
     wrap λ "Misleading language in custom.yaml"
 
-    λ(){ fgrep --color=always -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
+    λ(){ gf -e 'backlinks/' -e 'metadata/annotations/' -e '?gi=' -- ./metadata/backlinks.hs; }
     wrap λ "Bad paths in backlinks databases: metadata paths are being annotated when they should not be!"
 
-    λ(){ egrep --color=always -e '#[[:alnum:]]+#' -- ./metadata/*.hs ./metadata/*.yaml; }
+    λ(){ eg -e '#[[:alnum:]]+#' -- ./metadata/*.hs ./metadata/*.yaml; }
     wrap λ "Bad paths in metadata databases: redundant anchors"
 
-    λ(){ fgrep '{#' $(find _site/ -type f -name "index"); }
+    λ(){ gf '{#' $(find _site/ -type f -name "index"); }
     wrap λ "Broken anchors in directory indexes."
 
     λ(){
@@ -541,8 +544,8 @@ else
           cm "text/yaml; charset=utf-8" 'https://www.gwern.net/metadata/custom.yaml'
           cm "video/mp4"  'https://www.gwern.net/images/genetics/selection/2019-coop-illinoislongtermselectionexperiment-responsetoselection-animation.mp4'
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
-          cm "image/jpeg" 'https://www.gwern.net/images/lobel-frogandtoadtogether-thebox-crop.jpg'
-          cm "image/png"  'https://www.gwern.net/images/googlesearch-tools-daterange.png'
+          cm "image/jpeg" 'https://www.gwern.net/images/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
+          cm "image/png"  'https://www.gwern.net/images/technology/search/googlesearch-tools-daterange.png'
         }
     wrap λ "The live MIME types are incorrect"
 
@@ -568,7 +571,7 @@ else
     λ() { find . -perm u=r -path '.git' -prune; }
     wrap λ "Read-only file check" ## check for read-only outside ./.git/ (weird but happened):
 
-    λ(){ fgrep --color=always -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
+    λ(){ gf -e 'RealObjects' -e '404 Not Found Error: No Page' -e ' may refer to:' ./metadata/auto.yaml; }
     wrap λ "Broken links, corrupt authors', or links to Wikipedia disambiguation pages in auto.yaml."
 
     λ(){ (find . -type f -name "*--*"; find . -type f -name "*~*"; ) | fgrep -v -e images/thumbnails/ -e metadata/annotations/; }
