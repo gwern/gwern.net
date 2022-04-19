@@ -274,11 +274,6 @@ function revealElement(element, scrollIntoView = true) {
 //	Called by: prepareCollapseBlocks
 //	Called by: sidenotes.js
 function getHashTargetedElement() {
-	//  Chrome’s fancy new “scroll to text fragment”. Deal with it in Firefox.
-	if (   GW.isFirefox() 
-		&& location.hash.startsWith("#:~:"))
-		return null;
-
 	return (location.hash.length > 1)
 			? document.querySelector(selectorFromHash(location.hash))
 			: null;
