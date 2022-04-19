@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-04-13 20:54:59 gwern"
+When:  Time-stamp: "2022-04-19 18:16:40 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -79,8 +79,7 @@ linkAuto = linkAutoFiltered id
 -- if we want to run on just a subset of links (eg. remove all resulting links to Wikipedia, or delete a specific regexp match), we can pass in a filter:
 linkAutoFiltered :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> Pandoc -> Pandoc
 linkAutoFiltered subsetter p = let customDefinitions' = filterMatches p $ filterDefinitions p (customDefinitions subsetter) in
-               if null customDefinitions' then p else cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
-
+               if null customDefinitions' then p else topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
 -----------
 
@@ -110,6 +109,22 @@ cleanupNestedLinks = topDown go
         goDeeper :: Inline -> Inline
         goDeeper (Link _ is _) = Str $ inlinesToString is -- Span nullAttr is
         goDeeper x = x
+
+-- we probably want to remove the link-auto-skipped Spans if we are not actively debugging, because they inflate the markup & browser DOM.
+-- We can't just remove the Span using a 'Inline -> Inline' walk, because a Span is an Inline with an [Inline] payload, so if we just remove the Span wrapper, it is a type error: we've actually done 'Inline -> [Inline]'.
+-- Block elements always have [Inline] (or [[Inline]]) and not Inline arguments if they have Inline at all; likewise, Inline element also have only [Inline] arguments.
+-- So, every instance of a Span *must* be inside an [Inline]. Therefore, we can walk an [Inline], and remove the wrapper, and then before++payload++after :: [Inline] and it typechecks and doesn't change the shape.
+--
+-- > cleanUpSpansLinkAutoSkipped [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]
+--                               [Str "foo",                                     Str "Bar", Emph [Str "Baz"],  Str "Quux"]
+-- > walk cleanUpSpansLinkAutoSkipped $ Pandoc nullMeta [Para [Str "foo", Span ("",["link-auto-skipped"],[]) [Str "Bar", Emph [Str "Baz"]], Str "Quux"]]
+-- Pandoc (Meta {unMeta = fromList []}) [Para [Str "foo",Str "Bar",Emph [Str "Baz"],Str "Quux"]]
+--
+-- NOTE: might need to generalize this to clean up other Span crud?
+cleanUpSpansLinkAutoSkipped :: [Inline] -> [Inline]
+cleanUpSpansLinkAutoSkipped [] = []
+cleanUpSpansLinkAutoSkipped ((Span (_,["link-auto-skipped"],_) payload):rest) = payload ++ rest
+cleanUpSpansLinkAutoSkipped (r:rest) = r : cleanUpSpansLinkAutoSkipped rest
 
 -----------
 
@@ -338,7 +353,7 @@ custom = sortBy (\a b -> compare (T.length $ fst b) (T.length $ fst a)) [
         , ("(Niels Bohr|Bohr)", "https://en.wikipedia.org/wiki/Niels_Bohr")
         , ("(OpenAI 5|OA ?5)", "https://openai.com/five/")
         , ("(Openness|Openness to Experience)", "https://en.wikipedia.org/wiki/Openness_to_Experience")
-        , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "https://www.science.org/doi/10.1126/science.aau6249")
+        , ("(PBT|[Pp]opulation[ -][Bb]ased [Tt]raining|population[ -]based (deep reinforcement)? ?learning)", "/docs/reinforcement-learning/exploration/2019-jaderberg.pdf#deepmind")
         , ("(POMDPs?|[Pp]artially [Oo]bservable [Mm]arkov [Dd]ecision [Pp]rocess?e?s)", "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process")
         , ("(PPO|[Pp]roximal [Pp]olicy [Oo]ptimization)", "https://arxiv.org/abs/1707.06347#openai")
         , ("(PTSD|[Pp]ost.?traumatic stress disorder)", "https://en.wikipedia.org/wiki/Post-traumatic_stress_disorder")
