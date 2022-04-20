@@ -762,6 +762,9 @@ figcaption strong {
     margin: 1px auto 0 auto;
     width: 100%;
 }
+figure.no-outline .caption-wrapper {
+    outline: none;
+}
 video + .caption-wrapper {
     margin-top: 2px;
 }
