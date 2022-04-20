@@ -66,7 +66,9 @@ convertInterwikiLinks x = x
 -- If True, a URL is a regular English Wikipedia article. If False, it's something else, like a talk page or history page etc.
 --
 -- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg. 'https://en.wikipedia.org/wiki/File:Energy_density.svg' . Note that we need the colon separator because the prefixes are not unique without it, eg. 'https://en.wikipedia.org/wiki/Image_segmentation' is not in the `Image` namespace because images have a colon, and so they would be `Image:...`.
--- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough; we can only popup on articles, the other pages need raw URL previews.
+-- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough.
+--
+-- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all).
 enWikipediaArticleNamespace :: String -> Bool
 enWikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) then False else
                                 let u' = takeWhile (/=':') $ replace "https://en.wikipedia.org/wiki/" "" u in

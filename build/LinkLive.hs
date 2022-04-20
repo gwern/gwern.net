@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-03 19:04:05 gwern"
+When:  Time-stamp: "2022-04-19 19:52:33 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -2444,6 +2444,7 @@ badDomainsSimple = ["1d4chan.org",
     , "aka.ms"
     , "nitter.hu"
     , "tinyurl.com"
+    , "history.nasa.gov"
    ]
 
 url :: T.Text -> Inline
@@ -3175,7 +3176,6 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://seths.blog/2005/03/dont_shave_that/", True)
     , ("https://scientistatwork.blogs.nytimes.com/2012/09/06/lost-in-time-in-the-antarctic-ice-age/", True)
     , ("https://sciencebulletin.org/archives/9946.html", True)
-    , ("https://science.ksc.nasa.gov/shuttle/missions/51-l/docs/rogers-commission/Appendix-F.txt", True)
     , ("https://samoburja.com/the-youtube-revolution-in-knowledge-transfer/", True)
     , ("https://ruder.io/recent-advances-lm-fine-tuning/", True)
     , ("https://read-the-samples.netlify.app/sample_1353/", True)
@@ -4784,4 +4784,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://nitter.hu/advadnoun/status/1458894698974638111", False)
     , ("https://nitter.hu/search?f=tweets&q=http%3A%2F%2Fwww.thiswaifudoesnotexist.net&src=typd", False)
     , ("https://tinyurl.com/hquv34", False)
+    , ("https://history.nasa.gov/rogersrep/v2appf.htm", False)
     ]

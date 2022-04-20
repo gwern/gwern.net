@@ -20,7 +20,7 @@ main = do md  <- readLinkMetadata
 
           -- update for any missing embeddings, and return updated DB for computing distances & writing out fragments:
           let todo = sort $ missingEmbeddings md edb
-          edb'' <- if null todo then printGreen "All databases up to date." >> return edb else
+          edb'' <- if True then printGreen "All databases up to date." >> return edb else
                      do
                        printGreen $ "Embedding…\n" ++ unlines (map show todo)
                        newEmbeddings <- Par.mapM embed todo
