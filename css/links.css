@@ -272,7 +272,7 @@ body.tags a.link-local::after,
     would just be clutter and is not worth adding, so we merely suppress them
     entirely.
 
-	Also remove G icon from the tags inside popups (which go to directory 
+	Also remove G icon from the tags inside popups (which go to directory
 	indexes, which aren’t really top-level/essay content, and the G is clutter).
 
 	Ditto link tags.
@@ -285,13 +285,13 @@ body.tags a.link-local::after,
 /*	Italicize link tags in popups/indexes similar to the page metadata block”s
 	tags for consistency
  */
-.link-tags { 
-	font-style: italic; 
+.link-tags {
+	font-style: italic;
 }
 
-/*	Remove the ‘W’ document icon from the anonymous feedback link icon; it is 
+/*	Remove the ‘W’ document icon from the anonymous feedback link icon; it is
 	true, but not useful (a ‘document’ doesn’t look like ‘a thing I can interact
-	with & type in text to), and it looks bad/cluttered given that icons are 
+	with & type in text to), and it looks bad/cluttered given that icons are
 	removed from the rest of the ‘surrounding’ UI (*especially* in /index).
  */
 #footer a[href*='docs.google.com'i]::after {
@@ -778,14 +778,14 @@ a[data-link-icon='nasa']::after {
     --link-icon-offset-y: 0.2em;
     --link-icon-offset-x: 0.15em;
 
-    opacity: 0.75;
+    opacity: 0.65;
 }
 
 a[data-link-icon='nautilus']::after {
 	--link-icon-size: 0.7em;
 	--link-icon-offset-y: 0.25em;
 	--link-icon-offset-x: 0.15em;
-	
+
 	opacity: 0.6;
 }
 
