@@ -309,7 +309,7 @@ hasAnnotation :: Metadata -> Bool -> Block -> Block
 hasAnnotation md idp = walk (hasAnnotationInline md idp)
     where hasAnnotationInline :: Metadata -> Bool -> Inline -> Inline
           hasAnnotationInline mdb idBool y@(Link (a,classes,c) d (f,g)) =
-            if "docMetadataNot" `elem` classes || "idNot" `elem` classes then y
+            if "link-annotated-not" `elem` classes || "idNot" `elem` classes then y
             else
               let f' = linkCanonicalize $ T.unpack f in
                 case M.lookup f' mdb of
@@ -339,9 +339,9 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
                 -- -- but this is a special case: we do *not* want to popup just the header, but the whole index page.
                 -- -- so we check for directory-tags and force them to not popup.
                 -- if "/docs/"`isPrefixOf`f' && "/index"`isSuffixOf` f' then
-                --   Link (a', nubOrd (b++["docMetadataNot"]), c) e (f,g')
+                --   Link (a', nubOrd (b++["link-annotated-not"]), c) e (f,g')
                 -- else
-                  Link (a', nubOrd (b++["docMetadata"]), c) e (f,g')
+                  Link (a', nubOrd (b++["link-annotated"]), c) e (f,g')
           addHasAnnotation _ _ z _ = z
 
 parseRawBlock :: Attr -> Block -> Block
@@ -371,8 +371,8 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan ts]
                                     values = if doi=="" then [] else [("doi",T.pack $ processDOI doi)]
                                     linkPrefix = if rawFilep then [Code nullAttr (T.pack $ takeFileName f), Str ":", Space] else []
-                                    -- on directory indexes/link bibliography pages, we don't want to set 'docMetadata' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
-                                    link = Link (lid, if annotationP then ["docMetadata"] else ["docMetadataNot"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
+                                    -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
+                                    link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
                                     abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || take 7 abst == "<figure" then abst else "<p>" ++ abst ++ "</p>"
                                     -- check that float-right hasn't been deleted by Pandoc again:
@@ -426,7 +426,7 @@ tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
                        Span ("", ["link-local", "link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "docMetadata"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --

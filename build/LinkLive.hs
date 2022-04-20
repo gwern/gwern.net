@@ -82,7 +82,7 @@ linkLivePrioritize = do b <- readBacklinksDB
         -- Append an example of a prioritized link to /Lorem#link-testcases for manual review, to skip copy-paste hassle"
         writeLinkLiveTestcase :: Backlinks -> T.Text -> IO ()
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
-                                      appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .docMetadataNot .link-live}"
+                                      appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .link-annotated-not .link-live}"
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",

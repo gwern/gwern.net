@@ -45,14 +45,14 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
-                                           "idNot" : (if enWikipediaArticleNamespace (T.unpack url) then "docMetadata" else "docMetadataNot") : classes,
+                                           "idNot" : (if enWikipediaArticleNamespace (T.unpack url) then "link-annotated" else "link-annotated-not") : classes,
                                            kvs) in
                              case article of
                                   "" -> Link attr' ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
                                   _  -> Link attr' ref (url `interwikiurl` article, "")
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else if "https://en.wikipedia.org/wiki/" `T.isPrefixOf` interwiki && enWikipediaArticleNamespace (T.unpack interwiki) then
-            Link (ident, "docMetadata":"backlinksNot":classes, kvs) ref (interwiki, article)
+            Link (ident, "link-annotated":"backlinksNot":classes, kvs) ref (interwiki, article)
        else x
             where
                   interwikiurl :: T.Text -> T.Text -> T.Text

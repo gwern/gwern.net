@@ -77,7 +77,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                                       Just ("",_,_,_,_,_) -> if T.head u == '/' then T.tail u else u
                                                                       Just (t,_,_,_,_,_) -> T.pack t)
                                                           callers
-                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["docMetadata"]) callers
+                                       let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["link-annotated"]) callers
                                        let callers' = zip3 callers callerClasses callerTitles
                                        let content = BulletList $
                                             map (\(u,c,t) -> [Para [Link ("", "idNot":"backlinksNot":c, [])

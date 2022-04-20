@@ -287,7 +287,7 @@ descField d = field d $ \item -> do
                          Right finalDesc -> return $ reverse $ drop 4 $ reverse $ drop 3 finalDesc -- strip <p></p>
 
 pandocTransform :: Metadata -> ArchiveMetadata -> IORef Bool -> Pandoc -> IO Pandoc
-pandocTransform md adb archived p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add docMetadata as necessary
+pandocTransform md adb archived p = -- linkAuto needs to run before convertInterwikiLinks so it can add in all of the WP links and then convertInterwikiLinks will add link-annotated as necessary
                            do let pw = walk (footnoteAnchorChecker . convertInterwikiLinks) $ walk linkAuto $ walk marginNotes p
                               _ <- createAnnotations md pw
                               let pb = walk (hasAnnotation md True) pw
