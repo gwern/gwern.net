@@ -762,6 +762,9 @@ figcaption strong {
     margin: 1px auto 0 auto;
     width: 100%;
 }
+figure.no-outline .caption-wrapper {
+    outline: none;
+}
 video + .caption-wrapper {
     margin-top: 2px;
 }
@@ -2148,6 +2151,10 @@ span.inflationAdjusted {
     column-width: 15em;
     column-gap: 3em;
     margin-bottom: 2em;
+
+    /*	Without `clear`, columns don’t render properly if there’s a float.
+     */
+    clear: both;
 }
 .markdownBody .columns li,
 .markdownBody .columns li p {
