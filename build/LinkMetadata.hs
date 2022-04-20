@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-20 10:44:54 gwern"
+When:  Time-stamp: "2022-04-20 11:29:33 gwern"
 License: CC-0
 -}
 
@@ -1624,8 +1624,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
-                              let imgClass = if color then "class=\"invertible-auto\" " else ""
-                              return ("<figure class=\"float-right\"><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure> ")
+                              let imgClass = if color then "class=\"invertible-auto float-right\" " else "class=\"float-right\" "
+                              return ("<figure><img " ++ imgClass ++ "height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /><figcaption></figcaption></figure> ")
 
                         let doi = ""
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
