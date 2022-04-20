@@ -1056,11 +1056,11 @@ pre {
 /*= Full-width tables =*/
 /*=-------------------=*/
 
-.table-wrapper.full-width {
+.table-wrapper.width-full {
     position: relative;
     z-index: 1;
 }
-.table-wrapper.full-width table {
+.table-wrapper.width-full table {
     width: -moz-fit-content;
     width: fit-content;
     margin: 0 auto;

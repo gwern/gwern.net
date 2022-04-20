@@ -56,7 +56,7 @@
 /************/
 /*  Use: annotate collapsible section headers with '{.collapse}' (in the Markdown);
     for sections where I want a summary/abstract of that (eg. in Notes.page/Statistical-notes.page),
-    one annotate summaries to keep uncollapsed with '<div class="collapseSummary">summary</div>'.
+    one annotate summaries to keep uncollapsed with '<div class="abstract-collapse">summary</div>'.
     (Pandoc Markdown does support a native div syntax, but it's long and ugly.)
     */
 
@@ -68,7 +68,7 @@
     box-sizing: border-box;
     margin: 1em 0;
 }
-.collapse:not(.expanded) > .disclosure-button ~ :not(.collapseSummary) {
+.collapse:not(.expanded) > .disclosure-button ~ :not(.abstract-collapse) {
     max-height: 0;
     min-height: unset;
     overflow: hidden;
@@ -82,29 +82,29 @@
 
 /*  Collapse summary.
     */
-.collapse .collapseSummary {
+.collapse .abstract-collapse {
     margin: 0;
     position: relative;
     z-index: 1;
 }
-.collapse .collapseSummary.abstract {
+.collapse .abstract-collapse.abstract {
     margin-left: calc(-0.5em - 2px);
 }
-.collapse .collapseSummary:not(.abstract) {
+.collapse .abstract-collapse:not(.abstract) {
     margin: 1.5em 0 0.25em 0;
 }
-.collapse.expanded > .collapseSummary:not(.abstract) {
+.collapse.expanded > .abstract-collapse:not(.abstract) {
     margin-bottom: 0;
 }
-.collapse:not(.expanded) > .collapseSummary {
+.collapse:not(.expanded) > .abstract-collapse {
     pointer-events: none;
     position: relative;
     z-index: 3;
 }
-.collapse:not(.expanded) > .collapseSummary blockquote {
+.collapse:not(.expanded) > .abstract-collapse blockquote {
     margin: 0;
 }
-.collapse:not(.expanded) > .disclosure-button:hover + .collapseSummary blockquote {
+.collapse:not(.expanded) > .disclosure-button:hover + .abstract-collapse blockquote {
     background-color: var(--GW-collapse-summary-blockquote-hover-color);
 }
 
@@ -257,7 +257,7 @@ section.collapse > :first-child > a {
 :not(section).collapse:not(.expanded) > .disclosure-button::after {
     opacity: 0.95;
 }
-:not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.collapseSummary) {
+:not(section).collapse:not(.expanded) > .disclosure-button ~ :not(.abstract-collapse) {
     max-height: 5rem;
 }
 :not(section).collapse.expanded {
@@ -276,7 +276,7 @@ section.collapse > :first-child > a {
 .sourceCode.collapse > pre {
     margin: 0;
 }
-.collapse:not(.expanded) > .disclosure-button ~ pre:not(.collapseSummary) {
+.collapse:not(.expanded) > .disclosure-button ~ pre:not(.abstract-collapse) {
     border: 1px solid var(--GW-pre-element-border-color);
     box-sizing: border-box;
 }
@@ -783,8 +783,8 @@ video + .caption-wrapper {
     padding-bottom: 1px;
 }
 
-/* enable the various `![caption](/images/foo.jpg){.full-width}` uses; analogous to full-width tables */
-figure.full-width {
+/* enable the various `![caption](/images/foo.jpg){.width-full}` uses; analogous to width-full tables */
+figure.width-full {
     position: relative;
     max-width: unset;
 }
@@ -1549,10 +1549,10 @@ table {
 /*= Full-width tables =*/
 /*=-------------------=*/
 
-.table-wrapper.full-width .full-width-table-inner-wrapper {
+.table-wrapper.width-full .full-width-table-inner-wrapper {
     background-color: var(--GW-table-full-width-background-color);
 }
-blockquote .table-wrapper.full-width {
+blockquote .table-wrapper.width-full {
     background-color: transparent;
 }
 
@@ -1654,7 +1654,7 @@ th.tablesorter-headerDesc:hover {
 /*  zebra-stripe tables (CSS3); from Twitter's bootstrap package
     NOTE: we tried 3-cycle zebra striping tables, but didn't pass muster.
     */
-:not(.small-table) > table tr:nth-child(odd) td {
+:not(.table-small) > table tr:nth-child(odd) td {
     background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
     --GW-link-underline-background-color: var(--GW-table-zebra-stripe-alternate-row-background-color);
 }
@@ -1952,7 +1952,7 @@ p { hanging-punctuation: first last; }
     margin-right: -0.120em;
     line-height: 1ex;
 }
-.tex-logotype sub {
+.logotype-tex sub {
     text-transform: uppercase;
     vertical-align: -0.50ex;
     margin-left: -0.1em;
@@ -2355,13 +2355,13 @@ body.index #markdownBody section > h1:first-child a::after {
     */
 body.index article,
 body.tags article,
-body.directory-index article {
+body.index-directory article {
     position: relative;
     padding-bottom: 4em;
 }
 body.index article::after,
 body.tags article::after,
-body.directory-index article::after {
+body.index-directory article::after {
     content: "";
     background-color: var(--GW-body-background-color);
     background-image: url('/static/img/logo/logo-smooth.svg');
@@ -2381,7 +2381,7 @@ body.directory-index article::after {
 }
 body.index article::before,
 body.tags article::before,
-body.directory-index article::before {
+body.index-directory article::before {
     content: "";
     display: block;
     position: absolute;
@@ -2523,15 +2523,15 @@ body.otaku blockquote {
 /****************************/
 /* trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /index. */
 
-body.directory-index #sidebar a.patreon,
+body.index-directory #sidebar a.patreon,
 body.tags #sidebar a.patreon,
-body.directory-index #page-tags,
-body.directory-index #page-metadata-block,
-body.directory-index #TOC,
-body.directory-index #navigation,
-body.directory-index #footer,
-body.directory-index #comments,
-body.directory-index #disqus_thread {
+body.index-directory #page-tags,
+body.index-directory #page-metadata-block,
+body.index-directory #TOC,
+body.index-directory #navigation,
+body.index-directory #footer,
+body.index-directory #comments,
+body.index-directory #disqus_thread {
     display: none;
 }
 
@@ -3934,7 +3934,7 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*│ Tag popups. │*/
 /*└─────────────┘*/
 /* on tag/directory index popups, we want to hide the initial '# Links' <h1> because it takes up way too much space and adds nothing. */
-.popup h1.displayPopNot, .popin h1.displayPopNot { display: none; }
+.popup h1.display-pop-not, .popin h1.display-pop-not { display: none; }
 
 /* We also want to squeeze the directory list because the default unordered-list padding of 2em bottom uses up too much of a popup. */
 .popup #directory-indexes ul { margin-top: 0.5em; margin-bottom: 0.5em; }

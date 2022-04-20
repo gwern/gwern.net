@@ -164,14 +164,14 @@ function wrapTables(loadEventInfo) {
 }
 
 /******************************************************************************/
-/*  Wrap each full-width table in a div.full-width-table-wrapper, and also move
+/*  Wrap each full-width table in a div.width-full-table-wrapper, and also move
     the .collapse class (if any) from the outer wrapper to the table (for
     consistency).
  */
 function wrapFullWidthTables(loadEventInfo) {
     GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
-    let fullWidthClass = "full-width";
+    let fullWidthClass = "width-full";
     let fullWidthInnerWrapperClass = "full-width-table-inner-wrapper";
     loadEventInfo.document.querySelectorAll(`.table-wrapper.${fullWidthClass}`).forEach(fullWidthTableWrapper => {
         if (fullWidthTableWrapper.classList.contains("collapse")) {
@@ -242,12 +242,12 @@ function wrapFigures(loadEventInfo) {
 }
 
 /********************************************************************/
-/*  Designate full-width figures as such (with a ‘full-width’ class).
+/*  Designate full-width figures as such (with a ‘width-full’ class).
  */
 function markFullWidthFigures(loadEventInfo) {
     GWLog("markFullWidthFigures", "rewrite.js", 1);
 
-    let fullWidthClass = "full-width";
+    let fullWidthClass = "width-full";
 
     let allFullWidthMedia = loadEventInfo.document.querySelectorAll(`img.${fullWidthClass}, video.${fullWidthClass}`);
     allFullWidthMedia.forEach(fullWidthMedia => {
@@ -287,13 +287,13 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /***************/
 
 /***********************************************************/
-/*  Wrap each pre.full-width in a div.full-width and a
+/*  Wrap each pre.width-full in a div.width-full and a
     div.full-width-code-block-wrapper (for layout purposes).
  */
 function wrapFullWidthPreBlocks(loadEventInfo) {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-    let fullWidthClass = "full-width";
+    let fullWidthClass = "width-full";
     let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
     loadEventInfo.document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
         if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1) {
@@ -345,7 +345,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 
 /*******************************************************************************/
 /*  Expands all tables (& other blocks) whose wrapper block is marked with class
-    ‘full-width’, and all figures marked with class ‘full-width’, to span the
+    ‘width-full’, and all figures marked with class ‘width-full’, to span the
     viewport (minus a specified margin on both sides).
  */
 function createFullWidthBlockLayoutStyles() {
@@ -400,7 +400,7 @@ function setMarginsOnFullWidthBlocks(loadEventInfo) {
     GWLog("setMarginsOnFullWidthBlocks", "rewrite.js", 1);
 
     //  Get all full-width blocks in the given document.
-    let allFullWidthBlocks = loadEventInfo.document.querySelectorAll("div.full-width, figure.full-width");
+    let allFullWidthBlocks = loadEventInfo.document.querySelectorAll("div.width-full, figure.width-full");
 
     let removeFullWidthBlockMargins = () => {
         allFullWidthBlocks.forEach(fullWidthBlock => {
