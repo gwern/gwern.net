@@ -63,7 +63,7 @@ Annotations = {
         */
 
     annotationsBasePathname: "/metadata/annotations/",
-    annotationReferenceElementSelectors: [ "a.docMetadata" ],
+    annotationReferenceElementSelectors: [ "a.link-annotated" ],
     annotationReferenceElementSelectorPrefix: ".annotation > p ",
 
     /******************/
@@ -443,7 +443,7 @@ Annotations = {
             //  Mark other Wikipedia links as also being annotated.
             if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
 				if (Annotations.isWikipediaArticleLink(link)) {
-					link.classList.add("docMetadata");
+					link.classList.add("link-annotated");
 				} else {
 					link.classList.add("link-live");
 				}

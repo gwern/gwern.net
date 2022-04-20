@@ -33,13 +33,13 @@ Extracts.targetTypeDefinitions.insertBefore([
 
 Extracts = { ...Extracts, ...{
     //  Used in: Extracts.setUpAnnotationLoadEventWithin
-    annotatedTargetSelectors: [ "a.docMetadata" ],
+    annotatedTargetSelectors: [ "a.link-annotated" ],
 
     //  Called by: extracts.js (as `predicateFunctionName`)
     //  Called by: extracts.js
     //  Called by: extracts-content.js
     isAnnotatedLink: (target) => {
-        return target.classList.contains("docMetadata");
+        return target.classList.contains("link-annotated");
     },
 
     /*  An annotation for a link.

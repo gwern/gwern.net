@@ -502,7 +502,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function bindSectionHighlightEventsToAnnotatedLinks(loadEventInfo) {
     GWLog("bindSectionHighlightEventsToAnnotatedLinks", "rewrite.js", 1);
 
-    loadEventInfo.document.querySelectorAll(".docMetadata").forEach(annotatedLink => {
+    loadEventInfo.document.querySelectorAll(".link-annotated").forEach(annotatedLink => {
         //  Unbind existing events, if any.
         if (annotatedLink.annotatedLinkMouseEnter)
         	annotatedLink.removeEventListener("mouseenter", annotatedLink.annotatedLinkMouseEnter);
