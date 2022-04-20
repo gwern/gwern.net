@@ -520,6 +520,14 @@ hr::after,
     filter: drop-shadow(0 0 0 currentColor);
 }
 
+/*************************/
+/* TAG DIRECTORY INDEXES */
+/*************************/
+
+.directory-indexes.columns ul {
+	clear: none;
+}
+
 /**********/
 /* DISQUS */
 /**********/

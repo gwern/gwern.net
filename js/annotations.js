@@ -442,7 +442,11 @@ Annotations = {
 
             //  Mark other Wikipedia links as also being annotated.
             if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
-                link.classList.add("docMetadata");
+				if (Annotations.isWikipediaArticleLink(link)) {
+					link.classList.add("docMetadata");
+				} else {
+					link.classList.add("link-live");
+				}
 
 				//	Link icon metadata also affects link underline style.
                 link.dataset.linkIcon = "wikipedia";
