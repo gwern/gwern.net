@@ -2151,6 +2151,10 @@ span.inflationAdjusted {
     column-width: 15em;
     column-gap: 3em;
     margin-bottom: 2em;
+
+    /*	Without `clear`, columns don’t render properly if there’s a float.
+     */
+    clear: both;
 }
 .markdownBody .columns li,
 .markdownBody .columns li p {
