@@ -3,7 +3,7 @@
 # similar.sh: get a neural net summary (embedding) of a text string (usually an annotation)
 # Author: Gwern Branwen
 # Date: 2021-12-05
-# When:  Time-stamp: "2022-04-11 19:01:53 gwern"
+# When:  Time-stamp: "2022-04-20 16:47:44 gwern"
 # License: CC-0
 #
 # Shell script to pass a document into the OpenAI API Embedding endpoint ( https://beta.openai.com/docs/api-reference/embeddings
@@ -56,15 +56,21 @@ while [ $TEXT_LENGTH -gt 0 ]; do
          -d "{\"input\": \"$TEXT\"}")"
     PARSED="$(echo "$RESULT" | jq --raw-output '.model, .data[0].embedding')"
 
-    if [ "$PARSED" = "null
-null" ]; then
-        echo "Length error? $TEXT_LENGTH $(echo $RESULT | jq .)" 1>&2
-        TEXT_LENGTH="$(($TEXT_LENGTH - 250))"
-        TEXT="${TEXT:0:$TEXT_LENGTH}"
-        sleep 2s
+    if [ "$(echo "$PARSED" | fgrep 'exceeded your current quota' | wc --char)" -eq 0 ]; then
+        echo "Quota exceeded!" >> /dev/stderr
+        echo "$RESULT" >> /dev/stderr
+        exit 1
     else
-        echo "$PARSED"
-        break
+        if [ "$PARSED" = "null
+null" ]; then
+            echo "Length error? $TEXT_LENGTH $(echo $RESULT | jq .)" 1>&2
+            TEXT_LENGTH="$(($TEXT_LENGTH - 250))"
+            TEXT="${TEXT:0:$TEXT_LENGTH}"
+            sleep 2s
+        else
+            echo "$PARSED"
+            break
+        fi
     fi
 done
 
