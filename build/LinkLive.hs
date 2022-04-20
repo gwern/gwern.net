@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-19 19:52:33 gwern"
+When:  Time-stamp: "2022-04-20 15:13:17 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -34,11 +34,11 @@ import Control.Monad (when)
 import Data.List (sort)
 import Data.Maybe (isNothing)
 import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
-import Data.Text as T (isInfixOf, isPrefixOf, isSuffixOf, unpack, Text)
+import Data.Text as T (isInfixOf, isPrefixOf, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
 import LinkBacklink (readBacklinksDB, Backlinks)
-import Utils (addClass, host)
+import Utils (addClass, host, anySuffixT)
 
 linkLive :: Inline -> Inline
 linkLive x@(Link (_,cl,_) _ (u, _))
@@ -58,11 +58,11 @@ overrideLinkLive = []
 
 -- Nothing = unknown/untested; Just True = known good; Just False = known bad
 urlLive :: T.Text -> Maybe Bool
-urlLive u | u'            `elem`    goodDomainsSimple = Just True
-          | any (`T.isSuffixOf` u') goodDomainsSub    = Just True
-          | u'               `elem` badDomainsSimple  = Just False
-          | any (`T.isSuffixOf` u') badDomainsSub     = Just False
-          | otherwise                                 = Nothing
+urlLive u | u'     `elem` goodDomainsSimple = Just True
+          | anySuffixT u' goodDomainsSub    = Just True
+          | u'     `elem` badDomainsSimple  = Just False
+          | anySuffixT u' badDomainsSub     = Just False
+          | otherwise                       = Nothing
    where u' = host u
 
 linkLivePrioritize :: IO [(Int, T.Text)]

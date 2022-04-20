@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-04-13 10:56:16 gwern"
+When:  Time-stamp: "2022-04-20 15:29:54 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -96,7 +96,7 @@ module LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata) where
 import Control.Monad (filterM)
 import Data.IORef (IORef, readIORef, writeIORef)
 import qualified Data.Map.Strict as M (fromList, insert, lookup, toAscList, Map)
-import Data.List (isInfixOf, isPrefixOf, isSuffixOf)
+import Data.List (isInfixOf, isPrefixOf)
 import Data.List.Utils (replace)
 import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text.IO as TIO (readFile)
@@ -111,7 +111,7 @@ import Network.URI.TLD (parseTLD)
 import Text.Pandoc (Inline(Link))
 import Text.Show.Pretty (ppShow)
 
-import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass)
+import Utils (writeUpdatedFile, printGreen, printRed, sed, addClass, anyInfix, anyPrefix, anySuffix)
 
 type ArchiveMetadataItem = Either
   Integer -- Age: first seen date -- ModifiedJulianDay, eg. 2019-11-22 = 58810
@@ -275,12 +275,10 @@ While the logic is a little opaque to readers, I think this handles Arxiv much m
 -- 3. after that, we may want to skip various filetypes and domains
 whiteList :: String -> Bool
 whiteList url
-  | any (`isInfixOf` url) ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
-  | any (`isPrefixOf` url) ["/", "./", "../", "https://www.gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/docs/"] = True
-  | any (`isSuffixOf` url) [".pdf"] = False
-  | any (`isSuffixOf` url) ["/pdf"] = False
-  | any (`isInfixOf` url) [".pdf#"] = False
-  | any (`isInfixOf` url) [".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
+  | anyInfix url ["citeseerx.ist.psu.edu"] = False -- TODO: after fixing all existing Citeseer links, set this rule to False
+  | anyPrefix url ["/", "./", "../", "https://www.gwern.net", "#", "!", "$", "mailto", "irc", "/metadata/", "/docs/"] = True
+  | anySuffix url [".pdf", "/pdf", ".pdf#"] = False
+  | anyInfix url [".txt" -- TODO: generalize the PDF download to handle all non-HTML filetypes
       , ".xlsx"
       , ".xz"
       , ".csv"

@@ -13,7 +13,7 @@ import Data.List (intercalate, nub, sort, sortBy)
 import qualified Data.Map.Strict as M (difference, elems, filter, filterWithKey, fromList, fromListWith, toList, map, union, Map)
 import Data.Maybe (isJust)
 import qualified Data.Set as S (fromList, member, Set)
-import qualified Data.Text as T (append, dropWhile, dropWhileEnd, length, lines, intercalate, pack, isInfixOf, isPrefixOf, toLower, unpack, Text)
+import qualified Data.Text as T (append, dropWhile, dropWhileEnd, length, lines, intercalate, pack, toLower, unpack, Text)
 import Data.Char (isSpace, isPunctuation)
 import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
@@ -27,7 +27,7 @@ import Data.List.Unique as U (repeated) -- Unique
 import Text.Regex (mkRegex, matchRegex)
 
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
-import Utils (writeUpdatedFile, printGreen)
+import Utils (writeUpdatedFile, printGreen, anyInfixT, anyPrefixT)
 
 hitsMinimum, anchorLengthMaximum :: Int
 hitsMinimum = 2
@@ -98,14 +98,14 @@ parseURLs file = do
 
 -- return True if matches any blacklist conditions
 filterURLs :: T.Text -> Bool
-filterURLs    u = "$"`T.isPrefixOf`u || "\8383"`T.isPrefixOf`u || "#"`T.isPrefixOf`u || "/static/img/"`T.isPrefixOf`u || "/newsletter/20"`T.isPrefixOf`u || "dropbox.com" `T.isInfixOf` u || "https://www.harney.com"`T.isPrefixOf`u ||
+filterURLs    u = anyPrefixT u ["$","\8383","#","/static/img/","/newsletter/20","dropbox.com","https://www.harney.com"] ||
                   u `elem` ["https://www.reuters.com/article/us-germany-cyber-idUSKCN1071KW"]
 filterAnchors :: S.Set T.Text -> T.Text -> Bool
 filterAnchors d t = T.length t > anchorLengthMaximum ||
                     S.member (T.toLower t) d ||
                     isJust (matchRegex regex (T.unpack t)) ||
-                    "$"`T.isInfixOf`t || "%"`T.isInfixOf`t || "["`T.isInfixOf`t || "]"`T.isInfixOf`t ||
-                    "("`T.isPrefixOf`t  || "."`T.isPrefixOf`t ||
+                    anyInfixT t ["$","%","[","]"] ||
+                    anyPrefixT t ["(","."] ||
                     "&"==t ||
                     elem t badStrings
   where regex = mkRegex $ intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+", "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?", "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]

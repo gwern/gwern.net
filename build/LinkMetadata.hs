@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-20 11:29:33 gwern"
+When:  Time-stamp: "2022-04-20 15:18:45 gwern"
 License: CC-0
 -}
 
@@ -58,7 +58,7 @@ import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
 import LinkBacklink (getSimilarLink, getBackLink, readBacklinksDB, Backlinks)
 import Query (extractURLs, truncateTOCHTML)
-import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified)
+import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix)
 
 ----
 -- Should the current link get a 'G' icon because it's an essay or regular page of some sort?
@@ -199,7 +199,7 @@ readLinkMetadataAndCheck = do
 
              let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,tags,_) -> if not ("/docs/" `isPrefixOf` f) then False else
                                                         let fileTag = replace "/docs/" "" $ takeDirectory f
-                                                         in any ((fileTag++"/") `isPrefixOf`) tags) final
+                                                         in anyPrefix (fileTag++"/") tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
              -- check tags (not just custom but all of them, including partials)
@@ -636,7 +636,7 @@ tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` p
 
 -- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
-uniqTags tags = nubOrd $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
+uniqTags tags = nubOrd $ filter(\t -> not (anyPrefix (t++"/") tags)) tags
 
 -- another tag heuristic: some pages are heavily topic-focused such that any link on them can safely be given a specific tag, especially as many pages serve as link-dumps. (For example, everything on '/Sunk-cost' can be safely tagged 'sunk-cost'.)
 -- Using the forward-links database, we can look up what pages each link is present on, see if it is linked by any such page specified in our little topic database, and add that tag (if not already present).
@@ -647,9 +647,9 @@ pages2Tags f path oldTags = let additionalTags = page2Tag f path ++ url2Tags pat
 page2Tag :: Backlinks -> String -> [String]
 page2Tag fdb path
   -- skip metadata pages which are linked all over the place for various reasons
-  | any (`isPrefixOf` path) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/About", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem"]
+  | anyPrefix path ["/images", "/tags/", "/docs/www/", "/newsletter/", "/About", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem"]
                                        = []
-  | any (`isSuffixOf` path) ["/index"] = []
+  | anySuffix path ["/index"] = []
   | otherwise = let backlinks = M.lookup (T.pack $ takeWhile (/='#') path) fdb in
                     case backlinks of
                       Nothing -> case M.lookup (T.pack $ path) fdb of -- is the URL present under a hash-link?
@@ -905,22 +905,15 @@ data Failure = Temporary | Permanent deriving Show
 
 linkDispatcher :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern, arxiv, biorxiv, pubmed, openreview :: Path -> IO (Either Failure (Path, MetadataItem))
-linkDispatcher l | "/metadata/annotations/backlinks/" `isPrefixOf` l' = return (Left Permanent)
-                 | "/metadata/annotations/similars/"   `isPrefixOf` l' = return (Left Permanent)
+linkDispatcher l | anyPrefix l' ["/metadata/annotations/backlinks/", "/metadata/annotations/similars/"] = return (Left Permanent)
                  -- WP is now handled by annotations.js calling the Mobile WP API; we pretty up the title for directory-tags.
                  | "https://en.wikipedia.org/wiki/" `isPrefixOf` l' = return $ Right (l', (wikipediaURLToTitle l', "", "", "", [], ""))
                  | "https://arxiv.org/abs/" `isPrefixOf` l' = arxiv l'
                  | "https://openreview.net/forum?id=" `isPrefixOf` l' || "https://openreview.net/pdf?id=" `isPrefixOf` l' = openreview l'
-                 | "https://www.biorxiv.org/content/" `isPrefixOf` l' = biorxiv l'
-                 | "https://www.medrxiv.org/content/" `isPrefixOf` l' = biorxiv l'
+                 | anyPrefix l' ["https://www.biorxiv.org/content/", "https://www.medrxiv.org/content/"] = biorxiv l'
                  | "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC" `isPrefixOf` l' = pubmed l'
                      -- WARNING: this is not a complete list of PLOS domains, just the ones currently used on Gwern.net; didn't see a complete list anywhere...
-                 | "journals.plos.org" `isInfixOf` l' = pubmed l'
-                 | "plosbiology.org" `isInfixOf` l' = pubmed l'
-                 | "ploscompbiology.org" `isInfixOf` l' = pubmed l'
-                 | "plosgenetics.org" `isInfixOf` l' = pubmed l'
-                 | "plosmedicine.org" `isInfixOf` l' = pubmed l'
-                 | "plosone.org" `isInfixOf` l' = pubmed l'
+                 | anyInfix l' ["journals.plos.org", "plosbiology.org", "ploscompbiology.org", "plosgenetics.org", "plosmedicine.org", "plosone.org"] = pubmed l'
                  | null l' = return (Left Permanent)
                  -- locally-hosted PDF?
                  | ".pdf" `isInfixOf` l' = let l'' = linkCanonicalize l' in if head l'' == '/' then pdf $ tail l' else return (Left Permanent)
@@ -971,7 +964,7 @@ pdf p = do let p' = takeWhile (/='#') p
            else return (Left Permanent)
 
 filterMeta :: String -> String
-filterMeta ea = if any (`isInfixOf`ea) badSubstrings || elem ea badWholes then "" else ea
+filterMeta ea = if anyInfix ea badSubstrings || elem ea badWholes then "" else ea
  where badSubstrings, badWholes :: [String]
        badSubstrings = ["ABBYY", "Adobe", "InDesign", "Arbortext", "Unicode", "Total Publishing", "pdftk", "aBBYY", "FineReader", "LaTeX", "hyperref", "Microsoft", "Office Word", "Acrobat", "Plug-in", "Capture", "ocrmypdf", "tesseract", "Windows", "JstorPdfGenerator", "Linux", "Mozilla", "Chromium", "Gecko", "QuarkXPress", "LaserWriter", "AppleWorks", "PDF", "Apache", ".tex", ".tif", "2001", "2014", "3628", "4713", "AR PPG", "ActivePDF", "Administrator", "Administratör", "American Association for the Advancement of Science", "Appligent", "BAMAC6", "CDPUBLICATIONS", "CDPublications", "Chennai India", "Copyright", "DesktopOperator", "Emacs", "G42", "GmbH", "IEEE", "Image2PDF", "J-00", "JN-00", "LSA User", "LaserWriter", "Org-mode", "PDF Generator", "PScript5.dll", "PageMaker", "PdfCompressor", "Penta", "Preview", "PrimoPDF", "PrincetonImaging.com", "Print Plant", "QuarkXPress", "Radical Eye", "RealPage", "SDK", "SYSTEM400", "Sci Publ Svcs", "Scientific American", "Springer", "TIF", "Unknown", "Utilities", "XPP", "apark", "bhanson", "cairo 1", "cairographics.org", "dvips", "easyPDF", "eguise", "epfeifer", "fdz", "ftfy", "gscan2pdf", "jsalvatier", "jwh1975", "kdx", "pdf", " OVID ", "imogenes", "firefox", "Firefox", "Mac1", "EBSCO", "faculty.vp", ".book", "PII", "Typeset", ".pmd", "affiliations", "list of authors", ".doc", "untitled", "Untitled", "FrameMaker", "PSPrinter", "qxd", "INTEGRA", "Xyvision", "CAJUN", "PPT Extended", "Secure Data Services", "MGS V", "mgs;", "COPSING", "- AAAS", "Science Journals", "Serif Affinity", "Google Analytics", "rnvb085", ".indd", "hred_", "penta@", "WorkStation", "ORDINATO+", ":Gold:", "XeTeX", "Aspose", "Abbyy", "Archetype Publishing Inc.", "AmornrutS", "OVID-DS", "PAPER Template", "IATED"]
        badWholes = ["P", "b", "cretu", "user", "yeh", "Canon", "times", "is2020", "klynch", "downes", "American Medical Association", "om", "lhf", "comp", "khan"]
@@ -1143,7 +1136,7 @@ paragraphized a = paragraphsMarkdown a || blockElements a || length (paragraphsH
    paragraphsMarkdown b = "\n\n" `isInfixOf` b
    blockElements :: String -> Bool
    -- full-blown lists or blockquotes also imply it's fully-formatted
-   blockElements b = "<ul>" `isInfixOf` b || "<ol>" `isInfixOf` b || "<ul type=" `isInfixOf` b || "<ol type=" `isInfixOf` b || "<blockquote>" `isInfixOf` b || "<figure>" `isInfixOf` b
+   blockElements b = anyInfix b ["<ul>", "<ol>", "<ul type=", "<ol type=", "<blockquote>", "<figure>"]
    -- annotations are wrapped in a '<p>...</p>' pair, unless they start with another block element; if there are two or more '<p>', then, there are at least two paragraphs (because it must be '<p>...</p> ... <p>...</p>') and it counts as being paragraphized.
    paragraphsHtml :: String -> [(T.Text,T.Text)]
    paragraphsHtml b = T.breakOnAll "<p>" (T.pack b)
@@ -1596,13 +1589,16 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 
 -- gwern :: Path -> IO (Either Failure (Path, MetadataItem))
 gwern p | ".pdf" `isInfixOf` p = pdf p
-        | any (`isInfixOf` p) [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
-        | "tags/" `isPrefixOf` p || "/tags/" `isPrefixOf` p || "newsletter/" `isPrefixOf` p || "docs/link-bibliography/" `isPrefixOf` p || "#external-links" `isSuffixOf` p || "#see-also" `isSuffixOf` p || "#footnotes" `isSuffixOf` p || "#links" `isSuffixOf` p || "#top-tag" `isSuffixOf` p || "#miscellaneous" `isSuffixOf` p || "#appendix" `isSuffixOf` p || "#conclusion" `isSuffixOf` p || "#media" `isSuffixOf` p || "#writings" `isSuffixOf` p || "#filmtv" `isSuffixOf` p || "#music" `isSuffixOf` p || "index.html" `isInfixOf` p || "/index#" `isInfixOf` p || ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
+        | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
+        | anyPrefix p ["tags/", "/tags/", "newsletter/", "/newsletter/", "docs/link-bibliography/"] ||
+          anySuffix p ["#external-links", "#see-also", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#top-tag", "#miscellaneous", "#appendix", "#conclusion", "#media", "#writings", "#filmtv", "#music", "#books"] ||
+          anyInfix p ["index.html", "/index#"] ||
+          ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
         | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
             do printRed p'
-               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--location", "--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"]
+               (status,_,bs) <- runShellCommand "./" Nothing "curl" ["--silent", "https://www.gwern.net/"++p', "--user-agent", "gwern+gwernscraping@gwern.net"] -- we strip `--location` because we do *not* want to follow redirects. Redirects creating duplicate annotations is a problem.
                case status of
                  ExitFailure _ -> printRed ("Gwern.net download failed: " ++ p) >> return (Left Permanent)
                  _ -> do
@@ -1684,7 +1680,7 @@ gwernAbstract shortAllowed p' description keywords toc f =
                          in (titleClean, abstractRaw, restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
-      abstrct'' = (if "<p>"`isPrefixOf`abstrct' || "<p>"`isPrefixOf`abstrct' || "<figure>"`isPrefixOf`abstrct' then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
+      abstrct'' = (if anyPrefix abstrct' ["<p>", "<p>", "<figure>"] then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
   in if "abstractNot" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool

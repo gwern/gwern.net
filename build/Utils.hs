@@ -4,7 +4,7 @@ module Utils where
 import Control.Monad (when)
 import Data.Char (isSpace)
 import Data.Text.IO as TIO (readFile, writeFile)
-import qualified Data.Text as T (Text, pack, unpack)
+import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf)
 import Network.URI (parseURIReference, uriAuthority, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
@@ -16,7 +16,7 @@ import Data.Time.Clock (getCurrentTime, utctDay)
 import Data.Time.Calendar (toGregorian)
 import System.IO.Unsafe (unsafePerformIO)
 import Text.Regex (subRegex, mkRegex)
-import Data.List (group, sort)
+import Data.List (group, sort, isInfixOf, isPrefixOf, isSuffixOf)
 import Data.List.Utils (replace)
 import Text.Show.Pretty (ppShow)
 
@@ -116,3 +116,13 @@ host p = case parseURIReference (T.unpack p) of
               Just uri' -> case uriAuthority uri' of
                                 Nothing -> ""
                                 Just uridomain' -> T.pack $ uriRegName uridomain'
+
+anyInfix, anyPrefix, anySuffix :: String -> [String] -> Bool
+anyInfix p = any (`isInfixOf` p)
+anyPrefix p = any (`isPrefixOf` p)
+anySuffix p = any (`isSuffixOf` p)
+
+anyInfixT, anyPrefixT, anySuffixT :: T.Text -> [T.Text] -> Bool
+anyInfixT p = any (`T.isInfixOf` p)
+anyPrefixT p = any (`T.isPrefixOf` p)
+anySuffixT p = any (`T.isSuffixOf` p)

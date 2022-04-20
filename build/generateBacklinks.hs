@@ -7,9 +7,9 @@ import Text.Pandoc (nullMeta,
                      runPure, writeHtml5String,
                      Pandoc(Pandoc), Block(BulletList,Para), Inline(Link,RawInline), Format(..))
 import Text.Pandoc.Walk (walk)
-import qualified Data.Text as T (append, isPrefixOf, isInfixOf, isSuffixOf, head, pack, unpack, tail, takeWhile, Text)
+import qualified Data.Text as T (append, isInfixOf, head, pack, unpack, tail, takeWhile, Text)
 import qualified Data.Text.IO as TIO (readFile)
-import Data.List (isPrefixOf, isInfixOf, isSuffixOf)
+import Data.List (isPrefixOf, isSuffixOf)
 import qualified Data.Map.Strict as M (lookup, keys, elems, mapWithKey, traverseWithKey, fromListWith, union, filter)
 import System.Directory (createDirectoryIfMissing, doesFileExist)
 import Network.HTTP (urlEncode)
@@ -20,10 +20,10 @@ import Control.Monad (forM_, unless)
 import Control.Monad.Parallel as Par (mapM)
 
 import LinkAuto (linkAutoFiltered)
-import LinkMetadata -- (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, safeHtmlWriterOptions)
+import LinkMetadata (hasAnnotation, isLocalPath, readLinkMetadata, generateID, Metadata, MetadataItem, safeHtmlWriterOptions)
 import LinkBacklink (readBacklinksDB, writeBacklinksDB,)
 import Query (extractLinksWith)
-import Utils (writeUpdatedFile, sed)
+import Utils (writeUpdatedFile, sed, anyInfixT, anyPrefixT, anySuffixT, anyInfix, anyPrefix)
 
 main :: IO ()
 main = do
@@ -34,7 +34,7 @@ main = do
   -- check that all backlink targets/callers are valid:
   let dotPageFy f = if '.' `elem` f then f else f++".page" -- all files have at least 1 period in them (for file extensions); a file missing periods must be a `.page` Markdown file, with the exception of tag pages which are auto-generated
   let filesCheck = map (dotPageFy . takeWhile (/='#') . tail) $ nubOrd $
-        filter (\f -> not ("tags/"`isInfixOf` f || "/index"`isInfixOf` f || "/docs/link-bibliography/" `isPrefixOf` f)) $
+        filter (\f -> not (anyInfix f ["tags/","/index","/docs/link-bibliography/"])) $
         filter ("/"`isPrefixOf`) $ map T.unpack $
         M.keys bldb ++ concat (M.elems bldb)
   forM_ filesCheck (\f -> do exist <- doesFileExist f
@@ -43,7 +43,7 @@ main = do
   -- if all are valid, write out:
   _ <- M.traverseWithKey (writeOutCallers md) bldb
 
-  fs <- fmap (filter (\f -> not $ ("/backlinks/"`isPrefixOf`f || "/docs/link-bibliography/"`isPrefixOf`f || "#"`isPrefixOf`f || ".#"`isPrefixOf`f)) .  map (sed "^\\.\\/" "")) $
+  fs <- fmap (filter (\f -> not $ (anyPrefix f ["/backlinks/","/docs/link-bibliography/","#",".#"])) .  map (sed "^\\.\\/" "")) $
          fmap lines getContents
 
   let markdown = filter (".page" `isSuffixOf`) fs
@@ -131,12 +131,10 @@ truncateAnchors = T.takeWhile (/='#')
 
 blackList :: T.Text -> Bool
 blackList f
-  | any (`T.isInfixOf` f) ["/backlinks/"] = False
-  | any (`T.isInfixOf` f) ["/link-bibliography/"] = False
-  | any (`T.isInfixOf` f) ["/similars/"] = False
-  | any (`T.isPrefixOf` f) ["/images", "/tags/", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
-                            -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
-                            "https://www.youtube.com/", "https://en.wikipedia.org/wiki/",
-                            "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
-  | any (`T.isSuffixOf` f) ["/index"] = False
+  | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/"] = False
+  | anyPrefixT f ["/images", "/tags/", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
+                   -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
+                   "https://www.youtube.com/", "https://en.wikipedia.org/wiki/",
+                   "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
+  | anySuffixT f ["/index"] = False
   | otherwise = True
