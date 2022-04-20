@@ -4,7 +4,7 @@
 // When:
 // license: MIT (derivative of footnotes.js, which is PD)
 
-// popups.js parses a HTML document and looks for <a> links which have the 'docMetadata' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
+// popups.js parses a HTML document and looks for <a> links which have the 'link-annotated' attribute class, and the attributes 'data-popup-title', 'data-popup-author', 'data-popup-date', 'data-popup-doi', 'data-popup-abstract'.
 // (These attributes are expected to be populated already by the HTML document's compiler, however, they can also be done dynamically. See '/static/js/old/wikipedia-popups.js' for an example of a library which does Wikipedia-only dynamically on page loads.)
 
 // Popups are inspired by Wikipedia's augmented tooltips (originally implemented as editor-built extensions, now available to all readers via https://www.mediawiki.org/wiki/Page_Previews ). Whenever any such link is mouse-overed by the user, popups.js will pop up a large tooltip-like square with the contents of the attributes. This is particularly intended for references, where it is extremely convenient to autopopulate links such as to Arxiv.org/Biorxiv.org/Wikipedia with the link's title/author/date/abstract, so the reader can see it instantly. Links to 'reverse citations' are provided as much as possible: links with DOIs go to a Semantic Scholar search engine query for that DOI, which prioritizes meta-analyses & systematic reviews to provide context for any given paper (particularly whether it has failed to replicate or otherwise been debunked); for URLs ending in 'PDF' which probably have Semantic Scholar entries, they go to a title search; and for all other URLs, a Google search using the obscure `link:` operator is provided.. For more details, see `LinkMetadata.hs`.
@@ -28,13 +28,13 @@
 	Extracts.targetsDidProcessOnContentLoad {
 			source: "Extracts.processTargetsOnContentLoad"
 			document:
-				The `document` property of the GW.contentDidLoad event that 
+				The `document` property of the GW.contentDidLoad event that
 				triggered the Extracts.processTargetsOnContentLoad handler.
             location:
-                The `location` property of the GW.contentDidLoad event that 
+                The `location` property of the GW.contentDidLoad event that
 				triggered the Extracts.processTargetsOnContentLoad handler.
 			flags:
-				The `flags` property of the GW.contentDidLoad event that 
+				The `flags` property of the GW.contentDidLoad event that
 				triggered the Extracts.processTargetsOnContentLoad handler.
 		}
 		Fired after targets in a document have been processed (classes applied,
@@ -94,13 +94,13 @@ Extracts = {
             let targetTypeInfo = Extracts.targetTypeInfo(target);
             if (targetTypeInfo) {
                 let specialTestFunction = Extracts[`testTarget_${targetTypeInfo.typeName}`]
-                if (   specialTestFunction 
+                if (   specialTestFunction
                 	&& specialTestFunction(target) == false)
                     return false;
 
                 //  Do not allow pop-frames to spawn themselves.
                 let containingPopFrame = target.closest(".popframe");
-                if (   containingPopFrame 
+                if (   containingPopFrame
                 	&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
                     return false;
 
@@ -273,7 +273,7 @@ Extracts = {
 					link. (It _must_ be injected as a Unicode character into the
 					existing text node; injecting it within the .indicator-hook
 					span, or as an HTML escape code into the text node, or in
-					any other fashion, creates a separate text node, which 
+					any other fashion, creates a separate text node, which
 					causes all sorts of problems - text shadow artifacts, etc.)
 				 */
 				let linkFirstTextNode = link.firstTextNode;
@@ -396,7 +396,7 @@ Extracts = {
         let didFill = false;
         let target = popFrame.spawningTarget;
         let targetTypeInfo = Extracts.targetTypeInfo(target);
-        if (   targetTypeInfo 
+        if (   targetTypeInfo
         	&& targetTypeInfo.popFrameFillFunctionName) {
             didFill = Extracts.popFrameProvider.setPopFrameContent(popFrame, Extracts[targetTypeInfo.popFrameFillFunctionName](target));
             if (targetTypeInfo.popFrameClasses)
@@ -605,7 +605,7 @@ Extracts = {
             page (which can be the root page of the window).
          */
         let fullTargetDocument = Extracts.targetDocument(target);
-        if (   fullTargetDocument 
+        if (   fullTargetDocument
         	&& target.hash > "") {
             /*  If there already is a pop-frame that displays the entire linked
                 page, and if the link points to an anchor, display the linked
@@ -742,7 +742,7 @@ Extracts = {
         });
 
         //  Scroll to the target.
-        if (   target.hash > "" 
+        if (   target.hash > ""
         	&& popFrame.classList.contains("local-transclude"))
             requestAnimationFrame(() => {
             	let element = null;
@@ -840,8 +840,8 @@ Extracts = {
 
 					//	Alt text, if provided.
 					let pageThumbnailAltMetaTag = target.popFrame.querySelector("meta[property='og:image:alt']");
-					let pageThumbnailAltText = pageThumbnailAltMetaTag 
-											   ? pageThumbnailAltMetaTag.getAttribute("content") 
+					let pageThumbnailAltText = pageThumbnailAltMetaTag
+											   ? pageThumbnailAltMetaTag.getAttribute("content")
 											   : `Thumbnail image for “${Extracts.cachedPageTitles[target.pathname]}”`;
 
 					//	Image dimensions.
@@ -850,11 +850,11 @@ Extracts = {
 
 					//	Construct and save the <img> tag.
 					if (pageThumbnailURL.pathname != "/static/img/logo/logo-whitebg-large-border.png")
-						Extracts.cachedPageThumbnailImageTags[target.pathname] = `<img 
-							src='${pageThumbnailURL.href}' 
+						Extracts.cachedPageThumbnailImageTags[target.pathname] = `<img
+							src='${pageThumbnailURL.href}'
 							alt='${pageThumbnailAltText}'
-							width='${pageThumbnailWidth}' 
-							height='${pageThumbnailHeight}' 
+							width='${pageThumbnailWidth}'
+							height='${pageThumbnailHeight}'
 							style='width: ${pageThumbnailWidth}px; height: auto;'
 								>`;
 
@@ -949,7 +949,7 @@ Extracts = {
         popFrame.classList.add(...target.classList);
         //  We then remove some of the imported classes.
         popFrame.classList.remove("has-annotation", "has-content", "link-self",
-            "link-local", "spawns-popup", "spawns-popin", "idNot", 
+            "link-local", "spawns-popup", "spawns-popin", "idNot",
             "backlinksNot", "uri");
 
         //  Add ‘markdownBody’ class.
