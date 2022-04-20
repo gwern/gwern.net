@@ -309,7 +309,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | u'' "krebsonsecurity.com" = aI "Kreb" "text,quad,sans" -- KrebsOnSecurity: 'KOS' unrecognizable, favicon a baffling mystery, Brian Krebs is generally known as 'Krebs', so abbreviate that
  | u'' "www.nextplatform.com" = aI "NEXT" "text,quad,sans" -- The Next Platform's double-cube logo *could* work as an SVG but not convinced it'd be recognizable
  | u'' "www.vetta.org" = aI "Legg" "text,quad,sans" -- Shane Legg (DeepMind)
- | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation isntead
+ | u'' "www.spiegel.de" = aI "SPGL" "text,quad" -- Der Spiegel, major German newspaper; the 'S' logo is unrecognizable given the sheer number of 'S' logos out there, so abbreviation instead
 
  -- SVG icons (remember the link-icon name is substituted in as part of the URL to the SVG icon)
  | aU'' ["www.amazon.com", "aws.amazon.com", "amazon.com", "smile.amazon.com", "aboutamazon.com"] || u' "amazon.co." = aI "amazon" "svg"
@@ -356,6 +356,7 @@ linkIcon x@(Link (_,cl,attributes) _ (u, _))
  | aU'' ["www.econlib.org", "www.econtalk.org", "betonit.blog"] = aI "econlib" "svg" -- EconLib/EconLog/EconTalk torch icon <https://3ijp5i2qkzo4hq4yrxfteqh-wpengine.netdna-ssl.com/wp-content/themes/econlib/assets/icons/torch-icon.svg>
  | u' ".cochrane.org" || aU'' ["www.cochrane.org.uk", "www.cochranelibrary.com"] = aI "cochrane-collaboration" "svg" -- <https://upload.wikimedia.org/wikipedia/commons/archive/a/a1/20200122144949%21Cclogo.svg> (Newer version is not actually an SVG; reported on Talk page)
  | u'' "www.connectedpapers.com" = aI "connected-papers" "svg"
+ | u' "nasa.gov" = aI "nasa" "svg" -- NASA has way too many subdomains to try to whitelist them individually. SVG is a quad version of <https://commons.wikimedia.org/wiki/File:NASA_Worm_logo_(black).svg>
 
  -- many orgs will use a medium subdomain, so we fall back here for Medium and override above:
  | u'' "medium.com" || u'' "towardsdatascience.com" = aI "𝐌" "text" -- Medium: cheaper to abuse Unicode (𝐌) MATHEMATICAL BOLD CAPITAL M
@@ -978,4 +979,7 @@ linkIconTestUnits =
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans")
          , ("https://thepiratebay.org/description.php?id=14045031", "⚑☠\8205", "text,sans")
+         , ("https://history.nasa.gov/rogersrep/v2appf.htm", "nasa", "svg")
+         , ("https://science.nasa.gov/science-news/science-at-nasa/2005/03jun_naps/", "nasa", "svg")
+         , ("https://www.nasa.gov/mission_pages/station/expeditions/expedition30/tryanny.html", "nasa", "svg")
         ]
