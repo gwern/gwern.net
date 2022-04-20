@@ -49,7 +49,7 @@ Sidenotes = {
 	/*	Elements which occupy (partially or fully) the sidenote columns, and
 		which can thus collide with sidenotes.
 		*/
-	potentiallyOverlappingElementsSelector: ".full-width img, .full-width video, .full-width table, .full-width pre, .marginnote",
+	potentiallyOverlappingElementsSelector: ".width-full img, .width-full video, .width-full table, .width-full pre, .marginnote",
 
 	/*  Media query objects (for checking and attaching listeners).
 		*/

@@ -1374,11 +1374,11 @@ pre {
 /*= Full-width tables =*/
 /*=-------------------=*/
 
-.table-wrapper.full-width {
+.table-wrapper.width-full {
     position: relative;
     z-index: 1;
 }
-.table-wrapper.full-width table {
+.table-wrapper.width-full table {
     width: -moz-fit-content;
     width: fit-content;
     margin: 0 auto;
@@ -1775,7 +1775,7 @@ span.smallcaps {
 }
 
 /* Modifying the 'fill' does not work so well when we call an SVG as a 'background-image' (like for the —𝔊— footers on the index page), so we do variable+invert tricks to get a white copy of the logo as a hack. */
-body.index main article::after, body.tags main article::after, body.directory-index main article::after {
+body.index main article::after, body.tags main article::after, body.index-directory main article::after {
     filter: invert(1); background-color: var(--GW-body-background-color-inverted); }
 
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
