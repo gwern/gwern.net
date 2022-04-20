@@ -229,9 +229,9 @@ generateMatches md p abst matches =
                                                title' = simplifiedString title -- need to strip out HTML formatting like "<em>Peep Show</em>—The Most Realistic Portrayal of Evil Ever Made"
                                                titleQuery = "%22" ++ title' ++ "%22"
                                                query = if null title' && not (null doi) then doiQuery else if null doi && not (null title) then titleQuery else doiQuery ++ "+OR+" ++ titleQuery
-                                               linkMetadataG  = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
-                                               linkMetadataGS = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
-                                               linkMetadataCP = ("",["backlinksNot", "idNot", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
+                                               linkMetadataG  = ("",["backlinks-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google"), ("link-icon-type", "svg")])
+                                               linkMetadataGS = ("",["backlinks-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "google-scholar"), ("link-icon-type", "svg")])
+                                               linkMetadataCP = ("",["backlinks-not", "id-not", "link-live-not", "archive-not"],[("link-icon", "connected-papers"), ("link-icon-type", "svg")])
                                            in
                                             [[Para $
                                               [Strong [Str "Search"], Str ": ",
@@ -271,7 +271,7 @@ generateItem md (p2,distance) = case M.lookup p2 md of
                                   Just (_,_,_,_,_,"") -> []
                                   Just (t,_,_,_,tags,_) ->
                                     [Para
-                                      [Link ("", ["link-annotated", "backlinksNot", "idNot"], [("embeddingDistance", T.pack $ take 7 $ show distance)] ++
+                                      [Link ("", ["link-annotated", "backlinks-not", "id-not"], [("embeddingDistance", T.pack $ take 7 $ show distance)] ++
                                               if null tags then [] else [("linkTags", T.pack $ unwords tags) ]
                                             ) [RawInline (Format "html") $ T.pack t] (T.pack p2,"")]
                                     ]

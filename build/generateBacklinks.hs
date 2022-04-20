@@ -80,7 +80,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                        let callerClasses = map (\u -> if T.head u == '/' && not ("." `T.isInfixOf` u) then ["link-local"] else ["link-annotated"]) callers
                                        let callers' = zip3 callers callerClasses callerTitles
                                        let content = BulletList $
-                                            map (\(u,c,t) -> [Para [Link ("", "idNot":"backlinksNot":c, [])
+                                            map (\(u,c,t) -> [Para [Link ("", "id-not":"backlinks-not":c, [])
                                                                   [RawInline (Format "html") t]
                                                                   (if isLocalPath u then u`T.append`selfIdent else u, "")]
                                                    ]
@@ -119,9 +119,9 @@ parseFileForLinks mdp m = do text <- TIO.readFile m
                                 let called = filter (/= caller) (map (T.pack . replace "https://www.gwern.net/" "/"  . T.unpack) links)
                                 return $ zip called (repeat caller)
 
--- filter out links with the 'backlinksNot' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
+-- filter out links with the 'backlinks-not' class. This is for when we want to insert a link, but not have it 'count' as a backlink for the purpose of linking the reader. eg. the 'similar links' which are put into a 'See Also' in annotations - they're not really 'backlinks' even if they are semi-automatically approved as relevant.
 backLinksNot :: Inline -> Bool
-backLinksNot (Link (_, classes, _) _ _) = "backlinksNot" `notElem` classes
+backLinksNot (Link (_, classes, _) _ _) = "backlinks-not" `notElem` classes
 backLinksNot _ = True
 
 -- for URLs like 'arxiv.org/123#google' or 'docs/reinforcement-learning/2021-foo.pdf#deepmind', we want to preserve anchors; for on-site pages like '/GPT-3#prompt-programming' we want to merge all such anchor links into just callers of '/GPT-3'

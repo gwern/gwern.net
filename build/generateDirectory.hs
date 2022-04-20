@@ -101,13 +101,13 @@ generateDirectory mta dir'' = do
 
                directorySectionChildren ++
 
-               (if null dirsSeeAlsos then [] else ([Header 1 (idSeealso, ["displayPopNot"], []) [Str "See Also"]] ++
+               (if null dirsSeeAlsos then [] else ([Header 1 (idSeealso, ["display-pop-not"], []) [Str "See Also"]] ++
                                                   directorySectionSeeAlsos)) ++
 
                (if null titledLinks then [] else
-                   -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'displayPopNot', and the CSS (in default.css's popups section) will suppress that in popups/popins.
+                   -- NOTE: we need a <h1> for proper hierarchical tree, but that <h1> uses up a lot of visual space in popups/popins, and we can't just suppress *all* first-<h1>s, we only want to suppress the ones on directory/tag pages. So we define a new class 'display-pop-not', and the CSS (in default.css's popups section) will suppress that in popups/popins.
                    [Para []] ++
-                   [Header 1 (idLinks, ["displayPopNot"], []) [Str "Links"]] ++
+                   [Header 1 (idLinks, ["display-pop-not"], []) [Str "Links"]] ++
                    titledLinksSections) ++
 
                (if null untitledLinks then [] else

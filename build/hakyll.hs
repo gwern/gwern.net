@@ -297,7 +297,7 @@ pandocTransform md adb archived p = -- linkAuto needs to run before convertInter
                               pbth'' <- walkM imageSrcset pbth'
                               return pbth''
 
--- Example: Image ("",["full-width"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
+-- Example: Image ("",["width-full"],[]) [Str "..."] ("/images/gan/thiswaifudoesnotexist.png","fig:")
 -- type Text.Pandoc.Definition.Attr = (T.Text, [T.Text], [(T.Text, T.Text)])
 -- WARNING: image hotlinking is a bad practice: hotlinks will often break, sometimes just because of hotlinking. We assume that all images are locally hosted! Woe betide the cheapskate parasite who fails to heed this.
 imageSrcset :: Inline -> IO Inline
