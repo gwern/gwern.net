@@ -185,7 +185,7 @@ a.link-self::after {
 
 /*  Self-links in Wikipedia pop-frames.
     */
-.wikipedia-entry a[href*='wikipedia.org'].docMetadata.link-self::after {
+.wikipedia-entry a[href*='wikipedia.org'].link-annotated.link-self::after {
     content: "\00A7"; /* (§) Section sign */
     margin: 0 1px 0 0;
     width: 0.7em;
@@ -1054,7 +1054,7 @@ a[data-link-icon='wikipedia']:hover::after {
 }
 
 /*  Suppress the WP link icon suffix (knowledge of WP ‘articles’ vs Talk pages/History/etc is baked into
-    the links by the docMetadata+has-annotation classes, see LinkMetadata.hs’s
+    the links by the link-annotated+has-annotation classes, see LinkMetadata.hs’s
     `wikipediaArticleNamespace` function); the dotted-underlining is enough.
  */
 a[data-link-icon='wikipedia'].has-annotation::after {
