@@ -3054,6 +3054,10 @@ body.index-directory #disqus_thread {
     font-size: 6.625em;
 }
 
+.popframe-content-view > [class^='drop-cap-']:last-child {
+	overflow: hidden;
+}
+
 /*  Margin notes in pop-frames.
     */
 .popframe .marginnote {
