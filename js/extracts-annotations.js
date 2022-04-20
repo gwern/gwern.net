@@ -89,7 +89,7 @@ Extracts = { ...Extracts, ...{
         //  Extract title/link.
         let titleLinkClass = (originalLinkHTML > "" 
         					  ? `title-link local-archive-link` 
-        					  : (Annotations.isWikipediaLink(annotationIdentifier)
+        					  : (Annotations.isWikipediaArticleLink(annotationIdentifier)
         					  	 ? `title-link link-live`
         					  	 : `title-link`));
         let titleLinkHTML = `<a
@@ -112,7 +112,7 @@ Extracts = { ...Extracts, ...{
 
         //  The fully constructed annotation pop-frame contents.
         let abstractSpecialClass = ``;
-        if (Annotations.isWikipediaLink(annotationIdentifier))
+        if (Annotations.isWikipediaArticleLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
 
         return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
@@ -127,7 +127,7 @@ Extracts = { ...Extracts, ...{
 
         let popFrameTitleText = Extracts.popFrameHasLoaded(popFrame)
                                 ? popFrame.querySelector(".data-field.title").textContent
-                                : (Annotations.isWikipediaLink(Extracts.targetIdentifier(target))
+                                : (Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
                                    ? target.href
                                    : target.pathname + target.hash);
 
@@ -148,7 +148,7 @@ Extracts = { ...Extracts, ...{
 					  ].includes(target.hash.substr(1))))) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
         } else if (   target.hash > ""
-        		   && Annotations.isWikipediaLink(Extracts.targetIdentifier(target))
+        		   && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))
         		   && Extracts.popFrameHasLoaded(popFrame)) {
         	/*	For Wikipedia, show the page title and the section title,
         		separated by the ‘§’ symbol.
