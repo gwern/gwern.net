@@ -773,6 +773,14 @@ a[data-link-icon='miri']::after {
     opacity: 0.65;
 }
 
+a[data-link-icon='nasa']::after {
+    --link-icon-size: 0.75em;
+    --link-icon-offset-y: 0.2em;
+    --link-icon-offset-x: 0.15em;
+
+    opacity: 0.75;
+}
+
 a[data-link-icon='nautilus']::after {
 	--link-icon-size: 0.7em;
 	--link-icon-offset-y: 0.25em;
