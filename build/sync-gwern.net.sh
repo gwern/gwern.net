@@ -91,7 +91,7 @@ else
                 -e 'docs/link-bibliography') &
 
     bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e '404.html.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -248,8 +248,11 @@ else
     λ(){ gf '\\' ./static/css/*.css; }
     wrap λ "Warning: stray backslashes in CSS‽ (Dangerous interaction with minification!)"
 
-    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www' -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e 'hhttp://' -e 'hhttps://' -e '{.invertible-not}' -e ' _n_s' -e '{#'; }
+    λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '!Wikipedia' -e '!W'")" -e '!W \"' -e ']( http' -e ']( /' -e '!Margin:' -e '<span></span>' -e '<span />' -e '<span/>' -e 'http://gwern.net' -e 'http://www.gwern.net' -e 'https//www' -e 'http//www' -e '.invertible-not}{' -e '.invertibleNot' -e '.invertible-Not' -e '{.sallcaps}' -e 'hhttp://' -e 'hhttps://' -e '{.invertible-not}' -e ' _n_s'; }
     wrap λ "Stray links in Markdown/HTML"
+
+     λ(){ find ./ -type f -name "*.page" | fgrep -v '/Variables' | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | xargs --max-args=100 fgrep --with-filename --color=always -e '{#'; }
+     wrap λ "Bad link ID overrides in Markdown."
 
     λ(){ find ./ -type f -name "*.page" | fgrep --invert-match '_site' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/'  | parallel --max-args=100 egrep --with-filename --color=always -e 'pdf#page[0-9]' -e 'pdf#pg[0-9]' -e '\#[a-z]\+\#[a-z]\+'; }
     wrap λ "Incorrect PDF page links in Markdown"
@@ -315,11 +318,10 @@ else
                -e '"!"' -e '</sub<' -e 'xref>' -e '<xref' -e '<e>' -e '\\$' -e 'title="http' -e '%3Csup%3E' -e 'sup%3E' -e ' et la ' \
                -e '<strong>Abstract' -e ' ]' -e '</a>’s' -e ']</a>' -e 'title="&#39; ' -e 'collapseAbstract' -e '\n' -e 'utm_' \
                -e ' JEL' -e 'top-k' -e '</p> </p>' -e '</sip>' -e '<sip>' -e ',</a>' -e ' : ' -e " ' " -e '>/>a' -- ./metadata/*.yaml;
-         # look for YAML linebreaking at a hyphen:
+         # look for YAML line breaking at a hyphen:
         egrep -v '^- - http' ./metadata/*.yaml | eg '[a-zA-Z0-9>]-$';
         # look for punctuation inside links; unless it's a full sentence or a quote or a section link, generally prefer to put punctuation outside:
-        egrep -e '[.,:;-<!]</a>' -e '\]</a>' -- ./metadata/*.yaml | fgrep -v -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' | eg -e '[.,:;-<!]</a>' -e '\]</a>'
-;
+        egrep -e '[.,:;-<!]</a>' -e '\]</a>' -- ./metadata/*.yaml | fgrep -v -e 'i.i.d.' -e 'sativum</em> L.</a>' -e 'this cloning process.</a>' -e '#' | eg -e '[.,:;-<!]</a>' -e '\]</a>';
        }
     wrap λ "Check possible syntax errors in YAML metadata database"
 
@@ -386,7 +388,8 @@ else
                              -e 'Warning: <svg> proprietary attribute "alt"' -e 'Warning: <source> proprietary attribute "alt"' \
                              -e 'Warning: missing <!DOCTYPE> declaration' -e 'Warning: inserting implicit <body>' \
                              -e "Warning: inserting missing 'title' element" -e 'Warning: <img> proprietary attribute "decoding"' \
-                             -e 'Warning: <a> anchor .* already defined' -e 'Warning: <a> escaping malformed URI reference' )
+                             -e 'Warning: <a> anchor .* already defined' -e 'Warning: <a> escaping malformed URI reference' \
+                             -e 'Warning: <script> proprietary attribute "fetchpriority"' )
             if [[ -n $TIDY ]]; then echo -e "\n\e[31m$INDEX\e[0m:\n$TIDY"; fi
         done
 
@@ -583,7 +586,7 @@ else
     λ(){ find . -type f | fgrep -v -e '.'; }
     wrap λ "Every file should have at least one period in them (extension)."
 
-    λ(){ find . -type f -name "*\.*\.page"; }
+    λ(){ find . -type f -name "*\.*\.page" | fgrep -v -e '404.html.page'; }
     wrap λ "Markdown files should have exactly one period in them."
 
     λ(){ find . -type f -mtime +3 -name "*#*"; }
@@ -654,7 +657,7 @@ else
     wrap λ "DjVu detected (convert to PDF)"
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./docs/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e './docs/www/' -e './static/404.html' | xargs fgrep --files-with-matches 'noindex'; }
+    λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e './docs/www/' -e './static/404.html' -e './static/templates/default.html' | xargs fgrep --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages"
 
     λ(){ find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel --max-args=100 identify | egrep '\.gif\[[0-9]\] '; }

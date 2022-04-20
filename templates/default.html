@@ -56,6 +56,7 @@
     <meta property="og:image:width" content="$thumbnailWidth$">
     <meta name="keywords" content="$tags$">
     <meta name="dc.date.issued" content="$created$">
+    $if(error404)$<meta name="robots" content="noindex, nofollow, nosnippet, nocache, noarchive">$endif$
     <meta name="citation_publication_date" content="$created$">
     <meta name="dcterms.modified" content="$modified$">
     <link rel="schema.dcterms" href="https://www.dublincore.org/specifications/dublin-core/dcmi-terms/">
@@ -142,7 +143,8 @@
 
     $partial("static/includes/inlined-graphical-linkicon-styles.html")$
 
-    <script defer id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
+    <script async fetchpriority="low" id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
