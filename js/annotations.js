@@ -164,7 +164,7 @@ Annotations = {
 	//	Called by: Annotations.loadAnnotation
 	annotationURLForIdentifier: (annotationIdentifier) => {
 		let annotationURL;
-        if (Annotations.isWikipediaLink(annotationIdentifier)) {
+        if (Annotations.isWikipediaArticleLink(annotationIdentifier)) {
             //  Wikipedia entry.
             annotationURL = new URL(annotationIdentifier);
             let wikiPageName = /\/([^\/]+?)$/.exec(annotationURL.pathname)[1];
@@ -207,7 +207,7 @@ Annotations = {
             location: annotationURL.href,
             onSuccess: (event) => {
                 let annotation;
-                if (Annotations.isWikipediaLink(annotationIdentifier)) {
+                if (Annotations.isWikipediaArticleLink(annotationIdentifier)) {
                 	annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(event.target.responseText, annotationURL);
                 	if (annotation) {
 						Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
@@ -260,7 +260,7 @@ Annotations = {
     referenceDataForAnnotationIdentifier: (annotationIdentifier) => {
         let referenceEntry = Annotations.cachedAnnotations[annotationIdentifier];
 
-        if (Annotations.isWikipediaLink(annotationIdentifier)) {
+        if (Annotations.isWikipediaArticleLink(annotationIdentifier)) {
             return Annotations.referenceDataForWikipediaEntry(referenceEntry);
         } else {
             return Annotations.referenceDataForLocalAnnotation(referenceEntry);
@@ -325,17 +325,28 @@ Annotations = {
 
     /*  Returns true iff the given identifier string is a Wikipedia URL.
         */
+    //	Called by: Annotations.annotationURLForIdentifier
     //	Called by: Annotations.loadAnnotation
     //	Called by: Annotations.referenceDataForAnnotationIdentifier
     //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
     //	Called by: Extracts.titleForPopFrame_ANNOTATION (extracts-annotations.js)
-    isWikipediaLink: (annotationIdentifier) => {
-        if (/^[\?\/]/.test(annotationIdentifier))
+    isWikipediaArticleLink: (annotationIdentifier) => {
+        if (/^[\/]/.test(annotationIdentifier))
             return false;
 
         let url = new URL(annotationIdentifier);
 
-        return (url && /(.+?)\.wikipedia\.org/.test(url.hostname));
+        return (   url 
+        		&& /(.+?)\.wikipedia\.org/.test(url.hostname)
+        		&& !(url.pathname.startsWithAnyOf(_π("/wiki/", [ "Talk:", "User:", 
+        			 "User_talk:", "Wikipedia:", "Wikipedia_talk:", "File:", 
+        			 "File_talk:", "MediaWiki:", "MediaWiki_talk:", "Template:",
+        			 "Template_talk:", "Help:", "Help_talk:", "Category:", 
+        			 "Category_talk:", "Portal:", "Portal_talk:", "Draft:", 
+        			 "Draft_talk:", "TimedText:", "TimedText_talk:", "Module:",
+        			 "Module_talk:", "Gadget:", "Gadget_talk:", 
+        			 "Gadget_definition:", "Gadget_definition_talk:", 
+        			 "Special:", "Media:" ]))));
     },
 
     /*  Wikipedia entries (page summaries or sections).
