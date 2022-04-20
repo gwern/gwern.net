@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-19 14:38:36 gwern"
+When:  Time-stamp: "2022-04-20 10:44:54 gwern"
 License: CC-0
 -}
 
@@ -1556,7 +1556,7 @@ authorsToCite url author date =
   let year = if date=="" then show currentYear else take 4 date -- YYYY-MM-DD
       authors = split ", " $ sedMany [(" \\([A-Za-z ]+\\)", "")] author -- affiliations like "Schizophrenia Working Group of the Psychiatric Genomics Consortium (PGC), Stephan Foo" or "Foo Bar (Atlas Obscura)" would break the later string-munging & eventually the HTML
       authorCount = length authors
-      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlpha c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
+      firstAuthorSurname = if authorCount==0 then "" else filter (\c -> isAlphaNum c || isPunctuation c) $ reverse $ takeWhile (/=' ') $ reverse $ head authors
   in
        if authorCount == 0 then "" else
            let
