@@ -60,7 +60,7 @@ function imageFocusSetup() {
 			return;
 
 		//	NOTE: unlike the above, this one is probably not a temporary hack
-		if (image.closest("figure.no-image-focus"))
+		if (image.closest("figure.image-focus-no"))
 			return;
 
 		image.addEventListener("click", GW.imageClickedToFocus);
@@ -69,7 +69,7 @@ function imageFocusSetup() {
 	//  Wrap all images in figures in a span.
 	document.querySelectorAll("figure img").forEach(image => {
 		//	NOTE: unlike the above, this one is probably not a temporary hack
-		if (image.closest("figure.no-image-focus"))
+		if (image.closest("figure.image-focus-no"))
 			return;
 
 		let imageContainer = image.parentElement;
@@ -195,12 +195,12 @@ function focusImage(imageToFocus) {
 
 		//  Zoom from cursor if we’re zoomed in to where image exceeds screen, AND
 		//  the cursor is over the image.
-		let imageSizeExceedsWindowBounds = (   image.getBoundingClientRect().width > window.innerWidth 
+		let imageSizeExceedsWindowBounds = (   image.getBoundingClientRect().width > window.innerWidth
 											|| image.getBoundingClientRect().height > window.innerHeight);
-		let zoomingFromCursor =    imageSizeExceedsWindowBounds 
-								&& (   imageBoundingBox.left <= event.clientX 
-									&& event.clientX <= imageBoundingBox.right 
-									&& imageBoundingBox.top <= event.clientY 
+		let zoomingFromCursor =    imageSizeExceedsWindowBounds
+								&& (   imageBoundingBox.left <= event.clientX
+									&& event.clientX <= imageBoundingBox.right
+									&& imageBoundingBox.top <= event.clientY
 									&& event.clientY <= imageBoundingBox.bottom);
 
 		//  Otherwise, if we’re zooming OUT, zoom from window center; if we’re
@@ -273,9 +273,9 @@ function focusImage(imageToFocus) {
 			return;
 
 		let focusedImage = GW.currentlyFocusedImage;
-		if (   (   event.target == focusedImage 
-				|| event.target.tagName == "HTML") 
-			&& (   focusedImage.height >= window.innerHeight 
+		if (   (   event.target == focusedImage
+				|| event.target.tagName == "HTML")
+			&& (   focusedImage.height >= window.innerHeight
 				|| focusedImage.width >= window.innerWidth)) {
 			//  If the mouseup event was the end of a pan of an oversized image,
 			//  put the filter back; do not unfocus.
@@ -295,7 +295,7 @@ function focusImage(imageToFocus) {
 		event.preventDefault();
 
 		let focusedImage = GW.currentlyFocusedImage;
-		if (   focusedImage.height >= window.innerHeight 
+		if (   focusedImage.height >= window.innerHeight
 			|| focusedImage.width >= window.innerWidth) {
 			let mouseCoordX = event.clientX;
 			let mouseCoordY = event.clientY;
@@ -398,7 +398,7 @@ function focusImage(imageToFocus) {
 		GWLog("GW.imageFocus.mouseMoved", "image-focus.js", 3);
 
 		let currentDateTime = new Date();
-		if (!(   event.target == GW.imageFocus.currentlyFocusedImage 
+		if (!(   event.target == GW.imageFocus.currentlyFocusedImage
 			  || event.target == GW.imageFocus.overlay)) {
 			cancelImageFocusHideUITimer();
 		} else {
@@ -442,9 +442,9 @@ function setFocusedImageCursor() {
 	let focusedImage = GW.currentlyFocusedImage;
 	if (!focusedImage)
 		return;
-	focusedImage.style.cursor = (   focusedImage.height >= window.innerHeight 
+	focusedImage.style.cursor = (   focusedImage.height >= window.innerHeight
 								 || focusedImage.width >= window.innerWidth)
-								? "move" 
+								? "move"
 								: "";
 }
 
@@ -590,7 +590,7 @@ function focusImageSpecifiedByURL() {
 		doWhenPageLoaded(() => {
 			let images = document.querySelectorAll(GW.imageFocus.contentImagesSelector);
 			let imageToFocus = (/#if_slide_([0-9]+)/.exec(location.hash)||{})[1];
-			if (   imageToFocus > 0 
+			if (   imageToFocus > 0
 				&& imageToFocus <= images.length) {
 				focusImage(images[imageToFocus - 1]);
 
