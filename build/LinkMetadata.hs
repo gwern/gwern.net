@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-20 15:18:45 gwern"
+When:  Time-stamp: "2022-04-20 20:00:28 gwern"
 License: CC-0
 -}
 
@@ -636,7 +636,7 @@ tag2Default path = if "/docs/" `isPrefixOf` path && not ("/docs/" `isPrefixOf` p
 
 -- de-duplicate tags: uniquefy, and remove the more general tags in favor of nested (more specific) tags. eg. ["ai", "ai/gpt", "reinforcement-learning"] → ["ai/gpt", "reinforcement-learning"]
 uniqTags :: [String] -> [String]
-uniqTags tags = nubOrd $ filter(\t -> not (anyPrefix (t++"/") tags)) tags
+uniqTags tags = nubOrd $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
 
 -- another tag heuristic: some pages are heavily topic-focused such that any link on them can safely be given a specific tag, especially as many pages serve as link-dumps. (For example, everything on '/Sunk-cost' can be safely tagged 'sunk-cost'.)
 -- Using the forward-links database, we can look up what pages each link is present on, see if it is linked by any such page specified in our little topic database, and add that tag (if not already present).

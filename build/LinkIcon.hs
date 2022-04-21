@@ -978,7 +978,7 @@ linkIconTestUnits =
          , ("https://www.spiegel.de/panorama/justiz/amokschuetze-von-muenchen-tatwaffe-aus-dem-darknet-a-1104461.html", "SPGL", "text,quad")
          , ("https://www.pragmatic.ml/sparse-sinkhorn-attention/", "𝕄", "text")
          , ("https://hbr.org/2019/12/can-you-know-too-much-about-your-organization", "HBR", "text,tri,sans")
-         , ("https://thepiratebay.org/description.php?id=14045031", "⚑☠\8205", "text,sans")
+         , ("https://thepiratebay.org/description.php?id=14045031", "🏴\8205☠️", "text,sans")
          , ("https://history.nasa.gov/rogersrep/v2appf.htm",                                    "nasa", "svg")
          , ("https://science.nasa.gov/science-news/science-at-nasa/2005/03jun_naps/",           "nasa", "svg")
          , ("https://www.nasa.gov/mission_pages/station/expeditions/expedition30/tryanny.html", "nasa", "svg")
