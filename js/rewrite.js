@@ -490,9 +490,8 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     setImageDimensionsInAnnotation(info);
 }, {
 	phase: "rewrite",
-	condition: (info) => (   info.isMainDocument == false
-						  && info.needsRewrite
-						  && info.document.parentElement.id == "annotations-workspace")
+	condition: (info) => (   info.needsRewrite
+						  && info.document.classList.contains("annotation"))
 });
 
 /******************************************************************************/

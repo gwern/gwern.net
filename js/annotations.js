@@ -27,7 +27,8 @@
 
 	GW.contentDidLoad {
 			source: "Annotations.loadAnnotation"
-			document: Annotations.annotationsWorkspace
+			document: 
+				The DocumentFragment wrapping the annotation source elements.
 			location:
 				The URL of the annotation resource.
 			identifier:
@@ -45,7 +46,7 @@
 
 	GW.contentLoadDidFail {
 			source: "Annotations.loadAnnotation"
-			document: Annotations.annotationsWorkspace
+			document: null
 			location:
 				The URL of the annotation resource.
 			identifier:
@@ -66,12 +67,6 @@ Annotations = {
     annotationReferenceElementSelectors: [ "a.link-annotated" ],
     annotationReferenceElementSelectorPrefix: ".annotation > p ",
 
-    /******************/
-    /*  Infrastructure.
-        */
-
-    annotationsWorkspace: null,
-
     /***********/
     /*  General.
         */
@@ -79,10 +74,6 @@ Annotations = {
 	//	Called in: nowhere
     cleanup: () => {
         GWLog("Annotations.cleanup", "annotations.js", 1);
-
-        //  Remove staging element for annotations.
-        if (Annotations.annotationsWorkspace)
-            Annotations.annotationsWorkspace.remove();
 
         //  Remove content load event handlers.
         GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", signalAnnotationLoaded);
@@ -96,26 +87,19 @@ Annotations = {
     setup: () => {
         GWLog("Annotations.setup", "annotations.js", 1);
 
-        //  Inject the staging area for annotations.
-        document.body.insertAdjacentHTML("beforeend", `<div id="annotations-workspace" style="display:none;"></div>`);
-        Annotations.annotationsWorkspace = document.querySelector("#annotations-workspace");
-
         //  Add handler for if an annotation loads.
         GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Annotations.signalAnnotationLoaded = (info) => {
             GWLog("Annotations.signalAnnotationLoaded", "annotations.js", 2);
 
-            /*  If this is an annotation that’s loaded, we cache it, remove
-                it from the staging element, and fire the annotationDidLoad
-                event.
+            /*  If this is an annotation that’s loaded, we cache it, and fire 
+            	the annotationDidLoad event.
                 */
             Annotations.cachedAnnotations[info.identifier] = info.document;
-            info.document.remove();
 
             GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: info.identifier });
         }, {
             phase: ">rewrite",
-            condition: (info) => (   info.document.parentElement
-                                  && info.document.parentElement == Annotations.annotationsWorkspace)
+            condition: (info) => info.document.classList.contains("annotation")
         });
 
         //  Add handler for if loading an annotation failed.
@@ -130,7 +114,7 @@ Annotations = {
 
             GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: info.identifier });
         }, {
-        	condition: (info) => info.document == Annotations.annotationsWorkspace
+        	condition: (info) => info.document.classList.contains("annotation")
         });
 
         //  Fire setup-complete event.
@@ -182,13 +166,19 @@ Annotations = {
         return annotationURL;
 	},
 
-    /*  Construct a usable DOM object from the raw HTML of an annotation,
-        by inserting it as a child of the annotations workspace element.
+    /*  Return a DocumentFragment containing usable DOM objects made from the 
+    	raw HTML of an annotation.
         */
     //	Called by: Annotations.loadAnnotation
     stageAnnotation: (annotationRawHTML) => {
-        Annotations.annotationsWorkspace.insertAdjacentHTML("beforeend", `<div class="annotation">${annotationRawHTML}</div>`);
-        return Annotations.annotationsWorkspace.lastElementChild;
+    	let annotationWrapper = new DocumentFragment();
+
+    	let annotation = document.createElement("DIV");
+    	annotation.classList.add("annotation");
+    	annotation.innerHTML = annotationRawHTML;
+    	annotationWrapper.append(annotation);
+
+    	return annotation;
     },
 
     /*  Load, stage, and process the annotation for the given identifier string.
@@ -234,7 +224,7 @@ Annotations = {
 				} else {
 					GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
 						source: "Annotations.loadAnnotation",
-						document: Annotations.annotationsWorkspace,
+						document: null,
 						identifier: annotationIdentifier,
 						location: annotationURL
 					});
@@ -243,7 +233,7 @@ Annotations = {
             onFailure: (event) => {
                 GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
                     source: "Annotations.loadAnnotation",
-                    document: Annotations.annotationsWorkspace,
+                    document: null,
                     location: annotationURL,
                     identifier: annotationIdentifier
                 });
@@ -374,7 +364,7 @@ Annotations = {
 		let targetSection;
 		if (annotationURL.hash > "") {
 			targetSection = response["remaining"]["sections"].find(section =>
-				section["anchor"] == decodeURIComponent(annotationURL.hash).substr(1)
+				section["anchor"] == selectorFromHash(annotationURL.hash).slice(1)
 			);
 
 			/*	Check whether we have tried to load a page section which does
