@@ -731,9 +731,9 @@ figure video,
 figure audio {
     outline: 1px solid var(--GW-figure-outline-color);
 }
-figure.no-outline img,
-figure.no-outline video,
-figure.no-outline audio {
+figure.outline-no img,
+figure.outline-no video,
+figure.outline-no audio {
 	outline: none;
 }
 /* WARNING: work around Chrome layout bug */
@@ -770,7 +770,7 @@ figcaption strong {
     margin: 1px auto 0 auto;
     width: 100%;
 }
-figure.no-outline .caption-wrapper {
+figure.outline-no .caption-wrapper {
     outline: none;
 }
 video + .caption-wrapper {

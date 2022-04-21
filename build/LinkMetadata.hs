@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-20 20:00:28 gwern"
+When:  Time-stamp: "2022-04-20 20:12:47 gwern"
 License: CC-0
 -}
 
@@ -199,7 +199,7 @@ readLinkMetadataAndCheck = do
 
              let tagIsNarrowerThanFilename = M.map (\(title,_,_,_,tags,_) -> (title,tags)) $ M.filterWithKey (\f (_,_,_,_,tags,_) -> if not ("/docs/" `isPrefixOf` f) then False else
                                                         let fileTag = replace "/docs/" "" $ takeDirectory f
-                                                         in anyPrefix (fileTag++"/") tags) final
+                                                         in any ((fileTag++"/") `isPrefixOf`) tags) final
              unless (null tagIsNarrowerThanFilename) $ printRed "Files whose tags are more specific than their path: " >> printGreen (unlines $ map (\(f',(t',tag')) -> t' ++ " : " ++ f' ++ " " ++ unwords tag') $ M.toList tagIsNarrowerThanFilename)
 
              -- check tags (not just custom but all of them, including partials)
