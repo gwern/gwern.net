@@ -830,23 +830,26 @@ Extracts = {
                 if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                     return;
 
-                //  Inject the whole page into the pop-frame at first.
-                Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
+				let docFragment = new DocumentFragment();
+				let page = document.createElement("DIV");
+				page.classList.add("page");
+				page.innerHTML = event.target.responseText;
+				docFragment.append(page);
 
 				//	Get the page thumbnail URL and metadata.
-				let pageThumbnailMetaTag = target.popFrame.querySelector("meta[property='og:image']");
+				let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
 				if (pageThumbnailMetaTag) {
 					let pageThumbnailURL = new URL(pageThumbnailMetaTag.getAttribute("content"));
 
 					//	Alt text, if provided.
-					let pageThumbnailAltMetaTag = target.popFrame.querySelector("meta[property='og:image:alt']");
+					let pageThumbnailAltMetaTag = page.querySelector("meta[property='og:image:alt']");
 					let pageThumbnailAltText = pageThumbnailAltMetaTag
 											   ? pageThumbnailAltMetaTag.getAttribute("content")
 											   : `Thumbnail image for “${Extracts.cachedPageTitles[target.pathname]}”`;
 
 					//	Image dimensions.
-					let pageThumbnailWidth = target.popFrame.querySelector("meta[property='og:image:width']").getAttribute("content");
-					let pageThumbnailHeight = target.popFrame.querySelector("meta[property='og:image:height']").getAttribute("content");
+					let pageThumbnailWidth = page.querySelector("meta[property='og:image:width']").getAttribute("content");
+					let pageThumbnailHeight = page.querySelector("meta[property='og:image:height']").getAttribute("content");
 
 					//	Construct and save the <img> tag.
 					if (pageThumbnailURL.pathname != "/static/img/logo/logo-whitebg-large-border.png")
@@ -867,18 +870,18 @@ Extracts = {
 				Extracts.cachedPageBodyClasses[target.pathname] = /<body class="(.+?)">/.exec(event.target.responseText)[1].split(" ");
 
                 //  Get the page title.
-                Extracts.cachedPageTitles[target.pathname] = target.popFrame.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
+                Extracts.cachedPageTitles[target.pathname] = page.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
 
                 //  The content is the page body plus the metadata block.
-                Extracts.cachedPages[target.pathname] = target.popFrame.querySelector("#markdownBody");
+                Extracts.cachedPages[target.pathname] = page.querySelector("#markdownBody");
 
 				//	If there’s only one solitary section, unwrap it.
-                let onlySection = target.popFrame.querySelector("#markdownBody > section:only-child");
+                let onlySection = page.querySelector("#markdownBody > section:only-child");
                 if (onlySection)
                 	Extracts.cachedPages[target.pathname] = onlySection;
 
 				//	Add the page metadata block.
-                let pageMetadata = target.popFrame.querySelector("#page-metadata");
+                let pageMetadata = page.querySelector("#page-metadata");
                 if (pageMetadata)
                     Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
 
@@ -886,7 +889,7 @@ Extracts = {
                  */
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Extracts.refreshPopFrameAfterLocalPageLoads",
-                    document: target.popFrame.contentView,
+                    document: page,
                     location: Extracts.locationForTarget(target),
                     flags: (  GW.contentDidLoadEventFlags.needsRewrite
                             | GW.contentDidLoadEventFlags.isFullPage)

@@ -795,9 +795,9 @@ function addSpecialLinkClasses(loadEventInfo) {
         if (   loadEventInfo.location
             && link.pathname == loadEventInfo.location.pathname
             && (   loadEventInfo.document == Extracts.rootDocument
-                || loadEventInfo.document.closest(".popframe").classList.contains("local-transclude"))) {
+                || loadEventInfo.document.classList.contains("page"))) {
             link.swapClasses([ "link-self", "link-local" ], 0);
-        } else if (link.pathname.substr(1).match(/[\.]/) == null) {
+        } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-local" ], 1);
         }
     });
