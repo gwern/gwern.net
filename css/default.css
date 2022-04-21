@@ -3000,6 +3000,15 @@ body.index-directory #disqus_thread {
 .popframe h6 {
     margin-left: 0;
 }
+.popframe h1 a:link,
+.popframe h2 a:link,
+.popframe h3 a:link,
+.popframe h4 a:link,
+.popframe h5 a:link,
+.popframe h6 a:link {
+    background-image: none;
+    text-shadow: none;
+}
 
 .popframe:not(.zoomed) blockquote {
     margin: 1em 0;
