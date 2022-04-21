@@ -2507,8 +2507,7 @@ body.index-directory #page-tags,
 body.index-directory #page-metadata-block,
 body.index-directory #TOC,
 body.index-directory #navigation,
-body.index-directory #footer,
-body.index-directory #comments {
+body.index-directory #footer {
     display: none;
 }
 
