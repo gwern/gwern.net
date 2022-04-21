@@ -4,7 +4,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_ANNOTATION"
             document:
-                The contentView of the pop-frame.
+                A DocumentFragment containing the annotation source elements.
             location:
                 URL of the annotated target (NOT the URL of the annotation
                 resource!).
@@ -55,28 +55,30 @@ Extracts = { ...Extracts, ...{
                 and meanwhile wait, and do nothing yet.
              */
             Extracts.refreshPopFrameAfterAnnotationLoads(target);
-            return `&nbsp;`;
+
+            return Extracts.newDocument();
         } else if (Annotations.annotationForIdentifier(annotationIdentifier) == "LOADING_FAILED") {
             /*  If we’ve already tried and failed to load the annotation, we
                 will not try loading again, and just show the “loading failed”
                 message.
              */
             target.popFrame.classList.add("loading-failed");
-            return `&nbsp;`;
+
+            return Extracts.newDocument();
         }
 
         /*  Retrieve HTML/text components of the annotation (constructed from
             a retrieved, and presumably cached, annotation source).
          */
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
-
         //  Open link in same window on mobile, new window on desktop.
         let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
         //  Link to original URL (for archive links).
         let originalLinkHTML = "";
-        if (   referenceData.element.dataset.urlOriginal != undefined
-               && referenceData.element.dataset.urlOriginal != target.href) {
+        if (   referenceData.element
+        	&& referenceData.element.dataset.urlOriginal != undefined
+            && referenceData.element.dataset.urlOriginal != target.href) {
             let originalURLText = referenceData.element.dataset.urlOriginal.includes("ar5iv") ? `<span class="smallcaps">HTML</span>` : "live";
             originalLinkHTML = ` <span class="originalURL">[<a
                             title="Link to original URL for ${referenceData.element.textContent}"
@@ -115,10 +117,13 @@ Extracts = { ...Extracts, ...{
         if (Annotations.isWikipediaArticleLink(annotationIdentifier))
             abstractSpecialClass = "wikipedia-entry";
 
-        return `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
+		let constructedAnnotation = Extracts.newDocument(
+        	  `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
             + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}`
             + tagBacklinks
-            + `<div class="data-field annotation-abstract ${abstractSpecialClass}">${referenceData.abstractHTML}</div>`;
+            + `<div class="data-field annotation-abstract ${abstractSpecialClass}"></div>`);
+        constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
+        return constructedAnnotation;
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)

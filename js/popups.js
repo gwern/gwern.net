@@ -85,6 +85,8 @@ Popups = {
 
 	//	Called by: extracts.js
 	addTargetsWithin: (contentContainer, targets, prepareFunction, targetPrepareFunction = null) => {
+		GWLog("Popups.addTargetsWithin", "popups.js", 1);
+
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
@@ -123,6 +125,8 @@ Popups = {
 
 	//	Called by: extracts.js
 	removeTargetsWithin: (contentContainer, targets, targetRestoreFunction = null) => {
+		GWLog("Popups.removeTargetsWithin", "popups.js", 1);
+
 		if (typeof contentContainer == "string")
 			contentContainer = document.querySelector(contentContainer);
 
@@ -244,9 +248,13 @@ Popups = {
 
 	//	Called by: extracts.js
 	//	Called by: extracts-content.js
-	setPopFrameContent: (popup, contentHTML) => {
-		popup.contentView.innerHTML = contentHTML;
-		return (contentHTML > "");
+	setPopFrameContent: (popup, content) => {
+		if (content) {
+			popup.contentView.appendChild(content);
+			return true;
+		} else {
+			return false;
+		}
 	},
 
 	//	Called by: extracts.js

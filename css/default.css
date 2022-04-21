@@ -30,6 +30,8 @@
     --GW-popups-popup-with-title-bar-min-width: 320px;
     --GW-popups-annotation-popup-min-width: 360px;
     --GW-popups-annotation-popup-min-height: 120px;
+    --GW-popups-aux-links-popup-min-width: 240px;
+    --GW-popups-aux-links-popup-min-height: 120px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
@@ -3823,6 +3825,15 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*┌──────────────────────────┐*/
 /*│ Citation context popups. │*/
 /*└──────────────────────────┘*/
+
+/*┌──────────────────┐*/
+/*│ Aux-link popups. │*/
+/*└──────────────────┘*/
+
+.popup.backlinks {
+    min-width: var(--GW-popups-aux-links-popup-min-width);
+    min-height: var(--GW-popups-aux-links-popup-min-height);
+}
 
 /*┌──────────────┐*/
 /*│ Code popups. │*/

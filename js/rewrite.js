@@ -156,10 +156,16 @@ function wrapTables(loadEventInfo) {
 
     let wrapperClass = "table-wrapper";
     loadEventInfo.document.querySelectorAll("table").forEach(table => {
-        if (table.parentElement.tagName == "DIV" && table.parentElement.children.length == 1)
+        if (   table.parentElement
+        	&& table.parentElement.tagName == "DIV" 
+        	&& table.parentElement.children.length == 1) {
             table.parentElement.classList.toggle(wrapperClass, true);
-        else
-            table.outerHTML = `<div class="${wrapperClass}">` + table.outerHTML + `</div>`;
+        } else {
+        	let wrapper = document.createElement("DIV");
+        	wrapper.classList.add(wrapperClass);
+        	table.parentNode.insertBefore(wrapper, table);
+        	wrapper.appendChild(table);
+        }
     });
 }
 
@@ -491,7 +497,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 }, {
 	phase: "rewrite",
 	condition: (info) => (   info.needsRewrite
-						  && info.document.classList.contains("annotation"))
+						  && info.source == "Annotations.loadAnnotation")
 });
 
 /******************************************************************************/
@@ -794,8 +800,7 @@ function addSpecialLinkClasses(loadEventInfo) {
 
         if (   loadEventInfo.location
             && link.pathname == loadEventInfo.location.pathname
-            && (   loadEventInfo.document == Extracts.rootDocument
-                || loadEventInfo.document.classList.contains("page"))) {
+            && loadEventInfo.isFullPage) {
             link.swapClasses([ "link-self", "link-local" ], 0);
         } else if (link.pathname.slice(1).match(/[\.]/) == null) {
             link.swapClasses([ "link-self", "link-local" ], 1);

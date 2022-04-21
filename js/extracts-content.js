@@ -4,7 +4,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_CITATION"
             document:
-                The contentView of the pop-frame.
+                A DocumentFragment containing the citation element.
             location:
                 URL of (i.e., anchor-link to) the footnote (or sidenote; this
                 depends on whether the page in which the citation appears -
@@ -24,9 +24,8 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
             document:
-                The contentView of the popup (not “pop-frame”, but “popup”;
-                citation back-links can only spawn popups; they act as simple
-                anchor-links in popins mode).
+                A DocumentFragment containing a copy of the block element which 
+                contains the citation.
             location:
                 URL of (i.e., anchor-link to) the citation which references the
                 footnote/sidenote which spawned the popup. (If there are
@@ -46,7 +45,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
             document:
-                The contentView of the pop-frame.
+                A DocumentFragment containing the aux-links elements.
             location:
                 URL of the aux-links source file.
             flags:
@@ -62,7 +61,7 @@
     GW.contentDidLoad {
             source: "Extracts.refreshPopFrameAfterAuxLinksLoad"
             document:
-                The contentView of the pop-frame.
+                A DocumentFragment containing the aux-links elements.
             location:
                 URL of the aux-links source file.
             flags: GW.contentDidLoadEventFlags.needsRewrite
@@ -113,11 +112,11 @@ Extracts = { ...Extracts, ...{
         GWLog("Extracts.auxLinksForTarget", "extracts-content.js", 2);
 
         if (Extracts.auxLinksCache[target.pathname]) {
-            return Extracts.auxLinksCache[target.pathname].innerHTML;
+            return Extracts.newDocument(Extracts.auxLinksCache[target.pathname]);
         } else {
             Extracts.refreshPopFrameAfterAuxLinksLoad(target);
 
-            return `&nbsp;`;
+            return Extracts.newDocument();
         }
     },
 
@@ -171,17 +170,14 @@ Extracts = { ...Extracts, ...{
                 if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                     return;
 
-                //  Inject the aux-links source into the pop-frame.
-                Extracts.popFrameProvider.setPopFrameContent(target.popFrame, event.target.responseText);
-
                 //  Cache the aux-links source.
-                Extracts.auxLinksCache[target.pathname] = target.popFrame.contentView;
+                Extracts.auxLinksCache[target.pathname] = Extracts.newDocument(event.target.responseText);
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                     */
                 GW.notificationCenter.fireEvent("GW.contentDidLoad", {
                     source: "Extracts.refreshPopFrameAfterAuxLinksLoad",
-                    document: target.popFrame.contentView,
+                    document: Extracts.auxLinksCache[target.pathname],
                     location: Extracts.locationForTarget(target),
                     flags: GW.contentDidLoadEventFlags.needsRewrite
                 });
@@ -234,8 +230,8 @@ Extracts = { ...Extracts, ...{
 
         return Extracts.localTranscludeForTarget(target, (blockElement) => {
             return target.hash.startsWith("#sn")
-                   ? blockElement.querySelector(".sidenote-inner-wrapper").innerHTML
-                   : blockElement.innerHTML;
+                   ? blockElement.querySelector(".sidenote-inner-wrapper")
+                   : blockElement;
         });
     },
 
@@ -425,7 +421,14 @@ Extracts = { ...Extracts, ...{
         let srcdocHTML = `<a href='${videoEmbedURL}?autoplay=1'><img src='${placeholderImgSrc}'>${playButtonHTML}</a>`;
 
         //  `allow-same-origin` only for EXTERNAL videos, NOT local videos!
-        return `<iframe src="${videoEmbedURL}" srcdoc="${srcdocStyles}${srcdocHTML}" frameborder="0" allowfullscreen sandbox="allow-scripts allow-same-origin"></iframe>`;
+        return Extracts.newDocument(
+        	`<iframe 
+        		src="${videoEmbedURL}" 
+        		srcdoc="${srcdocStyles}${srcdocHTML}" 
+        		frameborder="0" 
+        		allowfullscreen 
+        		sandbox="allow-scripts allow-same-origin"
+        			></iframe>`);
     }
 }};
 
@@ -467,9 +470,10 @@ Extracts = { ...Extracts, ...{
     localVideoForTarget: (target) => {
         GWLog("Extracts.localVideoForTarget", "extracts-content.js", 2);
 
-        return `<video controls="controls" preload="none">` +
-            `<source src="${target.href}">` +
-            `</video>`;
+        return Extracts.newDocument(
+        	  `<video controls="controls" preload="none">` 
+        	+ `<source src="${target.href}">` 
+        	+ `</video>`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -543,7 +547,12 @@ Extracts = { ...Extracts, ...{
             styles = `width="${width}" height="${height}" style="width: ${width}px; height: ${height}px;"`;
 
         //  Note that we pass in the original image-link’s classes - this is good for classes like ‘invertible’.
-        return `<img ${styles} class="${target.classList}" src="${target.href}" loading="lazy">`;
+        return Extracts.newDocument(`<img 
+        								${styles} 
+        								class="${target.classList}" 
+        								src="${target.href}" 
+        								loading="lazy"
+        									>`);
     },
 
     //  Called by: extracts.js (as `preparePopup_${targetTypeName}`)
@@ -615,9 +624,14 @@ Extracts = { ...Extracts, ...{
 
         if (target.href.match(/\.pdf(#|$)/) != null) {
             let data = target.href + (target.href.includes("#") ? "&" : "#") + "view=FitH";
-            return `<object data="${data}"></object>`;
+            return Extracts.newDocument(`<object data="${data}"></object>`);
         } else {
-            return `<iframe src="${target.href}" frameborder="0" sandbox="allow-same-origin" referrerpolicy="same-origin"></iframe>`;
+            return Extracts.newDocument(`<iframe 
+            								src="${target.href}" 
+            								frameborder="0" 
+            								sandbox="allow-same-origin" 
+            								referrerpolicy="same-origin"
+            									></iframe>`);
         }
     },
 
@@ -705,7 +719,7 @@ Extracts = { ...Extracts, ...{
                     return;
 
                 target.popFrame.classList.toggle("loading", false);
-                setPopFrameContent(target.popFrame, event.target.responseText);
+                setPopFrameContent(target.popFrame, Extracts.newDocument(event.target.responseText));
 
                 //  Do additional rewriting, if any.
                 if (Extracts.popFrameProvider == Popups)
@@ -726,7 +740,8 @@ Extracts = { ...Extracts, ...{
                         let lines = htmlEncodedResponse.split("\n");
                         htmlEncodedResponse = lines.map(line => `<span class="line">${(line || "&nbsp;")}</span>`).join("\n");
 
-                        setPopFrameContent(target.popFrame, `<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`);
+                        setPopFrameContent(target.popFrame, 
+                        	Extracts.newDocument(`<pre class="raw-code"><code>${htmlEncodedResponse}</code></pre>`));
 
                         //  Do additional rewriting, if any.
                         if (Extracts.popFrameProvider == Popups)
@@ -744,7 +759,7 @@ Extracts = { ...Extracts, ...{
             }
         });
 
-        return `&nbsp;`;
+        return Extracts.newDocument();
     },
 }};
 
@@ -821,7 +836,7 @@ Extracts = { ...Extracts, ...{
                 }
             });
 
-            return `<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`;
+            return Extracts.newDocument(`<iframe frameborder="0" sandbox="allow-scripts allow-popups"></iframe>`);
         }
         //  END EXPERIMENTAL SECTION
 
@@ -857,7 +872,7 @@ Extracts = { ...Extracts, ...{
             url.protocol = "https:";
         }
 
-        return `<iframe src="${url.href}" frameborder="0" sandbox></iframe>`;
+        return Extracts.newDocument(`<iframe src="${url.href}" frameborder="0" sandbox></iframe>`);
     },
 
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)

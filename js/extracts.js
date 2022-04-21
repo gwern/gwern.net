@@ -43,7 +43,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
             document:
-                The contentView of the pop-frame.
+                A DocumentFragment containing the embedded page elements.
             location:
                 URL of the local page (including anchor, if any).
             flags:
@@ -59,7 +59,7 @@
     GW.contentDidLoad {
             source: "Extracts.refreshPopFrameAfterLocalPageLoads"
             document:
-                The contentView of the pop-frame.
+                A DocumentFragment containing the embedded page elements.
             location:
                 URL of the local page (including anchor, if any).
             flags: (  GW.contentDidLoadEventFlags.needsRewrite
@@ -99,6 +99,7 @@ Extracts = {
                     return false;
 
                 //  Do not allow pop-frames to spawn themselves.
+                //	TODO: verify!
                 let containingPopFrame = target.closest(".popframe");
                 if (   containingPopFrame
                 	&& Extracts.targetsMatch(containingPopFrame.spawningTarget, target))
@@ -123,7 +124,7 @@ Extracts = {
 
     pageTitleRegexp: /^(.+?) · Gwern\.net$/,
 
-    rootDocument: document.firstElementChild,
+    rootDocument: document,
 
     /******************/
     /*  Infrastructure.
@@ -197,6 +198,8 @@ Extracts = {
         } else if (Extracts.popFrameProvider == Popins) {
             Popins.addTargetsWithin(container, Extracts.targets, Extracts.preparePopin);
         }
+
+		Extracts.setUpAnnotationLoadEventWithin(container);
     },
 
     //  Called by: extracts.js (doSetup)
@@ -252,13 +255,13 @@ Extracts = {
     processTargetsInDocument: (doc = Extracts.rootDocument, addHooks = true) => {
         GWLog("Extracts.processTargetsInDocument", "extracts.js", 2);
 
-        if (doc.closest(Extracts.contentContainersSelector)) {
-            Extracts.addTargetsWithin(doc);
-            Extracts.setUpAnnotationLoadEventWithin(doc);
-        } else {
+		if (   doc instanceof DocumentFragment
+			|| (   doc instanceof Element 
+			    && doc.closest(Extracts.contentContainersSelector))) {
+			Extracts.addTargetsWithin(doc);
+		} else {
             doc.querySelectorAll(Extracts.contentContainersSelector).forEach(container => {
                 Extracts.addTargetsWithin(container);
-                Extracts.setUpAnnotationLoadEventWithin(container);
             });
         }
 
@@ -595,9 +598,10 @@ Extracts = {
     },
 
     //  Called by: Extracts.fillPopFrame (as `popFrameFillFunctionName`)
-    //  Called by: extracts-content.js
+    //	Called by: Extracts.citationForTarget (extracts-content.js)
+    //	Called by: Extracts.citationBackLinkForTarget (extracts-content.js)
     localTranscludeForTarget: (target, unwrapFunction = ((blockElement) => {
-			return (blockElement.tagName == "SECTION" ? blockElement.innerHTML : blockElement.outerHTML);
+			return (blockElement.tagName == "SECTION" ? blockElement.children : blockElement);
 		})) => {
         GWLog("Extracts.localTranscludeForTarget", "extracts.js", 2);
 
@@ -611,7 +615,7 @@ Extracts = {
                 page, and if the link points to an anchor, display the linked
                 section or element.
              */
-            return unwrapFunction(Extracts.nearestBlockElement(fullTargetDocument.querySelector(selectorFromHash(target.hash))));
+            return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(fullTargetDocument.querySelector(selectorFromHash(target.hash)))));
         } else {
             /*  Otherwise, display the entire linked page.
 
@@ -830,11 +834,8 @@ Extracts = {
                 if (Extracts.popFrameProvider.isSpawned(target.popFrame) == false)
                     return;
 
-				let docFragment = new DocumentFragment();
-				let page = document.createElement("DIV");
-				page.classList.add("page");
-				page.innerHTML = event.target.responseText;
-				docFragment.append(page);
+				let page = Extracts.newDocument(event.target.responseText);
+				page.isPage = true;
 
 				//	Get the page thumbnail URL and metadata.
 				let pageThumbnailMetaTag = page.querySelector("meta[property='og:image']");
@@ -873,17 +874,23 @@ Extracts = {
                 Extracts.cachedPageTitles[target.pathname] = page.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
 
                 //  The content is the page body plus the metadata block.
-                Extracts.cachedPages[target.pathname] = page.querySelector("#markdownBody");
+                let pageContent = page.querySelector("#markdownBody");
 
 				//	If there’s only one solitary section, unwrap it.
                 let onlySection = page.querySelector("#markdownBody > section:only-child");
                 if (onlySection)
-                	Extracts.cachedPages[target.pathname] = onlySection;
+                	pageContent = onlySection;
 
 				//	Add the page metadata block.
                 let pageMetadata = page.querySelector("#page-metadata");
                 if (pageMetadata)
-                    Extracts.cachedPages[target.pathname].insertBefore(pageMetadata, Extracts.cachedPages[target.pathname].firstElementChild);
+                    pageContent.insertBefore(pageMetadata, pageContent.firstElementChild);
+
+				//	Discard extraneous DOM structure.
+				page.replaceChildren(...pageContent.children);
+
+				//	Cache the constructed page (document fragment).
+				Extracts.cachedPages[target.pathname] = page;
 
                 /*  Trigger the rewrite pass by firing the requisite event.
                  */
@@ -918,6 +925,33 @@ Extracts = {
         });
     },
 
+	//	Called by: Extracts.externalPageEmbedForTarget
+	//	Called by: Extracts.localTranscludeForTarget
+	//	Called by: Extracts.refreshPopFrameAfterLocalPageLoads
+	//	Called by: Extracts.annotationForTarget (extracts-annotations.js)
+	newDocument: (content) => {
+		let docFrag = new DocumentFragment();
+
+		if (content == null)
+			return docFrag;
+
+		if (content instanceof DocumentFragment) {
+			content = content.children;
+		} else if (typeof content == "string") {
+			let wrapper = document.createElement("DIV");
+			wrapper.innerHTML = content;
+			content = wrapper.children;
+		}
+
+		if (content instanceof Node) {
+			docFrag.append(document.importNode(content, true));
+		} else if (content instanceof HTMLCollection) {
+			docFrag.append(...(Array.from(content).map(node => document.importNode(node, true))));
+		}
+
+		return docFrag;
+	},
+
     //  Called by: Extracts.localTranscludeForTarget
     externalPageEmbedForTarget: (target) => {
         GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
@@ -927,13 +961,13 @@ Extracts = {
 
         if (Extracts.cachedPages[target.pathname]) {
             //  Give the pop-frame an identifying class.
-            target.popFrame.classList.toggle("external-page-embed", "page-" + target.pathname.substr(1), true);
+            target.popFrame.classList.toggle("external-page-embed", "page-" + target.pathname.slice(1), true);
 
-            return Extracts.cachedPages[target.pathname].innerHTML;
+			return Extracts.newDocument(Extracts.cachedPages[target.pathname]);
         } else {
             Extracts.refreshPopFrameAfterLocalPageLoads(target);
 
-            return `&nbsp;`;
+			return Extracts.newDocument();
         }
     },
 

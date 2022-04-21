@@ -9,7 +9,7 @@ if (typeof window.GW == "undefined")
 	GW.contentDidLoad {
 			source: "DOMContentLoaded"
 			document: 
-				The main element (i.e., <html>) of the main page.
+				The global document object (window.document).
 			location: 
 				URL of the main page, as loaded.
 			flags: (  GW.contentDidLoadEventFlags.isMainDocument
@@ -1147,7 +1147,7 @@ window.addEventListener("DOMContentLoaded", () => {
     GW.DOMContentLoaded = true;
     GW.notificationCenter.fireEvent("GW.contentDidLoad", {
         source: "DOMContentLoaded",
-        document: document.firstElementChild,
+        document: document,
         location: new URL(location.href),
         flags: (  GW.contentDidLoadEventFlags.isMainDocument
         		| GW.contentDidLoadEventFlags.needsRewrite

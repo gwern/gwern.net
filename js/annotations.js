@@ -28,7 +28,7 @@
 	GW.contentDidLoad {
 			source: "Annotations.loadAnnotation"
 			document: 
-				The DocumentFragment wrapping the annotation source elements.
+				A DocumentFragment containing the annotation source elements.
 			location:
 				The URL of the annotation resource.
 			identifier:
@@ -65,7 +65,7 @@ Annotations = {
 
     annotationsBasePathname: "/metadata/annotations/",
     annotationReferenceElementSelectors: [ "a.link-annotated" ],
-    annotationReferenceElementSelectorPrefix: ".annotation > p ",
+    annotationReferenceElementSelectorPrefix: "",
 
     /***********/
     /*  General.
@@ -166,21 +166,6 @@ Annotations = {
         return annotationURL;
 	},
 
-    /*  Return a DocumentFragment containing usable DOM objects made from the 
-    	raw HTML of an annotation.
-        */
-    //	Called by: Annotations.loadAnnotation
-    stageAnnotation: (annotationRawHTML) => {
-    	let annotationWrapper = new DocumentFragment();
-
-    	let annotation = document.createElement("DIV");
-    	annotation.classList.add("annotation");
-    	annotation.innerHTML = annotationRawHTML;
-    	annotationWrapper.append(annotation);
-
-    	return annotation;
-    },
-
     /*  Load, stage, and process the annotation for the given identifier string.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
@@ -206,7 +191,7 @@ Annotations = {
 						GWServerLogError(annotationURL + `--could-not-process`, "problematic Wikipedia annotation");
                	}
                 } else {
-                    annotation = Annotations.stageAnnotation(event.target.responseText);
+                    annotation = Extracts.newDocument(event.target.responseText);
                 }
 
 				if (annotation) {
@@ -301,7 +286,7 @@ Annotations = {
             tagsHTML:       (tagsElement ? `<span class="data-field link-tags">${tagsElement.innerHTML}</span>` : ``),
             backlinksHTML:  (backlinksElement ? `<span class="data-field backlinks">${backlinksElement.innerHTML}</span>` : ``),
             similarHTML:    (similarElement ? `<span class="data-field similars" >${similarElement.innerHTML}</span>` : ``),
-            abstractHTML:   referenceEntry.querySelector("blockquote div").innerHTML
+            abstract:   	Extracts.newDocument(referenceEntry.querySelector("blockquote div").children)
         };
     },
 
@@ -344,13 +329,13 @@ Annotations = {
     //	Called by: Annotations.referenceDataForAnnotationIdentifier
     referenceDataForWikipediaEntry: (referenceEntry) => {
         return {
-            element:        referenceEntry,
-            titleHTML:      referenceEntry.dataset["titleHTML"],
+            element:        null,
+            titleHTML:      referenceEntry.titleHTML,
             authorHTML:     `<span class="data-field author">Wikipedia</span>`,
             dateHTML:       ``,
             tagsHTML:       ``,
             backlinksHTML:  ``,
-            abstractHTML:   referenceEntry.innerHTML
+            abstract: 		Extracts.newDocument(referenceEntry)
         };
     },
 
@@ -379,8 +364,8 @@ Annotations = {
 						     	`<h2 id='${section["anchor"]}'>${section["line"]}</h2>\n${section["text"]}`
 						     ).join("");
 
-		annotation = Annotations.stageAnnotation(responseHTML);
-		annotation.dataset["titleHTML"] = response["lead"]["displaytitle"];
+		annotation = Extracts.newDocument(responseHTML);
+		annotation.titleHTML = response["lead"]["displaytitle"];
 
 		return annotation;
 	},
