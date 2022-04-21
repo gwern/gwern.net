@@ -99,7 +99,7 @@ Annotations = {
             GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: info.identifier });
         }, {
             phase: ">rewrite",
-            condition: (info) => info.document.classList.contains("annotation")
+            condition: (info) => (info.source == "Annotations.loadAnnotation")
         });
 
         //  Add handler for if loading an annotation failed.
@@ -114,7 +114,7 @@ Annotations = {
 
             GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: info.identifier });
         }, {
-        	condition: (info) => info.document.classList.contains("annotation")
+        	condition: (info) => (info.source == "Annotations.loadAnnotation")
         });
 
         //  Fire setup-complete event.
