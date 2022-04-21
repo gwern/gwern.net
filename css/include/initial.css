@@ -316,7 +316,6 @@ body.tags #sidebar a.patreon,
 body.index #TOC,
 body.index #page-metadata,
 body.index #comments,
-body.index #disqus_thread,
 body.index header {
     display: none;
 }
