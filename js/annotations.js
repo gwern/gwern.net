@@ -204,7 +204,7 @@ Annotations = {
                 	} else {
 						//	Send request to record failure in server logs.
 						GWServerLogError(annotationURL + `--could-not-process`, "problematic Wikipedia annotation");
-                	}
+               	}
                 } else {
                     annotation = Annotations.stageAnnotation(event.target.responseText);
                 }
@@ -364,7 +364,7 @@ Annotations = {
 		let targetSection;
 		if (annotationURL.hash > "") {
 			targetSection = response["remaining"]["sections"].find(section =>
-				section["anchor"] == selectorFromHash(annotationURL.hash).slice(1)
+				section["anchor"] == decodeURIComponent(annotationURL.hash).slice(1)
 			);
 
 			/*	Check whether we have tried to load a page section which does
