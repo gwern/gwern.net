@@ -530,28 +530,6 @@ hr::after,
 	clear: none;
 }
 
-/**********/
-/* DISQUS */
-/**********/
-
-#disqus_thread {
-    padding-left: 0.5em;
-}
-#comments {
-    position: relative;
-    margin: 0.5em 0 0 0;
-    padding: 0.25em 0 0 0;
-}
-#comments::before {
-    content: "";
-    display: block;
-    position: absolute;
-    width: calc(100% + 10px);
-    border-top: 1px solid var(--GW-comment-section-top-border-color);
-    top: 0;
-    left: 0;
-}
-
 /***********/
 /* NUMBERS */
 /***********/
@@ -2532,8 +2510,7 @@ body.index-directory #page-metadata-block,
 body.index-directory #TOC,
 body.index-directory #navigation,
 body.index-directory #footer,
-body.index-directory #comments,
-body.index-directory #disqus_thread {
+body.index-directory #comments {
     display: none;
 }
 
