@@ -158,7 +158,7 @@ invertImageLocal f = do does <- doesFileExist f
                         if not does then printRed ("invertImageLocal: " ++ f ++ " " ++ "does not exist") >> return (False, "0", "0") else
                           do c <- imageMagickColor f f
                              (h,w) <- imageMagickDimensions f
-                             let invertp = c < invertThreshold
+                             let invertp = c <= invertThreshold
                              return (invertp, h, w)
 invertThreshold :: Float
 invertThreshold = 0.09
