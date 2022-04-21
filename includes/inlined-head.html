@@ -2090,7 +2090,7 @@ function GWStopWatch(f, ...args) {
  */
 function GWServerLogError(errorString, errorType) {
 	doAjax({ location: `${location.origin}/static/404.html-error-` + fixedEncodeURIComponent(errorString) });
-	GWLog(`Reporting ${(errorType || "error")}:  errorString`, "error reporting", 1);
+	GWLog(`Reporting ${(errorType || "error")}:  ${errorString}`, "error reporting", 1);
 }
 
 /***********/
