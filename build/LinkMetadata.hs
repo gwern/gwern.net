@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-21 23:45:58 gwern"
+When:  Time-stamp: "2022-04-22 15:33:35 gwern"
 License: CC-0
 -}
 
@@ -922,7 +922,7 @@ linkDispatcher l | anyPrefix l' ["/metadata/annotations/backlinks/", "/metadata/
                  -- And everything else is unhandled:
                     else return (Left Permanent)
                  -- check validity of all external links:
-                 where l' = if head l == '/' then l else if not (isURIReference l) then error $ "External URL is invalid‽ " ++ l else l
+                 where l' = l -- if head l == '/' then l else if not (isURIReference l) then error $ "External URL is invalid‽ " ++ l else l
 
 -- handles both PM & PLOS right now:
 pubmed l = do (status,_,mb) <- runShellCommand "./" Nothing "Rscript" ["static/build/linkAbstract.R", l]
@@ -1732,7 +1732,7 @@ initializeAuthors = trim . replaceMany [(",,", ","), (",,", ","), (", ,", ", "),
                          ]
 
 wikipediaURLToTitle :: String -> String
-wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
+wikipediaURLToTitle u = trimTitle $ cleanAbstractsHTML $ replace "#" " § " $ urlDecode $ replace "% " "%25 " $ replace "_" " " $ replace "https://en.wikipedia.org/wiki/" "" u
 
 -- title clean up: delete the period at the end of many titles, extraneous colon spacing, remove Arxiv's newline+double-space, and general whitespace cleaning
 trimTitle :: String -> String

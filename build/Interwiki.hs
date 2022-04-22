@@ -6,7 +6,7 @@ import Text.Pandoc (Inline(..))
 import qualified Data.Text as T (append, concat, head, isPrefixOf, null, tail, take, toUpper, pack, unpack, Text)
 import Data.List.Utils (replace)
 import Data.List (isPrefixOf)
-import Network.HTTP (urlEncode)
+-- import Network.HTTP (urlEncode)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
@@ -58,9 +58,9 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                  else x
             where
                   interwikiurl :: T.Text -> T.Text -> T.Text
-                  -- normalize links; MediaWiki requires first letter to be capitalized
+                  -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
                   interwikiurl u a = let a' = if u=="https://en.wikipedia.org/wiki/" then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
-                                       u `T.append` T.pack (replace "%3A" ":" $ replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
+                                       u `T.append` T.pack (replace "%" "%25" $ replace " " "_" $ deunicode (T.unpack a'))
                   deunicode :: String -> String
                   deunicode = replace "‘" "\'" . replace "’" "\'" . replace " " " " . replace " " " "
 convertInterwikiLinks x = x
