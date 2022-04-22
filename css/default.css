@@ -559,7 +559,7 @@ blockquote .TOC {
      */
     clear: both;
     display: inline-block;
-    width: calc(100% - 1em);    /* Subtract side padding. */
+    width: calc(100% - 1.25em);    /* Subtract side padding. */
 }
 
 blockquote .TOC > ul {
@@ -2980,7 +2980,7 @@ body.index-directory #footer {
 
 .popframe .TOC {
     margin: 1.25em 0 0 0;
-    padding: 0.5em 0.5em 0.5em 0.75em;
+    padding: 0.5em 0.5em 0.75em 0.75em;
 
     /*  The following three properties are to prevent both overlap and
         margin-collapse of the TOC when there’s a floated thumbnail figure
@@ -2988,7 +2988,7 @@ body.index-directory #footer {
      */
     clear: both;
     display: inline-block;
-    width: calc(100% - 1em);    /* Subtract side padding. */
+    width: calc(100% - 1.25em);    /* Subtract side padding. */
 }
 
 .popframe .TOC > ul {

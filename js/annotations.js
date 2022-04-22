@@ -252,15 +252,7 @@ Annotations = {
 
         return (   url 
         		&& /(.+?)\.wikipedia\.org/.test(url.hostname)
-        		&& !(url.pathname.startsWithAnyOf(_π("/wiki/", [ "Talk:", "User:", 
-        			 "User_talk:", "Wikipedia:", "Wikipedia_talk:", "File:", 
-        			 "File_talk:", "MediaWiki:", "MediaWiki_talk:", "Template:",
-        			 "Template_talk:", "Help:", "Help_talk:", "Category:", 
-        			 "Category_talk:", "Portal:", "Portal_talk:", "Draft:", 
-        			 "Draft_talk:", "TimedText:", "TimedText_talk:", "Module:",
-        			 "Module_talk:", "Gadget:", "Gadget_talk:", 
-        			 "Gadget_definition:", "Gadget_definition_talk:", 
-        			 "Special:", "Media:" ]))));
+        		&& !(url.pathname.startsWithAnyOf(_π("/wiki/", [ "File:", "Category:", "Special:" ]))));
     },
 
     /*  Wikipedia entries (page summaries or sections).
@@ -386,7 +378,8 @@ Annotations = {
 				if (Annotations.isWikipediaArticleLink(link)) {
 					link.classList.add("link-annotated");
 				} else {
-					link.classList.add("link-live");
+					if (!(url.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))))
+						link.classList.add("link-live");
 				}
             }
 
