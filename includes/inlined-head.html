@@ -2102,7 +2102,7 @@ function selectorFromHash(hash) {
 		return null;
 
 	//	IDs that start with a number are handled specially.
-	if (/^[0-9]/.test(hash))
+	if (/^[0-9]/.test(hash.slice(1)))
 		return "[id='" + decodeURIComponent(hash.slice(1)) + "']";
 
 	//	All other IDs have special characters backslash-escaped.
