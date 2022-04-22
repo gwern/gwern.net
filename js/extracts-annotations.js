@@ -73,15 +73,18 @@ Extracts = { ...Extracts, ...{
 		if (Extracts.cachedAnnotations[annotationIdentifier])
 			return Extracts.newDocument(Extracts.cachedAnnotations[annotationIdentifier]);
 
-		//	Check whether the annotation source is loaded.
-        if (Annotations.annotationForIdentifier(annotationIdentifier) == null) {
+		//	Get annotation reference data (if available).
+        let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
+
+		//	Check whether the annotation reference data is loaded.
+        if (referenceData == null) {
             /*  If the annotation has yet to be loaded, we’ll ask for it to load,
                 and meanwhile wait, and do nothing yet.
              */
             Extracts.refreshPopFrameAfterAnnotationLoads(target);
 
             return Extracts.newDocument();
-        } else if (Annotations.annotationForIdentifier(annotationIdentifier) == "LOADING_FAILED") {
+        } else if (referenceData == "LOADING_FAILED") {
             /*  If we’ve already tried and failed to load the annotation, we
                 will not try loading again, and just show the “loading failed”
                 message.
@@ -91,10 +94,6 @@ Extracts = { ...Extracts, ...{
             return Extracts.newDocument();
         }
 
-        /*  Retrieve HTML/text components of the annotation (constructed from
-            a retrieved, and presumably cached, annotation source).
-         */
-        let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
         //  Open link in same window on mobile, new window on desktop.
         let linkTarget = (Extracts.popFrameProvider == Popins) ? "_self" : "_blank";
 
