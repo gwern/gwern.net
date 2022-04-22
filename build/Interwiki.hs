@@ -45,7 +45,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   if T.head interwiki == '!' then
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
-                                           "id-not" : (if enWikipediaArticleNamespace (T.unpack url) then "link-annotated" else "link-annotated-not") : classes,
+                                           "id-not" : (if enWikipediaArticleNamespace (if article=="" then T.unpack $ inlinesToString ref else T.unpack article) then "link-annotated" else "link-annotated-not") : classes,
                                            kvs) in
                              case article of
                                   "" -> Link attr' ref (url `interwikiurl` inlinesToString ref, "") -- tooltip is now handled by LinkMetadata.hs
@@ -53,7 +53,9 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                 Nothing -> error $ "Attempted to use an interwiki link with no defined interwiki: " ++ show x
   else if "https://en.wikipedia.org/wiki/" `T.isPrefixOf` interwiki && enWikipediaArticleNamespace (T.unpack interwiki) then
             Link (ident, "link-annotated":"backlinks-not":classes, kvs) ref (interwiki, article)
-       else x
+            else if "https://en.wikipedia.org/wiki/" `T.isPrefixOf` interwiki then
+                   Link (ident, "link-annotated-not":"backlinks-not":classes, kvs) ref (interwiki, article)
+                 else x
             where
                   interwikiurl :: T.Text -> T.Text -> T.Text
                   -- normalize links; MediaWiki requires first letter to be capitalized
@@ -70,7 +72,7 @@ convertInterwikiLinks x = x
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 enWikipediaArticleNamespace :: String -> Bool
-enWikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) then False else
+enWikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) && "http" `isPrefixOf` u then False else
                                 let u' = takeWhile (\c -> c/=':' && c/='%' ) $ replace "https://en.wikipedia.org/wiki/" "" u in
                                   not $ u' `elem` nonArticleNamespace ||
                                         u' `elem` nonArticleNamespace
