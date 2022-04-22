@@ -2997,6 +2997,10 @@ body.index-directory #footer {
     max-width: unset;
 }
 
+.popframe blockquote > figure.float-right:first-child {
+	margin-top: 0.375em;
+}
+
 .popframe.local-transclude .popframe-content-view > blockquote:first-child,
 .popframe.local-transclude .popframe-content-view > .table-wrapper:first-child,
 .popframe.local-transclude .popframe-content-view > div.sourceCode:first-child pre {
