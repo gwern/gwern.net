@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-22 15:33:35 gwern"
+When:  Time-stamp: "2022-04-22 18:54:45 gwern"
 License: CC-0
 -}
 
@@ -1636,7 +1636,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
 
-                        if gabstract == "404 Not Found Error: no page by this name!" then return (Left Temporary)
+                        if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" then return (Left Temporary)
                           else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
                                  return $ Right (p, (title', author, date, doi, [], combinedAnnotation))
         where
