@@ -116,7 +116,7 @@ function fixedEncodeURIComponent(str) {
 	querySelector and similar functions. (All characters that need to be escaped
 	according to the CSS spec are escaped.)
  */
-GW.selectorFromHashRegeExp = new RegExp("[" + "~!@$%^&*()+=,./';:\"?><[]\{}|`#".replace(/./g, "\\$&") + "]", "g");
+// GW.selectorFromHashRegeExp = new RegExp("[" + "~!@$%^&*()+=,./';:\"?><[]\{}|`#".replace(/./g, "\\$&") + "]", "g");
 function selectorFromHash(hash) {
 	if (hash.length < 2)
 		return null;
@@ -126,11 +126,13 @@ function selectorFromHash(hash) {
 		return null;
 
 	//	IDs that start with a number are handled specially.
-	if (/^[0-9]/.test(hash.slice(1)))
-		return "[id='" + decodeURIComponent(hash.slice(1)) + "']";
+// 	if (/^[0-9]/.test(hash.slice(1)))
+// 		return "[id='" + decodeURIComponent(hash.slice(1)) + "']";
 
 	//	All other IDs have special characters backslash-escaped.
-	return "#" + decodeURIComponent(hash.slice(1)).replace(GW.selectorFromHashRegeExp, "\\$&");
+// 	return "#" + decodeURIComponent(hash.slice(1)).replace(GW.selectorFromHashRegeExp, "\\$&");
+
+	return "#" + CSS.escape(decodeURIComponent(hash.slice(1)));
 }
 
 /*  Helper function for AJAX, by kronusaturn
