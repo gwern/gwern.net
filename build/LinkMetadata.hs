@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-21 23:26:11 gwern"
+When:  Time-stamp: "2022-04-21 23:45:58 gwern"
 License: CC-0
 -}
 
@@ -365,7 +365,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     authorShort = authorsTruncate aut
                                     authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
-                                    author = if aut=="" then [Space] else [Space, authorSpan]
+                                    author = if aut=="" || aut=="N/A" then [Space] else [Space, authorSpan]
                                     date = if dt=="" then [] else [Span ("", ["date"], [("title",T.pack dt)]) [Str (T.pack $ dateTruncate dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]

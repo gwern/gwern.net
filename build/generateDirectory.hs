@@ -263,7 +263,7 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) =
        authorShort = authorsTruncate aut
        authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
                      else Str (T.pack $ authorShort)
-       author   = if aut=="" then [] else [Str ",", Space, authorSpan]
+       author   = if aut=="" || aut=="N/A" then [] else [Str ",", Space, authorSpan]
        date     = if dt=="" then [] else [Span ("", ["date"], []) [Str (T.pack dt)]]
        tags     = if tgs==[] then [] else (if dt/="" then [Str "; "] else []) ++ [tagsToLinksSpan tgs]
        backlink = if bl=="" then [] else (if dt=="" && tgs==[] then [] else [Str ";", Space]) ++ [Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack bl,"Reverse citations/backlinks for this page (the list of other pages which link to this URL).")]]

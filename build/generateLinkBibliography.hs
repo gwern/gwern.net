@@ -83,7 +83,7 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  =
       authorShort = authorsTruncate aut
       authorSpan  = if authorShort/=aut then Span ("",["full-authors-list"],[("title", T.pack aut)]) [Str (T.pack $ authorsTruncate aut)]
                     else Str (T.pack authorShort)
-      author = if aut=="" then []
+      author = if aut=="" || aut=="N/A" then []
                else
                  [Str ",", Space, authorSpan]
       -- I skip date because files don't usually have anything better than year, and that's already encoded in the filename which is shown
