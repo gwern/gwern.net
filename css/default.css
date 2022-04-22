@@ -468,6 +468,27 @@ section:target > :first-child a::after {
     opacity: 0.5;
 }
 
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+.TOC a:hover,
+.markdownBody .TOC a:hover {
+    background-color: var(--GW-TOC-link-hover-background-color);
+    color: var(--GW-TOC-link-hover-color);
+}
+.TOC a:hover::after,
+.markdownBody .TOC a:hover::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background-color: var(--GW-TOC-link-hover-indicator-bar-color);
+    width: 0.25em;
+    height: 100%;
+}
+
 /**********/
 /* FOOTER */
 /**********/
@@ -520,6 +541,34 @@ hr::after,
 }
 .horizontalRule-nth-2 {
     filter: drop-shadow(0 0 0 currentColor);
+}
+
+/*******************************************/
+/* DIRECTORY INDEXES & LINK BIBLIOGRAPHIES */
+/*******************************************/
+
+blockquote .TOC {
+    margin: 1em 0 0 0;
+    padding: 0.5em 0.5em 0.75em 0.75em;
+
+    /*  The following three properties are to prevent both overlap and
+        margin-collapse of the TOC when there’s a floated thumbnail figure
+        that juts down below the abstract text.
+     */
+    clear: both;
+    display: inline-block;
+    width: calc(100% - 1em);    /* Subtract side padding. */
+}
+
+blockquote .TOC > ul {
+    column-width: 12em;
+}
+
+blockquote .TOC a:hover::after {
+    margin: 0;
+    bottom: unset;
+    font-size: inherit;
+    opacity: unset;
 }
 
 /*************************/

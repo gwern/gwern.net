@@ -71,14 +71,17 @@ body.index .has-content .indicator-hook::before {
     background-image: var(--GW-dotted-underline-hover-background-image);
 }
 
-/*	TOCs in pop-frames.
+/*	TOCs in pop-frames, and also in link bibliographies, directory indexes, etc.
  */
-.popframe .TOC a:link,
-.popframe .TOC a:link * {
+.popframe .TOC a,
+.popframe .TOC a *,
+blockquote .TOC a:link,
+blockquote .TOC a:link * {
 	background: none;
 	text-shadow: none;
 }
-.popframe .TOC a::after {
+.popframe .TOC a::after,
+blockquote .TOC a::after {
 	display: none;
 }
 
