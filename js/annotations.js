@@ -35,7 +35,8 @@
 				The identifier string for the annotation.
 				(See the Extracts.targetIdentifier function in extracts.js for
 				 details.)
-			flags: GW.contentDidLoadEventFlags.needsRewrite
+			flags: 
+				0 (no flags set)
 
 		}
 		Fired after a new annotation has been loaded and staged (and, if it is
@@ -204,7 +205,7 @@ Annotations = {
 						document: annotation,
 						location: annotationURL,
 						identifier: annotationIdentifier,
-						flags: GW.contentDidLoadEventFlags.needsRewrite
+						flags: 0
 					});
 				} else {
 					GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
@@ -374,6 +375,7 @@ Annotations = {
         */
     //	Called by: Annotations.postProcessStagedWikipediaAnnotation
     wikipediaEntryExtraneousElementSelectors: [
+    	"style",
         ".mw-ref",
         ".shortdescription",
         ".plainlinks",

@@ -2,14 +2,30 @@
 /*  Events fired by extracts-annotations.js:
 
     GW.contentDidLoad {
-            source: "Extracts.rewritePopFrameContent_ANNOTATION"
+            source: "Extracts.annotationForTarget"
             document:
-                A DocumentFragment containing the annotation source elements.
+                A DocumentFragment containing the constructed annotation.
             location:
                 URL of the annotated target (NOT the URL of the annotation
                 resource!).
             flags:
                 GW.contentDidLoadEventFlags.needsRewrite
+        }
+        Fired when the content of the annotation pop-frame (i.e., the 
+        annotation) has been constructed, but not yet injected into a pop-frame.
+
+        (See rewrite.js for more information about the keys and values of the
+         GW.contentDidLoad event.)
+
+    GW.contentDidLoad {
+            source: "Extracts.rewritePopFrameContent_ANNOTATION"
+            document:
+                The contentView of the annotation pop-frame.
+            location:
+                URL of the annotated target (NOT the URL of the annotation
+                resource!).
+            flags: 
+                0 (no flags set)
         }
         Fired when an annotation pop-frame has been filled with content (i.e.,
         the annotation), at the last stage of preparing the pop-frame for
@@ -35,6 +51,9 @@ Extracts = { ...Extracts, ...{
     //  Used in: Extracts.setUpAnnotationLoadEventWithin
     annotatedTargetSelectors: [ "a.link-annotated" ],
 
+	//	Constructed annotations.
+	cachedAnnotations: { },
+
     //  Called by: extracts.js (as `predicateFunctionName`)
     //  Called by: extracts.js
     //  Called by: extracts-content.js
@@ -50,6 +69,11 @@ Extracts = { ...Extracts, ...{
 
         let annotationIdentifier = Extracts.targetIdentifier(target);
 
+		//	Use cached constructed annotation, if available.
+		if (Extracts.cachedAnnotations[annotationIdentifier])
+			return Extracts.newDocument(Extracts.cachedAnnotations[annotationIdentifier]);
+
+		//	Check whether the annotation source is loaded.
         if (Annotations.annotationForIdentifier(annotationIdentifier) == null) {
             /*  If the annotation has yet to be loaded, we’ll ask for it to load,
                 and meanwhile wait, and do nothing yet.
@@ -101,16 +125,20 @@ Extracts = { ...Extracts, ...{
                                 target="${linkTarget}"
                                     >${referenceData.titleHTML}</a>`;
 
-        let similarLinksHtml = referenceData.similarHTML == `` ? `` : `; ${referenceData.similarHTML}`;
+		//	Similars, backlinks, tags.
+        let auxLinks = ``;
+    	if (referenceData.backlinksHTML == ``) { 
+    		if (referenceData.tagsHTML > ``)
+				auxLinks += `; <span class="data-field link-tags">${referenceData.tagsHTML}</span>`;
+		} else {
+			if (referenceData.tagsHTML > ``)
+				auxLinks += `; ${referenceData.tagsHTML}`; 
 
-        let tagBacklinks = `${similarLinksHtml}</p>`;
-        if (referenceData.tagsHTML == `` && referenceData.backlinksHTML == ``) { tagBacklinks = `${similarLinksHtml}</p>`; } else {
-            if (referenceData.tagsHTML != `` && referenceData.backlinksHTML == ``) { tagBacklinks = `; <span class="data-field link-tags">${referenceData.tagsHTML}</span>${similarLinksHtml}</p>`; } else {
-                if (referenceData.tagsHTML == `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.backlinksHTML}${similarLinksHtml}</p>`; } else {
-                    if (referenceData.tagsHTML != `` && referenceData.backlinksHTML != ``) { tagBacklinks = `; ${referenceData.tagsHTML}; ${referenceData.backlinksHTML}${similarLinksHtml}</p>`; }
-                }
-            }
-        }
+        	auxLinks += `; ${referenceData.backlinksHTML}`;		
+		}
+        auxLinks += (referenceData.similarHTML 
+        			 ? `; ${referenceData.similarHTML}` 
+        			 : ``);
 
         //  The fully constructed annotation pop-frame contents.
         let abstractSpecialClass = ``;
@@ -120,10 +148,22 @@ Extracts = { ...Extracts, ...{
 		let constructedAnnotation = Extracts.newDocument(
         	  `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
             + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}`
-            + tagBacklinks
+            + `${auxLinks}</p>`
             + `<div class="data-field annotation-abstract ${abstractSpecialClass}"></div>`);
         constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
-        return constructedAnnotation;
+
+        //  Fire contentDidLoad event.
+        GW.notificationCenter.fireEvent("GW.contentDidLoad", {
+            source: "Extracts.annotationForTarget",
+            document: constructedAnnotation,
+            location: Extracts.locationForTarget(target),
+            flags: GW.contentDidLoadEventFlags.needsRewrite
+        });
+
+		//	Cache constructed and processed annotation.
+		Extracts.cachedAnnotations[annotationIdentifier] = constructedAnnotation;
+
+        return Extracts.newDocument(constructedAnnotation);
     },
 
     //  Called by: extracts.js (as `titleForPopFrame_${targetTypeName}`)
@@ -234,7 +274,7 @@ Extracts = { ...Extracts, ...{
             source: "Extracts.rewritePopFrameContent_ANNOTATION",
             document: popFrame.contentView,
             location: Extracts.locationForTarget(target),
-            flags: GW.contentDidLoadEventFlags.needsRewrite
+            flags: 0
         });
 
         //  Scroll to the target.

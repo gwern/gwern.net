@@ -497,7 +497,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 }, {
 	phase: "rewrite",
 	condition: (info) => (   info.needsRewrite
-						  && info.source == "Annotations.loadAnnotation")
+						  && info.source == "Extracts.annotationForTarget")
 });
 
 /******************************************************************************/
