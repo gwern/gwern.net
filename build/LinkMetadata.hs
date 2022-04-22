@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-21 14:31:59 gwern"
+When:  Time-stamp: "2022-04-21 23:26:11 gwern"
 License: CC-0
 -}
 
@@ -228,7 +228,7 @@ minimumAnnotationLength = 200
 writeAnnotationFragments :: ArchiveMetadata -> Metadata -> IORef Bool -> IO ()
 writeAnnotationFragments am md archived = mapM_ (\(p, mi) -> writeAnnotationFragment am md archived p mi) $ M.toList md
 writeAnnotationFragment :: ArchiveMetadata -> Metadata -> IORef Bool -> Path -> MetadataItem -> IO ()
-writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $!
+writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > minimumAnnotationLength) $
                                           do let u' = linkCanonicalize u
                                              bl <- getBackLink u'
                                              sl <- getSimilarLink u'
@@ -242,14 +242,14 @@ writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > min
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
                                              void $ createAnnotations md pandoc
-                                             let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk convertInterwikiLinks $ walk linkAuto  pandoc
+                                             let annotationPandoc = walk nominalToRealInflationAdjuster $ walk (hasAnnotation md True) $ walk convertInterwikiLinks $ walk linkAuto $ walk (parseRawBlock nullAttr) pandoc
                                              localizedPandoc <- walkM (localizeLink am archived) annotationPandoc
 
                                              let finalHTMLEither = runPure $ writeHtml5String safeHtmlWriterOptions localizedPandoc
                                              annotationExisted <- doesFileExist filepath'
                                              case finalHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
-                                               Right finalHTML -> let refloated = T.pack $ restoreFloatRight e $ T.unpack finalHTML
+                                               Right finalHTML -> let refloated = T.pack $ restoreFigureClass e $ T.unpack finalHTML
                                                                   in writeUpdatedFile "annotation" filepath' refloated -- >>
                                            -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
                                            -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
@@ -266,7 +266,7 @@ typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerEx
                          Left errr -> error $ show orig ++ ": " ++ t ++ show errr
                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
                                                 let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
-                           restoreFloatRight orig $ T.unpack fieldHtml
+                           restoreFigureClass orig $ T.unpack fieldHtml
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -346,10 +346,10 @@ hasAnnotation md idp = walk (hasAnnotationInline md idp)
           addHasAnnotation _ _ z _ = z
 
 parseRawBlock :: Attr -> Block -> Block
-parseRawBlock attr x@(RawBlock (Format "html") h) = let markdown = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
-                                          case markdown of
+parseRawBlock attr x@(RawBlock (Format "html") h) = let pandoc = runPure $ readHtml def{readerExtensions = pandocExtensions} h in
+                                          case pandoc of
                                             Left e -> error (show x ++ ": " ++ show e)
-                                            Right (Pandoc _ markdown') -> Div attr markdown'
+                                            Right (Pandoc _ blocks) -> Div attr blocks
 parseRawBlock _ x = x
 
 simplifiedHTMLString :: String -> String
@@ -375,9 +375,9 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     -- on directory indexes/link bibliography pages, we don't want to set 'link-annotated' class because the annotation is already being presented inline. It makes more sense to go all the way popping the link/document itself, as if the popup had already opened. So 'annotationP' makes that configurable:
                                     link = Link (lid, if annotationP then ["link-annotated"] else ["link-annotated-not"], values) [RawInline (Format "html") (T.pack $ "“"++tle++"”")] (T.pack f,"")
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
-                                    abst' = let start = take 3 abst in if start == "<p>" || start == "<ul" || start == "<ol" || start=="<h2" || start=="<h3" || start=="<bl" || take 7 abst == "<figure" then abst else "<p>" ++ abst ++ "</p>"
+                                    abst' = if anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                     -- check that float-right hasn't been deleted by Pandoc again:
-                                    abst'' = restoreFloatRight abst abst'
+                                    abst'' = restoreFigureClass abst abst'
                                 in
                                   [Para
                                        (linkPrefix ++ [link,Str ","] ++
@@ -391,7 +391,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                                 [Str ")"]
                                          ) ++
                                          [Str ":"]),
-                                       BlockQuote [parseRawBlock nullAttr $ RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
+                                       BlockQuote [RawBlock (Format "html") (rewriteAnchors f (T.pack abst''))]
                                   ]
                              where
                                nonAnnotatedLink :: [Block]
@@ -1166,8 +1166,9 @@ processParagraphizer a =
 --------------------------------------------
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
-restoreFloatRight :: String -> String -> String
-restoreFloatRight original final = if ("<figure class=\"float-right\">" `isInfixOf` original) then replace "<figure>" "<figure class=\"float-right\">" final else final
+restoreFigureClass :: String -> String -> String
+restoreFigureClass original final = foldr (\clss string -> if clss`isInfixOf`original then replace "<figure>" clss string else string) final classes
+  where classes = ["<figure class=\"float-right\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"invertible\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"width-full invertible-not\">"]
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
