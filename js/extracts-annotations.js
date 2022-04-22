@@ -189,7 +189,7 @@ Extracts = { ...Extracts, ...{
 					  "lighton", "microsoft", "microsoftnvidia", "miri",
 					  "nvidia", "openai", "pdf", "salesforce", "sensetime",
 					  "snapchat", "tencent", "tensorfork", "uber", "yandex"
-					  ].includes(target.hash.substr(1))))) {
+					  ].includes(target.hash.slice(1))))) {
             popFrameTitleText = "&#x00a7; " + popFrameTitleText;
         } else if (   target.hash > ""
         		   && Annotations.isWikipediaArticleLink(Extracts.targetIdentifier(target))

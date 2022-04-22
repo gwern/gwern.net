@@ -32,6 +32,8 @@
     --GW-popups-annotation-popup-min-height: 120px;
     --GW-popups-aux-links-popup-min-width: 240px;
     --GW-popups-aux-links-popup-min-height: 120px;
+    --GW-popups-local-transclude-popup-min-width: 360px;
+    --GW-popups-local-transclude-popup-min-height: 120px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
@@ -3964,6 +3966,11 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*┌──────────────────────────┐*/
 /*│ Local transclude popups. │*/
 /*└──────────────────────────┘*/
+
+.popup.local-transclude {
+    min-width: var(--GW-popups-local-transclude-popup-min-width);
+    min-height: var(--GW-popups-local-transclude-popup-min-height);
+}
 
 /*  Table of contents popups.
     */

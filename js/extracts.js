@@ -609,13 +609,29 @@ Extracts = {
             page (which can be the root page of the window).
          */
         let fullTargetDocument = Extracts.targetDocument(target);
-        if (   fullTargetDocument
-        	&& target.hash > "") {
+        if (   target.hash > ""
+        	&& (   fullTargetDocument
+        		|| target.closest(".popframe .TOC"))) {
             /*  If there already is a pop-frame that displays the entire linked
                 page, and if the link points to an anchor, display the linked
                 section or element.
              */
-            return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(fullTargetDocument.querySelector(selectorFromHash(target.hash)))));
+            if (fullTargetDocument) {
+            	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
+				return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
+			} else {
+				/*  Also display just the linked block if we’re spawning this
+					pop-frame from an in-pop-frame TOC.
+				 */
+				if (Extracts.cachedPages[target.pathname]) {
+					let linkedElement = Extracts.cachedPages[target.pathname].querySelector(selectorFromHash(target.hash));
+					return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
+				} else {
+					Extracts.refreshPopFrameAfterLocalPageLoads(target);
+
+					return Extracts.newDocument();
+				}
+			}
         } else {
             /*  Otherwise, display the entire linked page.
 
@@ -625,7 +641,19 @@ Extracts = {
                  we didn’t want to despawn it and respawn it at this target’s
                  location).
              */
-            return Extracts.externalPageEmbedForTarget(target);
+			//  Mark the pop-frame as an external page embed.
+			target.popFrame.classList.add("external-page-embed");
+
+			if (Extracts.cachedPages[target.pathname]) {
+				//  Give the pop-frame an identifying class.
+				target.popFrame.classList.add("page-" + target.pathname.slice(1));
+
+				return Extracts.newDocument(Extracts.cachedPages[target.pathname]);
+			} else {
+				Extracts.refreshPopFrameAfterLocalPageLoads(target);
+
+				return Extracts.newDocument();
+			}
         }
     },
 
@@ -699,12 +727,16 @@ Extracts = {
                 popFrameTitleText = Extracts.cachedPageTitles[target.pathname] || target.pathname;
             } else {
                 //  Sections of other pages.
-                let targetDocument = Extracts.targetDocument(target);
-                let nearestBlockElement = Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)));
-                let pageTitleOrPath = Extracts.cachedPageTitles[target.pathname] || target.pathname;
-                popFrameTitleText = nearestBlockElement.tagName == "SECTION"
-                                    ? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
-                                    : `${target.hash} (${pageTitleOrPath})`;
+                let targetDocument = Extracts.targetDocument(target) || Extracts.cachedPages[target.pathname];
+                if (targetDocument) {
+					let nearestBlockElement = Extracts.nearestBlockElement(targetDocument.querySelector(selectorFromHash(target.hash)));
+					let pageTitleOrPath = Extracts.cachedPageTitles[target.pathname] || target.pathname;
+					popFrameTitleText = nearestBlockElement.tagName == "SECTION"
+										? `${nearestBlockElement.firstElementChild.textContent} (${pageTitleOrPath})`
+										: `${target.hash} (${pageTitleOrPath})`;
+                } else {
+                	popFrameTitleText = target.pathname + target.hash;
+                }
             }
         }
 
@@ -951,25 +983,6 @@ Extracts = {
 
 		return docFrag;
 	},
-
-    //  Called by: Extracts.localTranscludeForTarget
-    externalPageEmbedForTarget: (target) => {
-        GWLog("Extracts.externalPageEmbedForTarget", "extracts.js", 2);
-
-        //  Mark the pop-frame as an external page embed.
-        target.popFrame.classList.add("external-page-embed");
-
-        if (Extracts.cachedPages[target.pathname]) {
-            //  Give the pop-frame an identifying class.
-            target.popFrame.classList.toggle("external-page-embed", "page-" + target.pathname.slice(1), true);
-
-			return Extracts.newDocument(Extracts.cachedPages[target.pathname]);
-        } else {
-            Extracts.refreshPopFrameAfterLocalPageLoads(target);
-
-			return Extracts.newDocument();
-        }
-    },
 
     /***************************/
     /*  Pop-frames (in general).
