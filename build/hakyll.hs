@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-19 19:24:01 gwern"
+When: Time-stamp: "2022-04-22 18:34:44 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -39,18 +39,19 @@ import Control.Monad (when, void)
 import Data.Char (toLower)
 import Data.IORef (newIORef, IORef)
 import Data.List (isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
+import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
 import Network.HTTP (urlDecode)
 import System.Directory (doesFileExist)
 import System.FilePath (takeExtension)
 import Data.FileStore.Utils (runShellCommand)
-import Hakyll (applyTemplateList, buildTags, compile, composeRoutes, constField,
+import Hakyll (compile, composeRoutes, constField,
                symlinkFileCompiler, dateField, defaultContext, defaultHakyllReaderOptions, field, getMetadata, getMetadataField, lookupString,
-               defaultHakyllWriterOptions, fromCapture, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
-               loadAll, loadAndApplyTemplate, loadBody, makeItem, match, modificationTimeField, mapContext,
+               defaultHakyllWriterOptions, getRoute, gsubRoute, hakyll, idRoute, itemIdentifier,
+               loadAndApplyTemplate, match, modificationTimeField, mapContext,
                pandocCompilerWithTransformM, route, setExtension, pathField, preprocess, boolField, toFilePath,
-               tagsField, tagsRules, templateCompiler, version, Compiler, Context, Item, Pattern, Tags, unsafeCompiler, noResult)
+               templateCompiler, version, Compiler, Context, Item, unsafeCompiler, noResult)
 import System.Exit (ExitCode(ExitFailure))
 import Text.HTML.TagSoup (renderTagsOptions, parseTags, renderOptions, optMinimize, optRawTag, Tag(TagOpen))
 import Text.Read (readMaybe)
@@ -58,7 +59,7 @@ import Text.Pandoc.Shared (blocksToInlines)
 import Text.Pandoc (nullAttr, runPure, runWithDefaultPartials, compileTemplate,
                     def, pandocExtensions, readerExtensions, readMarkdown, writeHtml5String,
                     Block(..), HTMLMathMethod(MathJax), defaultMathJaxURL, Inline(..),
-                    ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..))
+                    ObfuscationMethod(NoObfuscation), Pandoc(..), WriterOptions(..), nullMeta)
 import Text.Pandoc.Walk (walk, walkM)
 import Network.HTTP (urlEncode)
 import System.IO.Unsafe (unsafePerformIO)
@@ -69,7 +70,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToString)
-import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString)
+import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksSpan, safeHtmlWriterOptions)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
@@ -79,7 +80,6 @@ import Utils (printGreen, printRed)
 
 main :: IO ()
 main = hakyll $ do
-             tags <- buildTags "**.page" (fromCapture "tags/*")
 
              preprocess $ printGreen ("Testing link icon matches & updating inlined CSS…" :: String)
              preprocess rebuildSVGIconCSS
@@ -107,13 +107,8 @@ main = hakyll $ do
                  -- https://groups.google.com/forum/#!topic/pandoc-discuss/HVHY7-IOLSs
                  let readerOptions = defaultHakyllReaderOptions
                  compile $ pandocCompilerWithTransformM readerOptions woptions (unsafeCompiler . pandocTransform meta am hasArchivedOnce)
-                     >>= loadAndApplyTemplate "static/templates/default.html" (postCtx tags)
+                     >>= loadAndApplyTemplate "static/templates/default.html" (postCtx meta)
                      >>= imgUrls
-
-             tagsRules tags $ \tag pattern -> do
-                 let title = "Tag: " ++ tag
-                 route idRoute
-                 compile $ tagPage tags title pattern
 
              -- handle the simple static non-.page files; we define this after the pages because the pages' compilation has side-effects which may create new static files (archives & downsized images)
              let static = route idRoute >> compile symlinkFileCompiler -- WARNING: custom optimization requiring forked Hakyll installation; see https://github.com/jaspervdj/hakyll/issues/786
@@ -194,20 +189,6 @@ woptions = defaultHakyllWriterOptions{ writerSectionDivs = True,
         runPure $ runWithDefaultPartials $
         compileTemplate "" "<div id=\"TOC\" class=\"TOC\">$toc$</div>\n<div id=\"markdownBody\" class=\"markdownBody\">$body$</div>"
 
-postList :: String -> Tags -> Pattern -> ([Item String] -> Compiler [Item String]) -> Compiler String
-postList title tags pattern preprocess' = do
-    postItemTemplate <- loadBody "static/templates/postitem.html"
-    -- most tags we just leave in the default alphabetical sort. For newsletters, we prefer reverse order (they are written as '/newsletter/$YEAR/$MONTH.page' so the alphabetical sort is chronological, and reversing that is newest-first). This is particularly convenient with tooltip popups: the reader can mouse over 'NEWS' in the sidebar, and the latest finished newsletter will be the first link and it can be popped up as well.
-    posts' <- fmap (if title == "Tag: newsletter" then reverse else id) $ loadAll pattern
-    posts <- preprocess' posts'
-    applyTemplateList postItemTemplate (postCtx tags) posts
-tagPage :: Tags -> String -> Pattern -> Compiler (Item String)
-tagPage tags title pattern = do
-    list <- postList title tags pattern (return . id)
-    makeItem ""
-        >>= loadAndApplyTemplate "static/templates/tags.html"
-                (constField "posts" list <> constField "title" title <>
-                    defaultContext)
 
 imgUrls :: Item String -> Compiler (Item String)
 imgUrls item = do
@@ -216,9 +197,9 @@ imgUrls item = do
         Nothing -> return item
         Just _  -> traverse (unsafeCompiler . addImgDimensions) item
 
-postCtx :: Tags -> Context String
-postCtx tags =
-    tagsField "tagsHTML" tags <>
+postCtx :: Metadata -> Context String
+postCtx md =
+    fieldsTag "tagsHTML" md <>
     titlePlainField "titlePlain" <>
     descField "title" <>
     descField "description" <> -- constField "description" "N/A" <>
@@ -243,6 +224,15 @@ postCtx tags =
     -- for use in templating, `<body class="$safeURL$">`, allowing page-specific CSS:
     escapedTitleField "safeURL" <>
     (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
+
+fieldsTag :: String -> Metadata -> Context a
+fieldsTag th m = field th $ \item -> do
+  let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
+  case M.lookup path m of
+    Nothing -> noResult "no description field"
+    Just x@(_,_,_,_,tags,_) -> case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [Para [tagsToLinksSpan tags]])) of
+                                 Left e -> error ("Failed to compile tags to HTML fragment: " ++ show path ++ show x ++ show e)
+                                 Right html -> return (T.unpack html)
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, `postList`, `tagPage`, and `main`?
@@ -365,7 +355,6 @@ addImgDimensions :: String -> IO String
 addImgDimensions = fmap (renderTagsOptions renderOptions{optMinimize=whitelist, optRawTag = (`elem` ["script", "style"]) . map toLower}) . mapM staticImg . parseTags
                  where whitelist s = s /= "div" && s /= "script" && s /= "style"
 
-
 {- example illustration:
  TagOpen "img" [("src","/images/traffic/201201-201207-traffic-history.png")
                 ("alt","Plot of page-hits (y-axis) versus date (x-axis)")],
@@ -405,7 +394,6 @@ staticImg x@(TagOpen "img" xs) = do
       else return x
   where uniq = nubBy (\a b -> fst a == fst b) . sort
 staticImg x = return x
-
 
 -- https://edwardtufte.github.io/tufte-css/#sidenotes
 -- support Tufte-CSS-style margin notes with a syntax like
