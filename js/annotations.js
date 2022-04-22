@@ -378,7 +378,7 @@ Annotations = {
 				if (Annotations.isWikipediaArticleLink(link)) {
 					link.classList.add("link-annotated");
 				} else {
-					if (!(url.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))))
+					if (!(link.pathname.startsWithAnyOf(_π("/wiki/", [ "Special:" ]))))
 						link.classList.add("link-live");
 				}
             }
