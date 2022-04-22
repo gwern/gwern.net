@@ -100,6 +100,14 @@ Annotations = {
         return annotationURL;
 	},
 
+	//	Called by: Annotations.loadAnnotation
+	cachedResponseForIdentifier: (identifier) => {
+		if (Annotations.isWikipediaArticleLink(identifier))
+			return Annotations.cachedWikipediaAPIResponses[Annotations.annotationURLForIdentifier(identifier)];
+
+		return null;
+	},
+
     /*  Load, stage, and process the annotation for the given identifier string.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
@@ -110,42 +118,62 @@ Annotations = {
 		 */
         let annotationURL = Annotations.annotationURLForIdentifier(identifier);
 
-		/*	Retrieve the annotation resource and stage the annotation.
+		/*	Depending on the annotation source, `response` could be text (HTML),
+			JSON (already parsed), or other.
 		 */
-        doAjax({
-            location: annotationURL.href,
-            onSuccess: (event) => {
-                let annotation;
-                if (Annotations.isWikipediaArticleLink(identifier)) {
-                	annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(event.target.responseText, annotationURL);
-                	if (annotation)
-						Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
-                } else {
-                    annotation = Extracts.newDocument(event.target.responseText);
-                }
+		let processResponse = (response) => {
+			let annotation;
+			if (Annotations.isWikipediaArticleLink(identifier)) {
+				annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(response, annotationURL);
+				if (annotation)
+					Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
+			} else {
+				annotation = Extracts.newDocument(response);
+			}
 
-				if (annotation) {
-					Annotations.cachedReferenceData[identifier] = Annotations.referenceDataForAnnotation(annotation, identifier);
+			if (annotation) {
+				Annotations.cachedReferenceData[identifier] = Annotations.referenceDataForAnnotation(annotation, identifier);
 
-					GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: identifier });
-				} else {
-					Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
-
-					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
-
-					//	Send request to record failure in server logs.
-					GWServerLogError(annotationURL + `--could-not-process`, "problematic annotation");
-				}
-            },
-            onFailure: (event) => {
+				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: identifier });
+			} else {
 				Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
 
 				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
 
 				//	Send request to record failure in server logs.
-				GWServerLogError(annotationURL, "missing annotation");
-            }
-        });
+				GWServerLogError(annotationURL + `--could-not-process`, "problematic annotation");
+			}
+		};
+
+		/*	Retrieve the annotation resource and stage the annotation.
+		 */
+		let response = Annotations.cachedResponseForIdentifier(identifier);
+		if (response) {
+			processResponse(response);
+		} else {
+			doAjax({
+				location: annotationURL.href,
+				onSuccess: (event) => {
+					if (Annotations.isWikipediaArticleLink(identifier)) {
+						let responseJSON = JSON.parse(event.target.responseText);
+
+						Annotations.cachedWikipediaAPIResponses[annotationURL] = responseJSON;
+
+						processResponse(responseJSON);
+					} else {
+						processResponse(event.target.responseText);
+					}
+				},
+				onFailure: (event) => {
+					Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
+
+					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
+
+					//	Send request to record failure in server logs.
+					GWServerLogError(annotationURL, "missing annotation");
+				}
+			});
+		}
     },
 
 	//	Called by: Annotations.loadAnnotation
@@ -209,6 +237,8 @@ Annotations = {
 	/*	Wikipedia.
 	 */
 
+	cachedWikipediaAPIResponses: { },
+
     /*  Returns true iff the given identifier string is a Wikipedia URL.
         */
     //	Called by: Annotations.annotationURLForIdentifier
@@ -250,13 +280,11 @@ Annotations = {
         };
     },
 
-	/*	Returns a staged annotation, given the full response text of a Wikipedia
+	/*	Returns a staged annotation, given the full response JSON of a Wikipedia
 		API response.
 	 */
 	//	Called by: Annotations.loadAnnotation
-	stagedAnnotationFromWikipediaAPIResponse: (responseText, annotationURL) => {
-		let response = JSON.parse(responseText);
-
+	stagedAnnotationFromWikipediaAPIResponse: (response, annotationURL) => {
 		let targetSection;
 		if (annotationURL.hash > "") {
 			targetSection = response["remaining"]["sections"].find(section =>
