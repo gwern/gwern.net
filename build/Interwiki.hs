@@ -58,21 +58,25 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
                   interwikiurl :: T.Text -> T.Text -> T.Text
                   -- normalize links; MediaWiki requires first letter to be capitalized
                   interwikiurl u a = let a' = if u=="https://en.wikipedia.org/wiki/" then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
-                                       u `T.append` T.pack (replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
+                                       u `T.append` T.pack (replace "%3A" ":" $ replace "%20" "_" $ replace "%23" "#" $ urlEncode (deunicode (T.unpack a')))
                   deunicode :: String -> String
                   deunicode = replace "‘" "\'" . replace "’" "\'" . replace " " " " . replace " " " "
 convertInterwikiLinks x = x
 
 -- If True, a URL is a regular English Wikipedia article. If False, it's something else, like a talk page or history page etc.
 --
--- a WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg. 'https://en.wikipedia.org/wiki/File:Energy_density.svg' . Note that we need the colon separator because the prefixes are not unique without it, eg. 'https://en.wikipedia.org/wiki/Image_segmentation' is not in the `Image` namespace because images have a colon, and so they would be `Image:...`.
--- so just checking for 'en.wikipedia.org/wiki/' prefix is not enough.
+-- A WP link may be to non-article sets of pages, or namespaces (https://en.wikipedia.org/wiki/Wikipedia:Namespace): `Talk`, `User`, `File`, `Wikipedia` etc. eg. 'https://en.wikipedia.org/wiki/File:Energy_density.svg' . Note that we need to match on the colon separator, we can't just match the namespace prefix, because the prefixes are not unique without it, eg. 'https://en.wikipedia.org/wiki/Image_segmentation' is *not* in the `Image` namespace—because images have a colon, and so they would be `Image:...`.
+-- So just checking for 'en.wikipedia.org/wiki/' prefix is not enough.
 --
--- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all).
+-- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 enWikipediaArticleNamespace :: String -> Bool
 enWikipediaArticleNamespace u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) then False else
-                                let u' = takeWhile (/=':') $ replace "https://en.wikipedia.org/wiki/" "" u in
-                                  not $ u' `elem` (map (++":") ["Talk", "User", "User talk", "Wikipedia", "Wikipedia talk", "File", "File talk", "MediaWiki", "MediaWiki talk", "Template", "Template talk", "Help", "Help talk", "Category", "Category talk", "Portal", "Portal talk", "Draft", "Draft talk", "TimedText", "TimedText talk", "Module", "Module talk", "Gadget", "Gadget talk", "Gadget definition", "Gadget definition talk", "Special", "Media"])
+                                let u' = takeWhile (\c -> c/=':' && c/='%' ) $ replace "https://en.wikipedia.org/wiki/" "" u in
+                                  not $ u' `elem` nonArticleNamespace ||
+                                        u' `elem` nonArticleNamespace
+
+nonArticleNamespace :: [String]
+nonArticleNamespace = ["Talk", "User", "User_talk", "Wikipedia", "Wikipedia_talk", "File", "File_talk", "MediaWiki", "MediaWiki_talk", "Template", "Template_talk", "Help", "Help_talk", "Category", "Category_talk", "Portal", "Portal_talk", "Draft", "Draft_talk", "TimedText", "TimedText_talk", "Module", "Module_talk", "Gadget", "Gadget_talk", "Gadget definition", "Gadget definition_talk", "Special", "Media"]
 
 -- | Large table of constants; this is a mapping from shortcuts to a URL. The URL can be used by
 --   appending to it the article name (suitably URL-escaped, of course).

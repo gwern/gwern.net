@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-20 15:13:17 gwern"
+When:  Time-stamp: "2022-04-22 08:51:24 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -58,11 +58,12 @@ overrideLinkLive = []
 
 -- Nothing = unknown/untested; Just True = known good; Just False = known bad
 urlLive :: T.Text -> Maybe Bool
-urlLive u | u'     `elem` goodDomainsSimple = Just True
-          | anySuffixT u' goodDomainsSub    = Just True
-          | u'     `elem` badDomainsSimple  = Just False
-          | anySuffixT u' badDomainsSub     = Just False
-          | otherwise                       = Nothing
+urlLive u | u'      `elem`  goodDomainsSimple = Just True
+          | anySuffixT u'   goodDomainsSub    = Just True
+          | u'     `elem`   badDomainsSimple  = Just False
+          | anySuffixT u'   badDomainsSub     = Just False
+          | ".wikipedia.org" `T.isInfixOf` u  = wikipedia u
+          | otherwise                         = Nothing
    where u' = host u
 
 linkLivePrioritize :: IO [(Int, T.Text)]
@@ -84,10 +85,14 @@ linkLivePrioritize = do b <- readBacklinksDB
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
                                       appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .link-annotated-not .link-live}"
 
+-- Wikipedia link-live capabilities are page-dependent: anything in the Special namespace is blocked by headers (which makes sense given how many queries/capabilities are inside it). But it looks like pretty much all other namespaces (see Interwiki.hs's nonArticleNamespace for a list) can pop up?
+wikipedia :: T.Text -> Maybe Bool
+wikipedia u = Just $ not ("/wiki/Special:" `T.isInfixOf` u || "/wiki/Special%3A" `T.isInfixOf` u)
+
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
                    ".github.io", ".givewell.org", ".greenspun.com", ".humanprogress.org", ".imagemagick.org", ".mementoweb.org",
-                   ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wikipedia.org", ".wordpress.com",
+                   ".metafilter.com", ".nomeata.de", ".obormot.net", ".tumblr.com", ".xkcd.com", ".wordpress.com",
                    ".blogspot.com"]
 goodDomainsSimple =
   ["1dollarscan.com"
@@ -3296,6 +3301,8 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.unf.edu/mudlark/posters/hartzler.html", True)
     , ("https://palmerlab.org/neuroticism-and-depression-gwas-consortium-paper-accepted-for-publication-in-jama-psychiatry-abraham-palmer-harriet-de-wit-and-amy-hart-are-co-authors/", True)
     , ("https://jetpress.org/volume1/moravec.htm", True)
+    , ("https://en.wikipedia.org/wiki/User:Gwern", True)
+    , ("https://en.wikipedia.org/wiki/Talk:Small_caps", True)
     ]
 
 badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", False)
@@ -4785,4 +4792,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://nitter.hu/search?f=tweets&q=http%3A%2F%2Fwww.thiswaifudoesnotexist.net&src=typd", False)
     , ("https://tinyurl.com/hquv34", False)
     , ("https://history.nasa.gov/rogersrep/v2appf.htm", False)
+    , ("https://en.wikipedia.org/wiki/Special:Random", False)
     ]
