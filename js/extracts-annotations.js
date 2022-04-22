@@ -197,10 +197,8 @@ Extracts = { ...Extracts, ...{
         	/*	For Wikipedia, show the page title and the section title,
         		separated by the ‘§’ symbol.
         	 */
-        	let parentArticleURL = new URL(Extracts.targetIdentifier(popFrame.spawningTarget));
-        	parentArticleURL.hash = "";
-        	let parentArticleReferenceData = Annotations.referenceDataForAnnotationIdentifier(parentArticleURL.href);
-        	popFrameTitleText =   parentArticleReferenceData.titleHTML
+        	let referenceData = Annotations.referenceDataForAnnotationIdentifier(Extracts.targetIdentifier(popFrame.spawningTarget));
+        	popFrameTitleText =   referenceData.articleTitle
         						+ " &#x00a7; "
         						+ popFrameTitleText;
         }
