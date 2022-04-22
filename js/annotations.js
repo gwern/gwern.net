@@ -86,7 +86,6 @@ Annotations = {
             //  Wikipedia entry.
             annotationURL = new URL(identifier);
             let wikiPageName = /\/([^\/]+?)$/.exec(annotationURL.pathname)[1];
-            annotationURL.originalPathname = annotationURL.pathname;
             annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
         } else {
             //  Local annotation.
@@ -124,9 +123,7 @@ Annotations = {
 		let processResponse = (response) => {
 			let annotation;
 			if (Annotations.isWikipediaArticleLink(identifier)) {
-				annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(response, annotationURL);
-				if (annotation)
-					Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
+				annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(response, identifier);
 			} else {
 				annotation = Extracts.newDocument(response);
 			}
@@ -284,11 +281,12 @@ Annotations = {
 		API response.
 	 */
 	//	Called by: Annotations.loadAnnotation
-	stagedAnnotationFromWikipediaAPIResponse: (response, annotationURL) => {
-		let targetSection;
-		if (annotationURL.hash > "") {
-			targetSection = response["remaining"]["sections"].find(section =>
-				section["anchor"] == decodeURIComponent(annotationURL.hash).slice(1)
+	stagedAnnotationFromWikipediaAPIResponse: (response, identifier) => {
+		let articleURL = new URL(identifier);
+		let responseHTML, titleHTML;
+		if (articleURL.hash > "") {
+			let targetSection = response["remaining"]["sections"].find(section =>
+				section["anchor"] == decodeURIComponent(articleURL.hash).slice(1)
 			);
 
 			/*	Check whether we have tried to load a page section which does
@@ -296,22 +294,48 @@ Annotations = {
 			 */
 			if (!targetSection)
 				return null;
+
+			responseHTML = targetSection["text"];
+			titleHTML = targetSection["line"];
+		} else {
+			responseHTML = response["lead"]["sections"][0]["text"];
+			let sections = response["remaining"]["sections"];
+			if (sections > []) {
+				responseHTML += `<div class="TOC"><ul>`;
+				let headingLevel = 2;
+				for (let i = 0; i < sections.length; i++) {
+					let section = sections[i];
+					let newHeadingLevel = 1 + parseInt(section["toclevel"]);
+					if (newHeadingLevel > headingLevel)
+						responseHTML += `<ul>`;
+
+					if (i > 0 && newHeadingLevel <= headingLevel)
+						responseHTML += `</li>`;
+
+					if (newHeadingLevel < headingLevel)
+						responseHTML += `</ul>`;
+
+					responseHTML += `<li><a href='${articleURL}#${section["anchor"]}'>${section["line"]}</a>`;
+
+					headingLevel = newHeadingLevel;
+				}
+				responseHTML += `</li></ul></div>`;
+			}
+
+			titleHTML = response["lead"]["displaytitle"];
 		}
 
-		let responseHTML =   response["lead"]["sections"][0]["text"]
-						   + response["remaining"]["sections"].map(section =>
-						     	`<h2 id='${section["anchor"]}'>${section["line"]}</h2>\n${section["text"]}`
-						     ).join("");
+		let annotation = Extracts.newDocument(responseHTML);
+		annotation.titleHTML = titleHTML;
 
-		annotation = Extracts.newDocument(responseHTML);
-		annotation.titleHTML = response["lead"]["displaytitle"];
+		Annotations.postProcessStagedWikipediaAnnotation(annotation, identifier);
 
 		return annotation;
 	},
 
     /*  Elements to excise from a Wikipedia entry.
         */
-    //	Called by: Annotations.postProcessStagedWikipediaAnnotation
+    //	Used by: Annotations.postProcessStagedWikipediaAnnotation
     wikipediaEntryExtraneousElementSelectors: [
     	"style",
         ".mw-ref",
@@ -331,7 +355,9 @@ Annotations = {
     	entry (do HTML cleanup, etc.).
         */
     //	Called by: Annotations.loadAnnotation
-    postProcessStagedWikipediaAnnotation: (annotation, annotationURL) => {
+    postProcessStagedWikipediaAnnotation: (annotation, identifier) => {
+		let articleURL = new URL(identifier);
+
         //  Remove unwanted elements.
         annotation.querySelectorAll(Annotations.wikipediaEntryExtraneousElementSelectors.join(", ")).forEach(element => {
             element.remove();
@@ -351,9 +377,9 @@ Annotations = {
         annotation.querySelectorAll("a").forEach(link => {
             //  Qualify links.
             if (link.getAttribute("href").startsWith("#"))
-                link.pathname = annotationURL.originalPathname;
+                link.pathname = articleURL.pathname;
             if (link.hostname == location.hostname)
-                link.hostname = annotationURL.hostname;
+                link.hostname = articleURL.hostname;
 
             //  Mark other Wikipedia links as also being annotated.
             if (/(.+?)\.wikipedia\.org/.test(link.hostname)) {
@@ -362,14 +388,10 @@ Annotations = {
 				} else {
 					link.classList.add("link-live");
 				}
-
-				//	Link icon metadata also affects link underline style.
-                link.dataset.linkIcon = "wikipedia";
-                link.dataset.linkIconType = "svg";
             }
 
             //  Mark self-links.
-            if (link.pathname == annotationURL.originalPathname)
+            if (link.pathname == articleURL.pathname)
                 link.classList.add("link-self");
         });
 
