@@ -102,7 +102,8 @@ extractLinksFromPage path = do f <- TIO.readFile path
                                return $ case pE of
                                           Left  _ -> []
                                           -- make the list unique, but keep the original ordering
-                                          Right p -> filter (\l -> not (head l == '#')) $ -- self-links are not useful in link bibliographies
+                                          Right p -> map (replace "https://www.gwern.net/" "/") $
+                                                     filter (\l -> not (head l == '#')) $ -- self-links are not useful in link bibliographies
                                                      nub $ map T.unpack $ extractURLs p -- TODO: maybe extract the title from the metadata for nicer formatting?
 
 linksToAnnotations :: Metadata -> [String] -> [(String,MetadataItem)]
