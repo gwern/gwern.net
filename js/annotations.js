@@ -87,6 +87,7 @@ Annotations = {
             annotationURL = new URL(identifier);
             let wikiPageName = /\/([^\/]+?)$/.exec(annotationURL.pathname)[1];
             annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
+            annotationURL.hash = "";
         } else {
             //  Local annotation.
             annotationURL = new URL("https://"
@@ -269,10 +270,8 @@ Annotations = {
         return {
             element:        null,
             titleHTML:      referenceEntry.titleHTML,
+            articleTitle:	referenceEntry.articleTitle,
             authorHTML:     `<span class="data-field author">Wikipedia</span>`,
-            dateHTML:       ``,
-            tagsHTML:       ``,
-            backlinksHTML:  ``,
             abstract: 		Extracts.newDocument(referenceEntry)
         };
     },
@@ -327,6 +326,7 @@ Annotations = {
 
 		let annotation = Extracts.newDocument(responseHTML);
 		annotation.titleHTML = titleHTML;
+		annotation.articleTitle = response["lead"]["displaytitle"];
 
 		Annotations.postProcessStagedWikipediaAnnotation(annotation, identifier);
 
