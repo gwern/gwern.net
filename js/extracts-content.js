@@ -4,7 +4,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_CITATION"
             document:
-                A DocumentFragment containing the citation element.
+                The contentView of the citation pop-frame.
             location:
                 URL of (i.e., anchor-link to) the footnote (or sidenote; this
                 depends on whether the page in which the citation appears -
@@ -24,8 +24,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopupContent_CITATION_BACK_LINK"
             document:
-                A DocumentFragment containing a copy of the block element which 
-                contains the citation.
+                The contentView of the citation back-link popup.
             location:
                 URL of (i.e., anchor-link to) the citation which references the
                 footnote/sidenote which spawned the popup. (If there are
@@ -34,9 +33,9 @@
             flags:
                 0 (no flags set)
         }
-        Fired when a citation back-link pop-frame has been filled with content
+        Fired when a citation back-link popup has been filled with content
         (i.e., the text surrounding the reference which links to the footnote),
-        at the last stage of preparing the pop-frame for spawning (being
+        at the last stage of preparing the popup for spawning (being
         injected into the page and positioned).
 
         (See rewrite.js for more information about the keys and values of the
@@ -45,7 +44,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_AUX_LINKS_LINK"
             document:
-                A DocumentFragment containing the aux-links elements.
+                The contentView of the aux-links pop-frame.
             location:
                 URL of the aux-links source file.
             flags:
@@ -66,9 +65,8 @@
                 URL of the aux-links source file.
             flags: GW.contentDidLoadEventFlags.needsRewrite
         }
-        Fired at the last stage of preparing an aux-links pop-frame for spawning
-        (after the pop-frame’s content has been freshly loaded via a network
-        request).
+        Fired when the content of the aux-links pop-frame has been constructed,
+        but not yet injected into a pop-frame.
 
         (See rewrite.js for more information about the keys and values of the
          GW.contentDidLoad event.)

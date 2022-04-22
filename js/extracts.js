@@ -43,7 +43,7 @@
     GW.contentDidLoad {
             source: "Extracts.rewritePopFrameContent_LOCAL_PAGE"
             document:
-                A DocumentFragment containing the embedded page elements.
+                The contentView of the local transclude pop-frame.
             location:
                 URL of the local page (including anchor, if any).
             flags:
