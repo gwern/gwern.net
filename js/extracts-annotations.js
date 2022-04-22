@@ -197,9 +197,12 @@ Extracts = { ...Extracts, ...{
         	/*	For Wikipedia, show the page title and the section title,
         		separated by the ‘§’ symbol.
         	 */
-        	popFrameTitleText =   popFrameTitleText 
+        	let parentArticleURL = new URL(Extracts.targetIdentifier(popFrame.spawningTarget));
+        	parentArticleURL.hash = "";
+        	let parentArticleReferenceData = Annotations.referenceDataForAnnotationIdentifier(parentArticleURL.href);
+        	popFrameTitleText =   parentArticleReferenceData.titleHTML
         						+ " &#x00a7; "
-        						+ popFrame.querySelector(selectorFromHash(target.hash)).textContent;
+        						+ popFrameTitleText;
         }
 
 
@@ -351,7 +354,7 @@ Extracts = { ...Extracts, ...{
     },
 
     /*  Refresh (respawn or reload) a pop-frame for an annotated target after
-        its annotation (fragment) loads.
+        its annotation loads.
         */
     //  Called by: Extracts.annotationForTarget
     refreshPopFrameAfterAnnotationLoads: (target) => {
@@ -359,8 +362,8 @@ Extracts = { ...Extracts, ...{
 
         target.popFrame.classList.toggle("loading", true);
 
-        /*  We set up an event handler for when the fragment loads, and respawn
-            the popup / re-inject the popin, after it spawns (if it
+        /*  We set up an event handler for when the annotation loads, and 
+        	respawn the popup / re-inject the popin, after it spawns (if it
             hasn’t de-spawned already, eg. if the user moused out of the
             target).
             */
@@ -385,7 +388,7 @@ Extracts = { ...Extracts, ...{
             }
         }, { once: true, condition: (info) => info.identifier == Extracts.targetIdentifier(target) });
 
-        //  Add handler for if the fragment load fails.
+        //  Add handler for if the annotation load fails.
         GW.notificationCenter.addHandlerForEvent("Annotations.annotationLoadDidFail", target.updatePopFrameWhenFragmentLoadFails = (info) => {
             GWLog("updatePopFrameWhenFragmentLoadFails", "extracts.js", 2);
 
