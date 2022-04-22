@@ -32,6 +32,8 @@
     --GW-popups-annotation-popup-min-height: 120px;
     --GW-popups-aux-links-popup-min-width: 240px;
     --GW-popups-aux-links-popup-min-height: 120px;
+    --GW-popups-local-transclude-popup-min-width: 360px;
+    --GW-popups-local-transclude-popup-min-height: 120px;
     --GW-popups-popup-border-width: 3px;
     --GW-popups-popup-title-bar-height: calc(1.5rem + 1px);
     --GW-popups-popup-mini-title-bar-height: calc(1rem + 1px);
@@ -468,6 +470,27 @@ section:target > :first-child a::after {
     opacity: 0.5;
 }
 
+/*********************/
+/* TABLE OF CONTENTS */
+/*********************/
+
+.TOC a:hover,
+.markdownBody .TOC a:hover {
+    background-color: var(--GW-TOC-link-hover-background-color);
+    color: var(--GW-TOC-link-hover-color);
+}
+.TOC a:hover::after,
+.markdownBody .TOC a:hover::after {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background-color: var(--GW-TOC-link-hover-indicator-bar-color);
+    width: 0.25em;
+    height: 100%;
+}
+
 /**********/
 /* FOOTER */
 /**********/
@@ -520,6 +543,34 @@ hr::after,
 }
 .horizontalRule-nth-2 {
     filter: drop-shadow(0 0 0 currentColor);
+}
+
+/*******************************************/
+/* DIRECTORY INDEXES & LINK BIBLIOGRAPHIES */
+/*******************************************/
+
+blockquote .TOC {
+    margin: 1em 0 0 0;
+    padding: 0.5em 0.5em 0.75em 0.75em;
+
+    /*  The following three properties are to prevent both overlap and
+        margin-collapse of the TOC when there’s a floated thumbnail figure
+        that juts down below the abstract text.
+     */
+    clear: both;
+    display: inline-block;
+    width: calc(100% - 1em);    /* Subtract side padding. */
+}
+
+blockquote .TOC > ul {
+    column-width: 12em;
+}
+
+blockquote .TOC a:hover::after {
+    margin: 0;
+    bottom: unset;
+    font-size: inherit;
+    opacity: unset;
 }
 
 /*************************/
@@ -2997,6 +3048,10 @@ body.index-directory #footer {
     max-width: unset;
 }
 
+.popframe blockquote > figure.float-right:first-child {
+	margin-top: 0.375em;
+}
+
 .popframe.local-transclude .popframe-content-view > blockquote:first-child,
 .popframe.local-transclude .popframe-content-view > .table-wrapper:first-child,
 .popframe.local-transclude .popframe-content-view > div.sourceCode:first-child pre {
@@ -3911,6 +3966,11 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*┌──────────────────────────┐*/
 /*│ Local transclude popups. │*/
 /*└──────────────────────────┘*/
+
+.popup.local-transclude {
+    min-width: var(--GW-popups-local-transclude-popup-min-width);
+    min-height: var(--GW-popups-local-transclude-popup-min-height);
+}
 
 /*  Table of contents popups.
     */

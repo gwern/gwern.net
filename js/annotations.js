@@ -24,39 +24,6 @@
 		}
 		Fired when a new annotation has failed to load, and the load failure
 		has been recorded in the annotations cache.
-
-	GW.contentDidLoad {
-			source: "Annotations.loadAnnotation"
-			document: 
-				A DocumentFragment containing the annotation source elements.
-			location:
-				The URL of the annotation resource.
-			identifier:
-				The identifier string for the annotation.
-				(See the Extracts.targetIdentifier function in extracts.js for
-				 details.)
-			flags: 
-				0 (no flags set)
-
-		}
-		Fired after a new annotation has been loaded and staged (and, if it is
-		a Wikipedia entry, cleaned up / rectified), but not cached yet.
-
-		(See rewrite.js for more information about the keys and values of the
-		 GW.contentDidLoad event.)
-
-	GW.contentLoadDidFail {
-			source: "Annotations.loadAnnotation"
-			document: null
-			location:
-				The URL of the annotation resource.
-			identifier:
-				The identifier string for the annotation.
-				(See the Extracts.targetIdentifier function in extracts.js for
-				 details.)
-		}
-		Fired when a new annotation has failed to load (but before the load
-		failure has been recorded in the annotations cache).
  */
 
 Annotations = {
@@ -76,10 +43,6 @@ Annotations = {
     cleanup: () => {
         GWLog("Annotations.cleanup", "annotations.js", 1);
 
-        //  Remove content load event handlers.
-        GW.notificationCenter.removeHandlerForEvent("GW.contentDidLoad", signalAnnotationLoaded);
-        GW.notificationCenter.removeHandlerForEvent("GW.contentLoadDidFail", signalAnnotationLoadFailed);
-
         //  Fire cleanup-complete event.
         GW.notificationCenter.fireEvent("Annotations.cleanupDidComplete");
     },
@@ -88,70 +51,40 @@ Annotations = {
     setup: () => {
         GWLog("Annotations.setup", "annotations.js", 1);
 
-        //  Add handler for if an annotation loads.
-        GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", Annotations.signalAnnotationLoaded = (info) => {
-            GWLog("Annotations.signalAnnotationLoaded", "annotations.js", 2);
-
-            /*  If this is an annotation that’s loaded, we cache it, and fire 
-            	the annotationDidLoad event.
-                */
-            Annotations.cachedAnnotations[info.identifier] = info.document;
-
-            GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: info.identifier });
-        }, {
-            phase: ">rewrite",
-            condition: (info) => (info.source == "Annotations.loadAnnotation")
-        });
-
-        //  Add handler for if loading an annotation failed.
-        GW.notificationCenter.addHandlerForEvent("GW.contentLoadDidFail", Annotations.signalAnnotationLoadFailed = (info) => {
-            GWLog("Annotations.signalAnnotationLoadFailed", "annotations.js", 2);
-
-            /*  If this is an annotation that’s failed to load, then we set
-                the cache value to indicate this, and fire the
-                annotationLoadDidFail event.
-                */
-            Annotations.cachedAnnotations[info.identifier] = "LOADING_FAILED";
-
-            GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: info.identifier });
-        }, {
-        	condition: (info) => (info.source == "Annotations.loadAnnotation")
-        });
-
         //  Fire setup-complete event.
         GW.notificationCenter.fireEvent("Annotations.setupDidComplete");
     },
 
     /*  Storage for retrieved and cached annotations.
         */
-    cachedAnnotations: { },
+    cachedReferenceData: { },
 
     /*  Returns true iff a processed and cached annotation exists for the given
         identifier string.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
-    cachedAnnotationExists: (annotationIdentifier) => {
-        let cachedAnnotation = Annotations.cachedAnnotations[annotationIdentifier];
+    cachedAnnotationExists: (identifier) => {
+        let cachedAnnotation = Annotations.cachedReferenceData[identifier];
         return (cachedAnnotation && cachedAnnotation != "LOADING_FAILED");
     },
 
-    /*  Returns a cached annotation for a given identifier string, or else
-        either “LOADING_FAILED” (if loading the annotation was attempted but
-        failed) or null (if the annotation has not been loaded).
+    /*  Returns cached annotation reference data for a given identifier string,
+    	or else either “LOADING_FAILED” (if loading the annotation was attempted
+    	but failed) or null (if the annotation has not been loaded).
         */
     //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
-    annotationForIdentifier: (annotationIdentifier) => {
-        return Annotations.cachedAnnotations[annotationIdentifier];
+    referenceDataForAnnotationIdentifier: (identifier) => {
+        return Annotations.cachedReferenceData[identifier];
     },
 
 	/*	Returns the URL of the annotation resource for the given identifier.
 	 */
 	//	Called by: Annotations.loadAnnotation
-	annotationURLForIdentifier: (annotationIdentifier) => {
+	annotationURLForIdentifier: (identifier) => {
 		let annotationURL;
-        if (Annotations.isWikipediaArticleLink(annotationIdentifier)) {
+        if (Annotations.isWikipediaArticleLink(identifier)) {
             //  Wikipedia entry.
-            annotationURL = new URL(annotationIdentifier);
+            annotationURL = new URL(identifier);
             let wikiPageName = /\/([^\/]+?)$/.exec(annotationURL.pathname)[1];
             annotationURL.originalPathname = annotationURL.pathname;
             annotationURL.pathname = `/api/rest_v1/page/mobile-sections/${wikiPageName}`;
@@ -160,88 +93,97 @@ Annotations = {
             annotationURL = new URL("https://"
             						+ location.hostname
             						+ Annotations.annotationsBasePathname
-            						+ fixedEncodeURIComponent(fixedEncodeURIComponent(annotationIdentifier))
+            						+ fixedEncodeURIComponent(fixedEncodeURIComponent(identifier))
             						+ ".html");
         }
 
         return annotationURL;
 	},
 
+	//	Called by: Annotations.loadAnnotation
+	cachedResponseForIdentifier: (identifier) => {
+		if (Annotations.isWikipediaArticleLink(identifier))
+			return Annotations.cachedWikipediaAPIResponses[Annotations.annotationURLForIdentifier(identifier)];
+
+		return null;
+	},
+
     /*  Load, stage, and process the annotation for the given identifier string.
         */
     //	Called by: Extracts.setUpAnnotationLoadEventWithin (extracts-annotations.js)
-    loadAnnotation: (annotationIdentifier) => {
+    loadAnnotation: (identifier) => {
         GWLog("Annotations.loadAnnotation", "annotations.js", 2);
 
 		/*	Get URL of the annotation resource.
 		 */
-        let annotationURL = Annotations.annotationURLForIdentifier(annotationIdentifier);
+        let annotationURL = Annotations.annotationURLForIdentifier(identifier);
+
+		/*	Depending on the annotation source, `response` could be text (HTML),
+			JSON (already parsed), or other.
+		 */
+		let processResponse = (response) => {
+			let annotation;
+			if (Annotations.isWikipediaArticleLink(identifier)) {
+				annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(response, annotationURL);
+				if (annotation)
+					Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
+			} else {
+				annotation = Extracts.newDocument(response);
+			}
+
+			if (annotation) {
+				Annotations.cachedReferenceData[identifier] = Annotations.referenceDataForAnnotation(annotation, identifier);
+
+				GW.notificationCenter.fireEvent("Annotations.annotationDidLoad", { identifier: identifier });
+			} else {
+				Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
+
+				GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
+
+				//	Send request to record failure in server logs.
+				GWServerLogError(annotationURL + `--could-not-process`, "problematic annotation");
+			}
+		};
 
 		/*	Retrieve the annotation resource and stage the annotation.
 		 */
-        doAjax({
-            location: annotationURL.href,
-            onSuccess: (event) => {
-                let annotation;
-                if (Annotations.isWikipediaArticleLink(annotationIdentifier)) {
-                	annotation = Annotations.stagedAnnotationFromWikipediaAPIResponse(event.target.responseText, annotationURL);
-                	if (annotation) {
-						Annotations.postProcessStagedWikipediaAnnotation(annotation, annotationURL);
-                	} else {
-						//	Send request to record failure in server logs.
-						GWServerLogError(annotationURL + `--could-not-process`, "problematic Wikipedia annotation");
-               	}
-                } else {
-                    annotation = Extracts.newDocument(event.target.responseText);
-                }
+		let response = Annotations.cachedResponseForIdentifier(identifier);
+		if (response) {
+			processResponse(response);
+		} else {
+			doAjax({
+				location: annotationURL.href,
+				onSuccess: (event) => {
+					if (Annotations.isWikipediaArticleLink(identifier)) {
+						let responseJSON = JSON.parse(event.target.responseText);
 
-				if (annotation) {
-					/*	Fire GW.contentDidLoad event to trigger a rewrite pass and
-						then cause the annotation to be cached (and trigger the
-						Annotations.annotationDidLoad event to fire as well).
-					 */
-					GW.notificationCenter.fireEvent("GW.contentDidLoad", {
-						source: "Annotations.loadAnnotation",
-						document: annotation,
-						location: annotationURL,
-						identifier: annotationIdentifier,
-						flags: 0
-					});
-				} else {
-					GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-						source: "Annotations.loadAnnotation",
-						document: null,
-						identifier: annotationIdentifier,
-						location: annotationURL
-					});
+						Annotations.cachedWikipediaAPIResponses[annotationURL] = responseJSON;
+
+						processResponse(responseJSON);
+					} else {
+						processResponse(event.target.responseText);
+					}
+				},
+				onFailure: (event) => {
+					Annotations.cachedReferenceData[identifier] = "LOADING_FAILED";
+
+					GW.notificationCenter.fireEvent("Annotations.annotationLoadDidFail", { identifier: identifier });
+
+					//	Send request to record failure in server logs.
+					GWServerLogError(annotationURL, "missing annotation");
 				}
-            },
-            onFailure: (event) => {
-                GW.notificationCenter.fireEvent("GW.contentLoadDidFail", {
-                    source: "Annotations.loadAnnotation",
-                    document: null,
-                    location: annotationURL,
-                    identifier: annotationIdentifier
-                });
-
-				//	Send request to record failure in server logs.
-				GWServerLogError(annotationURL, "missing annotation");
-            }
-        });
+			});
+		}
     },
 
-    /*  Used to generate extracts.
-        */
-    //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
-    referenceDataForAnnotationIdentifier: (annotationIdentifier) => {
-        let referenceEntry = Annotations.cachedAnnotations[annotationIdentifier];
-
-        if (Annotations.isWikipediaArticleLink(annotationIdentifier)) {
-            return Annotations.referenceDataForWikipediaEntry(referenceEntry);
+	//	Called by: Annotations.loadAnnotation
+	referenceDataForAnnotation: (annotation, identifier) => {
+        if (Annotations.isWikipediaArticleLink(identifier)) {
+            return Annotations.referenceDataForWikipediaEntry(annotation);
         } else {
-            return Annotations.referenceDataForLocalAnnotation(referenceEntry);
+            return Annotations.referenceDataForLocalAnnotation(annotation);
         }
-    },
+	},
 
     /*  Annotations generated server-side and hosted locally.
         */
@@ -295,6 +237,8 @@ Annotations = {
 	/*	Wikipedia.
 	 */
 
+	cachedWikipediaAPIResponses: { },
+
     /*  Returns true iff the given identifier string is a Wikipedia URL.
         */
     //	Called by: Annotations.annotationURLForIdentifier
@@ -302,11 +246,11 @@ Annotations = {
     //	Called by: Annotations.referenceDataForAnnotationIdentifier
     //	Called by: Extracts.annotationForTarget (extracts-annotations.js)
     //	Called by: Extracts.titleForPopFrame_ANNOTATION (extracts-annotations.js)
-    isWikipediaArticleLink: (annotationIdentifier) => {
-        if (/^[\/]/.test(annotationIdentifier))
+    isWikipediaArticleLink: (identifier) => {
+        if (/^[\/]/.test(identifier))
             return false;
 
-        let url = new URL(annotationIdentifier);
+        let url = new URL(identifier);
 
         return (   url 
         		&& /(.+?)\.wikipedia\.org/.test(url.hostname)
@@ -336,13 +280,11 @@ Annotations = {
         };
     },
 
-	/*	Returns a staged annotation, given the full response text of a Wikipedia
+	/*	Returns a staged annotation, given the full response JSON of a Wikipedia
 		API response.
 	 */
 	//	Called by: Annotations.loadAnnotation
-	stagedAnnotationFromWikipediaAPIResponse: (responseText, annotationURL) => {
-		let response = JSON.parse(responseText);
-
+	stagedAnnotationFromWikipediaAPIResponse: (response, annotationURL) => {
 		let targetSection;
 		if (annotationURL.hash > "") {
 			targetSection = response["remaining"]["sections"].find(section =>

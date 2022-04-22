@@ -258,9 +258,13 @@ Popins = {
 
 	//	Called by: extracts.js
 	//	Called by: extracts-content.js
-	setPopFrameContent: (popin, contentHTML) => {
-		popin.contentView.innerHTML = contentHTML;
-		return (contentHTML > "");
+	setPopFrameContent: (popin, content) => {
+		if (content) {
+			popin.contentView.appendChild(content);
+			return true;
+		} else {
+			return false;
+		}
 	},
 
 	//	Called by: Popins.targetClicked (event handler)
