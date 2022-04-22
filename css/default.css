@@ -1386,7 +1386,7 @@ section.footnotes > hr:first-child.highlighted::before {
 }
 
 .sidenote p + p {
-    text-indent: 1em;
+    text-indent: 1.25em;
 }
 
 #markdownBody .sidenote ul,
@@ -2957,7 +2957,7 @@ body.index-directory #footer {
 }
 
 .popframe:not(.zoomed) p + p {
-    text-indent: 1.25em;
+    text-indent: 1.75em;
 }
 
 .popframe:not(.zoomed) p + ul,
