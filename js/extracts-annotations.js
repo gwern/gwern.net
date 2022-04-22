@@ -76,6 +76,9 @@ Extracts = { ...Extracts, ...{
 		//	Get annotation reference data (if available).
         let referenceData = Annotations.referenceDataForAnnotationIdentifier(annotationIdentifier);
 
+		//	Wikipedia (external) annotations get special treatment.
+		let isWikipediaLink = Annotations.isWikipediaArticleLink(annotationIdentifier);
+
 		//	Check whether the annotation reference data is loaded.
         if (referenceData == null) {
             /*  If the annotation has yet to be loaded, we’ll ask for it to load,
@@ -114,14 +117,18 @@ Extracts = { ...Extracts, ...{
         //  Extract title/link.
         let titleLinkClass = (originalLinkHTML > "" 
         					  ? `title-link local-archive-link` 
-        					  : (Annotations.isWikipediaArticleLink(annotationIdentifier)
+        					  : (isWikipediaLink
         					  	 ? `title-link link-live`
         					  	 : `title-link`));
+        let titleLinkIconMetadata = (isWikipediaLink
+        							 ? `data-link-icon-type="svg" data-link-icon="wikipedia"`
+        							 : ``);
         let titleLinkHTML = `<a
                                 class="${titleLinkClass}"
                                 title="Open ${target.href} in a new window"
                                 href="${target.href}"
                                 target="${linkTarget}"
+                                ${titleLinkIconMetadata}
                                     >${referenceData.titleHTML}</a>`;
 
 		//	Similars, backlinks, tags.
@@ -141,13 +148,24 @@ Extracts = { ...Extracts, ...{
 
         //  The fully constructed annotation pop-frame contents.
         let abstractSpecialClass = ``;
-        if (Annotations.isWikipediaArticleLink(annotationIdentifier))
+        if (isWikipediaLink)
             abstractSpecialClass = "wikipedia-entry";
 
 		let constructedAnnotation = Extracts.newDocument(
         	  `<p class="data-field title">${titleLinkHTML}${originalLinkHTML}</p>`
-            + `<p class="data-field author-plus-date">${referenceData.authorHTML}${referenceData.dateHTML}`
-            + `${auxLinks}</p>`
+        	/*	Suppress the author block in WP popups; we have nothing more 
+        		useful to say than ‘Wikipedia’ (even if we grabbed the 
+        		last-revision-time from WP, that’s usually just a trivial bot 
+        		edit and isn’t a ‘real’ author date), and the fact that it’s WP 
+        		is already denoted by the dotted underline, ‘W’ icon on the 
+        		title link, lack of the standard metadata block which non-WP 
+        		annotations have (author/date/tag/backlinks/similar-links), and 
+        		the encyclopedic topic & tone. Putting ‘Wikipedia’ on an entire 
+        		line by itself is just a waste of precious popup vertical space.
+        	 */
+        	+ (isWikipediaLink
+        	   ? ``
+        	   : `<p class="data-field author-date-aux">${referenceData.authorHTML}${referenceData.dateHTML}${auxLinks}</p>`)
             + `<div class="data-field annotation-abstract ${abstractSpecialClass}"></div>`);
         constructedAnnotation.querySelector(".annotation-abstract").appendChild(referenceData.abstract);
 
