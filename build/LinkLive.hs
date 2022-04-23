@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-22 08:51:24 gwern"
+When:  Time-stamp: "2022-04-23 18:26:56 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -37,6 +37,7 @@ import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
 import Data.Text as T (isInfixOf, isPrefixOf, unpack, Text)
 import Text.Pandoc (Inline(Link), nullAttr)
 
+import Interwiki (wpPopupClasses)
 import LinkBacklink (readBacklinksDB, Backlinks)
 import Utils (addClass, host, anySuffixT)
 
@@ -85,9 +86,9 @@ linkLivePrioritize = do b <- readBacklinksDB
         writeLinkLiveTestcase b l = let link = head $ filter (l `T.isInfixOf`) $ M.keys b in -- take the first URL which matches the domain:
                                       appendFile "Lorem.page" $ "\n- <" ++ T.unpack link ++ ">{.archive-not .link-annotated-not .link-live}"
 
--- Wikipedia link-live capabilities are page-dependent: anything in the Special namespace is blocked by headers (which makes sense given how many queries/capabilities are inside it). But it looks like pretty much all other namespaces (see Interwiki.hs's nonArticleNamespace for a list) can pop up?
+-- Wikipedia link-live capabilities are page-dependent: anything in the Special namespace is blocked by headers (which makes sense given how many queries/capabilities are inside it). But it looks like pretty much all other namespaces (see Interwiki.hs's nonArticleNamespace for a list) should be live?
 wikipedia :: T.Text -> Maybe Bool
-wikipedia u = Just $ not ("/wiki/Special:" `T.isInfixOf` u || "/wiki/Special%3A" `T.isInfixOf` u)
+wikipedia u = Just $ "link-live" `elem` wpPopupClasses (T.unpack u)
 
 goodDomainsSub, goodDomainsSimple, badDomainsSub, badDomainsSimple :: [T.Text]
 goodDomainsSub = [".allennlp.org", ".archive.org", ".archiveteam.org", ".bandcamp.com", ".eleuther.ai", ".fandom.com",
@@ -3582,7 +3583,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://www.jstatsoft.org/index.php/jss/article/download/v048i09/601", False)
     , ("https://pcl.sitehost.iu.edu/rgoldsto/interrelated/interrelated.html", False)
     , ("https://www.fimfiction.net/story/62074/Friendship-is-Optimal", False)
-    , ("http://www.ex.org/2.4/09-jpopconference_1.html", False)
+    , ("http://https://web.archive.org/web/20130314044739/http://www.ex.org:80/2.4/09-jpopconference_1.html", False)
     , ("https://news.ycombinator.com/item?id=17048329", False)
     , ("https://www.science.org/content/article/plan-replicate-50-high-impact-cancer-papers-shrinks-just-18", False)
     , ("https://www.longecity.org/forum/topic/54856-modafinil-use-prosecution-convictions/", False)
