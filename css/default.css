@@ -584,11 +584,16 @@ blockquote .TOC a:hover::after {
 /***********/
 /* NUMBERS */
 /***********/
-/*  'tabular figures' to make numbers line up in tables or other monospace/code like contexts:
-        https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
-        https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
-*/
-table, code, pre, a, h1, h2, h3, h4, h5, h6 { /* Skip old-style figures in elements with underlining, to reduce the need to cross the underline with skip-ink */
+/*  ‘Tabular figures’ to make numbers line up in tables or other 
+	monospace/code like contexts:
+
+    https://practicaltypography.com/alternate-figures.html#tabular-and-proportional-figures
+	https://helpx.adobe.com/fonts/using/open-type-syntax.html#tnum
+ */
+/*	Skip old-style figures in elements with underlining, to reduce the need to 
+	cross the underline with skip-ink
+ */
+table, code, pre, a, h1, h2, h3, h4, h5, h6 {
     font-variant-numeric: tabular-nums;
 }
 
@@ -1089,9 +1094,18 @@ a.footnote-ref {
     margin: 1em 0 0 0;
 }
 
-/* On directory indexes, titles may include '19th' century, which with the default size & padding makes the ' TH ' really stand out. eg. https://www.gwern.net/docs/sociology/index#johow-et-al-2019-section '“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019' */
-h1 sub, h1 sup, h2 sub, h2 sup  { font-size: 60%;  }
-.markdownBody h2 a:link > sub, .markdownBody h2 a:link > sup { padding-left: 0em; }
+/*	On directory indexes, titles may include ‘19th’ century, which with the 
+	default size & padding makes the ‘ TH ’ really stand out. e.g. 
+	
+	https://www.gwern.net/docs/sociology/index#johow-et-al-2019-section ‘“HIGH CONSANGUINITY PROMOTES INTERGENERATIONAL WEALTH CONCENTRATION IN SOCIOECONOMICALLY PRIVILEGED KRUMMHÖRN FAMILIES OF THE 18TH AND 19TH CENTURIES”, JOHOW ET AL 2019’
+ */
+h1 sub, h1 sup, h2 sub, h2 sup {
+	font-size: 0.6em;
+}
+.markdownBody h2 a:link > sub, 
+.markdownBody h2 a:link > sup {
+	padding-left: 0em; 
+}
 
 /*=------------------------=*/
 /*= Back-to-citation links =*/
@@ -1963,7 +1977,9 @@ code span.im { color: var(--GW-syntax-highlight-color-import); font-weight: bold
    This is most noticeable in epigraphs and blockquotes. Minor, but nice.
    CSS standard: https://www.w3.org/TR/css-text-3/#propdef-hanging-punctuation
    Supported only in Safari https://caniuse.com/css-hanging-punctuation https://developer.mozilla.org/en-US/docs/Web/CSS/hanging-punctuation#browser_compatibility but that has 18% market share, which is not nothing. */
-p { hanging-punctuation: first last; }
+p {
+	hanging-punctuation: first last;
+}
 
 /*  LaTeX/TeX: Format the logotypes correctly (a higher up, e lower)
     (borrowed from https://latex.now.sh/ )
@@ -3245,12 +3261,11 @@ body.index-directory #footer {
     display: block;
 }
 
-/* HACK: In WP popups, the thumbnails typically do not *quite* align with the caption, unlike regular images or in regular popups: the images ('img') get set to 250px (WP API's default for mobile?), but the figure caption ('figcaption') get set to 265.185px, producing a nagging inconsistency. This seems to be due to a loop in extracts.js ('// Ensure no reflow due to figures'), which tries to avoid the popup reflowing by setting the width dynamically, but it does so only on the *img* element. Thus, they wind up inconsistent.
-To hack around this issue (which surely has a better answer), and since in some cursory testing I didn't observe any widths >250px even for cases where WP could be sending a far bigger thumbnail/image, we can hardwire ahead of time a max-width of 250px in just WP popups' floated figures' captions.  */
-.wikipedia-entry figure[class^='float-'] .caption-wrapper { max-width: 250px; }
-
 /* WP wraps references entirely in <cite> elements; <cite> is styled by browsers (Chrome/FF) by default in italics. No one wants their entire reference in italics, so WP resets the font to the default style (whatever that is), and styles italics bits (like book titles) manually. We need to replicate that, or else references sections in our WP popups will be entirely italics! */
-.wikipedia-entry cite, .wikipedia-entry dfn { font-style: inherit; }
+.wikipedia-entry cite, 
+.wikipedia-entry dfn {
+	font-style: inherit; 
+}
 
 /*┌──────────────────────┐*/
 /*│ Footnote pop-frames. │*/
@@ -3992,10 +4007,16 @@ To hack around this issue (which surely has a better answer), and since in some 
 /*│ Tag popups. │*/
 /*└─────────────┘*/
 /* on tag/directory index popups, we want to hide the initial '# Links' <h1> because it takes up way too much space and adds nothing. */
-.popup h1.display-pop-not, .popin h1.display-pop-not { display: none; }
+.popup h1.display-pop-not, 
+.popin h1.display-pop-not {
+	display: none;
+}
 
 /* We also want to squeeze the directory list because the default unordered-list padding of 2em bottom uses up too much of a popup. */
-.popup #directory-indexes ul { margin-top: 0.5em; margin-bottom: 0.5em; }
+.popup #directory-indexes ul {
+	margin-top: 0.5em; 
+	margin-bottom: 0.5em; 
+}
 
 /*=---------------=*/
 /*= POPUP CONTENT =*/
@@ -4663,7 +4684,9 @@ section.highlight-fading::before {
 /* Navigation bar for previous/next page links (horizontal divider based on: https://commons.wikimedia.org/wiki/File:Filet_arabesque.svg ) */
 
 @media only screen and (max-width: 649px) {
-    #navigation { display: none; }
+    #navigation {
+    	display: none; 
+    }
 }
 @media only screen and (min-width: 650px) {
     #navigation {
