@@ -4,7 +4,6 @@ description: "404 Not Found Error: no page by this name!"
 author: "N/A"
 thumbnail: /static/img/logo/logo-unifrakturmaguntia-lowercase-h.png
 thumbnailText: "'I think you went too far.' [Image of Fraktur/blackletter lowercase letter 'H', alluding to the 'G' Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error did so by going too far alphabetically past the 'G'.]"
-tags: meta
 created: 2009-01-27
 modified: 2022-04-19
 status: finished
@@ -160,7 +159,7 @@ Other options:
 - [`/tags/Bitcoin`](/tags/Bitcoin)
 - [CO2/ventilation sleep experiment](/zeo/CO2 "Branwen 2016")
 - [ZMA Sleep Experiment](/zeo/ZMA "Branwen 2017")
-- [_MLP_: Immanetizing The Equestrian](/MLP "Branwen 2018")
+- [_MLP_: Immanetizing The Equestrian](/reviews/MLP "Branwen 2018")
 - [`/newsletter/2020/03`](/newsletter/2020/03)
 - ["Scanners Live in Vain" as realistic SF](/Scanners "Branwen 2013")
 - [Lizardman Constant in Surveys](/notes/Lizardman-constant "Branwen 2013")

@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-22 18:34:44 gwern"
+When: Time-stamp: "2022-04-23 09:44:27 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -38,7 +38,7 @@ import Control.Exception (onException)
 import Control.Monad (when, void)
 import Data.Char (toLower)
 import Data.IORef (newIORef, IORef)
-import Data.List (isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
+import Data.List (intercalate, isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
 import qualified Data.Map.Strict as M (lookup)
 import Data.Maybe (isNothing)
 import Data.Monoid ((<>))
@@ -199,7 +199,8 @@ imgUrls item = do
 
 postCtx :: Metadata -> Context String
 postCtx md =
-    fieldsTag "tagsHTML" md <>
+    fieldsTagPlain md <>
+    fieldsTagHTML  md <>
     titlePlainField "titlePlain" <>
     descField "title" <>
     descField "description" <> -- constField "description" "N/A" <>
@@ -225,14 +226,21 @@ postCtx md =
     escapedTitleField "safeURL" <>
     (mapContext (\p -> (urlEncode $ concatMap (\t -> if t=='/'||t==':' then urlEncode [t] else [t]) $ ("/" ++ (replace ".page" ".html" p)))) . pathField) "escapedURL" -- for use with backlinks ie 'href="/metadata/annotations/backlinks/$escapedURL$"', so 'Bitcoin-is-Worse-is-Better.page' → '/metadata/annotations/backlinks/%2FBitcoin-is-Worse-is-Better.html', 'notes/Faster.page' → '/metadata/annotations/backlinks/%2Fnotes%2FFaster.html'
 
-fieldsTag :: String -> Metadata -> Context a
-fieldsTag th m = field th $ \item -> do
+fieldsTagHTML :: Metadata -> Context a
+fieldsTagHTML m = field "tagsHTML" $ \item -> do
   let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
   case M.lookup path m of
-    Nothing -> noResult "no description field"
+    Nothing                 -> return "" -- noResult "no description field"
     Just x@(_,_,_,_,tags,_) -> case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [Para [tagsToLinksSpan tags]])) of
                                  Left e -> error ("Failed to compile tags to HTML fragment: " ++ show path ++ show x ++ show e)
                                  Right html -> return (T.unpack html)
+
+fieldsTagPlain :: Metadata -> Context a
+fieldsTagPlain m = field "tagsPlain" $ \item -> do
+  let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
+  case M.lookup path m of
+    Nothing               -> return "" -- noResult "no description field"
+    Just (_,_,_,_,tags,_) -> return $ intercalate ", " tags
 
 -- should backlinks be in the metadata? We skip backlinks for newsletters & indexes (excluded from the backlink generation process as well) due to lack of any value of looking for backlinks to hose.
 -- HACK: uses unsafePerformIO. Not sure how to check up front without IO... Read the backlinks DB and thread it all the way through `postCtx`, `postList`, `tagPage`, and `main`?

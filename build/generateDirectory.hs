@@ -135,7 +135,6 @@ generateYAMLHeader d date (directoryN,annotationN,linkN) thumbnail
              "description: 'Annotated bibliography for the tag-directory <code>/" ++ d ++ "</code>, most recent first." ++
               " " ++ show directoryN ++ " related tags, " ++ show annotationN ++ " annotations, " ++ show linkN ++ " links.'\n",
              thumbnail,
-             "tags: index\n",
              "created: 'N/A'\n",
              if date=="" then "" else "modified: " ++ date ++ "\n",
              "status: in progress\n",

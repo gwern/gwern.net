@@ -60,7 +60,6 @@ generateYAMLHeader :: FilePath -> String
 generateYAMLHeader d = "---\n" ++
                        "title: " ++ d ++ " (Link Bibliography)\n" ++
                        "description: 'Annotated bibliography of links in the top-level page \"" ++ d ++ "\"'\n" ++
-                       "tags: link-bibliography\n" ++
                        "created: 2009-01-01\n" ++
                        "status: in progress\n" ++
                        "confidence: log\n" ++
