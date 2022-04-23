@@ -1189,17 +1189,9 @@ function brokenAnchorCheck() {
 	GWLog("brokenAnchorCheck", "rewrite.js", 1);
 
 	if (   location.hash > "" 
+		&& /#if_slide_([0-9]+)/.test(location.hash) == false
 		&& document.querySelector(selectorFromHash(location.hash)) == null)
 		reportBrokenAnchorLink(location);
-
-	/*	Loop over internal page self-links and check that their targets exist;
-		if they do not, report it via 404 like the broken anchors.
-		DEPRECATED DUE TO anchor-checker.php SCRIPT.
-	 */
-// 	document.querySelectorAll(".markdownBody a[href^='#']").forEach(anchor => {
-// 		if (document.querySelector(selectorFromHash(anchor.hash)) == null)
-// 			reportBrokenAnchorLink(anchor);
-// 	});
 }
 doWhenPageLoaded(brokenAnchorCheck);
 
