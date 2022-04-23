@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-22 22:20:08 gwern"
+When:  Time-stamp: "2022-04-23 17:19:18 gwern"
 License: CC-0
 -}
 
@@ -486,6 +486,15 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("modafinil/darknet-market", "modafinil DNM")
           , ("history/s-l-a-marshall", "SLAM")
           , ("lesswrong-survey/hpmor", "HP:MoR")
+          , ("cs/c", "C")
+          , ("cs/r", "R")
+          , ("cs/shell", "shell")
+          , ("cs/scheme", "Scheme")
+          , ("cs/css", "CSS")
+          , ("cs/cryptography", "crypto")
+          , ("cs/js", "JS")
+          , ("cs/haskell", "Haskell")
+          , ("cs/python", "Python")
           , ("cs/end-to-end-principle", "end-to-end")
           , ("philosophy/frank-p-ramsey", "Frank Ramsey")
           , ("nootropic/quantified-self", "QS")
@@ -1612,8 +1621,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
-                        let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then snd $ head y else "") metas
-                        let keywords' = if "tags/" `isPrefixOf` p' || "/index" `isSuffixOf` p' then "" else "<p>[<strong>Keywords</strong>: <span class=\"link-tags\" title=\"List of tags for this page.\">" ++ keywordsToLinks keywords ++ "</span>]</p>" -- NOTE: we avoid the <span id="page-tags"> because not unique when substituted into tag-directories/link-bibliographies
+                        let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Data.List.Utils.split ", " $ snd $ head y else []) metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
                         let thumbnail = if not (any filterThumbnail metas) then "" else
                                           (\(TagOpen _ [_, ("content", thumb)]) -> thumb) $ head $ filter filterThumbnail metas
@@ -1631,23 +1639,19 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
                         let toc = gwernTOC footnotesP p' f
 
-                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description keywords' toc f
+                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description toc f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
                         let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
 
                         if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" then return (Left Temporary)
                           else if gabstract `elem` ["", "<p></p>", "<p></p> "] then return (Left Permanent) else
-                                 return $ Right (p, (title', author, date, doi, [], combinedAnnotation))
+                                 return $ Right (p, (title', author, date, doi, keywords, combinedAnnotation))
         where
           filterThumbnail (TagOpen "meta" [("property", "og:image"), _]) = True
           filterThumbnail _ = False
           filterThumbnailText (TagOpen "meta" [("property", "og:image:alt"), _]) = True
           filterThumbnailText _ = False
-
-          -- ["statistics","NN","anime","shell","dataset"] ~> "<a href=\"/tags/statistics\">statistics</a>, <a href=\"/tags/NN\">NN</a>, <a href=\"/tags/anime\">anime</a>, <a href=\"/tags/shell\">shell</a>, <a href=\"/tags/dataset\">dataset</a>"
-          keywordsToLinks :: String -> String
-          keywordsToLinks = intercalate ", " . map (\k -> "<a title=\"All pages tagged '"++k++"'\"" ++ " href=\"/tags/"++k++"\">"++k++"</a>") . words . replace "," ""
 
 truncateTOC :: String -> String -> String
 truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pack toc) in
@@ -1666,8 +1670,8 @@ gwernTOC footnotesP p' f =
                                                                  (takeWhile (\e' -> e' /= TagClose "div")  $ dropWhile (\e -> e /=  (TagOpen "div" [("id","TOC"), ("class","TOC")])) f) ++
                                                                  [TagClose "div"])
 
-gwernAbstract :: Bool -> String -> String -> String -> String -> [Tag String] -> (String,String)
-gwernAbstract shortAllowed p' description keywords toc f =
+gwernAbstract :: Bool -> String -> String -> String -> [Tag String] -> (String,String)
+gwernAbstract shortAllowed p' description toc f =
   let anchor  = sed ".*#" "" p'
       baseURL = sed "#.*" "" p'
       (t,abstrctRw, abstrct) = if not ("#" `isInfixOf` p') then ("", takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f, trim $ renderTags $ filter filterAbstract $ takeWhile takeToAbstract $ dropWhile dropToAbstract $ dropWhile dropToBody f)
@@ -1683,7 +1687,7 @@ gwernAbstract shortAllowed p' description keywords toc f =
                          in (titleClean, abstractRaw, restofpageAbstract)
       -- the description is inferior to the abstract, so we don't want to simply combine them, but if there's no abstract, settle for the description:
       abstrct'  = if length description > length abstrct then description else abstrct
-      abstrct'' = (if anyPrefix abstrct' ["<p>", "<p>", "<figure>"] then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ keywords ++ " " ++ toc
+      abstrct'' = (if anyPrefix abstrct' ["<p>", "<p>", "<figure>"] then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
   in if "abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool

@@ -103,7 +103,7 @@
         <div id="page-metadata">
           <p>$if(description)$
             <span id="page-description" title="Short description of page.">$description$</span><br/>$endif$
-            $if(tagsHTML)$<span id="page-tags" title="List of tags for this page.">$tagsHTML$</span><br/>$endif$
+            $if(tagsHTML)$$tagsHTML$<br/>$endif$
             <span id="page-metadata-block">
               $if(author)$ <span id="page-author" title="Author of this page.">by: <em>$author$</em></span>$endif$
               <span id="page-date-range"><span id="page-creation" title="Date page contents were begun."><em>$created$</em></span>–<span id="page-source"><a title="Link to latest revision of the raw Markdown text source for this page, '$title$': $url$.page" class="no-icon" href="$url$.page"><span id="page-modified" title="Date of last major modification to this page."><em>$modified$</em></span></a></span></span>
