@@ -136,7 +136,8 @@ function prepareCollapseBlocks(loadEventInfo) {
 		} else if ([ "H1", "H2", "H3", "H4", "H5", "H6" ].includes(collapseBlock.tagName)) {
 			//  Remove the ‘collapse’ class and do nothing else.
 			collapseBlock.classList.remove("collapse");
-		} else if (collapseBlock.parentElement.tagName == "DIV" && collapseBlock.parentElement.children.length == 1) {
+		} else if (   collapseBlock.parentElement.tagName == "DIV" 
+				   && collapseBlock.parentElement.children.length == 1) {
 			//  Use parent div as collapse block wrapper.
 			let realCollapseBlock = collapseBlock.parentElement;
 			realCollapseBlock.classList.add("collapse");
