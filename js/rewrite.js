@@ -144,6 +144,76 @@
 
 GW.rewriteFunctions = { };
 
+
+/***********/
+/* HELPERS */
+/***********/
+
+/******************************************************************************/
+/*	Create and return a new element with the specified tag name and attributes.
+ */
+function newElement(tagName, attributes = { }) {
+	let element = document.createElement(tagName);
+	for (const attrName in attributes)
+		if (attributes.hasOwnProperty(attrName))
+			element.setAttribute(attrName, attributes[attrName]);
+	return element;
+}
+
+/*****************************************************/
+/*	Wrap an element in a wrapper element.
+ */
+function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper = false) {
+	if (   useExistingWrapper
+		&& element.parentElement
+		&& element.parentElement.tagName == wrapTagName
+		&& element.parentElement.children.length == 1) {
+		element.parentElement.classList.toggle(wrapClass, true);
+	} else {
+		let wrapper = document.createElement(wrapTagName);
+		wrapper.classList.add(...(wrapClass.split(" ")));
+		element.parentElement.insertBefore(wrapper, element);
+		wrapper.appendChild(element);
+	}
+}
+
+/*****************************************************/
+/*	Wrap all elements specified by the given selector.
+ */
+function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = document, useExistingWrappers = false) {
+	let wrapperFunction;
+	if (typeof wrapClassOrFunction == "string") {
+		wrapperFunction = (element) => {
+			wrapElement(element, wrapClassOrFunction, wrapTagName, useExistingWrappers);
+		};
+	} else {
+		wrapperFunction = wrapClassOrFunction;
+	}
+
+	root.querySelectorAll(selector).forEach(wrapperFunction);
+}
+
+/****************************************/
+/*	Replace an element with its contents.
+ */
+function unwrap(wrapper) {
+	if (wrapper.parentElement) {
+		for (let node of wrapper.childNodes)
+			wrapper.parentElement.insertBefore(node, wrapper);
+		wrapper.remove();
+	}
+}
+
+/*******************************************************/
+/*	Unwrap all elements specified by the given selector.
+ */
+function unwrapAll(selector, root = document) {
+	root.querySelectorAll(selector).forEach(element => {
+		unwrap(element);
+	});
+}
+
+
 /**********/
 /* TABLES */
 /**********/
@@ -154,39 +224,24 @@ GW.rewriteFunctions = { };
 function wrapTables(loadEventInfo) {
     GWLog("wrapTables", "rewrite.js", 1);
 
-    let wrapperClass = "table-wrapper";
-    loadEventInfo.document.querySelectorAll("table").forEach(table => {
-        if (   table.parentElement
-        	&& table.parentElement.tagName == "DIV" 
-        	&& table.parentElement.children.length == 1) {
-            table.parentElement.classList.toggle(wrapperClass, true);
-        } else {
-        	let wrapper = document.createElement("DIV");
-        	wrapper.classList.add(wrapperClass);
-        	table.parentNode.insertBefore(wrapper, table);
-        	wrapper.appendChild(table);
-        }
-    });
+	wrapAll("table", "table-wrapper", "DIV", loadEventInfo.document, true)
 }
 
-/******************************************************************************/
-/*  Wrap each full-width table in a div.width-full-table-wrapper, and also move
-    the .collapse class (if any) from the outer wrapper to the table (for
-    consistency).
+/*****************************************************************************/
+/*  Wrap each full-width table in a div.full-width-table-inner-wrapper, and 
+	also move the .collapse class (if any) from the outer wrapper to the table 
+	(for consistency).
  */
 function wrapFullWidthTables(loadEventInfo) {
     GWLog("wrapFullWidthTables", "rewrite.js", 1);
 
-    let fullWidthClass = "width-full";
-    let fullWidthInnerWrapperClass = "full-width-table-inner-wrapper";
-    loadEventInfo.document.querySelectorAll(`.table-wrapper.${fullWidthClass}`).forEach(fullWidthTableWrapper => {
-        if (fullWidthTableWrapper.classList.contains("collapse")) {
-            fullWidthTableWrapper.classList.remove("collapse");
-            fullWidthTableWrapper.firstElementChild.classList.add("collapse");
-        }
+	wrapAll(".table-wrapper.width-full > table", "full-width-table-inner-wrapper", "DIV", loadEventInfo.document, false);
 
-        fullWidthTableWrapper.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthTableWrapper.innerHTML + `</div>`;
-    });
+	//	Move ‘collapse’ class from wrappers to tables.
+	loadEventInfo.document.querySelectorAll(".table-wrapper.width-full.collapse table").forEach(table => {
+		table.closest(".table-wrapper").classList.remove("collapse");
+		table.classList.add("collapse");
+	});
 }
 
 /**********************************************/
@@ -299,21 +354,10 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function wrapFullWidthPreBlocks(loadEventInfo) {
     GWLog("wrapFullWidthPreBlocks", "rewrite.js", 1);
 
-    let fullWidthClass = "width-full";
-    let fullWidthInnerWrapperClass = "full-width-code-block-wrapper";
-    loadEventInfo.document.querySelectorAll(`pre.${fullWidthClass}`).forEach(fullWidthPre => {
-        if (fullWidthPre.parentElement.tagName == "DIV" && fullWidthPre.parentElement.children.length == 1) {
-            fullWidthPre.parentElement.classList.toggle(fullWidthClass, true);
-            fullWidthPre.parentElement.innerHTML = `<div class="${fullWidthInnerWrapperClass}">` + fullWidthPre.parentElement.innerHTML + `</div>`;
-        } else {
-            fullWidthPre.parentElement.innerHTML =
-                  `<div class="${fullWidthInnerWrapperClass}">`
-                + `<div class="${fullWidthClass}">`
-                + fullWidthPre.parentElement.innerHTML
-                + `</div>`
-                + `</div>`;
-        }
-    });
+	wrapAll("pre.width-full", (fullWidthPre) => {
+		wrapElement(fullWidthPre, "width-full", "DIV", true);
+		wrapElement(fullWidthPre.parentElement, "full-width-code-block-wrapper", "DIV", false);
+	}, null, loadEventInfo.document);
 }
 
 /***************************************************/
@@ -557,9 +601,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function stripTOCLinkSpans(loadEventInfo) {
     GWLog("stripTOCLinkSpans", "rewrite.js", 1);
 
-	loadEventInfo.document.querySelectorAll(".TOC li a span:not([class])").forEach(spuriousSpan => {
-		spuriousSpan.outerHTML = spuriousSpan.innerHTML;
-	});
+	unwrapAll(".TOC li a span:not([class])", loadEventInfo.document);
 }
 
 /*************************************************************/
@@ -652,7 +694,14 @@ function rewriteFootnoteBackLinks(loadEventInfo) {
 	 */
 	let defaultSize = 20;
 	footnotes.forEach(footnote => {
-		footnote.querySelector(".footnote-back").innerHTML = `<img width="${defaultSize}" height="${defaultSize}" alt="↩ Right arrow curving left [footnote return link] arrow" src="/static/img/icons/arrow-hook-left.svg">`;
+		let backlink = footnote.querySelector(".footnote-back");
+		backlink.textContent = "";
+		backlink.appendChild(newElement("IMG", {
+			width: defaultSize,
+			height: defaultSize,
+			alt: "↩ Right arrow curving left [footnote return link] arrow",
+			src: "/static/img/icons/arrow-hook-left.svg"
+		}));
 	});
 
 	requestIdleCallback(() => {

@@ -1209,7 +1209,7 @@ Extracts = {
 GW.notificationCenter.fireEvent("Extracts.didLoad");
 
 //  Set pop-frame type (mode) - popups or popins.
-let mobileMode = (localStorage.getItem("extracts-force-popins") == "true") || GW.isMobile();
+let mobileMode = (localStorage.getItem("extracts-force-popins") == "true") || GW.isMobile() || matchMedia("(max-height: 949px)").matches;
 Extracts.popFrameProviderName = mobileMode ? "Popins" : "Popups";
 GWLog(`${(mobileMode ? "Mobile" : "Non-mobile")} client detected. Activating ${(mobileMode ? "popins" : "popups")}.`, "extracts.js", 1);
 
