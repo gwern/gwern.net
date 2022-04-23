@@ -1984,9 +1984,9 @@ if (typeof window.GW == "undefined")
 
 	GW.contentDidLoad {
 			source: "DOMContentLoaded"
-			document: 
+			document:
 				The global document object (window.document).
-			location: 
+			location:
 				URL of the main page, as loaded.
 			flags: (  GW.contentDidLoadEventFlags.isMainDocument
 					| GW.contentDidLoadEventFlags.needsRewrite
@@ -2072,7 +2072,7 @@ function GWStopWatch(f, ...args) {
 	with some error string (which gets automatically URL-encoded).
  */
 function GWServerLogError(errorString, errorType) {
-	doAjax({ location: `$${location.origin}/static/404.html-error-` + fixedEncodeURIComponent(errorString) });
+	doAjax({ location: `$${location.origin}/static/404-error-` + fixedEncodeURIComponent(errorString) });
 	GWLog(`Reporting $${(errorType || "error")}:  $${errorString}`, "error reporting", 1);
 }
 
@@ -2129,7 +2129,7 @@ function doAjax(options) {
 			options.onFailure(event);
     });
     let method = (options["method"] || "GET");
-    let location = (options.location || document.location) 
+    let location = (options.location || document.location)
     			   + ((options.params && method == "GET") ? ("?" + urlEncodeQuery(options.params)) : "");
     req.open(method, location);
     if (options["method"] == "POST") {
@@ -2147,7 +2147,7 @@ function doAjax(options) {
  */
 Element.prototype.addActivateEvent = function(fn, includeMouseDown) {
     let ael = this.activateEventListener = (event) => {
-        if (   event.button === 0 
+        if (   event.button === 0
         	|| event.key    === ' ')
             fn(event);
     };
@@ -2199,9 +2199,9 @@ function pointWithinRect(point, rect) {
 /*  Returns true if the given rects intersect, false otherwise.
  */
 function doRectsIntersect(rectA, rectB) {
-    return (   rectA.top < rectB.bottom 
-    		&& rectA.bottom > rectB.top 
-    		&& rectA.left < rectB.right 
+    return (   rectA.top < rectB.bottom
+    		&& rectA.bottom > rectB.top
+    		&& rectA.left < rectB.right
     		&& rectA.right > rectB.left);
 }
 
@@ -2287,12 +2287,12 @@ Array.prototype.insertBefore = function (item, test) {
 	array string with each right hand array string, e.g.:
 
 		[ "a", "b" ].π([ "x", "y" ])
-	
+
 	will return:
 
 		[ "ax", "ay", "bx", "by" ]
 
-	Any non-string argument must be iterable, else null is returned. Any 
+	Any non-string argument must be iterable, else null is returned. Any
 	members of a passed array (or other iterable object), whatever their types,
 	are stringified and interpolated into the resulting product strings.
  */
@@ -2415,13 +2415,13 @@ function removeScrollListener(name) {
 	occurs in the interim - i.e. after the trigger event happens but before the
 	delay elapses - cancel calling the handler.)
 
-	Return value of this function is an anonymous function which removes the 
+	Return value of this function is an anonymous function which removes the
 	listeners that this function adds.
 
 	NOTE: If `delay` is 0 or less, then `cancelEventName` is ignored, and `func`
 	is added as an event handler for `triggerEventName` directly.
 
-	If `delay` is positive, then `func` will be called by a timer after `delay` 
+	If `delay` is positive, then `func` will be called by a timer after `delay`
 	ms, prior to which time it might be cancelled if `cancelEventName` (if any)
 	occurs. (If `cancelEventName` is null, then `func` will be called after
 	`delay` unconditionally.)
@@ -2539,26 +2539,26 @@ function cancelDoWhenMatchMedia(name) {
 /* NOTIFICATIONS */
 /*****************/
 /*	The GW.notificationCenter object allows us to register handler functions for
-	named events. Any number of handlers may be registered for any given named 
-	event, and when that event is fired, all of its registered handlers will be 
-	called. Because event handlers are registered for events by event name 
-	(which may be any string we like), a handler may be registered for an event 
-	at any time and at any location in the code. (In other words, an event does 
-	not need to first be “defined”, nor needs to “exist” in any way, in order 
+	named events. Any number of handlers may be registered for any given named
+	event, and when that event is fired, all of its registered handlers will be
+	called. Because event handlers are registered for events by event name
+	(which may be any string we like), a handler may be registered for an event
+	at any time and at any location in the code. (In other words, an event does
+	not need to first be “defined”, nor needs to “exist” in any way, in order
 	for a handler to be registered for it.)
 
-	We can also make the calling of any given event handler conditional (with a 
-	user-defined, handler-specific condition function [closure] that dynamically 
-	determines whether its associated handler should be called or not, when the 
-	event the handler was registered for is fired), specify that an event 
-	handler should be called only once or many times, and group handlers for a 
+	We can also make the calling of any given event handler conditional (with a
+	user-defined, handler-specific condition function [closure] that dynamically
+	determines whether its associated handler should be called or not, when the
+	event the handler was registered for is fired), specify that an event
+	handler should be called only once or many times, and group handlers for a
 	particular event into named “phases” (to ensure that certain handlers for an
 	event are always called before/after others).
 
-	Events themselves are also user-defined. Causing an event to fire is as 
-	simple as calling GW.notificationCenter.fireEvent() and providing an event 
-	name (which may be any string), plus an event info dictionary (which may 
-	contain any keys and values we deem necessary, and which will be passed to 
+	Events themselves are also user-defined. Causing an event to fire is as
+	simple as calling GW.notificationCenter.fireEvent() and providing an event
+	name (which may be any string), plus an event info dictionary (which may
+	contain any keys and values we deem necessary, and which will be passed to
 	the handler functions); this will trigger the calling of all the handlers
 	that have been registered for that event name.
 
@@ -2574,7 +2574,7 @@ GW.notificationCenter = {
 		definition is a dictionary with the following keys/values:
 
 		- ‘f’ (key)
-			Handler function to call when the named event fires (passing the 
+			Handler function to call when the named event fires (passing the
 			event info dictionary of the fired event). (See comment on the
 			‘addHandlerForEvent’ function, below, for details.)
 
@@ -2587,14 +2587,14 @@ GW.notificationCenter = {
 				the condition returns true
 
 			- ‘once’ (key) [optional]
-				Boolean value; if true, the handler will be removed after the 
-				handler function is called once (note that if there is a 
-				condition function provided [see the ‘condition’ key], the 
+				Boolean value; if true, the handler will be removed after the
+				handler function is called once (note that if there is a
+				condition function provided [see the ‘condition’ key], the
 				handler function will not be called - and therefore will not be
-				removed - if the named event is fired by the condition evaluates 
+				removed - if the named event is fired by the condition evaluates
 				to false).
 
-				If not set, defaults to false (i.e., by default a handler is 
+				If not set, defaults to false (i.e., by default a handler is
 				not removed after an event is fired once, but will continue to
 				be invoked each time the named event fires and the condition,
 				if any, evaluates as true).
@@ -2607,8 +2607,8 @@ GW.notificationCenter = {
 				The format for this string is as follows:
 
 				- If the first character is anything other than ‘<’ or ‘>’, the
-				  entire string is treated as the name of a handler phase. The 
-				  given handler function will be called in the same handler 
+				  entire string is treated as the name of a handler phase. The
+				  given handler function will be called in the same handler
 				  phase as all other handlers assigned to that phase. (Within a
 				  phase, handlers are called in the order in which they were
 				  added.)
@@ -2617,61 +2617,61 @@ GW.notificationCenter = {
 				  is treated as the name of a handler phase. The given handler
 				  function will be called prior to any handlers assigned to the
 				  specified phase, but after any handlers assigned to an earlier
-				  named phase (if any). (Within such a “before phase X” 
-				  ‘pseudo-phase’, handlers are called in the order in which they 
+				  named phase (if any). (Within such a “before phase X”
+				  ‘pseudo-phase’, handlers are called in the order in which they
 				  were added.)
 
 				- If the first character is ‘>’, then the rest of the string
 				  is treated as the name of a handler phase. The given handler
 				  function will be called after any handlers assigned to the
 				  specified phase, but before any handlers assigned to a later
-				  named phase (if any). (Within such an “after phase X” 
-				  ‘pseudo-phase’, handlers are called in the order in which they 
+				  named phase (if any). (Within such an “after phase X”
+				  ‘pseudo-phase’, handlers are called in the order in which they
 				  were added.)
 
 		When an event is fired, any handlers registered for that event (i.e.,
-		members of the array which is the value for that event’s name in the 
+		members of the array which is the value for that event’s name in the
 		eventHandlers dictionary) are called in array order. (If a condition is
 		specified for any given handler, the handler function is only called if
 		the condition function - called with the event info dictionary as its
 		argument - evaluates true.)
 
-		The order of an event handlers array for a given event is, by default, 
+		The order of an event handlers array for a given event is, by default,
 		determined by the order in which handlers are registered for that event.
-		The value of the ‘phase’ key of an event’s options dictionary can 
-		override and modify this default order. (See definition of the ‘phase’ 
+		The value of the ‘phase’ key of an event’s options dictionary can
+		override and modify this default order. (See definition of the ‘phase’
 		key of an event handler options dictionary, above.)
 	 */
     eventHandlers: { },
 
     /*	Defined event handler phases for certain named events.
-    	(See definition of the ‘phase’ key of an event handler options 
+    	(See definition of the ‘phase’ key of an event handler options
     	 dictionary, above, for more info.)
 
-    	Phases are defined in execution order. For example, when the 
+    	Phases are defined in execution order. For example, when the
     	GW.contentDidLoad event (whose handler phases are defined as follows:
-    	`[ "rewrite", "eventListeners" ]`) fires, event handlers are called in 
+    	`[ "rewrite", "eventListeners" ]`) fires, event handlers are called in
     	the following order:
-    	
-    	1. Handlers assigned to be called before the ‘rewrite’ phase (i.e., 
+
+    	1. Handlers assigned to be called before the ‘rewrite’ phase (i.e.,
     	   those with ‘<rewrite’ as the value of their ‘phase’ key in their
     	   event handler options dictionary)
-    	2. Handlers assigned to be called during the ‘rewrite’ phase (i.e., 
+    	2. Handlers assigned to be called during the ‘rewrite’ phase (i.e.,
     	   those with ‘rewrite’ as the value of their ‘phase’ key in their
     	   event handler options dictionary)
-    	3. Handlers assigned to be called after the ‘rewrite’ phase (i.e., 
+    	3. Handlers assigned to be called after the ‘rewrite’ phase (i.e.,
     	   those with ‘>rewrite’ as the value of their ‘phase’ key in their
     	   event handler options dictionary)
-    	4. Handlers assigned to be called before the ‘eventListeners’ phase 
+    	4. Handlers assigned to be called before the ‘eventListeners’ phase
     	   (i.e., those with ‘<eventListeners’ as the value of their ‘phase’ key
     	   in their event handler options dictionary)
-    	5. Handlers assigned to be called during the ‘eventListeners’ phase 
+    	5. Handlers assigned to be called during the ‘eventListeners’ phase
     	   (i.e., those with ‘eventListeners’ as the value of their ‘phase’ key
     	   in their event handler options dictionary)
-    	6. Handlers assigned to be called after the ‘eventListeners’ phase 
+    	6. Handlers assigned to be called after the ‘eventListeners’ phase
     	   (i.e., those with ‘>eventListeners’ as the value of their ‘phase’ key
     	   in their event handler options dictionary)
-    	
+
     	(Handlers with no specified phase might be called at any point in this
     	 sequence, depending on when they were registered.)
      */
@@ -2688,27 +2688,27 @@ GW.notificationCenter = {
 			Event handler function. When the event fires, this function will be
 			called. Not that if a condition is specified in the event handler
 			options (i.e., if a condition function is provided as the value of
-			the ‘condition’ key in the event handler options dictionary), then 
-			the handler function will be called only if the condition function 
+			the ‘condition’ key in the event handler options dictionary), then
+			the handler function will be called only if the condition function
 			evaluates true).
 
 			The event handler function should take one argument: an event info
-			dictionary. The keys and values of this dictionary are mostly 
+			dictionary. The keys and values of this dictionary are mostly
 			event-specific (but see the ‘fireEvent’ function, below, for more
 			info).
 
 		- ‘options’ [optional]
 			Event handler options dictionary. See comment on the ‘eventHandlers’
 			property (above) for info on possible keys/values.
-		
-		Note that if there already exists a registered event handler for the 
+
+		Note that if there already exists a registered event handler for the
 		given event with the same event handler function as the new handler that
 		you are trying to register, then the new handler will not be registered
 		(even if it has different handler options than the existing handler).
 	 */
     addHandlerForEvent: (eventName, f, options = { }) => {
     	/*	If there’s not already a handlers array for the given event (which
-    		may be, e.g., because no event handlers have yet been registered 
+    		may be, e.g., because no event handlers have yet been registered
     		for this event), create the array.
     	 */
         if (GW.notificationCenter.eventHandlers[eventName] == null)
@@ -2719,7 +2719,7 @@ GW.notificationCenter = {
 		 */
         let handlers = GW.notificationCenter.eventHandlers[eventName];
 
-        /*	If there is already a registered handler with the same handler 
+        /*	If there is already a registered handler with the same handler
         	function as the one we’re trying to register, do not register this
         	new one (even if it has different handler options).
          */
@@ -2741,8 +2741,8 @@ GW.notificationCenter = {
 		/*	Get the handler phase order for the named event, if any.
 
 			(If no handler phases have been defined for the given event, then
-			 we will ignore the value of the ‘phase’ key in the new handler’s 
-			 options dictionary, and simply stick with the default behavior of 
+			 we will ignore the value of the ‘phase’ key in the new handler’s
+			 options dictionary, and simply stick with the default behavior of
 			 adding the new handler at the end of the event’s handler array.)
 		 */
         let phaseOrder = GW.notificationCenter.handlerPhaseOrders[eventName];
@@ -2758,24 +2758,24 @@ GW.notificationCenter = {
         if (phaseOrder)
             options.phase = (options.phase || "");
 
-		/*	Only if (a) there’s a defined handler phase order for the given 
-			event, AND (b) the handler we’re registering is being assigned to a 
+		/*	Only if (a) there’s a defined handler phase order for the given
+			event, AND (b) the handler we’re registering is being assigned to a
 			specific phase, do we have anything to do here...
 		 */
-        if (   options.phase 
+        if (   options.phase
         	&& phaseOrder) {
-        	/*	Get the target phase name, which may be the full value of the 
+        	/*	Get the target phase name, which may be the full value of the
         		‘phase’ key of the options dictionary, OR it may be that value
-        		minus the first character (if the value of the ‘phase’ key 
+        		minus the first character (if the value of the ‘phase’ key
         		begins with a ‘<’ or a ‘>’ character).
         		*/
             let targetPhase = options.phase.match(/^([<>]?)(.+)/)[2];
 
-            /*	Get the index of the target phase in the defined handler phase 
+            /*	Get the index of the target phase in the defined handler phase
             	order for the named event. If the specified phase is not found
             	in the defined handler phase order, set targetPhaseIndex to
-            	the length of the phase order array, thus ensuring that, by 
-            	default, the new handler will be appended to the end of the 
+            	the length of the phase order array, thus ensuring that, by
+            	default, the new handler will be appended to the end of the
             	event’s handlers array.
              */
             let targetPhaseIndex = defval(phaseOrder.length, phaseOrder.indexOf(targetPhase), -1);
@@ -2788,21 +2788,21 @@ GW.notificationCenter = {
 					index is assigned (could be an empty string).
 
 				- ‘before’ [key]
-					Boolean value; true if the handler at the given index is 
-					assigned to run before the specified phase, false otherwise 
-					(i.e., if it’s instead assigned to run either during or 
+					Boolean value; true if the handler at the given index is
+					assigned to run before the specified phase, false otherwise
+					(i.e., if it’s instead assigned to run either during or
 					after the specified phase).
 
 				- ‘after’ [key]
-					Boolean value; true if the handler at the given index is 
-					assigned to run after the specified phase, false otherwise 
-					(i.e., if it’s instead assigned to run either before or 
+					Boolean value; true if the handler at the given index is
+					assigned to run after the specified phase, false otherwise
+					(i.e., if it’s instead assigned to run either before or
 					during the specified phase).
-				
+
 				(Note that for an event handler which has not been assigned to
 				 any specific phase, ‘phase’ will be the empty string, and both
 				 ‘before’ and ‘after’ will be false.)
-				
+
 				Returns null if the given index is out of bounds of the event’s
 				handler definitions array.
 			 */
@@ -2824,21 +2824,21 @@ GW.notificationCenter = {
                 for (var i = 0; i < handlers.length; i++) {
                 	/*	We have found the index before which to insert, if the
                 		handler at this index is assigned to be called during
-                		or after our target phase, OR if it is assigned to be 
+                		or after our target phase, OR if it is assigned to be
                 		called before, during, or after any later phase.
 
                 		(In other words, we have passed all the handlers which
                 		 are assigned either to any earlier phase or to before
                 		 the specified phase.)
                 	 */
-                    if (    phaseAt(i).phase == targetPhase 
+                    if (    phaseAt(i).phase == targetPhase
                     	&& !phaseAt(i).before)
                         break;
                     if (phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAt(i).phase))
                         break;
                 }
 
-                /*	If neither of the break conditions in the loop were 
+                /*	If neither of the break conditions in the loop were
                 	encountered, i is now equal to the handler array length,
                 	and the new handler will be added to the end of the array.
                 	Otherwise, it’ll be inserted in the appropriate place.
@@ -2849,13 +2849,13 @@ GW.notificationCenter = {
             		phase.
             	 */
                 for (var j = handlers.length - 1; j > -1; j--) {
-                	/*	We have found the index _after_ which to insert (hence 
-                		the `j++`), if the handler at this index is assigned to 
+                	/*	We have found the index _after_ which to insert (hence
+                		the `j++`), if the handler at this index is assigned to
                 		be called before, during, or after the target phase, OR
                 		if it is assigned to be called before, during, or after
                 		any earlier phase.
 
-                		(In other words, we have passed - moving backwards 
+                		(In other words, we have passed - moving backwards
                 		 through the handlers array - all the handlers which
                 		 are assigned either to any later phase or to after
                 		 or during the specified phase.)
@@ -2865,7 +2865,7 @@ GW.notificationCenter = {
                         break;
                     }
 
-                    /*	There are no “earlier phases” if the target phase index 
+                    /*	There are no “earlier phases” if the target phase index
                     	is either 0 or out of array bounds of the phase order.
                     	(The latter will happen if the target phase is not in
                     	 the defined phase order for the given event.)
@@ -2878,7 +2878,7 @@ GW.notificationCenter = {
                     }
                 }
 
-                /*	If neither of the break conditions in the loop were 
+                /*	If neither of the break conditions in the loop were
                 	encountered, j is now equal to -1; in this case, set j to
                 	the handlers array length, such that the new handler will be
                 	added to the end of the array.
@@ -2892,21 +2892,21 @@ GW.notificationCenter = {
                 for (var k = 0; k < handlers.length; k++) {
                 	/*	We have found the index before which to insert, if the
                 		handler at this index is assigned to be called after the
-                		target phase, OR if it is assigned to be called before, 
+                		target phase, OR if it is assigned to be called before,
                 		during, or after any later phase.
 
                 		(In other words, we have passed all the handlers which
                 		 are assigned either to any earlier phase or to before
                 		 or during the specified phase.)
                 	 */
-                    if (   phaseAt(k).phase == targetPhase 
+                    if (   phaseAt(k).phase == targetPhase
                     	&& phaseAt(k).after)
                         break;
                     if (phaseOrder.slice(targetPhaseIndex + 1).includes(phaseAt(k).phase))
                         break;
                 }
 
-                /*	If neither of the break conditions in the loop were 
+                /*	If neither of the break conditions in the loop were
                 	encountered, k is now equal to the handler array length,
                 	and the new handler will be added to the end of the array.
                 	Otherwise, it’ll be inserted in the appropriate place.
@@ -2947,7 +2947,7 @@ GW.notificationCenter = {
 
     /*	Fire an event with the given name and event info dictionary.
 
-    	In addition to printing a console log message (if the log level is set 
+    	In addition to printing a console log message (if the log level is set
     	to 1 or higher), this will also cause each event handler that has been
     	registered for the named event to be called. (Handlers with a condition
     	function specified in their event handler options will first have that
@@ -2960,25 +2960,25 @@ GW.notificationCenter = {
     	be called).
 
     	The event info dictionary may contain various, mostly event-specific,
-    	keys and values. The one common key/value that any event’s info 
+    	keys and values. The one common key/value that any event’s info
     	dictionary may contain is the ‘source’ key, whose value should be a
-    	string identifying the function, browser event, or other context which 
+    	string identifying the function, browser event, or other context which
     	caused the given event to be fired (such as ‘DOMContentLoaded’ or
     	‘Annotations.loadAnnotation’). In addition to any ways in which it may
-    	be used by an event handler, this string (i.e., the value of the 
-    	‘source’ key) is (if present) included in the console message that is 
+    	be used by an event handler, this string (i.e., the value of the
+    	‘source’ key) is (if present) included in the console message that is
     	printed when the event is fired.
      */
     fireEvent: (eventName, eventInfo) => {
         /*  The ‘16’ here is the width of the date field plus spacing.
-            The “Source:” text is manually padded to be as wide 
+            The “Source:” text is manually padded to be as wide
             as “[notification]”.
          */
-        GWLog(`Event “$${eventName}” fired.` 
+        GWLog(`Event “$${eventName}” fired.`
         	+ `$${((eventInfo && eventInfo.source)
         		  ? ("\n"
-        		   + "".padStart(16, ' ') 
-        		   + "       Source:".padEnd(GW.logSourcePadLength, ' ') 
+        		   + "".padStart(16, ' ')
+        		   + "       Source:".padEnd(GW.logSourcePadLength, ' ')
         		   + eventInfo.source)
         		  : ""
 				 )}`, "notification");
@@ -2997,10 +2997,10 @@ GW.notificationCenter = {
 		 */
         for (let i = 0; i < GW.notificationCenter.eventHandlers[eventName].length; i++) {
             let handler = GW.notificationCenter.eventHandlers[eventName][i];
-            /*	If a condition function is provided, call it to determine 
+            /*	If a condition function is provided, call it to determine
             	whether the handler function should be called.
              */
-            if (   handler.options.condition 
+            if (   handler.options.condition
             	&& handler.options.condition(eventInfo) == false)
                 continue;
 
@@ -3009,12 +3009,12 @@ GW.notificationCenter = {
              */
             handler.f(eventInfo);
 
-        	/*	If the handler options specified a true value for the ‘once’ 
+        	/*	If the handler options specified a true value for the ‘once’
         		key, we unregister this handler after having called it once.
 
-        		(Note that in the case of an once-only handler that’s called 
-        		 conditionally, i.e. one with a specified condition function, 
-        		 regardless of how many times the named event fires, the handler 
+        		(Note that in the case of an once-only handler that’s called
+        		 conditionally, i.e. one with a specified condition function,
+        		 regardless of how many times the named event fires, the handler
         		 is never automatically removed until its condition evaluates
         		 true and the handler actually gets called once.)
         	 */
@@ -3079,7 +3079,7 @@ function isPageScrollingEnabled() {
     return !(document.documentElement.classList.contains("no-scroll"));
 }
 /*	Pass true or false to enable or disable (respectively) page scrolling.
-	Calling this function with no arguments toggles the state (enables if 
+	Calling this function with no arguments toggles the state (enables if
 	currently disabled, or vice versa).
  */
 function togglePageScrolling(enable) {
@@ -3088,7 +3088,7 @@ function togglePageScrolling(enable) {
 
     let preventScroll = (event) => { document.documentElement.scrollTop = GW.scrollState.lastScrollTop; };
 
-	/*	The `no-scroll` CSS class, which is added to the `html` element when 
+	/*	The `no-scroll` CSS class, which is added to the `html` element when
 		scrolling is disabled by this function (in order to permit the “toggle”
 		behavior, i.e. calling ‘togglePageScrolling’ with no arguments), allows
 		the assignment of arbitrary CSS properties to the page on the basis of
@@ -3097,12 +3097,12 @@ function togglePageScrolling(enable) {
 		scroll state, e.g. modifying the appearance of scroll bars). No specific
 		CSS properties are needed in order for this function to work properly.
 	 */
-    if (   enable 
+    if (   enable
     	&& isPageScrollingEnabled() == false) {
         document.documentElement.classList.toggle("no-scroll", false);
         removeScrollListener("preventScroll");
         addScrollListener(updateScrollState, "updateScrollStateScrollListener");
-    } else if (  !enable 
+    } else if (  !enable
     		   && isPageScrollingEnabled() == true) {
         document.documentElement.classList.toggle("no-scroll", true);
         addScrollListener(preventScroll, "preventScroll");
