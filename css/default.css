@@ -496,8 +496,9 @@ section:target > :first-child a::after {
 /**********/
 
 #footer {
-    padding-top: 30px;
+    padding-top: 2em;
     text-align: center;
+    margin: 0 0 2em 0;
 }
 
 /*********************/
