@@ -141,6 +141,25 @@
 
     $partial("static/includes/inlined-graphical-linkicon-styles.html")$
 
+	<script src="/static/js/Hyphenopoly_Loader.js" defer></script>
+	<script>
+		doWhenPageLoaded(() => {
+			if (GW.isX11())
+				return;
+
+			Hyphenopoly.config({
+				require: {
+					"en-us": "FORCEHYPHENOPOLY"
+				},
+				setup: {
+					hide: "none",
+					keepAlive: true,
+					safeCopy: true
+				}
+			});
+		});
+	</script>
+
     <script async fetchpriority="low" id="googleAnalytics" src="https://www.googletagmanager.com/gtag/js?id=UA-18912926-1" onload="GW.googleAnalyticsLoaded = true;"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
