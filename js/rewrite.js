@@ -493,9 +493,9 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 }, { phase: ">rewrite" });
 
 
-/***************************/
-/* ANNOTATIONS (FRAGMENTS) */
-/***************************/
+/***************/
+/* ANNOTATIONS */
+/***************/
 
 /*******************************************************************************/
 /*  Apply various typographic fixes (educate quotes, inject <wbr> elements after
@@ -955,6 +955,20 @@ function cleanUpImageAltText(loadEventInfo) {
     });
 }
 
+/************************************************************************/
+/*	Prevent line breaks immediately before citations (which “orphans” the 
+	citation on the next line, and looks ugly).
+ */
+function noBreakForCitations(loadEventInfo) {
+    GWLog("noBreakForCitations", "rewrite.js", 1);
+
+	loadEventInfo.document.querySelectorAll(".footnote-ref").forEach(citation => {
+		citation.insertAdjacentHTML("beforebegin", "&NoBreak;");
+		let textNode = citation.querySelector("sup").firstTextNode;
+		textNode.textContent = "\u{2060}" + textNode.textContent;
+	});
+}
+
 /**************************************************************/
 /*  Add content load handler for doing miscellaneous rewriting.
  */
@@ -962,6 +976,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
     GWLog("GW.rewriteFunctions.processMiscellaneousRewrites", "rewrite.js", 2);
 
     cleanUpImageAltText(info);
+    noBreakForCitations(info);
 }, {
 	phase: "rewrite",
 	condition: (info) => info.needsRewrite
