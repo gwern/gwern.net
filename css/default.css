@@ -1622,6 +1622,8 @@ table th {
     font-weight: bold;
     border-bottom: 1px solid var(--GW-table-row-horizontal-border-color);
     text-align: left;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
     hyphens: none;
 }
 table td {
@@ -1791,6 +1793,8 @@ code {
 
     font-size: 0.9em;
     word-break: break-all;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
     hyphens: none;
 }
 
@@ -3160,6 +3164,11 @@ body.index-directory #footer {
 }
 .popframe.annotation .iaMirror {
     padding-right: 0.3em;
+}
+.popframe.annotation .link-tags a {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    hyphens: none;
 }
 .popframe.annotation .data-field.annotation-abstract {
     margin-top: 0.5em;
