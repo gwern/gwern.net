@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-23 20:44:29 gwern"
+When: Time-stamp: "2022-04-24 17:34:51 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -35,7 +35,7 @@ Explanations:
 -}
 
 import Control.Exception (onException)
-import Control.Monad (when, void)
+import Control.Monad (when, unless, void)
 import Data.Char (toLower)
 import Data.IORef (newIORef, IORef)
 import Data.List (intercalate, isInfixOf, isSuffixOf, isPrefixOf, nubBy, sort)
@@ -69,7 +69,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
-import Interwiki (convertInterwikiLinks, inlinesToString)
+import Interwiki (convertInterwikiLinks, inlinesToString, interwikiTestSuite)
 import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
@@ -86,8 +86,12 @@ main = hakyll $ do
 
              preprocess $ printGreen ("Testing live-link-popup rules…" :: String)
              let livelinks = linkLiveTest
-             when (not $ null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
+             unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
              _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
+
+             preprocess $ printGreen ("Testing Interwiki rewrite rules…" :: String)
+             let interwikiPopupTestCases = interwikiTestSuite
+             unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki have errors in: " ++ show interwikiPopupTestCases)
 
              preprocess $ printGreen ("Local archives parsing…" :: String)
              am <- preprocess readArchiveMetadata
@@ -154,6 +158,7 @@ main = hakyll $ do
                                      "static/**.otf",
                                      "static/**.php",
                                      "static/**.py",
+                                     "static/**.wasm",
                                      "**.yaml",
                                      "metadata/**",
                                      "static/build/.htaccess",
