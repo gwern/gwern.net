@@ -131,13 +131,8 @@ Extracts = { ...Extracts, ...{
         });
 
 		//	Hyphenate.
-		if (Hyphenopoly.hyphenators) {
-			Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-				popFrame.querySelectorAll(".markdownBody p").forEach(block => {
-					hyphenate(block);
-				});
-			});
-		}
+		if (Hyphenopoly.hyphenators)
+			hyphenateWithin(popFrame);
     },
 
     /*  Page or document for whom the aux-links are.
@@ -293,11 +288,8 @@ Extracts = { ...Extracts, ...{
         });
 
 		//	Hyphenate.
-		Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-			popFrame.querySelectorAll(".markdownBody p").forEach(block => {
-				hyphenate(block);
-			});
-		});
+		if (Hyphenopoly.hyphenators)
+			hyphenateWithin(popFrame);
     },
 }};
 
@@ -380,11 +372,8 @@ Extracts = { ...Extracts, ...{
         });
 
 		//	Hyphenate.
-		Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-			popFrame.querySelectorAll(".markdownBody p").forEach(block => {
-				hyphenate(block);
-			});
-		});
+		if (Hyphenopoly.hyphenators)
+			hyphenateWithin(popFrame);
     }
 }};
 

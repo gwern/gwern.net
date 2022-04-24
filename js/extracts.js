@@ -779,13 +779,8 @@ Extracts = {
         });
 
 		//	Hyphenate.
-		if (Hyphenopoly.hyphenators) {
-			Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
-				popFrame.querySelectorAll(".markdownBody p").forEach(block => {
-					hyphenate(block);
-				});
-			});
-		}
+		if (Hyphenopoly.hyphenators)
+			hyphenateWithin(popFrame);
 
         //  Scroll to the target.
         if (target.hash > ""
