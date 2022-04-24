@@ -143,6 +143,14 @@
 
 	<script src="/static/js/Hyphenopoly_Loader.js" defer></script>
 	<script>
+		function hyphenateWithin(container, selector = ".markdownBody p") {
+			Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+				container.querySelectorAll(selector).forEach(block => {
+					hyphenate(block);
+				});
+			});
+		}
+
 		doWhenPageLoaded(() => {
 			if (GW.isX11())
 				return;
