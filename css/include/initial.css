@@ -312,7 +312,6 @@ header h1 {
 
 /* on the index page, we hide article-related formatting, begging, to make it more compact & classy */
 body.index #sidebar a.patreon,
-body.tags #sidebar a.patreon,
 body.index #TOC,
 body.index #page-metadata,
 body.index header {
@@ -403,17 +402,14 @@ body.index #markdownBody li,
 body.index #markdownBody li p {
     text-align: left;
 }
-body.index #markdownBody ul,
-body.tags #markdownBody ul {
+body.index #markdownBody ul {
     margin: 1em 3em 0 0;
     padding: 0 0 0 1.375em;
 }
-body.index #markdownBody li > ul,
-body.tags #markdownBody li > ul {
+body.index #markdownBody li > ul {
     margin: 0;
 }
-body.index #markdownBody li,
-body.tags #markdownBody li {
+body.index #markdownBody li {
     margin-top: 0;
 }
 body.index #markdownBody ul > li:nth-of-type(n+2) {
@@ -425,18 +421,15 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     body.index #markdownBody section {
         max-width: 100%;
     }
-    body.index #markdownBody ul,
-    body.tags #markdownBody ul {
+    body.index #markdownBody ul {
         overflow-wrap: break-word;
         margin-right: 0;
     }
-    body.index #markdownBody li,
-    body.tags #markdownBody li {
+    body.index #markdownBody li {
         padding: 1px 0;
         margin: 2px 0 0 0;
     }
-    body.index #markdownBody ul > li::before,
-    body.tags #markdownBody ul > li::before {
+    body.index #markdownBody ul > li::before {
         top: 0.25em;
     }
 }

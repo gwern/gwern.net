@@ -355,8 +355,10 @@
 }
 
 /* Modifying the 'fill' does not work so well when we call an SVG as a 'background-image' (like for the —𝔊— footers on the index page), so we do variable+invert tricks to get a white copy of the logo as a hack. */
-body.index main article::after, body.tags main article::after, body.index-directory main article::after {
-    filter: invert(1); background-color: var(--GW-body-background-color-inverted); }
+body.index main article::after, 
+body.index-directory main article::after {
+    filter: invert(1); background-color: var(--GW-body-background-color-inverted);
+}
 
 /*  The ‘celestial symbol’ horizontal rules are SVGs and must be inverted.
     */
