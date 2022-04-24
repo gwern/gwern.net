@@ -3,22 +3,25 @@ module Utils where
 
 import Control.Monad (when)
 import Data.Char (isSpace)
+import Data.List (group, sort, isInfixOf, isPrefixOf, isSuffixOf)
+import Data.List.Utils (replace)
 import Data.Text.IO as TIO (readFile, writeFile)
-import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf)
+import Data.Time.Calendar (toGregorian)
+import Data.Time.Clock (getCurrentTime, utctDay)
 import Network.URI (parseURIReference, uriAuthority, uriRegName)
 import System.Directory (createDirectoryIfMissing, doesFileExist, renameFile)
 import System.FilePath (takeDirectory)
+import System.IO (stderr, hPutStrLn)
 import System.IO.Temp (emptySystemTempFile)
+import System.IO.Unsafe (unsafePerformIO)
+import Text.Show.Pretty (ppShow)
+import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf)
+
+import Data.Array (elems)
+import Text.Regex.TDFA ((=~), MatchArray)
+
 import Text.Pandoc (def, nullMeta, runPure,
                     writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
-import System.IO (stderr, hPutStrLn)
-import Data.Time.Clock (getCurrentTime, utctDay)
-import Data.Time.Calendar (toGregorian)
-import System.IO.Unsafe (unsafePerformIO)
-import Text.Regex (subRegex, mkRegex)
-import Data.List (group, sort, isInfixOf, isPrefixOf, isSuffixOf)
-import Data.List.Utils (replace)
-import Text.Show.Pretty (ppShow)
 
 -- Auto-update the current year.
 {-# NOINLINE currentYear #-}
@@ -97,8 +100,17 @@ fixedPoint = fixedPoint' 100000
        fixedPoint' 0 _ i = error $ "Hit recursion limit: still changing after 100,000 iterations! Infinite loop? Final result: " ++ show i
        fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
-sed :: String -> String -> (String -> String)
-sed before after s = subRegex (mkRegex before) s after
+sed :: String -> String -> String -> String
+sed regex new_str str  =
+    let parts = concat $ map elems $ (str  =~  regex :: [MatchArray])
+    in foldl (replace' new_str) str (reverse parts)
+
+  where
+     replace' :: [a] -> [a] -> (Int, Int) -> [a]
+     replace' new list (shift, l)   =
+        let (pre, post) = splitAt shift list
+        in pre ++ new ++ (drop l post)
+
 -- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)
 sedMany regexps s = foldr (uncurry sed) s regexps
