@@ -792,7 +792,7 @@ Extracts = {
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
         }
-    },
+	},
 
     //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)
     rewritePopinContent_LOCAL_PAGE: (popin) => {
@@ -905,8 +905,7 @@ Extracts = {
 				}
 
 				//	Get the body classes.
-				//	TODO: Find a better way to do this!
-				Extracts.cachedPageBodyClasses[target.pathname] = /<body class="(.+?)">/.exec(event.target.responseText)[1].split(" ");
+				Extracts.cachedPageBodyClasses[target.pathname] = page.querySelector("meta[name='page-body-classes']").getAttribute("content").split(" ");
 
                 //  Get the page title.
                 Extracts.cachedPageTitles[target.pathname] = page.querySelector("title").innerHTML.match(Extracts.pageTitleRegexp)[1];
