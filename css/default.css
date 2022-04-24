@@ -1088,7 +1088,7 @@ a.footnote-ref.targeted::before {
 /* Deal with multiple footnote superscripts one after another; per Charuru */
 sup + sup,
 a.footnote-ref {
-    margin-left: 0.05em;
+    margin-left: 0.125em;
 }
 
 .markdownBody .footnotes > ol > li + li {

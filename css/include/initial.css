@@ -913,7 +913,7 @@ a code {
  */
 .markdownBody a:link sub,
 .markdownBody a:link sup {
-    padding-left: 0.125em;
+    padding: 0 0.05em;
 }
 
 /**************/
