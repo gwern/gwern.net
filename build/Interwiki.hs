@@ -1,12 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Interwiki (convertInterwikiLinks, inlinesToString, wpPopupClasses) where
 
+import Data.List (isPrefixOf, isSuffixOf)
+import Data.Maybe (fromJust)
 import qualified Data.Map as M (fromList, lookup, Map)
 import Text.Pandoc (Inline(..))
-import qualified Data.Text as T (append, concat, head, isPrefixOf, null, tail, take, toUpper, pack, unpack, Text)
+import qualified Data.Text as T (append, concat, head, isInfixOf, isPrefixOf, null, tail, take, toUpper, pack, unpack, Text)
 import Data.List.Utils (replace)
-import Data.List (isPrefixOf)
--- import Network.HTTP (urlEncode)
+import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
@@ -62,7 +63,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
   where
     interwikiurl :: T.Text -> T.Text -> T.Text
     -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
-    interwikiurl u a = let a' = if u=="https://en.wikipedia.org/wiki/" then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
+    interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
                          u `T.append` T.pack (replace "%" "%25" $ replace " " "_" $ deunicode (T.unpack a'))
     deunicode :: String -> String
     deunicode = replace "‘" "\'" . replace "’" "\'" . replace " " " " . replace " " " "
@@ -75,8 +76,12 @@ convertInterwikiLinks x = x
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 wpPopupClasses :: String -> [T.Text]
-wpPopupClasses u = if not ("https://en.wikipedia.org/wiki/" `isPrefixOf` u) && "http" `isPrefixOf` u then [] else
-                                let u' = takeWhile (\c -> c/=':' && c/='%' ) $ replace "https://en.wikipedia.org/wiki/" "" u in
+wpPopupClasses u = let uri = fromJust $ parseURIReference u
+                       article = uriPath uri
+                       domain = uriRegName $ fromJust $ uriAuthority uri
+                   in
+                     if not ("wikipedia.org" `isSuffixOf` domain) && "http" `isPrefixOf` u then [] else
+                                let u' = takeWhile (/= ':') $ replace "/wiki/" "" article in
                                   [if u' `elem` apiNamespacesNo then "link-annotation-not" else "link-annotation",
                                    if u' `elem` linkliveNamespacesNo then "link-live-not" else "link-live"]
 
