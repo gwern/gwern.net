@@ -251,24 +251,11 @@ header h1 {
 /* PAGE METADATA BLOCK */
 /***********************/
 
-@media only screen and (max-width: 649px) {
-    #page-metadata {
-        text-align: center;
-    }
-}
-
-#page-metadata hr {
-    display: none;
-}
-
 #page-metadata {
     margin: 0 0 2rem 0;
     overflow: auto;
     font-size: 0.95em;
     line-height: 1.5;
-}
-#page-metadata p {
-    text-align: left;
 }
 
 /* Override normal handling of italics: before, we wrapped descriptions in `<em>`; however, they compile to HTML which can contain italics of their own (eg. book titles). This causes HTML Tidy to warn about nested italics (which is valid HTML but *usually* means you've made an error - this often triggers when I mess up bolding, for example, like on /GPT-3 ). So we removed the wrapper in favor of the above `font-style: italic`. However, now the titles don't unitalicize automatically like they would for nested italics! So we force italicized titles back to normal Roman font to match the expected typographic convention. */
@@ -283,27 +270,49 @@ header h1 {
 }
 
 #page-metadata #page-description ~ * {
-    font-size: 0.9em;
-}
-
-#page-metadata #page-description + br {
-    display: none;
+    font-size: 0.95em;
 }
 
 #page-metadata-block span:nth-of-type(n+3) {
     white-space: nowrap;
 }
 
-/* interpunct separators for the metadata fields; looks nicer than semicolons or slashes */
+/*	Interpunct separators for the metadata fields; looks nicer than semicolons 
+	or slashes
+ */
 #page-metadata-block > span:not(:last-child)::after {
     content: "\00B7"; /* interpunct MIDDLE DOT (U+00B7) '·' */
     display: inline-block;
     margin: 0 0.35em 0 0.65em;
 }
 
-#page-tags,
-#page-metadata-block {
+#page-metadata .link-tags {
+	margin: 0 auto 0.25em auto;
+}
+
+#page-metadata .link-tags,
+#page-metadata #page-metadata-block {
     hyphens: none;
+}
+
+@media only screen and (max-width: 649px) {
+    #page-metadata,
+    #page-metadata #page-description {
+        text-align: center;
+    }
+    #page-metadata .link-tags {
+    	margin: 0 auto 0.75em auto;
+    }
+	#page-metadata-block #page-confidence,
+	#page-metadata-block #page-importance {
+		white-space: normal;
+		display: block;
+	}
+	#page-metadata-block #page-status::after,
+	#page-metadata-block #page-confidence::after,
+	#page-metadata-block #page-importance::after {
+		content: none;
+	}
 }
 
 /*=--------=*/
@@ -336,7 +345,6 @@ body.index #markdownBody #notable {
 }
 
 @media only screen and (min-width: 961px) {
-
     body.index #markdownBody {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -364,9 +372,11 @@ body.index #markdownBody #notable {
     }
 }
 
-/* On sufficiently-wide screens, we can get 3 columns in nicely; to preserve the initial row being 'meta' blocks, we leave #notable visible (for a newest/popular/notable triplet) */
+/*	On sufficiently-wide screens, we can get 3 columns in nicely; to preserve 
+	the initial row being ‘meta’ blocks, we leave #notable visible 
+	(for a newest/popular/notable triplet)
+ */
 @media only screen and (min-width: 2050px) {
-
     body.index #markdownBody #notable {
         display: block;
     }
@@ -375,8 +385,9 @@ body.index #markdownBody #notable {
     }
 }
 
-/*  Abstract is not a real abstract, just an introduction, no need for the abstract formatting.
-    */
+/*  Abstract is not a real abstract, just an introduction, no need for the 
+	abstract formatting.
+ */
 body.index .abstract {
     padding: 0;
     border: none;
@@ -385,19 +396,19 @@ body.index .abstract {
 }
 
 /*  Add some vertical padding for the introduction.
-    */
+ */
 body.index #markdownBody {
     padding-top: 15px;
 }
 
 /*  Headings on the home page.
-    */
+ */
 body.index #markdownBody h1 {
     margin: 1.125em 0 0 0;
 }
 
 /*  Lists on the home page.
-    */
+ */
 body.index #markdownBody li,
 body.index #markdownBody li p {
     text-align: left;
@@ -415,7 +426,6 @@ body.index #markdownBody li {
 body.index #markdownBody ul > li:nth-of-type(n+2) {
     margin: 0;
 }
-
 
 @media only screen and (max-width: 649px) {
     body.index #markdownBody section {
@@ -455,47 +465,42 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     display: none;
 }
 
-/*  On mobile, we want the TOC to be inline, but for desktop, we want it side by side with the content.
-    */
+/*  On mobile, we want the TOC to be inline, but for desktop, we want it 
+	side by side with the content.
+ */
 @media only screen and (max-width: 1280px) {
     #TOC {
         font-size: 0.95rem;
     }
 }
-
 @media only screen and (max-width: 1200px) {
     #TOC {
         font-size: 0.90rem;
     }
 }
-
 @media only screen and (max-width: 1120px) {
     #TOC {
         font-size: 0.85rem;
         margin: 0 1.5rem 1.25rem 0;
     }
 }
-
 @media only screen and (max-width: 1040px) {
     #TOC {
         font-size: 0.80rem;
         margin: 0 1.25rem 1rem 0;
     }
 }
-
 @media only screen and (max-width: 960px) {
     #TOC {
         margin: 0 1rem 1rem 0;
     }
 }
-
 @media only screen and (min-width: 901px) {
     #TOC {
         float: left;
         max-width: 285px;
     }
 }
-
 @media only screen and (max-width: 900px) {
     #TOC {
         float: none;
@@ -506,7 +511,6 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
         column-count: 2;
     }
 }
-
 @media only screen and (max-width: 649px) {
     #TOC a {
         display: inline-block;
@@ -654,7 +658,8 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     color: var(--GW-TOC-number-hover-color);
 }
 
-/* The table of contents is a *table*, so align */
+/*	The table of contents is a *table*, so align
+ */
 .TOC {
     font-variant-numeric: tabular-nums;
 }
@@ -666,12 +671,12 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 .markdownBody {
     /*  Try to avoid scrollbars on paragraphs: prevents long unbroken
         un-hyphenatable lines from causing H-scrolling
-        */
+     */
     overflow-wrap: break-word;
 }
 
 /*  Breakpoint for sidenotes.
-    */
+ */
 @media only screen and (min-width: 1761px) {
     #markdownBody {
         position: relative;
@@ -680,10 +685,10 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
 
 @media only screen and (min-width: 650px) {
     @media only screen and (max-width: 1000px) {
-    /*  Replaces A/B-test-set average value; the wider the screen, the more
-        line-height is necessary, and no one size suits all, so set 3 brackets
-        of increasing height.
-        */
+		/*  Replaces A/B-test-set average value; the wider the screen, the more
+			line-height is necessary, and no one size suits all, so set 3 
+			brackets of increasing height.
+		 */
         .markdownBody {
             line-height: 1.50;
         }
@@ -749,8 +754,10 @@ html {
     clear: none;
 }
 
-/* auto-smallcaps the first line of the introduction (= the first `<p>` after an
-'abstract' div); this avoids the need to manually specify what to smallcaps, and it auto-adjusts to screen/line-width, which is nicer. */
+/*	Auto-smallcaps the first line of the introduction (= the first `<p>` after 
+	an ‘abstract’ div); this avoids the need to manually specify what to 
+	smallcaps, and it auto-adjusts to screen/line-width, which is nicer.
+ */
 .abstract + p::first-line,
 #markdownBody > p:first-child::first-line,
 .markdownBody #page-metadata + p::first-line {
@@ -811,7 +818,7 @@ h1 {
 
 /*  On wide viewports, hide the margin notes until it is styled as a sidenote (i.e,
     until it gets the `.sidenote` class applied to it).
-    */
+ */
 @media only screen and (min-width: 1761px) {
     .marginnote {
         display: none;
@@ -827,7 +834,10 @@ a {
     text-decoration: none;
 }
 
-/* slightly gray out links the reader has already visited, so they know if they've seen that content before. (A critical affordance in densely hyperlinked longform.) */
+/*	Slightly gray out links the reader has already visited, so they know if 
+	they’ve seen that content before. (A critical affordance in densely 
+	hyperlinked longform.)
+ */
 .markdownBody a:visited {
     color: var(--GW-body-link-visited-color);
 }
@@ -883,7 +893,7 @@ May be able at some point to simplify this using regular link underlining, since
 
 /*  Prevent code block background color and border from obscuring link
     underlining, for inline <code> elements in links.
-    */
+ */
 a code {
     border-bottom-width: 0;
     word-break: normal;
@@ -892,15 +902,15 @@ a code {
 
 /*  Reduce text-shadow overlap partially erasing letters next to smallcaps:
     eg. in `<a href="https://www.microcovid.org/">"microCOVID project"</a>`,
-    the 'o' in 'micro' will be partially erased and look like a 'c' without
+    the ‘o’ in ‘micro’ will be partially erased and look like a ‘c’ without
     some sort of extra spacing
-    */
+ */
 .markdownBody a:link .smallcaps {
     margin-left: 0.8px;
 }
 
 /*  Like above, but for subscripts and superscripts
-    */
+ */
 .markdownBody a:link sub,
 .markdownBody a:link sup {
     padding-left: 0.125em;
@@ -929,7 +939,8 @@ div[class^='drop-cap-'] + p {
 /***************/
 /* BLOCKQUOTES */
 /***************/
-/* additional blockquote styling done in default.css */
+/*	Additional blockquote styling done in default.css.
+ */
 
 blockquote {
     --GW-link-underline-background-color: var(--GW-blockquote-background-color);
@@ -942,7 +953,7 @@ blockquote {
 }
 
 /*  Three-level of blockquote emphasis (darkening).
-    */
+ */
 blockquote,
 blockquote blockquote blockquote blockquote {
     --GW-blockquote-background-color: var(--GW-blockquote-background-color-level-one);
@@ -996,7 +1007,7 @@ pre {
 }
 
 /*  Full-width code blocks.
-    */
+ */
 .full-width-code-block-wrapper {
     max-width: -moz-fit-content;
     max-width: fit-content;
@@ -1064,8 +1075,9 @@ figure video {
 /* MISC */
 /********/
 
-/*  enable standard Pandoc attribute-based syntax for small-caps like '[foo]{.smallcaps}'; see https://pandoc.org/MANUAL.html#small-caps
-    */
+/*  Enable standard Pandoc attribute-based syntax for small-caps like 
+	‘[foo]{.smallcaps}’; see https://pandoc.org/MANUAL.html#small-caps
+ */
 span.smallcaps {
     font-feature-settings: 'smcp';
 }
@@ -1073,4 +1085,6 @@ span.smallcaps {
 /*************/
 /* DARK MODE */
 /*************/
-/* see /static/js/darkmode.js and /static/css/dark-mode.css; this allows the user to toggle at runtime */
+/*	See /static/js/darkmode.js and /static/css/dark-mode.css; this allows the 
+	user to toggle at runtime.
+ */

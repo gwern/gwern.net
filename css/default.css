@@ -4633,20 +4633,6 @@ body.index-directory #footer {
     text-align: unset;
 }
 
-/*┌───────────────────────┐*/
-/*│ Specific adjustments. │*/
-/*└───────────────────────┘*/
-
-/*  Page metadata block in local page embed popups.
-    */
-.popin #page-metadata-block span:nth-of-type(3) {
-    white-space: normal;
-    display: block;
-}
-.popin #page-metadata-block > span:nth-child(n+2)::after {
-    content: none;
-}
-
 /***************/
 /* ANNOTATIONS */
 /***************/
