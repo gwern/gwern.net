@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-23 17:23:21 gwern"
+When:  Time-stamp: "2022-04-23 19:46:56 gwern"
 License: CC-0
 -}
 
@@ -56,7 +56,7 @@ import Interwiki (convertInterwikiLinks)
 import Typography (typographyTransform, titlecase', invertImage)
 import LinkArchive (localizeLink, ArchiveMetadata)
 import LinkAuto (linkAuto)
-import LinkBacklink (getSimilarLink, getBackLink, readBacklinksDB, Backlinks)
+import LinkBacklink (getSimilarLink, getBackLink)
 import Query (extractURLs, truncateTOCHTML)
 import Utils (writeUpdatedFile, printGreen, printRed, fixedPoint, currentYear, sed, sedMany, replaceMany, toMarkdown, trim, simplified, anyInfix, anyPrefix, anySuffix)
 
@@ -453,9 +453,11 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
         tagRewritesFixed = [
           ("reinforcement-learning", "RL")
           , ("ai/anime", "anime AI")
+          , ("eva/little-boy", "Little Boy")
           , ("GPT/inner-monologue", "inner monologue (AI)")
           , ("/gpt", "GPT")
           , ("ai/gpt", "GPT")
+          , ("ai/nn", "neural nets")
           , ("ai/rnn", "AI/RNN")
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "AI/MoE")
@@ -509,6 +511,10 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("technology", "tech")
           , ("technology/carbon-capture", "carbon capture")
           , ("technology/digital-antiquarian", "Filfre")
+          , ("technology/google", "Google")
+          , ("technology/security", "infosec")
+          , ("technology/search", "Google-fu")
+          , ("linkrot/archiving", "web archiving")
           , ("reinforcement-learning/openai", "OA")
           , ("reinforcement-learning/deepmind", "DM")
           , ("genetics/cloning", "cloning")
@@ -528,6 +534,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("genetics/selection/dysgenics", "dysgenics")
           , ("philosophy/ethics/ethicists", "ethicists")
           , ("statistics/meta-analysis", "meta-analysis")
+          , ("statistics/power-analysis", "power analysis")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("longevity/john-bjorksten", "John Bjorksten")
           , ("genetics/gametogenesis", "gametogenesis")
@@ -539,7 +546,9 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("bitcoin/pirateat40", "Pirateat40")
           , ("psychology/novelty", "novelty U-curve")
           , ("spaced-repetition", "SRS")
+          , ("fiction/criticism", "literary criticism")
           , ("fiction/text-game", "text games")
+          , ("fiction/gene-wolfe", "Gene Wolfe")
           , ("cat/catnip/survey", "catnip survey")
           , ("modafinil/survey", "modafinil survey")
           , ("lesswrong-survey", "LW survey")
@@ -548,6 +557,9 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("history/medici", "Medici")
           , ("biology/portia", "Portia spider")
           , ("bitcoin/nashx", "Nash eXchange")
+          , ("fiction/opera", "opera")
+          , ("fiction/poetry", "poetry")
+          , ("insight-porn", "insight porn")
           , ("wikipedia", "WP")
           , ("sunk-cost", "sunk cost")
           , ("radiance", "Radiance")
@@ -573,6 +585,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
                              , ("^gan$", "GAN")
                              , ("^psychology/", "psych/")
                              , ("^technology/", "tech/")
+                             , ("^sf$", "sci-fi")
                              ]
 
 -------------------------------------------------------------------------------------------------------------------------------
@@ -623,20 +636,19 @@ readYaml yaml = do yaml' <- do filep <- doesFileExist yaml
                                else do fileAbsoluteP <- doesFileExist ("/home/gwern/wiki/" ++ yaml)
                                        if not fileAbsoluteP then printRed ("YAML path does not exist: " ++ yaml) >> return yaml
                                        else return ("/home/gwern/wiki/" ++ yaml)
-                   fdb <- readBacklinksDB
                    file <- Y.decodeFileEither yaml' :: IO (Either ParseException [[String]])
                    case file of
                      Left  e -> error $ "File: "++ yaml ++ "; parse error: " ++ ppShow e
-                     Right y -> (return $ concatMap (convertListToMetadata fdb) y) :: IO MetadataList
+                     Right y -> (return $ concatMap convertListToMetadata y) :: IO MetadataList
                 where
-                 convertListToMetadata :: Backlinks -> [String] -> MetadataList
-                 convertListToMetadata bldb [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags bldb u $ tag2TagsWithDefault u "", s))]
-                 convertListToMetadata bldb [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags bldb u $ tag2TagsWithDefault u ts, s))]
-                 convertListToMetadata _                         e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
+                 convertListToMetadata :: [String] -> MetadataList
+                 convertListToMetadata [u, t, a, d, di,     s] = [(u, (t,a,d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u "", s))]
+                 convertListToMetadata [u, t, a, d, di, ts, s] = [(u, (t,a,d,di,uniqTags $ pages2Tags u $ tag2TagsWithDefault u ts, s))]
+                 convertListToMetadata                       e = error $ "Pattern-match failed (too few fields?): " ++ ppShow e
 
 -- if a local '/docs/*' file and no tags available, try extracting a tag from the path; eg. '/docs/ai/2021-santospata.pdf' → 'ai', '/docs/ai/anime/2021-golyadkin.pdf' → 'ai/anime' etc; tags must be lowercase to map onto directory paths, but we accept uppercase variants (it's nicer to write 'economics, sociology, Japanese' than 'economics, sociology, japanese')
 tag2TagsWithDefault :: String -> String -> [String]
-tag2TagsWithDefault path tags = let tags' = split ", " $ map toLower tags
+tag2TagsWithDefault path tags = let tags' = map trim $ split ", " $ map toLower tags
                                     defTag = if ("/docs/" `isPrefixOf` path) && (not ("/docs/link-bibliography"`isPrefixOf`path || "//docs/biology/2000-iapac-norvir"`isPrefixOf`path)) then tag2Default path else ""
                                 in
                                   if defTag `elem` tags' || defTag == "" || defTag == "/docs" then tags' else defTag:tags'
@@ -649,8 +661,8 @@ uniqTags :: [String] -> [String]
 uniqTags tags = nubOrd $ filter(\t -> not (any ((t++"/") `isPrefixOf`) tags)) tags
 
 -- guess tag based on URL
-pages2Tags :: Backlinks -> String -> [String] -> [String]
-pages2Tags f path oldTags = url2Tags path ++ oldTags
+pages2Tags :: String -> [String] -> [String]
+pages2Tags path oldTags = url2Tags path ++ oldTags
 
 -- We also do general-purpose heuristics on the path/URL: any page in a domain might be given a specific tag, or perhaps any URL with the string "deepmind" might be given a 'reinforcement-learning/deepmind' tag—that sort of thing.
 url2Tags :: String -> [String]
@@ -1830,6 +1842,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("<span class=\"math inline\">\\(X_1,\\ldots,X_p\\)</span>", "<em>X</em><sub>1</sub>,...,<em>X</em><sub><em>p</em></sub>")
           , ("<span class=\"math inline\">\\([0,1]\\)</span>", "[0,1]")
           , ("<span class=\"math inline\">\\(R^2\\)</span>", "<em>R</em><sup>2</sup>")
+          , ("<span class=\"math inline\">\\(m^{1+o(1)}\\)</span>", "<em>m</em><sup>1+<em>o</em>(1)</sup>")
           , ("O(N) ", "𝑂(<em>N</em>) ")
           , (" O(N)", " 𝑂(<em>N</em>)")
           , (" N pixels", " <em>N</em> pixels")
