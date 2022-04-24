@@ -2,7 +2,6 @@
 module Interwiki (convertInterwikiLinks, inlinesToString, wpPopupClasses) where
 
 import Data.List (isPrefixOf, isSuffixOf)
-import Data.Maybe (fromJust)
 import qualified Data.Map as M (fromList, lookup, Map)
 import Text.Pandoc (Inline(..))
 import qualified Data.Text as T (append, concat, head, isInfixOf, isPrefixOf, null, tail, take, toUpper, pack, unpack, Text)
@@ -76,14 +75,17 @@ convertInterwikiLinks x = x
 --
 -- This is important because we can request Articles through the API and display them as a WP popup, but for other namespaces it would be meaningless (what is the contents of [[Special:Random]]? Or [[Special:BookSources/0-123-456-7]]?). These can only be done as live link popups (if at all, we can't for Special:).
 wpPopupClasses :: String -> [T.Text]
-wpPopupClasses u = let uri = fromJust $ parseURIReference u
-                       article = uriPath uri
-                       domain = uriRegName $ fromJust $ uriAuthority uri
-                   in
-                     if not ("wikipedia.org" `isSuffixOf` domain) && "http" `isPrefixOf` u then [] else
-                                let u' = takeWhile (/= ':') $ replace "/wiki/" "" article in
-                                  [if u' `elem` apiNamespacesNo then "link-annotation-not" else "link-annotation",
-                                   if u' `elem` linkliveNamespacesNo then "link-live-not" else "link-live"]
+wpPopupClasses u = case parseURIReference u of
+                        Nothing -> []
+                        Just uri -> case uriAuthority uri of
+                          Nothing -> []
+                          Just authority -> let article = uriPath uri
+                                                domain = uriRegName authority
+                                            in
+                                             if not ("wikipedia.org" `isSuffixOf` domain) && "http" `isPrefixOf` u then [] else
+                                                        let u' = takeWhile (/= ':') $ replace "/wiki/" "" article in
+                                                          [if u' `elem` apiNamespacesNo then "link-annotation-not" else "link-annotation",
+                                                           if u' `elem` linkliveNamespacesNo then "link-live-not" else "link-live"]
 
 -- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https:/en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
 -- I have not checked the full list of namespaces carefully so some of the odder namespaces may be bad.
