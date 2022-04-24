@@ -24,6 +24,7 @@ import qualified Data.Map as M (keys, lookup, size, toList, filterWithKey)
 import qualified Data.Text as T (append, pack, unpack)
 import System.IO (stderr, hPrint)
 import Control.Monad.Parallel as Par (mapM_)
+import Text.Pandoc.Walk (walk)
 
 import Interwiki (inlinesToString)
 import LinkMetadata (readLinkMetadata, generateAnnotationBlock, generateID, authorsToCite, authorsTruncate, tagsToLinksSpan, Metadata, MetadataItem, parseRawBlock, abbreviateTag)
@@ -251,7 +252,7 @@ generateSections = concatMap (\p@(f,(t,aut,dt,_,_,_),_,_) ->
                                  ++ generateItem p)
 
 generateItem :: (FilePath,MetadataItem,FilePath,FilePath) -> [Block]
-generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) =
+generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) = -- no abstracts:
  if ("wikipedia"`isInfixOf`f) then [Para [Link nullAttr [Str "Wikipedia"] (T.pack f, T.pack $ "Wikipedia link about " ++ t)]]
  else
   let
@@ -270,10 +271,11 @@ generateItem (f,(t,aut,dt,_,tgs,""),bl,sl) =
   in
   if (tgs==[] && bl=="" && dt=="") then [Para (prefix ++ Link nullAttr title (T.pack f, "") : (author))]
   else [Para (prefix  ++ Link nullAttr title (T.pack f, "") : (author ++ [Space, Str "("] ++ date ++ tags ++ backlink ++ similar ++ [Str ")"]))]
+-- long abstracts:
 generateItem (f,a,bl,sl) =
   -- render annotation as: (skipping DOIs)
   --
   -- > [`2010-lucretius-dererumnatura.pdf`: "On The Nature of Things"](/docs/philosophy/2010-lucretius-dererumnatura.pdf), Lucretius (55BC-01-01):
   -- >
   -- > > A poem on the Epicurean model of the world...
-  generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
+  walk (parseRawBlock nullAttr) $ generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl

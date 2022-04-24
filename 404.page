@@ -14,7 +14,7 @@ index: true
 error404: true
 ...
 
-<figure class="float-right outline-no">
+<figure class="float-right invertible outline-no">
 <img src="/static/img/logo/logo-unifrakturmaguntia-lowercase-h.png" title="&#39;I think you went too far.&#39; [Image of Fraktur/blackletter lowercase letter &#39;H&#39;, alluding to the &#39;G&#39; Fraktur logo of Gwern.net, humorously implying that the reader who has triggered a 404 Not Found error went too far past the &#39;G&#39;.]" alt="You went too far." /><figcaption aria-hidden="true">You went too far.</figcaption>
 </figure>
 
@@ -72,7 +72,7 @@ Other options:
 - [Darknet Market mortality risks](/DNM-survival "Branwen 2013")
 - [LSD microdosing RCT](/LSD-microdosing "Branwen 2012")
 - [DNM-related arrests, 2011–2015](/DNM-arrests "Branwen 2012")
-- [`/tags/newsletter`](/tags/newsletter)
+- [`/newsletter/index`](/newsletter/index)
 - [Complexity no Bar to AI](/Complexity-vs-AI "Branwen 2014")
 - [GPT-2 Folk Music](/GPT-2-music "Branwen & Presser 2019")
 - [Evolution as Backstop for Reinforcement Learning](/Backstop "Branwen 2018")

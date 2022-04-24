@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-23 18:26:56 gwern"
+When:  Time-stamp: "2022-04-23 19:35:38 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -30,7 +30,7 @@ automatically generate a live-link testcase appended to /Lorem for manual review
 {-# LANGUAGE OverloadedStrings #-}
 module LinkLive (linkLive, linkLiveTest, urlLive, linkLivePrioritize) where
 
-import Control.Monad (when)
+import Control.Monad (unless)
 import Data.List (sort)
 import Data.Maybe (isNothing)
 import qualified Data.Map.Strict as M (fromListWith, toList, map, keys)
@@ -77,7 +77,7 @@ linkLivePrioritize = do b <- readBacklinksDB
                                                                                        ("." `T.isInfixOf` url')) b'
                         let b''' =  M.fromListWith (+) b''
                         let hits = reverse $ sort $ Prelude.filter ((/="") . snd) $ map (\(e,f) -> (f,e)) $ M.toList b'''
-                        when (not $ null hits) $ mapM_ (\(_,l) -> writeLinkLiveTestcase b l) hits
+                        unless (null hits) $ mapM_ (\(_,l) -> writeLinkLiveTestcase b l) hits
                         return hits
   where blackList = ["omega.albany.edu"]
         linkLiveMinimum = 3

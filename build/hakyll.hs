@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-23 09:44:27 gwern"
+When: Time-stamp: "2022-04-23 20:44:29 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -70,7 +70,7 @@ import qualified Data.Text as T (append, isInfixOf, isPrefixOf, isSuffixOf, pack
 -- local custom modules:
 import Inflation (nominalToRealInflationAdjuster)
 import Interwiki (convertInterwikiLinks, inlinesToString)
-import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksSpan, safeHtmlWriterOptions)
+import LinkMetadata (isLocalLinkWalk, readLinkMetadataAndCheck, writeAnnotationFragments, Metadata, createAnnotations, hasAnnotation, simplifiedHTMLString, tagsToLinksDiv, safeHtmlWriterOptions)
 import LinkArchive (localizeLink, readArchiveMetadata, ArchiveMetadata)
 import Typography (linebreakingTransform, typographyTransform, invertImageInline, imageMagickDimensions)
 import LinkAuto (linkAuto)
@@ -231,7 +231,7 @@ fieldsTagHTML m = field "tagsHTML" $ \item -> do
   let path = "/" ++ (replace ".page" "" $ toFilePath $ itemIdentifier item)
   case M.lookup path m of
     Nothing                 -> return "" -- noResult "no description field"
-    Just x@(_,_,_,_,tags,_) -> case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [Para [tagsToLinksSpan tags]])) of
+    Just x@(_,_,_,_,tags,_) -> case (runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta [tagsToLinksDiv tags])) of
                                  Left e -> error ("Failed to compile tags to HTML fragment: " ++ show path ++ show x ++ show e)
                                  Right html -> return (T.unpack html)
 
