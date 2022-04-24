@@ -607,30 +607,31 @@ Extracts = {
 
         /*  Check to see if the target location matches an already-displayed
             page (which can be the root page of the window).
+
+            If there already is a pop-frame that displays the entire linked
+			page, and if the link points to an anchor, display the linked
+			section or element.
+
+			Also display just the linked block if we’re spawning this pop-frame
+			from an in-pop-frame TOC.
          */
         let fullTargetDocument = Extracts.targetDocument(target);
         if (   target.hash > ""
         	&& (   fullTargetDocument
         		|| target.closest(".popframe .TOC"))) {
-            /*  If there already is a pop-frame that displays the entire linked
-                page, and if the link points to an anchor, display the linked
-                section or element.
-             */
+        	/*	Fall back to loaded and cached full page, if it exists but is
+        		not displayed in a pop-frame.
+        	 */
+            if (fullTargetDocument == null)
+            	fullTargetDocument = Extracts.cachedPages[target.pathname];
+
             if (fullTargetDocument) {
             	let linkedElement = fullTargetDocument.querySelector(selectorFromHash(target.hash));
 				return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
 			} else {
-				/*  Also display just the linked block if we’re spawning this
-					pop-frame from an in-pop-frame TOC.
-				 */
-				if (Extracts.cachedPages[target.pathname]) {
-					let linkedElement = Extracts.cachedPages[target.pathname].querySelector(selectorFromHash(target.hash));
-					return Extracts.newDocument(unwrapFunction(Extracts.nearestBlockElement(linkedElement)));
-				} else {
-					Extracts.refreshPopFrameAfterLocalPageLoads(target);
+				Extracts.refreshPopFrameAfterLocalPageLoads(target);
 
-					return Extracts.newDocument();
-				}
+				return Extracts.newDocument();
 			}
         } else {
             /*  Otherwise, display the entire linked page.
@@ -778,8 +779,7 @@ Extracts = {
         });
 
         //  Scroll to the target.
-        if (   target.hash > ""
-        	&& popFrame.classList.contains("local-transclude"))
+        if (target.hash > "")
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
