@@ -778,14 +778,25 @@ Extracts = {
             flags: 0
         });
 
+		//	Hyphenate.
+		if (Hyphenopoly.hyphenators) {
+			Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+				popFrame.querySelectorAll(".markdownBody p").forEach(block => {
+					hyphenate(block);
+				});
+			});
+		}
+
         //  Scroll to the target.
-        if (target.hash > "")
+        if (target.hash > ""
+        	&& popFrame.classList.contains("local-transclude")) {
             requestAnimationFrame(() => {
             	let element = null;
                 if (   popFrame
                 	&& (element = popFrame.querySelector(selectorFromHash(target.hash))))
                     Extracts.popFrameProvider.scrollElementIntoViewInPopFrame(element);
             });
+        }
     },
 
     //  Called by: Extracts.rewritePopinContent (as `rewritePopinContent_${targetTypeName}`)

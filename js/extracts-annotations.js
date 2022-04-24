@@ -295,6 +295,15 @@ Extracts = { ...Extracts, ...{
             flags: 0
         });
 
+		//	Hyphenate.
+		if (Hyphenopoly.hyphenators) {
+			Hyphenopoly.hyphenators.HTML.then((hyphenate) => {
+				popFrame.querySelectorAll(".markdownBody p").forEach(block => {
+					hyphenate(block);
+				});
+			});
+		}
+
         //  Scroll to the target.
         if (target.hash > "") {
             requestAnimationFrame(() => {
