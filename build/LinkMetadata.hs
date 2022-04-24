@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-23 21:48:48 gwern"
+When:  Time-stamp: "2022-04-24 12:38:06 gwern"
 License: CC-0
 -}
 
@@ -30,7 +30,7 @@ import Data.FileStore.Utils (runShellCommand)
 import Data.Function (on)
 import Data.List (intercalate, intersect, intersperse, isInfixOf, isPrefixOf, isSuffixOf, sort, sortBy, (\\))
 import Data.List.Utils (replace, split, uniq)
-import Data.Maybe (Maybe, fromJust, fromMaybe, isJust, isNothing)
+import Data.Maybe (Maybe, fromJust, fromMaybe)
 import Data.Text.Encoding (decodeUtf8) -- ByteString -> T.Text
 import Data.Yaml as Y (decodeFileEither, decodeEither', encode, ParseException) -- NOTE: from 'yaml' package, *not* 'HsYaml'
 import GHC.Generics (Generic)
@@ -46,7 +46,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div), Attr)
 import Text.Pandoc.Walk (walk, walkM)
-import Text.Regex (mkRegex, matchRegex, Regex)
+import Text.Regex.TDFA ((=~))
 import Text.Show.Pretty (ppShow)
 
 import qualified Control.Monad.Parallel as Par (mapM_)
@@ -189,9 +189,9 @@ readLinkMetadataAndCheck = do
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final) in
-               Par.mapM_ (\a -> when (not (null a)) $ when (isJust (matchRegex dateRegex a)) (error $ "Mixed up author & date?: " ++ a) ) authors
+               Par.mapM_ (\a -> when (not (null a)) $ when (dateRegex =~ a) (error $ "Mixed up author & date?: " ++ a) ) authors
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
-               Par.mapM_ (\d -> when (not (null d)) $ when (isNothing (matchRegex dateRegex d)) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+               Par.mapM_ (\d -> when (not (null d)) $ when (dateRegex =~ d) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
@@ -211,10 +211,10 @@ readLinkMetadataAndCheck = do
                tagsSet
              return final
 
-dateRegex, footnoteRegex, sectionAnonymousRegex :: Regex
-dateRegex = mkRegex "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
-footnoteRegex = mkRegex "^/?[[:alnum:]-]+#fn[1-9][0-9]*$" -- '/Foo#fn3', 'Foo#fn1', 'Foo-Bar-2020#fn999' etc
-sectionAnonymousRegex = mkRegex "^#section-[0-9]+$" -- unnamed sections which receive Pandoc positional auto-names like "#section-1", "#section-15"; unstable, should be named if ever to be linked to, etc.
+dateRegex, footnoteRegex, sectionAnonymousRegex :: String
+dateRegex             = "^[1-2][0-9][0-9][0-9](-[0-2][0-9](-[0-3][0-9])?)?$"
+footnoteRegex         = "^/?[[:alnum:]-]+#fn[1-9][0-9]*$" -- '/Foo#fn3', 'Foo#fn1', 'Foo-Bar-2020#fn999' etc
+sectionAnonymousRegex = "^#section-[0-9]+$" -- unnamed sections which receive Pandoc positional auto-names like "#section-1", "#section-15"; unstable, should be named if ever to be linked to, etc.
 
 -- read a YAML database and look for annotations that need to be paragraphized.
 warnParagraphizeYAML :: FilePath -> IO ()
@@ -249,7 +249,8 @@ writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > min
                                              annotationExisted <- doesFileExist filepath'
                                              case finalHTMLEither of
                                                Left er -> error ("Writing annotation fragment failed! " ++ show u ++ ": " ++ show i ++ ": " ++ show er)
-                                               Right finalHTML -> let refloated = T.pack $ restoreFigureClass e $ T.unpack finalHTML
+                                               Right finalHTML -> -- let refloated = T.pack $ restoreFigureClass e $ T.unpack finalHTML
+                                                                  let refloated = finalHTML
                                                                   in writeUpdatedFile "annotation" filepath' refloated -- >>
                                            -- HACK: the current hakyll.hs assumes that all annotations already exist before compilation begins, although we actually dynamically write as we go.
                                            -- This leads to an annoying behavior where a new annotation will not get synced in its first build, because Hakyll doesn't "know" about it and won't copy it into the _site/ compiled version, and it won't get rsynced up. This causes unnecessary errors.
@@ -266,7 +267,7 @@ typesetHtmlField orig t = let fieldPandocMaybe = runPure $ readHtml def{readerEx
                          Left errr -> error $ show orig ++ ": " ++ t ++ show errr
                          Right fieldPandoc -> let (Pandoc _ fieldPandoc') = typographyTransform fieldPandoc in
                                                 let (Right fieldHtml) = runPure $ writeHtml5String safeHtmlWriterOptions (Pandoc nullMeta fieldPandoc') in
-                           restoreFigureClass orig $ T.unpack fieldHtml
+                           T.unpack fieldHtml -- restoreFigureClass orig $ T.unpack fieldHtml
 
 -- walk each page, extract the links, and create annotations as necessary for new links
 createAnnotations :: Metadata -> Pandoc -> IO ()
@@ -377,7 +378,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     -- make sure every abstract is wrapped in paragraph tags for proper rendering:in
                                     abst' = if anyPrefix abst ["<p>", "<ul", "<ol", "<h2", "<h3", "<bl", "<figure"] then abst else "<p>" ++ abst ++ "</p>"
                                     -- check that float-right hasn't been deleted by Pandoc again:
-                                    abst'' = restoreFigureClass abst abst'
+                                    abst'' = abst' -- restoreFigureClass abst abst'
                                 in
                                   [Para
                                        (linkPrefix ++ [link,Str ","] ++
@@ -426,16 +427,16 @@ tagsToLinksSpan :: [String] -> Inline
 tagsToLinksSpan [] = Span nullAttr []
 tagsToLinksSpan [""] = Span nullAttr []
 tagsToLinksSpan ts = let tags = condenseTags (sort ts) in
-                       Span ("", ["link-local", "link-tags"], []) $
-                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
+                       Span ("", ["link-tags"], []) $
+                       intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags
 
 -- Ditto; but since a Div is a Block element, we copy-paste a separate function:
 tagsToLinksDiv :: [String] -> Block
 tagsToLinksDiv [] = Div nullAttr []
 tagsToLinksDiv [""] = Div nullAttr []
 tagsToLinksDiv ts = let tags = condenseTags (sort ts) in
-                       Div ("", ["link-local", "link-tags"], []) $
-                       [Para $ intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
+                       Div ("", ["link-tags"], []) $
+                       [Para $ intersperse (Str ", ") $ map (\(text,tag) -> Link ("", ["link-tag", "link-local", "link-annotated"], [("rel","tag")]) [Str $ abbreviateTag text] ("/docs/"`T.append`tag`T.append`"/index", "Link to "`T.append`tag`T.append`" tag index") ) tags]
 
 -- For some links, tag names may overlap considerably, eg. ["genetics/heritable", "genetics/selection", "genetics/correlation"]. This takes up a lot of space, and as tags get both more granular & deeply nested, the problem will get worse (look at subtags of 'reinforcement-learning'). We'd like to condense the tags by their shared prefix. We take a (sorted) list of tags, in order to return the formatted text & actual tag, and for each tag, we look at whether its full prefix is shared with any previous entries; if there is a prior one in the list, then this one loses its prefix in the formatted text version.
 --
@@ -465,6 +466,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("GPT/inner-monologue", "inner monologue (AI)")
           , ("/gpt", "GPT")
           , ("ai/gpt", "GPT")
+          , ("/nn", "neural nets")
           , ("ai/nn", "neural nets")
           , ("ai/rnn", "AI/RNN")
           , ("ai/scaling", "AI scaling")
@@ -474,7 +476,9 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("iq/smpy", "SMPY")
           , ("vitamin-d", "Vitamin D")
           , ("dual-n-back", "DNB")
+          , ("/codex", "Codex")
           , ("ai/gpt/codex", "Codex")
+          , ("/lamda", "LaMDA")
           , ("ai/gpt/lamda", "LaMDA")
           , ("iq/anne-roe", "Anne Roe")
           , ("/diffusion", "diffusion model")
@@ -500,8 +504,10 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("cs/r", "R")
           , ("cs/shell", "shell")
           , ("cs/scheme", "Scheme")
+          , ("/css", "CSS")
           , ("cs/css", "CSS")
           , ("cs/cryptography", "crypto")
+          , ("/js", "JS")
           , ("cs/js", "JS")
           , ("cs/haskell", "Haskell")
           , ("cs/python", "Python")
@@ -522,7 +528,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("technology/google", "Google")
           , ("technology/security", "infosec")
           , ("technology/search", "Google-fu")
-          , ("linkrot/archiving", "web archiving")
+          , ("linkrot/archiving", "archiving")
           , ("reinforcement-learning/openai", "OA")
           , ("reinforcement-learning/deepmind", "DM")
           , ("genetics/cloning", "cloning")
@@ -686,6 +692,7 @@ url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTag
           , (("https://tvtropes.org"`isPrefixOf`), "fiction")
           , (("evageeks.org"`isInfixOf`),  "eva")
           , (("evamonkey.com"`isInfixOf`), "eva")
+          , (("r-project.org"`isInfixOf`), "cs/r")
           ]
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
@@ -971,9 +978,9 @@ processParagraphizer a =
 --------------------------------------------
 
 -- WARNING: Pandoc erases attributes set on `<figure>` like 'float-right', so blindly restore a float-right class to all <figure>s if there was one in the original (it's a hack, but I generally don't use any other classes besides 'float-right', or more than one image per annotation or mixed float/non-float, and it's a lot simpler...):
-restoreFigureClass :: String -> String -> String
-restoreFigureClass original final = foldr (\clss string -> if clss`isInfixOf`original then replace "<figure>" clss string else string) final classes
-  where classes = ["<figure class=\"float-right\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"invertible\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"width-full invertible-not\">"]
+-- restoreFigureClass :: String -> String -> String
+-- restoreFigureClass original final = foldr (\clss string -> if clss`isInfixOf`original then replace "<figure>" clss string else string) final classes
+--   where classes = ["<figure class=\"float-right\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"invertible\">", "<figure class=\"invertible-auto float-right\">", "<figure class=\"width-full invertible-not\">"]
 
 -- so after meditating on it, I think I've decided how duplicate annotation links should be handled:
 --
@@ -1398,11 +1405,11 @@ linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://
 gwern p | ".pdf" `isInfixOf` p = pdf p
         | anyInfix p [".avi", ".bmp", ".conf", ".css", ".csv", ".doc", ".docx", ".ebt", ".epub", ".gif", ".GIF", ".hi", ".hs", ".htm", ".html", ".ico", ".idx", ".img", ".jpeg", ".jpg", ".JPG", ".js", ".json", ".jsonl", ".maff", ".mdb", ".mht", ".mp3", ".mp4", ".mkv", ".o", ".ods", ".opml", ".pack", ".page", ".patch", ".php", ".png", ".R", ".rm", ".sh", ".svg", ".swf", ".tar", ".ttf", ".txt", ".wav", ".webm", ".xcf", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".zip"] = return (Left Permanent) -- skip potentially very large archives
         | anyPrefix p ["tags/", "/tags/", "newsletter/", "/newsletter/", "docs/link-bibliography/"] ||
-          anySuffix p ["#external-links", "#see-also", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#top-tag", "#miscellaneous", "#appendix", "#conclusion", "#media", "#writings", "#filmtv", "#music", "#books"] ||
+          anySuffix p ["#external-links", "#see-also", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#top-tag", "#misc", "#miscellaneous", "#appendix", "#conclusion", "#conclusion-1", "#media", "#writings", "#filmtv", "#music", "#books"] ||
           anyInfix p ["index.html", "/index#"] ||
           ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
-        | isJust (matchRegex sectionAnonymousRegex p) = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
-        | isJust (matchRegex footnoteRegex p) = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
+        | sectionAnonymousRegex =~ p = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
+        | footnoteRegex =~ p = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
             do printRed p'
@@ -1413,9 +1420,10 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
-                        let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
+                        -- let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
+                        let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
-                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || isNothing (matchRegex dateRegex dateTmp) then "" else dateTmp
+                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || dateRegex =~ dateTmp then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Data.List.Utils.split ", " $ snd $ head y else []) metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
@@ -1427,8 +1435,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         when (null thumbnailText) $ printRed ("Warning: no thumbnailText alt text defined for URL " ++ p)
                         thumbnailFigure <- if thumbnail'=="" then return "" else do
                               (color,h,w) <- invertImage thumbnail'
-                              let figureClass = if color then "class=\"invertible-auto float-right\"" else "class=\"float-right\""
-                              return ("<figure " ++ figureClass ++ "><img height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /><figcaption></figcaption></figure> ")
+                              let imgClass = if color then "class=\"invertible-auto float-right\"" else "class=\"float-right\""
+                              return ("<figure><img " ++ imgClass ++ " height=\"" ++ h ++ "\" width=\"" ++ w ++ "\" src=\"/" ++ thumbnail' ++ "\" title=\"" ++ thumbnailText ++ "\" alt=\"\" /></figure>")
 
                         let doi = ""
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
@@ -1437,7 +1445,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
 
                         let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description toc f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
-                        let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
+                        let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
 
                         if gabstract == "404 Not Found Error: no page by this name!" || title' == "404 Not Found" then return (Left Temporary)
