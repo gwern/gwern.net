@@ -374,7 +374,7 @@ else
         set +e;
         IFS=$(echo -en "\n\b");
         PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' -e 'docs/link-bibliography' | sort -u)"
-        OTHERS="$(find ./_site/tags/ -type f | sed -e 's/\.\/_site//'; find metadata/annotations/ -maxdepth 1 -name "*.html"; echo index)"
+        OTHERS="$(find metadata/annotations/ -maxdepth 1 -name "*.html"; echo index)"
         for PAGE in $PAGES $OTHERS ./static/404.html; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
@@ -688,7 +688,7 @@ else
           done; }
     wrap λ "Too-wide images (downscale)"
 
-    ## Remind to refine doc directories/tags (should be <50):
+    ## Remind to refine doc directory-tags (should be <50):
     find docs/ -type d -print0 | egrep --null-data -v -e 'docs/$' -e 'www' -e 'rotten.com' -e '2011-gwern-yourmorals.org' -e '2000-iapac-norvir' -e 'docs/link-bibliography' |
         while read -d '' -r dir;
     do N=$(find "$dir" -maxdepth 1 -type f | wc --lines);

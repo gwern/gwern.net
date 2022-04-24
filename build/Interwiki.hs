@@ -46,7 +46,7 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
         case M.lookup (T.tail interwiki) interwikiMap of
                 Just url  -> let attr' = (ident,
                                            ["id-not"] ++
-                                           wpPopupClasses (if article=="" then T.unpack $ inlinesToString ref else T.unpack article) ++
+                                           wpPopupClasses (T.unpack (url `interwikiurl` (if article=="" then inlinesToString ref else article))) ++
                                            classes,
                                            kvs) in
                              case article of
