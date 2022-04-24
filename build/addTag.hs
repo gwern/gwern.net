@@ -44,7 +44,7 @@ addOneTag link tag = do
                      do existP <- doesFileExist link'
                         if existP then return $ "/" ++ link' else
                           error $ "File does not exist? : '" ++ link' ++ "'"
-          when (head tag == '/'  || take 4 tag == "http")  $ error $ "Arguments not 'addTag.hs *tag* link'? : '" ++ tag ++ "'"
+          when (head tag == '/' || take 4 tag == "http") $ error $ "Arguments not 'addTag.hs *tag* link'? : '" ++ tag ++ "'"
           [custom,partial,auto] <- mapM readYaml ["metadata/custom.yaml", "metadata/partial.yaml", "metadata/auto.yaml"]
           addAndWriteTags tag link'' custom partial auto
 

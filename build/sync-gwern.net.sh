@@ -242,7 +242,7 @@ else
     λ(){ BACKLINKS_N=$(cat ./metadata/backlinks.hs | wc --lines); [ "$BACKLINKS_N" -le 57000 ] && echo "$BACKLINKS_N"; }
     wrap λ "Backlinks database broken?"
 
-    λ(){ egrep '#[[:alnum:]-]+#'  metadata/*.yaml metadata/*.hs; }
+    λ(){ egrep -e '#[[:alnum:]-]+#' -e '[[:alnum:]-]+##[[:alnum:]-]+' metadata/*.yaml metadata/*.hs; }
     wrap λ "Broken double-hash anchors in links somewhere?"
 
     λ(){ gf '\\' ./static/css/*.css; }

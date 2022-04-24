@@ -2,7 +2,7 @@
                    mirror which cannot break or linkrot—if something's worth linking, it's worth hosting!
 Author: Gwern Branwen
 Date: 2019-11-20
-When:  Time-stamp: "2022-04-23 08:59:47 gwern"
+When:  Time-stamp: "2022-04-24 09:07:59 gwern"
 License: CC-0
 Dependencies: pandoc, filestore, tld, pretty; runtime: SingleFile CLI extension, Chromium, wget, etc (see `linkArchive.sh`)
 -}
@@ -1141,5 +1141,7 @@ whiteList url
       , "https://wilson1yan.github.io/videogpt/index.html" -- (low quality (video embeds)
       , "https://repurposegans.github.io/" -- (low quality (video embeds)
       , "https://adapterhub.ml/" -- homepage
+      , "https://www.megaverse.info/" -- (low quality (video embeds)
+      , "https://attentionneuron.github.io/" -- interactive
       ] = True
     | otherwise = False
