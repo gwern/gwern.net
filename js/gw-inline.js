@@ -48,6 +48,10 @@ GW.isFirefox = () => {
     return (navigator.userAgent.indexOf("Firefox") > 0);
 };
 
+GW.isX11 = () => {
+	return (navigator.userAgent.indexOf("X11") > 0);
+};
+
 /********************/
 /* DEBUGGING OUTPUT */
 /********************/
