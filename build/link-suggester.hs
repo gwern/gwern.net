@@ -11,9 +11,8 @@ module Main where
 
 import Data.List (intercalate, nub, sort, sortBy)
 import qualified Data.Map.Strict as M (difference, elems, filter, filterWithKey, fromList, fromListWith, toList, map, union, Map)
-import Data.Maybe (isJust)
 import qualified Data.Set as S (fromList, member, Set)
-import qualified Data.Text as T (append, dropWhile, dropWhileEnd, length, lines, intercalate, pack, toLower, unpack, Text)
+import qualified Data.Text as T (append, dropWhile, dropWhileEnd, length, lines, intercalate, pack, toLower, Text)
 import Data.Char (isSpace, isPunctuation)
 import qualified Data.Text.IO as TIO (readFile)
 import System.Environment (getArgs)
@@ -24,7 +23,7 @@ import Control.Monad.Parallel as Par (mapM) -- monad-parallel
 
 import Data.List.Unique as U (repeated) -- Unique
 
-import Text.Regex (mkRegex, matchRegex)
+import Text.Regex.TDFA ((=~))
 
 import Query (extractURLsAndAnchorTooltips, parseMarkdownOrHTML)
 import Utils (writeUpdatedFile, printGreen, anyInfixT, anyPrefixT)
@@ -103,12 +102,12 @@ filterURLs    u = anyPrefixT u ["$","\8383","#","/static/img/","/newsletter/20",
 filterAnchors :: S.Set T.Text -> T.Text -> Bool
 filterAnchors d t = T.length t > anchorLengthMaximum ||
                     S.member (T.toLower t) d ||
-                    isJust (matchRegex regex (T.unpack t)) ||
+                    regex =~ t ||
                     anyInfixT t ["$","%","[","]"] ||
                     anyPrefixT t ["(","."] ||
                     "&"==t ||
                     elem t badStrings
-  where regex = mkRegex $ intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+", "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?", "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]
+  where regex = intercalate "|" $ map (\r -> "^"++r++"$") ["[0-9]+[kmgbt]?", "[0-9]+[\\.,;–-][0-9]+", "pg[0-9]+", "p\\.[0-9]+", "[0-9]+[a-f]", "in [12][0-9][0-9][0-9]", "[Ff]igure S?[0-9]+[a-f]?", "[Tt]able S?[0-9]+[a-f]?", "[Cc]hapter [0-9]+"]
         badStrings = ["has shown", "the end", "in the", "One", "one", "ast", "sed", "le", "intro", "Quest", "in the",
                       "very fast", "it was noted", "ODS", "diff of", "AK", "#8", "DL", "DM", "GQ", "H+", "JS", "NS",
                       "OA", "TR", "TV", "Xs", "i2", "s9", "v3", "Ant", "Ash", "CDC", "CO2", "DFA", "DOI", "DoJ", "FAQ",

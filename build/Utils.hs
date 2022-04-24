@@ -17,8 +17,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Text.Show.Pretty (ppShow)
 import qualified Data.Text as T (Text, pack, unpack, isInfixOf, isPrefixOf, isSuffixOf)
 
-import Data.Array (elems)
-import Text.Regex.TDFA ((=~), MatchArray)
+import Text.Regex (subRegex, mkRegex) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors: `$ cabal install regex-compat-tdfa && ghc-pkg --user hide regex-compat-0.95.1`
 
 import Text.Pandoc (def, nullMeta, runPure,
                     writerColumns, writePlain, Block, Pandoc(Pandoc), Inline(Code, Image, Link, Span, Str), Block(Para), readerExtensions, writerExtensions, readHtml, writeMarkdown, pandocExtensions)
@@ -101,15 +100,7 @@ fixedPoint = fixedPoint' 100000
        fixedPoint' n f i = let i' = f i in if i' == i then i else fixedPoint' (n-1) f i'
 
 sed :: String -> String -> String -> String
-sed regex new_str str  =
-    let parts = concat $ map elems $ (str  =~  regex :: [MatchArray])
-    in foldl (replace' new_str) str (reverse parts)
-
-  where
-     replace' :: [a] -> [a] -> (Int, Int) -> [a]
-     replace' new list (shift, l)   =
-        let (pre, post) = splitAt shift list
-        in pre ++ new ++ (drop l post)
+sed before after s = subRegex (mkRegex before) s after
 
 -- list of regexp string rewrites
 sedMany :: [(String,String)] -> (String -> String)

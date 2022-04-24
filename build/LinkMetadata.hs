@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-24 12:38:06 gwern"
+When:  Time-stamp: "2022-04-24 18:17:35 gwern"
 License: CC-0
 -}
 
@@ -46,7 +46,7 @@ import Text.Pandoc (readerExtensions, writerWrapText, writerHTMLMathMethod, Inli
                     readHtml, writerExtensions, nullAttr, nullMeta, writerColumns, Extension(Ext_shortcut_reference_links), enableExtension, WriterOptions,
                     Inline(Code, Str, RawInline, Space), Pandoc(..), Format(..), Block(RawBlock, Para, BlockQuote, Div), Attr)
 import Text.Pandoc.Walk (walk, walkM)
-import Text.Regex.TDFA ((=~))
+import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import Text.Show.Pretty (ppShow)
 
 import qualified Control.Monad.Parallel as Par (mapM_)
@@ -109,7 +109,7 @@ updateGwernEntries = walkAndUpdateLinkMetadata updateGwernEntry
                     newEntry <- gwern path
                     case newEntry of
                       Left _ -> return x
-                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',tags++tags',abstract'))
+                      Right (path', (title',author',date',doi',tags',abstract')) -> return (path', (title',author',date',doi',nubOrd(tags++tags'),abstract'))
 
 -- read the annotation base (no checks, >8× faster)
 readLinkMetadata :: IO Metadata
@@ -366,7 +366,7 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     authorShort = authorsTruncate aut
                                     authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
-                                    author = if aut=="" || aut=="N/A" then [Space] else [Space, authorSpan]
+                                    author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
                                     date = if dt=="" then [] else [Span ("", ["date"], [("title",T.pack dt)]) [Str (T.pack $ dateTruncate dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
@@ -549,6 +549,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("philosophy/ethics/ethicists", "ethicists")
           , ("statistics/meta-analysis", "meta-analysis")
           , ("statistics/power-analysis", "power analysis")
+          , ("statistics/bayes", "Bayesian")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("longevity/john-bjorksten", "John Bjorksten")
           , ("genetics/gametogenesis", "gametogenesis")

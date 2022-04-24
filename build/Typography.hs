@@ -23,8 +23,7 @@ import System.Exit (ExitCode(ExitFailure))
 import System.Posix.Temp (mkstemp)
 import qualified Data.Text as T (any, isSuffixOf, pack, unpack, replace, Text)
 import Text.Read (readMaybe)
-import qualified Text.Regex.Posix as R (makeRegex, match, Regex)
-import Text.Regex (subRegex, mkRegex)
+import Text.Regex.TDFA ((=~)) -- WARNING: avoid the native Posix 'Text.Regex' due to bugs and segfaults/strange-closure GHC errors
 import System.IO (stderr, hPrint)
 import System.IO.Temp (emptySystemTempFile)
 
@@ -38,7 +37,7 @@ import Text.Pandoc.Walk (walk, walkM)
 import LinkIcon (linkIcon)
 import LinkLive (linkLive)
 
-import Utils (addClass, printRed)
+import Utils (addClass, sed, printRed)
 
 typographyTransform :: Pandoc -> Pandoc
 typographyTransform = walk (linkLive . linkIcon) .
@@ -101,10 +100,8 @@ breakEquals x@Header{}    = x
 breakEquals x@Table{}     = x
 breakEquals x = walk breakEqualsInline x
 breakEqualsInline :: Inline -> Inline
-breakEqualsInline (Str s) = let s' = T.unpack s in Str $ T.pack $ subRegex equalsRegex s' " \\1 \\2"
+breakEqualsInline (Str s) = Str $ T.pack $ sed "([=≠])([a-zA-Z0-9])" " \\1 \\2" $ T.unpack s
 breakEqualsInline x = x
-equalsRegex :: R.Regex
-equalsRegex = mkRegex "([=≠])([a-zA-Z0-9])"
 
 -------------------------------------------
 
@@ -242,5 +239,5 @@ titlecase' "" = ""
 titlecase' t = titlecase $ titlecase'' t
    where titlecase'' :: String -> String
          titlecase'' "" = ""
-         titlecase'' t' = let (before,matched,after) = R.match (R.makeRegex ("-[a-z]"::String) :: R.Regex) t' :: (String,String,String)
+         titlecase'' t' = let (before,matched,after) = ("-[a-z]"::String) =~ t' :: (String,String,String)
                           in before ++ map toUpper matched ++ titlecase'' after
