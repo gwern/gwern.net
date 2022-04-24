@@ -239,13 +239,6 @@ body.index a.link-local::after,
     content: none;
 }
 
-/*	Tags pages, and embeds thereof, do not need the G icon.
- */
-body.tags a.link-local::after,
-.popframe.tags a.link-local::after {
-    content: none;
-}
-
 /*  Suppress link icons for backlinks popups: because the backlinks HTML file
     for each URL is stored at an escaped version of that URL
     ('/metadata/annotations/backlinks/escape($URL)'), the backlinks link will

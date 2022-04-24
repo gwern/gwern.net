@@ -2355,9 +2355,9 @@ span.inflationAdjusted {
 /* PAGE-SPECIFIC MODIFICATIONS */
 /*******************************/
 
-/*=-------------------------=*/
-/*= Index page & Tags pages =*/
-/*=-------------------------=*/
+/*=------------=*/
+/*= Index page =*/
+/*=------------=*/
 
 /*  Header self-links on home page need not be full-width. */
 body.index article #markdownBody section:not(.collapse) > h1:first-child a {
@@ -2402,13 +2402,11 @@ body.index #markdownBody section > h1:first-child a::after {
 /*  Nice-looking bottom decoration.
     */
 body.index article,
-body.tags article,
 body.index-directory article {
     position: relative;
     padding-bottom: 4em;
 }
 body.index article::after,
-body.tags article::after,
 body.index-directory article::after {
     content: "";
     background-color: var(--GW-body-background-color);
@@ -2428,7 +2426,6 @@ body.index-directory article::after {
     z-index: 1;
 }
 body.index article::before,
-body.tags article::before,
 body.index-directory article::before {
     content: "";
     display: block;
@@ -2572,7 +2569,6 @@ body.otaku blockquote {
 /* trim down appearance of UI elements not useful on listing pages (but without the other modifications for the primary /index. */
 
 body.index-directory #sidebar a.patreon,
-body.tags #sidebar a.patreon,
 body.index-directory #page-tags,
 body.index-directory #page-metadata-block,
 body.index-directory #TOC,
