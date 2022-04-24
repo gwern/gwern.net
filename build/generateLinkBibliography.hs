@@ -30,8 +30,9 @@ import qualified Data.Text as T (pack, unpack)
 import Control.Monad.Parallel as Par (mapM_)
 
 import Text.Pandoc (Inline(Code, Link, Str, Space, Span), def, nullAttr, nullMeta, readMarkdown, readerExtensions, writerExtensions, runPure, pandocExtensions, writeMarkdown, ListNumberDelim(DefaultDelim), ListNumberStyle(DefaultStyle), Block(Para, OrderedList), Pandoc(..))
+import Text.Pandoc.Walk (walk)
 
-import LinkMetadata (generateAnnotationBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
+import LinkMetadata (generateAnnotationBlock, parseRawBlock, readLinkMetadata, authorsTruncate, Metadata, MetadataItem)
 import LinkBacklink (getBackLink, getSimilarLink)
 import Query (extractURLs)
 import Utils (writeUpdatedFile)
@@ -74,7 +75,7 @@ generateYAMLHeader d = "---\n" ++
 generateLinkBibliographyItems :: [(String,MetadataItem,FilePath,FilePath)] -> Block
 generateLinkBibliographyItems items = OrderedList (1, DefaultStyle, DefaultDelim) $ map generateLinkBibliographyItem items
 generateLinkBibliographyItem  :: (String,MetadataItem,FilePath,FilePath) -> [Block]
-generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  =
+generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  = -- short:
   let f'
         | "http" `isPrefixOf` f = f
         | "index" `isSuffixOf` f = takeDirectory f
@@ -93,7 +94,8 @@ generateLinkBibliographyItem (f,(t,aut,_,_,_,""),_,_)  =
       [Para (Code nullAttr (T.pack f') :
               Str ":" : Space :
               Link nullAttr [Str "“", Str (T.pack $ titlecase t), Str "”"] (T.pack f, "") : author)]
-generateLinkBibliographyItem (f,a,bl,sl) = generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
+-- long items:
+generateLinkBibliographyItem (f,a,bl,sl) = walk (parseRawBlock nullAttr) $ generateAnnotationBlock ("/"`isPrefixOf`f) True False (f,Just a) bl sl
 
 extractLinksFromPage :: String -> IO [String]
 extractLinksFromPage path = do f <- TIO.readFile path
