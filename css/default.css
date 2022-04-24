@@ -2981,10 +2981,6 @@ body.index-directory #footer {
     margin: 0 0.5em;
 }
 
-.popframe-title-bar .options-button {
-    opacity: 0.8;
-}
-
 /*=-------------------=*/
 /*= POP-FRAME CONTENT =*/
 /*=-------------------=*/
@@ -4635,20 +4631,6 @@ body.index-directory #footer {
     font-style: normal;
     font-size: var(--GW-body-text-font-size);
     text-align: unset;
-}
-
-/*┌───────────────────────┐*/
-/*│ Specific adjustments. │*/
-/*└───────────────────────┘*/
-
-/*  Page metadata block in local page embed popups.
-    */
-.popin #page-metadata-block span:nth-of-type(3) {
-    white-space: normal;
-    display: block;
-}
-.popin #page-metadata-block > span:nth-child(n+2)::after {
-    content: none;
 }
 
 /***************/
