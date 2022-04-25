@@ -1002,6 +1002,10 @@ p + blockquote {
     margin-top: 1em;
 }
 
+blockquote > figure.float-right:first-child {
+	margin-top: 0.375em;
+}
+
 /***************/
 /* CODE BLOCKS */
 /***************/
