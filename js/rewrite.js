@@ -163,28 +163,49 @@ function newElement(tagName, attributes = { }) {
 /*****************************************************/
 /*	Wrap an element in a wrapper element.
  */
-function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper = false) {
+function wrapElement(element, wrapClass, wrapTagName = "DIV", useExistingWrapper = false, moveClasses = false) {
 	if (   useExistingWrapper
 		&& element.parentElement
 		&& element.parentElement.tagName == wrapTagName
 		&& element.parentElement.children.length == 1) {
-		element.parentElement.classList.toggle(wrapClass, true);
+		if (wrapClass > "")
+			element.parentElement.classList.add(...(wrapClass.split(" ")));
 	} else {
 		let wrapper = document.createElement(wrapTagName);
-		wrapper.classList.add(...(wrapClass.split(" ")));
+		if (wrapClass > "")
+			wrapper.classList.add(...(wrapClass.split(" ")));
 		element.parentElement.insertBefore(wrapper, element);
 		wrapper.appendChild(element);
 	}
+
+	if (moveClasses === false)
+		return;
+
+	if (moveClasses === true) {
+		element.parentElement.classList.add(...(element.classList));
+		element.removeAttribute("class");
+		return;
+	}
+
+	if (!(moveClasses instanceof Array))
+		return;
+
+	moveClasses.forEach(cssClass => {
+		if (element.classList.contains(cssClass)) {
+			element.classList.remove(cssClass);
+			element.parentElement.classList.add(cssClass);
+		}
+	});
 }
 
 /*****************************************************/
 /*	Wrap all elements specified by the given selector.
  */
-function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = document, useExistingWrappers = false) {
+function wrapAll(selector, wrapClassOrFunction, wrapTagName = "DIV", root = document, useExistingWrappers = false, moveClasses = false) {
 	let wrapperFunction;
 	if (typeof wrapClassOrFunction == "string") {
 		wrapperFunction = (element) => {
-			wrapElement(element, wrapClassOrFunction, wrapTagName, useExistingWrappers);
+			wrapElement(element, wrapClassOrFunction, wrapTagName, useExistingWrappers, moveClasses);
 		};
 	} else {
 		wrapperFunction = wrapClassOrFunction;
@@ -263,6 +284,21 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 /* FIGURES */
 /***********/
 
+/*******************************/
+/*  Wrap bare images in figures.
+ */
+function wrapImages(loadEventInfo) {
+    GWLog("wrapImages", "rewrite.js", 1);
+
+	wrapAll("img", (image) => {
+		if (image.closest(".footnote-back"))
+			return;
+
+		wrapElement(image, null, "FIGURE", true, 
+			[ "float-left", "float-right", "outline-not", "image-focus-not" ]);
+	}, null, loadEventInfo.document);
+}
+
 /********************************/
 /*  Inject wrappers into figures.
  */
@@ -334,6 +370,7 @@ function markFullWidthFigures(loadEventInfo) {
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processFigures = (info) => {
     GWLog("GW.rewriteFunctions.processFigures", "rewrite.js", 2);
 
+	wrapImages(info);
     wrapFigures(info);
     if (info.fullWidthPossible)
         markFullWidthFigures(info);
