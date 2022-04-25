@@ -91,7 +91,7 @@ else
                 -e 'docs/link-bibliography') &
 
     bold "Updating link bibliographies…"
-    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e '404.html.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
+    ./static/build/generateLinkBibliography +RTS -N"$N" -RTS $(find . -type f -name "*.page" | sort | fgrep -v -e 'index.page' -e '404.page' -e 'docs/link-bibliography/' | sed -e 's/\.\///') &
 
     bold "Check/update VCS…"
     cd ./static/ && (git status; git pull; git push --verbose &)
@@ -117,7 +117,7 @@ else
     ## possible alternative implementation in hakyll: https://www.rohanjain.in/hakyll-sitemap/
     (echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">"
      ## very static files which rarely change: PDFs, images, site infrastructure:
-     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | fgrep --invert-match -e 'docs/www/' -e 'metadata/' -e '.git' -e '404.html' | \
+     find -L _site/docs/ _site/images/ _site/static/ -not -name "*.page" -type f | fgrep --invert-match -e 'docs/www/' -e 'metadata/' -e '.git' -e '404' | \
          sort | xargs urlencode -m | sed -e 's/%20/\n/g' | \
          sed -e 's/_site\/\(.*\)/\<url\>\<loc\>https:\/\/www\.gwern\.net\/\1<\/loc><changefreq>never<\/changefreq><\/url>/'
      ## Everything else changes once in a while:
@@ -141,9 +141,13 @@ else
             LANGUAGE=${extensionToLanguage[$EXTENSION]}
             FILELENGTH=$(cat "$FILE" | wc --lines)
             (echo -e "~~~{.$LANGUAGE}";
-             if (( $FILELENGTH > 1000  )); then cat "$FILE" | head -1000; else cat "$FILE"; fi
+            if [ $EXTENSION == "page" ]; then # the very long lines look bad in narrow popups, so we fold:
+                cat "$FILE" | fold --spaces --width=66 | head -1100 | iconv -t utf8 -c;
+            else
+                cat "$FILE" | head -1000;
+            fi
              echo -e "\n~~~"
-             if (( $FILELENGTH > 1000  )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-local\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
+             if (( $FILELENGTH >= 1000 )); then echo -e "\n\n…[File truncated due to length; see <a class=\"link-local\" href=\"$FILEORIGINAL\">original file</a>]…"; fi;
             ) | pandoc --mathjax --write=html5 --from=markdown+smart >> $FILE.html
         done
     }
@@ -375,7 +379,7 @@ else
         IFS=$(echo -en "\n\b");
         PAGES="$(find . -type f -name "*.page" | fgrep -v -e '_site/' -e 'index' -e 'docs/link-bibliography' | sort -u)"
         OTHERS="$(find metadata/annotations/ -maxdepth 1 -name "*.html"; echo index)"
-        for PAGE in $PAGES $OTHERS ./static/404.html; do
+        for PAGE in $PAGES $OTHERS ./static/404; do
             HTML="${PAGE%.page}"
             TIDY=$(tidy -quiet -errors --doctype html5 ./_site/"$HTML" 2>&1 >/dev/null | \
                        fgrep --invert-match -e '<link> proprietary attribute ' -e 'Warning: trimming empty <span>' \
@@ -409,7 +413,7 @@ else
     wrap λ "Markdown→HTML pages don't validate as HTML5"
 
     ## anchor-checker.php doesn't work on HTML fragments, like the metadata annotations, and those rarely ever have within-fragment anchor links anyway, so skip those:
-    λ() { for PAGE in $PAGES ./static/404.html; do
+    λ() { for PAGE in $PAGES ./static/404; do
               HTML="${PAGE%.page}"
               ANCHOR=$(static/build/anchor-checker.php ./_site/"$HTML")
               if [[ -n $ANCHOR ]]; then echo -e "\n\e[31m$PAGE\e[0m:\n$ANCHOR"; fi
@@ -560,6 +564,7 @@ else
           cm "video/webm" 'https://www.gwern.net/images/statistics/2003-murray-humanaccomplishment-region-proportions-bootstrap.webm'
           cm "image/jpeg" 'https://www.gwern.net/images/technology/security/lobel-frogandtoadtogether-thebox-crop.jpg'
           cm "image/png"  'https://www.gwern.net/images/technology/search/googlesearch-tools-daterange.png'
+          cm "application/wasm"  'https://www.gwern.net/static/js/patterns/en-us.wasm'
         }
     wrap λ "The live MIME types are incorrect"
 
@@ -597,7 +602,7 @@ else
     λ(){ find . -type f | fgrep -v -e '.'; }
     wrap λ "Every file should have at least one period in them (extension)."
 
-    λ(){ find . -type f -name "*\.*\.page" | fgrep -v -e '404.html.page'; }
+    λ(){ find . -type f -name "*\.*\.page" | fgrep -v -e '404.page'; }
     wrap λ "Markdown files should have exactly one period in them."
 
     λ(){ find . -type f -mtime +3 -name "*#*"; }
@@ -668,7 +673,7 @@ else
     wrap λ "DjVu detected (convert to PDF)"
 
     ## having noindex tags causes conflicts with the robots.txt and throws SEO errors; except in the ./docs/www/ mirrors, where we don't want them to be crawled:
-    λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e './docs/www/' -e './static/404.html' -e './static/templates/default.html' | xargs fgrep --files-with-matches 'noindex'; }
+    λ(){ find ./ -type f -name "*.html" | fgrep --invert-match -e './docs/www/' -e './static/404' -e './static/templates/default.html' | xargs fgrep --files-with-matches 'noindex'; }
     wrap λ "Noindex tags detected in HTML pages"
 
     λ(){ find ./ -type f -name "*.gif" | fgrep --invert-match -e 'static/img/' -e 'docs/gwern.net-gitstats/' -e 'docs/rotten.com/' -e 'docs/genetics/selection/www.mountimprobable.com/' -e 'images/thumbnails/' | parallel --max-args=100 identify | egrep '\.gif\[[0-9]\] '; }
