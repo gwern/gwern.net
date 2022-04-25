@@ -60,7 +60,7 @@ function imageFocusSetup() {
 			return;
 
 		//	NOTE: unlike the above, this one is probably not a temporary hack
-		if (image.closest("figure.image-focus-no"))
+		if (image.closest("figure.image-focus-not"))
 			return;
 
 		image.addEventListener("click", GW.imageClickedToFocus);
@@ -69,7 +69,7 @@ function imageFocusSetup() {
 	//  Wrap all images in figures in a span.
 	document.querySelectorAll("figure img").forEach(image => {
 		//	NOTE: unlike the above, this one is probably not a temporary hack
-		if (image.closest("figure.image-focus-no"))
+		if (image.closest("figure.image-focus-not"))
 			return;
 
 		let imageContainer = image.parentElement;

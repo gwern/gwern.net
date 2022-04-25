@@ -768,9 +768,9 @@ figure video,
 figure audio {
     outline: 1px solid var(--GW-figure-outline-color);
 }
-figure.outline-no img,
-figure.outline-no video,
-figure.outline-no audio {
+figure.outline-not img,
+figure.outline-not video,
+figure.outline-not audio {
     outline: none;
 }
 /* WARNING: work around Chrome layout bug */
