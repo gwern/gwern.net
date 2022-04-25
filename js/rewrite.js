@@ -294,6 +294,11 @@ function wrapImages(loadEventInfo) {
 		if (image.closest(".footnote-back"))
 			return;
 
+		let figure = image.closest("figure");
+		if (   figure 
+			&& figure.querySelector("figcaption") != null)
+			return;
+
 		wrapElement(image, null, "FIGURE", true, 
 			[ "float-left", "float-right", "outline-not", "image-focus-not" ]);
 	}, null, loadEventInfo.document);
