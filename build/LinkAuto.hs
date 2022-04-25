@@ -4,7 +4,7 @@ module LinkAuto (linkAuto, linkAutoFiltered) where
 {- LinkAuto.hs: search a Pandoc document for pre-defined regexp patterns, and turn matching text into a hyperlink.
 Author: Gwern Branwen
 Date: 2021-06-23
-When:  Time-stamp: "2022-04-24 18:16:23 gwern"
+When:  Time-stamp: "2022-04-25 18:44:37 gwern"
 License: CC-0
 
 This is useful for automatically defining concepts, terms, and proper names using a single master
@@ -54,7 +54,7 @@ import Control.Parallel.Strategies (parMap, rseq)
 import Control.Monad.State (evalState, get, put, State)
 import System.IO.Unsafe (unsafePerformIO)
 
-import Text.Pandoc (topDown, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str))
+import Text.Pandoc (topDown, nullAttr, Pandoc(..), Inline(Link,Image,Code,Space,Span,Str), Block(Div))
 import Text.Pandoc.Walk (walkM, walk)
 import Text.Regex.TDFA as R (makeRegex, match, matchTest, Regex) -- regex-tdfa supports `(T.Text,T.Text,T.Text)` instance, to avoid packing/unpacking String matches; it is maybe 4x slower than pcre-heavy, but should have fewer Unicode & correctness/segfault/strange-closure issues (native Text, and useful splitting), so to save my sanity... BUG: TDFA seems to have slow Text instances: https://github.com/haskell-hvr/regex-tdfa/issues/9
 
@@ -79,7 +79,7 @@ linkAuto = linkAutoFiltered id
 -- if we want to run on just a subset of links (eg. remove all resulting links to Wikipedia, or delete a specific regexp match), we can pass in a filter:
 linkAutoFiltered :: ([(T.Text, T.Text)] -> [(T.Text, T.Text)]) -> Pandoc -> Pandoc
 linkAutoFiltered subsetter p = let customDefinitions' = filterMatches p $ filterDefinitions p (customDefinitions subsetter) in
-               if null customDefinitions' then p else topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
+               if null customDefinitions' then p else topDown cleanUpDivsEmpty $ topDown cleanUpSpansLinkAutoSkipped $ cleanupNestedLinks $ annotateFirstDefinitions $ walk (defineLinks customDefinitions') p
 
 -----------
 
@@ -125,6 +125,11 @@ cleanUpSpansLinkAutoSkipped :: [Inline] -> [Inline]
 cleanUpSpansLinkAutoSkipped [] = []
 cleanUpSpansLinkAutoSkipped ((Span (_,["link-auto-skipped"],_) payload):rest) = payload ++ rest
 cleanUpSpansLinkAutoSkipped (r:rest) = r : cleanUpSpansLinkAutoSkipped rest
+
+cleanUpDivsEmpty :: [Block] -> [Block]
+cleanUpDivsEmpty [] = []
+cleanUpDivsEmpty ((Div ("",[],[]) payload):rest) = payload ++ rest
+cleanUpDivsEmpty (r:rest) = r : cleanUpDivsEmpty rest -- if it is not a nullAttr, then it is important and carrying a class like "abstract" or something, and must be preserved.
 
 -----------
 
