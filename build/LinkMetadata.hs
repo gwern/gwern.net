@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-24 22:51:13 gwern"
+When:  Time-stamp: "2022-04-25 10:16:01 gwern"
 License: CC-0
 -}
 
@@ -237,7 +237,7 @@ writeAnnotationFragment am md archived u i@(a,b,c,d,ts,e) = when (length e > min
                                              when (filepath /= urlEncode u') $ printRed $ "Warning, annotation fragment path → URL truncated! Was: " ++ filepath ++ " but truncated to: " ++ filepath' ++ "; (check that the truncated file name is still unique, otherwise some popups will be wrong)"
                                              let titleHtml    = typesetHtmlField "" $ titlecase' a
                                              let authorHtml   = typesetHtmlField "" b
-                                             -- obviously no point in smallcaps-ing date/DOI, so skip those
+                                             -- obviously no point in trying to reformatting date/DOI, so skip those
                                              let abstractHtml = typesetHtmlField e e
                                              -- TODO: this is fairly redundant with 'pandocTransform' in hakyll.hs; but how to fix without circular dependencies...
                                              let pandoc = Pandoc nullMeta $ generateAnnotationBlock False False True (u', Just (titleHtml,authorHtml,c,d,ts,abstractHtml)) bl sl
@@ -696,6 +696,7 @@ url2Tags p = concat $ map (\(match,tag) -> if match p then [tag] else []) urlTag
           , (("evageeks.org"`isInfixOf`),  "eva")
           , (("evamonkey.com"`isInfixOf`), "eva")
           , (("r-project.org"`isInfixOf`), "cs/r")
+          , (("haskell.org"`isInfixOf`), "cs/haskell")
           ]
 
 -- clean a YAML metadata file by sorting & unique-ing it (this cleans up the various appends or duplicates):
@@ -1423,8 +1424,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let b = U.toString bs
                         let f = parseTags b
                         let metas = filter (isTagOpenName "meta") f
-                        -- let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
-                        let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
+                        let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
                                        in if dateTmp=="N/A" || dateTmp=="2009-01-01" || dateTmp =~ dateRegex then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
@@ -1445,8 +1445,9 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         let footnotesP = "<section class=\"footnotes\" role=\"doc-endnotes\">" `isInfixOf` b
 
                         let toc = gwernTOC footnotesP p' f
+                        let toc' = if toc == "<div class=\"columns\" class=\"TOC\"></div>" then "" else toc
 
-                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description toc f
+                        let (sectTitle,gabstract) = gwernAbstract ("/index" `isSuffixOf` p') p' description toc' f
                         let title' = if null sectTitle then title else title ++ " § " ++ sectTitle
                         let combinedAnnotation = (if "</figure>" `isInfixOf` gabstract || "<img>" `isInfixOf` gabstract then "" else thumbnailFigure) ++ -- some pages like /Questions have an image inside the abstract; preserve that if it's there
                                                  gabstract
@@ -1496,7 +1497,8 @@ gwernAbstract shortAllowed p' description toc f =
       abstrct'  = if length description > length abstrct then description else abstrct
       abstrct'' = (if anyPrefix abstrct' ["<p>", "<p>", "<figure>"] then abstrct' else "<p>"++abstrct'++"</p>") ++ " " ++ toc
       abstrct''' = trim $ replace "href=\"#" ("href=\"/"++baseURL++"#") abstrct'' -- turn relative anchor paths into absolute paths
-  in if "abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct''')
+      abstrct'''' = sed " id=\"fnref[0-9]+\"" "" abstrct''' -- rm footnote IDs - cause problems when transcluded
+  in if "abstract-not" `isInfixOf` (renderTags abstrctRw) then (t,"") else if shortAllowed then (t,abstrct'''') else if length abstrct < minimumAnnotationLength then ("","") else (t,abstrct'''')
 dropToAbstract, takeToAbstract, filterAbstract, dropToBody, dropToSectionEnd, dropToLink, dropToLinkEnd, dropToText :: Tag String -> Bool
 dropToClass, dropToID :: String -> Tag String -> Bool
 dropToClass    i (TagOpen "div" attrs) = case lookup "class" attrs of
