@@ -1,7 +1,7 @@
 {- LinkLive.hs: Specify domains which can be popped-up "live" in a frame by adding a link class.
 Author: Gwern Branwen
 Date: 2022-02-26
-When:  Time-stamp: "2022-04-23 19:35:38 gwern"
+When:  Time-stamp: "2022-04-25 12:36:42 gwern"
 License: CC-0
 
 Based on LinkIcon.hs. At compile-time, set the HTML class `link-live` on URLs from domains verified
@@ -301,7 +301,6 @@ goodDomainsSimple =
     , "www.stat.columbia.edu"
     , "www.straighttalkonevidence.org"
     , "www.tarsnap.com"
-    , "www.theatlantic.com"
     , "www.theindiaforum.in"
     , "www.theparisreview.org"
     , "www.thisfursonadoesnotexist.com"
@@ -2451,6 +2450,7 @@ badDomainsSimple = ["1d4chan.org",
     , "nitter.hu"
     , "tinyurl.com"
     , "history.nasa.gov"
+    , "www.theatlantic.com"
    ]
 
 url :: T.Text -> Inline
@@ -2493,7 +2493,6 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://archive.ph/VY8e2", True)
     , ("https://archivebox.io/", True)
     , ("https://bam-dataset.org/", True)
-    , ("https://bam.kalzumeus.com/archive/financial-innovation-is-happening/", True)
     , ("https://bam.kalzumeus.com/archive/financial-innovation-is-happening/", True)
     , ("https://beepb00p.xyz/pkm-search.html#appendix_cloudmacs", True)
     , ("https://bellard.org/jslinux/tech.html", True)
@@ -2666,7 +2665,6 @@ goodLinks = [("https://demo.allennlp.org/next-token-lm", True)
     , ("https://www.simplify.so/", True)
     , ("https://www.snpedia.com/index.php/Genomes", True)
     , ("https://www.straighttalkonevidence.org/2017/09/22/disappointing-findings-on-conditional-cash-transfers-as-a-tool-to-break-the-poverty-cycle-in-the-united-states/", True)
-    , ("https://www.theatlantic.com/technology/archive/2012/05/the-perfect-milk-machine-how-big-data-transformed-the-dairy-industry/256423/", True)
     , ("https://www.theindiaforum.in/article/revolt-upper-castes", True)
     , ("https://www.theparisreview.org/interviews/4155/the-art-of-the-essay-no-1-e-b-white", True)
     , ("https://www.thisfursonadoesnotexist.com/", True)
@@ -4794,4 +4792,5 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://tinyurl.com/hquv34", False)
     , ("https://history.nasa.gov/rogersrep/v2appf.htm", False)
     , ("https://en.wikipedia.org/wiki/Special:Random", False)
+    , ("https://www.theatlantic.com/technology/archive/2012/05/the-perfect-milk-machine-how-big-data-transformed-the-dairy-industry/256423/", False)
     ]
