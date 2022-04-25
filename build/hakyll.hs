@@ -5,7 +5,7 @@
 Hakyll file for building Gwern.net
 Author: gwern
 Date: 2010-10-01
-When: Time-stamp: "2022-04-24 17:34:51 gwern"
+When: Time-stamp: "2022-04-25 10:43:12 gwern"
 License: CC-0
 
 Debian dependencies:
@@ -89,9 +89,9 @@ main = hakyll $ do
              unless (null livelinks) $ preprocess $ printRed ("Live link pop rules have errors in: " ++ show livelinks)
              _ <- preprocess linkLivePrioritize -- generate testcases for new live-link targets
 
-             preprocess $ printGreen ("Testing Interwiki rewrite rules…" :: String)
+             preprocess $ printGreen ("Testing interwiki rewrite rules…" :: String)
              let interwikiPopupTestCases = interwikiTestSuite
-             unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki have errors in: " ++ show interwikiPopupTestCases)
+             unless (null interwikiPopupTestCases) $ preprocess $ printRed ("Interwiki rules have errors in: " ++ show interwikiPopupTestCases)
 
              preprocess $ printGreen ("Local archives parsing…" :: String)
              am <- preprocess readArchiveMetadata
