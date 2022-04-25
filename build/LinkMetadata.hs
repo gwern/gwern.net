@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-24 22:47:33 gwern"
+When:  Time-stamp: "2022-04-24 22:51:13 gwern"
 License: CC-0
 -}
 
@@ -466,8 +466,8 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("GPT/inner-monologue", "inner monologue (AI)")
           , ("/gpt", "GPT")
           , ("ai/gpt", "GPT")
-          , ("/nn", "neural nets")
-          , ("ai/nn", "neural nets")
+          , ("/nn", "neural net")
+          , ("ai/nn", "neural net")
           , ("ai/rnn", "AI/RNN")
           , ("ai/scaling", "AI scaling")
           , ("ai/scaling/moe", "AI/MoE")
@@ -536,6 +536,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("genetics/selection/index-selection", "index selection")
           , ("reinforcement-learning/meta-learning", "meta-learning")
           , ("reinforcement-learning/preference-learning", "preference learning")
+          , ("prediction/election", "election forecast")
           , ("psychology/illusion-of-depth", "the illusion of depth")
           , ("psychology/neuroscience", "neuroscience")
           , ("psychology/european-journal-of-parapsychology", "EJP")
@@ -549,7 +550,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("philosophy/ethics/ethicists", "ethicists")
           , ("statistics/meta-analysis", "meta-analysis")
           , ("statistics/power-analysis", "power analysis")
-          , ("statistics/bayes", "Bayesian")
+          , ("statistics/bayes", "Bayes")
           , ("psychiatry/schizophrenia", "SCZ")
           , ("longevity/john-bjorksten", "John Bjorksten")
           , ("genetics/gametogenesis", "gametogenesis")
@@ -581,7 +582,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
           , ("long-now", "Long Now")
           , ("japanese", "Japan")
           , ("algernon", "Algernon's Law")
-          , ("haskell", "Haskell")
+          , ("cs/haskell", "Haskell")
           , ("borges", "J. L. Borges")
           , ("bitcoin", "Bitcoin")
           , ("touhou", "Touhou")
@@ -591,6 +592,7 @@ abbreviateTag = T.pack . sedMany tagRewritesRegexes . replaceMany tagRewritesFix
         tagRewritesRegexes  :: [(String,String)]
         tagRewritesRegexes = [("^cs/", "CS/")
                              , ("^cs$", "CS")
+                             , ("^cs/r$", "R")
                              , ("^ai/", "AI/")
                              , ("^ai$", "AI")
                              , ("^iq/", "IQ/")

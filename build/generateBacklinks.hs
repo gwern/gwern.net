@@ -87,7 +87,7 @@ writeOutCallers md target callers = do let f = take 274 $ "metadata/annotations/
                                                 ) callers'
 
                                        -- auto-links are a good source of backlinks, catching cases where an abstract mentions something but I haven't actually hand-annotated the link yet (which would make it show up as a normal backlink). But auto-linking is extremely slow, and we don't care about the WP links which make up the bulk of auto-links. So we can do just the subset of non-WP autolinks.
-                                       let pandoc = linkAutoFiltered (filter (\(_,url) -> not ("en.wikipedia.org/"`T.isInfixOf`url))) $
+                                       let pandoc = linkAutoFiltered (filter (\(_,url) -> not ("wikipedia.org/"`T.isInfixOf`url))) $
                                                     walk (hasAnnotation md True) $ Pandoc nullMeta [content]
                                        let html = let htmlEither = runPure $ writeHtml5String safeHtmlWriterOptions pandoc
                                                   in case htmlEither of
@@ -131,10 +131,10 @@ truncateAnchors = T.takeWhile (/='#')
 
 blackList :: T.Text -> Bool
 blackList f
-  | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/"] = False
+  | anyInfixT f ["/backlinks/", "/link-bibliography/", "/similars/", "wikipedia.org/wiki/"] = False
   | anyPrefixT f ["/images", "/tags/", "/docs/www/", "/newsletter/", "/Changelog", "/Mistakes", "/Traffic", "/Links", "/Lorem",
                    -- WARNING: do not filter out 'metadata/annotations' because that leads to empty databases & infinite loops
-                   "https://www.youtube.com/", "https://en.wikipedia.org/wiki/",
+                   "https://www.youtube.com/",
                    "https://www.dropbox.com/", "https://dl.dropboxusercontent.com/"] = False
   | anySuffixT f ["/index"] = False
   | otherwise = True
