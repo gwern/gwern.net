@@ -562,6 +562,7 @@ body.index #markdownBody ul > li:nth-of-type(n+2) {
     margin: 0 0 0.5em 0;
     padding-left: 1.125em;
     position: relative;
+    text-align: left;
     overflow-wrap: break-word;
 }
 
@@ -999,6 +1000,10 @@ blockquote blockquote blockquote blockquote blockquote blockquote {
 
 p + blockquote {
     margin-top: 1em;
+}
+
+blockquote > figure.float-right:first-child {
+	margin-top: 0.375em;
 }
 
 /***************/

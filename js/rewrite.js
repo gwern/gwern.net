@@ -290,6 +290,10 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 function wrapImages(loadEventInfo) {
     GWLog("wrapImages", "rewrite.js", 1);
 
+	loadEventInfo.document.querySelectorAll("p > img:only-child").forEach(image => {
+		unwrap(image.parentElement);
+	});
+
 	wrapAll("img", (image) => {
 		if (image.closest(".footnote-back"))
 			return;

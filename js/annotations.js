@@ -32,8 +32,7 @@ Annotations = {
         */
 
     annotationsBasePathname: "/metadata/annotations/",
-    annotationReferenceElementSelectors: [ "a.link-annotated" ],
-    annotationReferenceElementSelectorPrefix: "",
+    annotationReferenceElementSelector: "a.link-annotated",
 
     /***********/
     /*  General.
@@ -187,9 +186,7 @@ Annotations = {
         */
     //	Called by: Annotations.referenceDataForAnnotationIdentifier
     referenceDataForLocalAnnotation: (referenceEntry) => {
-        let referenceElement = referenceEntry.querySelector(Annotations.annotationReferenceElementSelectors.map(selector =>
-            `${Annotations.annotationReferenceElementSelectorPrefix}${selector}`
-        ).join(", "));
+        let referenceElement = referenceEntry.querySelector(Annotations.annotationReferenceElementSelector);
 
         //  Author list.
         let authorElement = referenceEntry.querySelector(".author");
