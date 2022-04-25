@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-24 18:17:35 gwern"
+When:  Time-stamp: "2022-04-24 22:47:33 gwern"
 License: CC-0
 -}
 
@@ -189,9 +189,9 @@ readLinkMetadataAndCheck = do
              let final = M.union (M.fromList custom) $ M.union (M.fromList partial) (M.fromList auto) -- left-biased, so 'custom' overrides 'partial' overrides 'auto'
 
              let authors = map (\(_,(_,aut,_,_,_,_)) -> aut) (M.toList final) in
-               Par.mapM_ (\a -> when (not (null a)) $ when (dateRegex =~ a) (error $ "Mixed up author & date?: " ++ a) ) authors
+               Par.mapM_ (\a -> when (not (null a)) $ when (a =~ dateRegex) (error $ "Mixed up author & date?: " ++ a) ) authors
              let dates = map (\(_,(_,_,dt,_,_,_)) -> dt) (M.toList final) in
-               Par.mapM_ (\d -> when (not (null d)) $ when (dateRegex =~ d) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
+               Par.mapM_ (\d -> when (not (null d)) $ unless (d =~ dateRegex) (error $ "Malformed date (not 'YYYY[-MM[-DD]]'): " ++ d) ) dates
 
              -- 'filterMeta' may delete some titles which are good; if any annotation has a long abstract, all data sources *should* have provided a valid title. Enforce that.
              let titlesEmpty = M.filter (\(t,_,_,_,_,abst) -> t=="" && length abst > 100) final
@@ -1409,8 +1409,8 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
           anySuffix p ["#external-links", "#see-also", "#see-also-1", "#see-also-2", "#footnotes", "#links", "#top-tag", "#misc", "#miscellaneous", "#appendix", "#conclusion", "#conclusion-1", "#media", "#writings", "#filmtv", "#music", "#books"] ||
           anyInfix p ["index.html", "/index#"] ||
           ("/index#" `isInfixOf` p && "-section" `isSuffixOf` p)  = return (Left Permanent) -- likewise: the newsletters are useful only as cross-page popups, to browse
-        | sectionAnonymousRegex =~ p = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
-        | footnoteRegex =~ p = return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
+        | p =~ sectionAnonymousRegex = return (Left Permanent) -- unnamed sections are unstable, and also will never have abstracts because they would've gotten a name as part of writing it.
+        | p =~ footnoteRegex= return (Left Permanent) -- shortcut optimization: footnotes will never have abstracts (right? that would just be crazy hahaha ・・；)
         | otherwise =
             let p' = sed "^/" "" $ replace "https://www.gwern.net/" "" p in
             do printRed p'
@@ -1424,7 +1424,7 @@ gwern p | ".pdf" `isInfixOf` p = pdf p
                         -- let title = cleanAbstractsHTML $ concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let title = concatMap (\(TagOpen _ (t:u)) -> if snd t == "title" then snd $ head u else "") metas
                         let date = let dateTmp = concatMap (\(TagOpen _ (v:w)) -> if snd v == "dc.date.issued" then snd $ head w else "") metas
-                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || dateRegex =~ dateTmp then "" else dateTmp
+                                       in if dateTmp=="N/A" || dateTmp=="2009-01-01" || dateTmp =~ dateRegex then "" else dateTmp
                         let description = concatMap (\(TagOpen _ (cc:dd)) -> if snd cc == "description" then snd $ head dd else "") metas
                         let keywords = concatMap (\(TagOpen _ (x:y)) -> if snd x == "keywords" then Data.List.Utils.split ", " $ snd $ head y else []) metas
                         let author = initializeAuthors $ concatMap (\(TagOpen _ (aa:bb)) -> if snd aa == "author" then snd $ head bb else "") metas
@@ -1569,7 +1569,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
          ("</p>\n \n<p>", "</p>\n<p>"),
          ("  *", " "), -- squeeze whitespace
          (" \\( ", " ("),
-         (" ) ", " )"),
+         (" \\) ", " )"),
          (" </p>", "</p>"),
         ("<br/> *</p>", "</p>"),
         ("<p> *", "<p>"),

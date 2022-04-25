@@ -102,7 +102,7 @@ filterURLs    u = anyPrefixT u ["$","\8383","#","/static/img/","/newsletter/20",
 filterAnchors :: S.Set T.Text -> T.Text -> Bool
 filterAnchors d t = T.length t > anchorLengthMaximum ||
                     S.member (T.toLower t) d ||
-                    regex =~ t ||
+                    t =~ regex ||
                     anyInfixT t ["$","%","[","]"] ||
                     anyPrefixT t ["(","."] ||
                     "&"==t ||

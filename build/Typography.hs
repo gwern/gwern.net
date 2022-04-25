@@ -239,5 +239,5 @@ titlecase' "" = ""
 titlecase' t = titlecase $ titlecase'' t
    where titlecase'' :: String -> String
          titlecase'' "" = ""
-         titlecase'' t' = let (before,matched,after) = ("-[a-z]"::String) =~ t' :: (String,String,String)
+         titlecase'' t' = let (before,matched,after) =  t' =~ ("\\-[a-z]"::String) :: (String,String,String)
                           in before ++ map toUpper matched ++ titlecase'' after
