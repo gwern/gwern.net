@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-25 13:39:42 gwern"
+When:  Time-stamp: "2022-04-25 18:30:18 gwern"
 License: CC-0
 -}
 
@@ -1492,7 +1492,7 @@ gwernAbstract shortAllowed p' description toc f =
                 else let
                          beginning = dropWhile (dropToID anchor) $ dropWhile dropToBody f
                          -- complicated titles like `## Loehlin & Nichols 1976: _A Study of 850 Sets of Twins_` won't be just a single TagText, so grab everything inside the <a></a>:
-                         title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ dropWhile dropToLink beginning
+                         title = renderTags $ takeWhile dropToLinkEnd $ dropWhile dropToText $ drop 1 $ dropWhile dropToLink beginning
                          titleClean = trim $ replaceMany [("<span>", ""), ("</span>",""), ("\n", " "), ("<span class=\"smallcaps\">",""), ("<span class=\"link-auto-skipped\">",""), ("<span class=\"link-auto-first\">","")] title
                          abstractRaw = takeWhile takeToAbstract $ dropWhile dropToAbstract $ takeWhile dropToSectionEnd $ drop 1 beginning
                          restofpageAbstract = trim $ renderTags $ filter filterAbstract abstractRaw
@@ -1531,6 +1531,8 @@ dropToLink _ = True
 dropToLinkEnd (TagClose "a") = False
 dropToLinkEnd _ = True
 dropToText (TagText _) = False
+dropToText (TagOpen "em" _) = False
+dropToText (TagClose "em") = False
 dropToText _ = True
 
 -- handle initials consistently as space-separated; delete the occasional final Oxford 'and' cluttering up author lists
@@ -2546,6 +2548,7 @@ cleanAbstractsHTML = fixedPoint cleanAbstractsHTML'
           , ("\t\t\t\t\t", "")
           , ("co- occurring", "co-occurring")
           , ("</sup><br/>", "</sup>")
+          , (" < jats:sub>", "<sub>")
           , ("\n            <jats:italic>k</jats:italic>\n            ", "<em>k</em>")
           , ("\n            <jats:sup>–6</jats:sup>\n            ", "<sup>–6</sup>")
           , ("\n            <jats:italic>in vitro</jats:italic>\n", " <em>in vitro</em>")
