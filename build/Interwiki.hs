@@ -130,7 +130,7 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!Wikipedia",""),
      Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
   , (Link nullAttr [Str "File:NASA Worm logo.svg"] ("!Wikipedia",""),
-      Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "File:NASA Worm logo.svg"] ("https://en.wikipedia.org/wiki/File:NASA_Worm_logo.svg", ""))
+      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "File:NASA Worm logo.svg"] ("https://en.wikipedia.org/wiki/File:NASA_Worm_logo.svg", ""))
   , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!Wikipedia",""),
       Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
 
@@ -173,7 +173,7 @@ wpPopupClasses u = nubOrd $ ["backlinks-not", "id-not"] ++ case parseURIReferenc
 -- WP namespaces which are known to not return a useful annotation from the API; Special: does not (eg. Special:Random, or, common in article popups, Special:BookSources for ISBNs) and returns nothing while Category: returns something which is useless (just the category title!), but surprisingly, most others return something useful (eg. even Talk pages like <https:/en.wikipedia.org/api/rest_v1/page/mobile-sections/Talk:Small_caps> do).
 -- I have not checked the full list of namespaces carefully so some of the odder namespaces may be bad.
 apiNamespacesNo :: [String]
-apiNamespacesNo = ["Category", "Special"]
+apiNamespacesNo = ["Category", "File", "Special"]
 
 -- A separate question from API annotations is whether a namespace permits live popups, or if it sets X-FRAME headers. Thus far, only Special: appears to block embeddings (probably for security reasons, as there is a lot of MediaWiki functionality gatewayed behind Special: URLs, while the other namespaces should be harder to abuse).
 linkliveNamespacesNo :: [String]
