@@ -4,10 +4,12 @@ module Interwiki (convertInterwikiLinks, inlinesToString, wpPopupClasses, interw
 import Data.Containers.ListUtils (nubOrd)
 import Data.List (isPrefixOf, isSuffixOf)
 import qualified Data.Map as M (fromList, lookup, Map)
-import Text.Pandoc (Inline(..), nullAttr)
 import qualified Data.Text as T (append, concat, head, isInfixOf, null, tail, take, toUpper, pack, unpack, Text)
-import Data.List.Utils (replace)
 import Network.URI (parseURIReference, uriPath, uriAuthority, uriRegName)
+
+import Text.Pandoc (Inline(..), nullAttr)
+
+import Utils (replaceMany)
 
 -- INTERWIKI PLUGIN
 -- This is a simplification of the original interwiki plugin I wrote for Gitit: <https://github.com/jgm/gitit/blob/master/plugins/Interwiki.hs>
@@ -61,9 +63,9 @@ convertInterwikiLinks x@(Link (ident, classes, kvs) ref (interwiki, article)) =
     interwikiurl :: T.Text -> T.Text -> T.Text
     -- normalize links; MediaWiki requires first letter to be capitalized, and prefers '_' to ' '/'%20' for whitespace
     interwikiurl u a = let a' = if ".wikipedia.org/wiki/" `T.isInfixOf` u then T.toUpper (T.take 1 a) `T.append` T.tail a else a in
-                         u `T.append` T.pack (replace "%" "%25" $ replace " " "_" $ deunicode (T.unpack a'))
+                         u `T.append` T.pack (replaceMany [("\"", "%22"), ("[", "%5B"), ("]", "%5D"), ("%", "%25"), (" ", "_")] $ deunicode (T.unpack a'))
     deunicode :: String -> String
-    deunicode = replace "‘" "\'" . replace "’" "\'" . replace " " " " . replace " " " "
+    deunicode = replaceMany [("‘", "\'"), ("’", "\'"), (" ", " "), (" ", " ")]
 convertInterwikiLinks x = x
 
 interwikiTestSuite :: [(Inline, Inline, Inline)]
@@ -111,27 +113,27 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
   -- /Lorem testcases: Should popup (as an **annotation**):
   , (Link nullAttr [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum",""),
      Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Emph [Str "Liber Figurarum"]] ("https://it.wikipedia.org/wiki/Liber_Figurarum", ""))
-  , (Link nullAttr [Str "Small caps"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Small caps"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Small caps"] ("https://en.wikipedia.org/wiki/Small_caps", ""))
-  , (Link nullAttr [Str "Talk:Small caps"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Talk:Small caps"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Talk:Small caps"] ("https://en.wikipedia.org/wiki/Talk:Small_caps", ""))
-  , (Link nullAttr [Str "User:Gwern"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "User:Gwern"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "User:Gwern"] ("https://en.wikipedia.org/wiki/User:Gwern", ""))
-  , (Link nullAttr [Str "User talk:Gwern"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "User talk:Gwern"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "User talk:Gwern"] ("https://en.wikipedia.org/wiki/User_talk:Gwern", ""))
-  , (Link nullAttr [Str "Help:Authority control"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Help:Authority control"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Help:Authority control"] ("https://en.wikipedia.org/wiki/Help:Authority_control", ""))
-  , (Link nullAttr [Str "Help talk:Authority control"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Help talk:Authority control"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Help talk:Authority control"] ("https://en.wikipedia.org/wiki/Help_talk:Authority_control", ""))
-  , (Link nullAttr [Str "Wikipedia:Wikipedia Signpost"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Wikipedia:Wikipedia Signpost"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia:Wikipedia_Signpost", ""))
-  , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!W",""),
     Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
-  , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Wikipedia talk:Wikipedia Signpost"] ("!W",""),
      Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "Wikipedia talk:Wikipedia Signpost"] ("https://en.wikipedia.org/wiki/Wikipedia_talk:Wikipedia_Signpost", ""))
-  , (Link nullAttr [Str "File:NASA Worm logo.svg"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "File:NASA Worm logo.svg"] ("!W",""),
       Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "File:NASA Worm logo.svg"] ("https://en.wikipedia.org/wiki/File:NASA_Worm_logo.svg", ""))
-  , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "MediaWiki:Citethispage-content"] ("!W",""),
       Link ("", ["backlinks-not", "id-not", "link-annotated", "link-live"], []) [Str "MediaWiki:Citethispage-content"] ("https://en.wikipedia.org/wiki/MediaWiki:Citethispage-content", ""))
 
     -- Should popup (as a **live link** but not annotation): [Category:Buddhism and sports](!W)
@@ -139,15 +141,15 @@ interwikiTestSuite = map (\(a,b) -> (a, convertInterwikiLinks a, b)) $ filter (\
      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
     , (Link nullAttr [Str "Category:Buddhism and sports"] ("!W",""),
      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
-    , (Link nullAttr [Str "Category:Buddhism and sports"] ("!Wikipedia",""),
+    , (Link nullAttr [Str "Category:Buddhism and sports"] ("!W",""),
      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Category:Buddhism and sports"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
-    , (Link nullAttr [Str "Buddhism category"] ("!Wikipedia","Category:Buddhism and sports"),
+    , (Link nullAttr [Str "Buddhism category"] ("!W","Category:Buddhism and sports"),
      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live"], []) [Str "Buddhism category"] ("https://en.wikipedia.org/wiki/Category:Buddhism_and_sports", ""))
 
     -- Should **not** popup at all: [Special:Random](!W)
-  , (Link nullAttr [Str "Special:Random"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Special:Random"] ("!W",""),
       Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:Random"] ("https://en.wikipedia.org/wiki/Special:Random", ""))
-  , (Link nullAttr [Str "Special:BookSources/0-8054-2836-4"] ("!Wikipedia",""),
+  , (Link nullAttr [Str "Special:BookSources/0-8054-2836-4"] ("!W",""),
      Link ("", ["backlinks-not", "id-not", "link-annotated-not", "link-live-not"], []) [Str "Special:BookSources/0-8054-2836-4"] ("https://en.wikipedia.org/wiki/Special:BookSources/0-8054-2836-4", ""))
   ]
 
@@ -166,7 +168,7 @@ wpPopupClasses u = nubOrd $ ["backlinks-not", "id-not"] ++ case parseURIReferenc
                                                 domain = uriRegName authority
                                             in
                                              if not ("wikipedia.org" `isSuffixOf` domain) && "http" `isPrefixOf` u then [] else
-                                                        let u' = takeWhile (/= ':') $ replace "/wiki/" "" article in
+                                                        let u' = takeWhile (/= ':') $ replaceMany [("/wiki/", "")] article in
                                                           [if u' `elem` apiNamespacesNo then "link-annotated-not" else "link-annotated",
                                                            if u' `elem` linkliveNamespacesNo then "link-live-not" else "link-live"]
 
