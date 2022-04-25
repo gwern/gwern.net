@@ -618,7 +618,7 @@ Extracts = {
         let fullTargetDocument = Extracts.targetDocument(target);
         if (   target.hash > ""
         	&& (   fullTargetDocument
-        		|| target.closest(".popframe .TOC"))) {
+        		|| target.closest(".TOC"))) {
         	/*	Fall back to loaded and cached full page, if it exists but is
         		not displayed in a pop-frame.
         	 */
