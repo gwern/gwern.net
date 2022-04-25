@@ -294,7 +294,9 @@ function wrapImages(loadEventInfo) {
 		if (image.closest(".footnote-back"))
 			return;
 
-		if (image.closest("figure").querySelector("figcaption") != null)
+		let figure = image.closest("figure");
+		if (   figure 
+			&& figure.querySelector("figcaption") != null)
 			return;
 
 		wrapElement(image, null, "FIGURE", true, 
