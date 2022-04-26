@@ -3917,7 +3917,7 @@ badLinks = [("https://1d4chan.org/wiki/Tale_of_an_Industrious_Rogue,_Part_I", Fa
     , ("https://e621.net/posts", False)
     , ("https://eab.sagepub.com/content/23/1/3.short", False)
     , ("https://economics.stanford.edu/sites/default/files/economics_of_scaleup_20180316.pdf", False)
-    , ("https://econ.vt.edu/seminars/seminarpapers/2005/weinberg_100705_cc.pdf", False)
+    , ("https://link.springer.com/article/10.1007/s10645-019-09339-9", False)
     , ("https://ec.toranoana.jp/joshi_r/ec/item/040030048682/", False)
     , ("https://eg-2.hatenablog.com/", False)
     , ("https://ehp.niehs.nih.gov/doi/full/10.1289/ehp.1510037", False)
