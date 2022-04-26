@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-26 10:23:55 gwern"
+When:  Time-stamp: "2022-04-26 11:44:50 gwern"
 License: CC-0
 -}
 
@@ -1476,7 +1476,7 @@ truncateTOC p' toc = let pndc = truncateTOCHTML (T.pack (sed ".*#" "" p')) (T.pa
 
 gwernTOC :: Bool -> String -> [Tag String] -> String
 gwernTOC footnotesP p' f =
-                       (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#fn1\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add the footnotes section to the ToC, and we can't override this; on Gwern.net, this is done by JS at runtime, but of course that doesn't help the scraping case. So we infer the existence of footnotes and append it to the end of the ToC: the footnotes section has no ID to anchor on (only `class="footnotes"`) but if there are footnotes, there must be a *first* footnote, which has the id `fn1`, so, link to that...
+                       (\tc -> if not footnotesP then tc else replace "</ul>\n</div>" "<li><a href=\"#footnotes\"><span>Footnotes</span></a></li></ul></div>" tc) $ -- Pandoc declines to add an ID to footnotes section; on Gwern.net, we override this by at compile-time rewriting the <section> to have `#footnotes`
                               replace "<div class=\"columns\"><div class=\"TOC\">" "<div class=\"columns\" class=\"TOC\">" $ -- add columns class to condense it in popups/tag-directories
                               replace "<span>" "" $ replace "</span>" "" $ -- WARNING: Pandoc generates redundant <span></span> wrappers by abusing the span wrapper trick while removing header self-links <https://github.com/jgm/pandoc/issues/8020>; so since those are the only <span>s which should be in ToCs (...right?), we'll remove them.
                               (if '#'`elem`p' then (\t -> let toc = truncateTOC p' t in if toc /= "" then ("<div class=\"columns\" class=\"TOC\">" ++ toc ++ "</div>") else "") else id) $ -- NOTE: we strip the `id="TOC"` deliberately because the ID will cause HTML validation problems when abstracts get transcluded into tag-directories/link-bibliographies

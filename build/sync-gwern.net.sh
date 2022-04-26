@@ -215,6 +215,10 @@ else
     find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 nonbreakSpace || true
     find ./_site/metadata/annotations/ -maxdepth 1 -type f -name "*.html" | sort | parallel --max-args=100 nonbreakSpace || true
 
+    bold "Adding #footnotes section ID…" # Pandoc BUG? see <https://github.com/jgm/pandoc/issues/8043>
+    footnotesIDAdd () { sed -i -e 's/<section class="footnotes" role="doc-endnotes">/<section class="footnotes" role="doc-endnotes" id="footnotes">/' "$@"; }
+    find ./ -path ./_site -prune -type f -o -name "*.page" | fgrep -v -e '#' | sort | sed -e 's/\.page$//' -e 's/\.\/\(.*\)/_site\/\1/' | parallel --max-args=100 footnotesIDAdd || true
+
     # Testing compilation results:
     set +e
 
