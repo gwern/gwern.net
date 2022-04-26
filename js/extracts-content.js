@@ -228,8 +228,8 @@ Extracts = { ...Extracts, ...{
 
         return Extracts.localTranscludeForTarget(target, (blockElement) => {
             return target.hash.startsWith("#sn")
-                   ? blockElement.querySelector(".sidenote-inner-wrapper")
-                   : blockElement;
+                   ? blockElement.querySelector(".sidenote-inner-wrapper").children
+                   : blockElement.children;
         }, true);
     },
 
@@ -274,6 +274,10 @@ Extracts = { ...Extracts, ...{
     //  Called by: extracts.js (as `rewritePopFrameContent_${targetTypeName}`)
     rewritePopFrameContent_CITATION: (popFrame) => {
         let target = popFrame.spawningTarget;
+
+		//	Remove back-link and self-link.
+		popFrame.querySelector(".footnote-self-link").remove();
+		popFrame.querySelector(".footnote-back").remove();
 
         //  Fire a contentDidLoad event.
         GW.notificationCenter.fireEvent("GW.contentDidLoad", {

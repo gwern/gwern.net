@@ -872,10 +872,11 @@ img::before {
 /* BLOCKQUOTES */
 /***************/
 
-/* main gray background is implemented in initial.css to avoid 'flash' on load */
+/*	Main gray background is implemented in initial.css to avoid ‘flash’ on load. 
+ */
 
 blockquote {
-    /* avoid problems with floating */
+    /* Avoid problems with floating */
     clear: both;
 }
 
@@ -3080,10 +3081,6 @@ body.index-directory #footer {
     vertical-align: text-top;
 }
 
-.popframe .footnote-self-link {
-    display: none;
-}
-
 /*  Drop caps in pop-frames.
     */
 .popframe.markdownBody .drop-cap-goudy > p,
@@ -3274,22 +3271,8 @@ body.index-directory #footer {
 /*└──────────────────────┘*/
 /* http://ignorethecode.net/blog/2010/04/20/footnotes/ */
 
-.popframe.footnote:not(.external-page-embed) a.footnote-back {
-    display: none;
-}
-
-/*  The following compensates for the variable edge case where the last
-    blockquote within a floating footnote popup either DOES, or DOES NOT, have a
-    back-to-citation link after it (which is not shown, if present, but makes it
-    uncertain whether the blockquote is the last child of the popup or not. This
-    code makes everything consistent regardless of which case applies.
-    —Obormot (2019-02-17)
-    */
-.popframe.footnote .popframe-content-view > blockquote:nth-last-child(2) {
+.popframe.footnote .popframe-content-view > blockquote:last-child {
     margin-bottom: calc(1em/9);
-}
-.popframe.footnote .popframe-content-view > blockquote:nth-last-child(2) + p {
-    margin-top: 1em;
 }
 
 /*┌──────────────────────────────┐*/
