@@ -747,10 +747,22 @@ function injectFootnoteSelfLinks(loadEventInfo) {
     let footnotes = Array.from(footnotesSection.querySelector("#footnotes > ol").children);
 
     for (let i = 0; i < footnotes.length; i++)
-        footnotes[i].insertAdjacentHTML("afterbegin", `<a href="#fn${(i + 1)}" title="Link to footnote ${(i + 1)}" class="footnote-self-link">&nbsp;</a>`);
+        footnotes[i].insertAdjacentHTML("afterbegin", 
+        	`<a 
+        		href="#fn${(i + 1)}" 
+        		title="Link to footnote ${(i + 1)}" 
+        		class="footnote-self-link"
+        			>&nbsp;</a>`);
+}
+
+/******************************************/
+/*	Highlight footnote self-links on hover.
+ */
+function bindHighlightEventsToFootnoteSelfLinks(loadEventInfo) {
+    GWLog("bindHighlightEventsToFootnoteSelfLinks", "rewrite.js", 1);
 
     //  Highlight footnote on hover over self-link.
-    document.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
+    loadEventInfo.document.querySelectorAll(".footnote-self-link").forEach(footnoteSelfLink => {
         footnoteSelfLink.addEventListener("mouseenter", (event) => {
             footnoteSelfLink.parentElement.classList.toggle("highlighted", true);
         });
@@ -914,6 +926,7 @@ GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunction
 GW.notificationCenter.addHandlerForEvent("GW.contentDidLoad", GW.rewriteFunctions.processCitations = (info) => {
     GWLog("GW.rewriteFunctions.processCitations", "rewrite.js", 2);
 
+	bindHighlightEventsToFootnoteSelfLinks(info);
     bindNoteHighlightEventsToCitations(info);
 }, { phase: "eventListeners" });
 

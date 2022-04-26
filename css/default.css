@@ -3080,6 +3080,17 @@ body.index-directory #footer {
     display: none;
 }
 
+.popframe #footnotes > hr:first-child, 
+.popframe #footnotes > hr:first-child + a.section-self-link {
+	display: none;
+}
+
+.popframe #footnotes li > blockquote:nth-last-child(2),
+.popframe #footnotes li > pre:nth-last-child(2),
+.popframe #footnotes li > .sourceCode:nth-last-child(2) {
+	margin-bottom: 2em;
+}
+
 .popframe .footnotes .footnote-back {
     vertical-align: text-top;
 }
