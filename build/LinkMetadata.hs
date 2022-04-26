@@ -4,7 +4,7 @@
                     link, popup, read, decide whether to go to link.
 Author: Gwern Branwen
 Date: 2019-08-20
-When:  Time-stamp: "2022-04-25 18:30:18 gwern"
+When:  Time-stamp: "2022-04-26 10:23:55 gwern"
 License: CC-0
 -}
 
@@ -371,7 +371,9 @@ generateAnnotationBlock rawFilep truncAuthorsp annotationP (f, ann) blp slp = ca
                                     authorSpan = if aut/=authorShort then Span ("", ["author"], [("title",T.pack aut)]) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                                  else Span ("", ["author"], []) [Str (T.pack $ if truncAuthorsp then authorShort else aut)]
                                     author = if aut=="" || aut=="N/A" || aut=="N/\8203A" then [Space] else [Space, authorSpan]
-                                    date = if dt=="" then [] else [Span ("", ["date"], [("title",T.pack dt)]) [Str (T.pack $ dateTruncate dt)]]
+                                    date = if dt=="" then [] else [Span ("", ["date"],
+                                                                          if dateTruncateBad dt /= dt then [("title",T.pack dt)] else []) -- don't set a redundant title
+                                                                    [Str (T.pack $ dateTruncateBad dt)]]
                                     backlink = if blp=="" then [] else [Str ";", Space, Span ("", ["backlinks"], []) [Link ("",["link-local", "backlinks"],[]) [Str "backlinks"] (T.pack blp,"Reverse citations for this page.")]]
                                     similarlink = if slp=="" then [] else [Str ";", Space, Span ("", ["similars"], []) [Link ("",["link-local", "similars"],[]) [Str "similar"] (T.pack slp,"Similar links for this link (by text embedding).")]]
                                     tags = if ts==[] then [] else (if dt=="" then [] else [Str ";", Space]) ++ [tagsToLinksSpan ts]
@@ -1400,9 +1402,10 @@ citeToID = filter (\c -> c/='.' && c/='\'' && c/='’') . map toLower . replace 
 authorsTruncate :: String -> String
 authorsTruncate a = let (before,after) = splitAt 100 a in before ++ (if null after then "" else (head $ split ", " after) ++ " et al")
 
+dateTruncateBad :: String -> String
+ -- we assume that dates are guaranteed to be 'YYYY[-MM[-DD]]' format because of the validation in readLinkMetadataAndCheck enforcing this
 -- dates of the form 'YYYY-01-01' are invariably lies, and mean just 'YYYY'.
-dateTruncate :: String -> String
-dateTruncate d = if "-01-01" `isSuffixOf` d then take 4 d else d
+dateTruncateBad d = if "-01-01" `isSuffixOf` d then take 4 d else d
 
 linkCanonicalize :: String -> String
 linkCanonicalize l | "https://www.gwern.net/" `isPrefixOf` l = replace "https://www.gwern.net/" "/" l
